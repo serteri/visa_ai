@@ -89,17 +89,17 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
     }
   }
 
-  // Permanent migration → placeholder 189 / 190
+  // Permanent migration → default subclass 189 (Points tested stream)
   if (normalised.includes("migrate") || normalised.includes("permanent")) {
     results.push({
-      subclass: "189 / 190",
-      visa_name: "Skilled Independent / Nominated visa",
-      purpose: "Points-tested permanent residence in Australia",
+      subclass: "189",
+      visa_name: "Skilled Independent visa (Points tested stream)",
+      purpose: "Points-tested permanent residence in Australia for invited skilled workers",
       match_reason:
-        "You indicated a goal of permanent migration to Australia. Points-tested skilled visas (subclass 189 and 190) are common pathways, subject to a skills assessment and receiving an invitation. Full data for these visas is not yet available in this tool.",
+        "You indicated a goal of permanent migration to Australia. The Skilled Independent visa (subclass 189) Points tested stream is a common pathway for invited skilled workers, subject to skills assessment and invitation. Full data for this visa is not yet available in this tool.",
       confidence: "low",
       source_url:
-        "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189",
+        "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189/points-tested",
       pdf_snapshot_url: null,
       is_database_record: false,
     });
