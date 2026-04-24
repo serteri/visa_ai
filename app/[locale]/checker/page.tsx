@@ -90,7 +90,15 @@ export default function CheckerPage() {
       return;
     }
 
-    router.push(`/${locale}/results`);
+    const query = new URLSearchParams({ goal: formData.goal });
+    if (formData.hasEmployerSponsor)
+      query.set("hasSponsor", formData.hasEmployerSponsor);
+    if (formData.currentlyInAustralia)
+      query.set("inAustralia", formData.currentlyInAustralia);
+    if (formData.englishScore)
+      query.set("englishScore", formData.englishScore);
+
+    router.push(`/${locale}/results?${query.toString()}`);
   }
 
   function goBack() {
