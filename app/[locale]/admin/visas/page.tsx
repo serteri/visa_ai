@@ -1,14 +1,12 @@
-import React from "react";
 import { db } from "@/db";
-import { visaTypes, visaStructuredData } from "@/db/schema";
+import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 async function getVisas() {
   const visas = await db.select().from(visaTypes);
-  
-  // Fetch structured data for each visa
+
   const visasWithData = await Promise.all(
     visas.map(async (visa) => {
       const [structuredData] = await db
@@ -16,10 +14,21 @@ async function getVisas() {
         .from(visaStructuredData)
         .where(eq(visaStructuredData.visa_type_id, visa.id))
         .limit(1);
+
+      const snapshots = await db
+        .select({
+          id: sourceSnapshots.id,
+          source_url: sourceSnapshots.source_url,
+          pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+          captured_at: sourceSnapshots.captured_at,
+        })
+        .from(sourceSnapshots)
+        .where(eq(sourceSnapshots.visa_type_id, visa.id));
       
       return {
         ...visa,
         structured_data: structuredData,
+        snapshots,
       };
     })
   );
@@ -39,22 +48,17 @@ function ReviewBadge({ status }: { status: string | null | undefined }) {
 }
 
 function ExpandableJSON({ data }: { data: unknown }) {
-  const [isOpen, setIsOpen] = React.useState(false);
-
   return (
-    <div className="space-y-2">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="text-sm font-medium text-primary hover:underline"
-      >
-        {isOpen ? "▼" : "▶"} View Structured Data
-      </button>
-      {isOpen && (
+    <details className="space-y-2">
+      <summary className="cursor-pointer text-sm font-medium text-primary marker:text-primary">
+        View Structured Data
+      </summary>
+      <div className="pt-2">
         <pre className="overflow-auto rounded bg-muted p-3 text-xs max-h-96">
           {JSON.stringify(data, null, 2)}
         </pre>
-      )}
-    </div>
+      </div>
+    </details>
   );
 }
 
@@ -102,6 +106,30 @@ export default async function AdminVisasPage() {
 
                 <CardContent className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">
+                        Subclass
+                      </p>
+                      <p className="text-sm">{visa.subclass}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">
+                        Visa Name
+                      </p>
+                      <p className="text-sm">{visa.visa_name}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">
+                        Category
+                      </p>
+                      <p className="text-sm">{visa.category}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">
+                        Reviewed Status
+                      </p>
+                      <p className="text-sm">{visa.reviewed_status || "needs_review"}</p>
+                    </div>
                     <div>
                       <p className="text-xs font-semibold uppercase text-muted-foreground">
                         Purpose
@@ -154,6 +182,31 @@ export default async function AdminVisasPage() {
                       </a>
                     </div>
                   )}
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-muted-foreground">
+                      PDF Snapshots
+                    </p>
+                    {visa.snapshots.some((snapshot) => snapshot.pdf_snapshot_url) ? (
+                      <div className="space-y-2 pt-1">
+                        {visa.snapshots
+                          .filter((snapshot) => snapshot.pdf_snapshot_url)
+                          .map((snapshot) => (
+                            <a
+                              key={snapshot.id}
+                              href={snapshot.pdf_snapshot_url ?? undefined}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block text-sm text-primary hover:underline break-all"
+                            >
+                              Open PDF snapshot
+                            </a>
+                          ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm">No PDF snapshots available.</p>
+                    )}
+                  </div>
 
                   {visa.structured_data && (
                     <ExpandableJSON data={visa.structured_data.raw_json} />

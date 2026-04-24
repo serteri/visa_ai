@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 
 // Load environment variables FIRST
 dotenv.config({ path: ".env" });
-dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env.local", override: true });
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {
@@ -13,23 +13,29 @@ if (!process.env.DATABASE_URL) {
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
-import { visaTypes, visaStructuredData } from "./schema";
+import { sourceSnapshots, visaStructuredData, visaTypes } from "./schema";
 import { eq } from "drizzle-orm";
 
 // Initialize database
 const sql = neon(process.env.DATABASE_URL);
 const db = drizzle(sql, { schema });
 
+const STUDENT_VISA_SOURCE_URL =
+  "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500";
+const STUDENT_VISA_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa_500/visa_class_500_24April2026.pdf";
+const STUDENT_VISA_CAPTURED_AT = new Date("2026-04-24T00:00:00.000Z");
+
 const studentVisa500Data = {
   visa_name: "Student visa",
   subclass: "500",
   category: "Study",
   purpose: "Participate in an eligible course of study in Australia",
-  stay_period: "Up to 6 years depending on course length",
+  stay_period: "Up to 6 years and in line with enrolment",
   cost: "From AUD 2,000 unless exempt",
   work_rights:
-    "Up to 48 hours per fortnight while course is in session; unlimited hours when course is not in session; exceptions apply for research and certain postgraduate students",
-  source_url: "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500",
+    "Work up to 48 hours per fortnight when course is in session; different rules may apply for research or postgraduate students",
+  source_url: STUDENT_VISA_SOURCE_URL,
   last_checked: new Date("2026-04-24"),
   reviewed_status: "needs_review",
   key_requirements: [
@@ -136,6 +142,10 @@ const studentVisa500Data = {
   },
 };
 
+function toIsoDate(date: Date) {
+  return date.toISOString().split("T")[0];
+}
+
 async function createTables() {
   try {
     console.log("📊 Creating tables if they don't exist...");
@@ -209,56 +219,99 @@ async function seed() {
     // Create tables
     await createTables();
 
-    // Check if visa 500 already exists
-    const existingVisa = await db
-      .select()
-      .from(visaTypes)
-      .where(eq(visaTypes.subclass, "500"))
-      .limit(1);
+    const visaPayload = {
+      subclass: studentVisa500Data.subclass,
+      visa_name: studentVisa500Data.visa_name,
+      category: studentVisa500Data.category,
+      purpose: studentVisa500Data.purpose,
+      stay_period: studentVisa500Data.stay_period,
+      cost: studentVisa500Data.cost,
+      work_rights: studentVisa500Data.work_rights,
+      source_url: studentVisa500Data.source_url,
+      last_checked: toIsoDate(studentVisa500Data.last_checked),
+      reviewed_status: studentVisa500Data.reviewed_status,
+      updated_at: new Date(),
+    };
 
-    if (existingVisa.length > 0) {
-      console.log("✅ Student visa 500 already exists, skipping insertion");
-      return;
-    }
-
-    // Insert visa type
-    const [insertedVisa] = await db
+    const [upsertedVisa] = await db
       .insert(visaTypes)
-      .values({
-        subclass: studentVisa500Data.subclass,
-        visa_name: studentVisa500Data.visa_name,
-        category: studentVisa500Data.category,
-        purpose: studentVisa500Data.purpose,
-        stay_period: studentVisa500Data.stay_period,
-        cost: studentVisa500Data.cost,
-        work_rights: studentVisa500Data.work_rights,
-        source_url: studentVisa500Data.source_url,
-        last_checked: studentVisa500Data.last_checked 
-          ? studentVisa500Data.last_checked.toISOString().split('T')[0] 
-          : undefined,
-        reviewed_status: studentVisa500Data.reviewed_status,
-      } as any)
-      .returning();
-
-    console.log("✅ Inserted visa type:", insertedVisa.id);
-
-    // Insert structured data
-    const [insertedData] = await db
-      .insert(visaStructuredData)
-      .values({
-        visa_type_id: insertedVisa.id,
-        key_requirements: studentVisa500Data.key_requirements,
-        documents_required: studentVisa500Data.documents_required,
-        application_steps: studentVisa500Data.application_steps,
-        visa_conditions: studentVisa500Data.visa_conditions,
-        risks: studentVisa500Data.risks,
-        english_requirements: studentVisa500Data.english_requirements,
-        financial_requirements: studentVisa500Data.financial_requirements,
-        raw_json: studentVisa500Data,
+      .values(visaPayload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visaPayload,
       })
       .returning();
 
-    console.log("✅ Inserted structured data:", insertedData.id);
+    console.log("✅ Upserted visa type:", upsertedVisa.id);
+
+    const structuredDataPayload = {
+      visa_type_id: upsertedVisa.id,
+      key_requirements: studentVisa500Data.key_requirements,
+      documents_required: studentVisa500Data.documents_required,
+      application_steps: studentVisa500Data.application_steps,
+      visa_conditions: studentVisa500Data.visa_conditions,
+      risks: studentVisa500Data.risks,
+      english_requirements: studentVisa500Data.english_requirements,
+      financial_requirements: studentVisa500Data.financial_requirements,
+      raw_json: {
+        ...studentVisa500Data,
+        last_checked: toIsoDate(studentVisa500Data.last_checked),
+      },
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredData] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedVisa.id))
+      .limit(1);
+
+    if (existingStructuredData) {
+      const [updatedStructuredData] = await db
+        .update(visaStructuredData)
+        .set(structuredDataPayload)
+        .where(eq(visaStructuredData.id, existingStructuredData.id))
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Updated structured data:", updatedStructuredData.id);
+    } else {
+      const [insertedStructuredData] = await db
+        .insert(visaStructuredData)
+        .values(structuredDataPayload)
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Inserted structured data:", insertedStructuredData.id);
+    }
+
+    const existingSnapshots = await db
+      .select({
+        id: sourceSnapshots.id,
+        pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+      })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, upsertedVisa.id));
+
+    const matchingSnapshot = existingSnapshots.find(
+      (snapshot) => snapshot.pdf_snapshot_url === STUDENT_VISA_PDF_URL
+    );
+
+    if (matchingSnapshot) {
+      console.log("✅ PDF snapshot already exists:", matchingSnapshot.id);
+    } else {
+      const [insertedSnapshot] = await db
+        .insert(sourceSnapshots)
+        .values({
+          visa_type_id: upsertedVisa.id,
+          source_url: STUDENT_VISA_SOURCE_URL,
+          pdf_snapshot_url: STUDENT_VISA_PDF_URL,
+          captured_at: STUDENT_VISA_CAPTURED_AT,
+          notes: "Manual PDF snapshot uploaded to Vercel Blob",
+        })
+        .returning({ id: sourceSnapshots.id });
+
+      console.log("✅ Inserted PDF snapshot:", insertedSnapshot.id);
+    }
+
     console.log("🎉 Database seed completed successfully!");
   } catch (error) {
     console.error("❌ Seed error:", error);
