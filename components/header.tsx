@@ -8,6 +8,7 @@ import { LanguageSelector } from "@/components/language-selector";
 export function Header() {
   const params = useParams();
   const locale = params.locale as string;
+  const pointsLabel = locale === "tr" ? "Puan Hesaplayıcı" : "Points Calculator";
 
   return (
     <header className="relative z-40 border-b border-border/40 bg-white/95 backdrop-blur-sm">
@@ -17,6 +18,12 @@ export function Header() {
         </Link>
 
         <div className="flex items-center gap-4">
+          <Link
+            href={`/${locale}/points-calculator`}
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {pointsLabel}
+          </Link>
           <LanguageSelector currentLocale={locale} />
         </div>
       </nav>

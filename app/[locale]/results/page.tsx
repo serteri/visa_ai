@@ -30,5 +30,5 @@ export default async function ResultsPage({
     englishScore: englishScore ? parseFloat(englishScore) : undefined,
   });
 
-  return <ResultsContent locale={locale} matchedVisas={matchedVisas} />;
+  return <ResultsContent locale={locale} matchedVisas={matchedVisas} goal={goal} />;
 }

@@ -28,10 +28,25 @@ const CONFIDENCE_VARIANTS: Record<
 type ResultsContentProps = {
   locale: string;
   matchedVisas: MatchedVisa[];
+  goal?: string;
 };
 
-export function ResultsContent({ locale, matchedVisas }: ResultsContentProps) {
+export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsContentProps) {
   const { t } = useTranslation();
+  const normalisedGoal = goal.toLowerCase();
+  const hasSkilledPrVisa = matchedVisas.some(
+    (visa) => visa.subclass === "189" || visa.subclass === "190"
+  );
+  const showPointsCalculatorCta =
+    hasSkilledPrVisa ||
+    normalisedGoal.includes("permanent") ||
+    normalisedGoal.includes("pr") ||
+    normalisedGoal.includes("migrate") ||
+    normalisedGoal.includes("skilled migration");
+  const pointsCtaText =
+    locale === "tr"
+      ? "Nitelikli göç puanınızı tahmin edin"
+      : "Estimate your skilled migration points";
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -127,6 +142,11 @@ export function ResultsContent({ locale, matchedVisas }: ResultsContentProps) {
           <Button asChild>
             <Link href={`/${locale}/checker`}>{t("results.retake")}</Link>
           </Button>
+          {showPointsCalculatorCta && (
+            <Button asChild variant="secondary">
+              <Link href={`/${locale}/points-calculator`}>{pointsCtaText}</Link>
+            </Button>
+          )}
         </div>
 
         <AgentReferralCta />
