@@ -43,6 +43,9 @@ const SI_189_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
 const SN_190_SOURCE_URL =
   "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190";
+const SN_190_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20190%20Skilled%20Nominated%20visa/Subclass%20190%20Skilled%20Nominated%20visa_25April2026.pdf";
+const SN_190_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
 const studentVisa500Data = {
   visa_name: "Student visa",
@@ -976,6 +979,32 @@ async function seed() {
         .returning({ id: visaStructuredData.id });
 
       console.log("✅ Inserted structured data 190:", inserted.id);
+    }
+
+    const existingSnapshots190 = await db
+      .select({ id: sourceSnapshots.id, pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, upsertedVisa190.id));
+
+    const snapshot190 = {
+      source_url: SN_190_SOURCE_URL,
+      pdf_snapshot_url: SN_190_PDF_URL,
+      captured_at: SN_190_CAPTURED_AT,
+      notes: "Manual PDF snapshot for subclass 190 Skilled Nominated visa",
+    };
+
+    const existingSnapshot190 = existingSnapshots190.find(
+      (s) => s.pdf_snapshot_url === snapshot190.pdf_snapshot_url
+    );
+
+    if (existingSnapshot190) {
+      console.log("✅ PDF snapshot 190 already exists:", existingSnapshot190.id);
+    } else {
+      const [inserted] = await db
+        .insert(sourceSnapshots)
+        .values({ visa_type_id: upsertedVisa190.id, ...snapshot190 })
+        .returning({ id: sourceSnapshots.id });
+      console.log("✅ Inserted PDF snapshot 190:", inserted.id, "|", snapshot190.notes);
     }
 
     console.log("🎉 Database seed completed successfully!");
