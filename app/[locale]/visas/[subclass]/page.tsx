@@ -380,9 +380,9 @@ export default async function VisaDetailsPage({ params }: PageProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      View PDF snapshot
-                      {snap.captured_at &&
-                        ` (${new Date(snap.captured_at).toLocaleDateString("en-AU")})`}
+                      {snap.notes
+                        ? snap.notes
+                        : `View PDF snapshot${snap.captured_at ? ` (${new Date(snap.captured_at).toLocaleDateString("en-AU")})` : ""}`}
                     </a>
                   </Button>
                 ))}
@@ -402,6 +402,49 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             </Card>
           ))}
         </div>
+
+        {/* source snapshots */}
+        {snapshots.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Source snapshots</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {snapshots.map((snap) => (
+                  <div key={snap.id} className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="space-y-0.5">
+                      {snap.notes && (
+                        <p className="text-sm font-medium">{snap.notes}</p>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        Captured:{" "}
+                        {snap.captured_at
+                          ? new Date(snap.captured_at).toLocaleDateString("en-AU", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })
+                          : "Unknown"}
+                      </p>
+                    </div>
+                    {snap.pdf_snapshot_url && (
+                      <Button asChild variant="outline" size="sm" className="shrink-0">
+                        <a
+                          href={snap.pdf_snapshot_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Open PDF
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* compliance notice */}
         <Card className="border-l-4 border-l-primary">

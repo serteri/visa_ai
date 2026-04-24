@@ -21,6 +21,7 @@ async function getVisas() {
           source_url: sourceSnapshots.source_url,
           pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
           captured_at: sourceSnapshots.captured_at,
+          notes: sourceSnapshots.notes,
         })
         .from(sourceSnapshots)
         .where(eq(sourceSnapshots.visa_type_id, visa.id));
@@ -192,15 +193,19 @@ export default async function AdminVisasPage() {
                         {visa.snapshots
                           .filter((snapshot) => snapshot.pdf_snapshot_url)
                           .map((snapshot) => (
-                            <a
-                              key={snapshot.id}
-                              href={snapshot.pdf_snapshot_url ?? undefined}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="block text-sm text-primary hover:underline break-all"
-                            >
-                              Open PDF snapshot
-                            </a>
+                            <div key={snapshot.id} className="space-y-0.5">
+                              {snapshot.notes && (
+                                <p className="text-xs text-muted-foreground">{snapshot.notes}</p>
+                              )}
+                              <a
+                                href={snapshot.pdf_snapshot_url ?? undefined}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-primary hover:underline break-all"
+                              >
+                                Open PDF
+                              </a>
+                            </div>
                           ))}
                       </div>
                     ) : (

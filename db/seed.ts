@@ -30,6 +30,9 @@ const SID_482_SOURCE_URL =
   "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482/core-skills-stream";
 const SID_482_PDF_URL =
   "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/Skills%20in%20Demand%20Visa%20%28subclass%20482%29%20Core%20Skills%20stream_25April2026.pdf";
+const SID_482_ENGLISH_SOURCE_URL = "https://immi.homeaffairs.gov.au";
+const SID_482_ENGLISH_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/English%20proficiency%20%28subclass%20482%29_25April2026.pdf";
 const SID_482_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
 const studentVisa500Data = {
@@ -501,25 +504,34 @@ async function seed() {
       .from(sourceSnapshots)
       .where(eq(sourceSnapshots.visa_type_id, upsertedVisa482.id));
 
-    const matchingSnapshot482 = existingSnapshots482.find(
-      (s) => s.pdf_snapshot_url === SID_482_PDF_URL
-    );
+    const snapshotsToSeed = [
+      {
+        source_url: SID_482_SOURCE_URL,
+        pdf_snapshot_url: SID_482_PDF_URL,
+        captured_at: SID_482_CAPTURED_AT,
+        notes: "Manual PDF snapshot of subclass 482 Core Skills stream page uploaded to Vercel Blob",
+      },
+      {
+        source_url: SID_482_ENGLISH_SOURCE_URL,
+        pdf_snapshot_url: SID_482_ENGLISH_PDF_URL,
+        captured_at: SID_482_CAPTURED_AT,
+        notes: "Manual PDF snapshot of subclass 482 English proficiency requirements page uploaded to Vercel Blob",
+      },
+    ];
 
-    if (matchingSnapshot482) {
-      console.log("✅ PDF snapshot 482 already exists:", matchingSnapshot482.id);
-    } else {
-      const [insertedSnapshot482] = await db
-        .insert(sourceSnapshots)
-        .values({
-          visa_type_id: upsertedVisa482.id,
-          source_url: SID_482_SOURCE_URL,
-          pdf_snapshot_url: SID_482_PDF_URL,
-          captured_at: SID_482_CAPTURED_AT,
-          notes: "Manual PDF snapshot uploaded to Vercel Blob",
-        })
-        .returning({ id: sourceSnapshots.id });
-
-      console.log("✅ Inserted PDF snapshot 482:", insertedSnapshot482.id);
+    for (const snap of snapshotsToSeed) {
+      const existing = existingSnapshots482.find(
+        (s) => s.pdf_snapshot_url === snap.pdf_snapshot_url
+      );
+      if (existing) {
+        console.log("✅ PDF snapshot 482 already exists:", existing.id);
+      } else {
+        const [inserted] = await db
+          .insert(sourceSnapshots)
+          .values({ visa_type_id: upsertedVisa482.id, ...snap })
+          .returning({ id: sourceSnapshots.id });
+        console.log("✅ Inserted PDF snapshot 482:", inserted.id, "|", snap.notes);
+      }
     }
 
     console.log("🎉 Database seed completed successfully!");
