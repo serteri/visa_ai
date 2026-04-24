@@ -35,6 +35,8 @@ type CheckerFormData = {
   budgetRange: string;
 };
 
+type StepErrors = Partial<Record<keyof CheckerFormData, string>>;
+
 const totalSteps = 5;
 
 const initialData: CheckerFormData = {
@@ -59,6 +61,84 @@ const initialData: CheckerFormData = {
   budgetRange: "",
 };
 
+function validateStep(step: number, data: CheckerFormData): StepErrors {
+  const errors: StepErrors = {};
+
+  if (step === 1) {
+    if (!data.countryOfPassport.trim())
+      errors.countryOfPassport = "This field is required";
+    if (!data.currentCountryOfResidence.trim())
+      errors.currentCountryOfResidence = "This field is required";
+    if (!data.age.trim()) {
+      errors.age = "This field is required";
+    } else {
+      const ageNum = Number(data.age);
+      if (!Number.isFinite(ageNum) || ageNum <= 0 || ageNum >= 100)
+        errors.age = "Enter a valid age";
+    }
+    // preferredLanguage always has a default value — no validation needed
+  }
+
+  if (step === 2) {
+    if (!data.goal) errors.goal = "This field is required";
+  }
+
+  if (step === 3) {
+    if (!data.highestQualification.trim())
+      errors.highestQualification = "This field is required";
+    if (!data.occupation.trim())
+      errors.occupation = "This field is required";
+    if (!data.yearsOfWorkExperience.trim())
+      errors.yearsOfWorkExperience = "This field is required";
+    // englishTestTaken always has a value (yes/no default)
+    if (data.englishTestTaken === "yes") {
+      if (!data.englishScoreType.trim())
+        errors.englishScoreType = "This field is required";
+      if (!data.englishScore.trim())
+        errors.englishScore = "This field is required";
+    }
+  }
+
+  if (step === 4) {
+    if (!data.currentlyInAustralia)
+      errors.currentlyInAustralia = "This field is required";
+    if (data.currentlyInAustralia === "yes" && !data.currentVisaType.trim())
+      errors.currentVisaType = "This field is required";
+    if (!data.hasEmployerSponsor)
+      errors.hasEmployerSponsor = "This field is required";
+    if (!data.hasPartnerOrFamilyInAustralia)
+      errors.hasPartnerOrFamilyInAustralia = "This field is required";
+  }
+
+  if (step === 5) {
+    if (!data.hasPassport)
+      errors.hasPassport = "This field is required";
+    if (!data.documentsReady)
+      errors.documentsReady = "This field is required";
+    if (!data.timeline.trim())
+      errors.timeline = "This field is required";
+    if (!data.budgetRange.trim())
+      errors.budgetRange = "This field is required";
+  }
+
+  return errors;
+}
+
+// Shared select class
+const selectCls =
+  "h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
+const selectErrorCls =
+  "h-10 w-full rounded-md border border-destructive bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
+
+function FieldError({ msg }: { msg?: string }) {
+  if (!msg) return null;
+  return <p className="text-xs text-destructive">{msg}</p>;
+}
+
+function Req() {
+  return <span className="ml-0.5 text-destructive">*</span>;
+}
+
 export default function CheckerPage() {
   const router = useRouter();
   const params = useParams();
@@ -66,8 +146,12 @@ export default function CheckerPage() {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<CheckerFormData>(initialData);
+  const [showErrors, setShowErrors] = useState(false);
 
   const progressValue = useMemo(() => (step / totalSteps) * 100, [step]);
+
+  const stepErrors = useMemo(() => validateStep(step, formData), [step, formData]);
+  const stepIsValid = Object.keys(stepErrors).length === 0;
 
   const stepTitles = [
     t("checker.basicProfile"),
@@ -85,6 +169,13 @@ export default function CheckerPage() {
   }
 
   function goNext() {
+    if (!stepIsValid) {
+      setShowErrors(true);
+      return;
+    }
+
+    setShowErrors(false);
+
     if (step < totalSteps) {
       setStep((prev) => prev + 1);
       return;
@@ -102,8 +193,11 @@ export default function CheckerPage() {
   }
 
   function goBack() {
+    setShowErrors(false);
     setStep((prev) => Math.max(1, prev - 1));
   }
+
+  const err = showErrors ? stepErrors : {};
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -130,45 +224,63 @@ export default function CheckerPage() {
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {/* ── Step 1: Basic profile ── */}
             {step === 1 && (
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="countryOfPassport">{t("checker.countryOfPassport")}</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="countryOfPassport">
+                    {t("checker.countryOfPassport")}<Req />
+                  </Label>
                   <Input
                     id="countryOfPassport"
                     value={formData.countryOfPassport}
-                    onChange={(event) => updateField("countryOfPassport", event.target.value)}
+                    onChange={(e) => updateField("countryOfPassport", e.target.value)}
                     placeholder="e.g. India"
+                    className={err.countryOfPassport ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.countryOfPassport} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="currentCountryOfResidence">{t("checker.currentResidence")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="currentCountryOfResidence">
+                    {t("checker.currentResidence")}<Req />
+                  </Label>
                   <Input
                     id="currentCountryOfResidence"
                     value={formData.currentCountryOfResidence}
-                    onChange={(event) =>
-                      updateField("currentCountryOfResidence", event.target.value)
-                    }
+                    onChange={(e) => updateField("currentCountryOfResidence", e.target.value)}
                     placeholder="e.g. UAE"
+                    className={err.currentCountryOfResidence ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.currentCountryOfResidence} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="age">{t("checker.age")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="age">
+                    {t("checker.age")}<Req />
+                  </Label>
                   <Input
                     id="age"
                     type="number"
+                    min={1}
+                    max={99}
                     value={formData.age}
-                    onChange={(event) => updateField("age", event.target.value)}
+                    onChange={(e) => updateField("age", e.target.value)}
                     placeholder="e.g. 29"
+                    className={err.age ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.age} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="preferredLanguage">{t("checker.preferredLanguage")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="preferredLanguage">
+                    {t("checker.preferredLanguage")}
+                  </Label>
                   <select
                     id="preferredLanguage"
                     value={formData.preferredLanguage}
-                    onChange={(event) => updateField("preferredLanguage", event.target.value)}
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    onChange={(e) => updateField("preferredLanguage", e.target.value)}
+                    className={selectCls}
                   >
                     {activeLocales.map((langCode) => (
                       <option key={langCode} value={langCode}>
@@ -180,14 +292,17 @@ export default function CheckerPage() {
               </div>
             )}
 
+            {/* ── Step 2: Goal ── */}
             {step === 2 && (
-              <div className="space-y-2">
-                <Label htmlFor="goal">{t("checker.primaryGoal")}</Label>
+              <div className="space-y-1">
+                <Label htmlFor="goal">
+                  {t("checker.primaryGoal")}<Req />
+                </Label>
                 <select
                   id="goal"
                   value={formData.goal}
-                  onChange={(event) => updateField("goal", event.target.value)}
-                  className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                  onChange={(e) => updateField("goal", e.target.value)}
+                  className={err.goal ? selectErrorCls : selectCls}
                 >
                   <option value="">{t("checker.select")}</option>
                   <option value="Study in Australia">{t("checker.study")}</option>
@@ -197,48 +312,66 @@ export default function CheckerPage() {
                   <option value="Visit Australia">{t("checker.visit")}</option>
                   <option value="Not sure">{t("checker.notSure")}</option>
                 </select>
+                <FieldError msg={err.goal} />
               </div>
             )}
 
+            {/* ── Step 3: Education / work ── */}
             {step === 3 && (
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="highestQualification">{t("checker.qualification")}</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="highestQualification">
+                    {t("checker.qualification")}<Req />
+                  </Label>
                   <Input
                     id="highestQualification"
                     value={formData.highestQualification}
-                    onChange={(event) => updateField("highestQualification", event.target.value)}
+                    onChange={(e) => updateField("highestQualification", e.target.value)}
                     placeholder="e.g. Bachelor's degree"
+                    className={err.highestQualification ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.highestQualification} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="occupation">{t("checker.occupation")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="occupation">
+                    {t("checker.occupation")}<Req />
+                  </Label>
                   <Input
                     id="occupation"
                     value={formData.occupation}
-                    onChange={(event) => updateField("occupation", event.target.value)}
+                    onChange={(e) => updateField("occupation", e.target.value)}
                     placeholder="e.g. Software Engineer"
+                    className={err.occupation ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.occupation} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="yearsOfWorkExperience">{t("checker.experience")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="yearsOfWorkExperience">
+                    {t("checker.experience")}<Req />
+                  </Label>
                   <Input
                     id="yearsOfWorkExperience"
                     type="number"
+                    min={0}
                     value={formData.yearsOfWorkExperience}
-                    onChange={(event) =>
-                      updateField("yearsOfWorkExperience", event.target.value)
-                    }
+                    onChange={(e) => updateField("yearsOfWorkExperience", e.target.value)}
                     placeholder="e.g. 5"
+                    className={err.yearsOfWorkExperience ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.yearsOfWorkExperience} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="englishTestTaken">{t("checker.englishTest")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="englishTestTaken">
+                    {t("checker.englishTest")}<Req />
+                  </Label>
                   <select
                     id="englishTestTaken"
                     value={formData.englishTestTaken}
-                    onChange={(event) => updateField("englishTestTaken", event.target.value)}
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    onChange={(e) => updateField("englishTestTaken", e.target.value)}
+                    className={selectCls}
                   >
                     <option value="yes">{t("checker.yes")}</option>
                     <option value="no">{t("checker.no")}</option>
@@ -247,132 +380,172 @@ export default function CheckerPage() {
 
                 {formData.englishTestTaken === "yes" && (
                   <>
-                    <div className="space-y-2">
-                      <Label htmlFor="englishScoreType">{t("checker.englishType")}</Label>
+                    <div className="space-y-1">
+                      <Label htmlFor="englishScoreType">
+                        {t("checker.englishType")}<Req />
+                      </Label>
                       <Input
                         id="englishScoreType"
                         value={formData.englishScoreType}
-                        onChange={(event) => updateField("englishScoreType", event.target.value)}
+                        onChange={(e) => updateField("englishScoreType", e.target.value)}
                         placeholder="e.g. IELTS, PTE"
+                        className={err.englishScoreType ? "border-destructive" : ""}
                       />
+                      <FieldError msg={err.englishScoreType} />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="englishScore">{t("checker.englishScore")}</Label>
+                    <div className="space-y-1">
+                      <Label htmlFor="englishScore">
+                        {t("checker.englishScore")}<Req />
+                      </Label>
                       <Input
                         id="englishScore"
                         value={formData.englishScore}
-                        onChange={(event) => updateField("englishScore", event.target.value)}
-                        placeholder="e.g. IELTS 7.0"
+                        onChange={(e) => updateField("englishScore", e.target.value)}
+                        placeholder="e.g. 7.0"
+                        className={err.englishScore ? "border-destructive" : ""}
                       />
+                      <FieldError msg={err.englishScore} />
                     </div>
                   </>
                 )}
               </div>
             )}
 
+            {/* ── Step 4: Australia situation ── */}
             {step === 4 && (
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="currentlyInAustralia">{t("checker.inAustralia")}</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="currentlyInAustralia">
+                    {t("checker.inAustralia")}<Req />
+                  </Label>
                   <select
                     id="currentlyInAustralia"
                     value={formData.currentlyInAustralia}
-                    onChange={(event) => updateField("currentlyInAustralia", event.target.value)}
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    onChange={(e) => updateField("currentlyInAustralia", e.target.value)}
+                    className={err.currentlyInAustralia ? selectErrorCls : selectCls}
                   >
                     <option value="">{t("checker.select")}</option>
                     <option value="yes">{t("checker.yes")}</option>
                     <option value="no">{t("checker.no")}</option>
                   </select>
+                  <FieldError msg={err.currentlyInAustralia} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="currentVisaType">{t("checker.currentVisa")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="currentVisaType">
+                    {t("checker.currentVisa")}
+                    {formData.currentlyInAustralia === "yes" && <Req />}
+                  </Label>
                   <Input
                     id="currentVisaType"
                     value={formData.currentVisaType}
-                    onChange={(event) => updateField("currentVisaType", event.target.value)}
+                    onChange={(e) => updateField("currentVisaType", e.target.value)}
                     placeholder="e.g. Student 500"
+                    className={err.currentVisaType ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.currentVisaType} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="hasEmployerSponsor">{t("checker.sponsor")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="hasEmployerSponsor">
+                    {t("checker.sponsor")}<Req />
+                  </Label>
                   <select
                     id="hasEmployerSponsor"
                     value={formData.hasEmployerSponsor}
-                    onChange={(event) => updateField("hasEmployerSponsor", event.target.value)}
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    onChange={(e) => updateField("hasEmployerSponsor", e.target.value)}
+                    className={err.hasEmployerSponsor ? selectErrorCls : selectCls}
                   >
                     <option value="">{t("checker.select")}</option>
                     <option value="yes">{t("checker.yes")}</option>
                     <option value="no">{t("checker.no")}</option>
                   </select>
+                  <FieldError msg={err.hasEmployerSponsor} />
                 </div>
-                <div className="space-y-2">
+
+                <div className="space-y-1">
                   <Label htmlFor="hasPartnerOrFamilyInAustralia">
-                    {t("checker.familyInAustralia")}
+                    {t("checker.familyInAustralia")}<Req />
                   </Label>
                   <select
                     id="hasPartnerOrFamilyInAustralia"
                     value={formData.hasPartnerOrFamilyInAustralia}
-                    onChange={(event) =>
-                      updateField("hasPartnerOrFamilyInAustralia", event.target.value)
-                    }
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    onChange={(e) => updateField("hasPartnerOrFamilyInAustralia", e.target.value)}
+                    className={err.hasPartnerOrFamilyInAustralia ? selectErrorCls : selectCls}
                   >
                     <option value="">{t("checker.select")}</option>
                     <option value="yes">{t("checker.yes")}</option>
                     <option value="no">{t("checker.no")}</option>
                   </select>
+                  <FieldError msg={err.hasPartnerOrFamilyInAustralia} />
                 </div>
               </div>
             )}
 
+            {/* ── Step 5: Readiness ── */}
             {step === 5 && (
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="hasPassport">{t("checker.passport")}</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="hasPassport">
+                    {t("checker.passport")}<Req />
+                  </Label>
                   <select
                     id="hasPassport"
                     value={formData.hasPassport}
-                    onChange={(event) => updateField("hasPassport", event.target.value)}
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    onChange={(e) => updateField("hasPassport", e.target.value)}
+                    className={err.hasPassport ? selectErrorCls : selectCls}
                   >
                     <option value="">{t("checker.select")}</option>
                     <option value="yes">{t("checker.yes")}</option>
                     <option value="no">{t("checker.no")}</option>
                   </select>
+                  <FieldError msg={err.hasPassport} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="documentsReady">{t("checker.documents")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="documentsReady">
+                    {t("checker.documents")}<Req />
+                  </Label>
                   <select
                     id="documentsReady"
                     value={formData.documentsReady}
-                    onChange={(event) => updateField("documentsReady", event.target.value)}
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    onChange={(e) => updateField("documentsReady", e.target.value)}
+                    className={err.documentsReady ? selectErrorCls : selectCls}
                   >
                     <option value="">{t("checker.select")}</option>
                     <option value="yes">{t("checker.yes")}</option>
                     <option value="partially">{t("checker.partially")}</option>
                     <option value="no">{t("checker.no")}</option>
                   </select>
+                  <FieldError msg={err.documentsReady} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="timeline">{t("checker.timeline")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="timeline">
+                    {t("checker.timeline")}<Req />
+                  </Label>
                   <Input
                     id="timeline"
                     value={formData.timeline}
-                    onChange={(event) => updateField("timeline", event.target.value)}
+                    onChange={(e) => updateField("timeline", e.target.value)}
                     placeholder="e.g. Within 6 months"
+                    className={err.timeline ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.timeline} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="budgetRange">{t("checker.budget")}</Label>
+
+                <div className="space-y-1">
+                  <Label htmlFor="budgetRange">
+                    {t("checker.budget")}<Req />
+                  </Label>
                   <Input
                     id="budgetRange"
                     value={formData.budgetRange}
-                    onChange={(event) => updateField("budgetRange", event.target.value)}
+                    onChange={(e) => updateField("budgetRange", e.target.value)}
                     placeholder="e.g. AUD 10,000 - 20,000"
+                    className={err.budgetRange ? "border-destructive" : ""}
                   />
+                  <FieldError msg={err.budgetRange} />
                 </div>
               </div>
             )}
@@ -381,7 +554,7 @@ export default function CheckerPage() {
               <Button variant="outline" onClick={goBack} disabled={step === 1}>
                 {t("checker.back")}
               </Button>
-              <Button onClick={goNext}>
+              <Button onClick={goNext} disabled={showErrors && !stepIsValid}>
                 {step === totalSteps ? t("checker.viewResults") : t("checker.continue")}
               </Button>
             </div>
