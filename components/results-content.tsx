@@ -85,17 +85,23 @@ export function ResultsContent({ locale, matchedVisas }: ResultsContentProps) {
                   )}
 
                   <div className="flex flex-wrap gap-2">
-                    {visa.source_url && (
+                    {visa.is_database_record ? (
+                      <Button asChild variant="default" size="sm">
+                        <Link href={`/${locale}/visas/${visa.subclass}`}>
+                          View details
+                        </Link>
+                      </Button>
+                    ) : visa.source_url ? (
                       <Button asChild variant="outline" size="sm">
                         <a
                           href={visa.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          View details
+                          View on official site
                         </a>
                       </Button>
-                    )}
+                    ) : null}
                     {visa.pdf_snapshot_url && (
                       <Button asChild variant="ghost" size="sm">
                         <a

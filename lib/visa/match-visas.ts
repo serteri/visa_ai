@@ -40,6 +40,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         confidence: "high",
         source_url: row.source_url,
         pdf_snapshot_url: row.pdf_snapshot_url ?? null,
+        is_database_record: true,
       });
     }
   }
@@ -56,6 +57,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
       source_url:
         "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482",
       pdf_snapshot_url: null,
+      is_database_record: false,
     });
   }
 
@@ -71,6 +73,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
       source_url:
         "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189",
       pdf_snapshot_url: null,
+      is_database_record: false,
     });
   }
 
