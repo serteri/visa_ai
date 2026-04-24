@@ -17,10 +17,36 @@ type TestScores = {
   elicos_20_weeks: number | string;
 };
 
-type EnglishRequirements = {
+type PerSkillScores = {
+  listening?: number | string;
+  reading?: number | string;
+  writing?: number | string;
+  speaking?: number | string;
+  overall?: number | string;
+  note?: string;
+  single_sitting_required?: boolean;
+  single_skill_retake_accepted?: boolean;
+  single_skill_retake_note?: string;
+  [key: string]: unknown;
+};
+
+// Subclass 500 format
+type EnglishRequirements500 = {
   test_taken_on_or_before_2025_08_06?: Record<string, TestScores>;
   test_taken_on_or_after_2025_08_07?: Record<string, TestScores>;
   notes?: string[];
+};
+
+// Subclass 482 format
+type EnglishRequirements482 = {
+  summary?: string;
+  applies_to_streams?: string[];
+  test_validity?: string;
+  exemptions?: string[];
+  online_tests_not_accepted?: { rule?: string; examples_not_accepted?: string[] };
+  tests_taken_on_or_after_2025_09_13?: Record<string, PerSkillScores | string | boolean>;
+  tests_taken_before_2025_09_13?: Record<string, PerSkillScores | string | boolean>;
+  labour_agreement_stream_note?: string;
 };
 
 type FinancialRequirements = {
@@ -127,65 +153,209 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
     return <p className="text-sm text-muted-foreground">No data available.</p>;
   }
 
-  const eng = data as EnglishRequirements;
+  const raw = data as Record<string, unknown>;
 
-  const renderScoreTable = (tests: Record<string, TestScores>) => {
-    const entries = Object.entries(tests);
-    if (entries.length === 0) return null;
-    return (
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[480px] text-sm">
-          <thead>
-            <tr className="border-b text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              <th className="pb-2 pr-4">Test</th>
-              <th className="pb-2 pr-4">Standard</th>
-              <th className="pb-2 pr-4">ELICOS 10 wks</th>
-              <th className="pb-2">ELICOS 20 wks</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {entries.map(([test, scores]) => (
-              <tr key={test}>
-                <td className="py-2 pr-4 font-medium">{test}</td>
-                <td className="py-2 pr-4 text-muted-foreground">{scores.standard}</td>
-                <td className="py-2 pr-4 text-muted-foreground">{scores.elicos_10_weeks}</td>
-                <td className="py-2 text-muted-foreground">{scores.elicos_20_weeks}</td>
+  // ── Subclass 500 format (ELICOS table) ────────────────────────────────────
+  if (raw.test_taken_on_or_before_2025_08_06 || raw.test_taken_on_or_after_2025_08_07) {
+    const eng = raw as unknown as EnglishRequirements500;
+
+    const renderElicosTable = (tests: Record<string, TestScores>) => {
+      const entries = Object.entries(tests);
+      if (entries.length === 0) return null;
+      return (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px] text-sm">
+            <thead>
+              <tr className="border-b text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <th className="pb-2 pr-4">Test</th>
+                <th className="pb-2 pr-4">Standard</th>
+                <th className="pb-2 pr-4">ELICOS 10 wks</th>
+                <th className="pb-2">ELICOS 20 wks</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y">
+              {entries.map(([test, scores]) => (
+                <tr key={test}>
+                  <td className="py-2 pr-4 font-medium">{test}</td>
+                  <td className="py-2 pr-4 text-muted-foreground">{scores.standard}</td>
+                  <td className="py-2 pr-4 text-muted-foreground">{scores.elicos_10_weeks}</td>
+                  <td className="py-2 text-muted-foreground">{scores.elicos_20_weeks}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    };
+
+    return (
+      <div className="space-y-6">
+        {eng.test_taken_on_or_before_2025_08_06 && (
+          <div className="space-y-3">
+            <p className="text-sm font-semibold">Tests taken on or before 6 August 2025</p>
+            {renderElicosTable(eng.test_taken_on_or_before_2025_08_06)}
+          </div>
+        )}
+        {eng.test_taken_on_or_after_2025_08_07 && (
+          <div className="space-y-3">
+            <p className="text-sm font-semibold">Tests taken on or after 7 August 2025</p>
+            {renderElicosTable(eng.test_taken_on_or_after_2025_08_07)}
+          </div>
+        )}
+        {eng.notes && eng.notes.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">Notes</p>
+            <ul className="space-y-1">
+              {eng.notes.map((note, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <span className="mt-0.5 text-primary">•</span>
+                  <span>{note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── Subclass 482 format (per-skill scores) ────────────────────────────────
+  const eng = raw as unknown as EnglishRequirements482;
+
+  const META_KEYS = new Set([
+    "single_sitting_required",
+    "single_skill_retake_accepted",
+    "single_skill_retake_note",
+  ]);
+
+  const renderPerSkillTable = (
+    block: Record<string, PerSkillScores | string | boolean>,
+    metaNote?: string
+  ) => {
+    const entries = Object.entries(block).filter(([k]) => !META_KEYS.has(k));
+    if (entries.length === 0) return null;
+
+    return (
+      <div className="space-y-2">
+        {metaNote && <p className="text-sm text-muted-foreground italic">{metaNote}</p>}
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px] text-sm">
+            <thead>
+              <tr className="border-b text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <th className="pb-2 pr-4">Test</th>
+                <th className="pb-2 pr-4">Listening</th>
+                <th className="pb-2 pr-4">Reading</th>
+                <th className="pb-2 pr-4">Writing</th>
+                <th className="pb-2">Speaking</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {entries.map(([test, scores]) => {
+                if (typeof scores !== "object" || scores === null) return null;
+                const s = scores as PerSkillScores;
+                return (
+                  <>
+                    <tr key={test}>
+                      <td className="py-2 pr-4 font-medium">{test.replace(/_/g, " ")}</td>
+                      <td className="py-2 pr-4 text-muted-foreground">{s.listening ?? "—"}</td>
+                      <td className="py-2 pr-4 text-muted-foreground">{s.reading ?? "—"}</td>
+                      <td className="py-2 pr-4 text-muted-foreground">{s.writing ?? "—"}</td>
+                      <td className="py-2 text-muted-foreground">{s.speaking ?? "—"}</td>
+                    </tr>
+                    {s.note && (
+                      <tr key={`${test}-note`}>
+                        <td colSpan={5} className="pb-2 pt-0 text-xs text-muted-foreground italic">
+                          {s.note}
+                        </td>
+                      </tr>
+                    )}
+                    {s.overall !== undefined && (
+                      <tr key={`${test}-overall`}>
+                        <td className="pb-2 pt-0 text-xs text-muted-foreground" colSpan={5}>
+                          Overall: {s.overall}
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   };
 
   return (
     <div className="space-y-6">
-      {eng.test_taken_on_or_before_2025_08_06 && (
-        <div className="space-y-3">
-          <p className="text-sm font-semibold">Tests taken on or before 6 August 2025</p>
-          {renderScoreTable(eng.test_taken_on_or_before_2025_08_06)}
-        </div>
+      {eng.summary && <p className="text-sm text-muted-foreground">{eng.summary}</p>}
+
+      {eng.test_validity && (
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold">Test validity: </span>{eng.test_validity}
+        </p>
       )}
 
-      {eng.test_taken_on_or_after_2025_08_07 && (
-        <div className="space-y-3">
-          <p className="text-sm font-semibold">Tests taken on or after 7 August 2025</p>
-          {renderScoreTable(eng.test_taken_on_or_after_2025_08_07)}
-        </div>
-      )}
-
-      {eng.notes && eng.notes.length > 0 && (
+      {eng.exemptions && eng.exemptions.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Notes</p>
+          <p className="text-sm font-semibold">Exemptions</p>
           <ul className="space-y-1">
-            {eng.notes.map((note, i) => (
+            {eng.exemptions.map((ex, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                 <span className="mt-0.5 text-primary">•</span>
-                <span>{note}</span>
+                <span>{ex}</span>
               </li>
             ))}
           </ul>
         </div>
+      )}
+
+      {eng.online_tests_not_accepted && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Online tests not accepted</p>
+          {eng.online_tests_not_accepted.rule && (
+            <p className="text-sm text-muted-foreground">{eng.online_tests_not_accepted.rule}</p>
+          )}
+          {eng.online_tests_not_accepted.examples_not_accepted && (
+            <ul className="space-y-1">
+              {eng.online_tests_not_accepted.examples_not_accepted.map((ex, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <span className="mt-0.5 text-orange-500">!</span>
+                  <span>{ex}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      {eng.tests_taken_on_or_after_2025_09_13 && (
+        <div className="space-y-3">
+          <p className="text-sm font-semibold">Tests taken on or after 13 September 2025</p>
+          {renderPerSkillTable(
+            eng.tests_taken_on_or_after_2025_09_13 as Record<string, PerSkillScores | string | boolean>,
+            (eng.tests_taken_on_or_after_2025_09_13 as Record<string, unknown>).single_skill_retake_note as string | undefined
+          )}
+        </div>
+      )}
+
+      {eng.tests_taken_before_2025_09_13 && (
+        <div className="space-y-3">
+          <p className="text-sm font-semibold">Tests taken before 13 September 2025</p>
+          {!!(eng.tests_taken_before_2025_09_13 as Record<string, unknown>).single_sitting_required && (
+            <p className="text-sm text-muted-foreground italic">Must be taken in a single sitting.</p>
+          )}
+          {renderPerSkillTable(
+            eng.tests_taken_before_2025_09_13 as Record<string, PerSkillScores | string | boolean>
+          )}
+        </div>
+      )}
+
+      {eng.labour_agreement_stream_note && (
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold">Labour Agreement stream: </span>
+          {eng.labour_agreement_stream_note}
+        </p>
       )}
     </div>
   );
