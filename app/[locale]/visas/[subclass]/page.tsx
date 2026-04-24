@@ -431,9 +431,6 @@ export default async function VisaDetailsPage({ params }: PageProps) {
   if (!result) notFound();
 
   const { visa, structured, snapshots } = result;
-
-  const pdfSnapshots = snapshots.filter((s) => s.pdf_snapshot_url);
-
   const reviewedBadgeVariant =
     visa.reviewed_status === "approved"
       ? "default"
@@ -541,23 +538,6 @@ export default async function VisaDetailsPage({ params }: PageProps) {
               )}
             </div>
 
-            {pdfSnapshots.length > 0 && (
-              <div className="mt-5 flex flex-wrap gap-2">
-                {pdfSnapshots.map((snap) => (
-                  <Button key={snap.id} asChild variant="outline" size="sm">
-                    <a
-                      href={snap.pdf_snapshot_url!}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {snap.notes
-                        ? snap.notes
-                        : `View PDF snapshot${snap.captured_at ? ` (${new Date(snap.captured_at).toLocaleDateString("en-AU")})` : ""}`}
-                    </a>
-                  </Button>
-                ))}
-              </div>
-            )}
           </CardContent>
         </Card>
 
@@ -581,36 +561,42 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {snapshots.map((snap) => (
-                  <div key={snap.id} className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="space-y-0.5">
-                      {snap.notes && (
-                        <p className="text-sm font-medium">{snap.notes}</p>
+                {snapshots.map((snap) => {
+                  const notes = snap.notes ?? "";
+                  const title = /english proficiency/i.test(notes)
+                    ? "English proficiency requirements"
+                    : /core skills stream|main visa/i.test(notes)
+                      ? "Main visa page"
+                      : "PDF snapshot";
+                  return (
+                    <div key={snap.id} className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="space-y-0.5">
+                        <p className="text-sm font-medium">{title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Captured:{" "}
+                          {snap.captured_at
+                            ? new Date(snap.captured_at).toLocaleDateString("en-AU", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })
+                            : "Unknown"}
+                        </p>
+                      </div>
+                      {snap.pdf_snapshot_url && (
+                        <Button asChild variant="outline" size="sm" className="shrink-0">
+                          <a
+                            href={snap.pdf_snapshot_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Open PDF
+                          </a>
+                        </Button>
                       )}
-                      <p className="text-xs text-muted-foreground">
-                        Captured:{" "}
-                        {snap.captured_at
-                          ? new Date(snap.captured_at).toLocaleDateString("en-AU", {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            })
-                          : "Unknown"}
-                      </p>
                     </div>
-                    {snap.pdf_snapshot_url && (
-                      <Button asChild variant="outline" size="sm" className="shrink-0">
-                        <a
-                          href={snap.pdf_snapshot_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Open PDF
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
