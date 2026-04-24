@@ -1,21 +1,24 @@
+"use client";
+
 import { ComplianceNotice } from "@/components/sections/compliance-notice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from "@/contexts/language-context";
 
 export default function LegalPage() {
+  const { t } = useTranslation();
+
   return (
     <main className="ambient-bg flex-1 py-16">
       <section className="section-shell space-y-8">
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-            Legal and Compliance
+            {t("legal.heading")}
           </p>
           <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
-            Information use and platform boundaries
+            {t("legal.title")}
           </h1>
           <p className="max-w-3xl text-muted-foreground">
-            This platform is designed for general information and eligibility
-            pre-screening only. It is not a migration advice or legal advice
-            service.
+            {t("legal.subtitle")}
           </p>
         </div>
 
@@ -23,23 +26,23 @@ export default function LegalPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>What this platform does</CardTitle>
+            <CardTitle>{t("legal.whatDoes")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <p>Provides general pathway summaries using structured public visa data.</p>
-            <p>Highlights missing information and discussion points for your next step.</p>
-            <p>Offers optional referral pathways to registered migration professionals.</p>
+            <p>{t("legal.whatDoesText1")}</p>
+            <p>{t("legal.whatDoesText2")}</p>
+            <p>{t("legal.whatDoesText3")}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>What this platform does not do</CardTitle>
+            <CardTitle>{t("legal.whatDoesNot")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <p>Does not provide migration advice or legal advice.</p>
-            <p>Does not confirm visa eligibility, outcomes, or approvals.</p>
-            <p>Does not replace consultation with a registered migration agent.</p>
+            <p>{t("legal.whatDoesNotText1")}</p>
+            <p>{t("legal.whatDoesNotText2")}</p>
+            <p>{t("legal.whatDoesNotText3")}</p>
           </CardContent>
         </Card>
       </section>

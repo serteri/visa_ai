@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import { AgentReferralCta } from "@/components/sections/agent-referral-cta";
@@ -10,17 +12,19 @@ import {
   mockPathwaySuggestions,
   mockRiskFlags,
 } from "@/lib/mock-visa-data";
+import { useTranslation } from "@/contexts/language-context";
 
 export default function ResultsPage() {
+  const { t } = useTranslation();
+
   return (
     <main className="ambient-bg flex-1 py-12">
       <section className="section-shell space-y-6">
         <div className="space-y-3">
-          <Badge variant="secondary">General pathway summary</Badge>
-          <h1 className="text-3xl font-bold sm:text-4xl">Your mock pathway results</h1>
+          <Badge variant="secondary">{t("results.heading")}</Badge>
+          <h1 className="text-3xl font-bold sm:text-4xl">{t("results.title")}</h1>
           <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-            Based on your answers, the following pathways may be relevant and
-            could be worth reviewing with a registered migration agent.
+            {t("results.subtitle")}
           </p>
         </div>
 
@@ -29,7 +33,7 @@ export default function ResultsPage() {
             <Card key={pathway.title}>
               <CardHeader>
                 <CardTitle>
-                  Possible pathway {index + 1}: {pathway.title}
+                  {t("results.pathway")} {index + 1}: {pathway.title}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
@@ -43,7 +47,7 @@ export default function ResultsPage() {
         <div className="grid gap-5 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Missing information</CardTitle>
+              <CardTitle>{t("results.missing")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
               {mockMissingInformation.map((item) => (
@@ -54,7 +58,7 @@ export default function ResultsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Risk flags</CardTitle>
+              <CardTitle>{t("results.risks")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
               {mockRiskFlags.map((item) => (
@@ -66,17 +70,16 @@ export default function ResultsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recommended next step</CardTitle>
+            <CardTitle>{t("results.next")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-muted-foreground">
             <p>
-              Prepare your missing documents and discuss these possible pathways
-              with a registered migration agent before making visa decisions.
+              {t("results.nextText")}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button>Request agent referral</Button>
+              <Button>{t("results.requestReferral")}</Button>
               <Button asChild variant="outline">
-                <Link href="/checker">Edit questionnaire answers</Link>
+                <Link href="/checker">{t("results.editAnswers")}</Link>
               </Button>
             </div>
           </CardContent>

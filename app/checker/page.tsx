@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { supportedLanguages } from "@/lib/mock-visa-data";
+import { enabledLanguages } from "@/lib/languages";
+import { useTranslation } from "@/contexts/language-context";
 
 type CheckerFormData = {
   countryOfPassport: string;
@@ -40,7 +41,7 @@ const initialData: CheckerFormData = {
   countryOfPassport: "",
   currentCountryOfResidence: "",
   age: "",
-  preferredLanguage: "English",
+  preferredLanguage: "en",
   goal: "",
   highestQualification: "",
   occupation: "",
@@ -58,20 +59,21 @@ const initialData: CheckerFormData = {
   budgetRange: "",
 };
 
-const stepTitles = [
-  "Basic profile",
-  "Goal",
-  "Education and work",
-  "Australia situation",
-  "Readiness",
-];
-
 export default function CheckerPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<CheckerFormData>(initialData);
 
   const progressValue = useMemo(() => (step / totalSteps) * 100, [step]);
+
+  const stepTitles = [
+    t("checker.basicProfile"),
+    t("checker.goal"),
+    t("checker.educationWork"),
+    t("checker.australiaSituation"),
+    t("checker.readiness"),
+  ];
 
   function updateField<K extends keyof CheckerFormData>(
     key: K,
@@ -98,12 +100,11 @@ export default function CheckerPage() {
       <section className="section-shell space-y-6">
         <div className="space-y-2">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-            Visa Pathway Checker
+            {t("checker.heading")}
           </p>
-          <h1 className="text-3xl font-bold">Check my visa options</h1>
+          <h1 className="text-3xl font-bold">{t("checker.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            This questionnaire provides general information only. It does not
-            provide migration advice or legal advice.
+            {t("checker.subtitle")}
           </p>
         </div>
 
@@ -111,7 +112,7 @@ export default function CheckerPage() {
           <CardHeader className="space-y-4">
             <div className="flex items-center justify-between gap-3">
               <CardTitle>
-                Step {step} of {totalSteps}: {stepTitles[step - 1]}
+                {t("checker.step")} {step} {t("checker.of")} {totalSteps}: {stepTitles[step - 1]}
               </CardTitle>
               <span className="text-sm text-muted-foreground">{Math.round(progressValue)}%</span>
             </div>
@@ -122,7 +123,7 @@ export default function CheckerPage() {
             {step === 1 && (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="countryOfPassport">Country of passport</Label>
+                  <Label htmlFor="countryOfPassport">{t("checker.countryOfPassport")}</Label>
                   <Input
                     id="countryOfPassport"
                     value={formData.countryOfPassport}
@@ -131,7 +132,7 @@ export default function CheckerPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="currentCountryOfResidence">Current country of residence</Label>
+                  <Label htmlFor="currentCountryOfResidence">{t("checker.currentResidence")}</Label>
                   <Input
                     id="currentCountryOfResidence"
                     value={formData.currentCountryOfResidence}
@@ -142,7 +143,7 @@ export default function CheckerPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="age">Age</Label>
+                  <Label htmlFor="age">{t("checker.age")}</Label>
                   <Input
                     id="age"
                     type="number"
@@ -152,16 +153,16 @@ export default function CheckerPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="preferredLanguage">Preferred language</Label>
+                  <Label htmlFor="preferredLanguage">{t("checker.preferredLanguage")}</Label>
                   <select
                     id="preferredLanguage"
                     value={formData.preferredLanguage}
                     onChange={(event) => updateField("preferredLanguage", event.target.value)}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    {supportedLanguages.map((language) => (
-                      <option key={language} value={language}>
-                        {language}
+                    {enabledLanguages.map((language) => (
+                      <option key={language.code} value={language.code}>
+                        {language.localLabel}
                       </option>
                     ))}
                   </select>
@@ -171,20 +172,20 @@ export default function CheckerPage() {
 
             {step === 2 && (
               <div className="space-y-2">
-                <Label htmlFor="goal">Primary goal</Label>
+                <Label htmlFor="goal">{t("checker.primaryGoal")}</Label>
                 <select
                   id="goal"
                   value={formData.goal}
                   onChange={(event) => updateField("goal", event.target.value)}
                   className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                 >
-                  <option value="">Select one</option>
-                  <option value="Study in Australia">Study in Australia</option>
-                  <option value="Work in Australia">Work in Australia</option>
-                  <option value="Migrate permanently">Migrate permanently</option>
-                  <option value="Join partner/family">Join partner/family</option>
-                  <option value="Visit Australia">Visit Australia</option>
-                  <option value="Not sure">Not sure</option>
+                  <option value="">{t("checker.select")}</option>
+                  <option value="Study in Australia">{t("checker.study")}</option>
+                  <option value="Work in Australia">{t("checker.work")}</option>
+                  <option value="Migrate permanently">{t("checker.migrate")}</option>
+                  <option value="Join partner/family">{t("checker.family")}</option>
+                  <option value="Visit Australia">{t("checker.visit")}</option>
+                  <option value="Not sure">{t("checker.notSure")}</option>
                 </select>
               </div>
             )}
@@ -192,7 +193,7 @@ export default function CheckerPage() {
             {step === 3 && (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="highestQualification">Highest qualification</Label>
+                  <Label htmlFor="highestQualification">{t("checker.qualification")}</Label>
                   <Input
                     id="highestQualification"
                     value={formData.highestQualification}
@@ -201,7 +202,7 @@ export default function CheckerPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="occupation">Occupation</Label>
+                  <Label htmlFor="occupation">{t("checker.occupation")}</Label>
                   <Input
                     id="occupation"
                     value={formData.occupation}
@@ -210,7 +211,7 @@ export default function CheckerPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="yearsOfWorkExperience">Years of work experience</Label>
+                  <Label htmlFor="yearsOfWorkExperience">{t("checker.experience")}</Label>
                   <Input
                     id="yearsOfWorkExperience"
                     type="number"
@@ -222,22 +223,22 @@ export default function CheckerPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="englishTestTaken">English test taken?</Label>
+                  <Label htmlFor="englishTestTaken">{t("checker.englishTest")}</Label>
                   <select
                     id="englishTestTaken"
                     value={formData.englishTestTaken}
                     onChange={(event) => updateField("englishTestTaken", event.target.value)}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="yes">{t("checker.yes")}</option>
+                    <option value="no">{t("checker.no")}</option>
                   </select>
                 </div>
 
                 {formData.englishTestTaken === "yes" && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="englishScoreType">English score type</Label>
+                      <Label htmlFor="englishScoreType">{t("checker.englishType")}</Label>
                       <Input
                         id="englishScoreType"
                         value={formData.englishScoreType}
@@ -246,7 +247,7 @@ export default function CheckerPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="englishScore">English score</Label>
+                      <Label htmlFor="englishScore">{t("checker.englishScore")}</Label>
                       <Input
                         id="englishScore"
                         value={formData.englishScore}
@@ -262,20 +263,20 @@ export default function CheckerPage() {
             {step === 4 && (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="currentlyInAustralia">Are you currently in Australia?</Label>
+                  <Label htmlFor="currentlyInAustralia">{t("checker.inAustralia")}</Label>
                   <select
                     id="currentlyInAustralia"
                     value={formData.currentlyInAustralia}
                     onChange={(event) => updateField("currentlyInAustralia", event.target.value)}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    <option value="">Select one</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="">{t("checker.select")}</option>
+                    <option value="yes">{t("checker.yes")}</option>
+                    <option value="no">{t("checker.no")}</option>
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="currentVisaType">Current visa type (if any)</Label>
+                  <Label htmlFor="currentVisaType">{t("checker.currentVisa")}</Label>
                   <Input
                     id="currentVisaType"
                     value={formData.currentVisaType}
@@ -284,21 +285,21 @@ export default function CheckerPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="hasEmployerSponsor">Do you have an Australian employer sponsor?</Label>
+                  <Label htmlFor="hasEmployerSponsor">{t("checker.sponsor")}</Label>
                   <select
                     id="hasEmployerSponsor"
                     value={formData.hasEmployerSponsor}
                     onChange={(event) => updateField("hasEmployerSponsor", event.target.value)}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    <option value="">Select one</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="">{t("checker.select")}</option>
+                    <option value="yes">{t("checker.yes")}</option>
+                    <option value="no">{t("checker.no")}</option>
                   </select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="hasPartnerOrFamilyInAustralia">
-                    Do you have a partner/family member in Australia?
+                    {t("checker.familyInAustralia")}
                   </Label>
                   <select
                     id="hasPartnerOrFamilyInAustralia"
@@ -308,9 +309,9 @@ export default function CheckerPage() {
                     }
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    <option value="">Select one</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="">{t("checker.select")}</option>
+                    <option value="yes">{t("checker.yes")}</option>
+                    <option value="no">{t("checker.no")}</option>
                   </select>
                 </div>
               </div>
@@ -319,34 +320,34 @@ export default function CheckerPage() {
             {step === 5 && (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="hasPassport">Do you have passport?</Label>
+                  <Label htmlFor="hasPassport">{t("checker.passport")}</Label>
                   <select
                     id="hasPassport"
                     value={formData.hasPassport}
                     onChange={(event) => updateField("hasPassport", event.target.value)}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    <option value="">Select one</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="">{t("checker.select")}</option>
+                    <option value="yes">{t("checker.yes")}</option>
+                    <option value="no">{t("checker.no")}</option>
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="documentsReady">Do you have documents ready?</Label>
+                  <Label htmlFor="documentsReady">{t("checker.documents")}</Label>
                   <select
                     id="documentsReady"
                     value={formData.documentsReady}
                     onChange={(event) => updateField("documentsReady", event.target.value)}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    <option value="">Select one</option>
-                    <option value="yes">Yes</option>
-                    <option value="partially">Partially</option>
-                    <option value="no">No</option>
+                    <option value="">{t("checker.select")}</option>
+                    <option value="yes">{t("checker.yes")}</option>
+                    <option value="partially">{t("checker.partially")}</option>
+                    <option value="no">{t("checker.no")}</option>
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="timeline">Timeline</Label>
+                  <Label htmlFor="timeline">{t("checker.timeline")}</Label>
                   <Input
                     id="timeline"
                     value={formData.timeline}
@@ -355,7 +356,7 @@ export default function CheckerPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="budgetRange">Budget range</Label>
+                  <Label htmlFor="budgetRange">{t("checker.budget")}</Label>
                   <Input
                     id="budgetRange"
                     value={formData.budgetRange}
@@ -368,10 +369,10 @@ export default function CheckerPage() {
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
               <Button variant="outline" onClick={goBack} disabled={step === 1}>
-                Back
+                {t("checker.back")}
               </Button>
               <Button onClick={goNext}>
-                {step === totalSteps ? "See general pathway summary" : "Continue"}
+                {step === totalSteps ? t("checker.viewResults") : t("checker.continue")}
               </Button>
             </div>
           </CardContent>
@@ -380,7 +381,7 @@ export default function CheckerPage() {
         <ComplianceNotice />
 
         <p className="text-center text-sm text-muted-foreground">
-          Looking for legal details? <Link href="/legal" className="text-primary underline">Read full disclaimer</Link>
+          {t("footer.legal")} <Link href="/legal" className="text-primary underline">{t("footer.legal")}</Link>
         </p>
       </section>
     </main>
