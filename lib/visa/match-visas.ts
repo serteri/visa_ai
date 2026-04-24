@@ -89,20 +89,47 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
     }
   }
 
-  // Permanent migration → default subclass 189 (Points tested stream)
-  if (normalised.includes("migrate") || normalised.includes("permanent")) {
-    results.push({
-      subclass: "189",
-      visa_name: "Skilled Independent visa (Points tested stream)",
-      purpose: "Points-tested permanent residence in Australia for invited skilled workers",
-      match_reason:
-        "You indicated a goal of permanent migration to Australia. The Skilled Independent visa (subclass 189) Points tested stream is a common pathway for invited skilled workers, subject to skills assessment and invitation. Full data for this visa is not yet available in this tool.",
-      confidence: "low",
-      source_url:
-        "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189/points-tested",
-      pdf_snapshot_url: null,
-      is_database_record: false,
-    });
+  // Permanent migration → subclass 189 (Points tested stream)
+  if (normalised.includes("migrate") || normalised.includes("permanent") || normalised.includes("pr") || normalised.includes("skilled migration")) {
+    const [row189] = await db
+      .select({
+        subclass: visaTypes.subclass,
+        visa_name: visaTypes.visa_name,
+        purpose: visaTypes.purpose,
+        source_url: visaTypes.source_url,
+        pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+      })
+      .from(visaTypes)
+      .leftJoin(sourceSnapshots, eq(sourceSnapshots.visa_type_id, visaTypes.id))
+      .where(eq(visaTypes.subclass, "189"))
+      .limit(1);
+
+    if (row189) {
+      results.push({
+        subclass: row189.subclass,
+        visa_name: row189.visa_name,
+        purpose: row189.purpose,
+        match_reason:
+          "You indicated a goal of permanent migration to Australia. The Skilled Independent visa (subclass 189) is a points-tested permanent pathway for invited skilled workers. You will need to meet a skills assessment, invitation criteria and achieve sufficient points.",
+        confidence: "medium",
+        source_url: row189.source_url,
+        pdf_snapshot_url: row189.pdf_snapshot_url ?? null,
+        is_database_record: true,
+      });
+    } else {
+      // Fallback if not yet seeded
+      results.push({
+        subclass: "189",
+        visa_name: "Skilled Independent visa",
+        purpose: "Points-tested permanent residence in Australia for invited skilled workers",
+        match_reason:
+          "You indicated a goal of permanent migration to Australia. The Skilled Independent visa (subclass 189) is a points-tested permanent pathway for invited skilled workers.",
+        confidence: "medium",
+        source_url: "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189/points-tested",
+        pdf_snapshot_url: null,
+        is_database_record: false,
+      });
+    }
   }
 
   return results;

@@ -418,7 +418,137 @@ function FinancialRequirementsSection({ data }: { data: unknown }) {
   );
 }
 
-// ─── page ─────────────────────────────────────────────────────────────────────
+function OccupationRequirementsSection({
+  data,
+}: {
+  data: unknown;
+}) {
+  if (!data || typeof data !== "object") {
+    return <p className="text-sm text-muted-foreground">No data available.</p>;
+  }
+
+  const occ = data as Record<string, unknown>;
+  const summary = occ.summary as string | undefined;
+  const occupations = occ.occupations as string[] | undefined;
+  const note = occ.note as string | undefined;
+
+  return (
+    <div className="space-y-4">
+      {summary && <p className="text-sm text-muted-foreground">{summary}</p>}
+      {note && <p className="text-xs italic text-muted-foreground">{note}</p>}
+      {occupations && occupations.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Eligible occupations (sample)</p>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {occupations.map((occ, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{occ}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PointsTestRulesSection({
+  data,
+}: {
+  data: unknown;
+}) {
+  if (!data || typeof data !== "object") {
+    return <p className="text-sm text-muted-foreground">No data available.</p>;
+  }
+
+  const points = data as Record<string, unknown>;
+  const minPoints = points.minimum_points_required as number | undefined;
+
+  const renderPointsTable = (items: unknown): React.ReactNode => {
+    if (!Array.isArray(items) || items.length === 0) return null;
+    return (
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[400px] text-sm">
+          <tbody className="divide-y">
+            {items.map((item: unknown, i: number) => {
+              if (typeof item !== "object" || !item) return null;
+              const row = item as Record<string, unknown>;
+              const key1 = Object.keys(row)[0];
+              const val1 = Object.keys(row)[1];
+              if (!key1 || !val1) return null;
+              return (
+                <tr key={i}>
+                  <td className="py-2 pr-4 text-muted-foreground">{String(row[key1])}</td>
+                  <td className="py-2 font-semibold">{String(row[val1])} pts</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      {minPoints !== undefined && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+          <p className="text-sm font-semibold">Minimum points required: {minPoints}</p>
+        </div>
+      )}
+
+      {Array.isArray(points.age) && points.age.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Age</p>
+          {renderPointsTable(points.age)}
+        </div>
+      )}
+
+      {Array.isArray(points.english_language) && points.english_language.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">English language</p>
+          {renderPointsTable(points.english_language)}
+        </div>
+      )}
+
+      {Array.isArray(points.overseas_skilled_employment) && points.overseas_skilled_employment.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Overseas skilled employment</p>
+          {renderPointsTable(points.overseas_skilled_employment)}
+        </div>
+      )}
+
+      {Array.isArray(points.australian_skilled_employment) && points.australian_skilled_employment.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Australian skilled employment</p>
+          {renderPointsTable(points.australian_skilled_employment)}
+        </div>
+      )}
+
+      {Array.isArray(points.education) && points.education.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Education</p>
+          {renderPointsTable(points.education)}
+        </div>
+      )}
+
+      {Array.isArray(points.professional_year) && points.professional_year.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Professional year</p>
+          {renderPointsTable(points.professional_year)}
+        </div>
+      )}
+
+      {Array.isArray(points.partner_skills) && points.partner_skills.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Partner skills</p>
+          {renderPointsTable(points.partner_skills)}
+        </div>
+      )}
+    </div>
+  );
+}
 
 type PageProps = {
   params: Promise<{ locale: string; subclass: string }>;
@@ -467,6 +597,22 @@ export default async function VisaDetailsPage({ params }: PageProps) {
       title: "Financial requirements",
       content: <FinancialRequirementsSection data={structured?.financial_requirements} />,
     },
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "occupation_requirements" in structured.raw_json
+      ? [
+          {
+            title: "Occupation requirements",
+            content: <OccupationRequirementsSection data={(structured.raw_json as Record<string, unknown>).occupation_requirements} />,
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "points_test_rules" in structured.raw_json
+      ? [
+          {
+            title: "Points test rules",
+            content: <PointsTestRulesSection data={(structured.raw_json as Record<string, unknown>).points_test_rules} />,
+          },
+        ]
+      : []),
   ];
 
   return (

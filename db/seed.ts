@@ -35,6 +35,10 @@ const SID_482_ENGLISH_PDF_URL =
   "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/English%20proficiency%20%28subclass%20482%29_25April2026.pdf";
 const SID_482_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
+const SI_189_SOURCE_URL =
+  "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189/points-tested";
+const SI_189_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
+
 const studentVisa500Data = {
   visa_name: "Student visa",
   subclass: "500",
@@ -329,6 +333,221 @@ const skillsInDemand482Data = {
   },
 };
 
+const skilledIndependent189Data = {
+  visa_name: "Skilled Independent visa",
+  subclass: "189",
+  stream: "Points tested stream",
+  category: "Permanent Skilled Migration",
+  purpose: "Live and work permanently anywhere in Australia as an invited skilled worker.",
+  stay_period: "Permanently",
+  cost: "From AUD 4,910 for the main applicant",
+  work_rights: "Work and study anywhere in Australia",
+  source_url: SI_189_SOURCE_URL,
+  last_checked: new Date("2026-04-25"),
+  reviewed_status: "needs_review",
+  key_requirements: [
+    "Have an occupation on the relevant skilled occupation list",
+    "Have a suitable skills assessment for the nominated occupation",
+    "Be invited to apply for this visa",
+    "Satisfy the points test",
+    "Be aged under 45 when invited to apply",
+    "Score at least 65 points or more",
+    "Have at least Competent English at the time of invitation",
+    "Meet health and character requirements",
+    "Have paid back any debt to the Australian Government",
+    "Sign the Australian Values Statement if 18 or older",
+    "Not have a visa cancellation or refusal history that affects eligibility",
+  ],
+  documents_required: [
+    "Expression of Interest through SkillSelect",
+    "Invitation to apply",
+    "Suitable skills assessment",
+    "Evidence supporting points claims",
+    "English language evidence",
+    "Identity documents",
+    "Health examination results if requested",
+    "Character documents and police certificates if requested",
+    "Family member documents if included",
+    "Evidence for education, employment, partner skills and other claimed points",
+  ],
+  application_steps: [
+    "Submit an Expression of Interest through SkillSelect",
+    "Wait for an invitation to apply",
+    "Gather documents supporting EOI claims and eligibility",
+    "Apply online through ImmiAccount within 60 days of invitation",
+    "Attach documents and pay the application charge",
+    "Respond to requests for additional information if requested",
+    "Complete health examinations or biometrics if requested",
+    "Wait for written visa outcome",
+  ],
+  visa_conditions: [
+    "Permanent visa",
+    "Live, work and study anywhere in Australia",
+    "Travel to and from Australia for 5 years from grant date",
+    "After 5 years, a Resident Return visa may be needed to re-enter Australia as a permanent resident",
+    "May sponsor eligible relatives for permanent residence",
+    "May become eligible for Australian citizenship",
+  ],
+  risks: [
+    "No invitation means the applicant cannot apply",
+    "A score below 65 points means the applicant will not be invited",
+    "Invitation points may be higher than 65 depending on EOI claims",
+    "Evidence must support all points claims",
+    "Age must be under 45 at invitation",
+    "Skills assessment must be suitable and valid",
+    "Occupation must be on the relevant skilled occupation list",
+    "Previous visa refusals or cancellations may affect eligibility",
+    "Incomplete or incorrect information may delay or affect the application",
+  ],
+  english_requirements: {
+    required_level: "Competent English",
+    summary:
+      "At the time of invitation, the applicant must have at least Competent English.",
+    passport_exemptions: [
+      "Canada",
+      "New Zealand",
+      "Republic of Ireland",
+      "United Kingdom",
+      "United States of America",
+    ],
+    tests_from_2025_08_07: {
+      C1_Advanced: { listening: 163, reading: 163, writing: 170, speaking: 179 },
+      CELPIP_General: { listening: 7, reading: 7, writing: 7, speaking: 7 },
+      IELTS_Academic: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+      IELTS_General_Training: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+      MET: { listening: 56, reading: 55, writing: 57, speaking: 48 },
+      OET: { listening: 290, reading: 310, writing: 290, speaking: 330 },
+      LANGUAGECERT_Academic: { listening: 57, reading: 60, writing: 64, speaking: 70 },
+      PTE_Academic: { listening: 47, reading: 48, writing: 51, speaking: 54 },
+      TOEFL_iBT: {
+        listening: 16,
+        reading: 16,
+        writing: 19,
+        speaking: 19,
+        note: "Must select Taking TOEFL for Australia when registering.",
+      },
+    },
+    tests_on_or_before_2025_08_06: {
+      C1_Advanced: { listening: 169, reading: 169, writing: 169, speaking: 169 },
+      IELTS: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+      OET: { listening: "B", reading: "B", writing: "B", speaking: "B" },
+      PTE_Academic: { listening: 50, reading: 50, writing: 50, speaking: 50 },
+      TOEFL_iBT: {
+        listening: 12,
+        reading: 13,
+        writing: 21,
+        speaking: 21,
+        note: "TOEFL iBT tests from 26 July 2023 to 4 May 2024 were not approved.",
+      },
+    },
+    online_tests_not_accepted: [
+      "CELPIP Online",
+      "IELTS Online",
+      "LANGUAGECERT Academic Online",
+      "MET Digital taken at-home",
+      "OET@Home",
+      "TOEFL iBT Home Edition",
+    ],
+  },
+  financial_requirements: {
+    status: "not_primary_requirement_in_source_text",
+    notes: [
+      "The main provided source does not describe a specific personal financial capacity requirement for subclass 189.",
+      "Visa charges and possible second instalment for family members with less than functional English may apply.",
+    ],
+  },
+  occupation_requirements: {
+    summary:
+      "Applicant must have an occupation on the relevant skilled occupation list for subclass 189 Points-tested stream.",
+    list_name: "MLTSSL short list from provided source",
+    note: "This occupation list should later become searchable/filterable.",
+    occupations: [
+      "Accountant (General)",
+      "External Auditor",
+      "Internal Auditor",
+      "Management Accountant",
+      "Tax Accountant",
+      "Qualified Architect",
+      "Civil Engineer",
+      "Electrical Engineer",
+      "Mechanical Engineer",
+      "Software-related occupations should only be added if present in official occupation source",
+      "Registered Nurse",
+      "Midwife",
+      "General Practitioner",
+      "Physiotherapist",
+      "Social Worker",
+      "Chef",
+      "Carpenter",
+      "Electrician (General)",
+      "Plumber (General)",
+      "Welder (First Class)",
+    ],
+  },
+  points_test_rules: {
+    minimum_points_required: 65,
+    age: [
+      { range: "18 to less than 25", points: 25 },
+      { range: "25 to less than 33", points: 30 },
+      { range: "33 to less than 40", points: 25 },
+      { range: "40 to less than 45", points: 15 },
+    ],
+    english_language: [
+      { level: "Competent English", points: 0 },
+      { level: "Proficient English", points: 10 },
+      { level: "Superior English", points: 20 },
+    ],
+    overseas_skilled_employment: [
+      { years: "Less than 3 years", points: 0 },
+      { years: "At least 3 but less than 5 years", points: 5 },
+      { years: "At least 5 but less than 8 years", points: 10 },
+      { years: "At least 8 years", points: 15 },
+    ],
+    australian_skilled_employment: [
+      { years: "Less than 1 year", points: 0 },
+      { years: "At least 1 but less than 3 years", points: 5 },
+      { years: "At least 3 but less than 5 years", points: 10 },
+      { years: "At least 5 but less than 8 years", points: 15 },
+      { years: "At least 8 years", points: 20 },
+    ],
+    employment_points_cap: 20,
+    education: [
+      { qualification: "Doctorate", points: 20 },
+      { qualification: "Bachelor degree or higher recognised standard", points: 15 },
+      { qualification: "Diploma or trade qualification from Australian institution", points: 10 },
+      { qualification: "Qualification recognised by assessing authority", points: 10 },
+    ],
+    specialist_education: [
+      {
+        requirement:
+          "Masters by research or Doctorate from Australian institution with at least 2 academic years in relevant field",
+        points: 10,
+      },
+    ],
+    australian_study_requirement: [{ requirement: "Meet Australian study requirement", points: 5 }],
+    professional_year: [{ requirement: "Completed Professional Year in Australia", points: 5 }],
+    credentialled_community_language: [
+      { requirement: "Recognised qualification in a credentialled community language", points: 5 },
+    ],
+    study_in_regional_australia: [
+      {
+        requirement:
+          "Australian study requirement completed while living and studying in eligible regional Australia",
+        points: 5,
+      },
+    ],
+    partner_skills: [
+      {
+        requirement:
+          "Partner applicant under 45 with competent English, skilled occupation and suitable skills assessment",
+        points: 10,
+      },
+      { requirement: "Partner applicant has competent English", points: 5 },
+      { requirement: "Single, or partner is Australian citizen or permanent resident", points: 10 },
+    ],
+  },
+};
+
 async function createTables() {
   try {
     console.log("📊 Creating tables if they don't exist...");
@@ -594,6 +813,72 @@ async function seed() {
           .returning({ id: sourceSnapshots.id });
         console.log("✅ Inserted PDF snapshot 482:", inserted.id, "|", snap.notes);
       }
+    }
+
+    // ── Subclass 189: Skilled Independent visa (Points tested stream) ──────────────
+
+    const visa189Payload = {
+      subclass: skilledIndependent189Data.subclass,
+      visa_name: skilledIndependent189Data.visa_name,
+      category: skilledIndependent189Data.category,
+      purpose: skilledIndependent189Data.purpose,
+      stay_period: skilledIndependent189Data.stay_period,
+      cost: skilledIndependent189Data.cost,
+      work_rights: skilledIndependent189Data.work_rights,
+      source_url: skilledIndependent189Data.source_url,
+      last_checked: toIsoDate(skilledIndependent189Data.last_checked),
+      reviewed_status: skilledIndependent189Data.reviewed_status,
+      updated_at: new Date(),
+    };
+
+    const [upsertedVisa189] = await db
+      .insert(visaTypes)
+      .values(visa189Payload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visa189Payload,
+      })
+      .returning();
+
+    console.log("✅ Upserted visa type 189:", upsertedVisa189.id);
+
+    const structured189Payload = {
+      visa_type_id: upsertedVisa189.id,
+      key_requirements: skilledIndependent189Data.key_requirements,
+      documents_required: skilledIndependent189Data.documents_required,
+      application_steps: skilledIndependent189Data.application_steps,
+      visa_conditions: skilledIndependent189Data.visa_conditions,
+      risks: skilledIndependent189Data.risks,
+      english_requirements: skilledIndependent189Data.english_requirements,
+      financial_requirements: skilledIndependent189Data.financial_requirements,
+      raw_json: {
+        ...skilledIndependent189Data,
+        last_checked: toIsoDate(skilledIndependent189Data.last_checked),
+      },
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredData189] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedVisa189.id))
+      .limit(1);
+
+    if (existingStructuredData189) {
+      const [updated] = await db
+        .update(visaStructuredData)
+        .set(structured189Payload)
+        .where(eq(visaStructuredData.id, existingStructuredData189.id))
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Updated structured data 189:", updated.id);
+    } else {
+      const [inserted] = await db
+        .insert(visaStructuredData)
+        .values(structured189Payload)
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Inserted structured data 189:", inserted.id);
     }
 
     console.log("🎉 Database seed completed successfully!");
