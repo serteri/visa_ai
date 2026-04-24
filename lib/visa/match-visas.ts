@@ -110,7 +110,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: row189.visa_name,
         purpose: row189.purpose,
         match_reason:
-          "You indicated a goal of permanent migration to Australia. The Skilled Independent visa (subclass 189) is a points-tested permanent pathway for invited skilled workers. You will need to meet a skills assessment, invitation criteria and achieve sufficient points.",
+          "You selected permanent migration. This points-tested skilled pathway may be relevant if you meet occupation, invitation and points requirements.",
         confidence: "medium",
         source_url: row189.source_url,
         pdf_snapshot_url: row189.pdf_snapshot_url ?? null,
