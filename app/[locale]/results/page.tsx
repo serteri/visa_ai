@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 import { AgentReferralCta } from "@/components/sections/agent-referral-cta";
 import { ComplianceNotice } from "@/components/sections/compliance-notice";
@@ -15,6 +16,8 @@ import {
 import { useTranslation } from "@/contexts/language-context";
 
 export default function ResultsPage() {
+  const params = useParams();
+  const locale = params.locale as string;
   const { t } = useTranslation();
 
   return (
@@ -38,58 +41,63 @@ export default function ResultsPage() {
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <p>{pathway.rationale}</p>
-                <p className="rounded-lg bg-muted p-3">{pathway.caution}</p>
+                <p>
+                  <strong className="text-foreground">{t("results.requirementsLabel")}:</strong>{" "}
+                  {pathway.requirements}
+                </p>
+                {pathway.caution && (
+                  <p className="rounded bg-orange-50 p-2 text-orange-900">
+                    <strong>{t("results.caution")}:</strong> {pathway.caution}
+                  </p>
+                )}
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("results.missing")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              {mockMissingInformation.map((item) => (
-                <p key={item}>- {item}</p>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("results.risks")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              {mockRiskFlags.map((item) => (
-                <p key={item}>- {item}</p>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-
         <Card>
           <CardHeader>
-            <CardTitle>{t("results.next")}</CardTitle>
+            <CardTitle>{t("results.missingInfo")}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-sm text-muted-foreground">
-            <p>
-              {t("results.nextText")}
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button>{t("results.requestReferral")}</Button>
-              <Button asChild variant="outline">
-                <Link href="/checker">{t("results.editAnswers")}</Link>
-              </Button>
-            </div>
+          <CardContent>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {mockMissingInformation.map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
 
-        <ComplianceNotice />
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("results.riskFlags")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {mockRiskFlags.map((flag) => (
+                <li key={flag} className="flex items-start gap-2">
+                  <span className="text-orange-500">!</span>
+                  <span>{flag}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
-        <section>
-          <AgentReferralCta />
-        </section>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button asChild variant="outline">
+            <Link href={`/${locale}`}>{t("results.startOver")}</Link>
+          </Button>
+          <Button asChild>
+            <Link href={`/${locale}/checker`}>{t("results.retake")}</Link>
+          </Button>
+        </div>
+
+        <AgentReferralCta />
+        <ComplianceNotice />
       </section>
     </main>
   );

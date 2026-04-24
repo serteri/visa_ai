@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { CheckCircle2, Languages, Scale, ShieldCheck } from "lucide-react";
 
 import { AgentReferralCta } from "@/components/sections/agent-referral-cta";
@@ -8,7 +9,7 @@ import { ComplianceNotice } from "@/components/sections/compliance-notice";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supportedLanguages } from "@/lib/mock-visa-data";
+import { languages } from "@/lib/languages";
 import { useTranslation } from "@/contexts/language-context";
 
 const trustIndicatorKeys = [
@@ -35,6 +36,8 @@ const categoryKeys = [
 ];
 
 export function HomeContent() {
+  const params = useParams();
+  const locale = params.locale as string;
   const { t } = useTranslation();
 
   return (
@@ -50,7 +53,7 @@ export function HomeContent() {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/checker">{t("hero.cta")}</Link>
+              <Link href={`/${locale}/checker`}>{t("hero.cta")}</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
               <Link href="#how-it-works">{t("hero.secondary")}</Link>
@@ -113,11 +116,26 @@ export function HomeContent() {
           <CardHeader>
             <CardTitle>{t("languages.title")}</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            {supportedLanguages.map((language) => (
-              <Badge key={language} variant="outline" className="bg-white">
-                {language}
-              </Badge>
+          <CardContent className="flex flex-wrap gap-3">
+            {languages.map((language) => (
+              <div
+                key={language.code}
+                className={`flex flex-col items-center gap-1 rounded-lg px-3 py-2 ${
+                  language.enabled
+                    ? "bg-white"
+                    : "bg-muted opacity-60"
+                }`}
+              >
+                <span className={`text-sm font-medium ${language.enabled ? "text-foreground" : "text-muted-foreground"}`}>
+                  {language.localLabel}
+                </span>
+                <Badge
+                  variant={language.enabled ? "default" : "secondary"}
+                  className="text-xs"
+                >
+                  {language.enabled ? "Available" : "Coming Soon"}
+                </Badge>
+              </div>
             ))}
           </CardContent>
         </Card>
@@ -126,7 +144,7 @@ export function HomeContent() {
           <ComplianceNotice />
           <div className="flex justify-end">
             <Button asChild variant="ghost">
-              <Link href="/legal">{t("footer.legal")}</Link>
+              <Link href={`/${locale}/legal`}>{t("footer.legal")}</Link>
             </Button>
           </div>
         </div>

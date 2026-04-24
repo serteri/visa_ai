@@ -77,6 +77,8 @@ export const mockPathwaySuggestions: PathwaySuggestion[] = [
     title: "Student pathway (subclass 500) may be relevant",
     rationale:
       "Based on your study-focused responses, this pathway could be worth reviewing with a registered migration agent.",
+    requirements:
+      "Confirmation of enrolment, evidence of funds, English evidence where required.",
     caution:
       "Course enrolment, financial evidence, and visa conditions should be validated against current official criteria.",
   },
@@ -84,6 +86,8 @@ export const mockPathwaySuggestions: PathwaySuggestion[] = [
     title: "Employer-sponsored options may be worth discussing",
     rationale:
       "Because you indicated work plans and sponsor potential, employer-sponsored pathways could be worth discussing with a registered migration agent.",
+    requirements:
+      "Approved sponsor, relevant occupation, skills and English evidence.",
     caution:
       "Sponsor status, occupation alignment, and stream-specific requirements can materially change your options.",
   },

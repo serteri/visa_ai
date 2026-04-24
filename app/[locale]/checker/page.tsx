@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 import { ComplianceNotice } from "@/components/sections/compliance-notice";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { enabledLanguages } from "@/lib/languages";
+import { activeLocales } from "@/lib/i18n/config";
 import { useTranslation } from "@/contexts/language-context";
 
 type CheckerFormData = {
@@ -61,6 +61,8 @@ const initialData: CheckerFormData = {
 
 export default function CheckerPage() {
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<CheckerFormData>(initialData);
@@ -88,7 +90,7 @@ export default function CheckerPage() {
       return;
     }
 
-    router.push("/results");
+    router.push(`/${locale}/results`);
   }
 
   function goBack() {
@@ -160,9 +162,9 @@ export default function CheckerPage() {
                     onChange={(event) => updateField("preferredLanguage", event.target.value)}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    {enabledLanguages.map((language) => (
-                      <option key={language.code} value={language.code}>
-                        {language.localLabel}
+                    {activeLocales.map((langCode) => (
+                      <option key={langCode} value={langCode}>
+                        {langCode === "en" ? "English" : langCode === "tr" ? "Türkçe" : langCode}
                       </option>
                     ))}
                   </select>
@@ -381,7 +383,10 @@ export default function CheckerPage() {
         <ComplianceNotice />
 
         <p className="text-center text-sm text-muted-foreground">
-          {t("footer.legal")} <Link href="/legal" className="text-primary underline">{t("footer.legal")}</Link>
+          {t("footer.disclaimer")}{" "}
+          <Link href={`/${locale}/legal`} className="text-primary underline">
+            {t("footer.legal")}
+          </Link>
         </p>
       </section>
     </main>

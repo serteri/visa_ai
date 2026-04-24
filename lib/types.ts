@@ -128,5 +128,6 @@ export interface Language {
 export interface PathwaySuggestion {
   title: string;
   rationale: string;
+  requirements?: string;
   caution: string;
 }

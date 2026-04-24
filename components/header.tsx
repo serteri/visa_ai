@@ -1,18 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
+
 import { LanguageSelector } from "@/components/language-selector";
 
 export function Header() {
+  const params = useParams();
+  const locale = params.locale as string;
+
   return (
-    <header className="border-b border-border/40 bg-white/95 backdrop-blur-sm">
+    <header className="relative z-40 border-b border-border/40 bg-white/95 backdrop-blur-sm">
       <nav className="section-shell flex h-16 items-center justify-between">
-        <Link href="/" className="text-lg font-semibold text-primary">
+        <Link href={`/${locale}`} className="text-lg font-semibold text-primary">
           VisaAI
         </Link>
 
         <div className="flex items-center gap-4">
-          <LanguageSelector />
+          <LanguageSelector currentLocale={locale} />
         </div>
       </nav>
     </header>

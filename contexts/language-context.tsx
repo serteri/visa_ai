@@ -8,19 +8,18 @@ import {
   useEffect,
   useState,
 } from "react";
-
-const LANGUAGE_STORAGE_KEY = "visa-ai-language";
+import type { Locale } from "@/lib/i18n/config";
 
 interface LanguageContextType {
-  language: string;
-  setLanguage: (code: string) => void;
+  language: Locale;
+  setLanguage: (code: Locale) => void;
   translations: Record<string, string>;
   isReady: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-async function loadTranslations(languageCode: string) {
+async function loadTranslations(languageCode: Locale) {
   try {
     const response = await fetch(`/locales/${languageCode}.json`);
     if (!response.ok) {
@@ -33,33 +32,26 @@ async function loadTranslations(languageCode: string) {
   }
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<string>("en");
+export function LanguageProvider({
+  children,
+  initialLocale = "en",
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
+  const [language, setLanguageState] = useState<Locale>(initialLocale);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const savedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) || "en";
-    setLanguageState(savedLanguage);
-
-    loadTranslations(savedLanguage).then((trans) => {
+    loadTranslations(initialLocale).then((trans) => {
       setTranslations(trans);
       setIsReady(true);
     });
-  }, []);
+  }, [initialLocale]);
 
-  useEffect(() => {
-    if (!isReady || language === (localStorage.getItem(LANGUAGE_STORAGE_KEY) || "en")) {
-      return;
-    }
-
-    loadTranslations(language).then(setTranslations);
-  }, [language, isReady]);
-
-  const setLanguage = useCallback((code: string) => {
+  const setLanguage = useCallback((code: Locale) => {
     setLanguageState(code);
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
-    document.documentElement.lang = code;
   }, []);
 
   return (
