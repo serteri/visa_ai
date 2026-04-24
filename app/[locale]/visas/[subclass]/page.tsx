@@ -43,10 +43,14 @@ type EnglishRequirements482 = {
   applies_to_streams?: string[];
   test_validity?: string;
   exemptions?: string[];
+  passport_exemptions?: string[];
   online_tests_not_accepted?: { rule?: string; examples_not_accepted?: string[] };
+  tests_taken_on_or_after_2025_08_07?: Record<string, PerSkillScores | string | boolean>;
+  tests_taken_on_or_before_2025_08_06?: Record<string, PerSkillScores | string | boolean>;
   tests_taken_on_or_after_2025_09_13?: Record<string, PerSkillScores | string | boolean>;
   tests_taken_before_2025_09_13?: Record<string, PerSkillScores | string | boolean>;
   labour_agreement_stream_note?: string;
+  notes?: string[];
 };
 
 type FinancialRequirements = {
@@ -296,6 +300,20 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
         </p>
       )}
 
+      {eng.passport_exemptions && eng.passport_exemptions.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Passport exemptions</p>
+          <ul className="space-y-1">
+            {eng.passport_exemptions.map((ex, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{ex}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {eng.exemptions && eng.exemptions.length > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-semibold">Exemptions</p>
@@ -339,6 +357,16 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
         </div>
       )}
 
+      {eng.tests_taken_on_or_after_2025_08_07 && (
+        <div className="space-y-3">
+          <p className="text-sm font-semibold">Tests taken on or after 7 August 2025</p>
+          {renderPerSkillTable(
+            eng.tests_taken_on_or_after_2025_08_07 as Record<string, PerSkillScores | string | boolean>,
+            (eng.tests_taken_on_or_after_2025_08_07 as Record<string, unknown>).single_skill_retake_note as string | undefined
+          )}
+        </div>
+      )}
+
       {eng.tests_taken_before_2025_09_13 && (
         <div className="space-y-3">
           <p className="text-sm font-semibold">Tests taken before 13 September 2025</p>
@@ -348,6 +376,30 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
           {renderPerSkillTable(
             eng.tests_taken_before_2025_09_13 as Record<string, PerSkillScores | string | boolean>
           )}
+        </div>
+      )}
+
+      {eng.tests_taken_on_or_before_2025_08_06 && (
+        <div className="space-y-3">
+          <p className="text-sm font-semibold">Tests taken on or before 6 August 2025</p>
+          {renderPerSkillTable(
+            eng.tests_taken_on_or_before_2025_08_06 as Record<string, PerSkillScores | string | boolean>,
+            (eng.tests_taken_on_or_before_2025_08_06 as Record<string, unknown>).single_skill_retake_note as string | undefined
+          )}
+        </div>
+      )}
+
+      {eng.notes && eng.notes.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Notes</p>
+          <ul className="space-y-1">
+            {eng.notes.map((note, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{note}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

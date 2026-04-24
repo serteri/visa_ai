@@ -511,10 +511,130 @@ const skilledNominated190Data = {
 
   english_requirements: {
     required_level: "Competent English",
-    summary: "At the time of invitation, the applicant must have at least Competent English.",
-    status: "reuse_competent_english_rules",
-    note:
-      "Competent English rules are similar to points-tested skilled migration requirements. Use official English requirements source for detailed score tables.",
+    summary:
+      "At the time of invitation, subclass 190 applicants must have at least Competent English.",
+    test_validity:
+      "Test scores must generally be achieved in the 3 years before the visa application, depending on the visa subclass.",
+    passport_exemptions: [
+      "Canada",
+      "New Zealand",
+      "Republic of Ireland",
+      "United Kingdom of Great Britain and Northern Ireland",
+      "United States of America",
+    ],
+    tests_taken_on_or_after_2025_08_07: {
+      C1_Advanced: {
+        listening: 163,
+        reading: 163,
+        writing: 170,
+        speaking: 179,
+      },
+      CELPIP_General: {
+        listening: 7,
+        reading: 7,
+        writing: 7,
+        speaking: 7,
+      },
+      IELTS_Academic: {
+        listening: 6,
+        reading: 6,
+        writing: 6,
+        speaking: 6,
+        note: "IELTS One Skill Retake may be accepted for eligible visas.",
+      },
+      IELTS_General_Training: {
+        listening: 6,
+        reading: 6,
+        writing: 6,
+        speaking: 6,
+        note: "IELTS One Skill Retake may be accepted for eligible visas.",
+      },
+      MET: {
+        listening: 56,
+        reading: 55,
+        writing: 57,
+        speaking: 48,
+        note: "MET Single Section Retake may be accepted for eligible visas.",
+      },
+      OET: {
+        listening: 290,
+        reading: 310,
+        writing: 290,
+        speaking: 330,
+      },
+      LANGUAGECERT_Academic: {
+        listening: 57,
+        reading: 60,
+        writing: 64,
+        speaking: 70,
+      },
+      PTE_Academic: {
+        listening: 47,
+        reading: 48,
+        writing: 51,
+        speaking: 54,
+      },
+      TOEFL_iBT: {
+        listening: 16,
+        reading: 16,
+        writing: 19,
+        speaking: 19,
+        note: "Applicant must select Taking TOEFL for Australia when registering.",
+      },
+    },
+    tests_taken_on_or_before_2025_08_06: {
+      C1_Advanced: {
+        listening: 169,
+        reading: 169,
+        writing: 169,
+        speaking: 169,
+        note:
+          "From 12 February 2024 to 6 August 2025, only Cambridge C1 Advanced paper-based results are accepted. Earlier tests may still be accepted within validity periods.",
+      },
+      IELTS: {
+        listening: 6,
+        reading: 6,
+        writing: 6,
+        speaking: 6,
+        note: "IELTS Academic or General Training.",
+      },
+      OET: {
+        listening: "B",
+        reading: "B",
+        writing: "B",
+        speaking: "B",
+      },
+      PTE_Academic: {
+        listening: 50,
+        reading: 50,
+        writing: 50,
+        speaking: 50,
+      },
+      TOEFL_iBT: {
+        listening: 12,
+        reading: 13,
+        writing: 21,
+        speaking: 21,
+        note:
+          "TOEFL iBT tests from 26 July 2023 to 4 May 2024 were not approved for Australian visa purposes.",
+      },
+    },
+    online_tests_not_accepted: {
+      rule:
+        "The Department does not accept evidence from English language tests delivered completely online, remote-proctored, or at-home.",
+      examples_not_accepted: [
+        "CELPIP Online",
+        "IELTS Online",
+        "LANGUAGECERT Academic Online",
+        "MET Digital taken at-home",
+        "OET@Home",
+        "TOEFL iBT Home Edition",
+      ],
+    },
+    notes: [
+      "Tests taken on or before 6 August 2025 may be used as evidence until 6 August 2028 inclusive, depending on the visa.",
+      "Some visas may allow other forms of evidence.",
+    ],
   },
 
   financial_requirements: {
