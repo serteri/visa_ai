@@ -26,6 +26,12 @@ const STUDENT_VISA_PDF_URL =
   "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa_500/visa_class_500_24April2026.pdf";
 const STUDENT_VISA_CAPTURED_AT = new Date("2026-04-24T00:00:00.000Z");
 
+const SID_482_SOURCE_URL =
+  "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482/core-skills-stream";
+const SID_482_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/Skills%20in%20Demand%20Visa%20%28subclass%20482%29%20Core%20Skills%20stream_25April2026.pdf";
+const SID_482_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
+
 const studentVisa500Data = {
   visa_name: "Student visa",
   subclass: "500",
@@ -145,6 +151,118 @@ const studentVisa500Data = {
 function toIsoDate(date: Date) {
   return date.toISOString().split("T")[0];
 }
+
+const skillsInDemand482Data = {
+  visa_name: "Skills in Demand visa",
+  subclass: "482",
+  category: "Work",
+  purpose:
+    "Work in Australia temporarily for an approved employer sponsor in an occupation listed on the Core Skills Occupation List.",
+  stay_period: "Up to 4 years. Hong Kong passport holders may stay up to 5 years.",
+  cost: "From AUD 3,210 for the main applicant and each dependant 18 years or over. AUD 805 for each dependant under 18.",
+  work_rights:
+    "Work in Australia for the approved sponsor in the nominated occupation. In some cases, work may be for an associated entity of the sponsor.",
+  source_url: SID_482_SOURCE_URL,
+  last_checked: new Date("2026-04-25"),
+  reviewed_status: "needs_review",
+  key_requirements: [
+    "Be nominated by an approved sponsor",
+    "Be nominated to work in an occupation on the Core Skills Occupation List",
+    "Be paid the Annual Market Salary Rate and no less than the Core Skills Income Threshold",
+    "Have at least 1 year of relevant work experience in the nominated occupation or a related field",
+    "Have a relevant skills assessment if required for the occupation",
+    "Work only for the sponsor or associated entity unless exempt",
+    "Meet minimum English language proficiency standards unless exempt",
+    "Hold an appropriate visa if applying in Australia",
+    "Have complied with previous visa conditions if applying in Australia",
+    "Maintain adequate health insurance",
+    "Meet health and character requirements",
+    "Have no relevant history of paying for visa sponsorship",
+    "Not have a visa cancellation or refusal history that affects eligibility",
+    "Have no debt to the Australian Government",
+    "Sign the Australian Values Statement if 18 or older",
+  ],
+  documents_required: [
+    "Valid passport",
+    "Employer nomination Transaction Reference Number",
+    "Identity documents",
+    "Proof of change of name if applicable",
+    "Skills assessment reference number if mandatory",
+    "Evidence of skills, qualifications and employment background",
+    "Relevant qualification certificates",
+    "Registration or licensing evidence if required",
+    "Curriculum vitae or resume",
+    "Employment references",
+    "English language proficiency documents",
+    "Evidence of adequate health insurance",
+    "Health examination results if required",
+    "Australian police certificate if required",
+    "Overseas police certificates if required",
+    "Military service records if applicable",
+    "Partner documents if applicable",
+    "Dependant documents if applicable",
+    "Parental responsibility documents for dependants under 18 if applicable",
+    "Translated documents for non-English documents",
+  ],
+  application_steps: [
+    "Before applying, arrange nomination, passport, skills assessment if required, English test if required, and health exams if needed",
+    "Gather identity, skills, occupation, English, health insurance, character and family documents",
+    "Apply online through ImmiAccount",
+    "Attach documents and pay the application fee",
+    "Respond to requests for more information if requested",
+    "Complete health exams or biometrics if requested",
+    "Stay lawful in Australia while the application is processed",
+    "Wait for written visa outcome",
+  ],
+  visa_conditions: [
+    "Work in the nominated occupation",
+    "Usually work only for the sponsoring business",
+    "If sponsored by an Australian business, may work for that business or an associated entity",
+    "Begin employment within 90 days of entering Australia or within 90 days of visa grant if granted in Australia",
+    "Maintain adequate health insurance",
+    "Obey Australian laws",
+    "Travel to and from Australia while the visa is valid",
+    "Time outside Australia does not extend the visa",
+    "Notify the Department of changes such as contact details, employer, employment status, relationship status or birth of a child",
+  ],
+  risks: [
+    "Application cannot be granted unless the employer nomination is approved",
+    "Application may be delayed or refused if documents are incomplete",
+    "Mandatory skills assessment must be commenced before application if required, otherwise the application may be invalid",
+    "False or misleading information may lead to refusal and future visa consequences",
+    "Failure to meet English requirements may affect eligibility",
+    "Failure to maintain adequate health insurance may breach visa conditions",
+    "Previous visa refusals or cancellations may affect eligibility",
+    "Paying for visa sponsorship conduct in the previous 3 years may affect eligibility",
+    "If employment ends, the visa holder may need to find a new employer or make arrangements to leave Australia",
+  ],
+  english_requirements: {
+    status: "needs_official_review",
+    summary:
+      "Primary visa applicants must meet minimum standards of English language proficiency unless exemptions apply.",
+    notes: [
+      "English language test results can be no more than 3 years old.",
+      "Exact accepted test scores were not included in the provided source text.",
+      "Store detailed score thresholds only after extracting them from the official English requirement source.",
+    ],
+  },
+  financial_requirements: {
+    status: "not_primary_requirement_in_source_text",
+    notes: [
+      "The provided source text refers to salary requirements rather than personal financial capacity.",
+      "The applicant must be paid the Annual Market Salary Rate and no less than the Core Skills Income Threshold.",
+      "Exact income threshold amount should be reviewed against the official skilled visa income threshold source.",
+    ],
+  },
+  family_members: {
+    can_include_family: true,
+    notes: [
+      "Family members may be included as secondary applicants depending on whether the applicant currently or previously held subclass 457 or 482.",
+      "Secondary applicants must meet health and character requirements.",
+      "Family members cannot be added after the application is submitted, but may apply later as subsequent entrants if eligible.",
+    ],
+  },
+};
 
 async function createTables() {
   try {
@@ -310,6 +428,98 @@ async function seed() {
         .returning({ id: sourceSnapshots.id });
 
       console.log("✅ Inserted PDF snapshot:", insertedSnapshot.id);
+    }
+
+    // ── Subclass 482: Skills in Demand visa (Core Skills stream) ──────────────
+
+    const visa482Payload = {
+      subclass: skillsInDemand482Data.subclass,
+      visa_name: skillsInDemand482Data.visa_name,
+      category: skillsInDemand482Data.category,
+      purpose: skillsInDemand482Data.purpose,
+      stay_period: skillsInDemand482Data.stay_period,
+      cost: skillsInDemand482Data.cost,
+      work_rights: skillsInDemand482Data.work_rights,
+      source_url: skillsInDemand482Data.source_url,
+      last_checked: toIsoDate(skillsInDemand482Data.last_checked),
+      reviewed_status: skillsInDemand482Data.reviewed_status,
+      updated_at: new Date(),
+    };
+
+    const [upsertedVisa482] = await db
+      .insert(visaTypes)
+      .values(visa482Payload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visa482Payload,
+      })
+      .returning();
+
+    console.log("✅ Upserted visa type 482:", upsertedVisa482.id);
+
+    const structured482Payload = {
+      visa_type_id: upsertedVisa482.id,
+      key_requirements: skillsInDemand482Data.key_requirements,
+      documents_required: skillsInDemand482Data.documents_required,
+      application_steps: skillsInDemand482Data.application_steps,
+      visa_conditions: skillsInDemand482Data.visa_conditions,
+      risks: skillsInDemand482Data.risks,
+      english_requirements: skillsInDemand482Data.english_requirements,
+      financial_requirements: skillsInDemand482Data.financial_requirements,
+      raw_json: {
+        ...skillsInDemand482Data,
+        last_checked: toIsoDate(skillsInDemand482Data.last_checked),
+      },
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredData482] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedVisa482.id))
+      .limit(1);
+
+    if (existingStructuredData482) {
+      const [updated] = await db
+        .update(visaStructuredData)
+        .set(structured482Payload)
+        .where(eq(visaStructuredData.id, existingStructuredData482.id))
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Updated structured data 482:", updated.id);
+    } else {
+      const [inserted] = await db
+        .insert(visaStructuredData)
+        .values(structured482Payload)
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Inserted structured data 482:", inserted.id);
+    }
+
+    const existingSnapshots482 = await db
+      .select({ id: sourceSnapshots.id, pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, upsertedVisa482.id));
+
+    const matchingSnapshot482 = existingSnapshots482.find(
+      (s) => s.pdf_snapshot_url === SID_482_PDF_URL
+    );
+
+    if (matchingSnapshot482) {
+      console.log("✅ PDF snapshot 482 already exists:", matchingSnapshot482.id);
+    } else {
+      const [insertedSnapshot482] = await db
+        .insert(sourceSnapshots)
+        .values({
+          visa_type_id: upsertedVisa482.id,
+          source_url: SID_482_SOURCE_URL,
+          pdf_snapshot_url: SID_482_PDF_URL,
+          captured_at: SID_482_CAPTURED_AT,
+          notes: "Manual PDF snapshot uploaded to Vercel Blob",
+        })
+        .returning({ id: sourceSnapshots.id });
+
+      console.log("✅ Inserted PDF snapshot 482:", insertedSnapshot482.id);
     }
 
     console.log("🎉 Database seed completed successfully!");

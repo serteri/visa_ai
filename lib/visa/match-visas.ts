@@ -45,20 +45,48 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
     }
   }
 
-  // Work + employer sponsor → placeholder 482
+  // Work + employer sponsor → subclass 482 (live from DB)
   if (normalised.includes("work") && hasSponsor) {
-    results.push({
-      subclass: "482",
-      visa_name: "Skills in Demand visa",
-      purpose: "Temporary employer-sponsored work in Australia",
-      match_reason:
-        "You indicated a work goal and an employer sponsor. The Skills in Demand visa (subclass 482) may be worth exploring with your employer and a registered migration agent. Full data for this visa is not yet available in this tool.",
-      confidence: "medium",
-      source_url:
-        "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482",
-      pdf_snapshot_url: null,
-      is_database_record: false,
-    });
+    const [row482] = await db
+      .select({
+        subclass: visaTypes.subclass,
+        visa_name: visaTypes.visa_name,
+        purpose: visaTypes.purpose,
+        source_url: visaTypes.source_url,
+        pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+      })
+      .from(visaTypes)
+      .leftJoin(sourceSnapshots, eq(sourceSnapshots.visa_type_id, visaTypes.id))
+      .where(eq(visaTypes.subclass, "482"))
+      .limit(1);
+
+    if (row482) {
+      results.push({
+        subclass: row482.subclass,
+        visa_name: row482.visa_name,
+        purpose: row482.purpose,
+        match_reason:
+          "You selected work in Australia and indicated you have an employer sponsor. This employer-sponsored pathway may be relevant to review.",
+        confidence: "medium",
+        source_url: row482.source_url,
+        pdf_snapshot_url: row482.pdf_snapshot_url ?? null,
+        is_database_record: true,
+      });
+    } else {
+      // Fallback if not yet seeded
+      results.push({
+        subclass: "482",
+        visa_name: "Skills in Demand visa",
+        purpose: "Temporary employer-sponsored work in Australia",
+        match_reason:
+          "You selected work in Australia and indicated you have an employer sponsor. This employer-sponsored pathway may be relevant to review.",
+        confidence: "medium",
+        source_url:
+          "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482/core-skills-stream",
+        pdf_snapshot_url: null,
+        is_database_record: false,
+      });
+    }
   }
 
   // Permanent migration → placeholder 189 / 190
