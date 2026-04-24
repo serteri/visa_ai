@@ -429,13 +429,31 @@ function OccupationRequirementsSection({
 
   const occ = data as Record<string, unknown>;
   const summary = occ.summary as string | undefined;
-  const occupations = occ.occupations as string[] | undefined;
+  const occupations =
+    (occ.occupations as string[] | undefined) ??
+    (occ.sample_occupations as string[] | undefined);
   const note = occ.note as string | undefined;
+  const notes = occ.notes as string[] | undefined;
+  const statesAndTerritories = occ.states_and_territories as string[] | undefined;
+  const stateSpecificReviewRequired = occ.state_specific_review_required as boolean | undefined;
 
   return (
     <div className="space-y-4">
       {summary && <p className="text-sm text-muted-foreground">{summary}</p>}
       {note && <p className="text-xs italic text-muted-foreground">{note}</p>}
+      {stateSpecificReviewRequired && (
+        <p className="text-xs italic text-muted-foreground">State-specific review required.</p>
+      )}
+      {notes && notes.length > 0 && (
+        <ul className="space-y-1">
+          {notes.map((item, i) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+              <span className="mt-0.5 text-primary">•</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      )}
       {occupations && occupations.length > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-semibold">Eligible occupations (sample)</p>
@@ -444,6 +462,19 @@ function OccupationRequirementsSection({
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                 <span className="mt-0.5 text-primary">•</span>
                 <span>{occ}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {statesAndTerritories && statesAndTerritories.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">States and territories</p>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {statesAndTerritories.map((state, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{state}</span>
               </li>
             ))}
           </ul>
@@ -463,7 +494,11 @@ function PointsTestRulesSection({
   }
 
   const points = data as Record<string, unknown>;
-  const minPoints = points.minimum_points_required as number | undefined;
+  const minPoints =
+    (points.minimum_points_required as number | undefined) ??
+    (points.minimum_points as number | undefined);
+  const summary = points.summary as string | undefined;
+  const note = points.note as string | undefined;
 
   const renderPointsTable = (items: unknown): React.ReactNode => {
     if (!Array.isArray(items) || items.length === 0) return null;
@@ -492,11 +527,15 @@ function PointsTestRulesSection({
 
   return (
     <div className="space-y-6">
+      {summary && <p className="text-sm text-muted-foreground">{summary}</p>}
+
       {minPoints !== undefined && (
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
           <p className="text-sm font-semibold">Minimum points required: {minPoints}</p>
         </div>
       )}
+
+      {note && <p className="text-xs italic text-muted-foreground">{note}</p>}
 
       {Array.isArray(points.age) && points.age.length > 0 && (
         <div className="space-y-2">
@@ -509,6 +548,13 @@ function PointsTestRulesSection({
         <div className="space-y-2">
           <p className="text-sm font-semibold">English language</p>
           {renderPointsTable(points.english_language)}
+        </div>
+      )}
+
+      {Array.isArray(points.english) && points.english.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">English language</p>
+          {renderPointsTable(points.english)}
         </div>
       )}
 

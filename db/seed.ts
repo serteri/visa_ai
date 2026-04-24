@@ -41,6 +41,9 @@ const SI_189_PDF_URL =
   "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Skilled%20Independent%20visa%20%28subclass%20189%29%20Points-tested%20stream/Skilled%20Independent%20visa%20%28subclass%20189%29%20Points-tested%20stream_25April2026.pdf";
 const SI_189_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
+const SN_190_SOURCE_URL =
+  "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190";
+
 const studentVisa500Data = {
   visa_name: "Student visa",
   subclass: "500",
@@ -426,6 +429,129 @@ const skilledIndependent189Data = {
   },
 };
 
+const skilledNominated190Data = {
+  subclass: "190",
+  visa_name: "Skilled Nominated visa",
+  category: "Permanent Skilled Migration",
+  purpose:
+    "Live and work permanently in Australia as a skilled worker nominated by an Australian state or territory government.",
+  stay_period: "Permanently",
+  cost: "From AUD 4,910 for the main applicant",
+  work_rights: "Work and study anywhere in Australia",
+  source_url: SN_190_SOURCE_URL,
+  last_checked: new Date("2026-04-25"),
+  reviewed_status: "needs_review",
+
+  key_requirements: [
+    "Have an occupation on the relevant skilled list",
+    "Have a suitable skills assessment for the occupation",
+    "Submit an Expression of Interest through SkillSelect",
+    "Be nominated by an Australian state or territory government agency",
+    "Be invited to apply for this visa",
+    "Score at least 65 points",
+    "Be aged under 45 when invited to apply",
+    "Have at least Competent English at the time of invitation",
+    "Meet health and character requirements",
+    "Have paid back any debt to the Australian Government",
+    "Sign the Australian Values Statement if 18 or older",
+  ],
+
+  documents_required: [
+    "Expression of Interest through SkillSelect",
+    "Invitation to apply",
+    "State or territory nomination",
+    "Suitable skills assessment",
+    "Identity documents",
+    "Competent English evidence",
+    "Evidence supporting points claims",
+    "Relationship documents if applicable",
+    "Character documents and police certificates if required",
+    "Health examination results if requested",
+    "Family member documents if included",
+    "Translated documents for non-English documents",
+  ],
+
+  application_steps: [
+    "Submit an Expression of Interest through SkillSelect",
+    "Select the Skilled Nominated subclass 190 visa",
+    "Wait for possible nomination by a state or territory government agency",
+    "Receive an invitation to apply if nominated",
+    "Apply online through ImmiAccount within 60 calendar days of invitation",
+    "Attach documents and pay the application charge",
+    "Respond to requests for additional information if requested",
+    "Complete health examinations or biometrics if requested",
+    "Wait for written visa outcome",
+  ],
+
+  visa_conditions: [
+    "Permanent visa",
+    "Live, work and study in Australia",
+    "Travel to and from Australia for 5 years from grant date",
+    "After 5 years, a Resident Return visa may be needed to re-enter Australia as a permanent resident",
+    "May sponsor eligible relatives",
+    "May become eligible for Australian citizenship",
+    "Must obey Australian laws",
+  ],
+
+  risks: [
+    "No state or territory nomination means the applicant will not be invited for this visa",
+    "If the nominating state or territory withdraws nomination after application, the application becomes invalid",
+    "A score below 65 points means the applicant will not be invited",
+    "Invitation points may be higher than 65 depending on EOI claims",
+    "Applicant must prove points claims after invitation",
+    "Age must be under 45 at time of invitation",
+    "Skills assessment must be suitable and valid",
+    "Occupation must be on the relevant skilled occupation list",
+    "State and territory agencies have their own nomination criteria",
+    "Incomplete or incorrect information may delay or affect the application",
+  ],
+
+  english_requirements: {
+    required_level: "Competent English",
+    summary: "At the time of invitation, the applicant must have at least Competent English.",
+    status: "reuse_competent_english_rules",
+    note:
+      "Competent English rules are similar to points-tested skilled migration requirements. Use official English requirements source for detailed score tables.",
+  },
+
+  financial_requirements: {
+    status: "not_primary_requirement_in_source_text",
+    notes: [
+      "The provided source does not describe a specific personal financial capacity requirement for subclass 190.",
+      "Visa charges and possible second instalment for family members with less than functional English may apply.",
+    ],
+  },
+
+  occupation_requirements: {
+    summary:
+      "Applicant must have an occupation on the relevant list of eligible skilled occupations for the Skilled Nominated subclass 190 visa.",
+    state_specific_review_required: true,
+    notes: [
+      "Subclass 190 requires nomination by an Australian state or territory government agency.",
+      "Each state or territory has its own nomination criteria and occupation priorities.",
+      "Occupation eligibility should be checked against both the relevant skilled occupation list and the nominating state or territory criteria.",
+    ],
+    states_and_territories: [
+      "Australian Capital Territory",
+      "New South Wales",
+      "Northern Territory",
+      "Queensland",
+      "South Australia",
+      "Tasmania",
+      "Victoria",
+      "Western Australia",
+    ],
+  },
+
+  points_test_rules: {
+    minimum_points_required: 65,
+    summary:
+      "Subclass 190 is a points-tested visa. The applicant must score at least 65 points and may receive invitation based on EOI claims and state or territory nomination.",
+    note:
+      "Detailed points categories should reuse the same points-tested skilled migration table used for subclass 189 unless official subclass-specific differences are identified.",
+  },
+};
+
 async function createTables() {
   try {
     console.log("📊 Creating tables if they don't exist...");
@@ -784,6 +910,72 @@ async function seed() {
         .values({ visa_type_id: upsertedVisa189.id, ...snapshot189 })
         .returning({ id: sourceSnapshots.id });
       console.log("✅ Inserted PDF snapshot 189:", inserted.id, "|", snapshot189.notes);
+    }
+
+    // ── Subclass 190: Skilled Nominated visa ───────────────────────────────
+
+    const visa190Payload = {
+      subclass: skilledNominated190Data.subclass,
+      visa_name: skilledNominated190Data.visa_name,
+      category: skilledNominated190Data.category,
+      purpose: skilledNominated190Data.purpose,
+      stay_period: skilledNominated190Data.stay_period,
+      cost: skilledNominated190Data.cost,
+      work_rights: skilledNominated190Data.work_rights,
+      source_url: skilledNominated190Data.source_url,
+      last_checked: toIsoDate(skilledNominated190Data.last_checked),
+      reviewed_status: skilledNominated190Data.reviewed_status,
+      updated_at: new Date(),
+    };
+
+    const [upsertedVisa190] = await db
+      .insert(visaTypes)
+      .values(visa190Payload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visa190Payload,
+      })
+      .returning();
+
+    console.log("✅ Upserted visa type 190:", upsertedVisa190.id);
+
+    const structured190Payload = {
+      visa_type_id: upsertedVisa190.id,
+      key_requirements: skilledNominated190Data.key_requirements,
+      documents_required: skilledNominated190Data.documents_required,
+      application_steps: skilledNominated190Data.application_steps,
+      visa_conditions: skilledNominated190Data.visa_conditions,
+      risks: skilledNominated190Data.risks,
+      english_requirements: skilledNominated190Data.english_requirements,
+      financial_requirements: skilledNominated190Data.financial_requirements,
+      raw_json: {
+        ...skilledNominated190Data,
+        last_checked: toIsoDate(skilledNominated190Data.last_checked),
+      },
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredData190] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedVisa190.id))
+      .limit(1);
+
+    if (existingStructuredData190) {
+      const [updated] = await db
+        .update(visaStructuredData)
+        .set(structured190Payload)
+        .where(eq(visaStructuredData.id, existingStructuredData190.id))
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Updated structured data 190:", updated.id);
+    } else {
+      const [inserted] = await db
+        .insert(visaStructuredData)
+        .values(structured190Payload)
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Inserted structured data 190:", inserted.id);
     }
 
     console.log("🎉 Database seed completed successfully!");
