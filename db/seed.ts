@@ -37,6 +37,8 @@ const SID_482_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
 const SI_189_SOURCE_URL =
   "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189/points-tested";
+const SI_189_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Skilled%20Independent%20visa%20%28subclass%20189%29%20Points-tested%20stream/Skilled%20Independent%20visa%20%28subclass%20189%29%20Points-tested%20stream_25April2026.pdf";
 const SI_189_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
 const studentVisa500Data = {
@@ -879,6 +881,33 @@ async function seed() {
         .returning({ id: visaStructuredData.id });
 
       console.log("✅ Inserted structured data 189:", inserted.id);
+    }
+
+    // Seed PDF snapshot for 189
+    const existingSnapshots189 = await db
+      .select({ id: sourceSnapshots.id, pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, upsertedVisa189.id));
+
+    const snapshot189 = {
+      source_url: SI_189_SOURCE_URL,
+      pdf_snapshot_url: SI_189_PDF_URL,
+      captured_at: SI_189_CAPTURED_AT,
+      notes: "Manual PDF snapshot of subclass 189 Points-tested stream page uploaded to Vercel Blob",
+    };
+
+    const existingSnapshot189 = existingSnapshots189.find(
+      (s) => s.pdf_snapshot_url === snapshot189.pdf_snapshot_url
+    );
+
+    if (existingSnapshot189) {
+      console.log("✅ PDF snapshot 189 already exists:", existingSnapshot189.id);
+    } else {
+      const [inserted] = await db
+        .insert(sourceSnapshots)
+        .values({ visa_type_id: upsertedVisa189.id, ...snapshot189 })
+        .returning({ id: sourceSnapshots.id });
+      console.log("✅ Inserted PDF snapshot 189:", inserted.id, "|", snapshot189.notes);
     }
 
     console.log("🎉 Database seed completed successfully!");
