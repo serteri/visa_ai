@@ -10,6 +10,7 @@ export function Header() {
   const locale = params.locale as string;
   const pointsLabel = locale === "tr" ? "Puan Hesaplayıcı" : "Points Calculator";
   const occupationLabel = locale === "tr" ? "Meslek Kontrol" : "Occupation Checker";
+  const assistantLabel = locale === "tr" ? "AI Asistan" : "AI Assistant";
 
   return (
     <header className="relative z-40 border-b border-border/40 bg-white/95 backdrop-blur-sm">
@@ -30,6 +31,12 @@ export function Header() {
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {pointsLabel}
+          </Link>
+          <Link
+            href={`/${locale}/assistant`}
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {assistantLabel}
           </Link>
           <LanguageSelector currentLocale={locale} />
         </div>
