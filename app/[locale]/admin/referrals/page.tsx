@@ -4,6 +4,9 @@ import { db } from "@/db";
 import { agentReferrals } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { updateReferralStatus } from "@/app/[locale]/admin/referrals/actions";
+
+const STATUS_OPTIONS = ["new", "contacted", "referred", "closed"] as const;
 
 async function ensureAgentReferralsTable() {
   await db.execute(sql`
@@ -33,7 +36,12 @@ async function getReferrals() {
     .orderBy(desc(agentReferrals.created_at));
 }
 
-export default async function AdminReferralsPage() {
+type AdminReferralsPageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function AdminReferralsPage({ params }: AdminReferralsPageProps) {
+  const { locale } = await params;
   const referrals = await getReferrals();
 
   return (
@@ -61,30 +69,61 @@ export default async function AdminReferralsPage() {
                     <Badge>{referral.status ?? "new"}</Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
-                  <p>
-                    <span className="font-semibold">Created:</span>{" "}
-                    {referral.created_at
-                      ? new Date(referral.created_at).toLocaleString()
-                      : "-"}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Email:</span> {referral.email}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Visa interest:</span> {referral.visa_interest}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Passport country:</span>{" "}
-                    {referral.country_of_passport}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Current country:</span> {referral.current_country}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Preferred language:</span>{" "}
-                    {referral.preferred_language}
-                  </p>
+                <CardContent className="space-y-4">
+                  <form action={updateReferralStatus} className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                    <input type="hidden" name="referralId" value={referral.id} />
+                    <input type="hidden" name="locale" value={locale} />
+                    <div className="space-y-1">
+                      <label htmlFor={`status-${referral.id}`} className="text-sm font-semibold">
+                        Status
+                      </label>
+                      <select
+                        key={`${referral.id}-${referral.status ?? "new"}`}
+                        id={`status-${referral.id}`}
+                        name="status"
+                        defaultValue={referral.status ?? "new"}
+                        className="h-10 min-w-[180px] rounded-md border border-border bg-card px-3 text-sm"
+                      >
+                        {STATUS_OPTIONS.map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      type="submit"
+                      className="h-10 rounded-md border border-border px-4 text-sm font-medium transition hover:bg-muted"
+                    >
+                      Update status
+                    </button>
+                  </form>
+
+                  <div className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
+                    <p>
+                      <span className="font-semibold">Created:</span>{" "}
+                      {referral.created_at
+                        ? new Date(referral.created_at).toLocaleString()
+                        : "-"}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Email:</span> {referral.email}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Visa interest:</span> {referral.visa_interest}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Passport country:</span>{" "}
+                      {referral.country_of_passport}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Current country:</span> {referral.current_country}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Preferred language:</span>{" "}
+                      {referral.preferred_language}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
