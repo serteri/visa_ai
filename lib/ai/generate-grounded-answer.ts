@@ -1,63 +1,143 @@
-import { analyzeVisaMessage } from "@/lib/ai/visa-assistant";
 import type { RetrievedVisaContext } from "@/lib/ai/retrieve-visa-context";
 
-export type GroundedAction = {
+export type GroundedSourceItem = {
+  subclass: string;
+  visaName: string;
+  detailUrl: string;
+  sourceUrl: string | null;
+  pdfUrls: string[];
+};
+
+export type GroundedNextAction = {
   label: string;
   href: string;
 };
 
-export type GroundedSource = {
-  label: string;
-  href: string;
+export type GroundedAssistantResult = {
+  answer: string;
+  sources: GroundedSourceItem[];
+  nextActions: GroundedNextAction[];
 };
 
-export type GroundedAnswerResult = {
-  safeResponse: string;
-  nextActions: GroundedAction[];
-  visaDetailLinks: GroundedSource[];
-  pdfSnapshotLinks: GroundedSource[];
-  sourceLinks: GroundedSource[];
-};
-
-const SAFETY_PROMPT =
+const SYSTEM_PROMPT =
   "You are a controlled Australian visa information assistant. You are not a migration agent and do not provide migration advice or legal advice. You must answer only using the supplied database context. Do not use outside knowledge. Do not guess. If the answer is not in the context, say that the stored information does not contain enough detail and suggest speaking with a registered migration agent or Australian legal practitioner. Never say the user is eligible, qualifies, should apply, or will be approved. Use wording such as may be relevant, could be worth exploring, general information only.";
 
 const HARD_SAFETY_REPLY =
   "I can't determine eligibility or tell you what to apply for. I can summarise the stored pathway information and suggest what you may want to review with a registered migration agent.";
 
-function normalize(text: string): string {
-  return text.trim().toLowerCase();
+function normalize(message: string): string {
+  return message.trim().toLowerCase();
 }
 
-function isHardSafetyQuestion(message: string): boolean {
+function includesAny(text: string, tokens: string[]): boolean {
+  return tokens.some((token) => text.includes(token));
+}
+
+function isSafetyEligibilityQuestion(message: string): boolean {
   const lower = normalize(message);
-  return [
+  return includesAny(lower, [
     "am i eligible",
-    "will i get approved",
     "will i be approved",
+    "will i get approved",
     "should i apply",
-    "can i get a visa",
-    "what visa should i apply for",
-  ].some((keyword) => lower.includes(keyword));
+    "can i get this visa",
+    "can i get approved",
+  ]);
 }
 
-function appendGeneralInfo(text: string): string {
-  if (/this is general information only\./i.test(text)) {
-    return text;
+function addGeneralInfoSentence(answer: string): string {
+  const base = answer.trim();
+  if (/this is general information only\.?$/i.test(base)) {
+    return base;
   }
-  return `${text.trim()} This is general information only.`;
+  return `${base} This is general information only.`;
 }
 
-function hasUnsafePhrases(text: string): boolean {
-  const lower = normalize(text);
-  return ["you are eligible", "you qualify", "you should apply", "you will be approved"].some((phrase) =>
-    lower.includes(phrase)
-  );
+function sanitizeModelOutput(text: string): string {
+  const lower = text.toLowerCase();
+  const banned = ["you are eligible", "you qualify", "you should apply", "you will be approved"];
+  if (banned.some((term) => lower.includes(term))) {
+    return "The stored information does not contain enough detail for this question. Consider speaking with a registered migration agent or Australian legal practitioner.";
+  }
+  return text.trim();
 }
 
-function uniqueActions(actions: GroundedAction[]): GroundedAction[] {
+function buildLocaleFallback(locale: string): string {
+  if (locale === "tr") {
+    return "Saklanan bilgiler bu soru icin yeterli ayrinti icermiyor. Kayitli bir goc danismani veya Avustralya hukuk uygulayicisi ile gorusmeyi degerlendirin.";
+  }
+
+  return "The stored information does not contain enough detail for this question. Consider speaking with a registered migration agent or Australian legal practitioner.";
+}
+
+function extractMinPoints(pointsRules: unknown): string | null {
+  if (!pointsRules || typeof pointsRules !== "object") return null;
+  const obj = pointsRules as Record<string, unknown>;
+
+  const value =
+    (typeof obj.minimum_points_required === "number" && obj.minimum_points_required) ||
+    (typeof obj.minimum_points === "number" && obj.minimum_points) ||
+    (typeof obj.minimum_points_required === "string" && obj.minimum_points_required) ||
+    (typeof obj.minimum_points === "string" && obj.minimum_points);
+
+  if (!value) return null;
+  return String(value);
+}
+
+function deterministicAnswer(message: string, locale: string, context: RetrievedVisaContext): string {
+  if (context.length === 0) return buildLocaleFallback(locale);
+
+  const lower = normalize(message);
+  const asksEnglish = includesAny(lower, ["english", "ielts", "pte", "toefl"]);
+  const asksDocuments = includesAny(lower, ["document", "documents", "paper", "required"]);
+  const asksPoints = includesAny(lower, ["points", "point", "score"]);
+
+  const lines: string[] = [];
+
+  for (const record of context) {
+    if (asksEnglish) {
+      if (record.english_requirements) {
+        lines.push(`Subclass ${record.subclass} english requirements in stored data: ${JSON.stringify(record.english_requirements)}.`);
+      }
+      continue;
+    }
+
+    if (asksDocuments) {
+      if (record.documents_required.length > 0) {
+        lines.push(`Subclass ${record.subclass} documents in stored data: ${record.documents_required.join(", ")}.`);
+      }
+      continue;
+    }
+
+    if (asksPoints) {
+      const minPoints = extractMinPoints(record.points_test_rules);
+      if (minPoints) {
+        lines.push(`Subclass ${record.subclass} minimum points in stored data: ${minPoints}.`);
+      } else if (record.points_test_rules) {
+        lines.push(`Subclass ${record.subclass} has points test rules in stored data: ${JSON.stringify(record.points_test_rules)}.`);
+      }
+      continue;
+    }
+
+    const parts = [
+      record.purpose ? `purpose: ${record.purpose}` : null,
+      record.stay_period ? `stay period: ${record.stay_period}` : null,
+      record.cost ? `cost: ${record.cost}` : null,
+      record.work_rights ? `work rights: ${record.work_rights}` : null,
+    ].filter((part): part is string => Boolean(part));
+
+    if (parts.length > 0) {
+      lines.push(`Subclass ${record.subclass} (${record.visa_name}) ${parts.join("; ")}.`);
+    }
+  }
+
+  if (lines.length === 0) return buildLocaleFallback(locale);
+  return lines.join(" ");
+}
+
+function uniqueActions(actions: GroundedNextAction[]): GroundedNextAction[] {
   const seen = new Set<string>();
-  const result: GroundedAction[] = [];
+  const result: GroundedNextAction[] = [];
 
   for (const action of actions) {
     const key = `${action.label}|${action.href}`;
@@ -69,168 +149,74 @@ function uniqueActions(actions: GroundedAction[]): GroundedAction[] {
   return result;
 }
 
-function uniqueSources(sources: GroundedSource[]): GroundedSource[] {
-  const seen = new Set<string>();
-  const result: GroundedSource[] = [];
-
-  for (const source of sources) {
-    if (seen.has(source.href)) continue;
-    seen.add(source.href);
-    result.push(source);
-  }
-
-  return result;
-}
-
-function buildSourcePayload(locale: "en" | "tr", context: RetrievedVisaContext) {
-  const visaDetailLinks = uniqueSources(context.records.map((record) => ({
-    label: `Subclass ${record.subclass} - ${record.visaName}`,
-    href: `/${locale}/visas/${record.subclass}`,
-  })));
-
-  const pdfSnapshotLinks = uniqueSources(context.records.flatMap((record) =>
-    record.pdfSnapshotUrls.map((href, index) => ({
-      label: `Subclass ${record.subclass} PDF ${index + 1}`,
-      href,
-    }))
-  ));
-
-  const sourceLinks = uniqueSources(context.records.flatMap((record) =>
-    record.sourceUrls.map((href, index) => ({
-      label: `Subclass ${record.subclass} Source ${index + 1}`,
-      href,
-    }))
-  ));
-
-  return { visaDetailLinks, pdfSnapshotLinks, sourceLinks };
-}
-
-function buildDefaultActions(locale: "en" | "tr", context: RetrievedVisaContext): GroundedAction[] {
-  const actions: GroundedAction[] = [
-    {
-      label: "Speak with a registered migration agent",
-      href: `/${locale}/agent-referral`,
-    },
+function buildActions(locale: "en" | "tr", context: RetrievedVisaContext): GroundedNextAction[] {
+  const actions: GroundedNextAction[] = [
+    { label: "Speak with registered migration agent", href: `/${locale}/agent-referral` },
   ];
 
-  for (const record of context.records) {
-    actions.push({
-      label: `View visa details (${record.subclass})`,
-      href: `/${locale}/visas/${record.subclass}`,
-    });
+  for (const item of context) {
+    actions.push({ label: `View visa details (${item.subclass})`, href: `/${locale}/visas/${item.subclass}` });
   }
 
-  const hasPrPathway = context.records.some((record) => record.subclass === "189" || record.subclass === "190");
-  if (hasPrPathway) {
+  const hasPr = context.some((item) => item.subclass === "189" || item.subclass === "190");
+  const hasOcc = context.some((item) => item.subclass === "189" || item.subclass === "190" || item.subclass === "482");
+
+  if (hasPr) {
     actions.push({ label: "Points calculator", href: `/${locale}/points-calculator` });
-    actions.push({ label: "Occupation checker", href: `/${locale}/occupation-checker` });
   }
 
-  if (context.records.some((record) => record.subclass === "482")) {
+  if (hasOcc) {
     actions.push({ label: "Occupation checker", href: `/${locale}/occupation-checker` });
   }
 
   return uniqueActions(actions);
 }
 
-function summarizeDeterministically(message: string, locale: "en" | "tr", context: RetrievedVisaContext): string {
-  const lower = normalize(message);
-
-  if (context.records.length === 0) {
-    return locale === "tr"
-      ? "Saklanan bilgiler bu soru icin yeterli ayrinti icermiyor. Kayitli bir goc danismani veya Avustralya hukuk uygulayicisi ile gorusmeyi degerlendirin."
-      : "The stored information does not contain enough detail for this question. Consider speaking with a registered migration agent or Australian legal practitioner.";
-  }
-
-  const asksEnglish = ["english", "ielts", "pte", "toefl"].some((token) => lower.includes(token));
-  const asksDocuments = ["document", "documents", "paper", "papers", "required"].some((token) => lower.includes(token));
-  const asksPoints = ["point", "points", "score"].some((token) => lower.includes(token));
-
-  const lines: string[] = [];
-
-  for (const record of context.records) {
-    if (asksEnglish) {
-      if (record.englishRequirementsSummary) {
-        lines.push(`Subclass ${record.subclass}: ${record.englishRequirementsSummary}`);
-      }
-      continue;
-    }
-
-    if (asksDocuments) {
-      if (record.documentsRequired.length > 0) {
-        lines.push(`Subclass ${record.subclass} documents in stored data: ${record.documentsRequired.join(", ")}.`);
-      }
-      continue;
-    }
-
-    if (asksPoints) {
-      if (record.pointsTestRules && typeof record.pointsTestRules === "object") {
-        const pointsObj = record.pointsTestRules as Record<string, unknown>;
-        const minPoints =
-          (typeof pointsObj.minimum_points_required === "number" && pointsObj.minimum_points_required) ||
-          (typeof pointsObj.minimum_points === "number" && pointsObj.minimum_points);
-
-        if (minPoints) {
-          lines.push(`Subclass ${record.subclass} minimum points in stored data: ${minPoints}.`);
-        } else {
-          lines.push(`Subclass ${record.subclass} has points test rules in stored data.`);
-        }
-      }
-      continue;
-    }
-
-    const summaryParts = [
-      record.purpose ? `purpose: ${record.purpose}` : null,
-      record.stayPeriod ? `stay period: ${record.stayPeriod}` : null,
-      record.cost ? `cost: ${record.cost}` : null,
-      record.workRights ? `work rights: ${record.workRights}` : null,
-    ].filter((part): part is string => Boolean(part));
-
-    if (summaryParts.length > 0) {
-      lines.push(`Subclass ${record.subclass} (${record.visaName}) ${summaryParts.join("; ")}.`);
-    }
-  }
-
-  if (lines.length === 0) {
-    return locale === "tr"
-      ? "Saklanan bilgiler bu soru icin yeterli ayrinti icermiyor. Kayitli bir goc danismani veya Avustralya hukuk uygulayicisi ile gorusmeyi degerlendirin."
-      : "The stored information does not contain enough detail for this question. Consider speaking with a registered migration agent or Australian legal practitioner.";
-  }
-
-  return lines.join(" ");
+function buildSources(locale: "en" | "tr", context: RetrievedVisaContext): GroundedSourceItem[] {
+  return context.map((item) => ({
+    subclass: item.subclass,
+    visaName: item.visa_name,
+    detailUrl: `/${locale}/visas/${item.subclass}`,
+    sourceUrl: item.source_url,
+    pdfUrls: item.pdf_snapshot_urls,
+  }));
 }
 
-async function tryOpenAiAnswer(input: {
+function withSourceSubclassFooter(answer: string, context: RetrievedVisaContext): string {
+  if (context.length === 0) return answer;
+  const subclasses = Array.from(new Set(context.map((item) => item.subclass))).join(", ");
+  return `${answer.trim()} Source subclasses used: ${subclasses}.`;
+}
+
+async function generateWithOpenAi(input: {
   message: string;
-  locale: "en" | "tr";
+  locale: string;
   context: RetrievedVisaContext;
 }): Promise<string | null> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
+  if (!process.env.OPENAI_API_KEY) return null;
 
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
-
-  const contextPayload = JSON.stringify(input.context.records, null, 2);
+  const payload = JSON.stringify(input.context, null, 2);
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
       model,
       temperature: 0,
       messages: [
-        { role: "system", content: SAFETY_PROMPT },
+        { role: "system", content: SYSTEM_PROMPT },
         {
           role: "user",
           content: [
             `Locale: ${input.locale}`,
-            `User question: ${input.message}`,
-            "Stored database context:",
-            contextPayload,
-            "Provide a concise answer. Include the sentence: This is general information only.",
+            `User message: ${input.message}`,
+            "Database context JSON:",
+            payload,
+            "Answer only from this context. If missing, state stored information does not contain enough detail.",
           ].join("\n\n"),
         },
       ],
@@ -243,79 +229,48 @@ async function tryOpenAiAnswer(input: {
     choices?: Array<{ message?: { content?: string } }>;
   };
 
-  const content = data.choices?.[0]?.message?.content?.trim();
-  if (!content) return null;
-  if (hasUnsafePhrases(content)) return null;
-
-  return appendGeneralInfo(content);
+  const text = data.choices?.[0]?.message?.content?.trim();
+  if (!text) return null;
+  return sanitizeModelOutput(text);
 }
 
-export async function generateGroundedVisaAnswer(input: {
+export async function generateGroundedAnswer(input: {
   message: string;
-  locale: "en" | "tr";
+  locale: string;
   context: RetrievedVisaContext;
-}): Promise<GroundedAnswerResult> {
-  const { visaDetailLinks, pdfSnapshotLinks, sourceLinks } = buildSourcePayload(input.locale, input.context);
+}): Promise<GroundedAssistantResult> {
+  const locale = input.locale === "tr" ? "tr" : "en";
+  const sources = buildSources(locale, input.context);
+  const nextActions = buildActions(locale, input.context);
 
-  const fallbackRuleResult = analyzeVisaMessage(input.message);
-  const fallbackActions = fallbackRuleResult.nextActions.map((action) => ({
-    label: action.label,
-    href: action.href.replace("{locale}", input.locale),
-  }));
-
-  const nextActions = uniqueActions([
-    ...buildDefaultActions(input.locale, input.context),
-    ...fallbackActions,
-  ]);
-
-  if (isHardSafetyQuestion(input.message)) {
+  if (isSafetyEligibilityQuestion(input.message)) {
+    const safeAnswer = addGeneralInfoSentence(withSourceSubclassFooter(HARD_SAFETY_REPLY, input.context));
     return {
-      safeResponse: `${HARD_SAFETY_REPLY} This is general information only.`,
+      answer: safeAnswer,
+      sources,
       nextActions,
-      visaDetailLinks,
-      pdfSnapshotLinks,
-      sourceLinks,
     };
   }
 
-  const hasOpenAi = Boolean(process.env.OPENAI_API_KEY);
-
-  if (!hasOpenAi) {
-    const deterministic = summarizeDeterministically(input.message, input.locale, input.context);
-    const merged =
-      input.context.records.length === 0
-        ? `${fallbackRuleResult.safeResponse} ${deterministic}`
-        : deterministic;
-
+  if (input.context.length === 0) {
+    const fallback = addGeneralInfoSentence(buildLocaleFallback(locale));
     return {
-      safeResponse: appendGeneralInfo(merged),
+      answer: fallback,
+      sources,
       nextActions,
-      visaDetailLinks,
-      pdfSnapshotLinks,
-      sourceLinks,
     };
   }
 
-  let safeResponse: string | null = null;
-
-  if (input.context.records.length > 0) {
-    try {
-      safeResponse = await tryOpenAiAnswer(input);
-    } catch {
-      safeResponse = null;
-    }
+  let answer = await generateWithOpenAi(input);
+  if (!answer) {
+    answer = deterministicAnswer(input.message, locale, input.context);
   }
 
-  if (!safeResponse) {
-    const deterministic = summarizeDeterministically(input.message, input.locale, input.context);
-    safeResponse = appendGeneralInfo(deterministic);
-  }
+  const finalAnswer = addGeneralInfoSentence(withSourceSubclassFooter(answer, input.context));
 
   return {
-    safeResponse,
+    answer: finalAnswer,
+    sources,
     nextActions,
-    visaDetailLinks,
-    pdfSnapshotLinks,
-    sourceLinks,
   };
 }

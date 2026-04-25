@@ -5,25 +5,26 @@ import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
 
 export type RetrievedVisaRecord = {
   subclass: "500" | "482" | "189" | "190";
-  visaName: string;
+  visa_name: string;
+  category: string;
   purpose: string | null;
-  stayPeriod: string | null;
+  stay_period: string | null;
   cost: string | null;
-  workRights: string | null;
-  keyRequirements: string[];
-  documentsRequired: string[];
+  work_rights: string | null;
+  key_requirements: string[];
+  documents_required: string[];
+  application_steps: string[];
+  visa_conditions: string[];
   risks: string[];
-  englishRequirementsSummary: string | null;
-  pointsTestRules: unknown;
-  occupationRequirements: unknown;
-  sourceUrls: string[];
-  pdfSnapshotUrls: string[];
+  english_requirements: unknown;
+  financial_requirements: unknown;
+  occupation_requirements: unknown;
+  points_test_rules: unknown;
+  source_url: string | null;
+  pdf_snapshot_urls: string[];
 };
 
-export type RetrievedVisaContext = {
-  subclasses: Array<"500" | "482" | "189" | "190">;
-  records: RetrievedVisaRecord[];
-};
+export type RetrievedVisaContext = RetrievedVisaRecord[];
 
 const SUBCLASS_ORDER: Array<"500" | "482" | "189" | "190"> = ["500", "482", "189", "190"];
 
@@ -52,69 +53,43 @@ function detectSubclasses(message: string): Array<"500" | "482" | "189" | "190">
   }
 
   if (
-    ["study", "student", "course", "university", "college", "school"].some((token) =>
+    ["500", "student", "study", "course"].some((token) =>
       lower.includes(token)
     )
   ) {
     matches.add("500");
   }
 
-  if (["work", "sponsor", "sponsored", "employer", "job offer"].some((token) => lower.includes(token))) {
+  if (["482", "work", "sponsor", "employer"].some((token) => lower.includes(token))) {
     matches.add("482");
   }
 
-  if (["pr", "permanent", "skilled", "points", "migration", "migrate"].some((token) => lower.includes(token))) {
+  if (["189", "skilled independent", "pr", "permanent", "points"].some((token) => lower.includes(token))) {
     matches.add("189");
+  }
+
+  if (["190", "skilled nominated", "state nomination"].some((token) => lower.includes(token))) {
     matches.add("190");
   }
 
   return SUBCLASS_ORDER.filter((subclass) => matches.has(subclass));
 }
 
-function summarizeEnglishRequirements(value: unknown): string | null {
-  if (!value || typeof value !== "object") return null;
-  const data = value as Record<string, unknown>;
-  const chunks: string[] = [];
-
-  if (typeof data.summary === "string") {
-    chunks.push(data.summary);
-  }
-
-  if (Array.isArray(data.notes) && data.notes.length > 0) {
-    chunks.push(`Notes: ${data.notes.slice(0, 2).join(" ")}`);
-  }
-
-  if (Array.isArray(data.passport_exemptions) && data.passport_exemptions.length > 0) {
-    chunks.push(`Passport exemptions listed: ${data.passport_exemptions.join(", ")}`);
-  }
-
-  const dateBuckets = Object.keys(data).filter((key) => key.startsWith("tests_taken") || key.startsWith("test_taken"));
-  if (dateBuckets.length > 0) {
-    chunks.push(`Test score tables are available for: ${dateBuckets.join(", ")}.`);
-  }
-
-  if (chunks.length === 0) {
-    chunks.push(`English requirements data keys: ${Object.keys(data).join(", ")}`);
-  }
-
-  return chunks.join(" ");
-}
-
 export async function retrieveVisaContext(input: { message: string }): Promise<RetrievedVisaContext> {
   const subclasses = detectSubclasses(input.message);
 
-  if (subclasses.length === 0) {
-    return { subclasses, records: [] };
-  }
+  const visas =
+    subclasses.length > 0
+      ? await db
+          .select()
+          .from(visaTypes)
+          .where(inArray(visaTypes.subclass, subclasses))
+      : await db
+          .select()
+          .from(visaTypes)
+          .where(inArray(visaTypes.subclass, SUBCLASS_ORDER));
 
-  const visas = await db
-    .select()
-    .from(visaTypes)
-    .where(inArray(visaTypes.subclass, subclasses));
-
-  if (visas.length === 0) {
-    return { subclasses, records: [] };
-  }
+  if (visas.length === 0) return [];
 
   const visaIds = visas.map((visa) => visa.id);
 
@@ -166,19 +141,23 @@ export async function retrieveVisaContext(input: { message: string }): Promise<R
 
       return {
         subclass: visa.subclass as "500" | "482" | "189" | "190",
-        visaName: visa.visa_name,
+        visa_name: visa.visa_name,
+        category: visa.category,
         purpose: visa.purpose,
-        stayPeriod: visa.stay_period,
+        stay_period: visa.stay_period,
         cost: visa.cost,
-        workRights: visa.work_rights,
-        keyRequirements: toStringArray(structured?.key_requirements),
-        documentsRequired: toStringArray(structured?.documents_required),
+        work_rights: visa.work_rights,
+        key_requirements: toStringArray(structured?.key_requirements),
+        documents_required: toStringArray(structured?.documents_required),
+        application_steps: toStringArray(structured?.application_steps),
+        visa_conditions: toStringArray(structured?.visa_conditions),
         risks: toStringArray(structured?.risks),
-        englishRequirementsSummary: summarizeEnglishRequirements(structured?.english_requirements),
-        pointsTestRules: rawJson?.points_test_rules,
-        occupationRequirements: rawJson?.occupation_requirements,
-        sourceUrls,
-        pdfSnapshotUrls,
+        english_requirements: structured?.english_requirements ?? null,
+        financial_requirements: structured?.financial_requirements ?? null,
+        occupation_requirements: rawJson?.occupation_requirements ?? null,
+        points_test_rules: rawJson?.points_test_rules ?? null,
+        source_url: sourceUrls[0] ?? null,
+        pdf_snapshot_urls: pdfSnapshotUrls,
       };
     })
     .sort(
@@ -186,5 +165,5 @@ export async function retrieveVisaContext(input: { message: string }): Promise<R
         SUBCLASS_ORDER.indexOf(a.subclass) - SUBCLASS_ORDER.indexOf(b.subclass)
     );
 
-  return { subclasses, records };
+  return records;
 }

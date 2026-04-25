@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { runAssistantMessage } from "@/app/[locale]/assistant/actions";
-import type { GroundedAnswerResult } from "@/lib/ai/generate-grounded-answer";
+import type { GroundedAssistantResult } from "@/lib/ai/generate-grounded-answer";
 
 type AssistantMessage =
   | {
@@ -18,7 +18,7 @@ type AssistantMessage =
   | {
       role: "assistant";
       text: string;
-      result?: GroundedAnswerResult;
+      result?: GroundedAssistantResult;
     };
 
 const QUICK_PROMPTS = [
@@ -55,7 +55,7 @@ export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
         ...prev,
         {
           role: "assistant",
-          text: result.safeResponse,
+          text: result.answer,
           result,
         },
       ]);
@@ -144,52 +144,32 @@ export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
                           {isTr ? "Kullanilan kaynaklar" : "Sources used"}
                         </p>
 
-                        {message.result.visaDetailLinks.length > 0 && (
-                          <div className="mb-2 space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">
-                              {isTr ? "Vize detay sayfalari" : "Visa detail pages"}
+                        {message.result.sources.map((source) => (
+                          <div key={`${source.subclass}-${source.detailUrl}`} className="mb-3 rounded border border-border/60 p-2">
+                            <p className="text-xs font-semibold text-muted-foreground">
+                              Subclass {source.subclass} - {source.visaName}
                             </p>
-                            <div className="flex flex-wrap gap-2">
-                              {message.result.visaDetailLinks.map((link) => (
-                                <Button key={`${link.label}-${link.href}`} asChild size="sm" variant="outline">
-                                  <Link href={link.href}>{link.label}</Link>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <Button asChild size="sm" variant="outline">
+                                <Link href={source.detailUrl}>{isTr ? "Vize detayi" : "Visa details"}</Link>
+                              </Button>
+                              {source.sourceUrl && (
+                                <Button asChild size="sm" variant="outline">
+                                  <a href={source.sourceUrl} target="_blank" rel="noopener noreferrer">
+                                    {isTr ? "Resmi kaynak" : "Official source"}
+                                  </a>
                                 </Button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {message.result.pdfSnapshotLinks.length > 0 && (
-                          <div className="mb-2 space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">PDF snapshots</p>
-                            <div className="flex flex-wrap gap-2">
-                              {message.result.pdfSnapshotLinks.map((link) => (
-                                <Button key={`${link.label}-${link.href}`} asChild size="sm" variant="outline">
-                                  <a href={link.href} target="_blank" rel="noopener noreferrer">
-                                    {link.label}
+                              )}
+                              {source.pdfUrls.map((pdfUrl, index) => (
+                                <Button key={`${pdfUrl}-${index}`} asChild size="sm" variant="outline">
+                                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                                    PDF {index + 1}
                                   </a>
                                 </Button>
                               ))}
                             </div>
                           </div>
-                        )}
-
-                        {message.result.sourceLinks.length > 0 && (
-                          <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">
-                              {isTr ? "Resmi kaynaklar" : "Source links"}
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                              {message.result.sourceLinks.map((link) => (
-                                <Button key={`${link.label}-${link.href}`} asChild size="sm" variant="outline">
-                                  <a href={link.href} target="_blank" rel="noopener noreferrer">
-                                    {link.label}
-                                  </a>
-                                </Button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                        ))}
                       </div>
 
                       <div className="flex flex-wrap gap-2">
