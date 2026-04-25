@@ -14,6 +14,24 @@ export type ReferralFormState = {
 
 async function ensureAgentReferralsTable() {
   await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS agents (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      full_name TEXT NOT NULL,
+      business_name TEXT,
+      email TEXT NOT NULL,
+      phone TEXT,
+      marn TEXT,
+      languages JSONB,
+      specialties JSONB,
+      locations JSONB,
+      active BOOLEAN DEFAULT TRUE,
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+
+  await db.execute(sql`
     CREATE TABLE IF NOT EXISTS agent_referrals (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       full_name TEXT NOT NULL,
@@ -26,8 +44,36 @@ async function ensureAgentReferralsTable() {
       short_message TEXT NOT NULL,
       consent BOOLEAN NOT NULL,
       status TEXT DEFAULT 'new',
+      assigned_agent_id UUID,
+      assigned_at TIMESTAMP,
       created_at TIMESTAMP DEFAULT NOW()
     )
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE agent_referrals
+    ADD COLUMN IF NOT EXISTS assigned_agent_id UUID
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE agent_referrals
+    ADD COLUMN IF NOT EXISTS assigned_at TIMESTAMP
+  `);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'agent_referrals_assigned_agent_id_agents_id_fk'
+      ) THEN
+        ALTER TABLE agent_referrals
+        ADD CONSTRAINT agent_referrals_assigned_agent_id_agents_id_fk
+        FOREIGN KEY (assigned_agent_id) REFERENCES agents(id);
+      END IF;
+    END
+    $$;
   `);
 }
 

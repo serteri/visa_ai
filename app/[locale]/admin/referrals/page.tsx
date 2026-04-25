@@ -1,15 +1,33 @@
-import { desc, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { agentReferrals } from "@/db/schema";
+import { agentReferrals, agents } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { updateReferralStatus } from "@/app/[locale]/admin/referrals/actions";
+import { assignReferralToAgent, updateReferralStatus } from "@/app/[locale]/admin/referrals/actions";
 import { matchAgents } from "@/lib/agents/match-agents";
 
 const STATUS_OPTIONS = ["new", "contacted", "referred", "closed"] as const;
 
 async function ensureAgentReferralsTable() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS agents (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      full_name TEXT NOT NULL,
+      business_name TEXT,
+      email TEXT NOT NULL,
+      phone TEXT,
+      marn TEXT,
+      languages JSONB,
+      specialties JSONB,
+      locations JSONB,
+      active BOOLEAN DEFAULT TRUE,
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+
   await db.execute(sql`
     CREATE TABLE IF NOT EXISTS agent_referrals (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -23,8 +41,36 @@ async function ensureAgentReferralsTable() {
       short_message TEXT NOT NULL,
       consent BOOLEAN NOT NULL,
       status TEXT DEFAULT 'new',
+      assigned_agent_id UUID,
+      assigned_at TIMESTAMP,
       created_at TIMESTAMP DEFAULT NOW()
     )
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE agent_referrals
+    ADD COLUMN IF NOT EXISTS assigned_agent_id UUID
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE agent_referrals
+    ADD COLUMN IF NOT EXISTS assigned_at TIMESTAMP
+  `);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'agent_referrals_assigned_agent_id_agents_id_fk'
+      ) THEN
+        ALTER TABLE agent_referrals
+        ADD CONSTRAINT agent_referrals_assigned_agent_id_agents_id_fk
+        FOREIGN KEY (assigned_agent_id) REFERENCES agents(id);
+      END IF;
+    END
+    $$;
   `);
 }
 
@@ -53,9 +99,26 @@ export default async function AdminReferralsPage({ params }: AdminReferralsPageP
         currentCountry: referral.current_country,
       });
 
+      const assignedAgent = referral.assigned_agent_id
+        ? await db
+            .select({
+              id: agents.id,
+              full_name: agents.full_name,
+              business_name: agents.business_name,
+              email: agents.email,
+              phone: agents.phone,
+              marn: agents.marn,
+              active: agents.active,
+            })
+            .from(agents)
+            .where(eq(agents.id, referral.assigned_agent_id))
+            .limit(1)
+        : [];
+
       return {
         referral,
         matchedAgents: matchedAgents.slice(0, 3),
+        assignedAgent: assignedAgent[0] ?? null,
       };
     })
   );
@@ -77,7 +140,7 @@ export default async function AdminReferralsPage({ params }: AdminReferralsPageP
           </Card>
         ) : (
           <div className="space-y-4">
-            {referralsWithMatches.map(({ referral, matchedAgents }) => (
+            {referralsWithMatches.map(({ referral, matchedAgents, assignedAgent }) => (
               <Card key={referral.id}>
                 <CardHeader>
                   <div className="flex items-start justify-between gap-3">
@@ -142,16 +205,60 @@ export default async function AdminReferralsPage({ params }: AdminReferralsPageP
                   </div>
 
                   <div className="space-y-2 rounded-md border border-border/70 p-3">
+                    <p className="text-sm font-semibold">Assigned agent</p>
+                    {!assignedAgent ? (
+                      <p className="text-sm text-muted-foreground">No agent assigned yet.</p>
+                    ) : (
+                      <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-950">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p className="font-semibold">{assignedAgent.full_name}</p>
+                          <Badge variant={assignedAgent.active ? "default" : "outline"}>
+                            {assignedAgent.active ? "active" : "inactive"}
+                          </Badge>
+                        </div>
+                        <p>{assignedAgent.business_name || "-"}</p>
+                        <p>
+                          <span className="font-semibold">Email:</span> {assignedAgent.email}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Phone:</span> {assignedAgent.phone || "-"}
+                        </p>
+                        <p>
+                          <span className="font-semibold">MARN:</span> {assignedAgent.marn || "-"}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Assigned at:</span>{" "}
+                          {referral.assigned_at
+                            ? new Date(referral.assigned_at).toLocaleString()
+                            : "-"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 rounded-md border border-border/70 p-3">
                     <p className="text-sm font-semibold">Suggested agents</p>
                     {matchedAgents.length === 0 ? (
                       <p className="text-sm text-muted-foreground">No active matching agents found.</p>
                     ) : (
                       <div className="space-y-2">
                         {matchedAgents.map((agent) => (
-                          <div key={agent.agentId} className="rounded-md border border-border/70 p-3 text-sm">
+                          <div
+                            key={agent.agentId}
+                            className={`rounded-md border p-3 text-sm ${
+                              referral.assigned_agent_id === agent.agentId
+                                ? "border-emerald-300 bg-emerald-50"
+                                : "border-border/70"
+                            }`}
+                          >
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               <p className="font-semibold">{agent.fullName}</p>
-                              <Badge variant="secondary">Score: {agent.score}</Badge>
+                              <div className="flex items-center gap-2">
+                                {referral.assigned_agent_id === agent.agentId && (
+                                  <Badge>Assigned</Badge>
+                                )}
+                                <Badge variant="secondary">Score: {agent.score}</Badge>
+                              </div>
                             </div>
                             <p className="text-muted-foreground">{agent.businessName || "-"}</p>
                             <p>
@@ -166,6 +273,17 @@ export default async function AdminReferralsPage({ params }: AdminReferralsPageP
                             <p className="text-muted-foreground">
                               {agent.matchReasons.join(" • ")}
                             </p>
+                            <form action={assignReferralToAgent} className="pt-2">
+                              <input type="hidden" name="referralId" value={referral.id} />
+                              <input type="hidden" name="agentId" value={agent.agentId} />
+                              <input type="hidden" name="locale" value={locale} />
+                              <button
+                                type="submit"
+                                className="h-9 rounded-md border border-border px-3 text-sm font-medium transition hover:bg-muted"
+                              >
+                                Assign to this agent
+                              </button>
+                            </form>
                           </div>
                         ))}
                       </div>

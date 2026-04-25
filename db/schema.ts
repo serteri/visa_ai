@@ -59,6 +59,8 @@ export const agentReferrals = pgTable("agent_referrals", {
   short_message: text("short_message").notNull(),
   consent: boolean("consent").notNull(),
   status: text("status").default("new"),
+  assigned_agent_id: uuid("assigned_agent_id").references(() => agents.id),
+  assigned_at: timestamp("assigned_at"),
   created_at: timestamp("created_at").defaultNow(),
 });
 
