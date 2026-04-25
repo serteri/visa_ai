@@ -27,13 +27,9 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html lang={locale}>
-      <body className="min-h-full flex flex-col">
-        <LanguageProvider initialLocale={locale as Locale}>
-          <Header />
-          {children}
-        </LanguageProvider>
-      </body>
-    </html>
+    <LanguageProvider initialLocale={locale as Locale}>
+      <Header />
+      {children}
+    </LanguageProvider>
   );
 }
