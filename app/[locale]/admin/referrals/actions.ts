@@ -2,6 +2,7 @@
 
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { Resend } from "resend";
 
 import { db } from "@/db";
 import { agentReferrals, agents } from "@/db/schema";
@@ -12,6 +13,52 @@ type ReferralStatus = (typeof STATUS_VALUES)[number];
 
 function isReferralStatus(value: string): value is ReferralStatus {
   return STATUS_VALUES.includes(value as ReferralStatus);
+}
+
+async function sendAssignedReferralEmail(payload: {
+  agentEmail: string;
+  leadFullName: string;
+  leadEmail: string;
+  leadPhone: string;
+  countryOfPassport: string;
+  currentCountry: string;
+  preferredLanguage: string;
+  visaInterest: string;
+  shortMessage: string;
+  assignedDate: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    console.error("Assigned referral email skipped: RESEND_API_KEY is missing.");
+    return;
+  }
+
+  const resend = new Resend(apiKey);
+  const fromEmail = process.env.FROM_EMAIL || "Visa AI <onboarding@resend.dev>";
+
+  const lines = [
+    "A new visa referral lead has been assigned to you.",
+    "",
+    `lead full name: ${payload.leadFullName}`,
+    `lead email: ${payload.leadEmail}`,
+    `lead phone: ${payload.leadPhone || "-"}`,
+    `country of passport: ${payload.countryOfPassport}`,
+    `current country: ${payload.currentCountry}`,
+    `preferred language: ${payload.preferredLanguage}`,
+    `visa interest: ${payload.visaInterest}`,
+    `short message: ${payload.shortMessage}`,
+    `assigned date: ${payload.assignedDate}`,
+    "",
+    "This referral is for follow-up by a registered migration professional. The platform has not provided migration advice.",
+  ];
+
+  await resend.emails.send({
+    from: fromEmail,
+    to: [payload.agentEmail],
+    subject: "New visa referral assigned to you",
+    text: lines.join("\n"),
+  });
 }
 
 async function ensureAgentReferralsTable() {
@@ -120,7 +167,7 @@ export async function assignReferralToAgent(formData: FormData): Promise<void> {
   }
 
   const [agent] = await db
-    .select({ id: agents.id, active: agents.active })
+    .select({ id: agents.id, active: agents.active, email: agents.email })
     .from(agents)
     .where(eq(agents.id, agentId))
     .limit(1);
@@ -129,14 +176,52 @@ export async function assignReferralToAgent(formData: FormData): Promise<void> {
     return;
   }
 
+  const [referralForEmail] = await db
+    .select({
+      full_name: agentReferrals.full_name,
+      email: agentReferrals.email,
+      phone: agentReferrals.phone,
+      country_of_passport: agentReferrals.country_of_passport,
+      current_country: agentReferrals.current_country,
+      preferred_language: agentReferrals.preferred_language,
+      visa_interest: agentReferrals.visa_interest,
+      short_message: agentReferrals.short_message,
+    })
+    .from(agentReferrals)
+    .where(eq(agentReferrals.id, referralId))
+    .limit(1);
+
+  if (!referralForEmail) {
+    return;
+  }
+
+  const assignedAt = new Date();
+
   await db
     .update(agentReferrals)
     .set({
       assigned_agent_id: agentId,
-      assigned_at: new Date(),
+      assigned_at: assignedAt,
       status: "referred",
     })
     .where(eq(agentReferrals.id, referralId));
+
+  try {
+    await sendAssignedReferralEmail({
+      agentEmail: agent.email,
+      leadFullName: referralForEmail.full_name,
+      leadEmail: referralForEmail.email,
+      leadPhone: referralForEmail.phone ?? "",
+      countryOfPassport: referralForEmail.country_of_passport,
+      currentCountry: referralForEmail.current_country,
+      preferredLanguage: referralForEmail.preferred_language,
+      visaInterest: referralForEmail.visa_interest,
+      shortMessage: referralForEmail.short_message,
+      assignedDate: assignedAt.toISOString(),
+    });
+  } catch (error) {
+    console.error("Failed to send assigned referral email", error);
+  }
 
   revalidatePath(`/${locale}/admin/referrals`);
 }
