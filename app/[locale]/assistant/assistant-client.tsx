@@ -28,6 +28,49 @@ const QUICK_PROMPTS = [
   "I am a civil engineer and want to migrate",
 ] as const;
 
+function getVisaInterestForReferral(sources: GroundedAssistantResult["sources"]): string {
+  const subclasses = new Set(sources.map((source) => source.subclass));
+
+  if (subclasses.has("189") || subclasses.has("190")) {
+    return "189,190";
+  }
+
+  if (subclasses.has("500") && subclasses.size === 1) {
+    return "500";
+  }
+
+  if (subclasses.has("482") && subclasses.size === 1) {
+    return "482";
+  }
+
+  return "not sure";
+}
+
+function buildAssistantReferralHref(input: {
+  locale: "en" | "tr";
+  actionHref: string;
+  actionLabel: string;
+  latestUserQuestion: string;
+  sources: GroundedAssistantResult["sources"];
+}): string {
+  if (!input.actionHref.endsWith("/agent-referral")) {
+    return input.actionHref;
+  }
+
+  if (!/speak with registered migration agent/i.test(input.actionLabel)) {
+    return input.actionHref;
+  }
+
+  const visaInterest = getVisaInterestForReferral(input.sources);
+  const params = new URLSearchParams({
+    source: "assistant",
+    visaInterest,
+    message: input.latestUserQuestion,
+  });
+
+  return `/${input.locale}/agent-referral?${params.toString()}`;
+}
+
 export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
   const isTr = locale === "tr";
   const [input, setInput] = useState("");
@@ -173,11 +216,28 @@ export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
                       </div>
 
                       <div className="flex flex-wrap gap-2">
-                        {message.result.nextActions.map((action) => (
-                          <Button key={action.href + action.label} asChild size="sm" variant="secondary">
-                            <Link href={action.href}>{action.label}</Link>
-                          </Button>
-                        ))}
+                        {message.result.nextActions.map((action) => {
+                          const latestUserQuestion =
+                            messages
+                              .slice(0, idx)
+                              .reverse()
+                              .find((item): item is Extract<AssistantMessage, { role: "user" }> => item.role === "user")
+                              ?.text ?? "";
+
+                          const href = buildAssistantReferralHref({
+                            locale,
+                            actionHref: action.href,
+                            actionLabel: action.label,
+                            latestUserQuestion,
+                            sources: message.result?.sources ?? [],
+                          });
+
+                          return (
+                            <Button key={action.href + action.label} asChild size="sm" variant="secondary">
+                              <Link href={href}>{action.label}</Link>
+                            </Button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

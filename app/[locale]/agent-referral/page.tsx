@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,8 +19,14 @@ function ErrorText({ message }: { message?: string }) {
 
 export default function AgentReferralPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const locale = String(params.locale ?? "en");
   const isTr = locale === "tr";
+
+  const prefillSource = searchParams.get("source") ?? "";
+  const prefillVisaInterest = searchParams.get("visaInterest") ?? "";
+  const prefillMessage = searchParams.get("message") ?? "";
+  const startedFromAssistant = prefillSource === "assistant";
 
   const initialReferralFormState: ReferralFormState = {
     status: "idle",
@@ -53,6 +59,11 @@ export default function AgentReferralPage() {
           <Badge variant="secondary">{text.badge}</Badge>
           <h1 className="text-3xl font-bold sm:text-4xl">{text.title}</h1>
           <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">{text.subtitle}</p>
+          {startedFromAssistant && (
+            <p className="rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-muted-foreground">
+              This request was started from the AI Visa Assistant.
+            </p>
+          )}
         </div>
 
         <Card>
@@ -117,12 +128,18 @@ export default function AgentReferralPage() {
                   <label htmlFor="visaInterest" className="text-sm font-medium">
                     {isTr ? "Ilgilendiginiz vize" : "Visa interest"}
                   </label>
-                  <select id="visaInterest" name="visaInterest" className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm">
+                  <select
+                    id="visaInterest"
+                    name="visaInterest"
+                    defaultValue={prefillVisaInterest}
+                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm"
+                  >
                     <option value="">{isTr ? "Seciniz" : "Select"}</option>
                     <option value="500">500</option>
                     <option value="482">482</option>
                     <option value="189">189</option>
                     <option value="190">190</option>
+                    <option value="189,190">189/190</option>
                     <option value="not sure">not sure</option>
                   </select>
                   <ErrorText message={state.errors?.visaInterest} />
@@ -132,7 +149,13 @@ export default function AgentReferralPage() {
                   <label htmlFor="shortMessage" className="text-sm font-medium">
                     {isTr ? "Kisa mesaj" : "Short message"}
                   </label>
-                  <textarea id="shortMessage" name="shortMessage" rows={4} className="w-full rounded-md border border-border bg-card p-3 text-sm" />
+                  <textarea
+                    id="shortMessage"
+                    name="shortMessage"
+                    rows={4}
+                    defaultValue={prefillMessage}
+                    className="w-full rounded-md border border-border bg-card p-3 text-sm"
+                  />
                   <ErrorText message={state.errors?.shortMessage} />
                 </div>
               </div>
