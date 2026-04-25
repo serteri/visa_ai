@@ -742,6 +742,76 @@ function NominationOrSponsorshipSection({ data }: { data: unknown }) {
   );
 }
 
+function RelationshipRequirementsSection({ data }: { data: unknown }) {
+  if (!data || typeof data !== "object") {
+    return <p className="text-sm text-muted-foreground">No data available.</p>;
+  }
+
+  const info = data as Record<string, unknown>;
+  const spouse = info.spouse as string | undefined;
+  const deFacto = info.de_facto as string | undefined;
+  const evidenceCategories = info.evidence_categories as string[] | undefined;
+
+  return (
+    <div className="space-y-4">
+      {spouse && (
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">Spouse: </span>
+          {spouse}
+        </p>
+      )}
+      {deFacto && (
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">De facto: </span>
+          {deFacto}
+        </p>
+      )}
+      {evidenceCategories && evidenceCategories.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Evidence categories</p>
+          <ul className="space-y-1">
+            {evidenceCategories.map((item, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PathwaySection({ data }: { data: unknown }) {
+  if (!data || typeof data !== "object") {
+    return <p className="text-sm text-muted-foreground">No data available.</p>;
+  }
+
+  const pathway = data as Record<string, unknown>;
+  const stage1 = pathway.stage_1 as Record<string, unknown> | undefined;
+  const stage2 = pathway.stage_2 as Record<string, unknown> | undefined;
+
+  return (
+    <div className="space-y-4">
+      {stage1 && (
+        <div className="rounded-md border border-border/70 p-3">
+          <p className="text-sm font-semibold">Stage 1</p>
+          <p className="text-sm text-muted-foreground">Subclass: {String(stage1.subclass ?? "-")}</p>
+          <p className="text-sm text-muted-foreground">Type: {String(stage1.type ?? "-")}</p>
+        </div>
+      )}
+      {stage2 && (
+        <div className="rounded-md border border-border/70 p-3">
+          <p className="text-sm font-semibold">Stage 2</p>
+          <p className="text-sm text-muted-foreground">Subclass: {String(stage2.subclass ?? "-")}</p>
+          <p className="text-sm text-muted-foreground">Type: {String(stage2.type ?? "-")}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 type PageProps = {
   params: Promise<{ locale: string; subclass: string }>;
 };
@@ -826,6 +896,26 @@ export default async function VisaDetailsPage({ params }: PageProps) {
                 data={(structured.raw_json as Record<string, unknown>).nomination_or_sponsorship}
               />
             ),
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "relationship_requirements" in structured.raw_json
+      ? [
+          {
+            title: "Relationship requirements",
+            content: (
+              <RelationshipRequirementsSection
+                data={(structured.raw_json as Record<string, unknown>).relationship_requirements}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "pathway" in structured.raw_json
+      ? [
+          {
+            title: "Pathway",
+            content: <PathwaySection data={(structured.raw_json as Record<string, unknown>).pathway} />,
           },
         ]
       : []),

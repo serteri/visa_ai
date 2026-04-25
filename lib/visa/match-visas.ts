@@ -185,5 +185,44 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
     }
   }
 
+  // Partner/spouse relationship intent → subclass 820_801
+  const wantsPartnerPathway =
+    hasWord(normalised, "partner") ||
+    hasWord(normalised, "spouse") ||
+    hasWord(normalised, "marriage") ||
+    hasWord(normalised, "boyfriend") ||
+    hasWord(normalised, "girlfriend") ||
+    normalised.includes("de facto") ||
+    hasWord(normalised, "relationship");
+
+  if (wantsPartnerPathway) {
+    const [row820801] = await db
+      .select({
+        subclass: visaTypes.subclass,
+        visa_name: visaTypes.visa_name,
+        purpose: visaTypes.purpose,
+        source_url: visaTypes.source_url,
+        pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+      })
+      .from(visaTypes)
+      .leftJoin(sourceSnapshots, eq(sourceSnapshots.visa_type_id, visaTypes.id))
+      .where(eq(visaTypes.subclass, "820_801"))
+      .limit(1);
+
+    if (row820801) {
+      results.push({
+        subclass: row820801.subclass,
+        visa_name: row820801.visa_name,
+        purpose: row820801.purpose,
+        match_reason:
+          "You mentioned a relationship or partner. This visa allows partners of Australian citizens or residents to live in Australia and later obtain permanent residency.",
+        confidence: "high",
+        source_url: row820801.source_url,
+        pdf_snapshot_url: row820801.pdf_snapshot_url ?? null,
+        is_database_record: true,
+      });
+    }
+  }
+
   return results;
 }

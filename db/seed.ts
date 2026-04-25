@@ -53,6 +53,12 @@ const SWR_491_PDF_URL =
   "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant_25April2026.pdf";
 const SWR_491_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
+const PARTNER_820_801_SOURCE_URL =
+  "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore";
+const PARTNER_820_801_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/%28Subclasses%20820%20and%20801%29%20Partner%20visas%20%28apply%20in%20Australia%29/Subclass%20820%20Partner%20visa%20%28temporary%29/Subclass%20820%20Partner%20visa%20%28temporary%29_26April2026.pdf";
+const PARTNER_820_801_CAPTURED_AT = new Date("2026-04-26T00:00:00.000Z");
+
 const studentVisa500Data = {
   visa_name: "Student visa",
   subclass: "500",
@@ -913,6 +919,96 @@ const skilledWorkRegional491Data = {
   },
 };
 
+const partnerVisa820801Data = {
+  subclass: "820_801",
+  visa_name: "Partner visa (onshore)",
+  stream: "Apply in Australia",
+  category: "Family Migration",
+  purpose:
+    "Allow the partner or spouse of an Australian citizen, permanent resident or eligible New Zealand citizen to live in Australia temporarily and then permanently.",
+  stay_period: "Temporary until permanent visa is decided, then permanent residency",
+  cost: "From AUD 9,365 (covers both stages)",
+  work_rights: "Full work rights in Australia",
+  source_url: PARTNER_820_801_SOURCE_URL,
+  last_checked: new Date("2026-04-26"),
+  reviewed_status: "needs_review",
+  key_requirements: [
+    "Be in a genuine relationship with an eligible partner",
+    "Have an approved sponsor",
+    "Apply while in Australia",
+    "Be 18 or older in most cases",
+    "Meet relationship requirements",
+    "Meet health requirements",
+    "Meet character requirements",
+    "Have no outstanding government debt",
+    "Sign Australian Values Statement",
+  ],
+  documents_required: [
+    "Passport and identity documents",
+    "Birth certificate",
+    "Proof of relationship",
+    "Marriage certificate (if married)",
+    "De facto evidence (12 months or exemption)",
+    "Relationship history statement",
+    "Joint financial documents",
+    "Joint household evidence",
+    "Social evidence",
+    "Form 888 witness statements",
+    "Commitment evidence",
+    "Police certificates",
+    "Health examinations",
+    "Sponsor documents",
+  ],
+  application_steps: [
+    "Prepare documents",
+    "Apply online via ImmiAccount",
+    "Pay visa fee",
+    "Submit sponsorship",
+    "Attach documents",
+    "Complete health and character checks",
+    "Wait for 820 decision",
+    "After ~2 years, apply for 801",
+    "Provide additional documents",
+    "Receive permanent visa decision",
+  ],
+  visa_conditions: [
+    "Maintain genuine relationship",
+    "Follow Australian laws",
+    "Meet visa conditions",
+    "Remain eligible for permanent stage",
+  ],
+  risks: [
+    "Relationship breakdown may affect outcome",
+    "Weak evidence may cause delays or refusal",
+    "Missing documents may invalidate application",
+    "Sponsor must be approved",
+    "Long processing times",
+    "Must remain lawful",
+    "Switching visas may break pathway",
+  ],
+  english_requirements: {
+    status: "not_required",
+  },
+  financial_requirements: {
+    status: "not_primary_requirement",
+  },
+  relationship_requirements: {
+    spouse: "Must be legally married",
+    de_facto: "Usually 12 months unless exemption",
+    evidence_categories: ["financial", "household", "social", "commitment"],
+  },
+  pathway: {
+    stage_1: {
+      subclass: "820",
+      type: "temporary",
+    },
+    stage_2: {
+      subclass: "801",
+      type: "permanent",
+    },
+  },
+};
+
 async function createTables() {
   try {
     console.log("📊 Creating tables if they don't exist...");
@@ -1456,6 +1552,99 @@ async function seed() {
         .values({ visa_type_id: upsertedVisa491.id, ...snapshot491 })
         .returning({ id: sourceSnapshots.id });
       console.log("✅ Inserted PDF snapshot 491:", inserted.id, "|", snapshot491.notes);
+    }
+
+    // ── Subclass 820_801: Partner visa (onshore) ───────────────────────────
+
+    const visa820801Payload = {
+      subclass: partnerVisa820801Data.subclass,
+      visa_name: partnerVisa820801Data.visa_name,
+      category: "Family Migration",
+      purpose:
+        "Allows partners of Australian citizens or residents to live in Australia temporarily and transition to permanent residency.",
+      stay_period: "Temporary (820) leading to permanent (801)",
+      cost: "From AUD 9,365",
+      work_rights: "Full work rights",
+      source_url: partnerVisa820801Data.source_url,
+      last_checked: toIsoDate(partnerVisa820801Data.last_checked),
+      reviewed_status: partnerVisa820801Data.reviewed_status,
+      updated_at: new Date(),
+    };
+
+    const [upsertedVisa820801] = await db
+      .insert(visaTypes)
+      .values(visa820801Payload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visa820801Payload,
+      })
+      .returning();
+
+    console.log("✅ Upserted visa type 820_801:", upsertedVisa820801.id);
+
+    const structured820801Payload = {
+      visa_type_id: upsertedVisa820801.id,
+      key_requirements: partnerVisa820801Data.key_requirements,
+      documents_required: partnerVisa820801Data.documents_required,
+      application_steps: partnerVisa820801Data.application_steps,
+      visa_conditions: partnerVisa820801Data.visa_conditions,
+      risks: partnerVisa820801Data.risks,
+      english_requirements: partnerVisa820801Data.english_requirements,
+      financial_requirements: partnerVisa820801Data.financial_requirements,
+      raw_json: {
+        ...partnerVisa820801Data,
+        last_checked: toIsoDate(partnerVisa820801Data.last_checked),
+      },
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredData820801] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedVisa820801.id))
+      .limit(1);
+
+    if (existingStructuredData820801) {
+      const [updated] = await db
+        .update(visaStructuredData)
+        .set(structured820801Payload)
+        .where(eq(visaStructuredData.id, existingStructuredData820801.id))
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Updated structured data 820_801:", updated.id);
+    } else {
+      const [inserted] = await db
+        .insert(visaStructuredData)
+        .values(structured820801Payload)
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Inserted structured data 820_801:", inserted.id);
+    }
+
+    const existingSnapshots820801 = await db
+      .select({ id: sourceSnapshots.id, pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, upsertedVisa820801.id));
+
+    const snapshot820801 = {
+      source_url: PARTNER_820_801_SOURCE_URL,
+      pdf_snapshot_url: PARTNER_820_801_PDF_URL,
+      captured_at: PARTNER_820_801_CAPTURED_AT,
+      notes: "Partner visa 820/801 snapshot",
+    };
+
+    const existingSnapshot820801 = existingSnapshots820801.find(
+      (s) => s.pdf_snapshot_url === snapshot820801.pdf_snapshot_url
+    );
+
+    if (existingSnapshot820801) {
+      console.log("✅ PDF snapshot 820_801 already exists:", existingSnapshot820801.id);
+    } else {
+      const [inserted] = await db
+        .insert(sourceSnapshots)
+        .values({ visa_type_id: upsertedVisa820801.id, ...snapshot820801 })
+        .returning({ id: sourceSnapshots.id });
+      console.log("✅ Inserted PDF snapshot 820_801:", inserted.id, "|", snapshot820801.notes);
     }
 
     console.log("🎉 Database seed completed successfully!");

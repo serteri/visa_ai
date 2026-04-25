@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
 
 export type RetrievedVisaRecord = {
-  subclass: "500" | "482" | "189" | "190" | "491";
+  subclass: "500" | "482" | "189" | "190" | "491" | "820_801";
   visa_name: string;
   category: string;
   purpose: string | null;
@@ -48,17 +48,20 @@ function unique(values: string[]): string[] {
   return Array.from(new Set(values));
 }
 
-const SUBCLASS_ORDER: Array<"500" | "482" | "189" | "190" | "491"> = [
+const SUBCLASS_ORDER: Array<"500" | "482" | "189" | "190" | "491" | "820_801"> = [
   "500",
   "482",
   "189",
   "190",
   "491",
+  "820_801",
 ];
 
-function detectSubclasses(message: string): Array<"500" | "482" | "189" | "190" | "491"> {
+function detectSubclasses(
+  message: string
+): Array<"500" | "482" | "189" | "190" | "491" | "820_801"> {
   const lower = normalize(message);
-  const matches = new Set<"500" | "482" | "189" | "190" | "491">();
+  const matches = new Set<"500" | "482" | "189" | "190" | "491" | "820_801">();
 
   const explicit = lower.match(/\b(500|482|189|190|491)\b/g) ?? [];
   for (const value of explicit) {
@@ -117,6 +120,24 @@ function detectSubclasses(message: string): Array<"500" | "482" | "189" | "190" 
     matches.add("189");
     matches.add("190");
     matches.add("491");
+  }
+
+  const mentionsPartnerVisa =
+    hasPhrase(lower, "partner visa") ||
+    hasPhrase(lower, "spouse visa") ||
+    hasPhrase(lower, "marriage visa") ||
+    hasPhrase(lower, "de facto visa") ||
+    hasWord(lower, "partner") ||
+    hasWord(lower, "spouse") ||
+    hasWord(lower, "marriage") ||
+    hasWord(lower, "boyfriend") ||
+    hasWord(lower, "girlfriend") ||
+    hasPhrase(lower, "de facto") ||
+    hasWord(lower, "relationship") ||
+    hasPhrase(lower, "820_801");
+
+  if (mentionsPartnerVisa) {
+    matches.add("820_801");
   }
 
   return SUBCLASS_ORDER.filter((subclass) => matches.has(subclass));
@@ -187,7 +208,7 @@ export async function retrieveVisaContext(input: { message: string }): Promise<R
       );
 
       return {
-        subclass: visa.subclass as "500" | "482" | "189" | "190" | "491",
+        subclass: visa.subclass as "500" | "482" | "189" | "190" | "491" | "820_801",
         visa_name: visa.visa_name,
         category: visa.category,
         purpose: visa.purpose,

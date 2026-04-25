@@ -43,6 +43,7 @@ function localizeActionLabel(label: string, locale: "en" | "tr"): string {
     "View subclass 189 details": "189 vize detaylarini goruntule",
     "View subclass 190 details": "190 vize detaylarini goruntule",
     "View subclass 491 details": "491 vize detaylarini goruntule",
+    "View partner visa details": "Partner vize detaylarini goruntule",
     "View visa details (500)": "500 vize detaylarini goruntule",
     "View visa details (482)": "482 vize detaylarini goruntule",
     "View visa details (189)": "189 vize detaylarini goruntule",

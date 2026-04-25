@@ -155,6 +155,14 @@ function buildActions(locale: "en" | "tr", context: RetrievedVisaContext): Groun
   ];
 
   for (const item of context) {
+    if (item.subclass === "820_801") {
+      actions.push({
+        label: "View partner visa details",
+        href: `/${locale}/visas/${item.subclass}`,
+      });
+      continue;
+    }
+
     actions.push({
       label: `View subclass ${item.subclass} details`,
       href: `/${locale}/visas/${item.subclass}`,
