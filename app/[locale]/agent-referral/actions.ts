@@ -1,6 +1,7 @@
 "use server";
 
 import { sql } from "drizzle-orm";
+import { Resend } from "resend";
 
 import { db } from "@/db";
 import { agentReferrals } from "@/db/schema";
@@ -32,6 +33,51 @@ async function ensureAgentReferralsTable() {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function sendReferralNotificationEmail(payload: {
+  fullName: string;
+  email: string;
+  phone: string;
+  countryOfPassport: string;
+  currentCountry: string;
+  preferredLanguage: string;
+  visaInterest: string;
+  shortMessage: string;
+  submittedDate: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const notificationEmail = process.env.REFERRAL_NOTIFICATION_EMAIL;
+
+  if (!apiKey || !notificationEmail) {
+    console.error(
+      "Referral notification email skipped: RESEND_API_KEY or REFERRAL_NOTIFICATION_EMAIL is missing."
+    );
+    return;
+  }
+
+  const resend = new Resend(apiKey);
+
+  const bodyLines = [
+    "A new visa referral lead has been submitted.",
+    "",
+    `full name: ${payload.fullName}`,
+    `email: ${payload.email}`,
+    `phone: ${payload.phone || "-"}`,
+    `country of passport: ${payload.countryOfPassport}`,
+    `current country: ${payload.currentCountry}`,
+    `preferred language: ${payload.preferredLanguage}`,
+    `visa interest: ${payload.visaInterest}`,
+    `short message: ${payload.shortMessage}`,
+    `submitted date: ${payload.submittedDate}`,
+  ];
+
+  await resend.emails.send({
+    from: "Visa AI <onboarding@resend.dev>",
+    to: [notificationEmail],
+    subject: "New visa referral lead",
+    text: bodyLines.join("\n"),
+  });
 }
 
 export async function submitAgentReferral(
@@ -73,7 +119,9 @@ export async function submitAgentReferral(
 
   await ensureAgentReferralsTable();
 
-  await db.insert(agentReferrals).values({
+  const [insertedReferral] = await db
+    .insert(agentReferrals)
+    .values({
     full_name: fullName,
     email,
     phone: phone || null,
@@ -84,7 +132,28 @@ export async function submitAgentReferral(
     short_message: shortMessage,
     consent,
     status: "new",
-  });
+    })
+    .returning({
+      created_at: agentReferrals.created_at,
+    });
+
+  try {
+    await sendReferralNotificationEmail({
+      fullName,
+      email,
+      phone,
+      countryOfPassport,
+      currentCountry,
+      preferredLanguage,
+      visaInterest,
+      shortMessage,
+      submittedDate: insertedReferral?.created_at
+        ? new Date(insertedReferral.created_at).toISOString()
+        : new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Failed to send referral notification email", error);
+  }
 
   return {
     status: "success",
