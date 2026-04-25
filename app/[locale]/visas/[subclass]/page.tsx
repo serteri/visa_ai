@@ -866,6 +866,9 @@ export default async function VisaDetailsPage({ params }: PageProps) {
           <Button asChild>
             <Link href={`/${locale}/checker`}>Check your pathway</Link>
           </Button>
+          <Button asChild variant="secondary">
+            <Link href={`/${locale}/agent-referral`}>Speak with a registered migration agent</Link>
+          </Button>
         </div>
 
       </section>

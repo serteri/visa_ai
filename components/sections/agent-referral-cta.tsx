@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,8 @@ import { useTranslation } from "@/contexts/language-context";
 
 export function AgentReferralCta() {
   const { t } = useTranslation();
+  const params = useParams();
+  const locale = String(params.locale ?? "en");
 
   return (
     <Card className="bg-gradient-to-br from-[#0b4a6f] via-[#0e5d8a] to-[#0f6ea3] text-white">
@@ -19,7 +22,7 @@ export function AgentReferralCta() {
           {t("referral.text")}
         </p>
         <Button asChild variant="secondary" className="w-full sm:w-auto">
-          <Link href="/results">{t("referral.cta")}</Link>
+          <Link href={`/${locale}/agent-referral`}>{t("referral.cta")}</Link>
         </Button>
       </CardContent>
     </Card>

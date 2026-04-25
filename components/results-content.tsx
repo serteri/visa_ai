@@ -51,6 +51,10 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
     locale === "tr"
       ? "Mesleginizi kontrol edin"
       : "Check your occupation";
+  const agentCtaText =
+    locale === "tr"
+      ? "Kayitli bir goc danismani ile gorusun"
+      : "Speak with a registered migration agent";
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -156,6 +160,9 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
               <Link href={`/${locale}/occupation-checker`}>{occupationCtaText}</Link>
             </Button>
           )}
+          <Button asChild variant="ghost">
+            <Link href={`/${locale}/agent-referral`}>{agentCtaText}</Link>
+          </Button>
         </div>
 
         <AgentReferralCta />

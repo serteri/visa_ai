@@ -399,7 +399,7 @@ export default function PointsCalculatorPage() {
               <Link href={`/${locale}/visas/190`}>{content.cta190}</Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link href={`/${locale}/results`}>{content.ctaAgent}</Link>
+              <Link href={`/${locale}/agent-referral`}>{content.ctaAgent}</Link>
             </Button>
           </CardContent>
         </Card>

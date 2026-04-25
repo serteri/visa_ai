@@ -46,7 +46,7 @@ export default function OccupationCheckerPage() {
     ctaPoints: isTr ? "Puan hesaplayiciyi ac" : "Open points calculator",
     ctaAgent: isTr
       ? "Kayitli bir goc danismani ile gorusun"
-      : "Speak with registered migration agent",
+      : "Speak with a registered migration agent",
     compliance: isTr
       ? "Bu meslek kontrol araci yalnizca genel bilgi saglar. Meslek uygunlugu resmi meslek listelerine, degerlendirme kurumlarina ve eyalet veya bolge adaylik kriterlerine bagli olabilir."
       : "This occupation checker provides general information only. Occupation eligibility can depend on official occupation lists, assessing authorities, and state or territory nomination criteria.",
@@ -156,7 +156,7 @@ export default function OccupationCheckerPage() {
               <Link href={`/${locale}/points-calculator`}>{copy.ctaPoints}</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link href={`/${locale}/results`}>{copy.ctaAgent}</Link>
+              <Link href={`/${locale}/agent-referral`}>{copy.ctaAgent}</Link>
             </Button>
           </CardContent>
         </Card>

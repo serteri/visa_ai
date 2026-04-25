@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, jsonb, date } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, jsonb, date, boolean } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const visaTypes = pgTable("visa_types", {
@@ -45,6 +45,21 @@ export const sourceSnapshots = pgTable("source_snapshots", {
   captured_at: timestamp("captured_at").defaultNow(),
   content_hash: text("content_hash"),
   notes: text("notes"),
+});
+
+export const agentReferrals = pgTable("agent_referrals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  full_name: text("full_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  country_of_passport: text("country_of_passport").notNull(),
+  current_country: text("current_country").notNull(),
+  preferred_language: text("preferred_language").notNull(),
+  visa_interest: text("visa_interest").notNull(),
+  short_message: text("short_message").notNull(),
+  consent: boolean("consent").notNull(),
+  status: text("status").default("new"),
+  created_at: timestamp("created_at").defaultNow(),
 });
 
 // Relations
