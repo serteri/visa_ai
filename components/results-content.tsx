@@ -47,6 +47,10 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
     locale === "tr"
       ? "Nitelikli göç puanınızı tahmin edin"
       : "Estimate your skilled migration points";
+  const occupationCtaText =
+    locale === "tr"
+      ? "Mesleginizi kontrol edin"
+      : "Check your occupation";
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -145,6 +149,11 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
           {showPointsCalculatorCta && (
             <Button asChild variant="secondary">
               <Link href={`/${locale}/points-calculator`}>{pointsCtaText}</Link>
+            </Button>
+          )}
+          {hasSkilledPrVisa && (
+            <Button asChild variant="secondary">
+              <Link href={`/${locale}/occupation-checker`}>{occupationCtaText}</Link>
             </Button>
           )}
         </div>
