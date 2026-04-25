@@ -62,6 +62,22 @@ export const agentReferrals = pgTable("agent_referrals", {
   created_at: timestamp("created_at").defaultNow(),
 });
 
+export const agents = pgTable("agents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  full_name: text("full_name").notNull(),
+  business_name: text("business_name"),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  marn: text("marn"),
+  languages: jsonb("languages"),
+  specialties: jsonb("specialties"),
+  locations: jsonb("locations"),
+  active: boolean("active").default(true),
+  notes: text("notes"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const visaTypesRelations = relations(visaTypes, ({ one, many }) => ({
   structured_data: many(visaStructuredData),
