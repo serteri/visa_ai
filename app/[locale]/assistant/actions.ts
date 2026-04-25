@@ -1,14 +1,37 @@
 "use server";
 
 import {
-  analyzeVisaMessage,
-  type VisaAssistantResult,
-} from "@/lib/ai/visa-assistant";
+  generateGroundedVisaAnswer,
+  type GroundedAnswerResult,
+} from "@/lib/ai/generate-grounded-answer";
+import { retrieveVisaContext } from "@/lib/ai/retrieve-visa-context";
 
 type RunAssistantInput = {
   locale: "en" | "tr";
   message: string;
 };
+
+export async function runAssistantMessage(
+  input: RunAssistantInput
+): Promise<GroundedAnswerResult> {
+  const locale = input.locale === "tr" ? "tr" : "en";
+  const message = input.message.trim();
+
+  const context = await retrieveVisaContext({ message });
+  const grounded = await generateGroundedVisaAnswer({
+    message,
+    locale,
+    context,
+  });
+
+  return {
+    ...grounded,
+    nextActions: grounded.nextActions.map((action) => ({
+      label: localizeActionLabel(action.label, locale),
+      href: action.href,
+    })),
+  };
+}
 
 function localizeActionLabel(label: string, locale: "en" | "tr"): string {
   if (locale !== "tr") return label;
@@ -21,24 +44,13 @@ function localizeActionLabel(label: string, locale: "en" | "tr"): string {
     "View 189 details": "189 detaylarini goruntule",
     "View 190 details": "190 detaylarini goruntule",
     "Estimate points": "Puani tahmin et",
+    "View visa details (500)": "500 vize detaylarini goruntule",
+    "View visa details (482)": "482 vize detaylarini goruntule",
+    "View visa details (189)": "189 vize detaylarini goruntule",
+    "View visa details (190)": "190 vize detaylarini goruntule",
+    "Points calculator": "Puan hesaplayici",
+    "Occupation checker": "Meslek kontrol araci",
   };
 
   return map[label] ?? label;
-}
-
-export async function runAssistantMessage(
-  input: RunAssistantInput
-): Promise<VisaAssistantResult> {
-  const locale = input.locale === "tr" ? "tr" : "en";
-  const message = input.message.trim();
-
-  const result = analyzeVisaMessage(message);
-
-  return {
-    ...result,
-    nextActions: result.nextActions.map((action) => ({
-      label: localizeActionLabel(action.label, locale),
-      href: action.href.replace("{locale}", locale),
-    })),
-  };
 }

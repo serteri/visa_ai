@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { runAssistantMessage } from "@/app/[locale]/assistant/actions";
-import type { VisaAssistantResult } from "@/lib/ai/visa-assistant";
+import type { GroundedAnswerResult } from "@/lib/ai/generate-grounded-answer";
 
 type AssistantMessage =
   | {
@@ -18,7 +18,7 @@ type AssistantMessage =
   | {
       role: "assistant";
       text: string;
-      result?: VisaAssistantResult;
+      result?: GroundedAnswerResult;
     };
 
 const QUICK_PROMPTS = [
@@ -139,35 +139,58 @@ export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
 
                   {message.role === "assistant" && message.result && (
                     <div className="mt-3 space-y-3">
-                      <div className="rounded-md border border-border/70 bg-background/70 p-2 text-xs text-muted-foreground">
-                        <p>
-                          <span className="font-semibold">Intent:</span> {message.result.intent}
+                      <div className="rounded-md border border-border/70 bg-background/70 p-3 text-sm">
+                        <p className="mb-2 font-semibold">
+                          {isTr ? "Kullanilan kaynaklar" : "Sources used"}
                         </p>
-                        {message.result.occupation && (
-                          <p>
-                            <span className="font-semibold">occupation:</span> {message.result.occupation}
-                          </p>
+
+                        {message.result.visaDetailLinks.length > 0 && (
+                          <div className="mb-2 space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {isTr ? "Vize detay sayfalari" : "Visa detail pages"}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {message.result.visaDetailLinks.map((link) => (
+                                <Button key={`${link.label}-${link.href}`} asChild size="sm" variant="outline">
+                                  <Link href={link.href}>{link.label}</Link>
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
                         )}
-                        {message.result.hasSponsor !== undefined && (
-                          <p>
-                            <span className="font-semibold">hasSponsor:</span>{" "}
-                            {String(message.result.hasSponsor)}
-                          </p>
+
+                        {message.result.pdfSnapshotLinks.length > 0 && (
+                          <div className="mb-2 space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">PDF snapshots</p>
+                            <div className="flex flex-wrap gap-2">
+                              {message.result.pdfSnapshotLinks.map((link) => (
+                                <Button key={`${link.label}-${link.href}`} asChild size="sm" variant="outline">
+                                  <a href={link.href} target="_blank" rel="noopener noreferrer">
+                                    {link.label}
+                                  </a>
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {message.result.sourceLinks.length > 0 && (
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {isTr ? "Resmi kaynaklar" : "Source links"}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {message.result.sourceLinks.map((link) => (
+                                <Button key={`${link.label}-${link.href}`} asChild size="sm" variant="outline">
+                                  <a href={link.href} target="_blank" rel="noopener noreferrer">
+                                    {link.label}
+                                  </a>
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
                         )}
                       </div>
-
-                      {message.result.suggestedVisas.length > 0 && (
-                        <div className="grid gap-2 sm:grid-cols-2">
-                          {message.result.suggestedVisas.map((visa) => (
-                            <div key={visa.subclass} className="rounded-md border border-border/70 bg-card p-3">
-                              <p className="text-sm font-semibold">
-                                Subclass {visa.subclass} - {visa.title}
-                              </p>
-                              <p className="text-xs text-muted-foreground">{visa.reason}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
 
                       <div className="flex flex-wrap gap-2">
                         {message.result.nextActions.map((action) => (
