@@ -197,41 +197,50 @@ async function generateWithOpenAi(input: {
 
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
   const payload = JSON.stringify(input.context, null, 2);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: [
-            `Locale: ${input.locale}`,
-            `User message: ${input.message}`,
-            "Database context JSON:",
-            payload,
-            "Answer only from this context. If missing, state stored information does not contain enough detail.",
-          ].join("\n\n"),
-        },
-      ],
-    }),
-  });
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        temperature: 0,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          {
+            role: "user",
+            content: [
+              `Locale: ${input.locale}`,
+              `User message: ${input.message}`,
+              "Database context JSON:",
+              payload,
+              "Answer only from this context. If missing, state stored information does not contain enough detail.",
+            ].join("\n\n"),
+          },
+        ],
+      }),
+    });
 
-  if (!response.ok) return null;
+    if (!response.ok) return null;
 
-  const data = (await response.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
-  };
+    const data = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
 
-  const text = data.choices?.[0]?.message?.content?.trim();
-  if (!text) return null;
-  return sanitizeModelOutput(text);
+    const text = data.choices?.[0]?.message?.content?.trim();
+    if (!text) return null;
+    return sanitizeModelOutput(text);
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function generateGroundedAnswer(input: {

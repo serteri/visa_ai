@@ -32,6 +32,15 @@ function normalize(text: string): string {
   return text.trim().toLowerCase();
 }
 
+function hasWord(text: string, word: string): boolean {
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\b${escaped}\\b`, "i").test(text);
+}
+
+function hasPhrase(text: string, phrase: string): boolean {
+  return text.includes(phrase.toLowerCase());
+}
+
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is string => typeof item === "string");
@@ -52,23 +61,30 @@ function detectSubclasses(message: string): Array<"500" | "482" | "189" | "190">
     }
   }
 
-  if (
-    ["500", "student", "study", "course"].some((token) =>
-      lower.includes(token)
-    )
-  ) {
+  const mentions500 = ["500", "student", "study", "course"].some((token) => hasWord(lower, token));
+  if (mentions500) {
     matches.add("500");
   }
 
-  if (["482", "work", "sponsor", "employer"].some((token) => lower.includes(token))) {
+  const mentions482 = ["482", "work", "sponsor", "employer"].some((token) => hasWord(lower, token));
+  if (mentions482) {
     matches.add("482");
   }
 
-  if (["189", "skilled independent", "pr", "permanent", "points"].some((token) => lower.includes(token))) {
+  const mentions189Explicit = hasWord(lower, "189") || hasPhrase(lower, "skilled independent");
+  const mentions190Explicit = hasWord(lower, "190") || hasPhrase(lower, "skilled nominated") || hasPhrase(lower, "state nomination");
+  const mentionsPrGeneric = hasWord(lower, "pr") || hasWord(lower, "permanent") || hasWord(lower, "points");
+
+  if (mentions189Explicit) {
     matches.add("189");
   }
 
-  if (["190", "skilled nominated", "state nomination"].some((token) => lower.includes(token))) {
+  if (mentions190Explicit) {
+    matches.add("190");
+  }
+
+  if (mentionsPrGeneric && !mentions189Explicit && !mentions190Explicit) {
+    matches.add("189");
     matches.add("190");
   }
 
