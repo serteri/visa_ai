@@ -5,6 +5,7 @@ import { agentReferrals } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { updateReferralStatus } from "@/app/[locale]/admin/referrals/actions";
+import { matchAgents } from "@/lib/agents/match-agents";
 
 const STATUS_OPTIONS = ["new", "contacted", "referred", "closed"] as const;
 
@@ -43,6 +44,21 @@ type AdminReferralsPageProps = {
 export default async function AdminReferralsPage({ params }: AdminReferralsPageProps) {
   const { locale } = await params;
   const referrals = await getReferrals();
+  const referralsWithMatches = await Promise.all(
+    referrals.map(async (referral) => {
+      const matchedAgents = await matchAgents({
+        visaInterest: referral.visa_interest,
+        preferredLanguage: referral.preferred_language,
+        countryOfPassport: referral.country_of_passport,
+        currentCountry: referral.current_country,
+      });
+
+      return {
+        referral,
+        matchedAgents: matchedAgents.slice(0, 3),
+      };
+    })
+  );
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -61,7 +77,7 @@ export default async function AdminReferralsPage({ params }: AdminReferralsPageP
           </Card>
         ) : (
           <div className="space-y-4">
-            {referrals.map((referral) => (
+            {referralsWithMatches.map(({ referral, matchedAgents }) => (
               <Card key={referral.id}>
                 <CardHeader>
                   <div className="flex items-start justify-between gap-3">
@@ -123,6 +139,37 @@ export default async function AdminReferralsPage({ params }: AdminReferralsPageP
                       <span className="font-semibold">Preferred language:</span>{" "}
                       {referral.preferred_language}
                     </p>
+                  </div>
+
+                  <div className="space-y-2 rounded-md border border-border/70 p-3">
+                    <p className="text-sm font-semibold">Suggested agents</p>
+                    {matchedAgents.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No active matching agents found.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {matchedAgents.map((agent) => (
+                          <div key={agent.agentId} className="rounded-md border border-border/70 p-3 text-sm">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <p className="font-semibold">{agent.fullName}</p>
+                              <Badge variant="secondary">Score: {agent.score}</Badge>
+                            </div>
+                            <p className="text-muted-foreground">{agent.businessName || "-"}</p>
+                            <p>
+                              <span className="font-semibold">Email:</span> {agent.email}
+                            </p>
+                            <p>
+                              <span className="font-semibold">Phone:</span> {agent.phone || "-"}
+                            </p>
+                            <p>
+                              <span className="font-semibold">MARN:</span> {agent.marn || "-"}
+                            </p>
+                            <p className="text-muted-foreground">
+                              {agent.matchReasons.join(" • ")}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
