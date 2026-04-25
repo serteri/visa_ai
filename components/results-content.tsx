@@ -35,7 +35,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
   const { t } = useTranslation();
   const normalisedGoal = goal.toLowerCase();
   const hasSkilledPrVisa = matchedVisas.some(
-    (visa) => visa.subclass === "189" || visa.subclass === "190"
+    (visa) => visa.subclass === "189" || visa.subclass === "190" || visa.subclass === "491"
   );
   const showPointsCalculatorCta =
     hasSkilledPrVisa ||

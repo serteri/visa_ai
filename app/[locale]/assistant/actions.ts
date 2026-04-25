@@ -38,6 +38,11 @@ function localizeActionLabel(label: string, locale: "en" | "tr"): string {
 
   const map: Record<string, string> = {
     "Speak with registered migration agent": "Kayitli bir goc danismani ile gorusun",
+    "View subclass 500 details": "500 vize detaylarini goruntule",
+    "View subclass 482 details": "482 vize detaylarini goruntule",
+    "View subclass 189 details": "189 vize detaylarini goruntule",
+    "View subclass 190 details": "190 vize detaylarini goruntule",
+    "View subclass 491 details": "491 vize detaylarini goruntule",
     "View visa details (500)": "500 vize detaylarini goruntule",
     "View visa details (482)": "482 vize detaylarini goruntule",
     "View visa details (189)": "189 vize detaylarini goruntule",

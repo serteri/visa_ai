@@ -155,13 +155,24 @@ function buildActions(locale: "en" | "tr", context: RetrievedVisaContext): Groun
   ];
 
   for (const item of context) {
-    actions.push({ label: `View visa details (${item.subclass})`, href: `/${locale}/visas/${item.subclass}` });
+    actions.push({
+      label: `View subclass ${item.subclass} details`,
+      href: `/${locale}/visas/${item.subclass}`,
+    });
   }
 
-  const hasPr = context.some((item) => item.subclass === "189" || item.subclass === "190");
-  const hasOcc = context.some((item) => item.subclass === "189" || item.subclass === "190" || item.subclass === "482");
+  const hasSkilled = context.some(
+    (item) => item.subclass === "189" || item.subclass === "190" || item.subclass === "491"
+  );
+  const hasOcc = context.some(
+    (item) =>
+      item.subclass === "189" ||
+      item.subclass === "190" ||
+      item.subclass === "491" ||
+      item.subclass === "482"
+  );
 
-  if (hasPr) {
+  if (hasSkilled) {
     actions.push({ label: "Points calculator", href: `/${locale}/points-calculator` });
   }
 

@@ -10,6 +10,11 @@ function normaliseGoal(goal: string): string {
   return goal.toLowerCase();
 }
 
+function hasWord(text: string, word: string): boolean {
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\b${escaped}\\b`, "i").test(text);
+}
+
 export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
   const { goal, hasSponsor } = input;
   const normalised = normaliseGoal(goal);
@@ -89,8 +94,15 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
     }
   }
 
-  // Permanent migration → subclasses 189 and 190
-  if (normalised.includes("migrate") || normalised.includes("permanent") || normalised.includes("pr") || normalised.includes("skilled migration")) {
+  // Skilled/PR/regional migration → subclasses 189, 190, and 491
+  const wantsSkilledMigration =
+    hasWord(normalised, "regional") ||
+    normalised.includes("skilled migration") ||
+    hasWord(normalised, "pr") ||
+    hasWord(normalised, "permanent") ||
+    hasWord(normalised, "migrate");
+
+  if (wantsSkilledMigration) {
     const [row189] = await db
       .select({
         subclass: visaTypes.subclass,
@@ -117,6 +129,19 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
       .where(eq(visaTypes.subclass, "190"))
       .limit(1);
 
+    const [row491] = await db
+      .select({
+        subclass: visaTypes.subclass,
+        visa_name: visaTypes.visa_name,
+        purpose: visaTypes.purpose,
+        source_url: visaTypes.source_url,
+        pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+      })
+      .from(visaTypes)
+      .leftJoin(sourceSnapshots, eq(sourceSnapshots.visa_type_id, visaTypes.id))
+      .where(eq(visaTypes.subclass, "491"))
+      .limit(1);
+
     if (row189) {
       results.push({
         subclass: row189.subclass,
@@ -141,6 +166,20 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         confidence: "medium",
         source_url: row190.source_url,
         pdf_snapshot_url: row190.pdf_snapshot_url ?? null,
+        is_database_record: true,
+      });
+    }
+
+    if (row491) {
+      results.push({
+        subclass: row491.subclass,
+        visa_name: row491.visa_name,
+        purpose: row491.purpose,
+        match_reason:
+          "You selected skilled or regional migration. This provisional regional skilled pathway may be relevant if you have an eligible occupation, nomination or eligible relative sponsorship, enough points and are willing to live, work and study in a designated regional area.",
+        confidence: "medium",
+        source_url: row491.source_url,
+        pdf_snapshot_url: row491.pdf_snapshot_url ?? null,
         is_database_record: true,
       });
     }

@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
 
 export type RetrievedVisaRecord = {
-  subclass: "500" | "482" | "189" | "190";
+  subclass: "500" | "482" | "189" | "190" | "491";
   visa_name: string;
   category: string;
   purpose: string | null;
@@ -25,8 +25,6 @@ export type RetrievedVisaRecord = {
 };
 
 export type RetrievedVisaContext = RetrievedVisaRecord[];
-
-const SUBCLASS_ORDER: Array<"500" | "482" | "189" | "190"> = ["500", "482", "189", "190"];
 
 function normalize(text: string): string {
   return text.trim().toLowerCase();
@@ -50,13 +48,27 @@ function unique(values: string[]): string[] {
   return Array.from(new Set(values));
 }
 
-function detectSubclasses(message: string): Array<"500" | "482" | "189" | "190"> {
-  const lower = normalize(message);
-  const matches = new Set<"500" | "482" | "189" | "190">();
+const SUBCLASS_ORDER: Array<"500" | "482" | "189" | "190" | "491"> = [
+  "500",
+  "482",
+  "189",
+  "190",
+  "491",
+];
 
-  const explicit = lower.match(/\b(500|482|189|190)\b/g) ?? [];
+function detectSubclasses(message: string): Array<"500" | "482" | "189" | "190" | "491"> {
+  const lower = normalize(message);
+  const matches = new Set<"500" | "482" | "189" | "190" | "491">();
+
+  const explicit = lower.match(/\b(500|482|189|190|491)\b/g) ?? [];
   for (const value of explicit) {
-    if (value === "500" || value === "482" || value === "189" || value === "190") {
+    if (
+      value === "500" ||
+      value === "482" ||
+      value === "189" ||
+      value === "190" ||
+      value === "491"
+    ) {
       matches.add(value);
     }
   }
@@ -73,7 +85,21 @@ function detectSubclasses(message: string): Array<"500" | "482" | "189" | "190">
 
   const mentions189Explicit = hasWord(lower, "189") || hasPhrase(lower, "skilled independent");
   const mentions190Explicit = hasWord(lower, "190") || hasPhrase(lower, "skilled nominated") || hasPhrase(lower, "state nomination");
-  const mentionsPrGeneric = hasWord(lower, "pr") || hasWord(lower, "permanent") || hasWord(lower, "points");
+  const mentions491Explicit =
+    hasWord(lower, "491") ||
+    hasPhrase(lower, "skilled work regional") ||
+    hasPhrase(lower, "designated regional area") ||
+    hasPhrase(lower, "regional migration") ||
+    hasPhrase(lower, "family sponsor") ||
+    hasPhrase(lower, "eligible relative sponsor") ||
+    hasPhrase(lower, "eligible relative sponsorship") ||
+    hasWord(lower, "regional");
+  const mentionsPrGeneric =
+    hasWord(lower, "pr") ||
+    hasWord(lower, "permanent") ||
+    hasWord(lower, "points") ||
+    hasWord(lower, "migrate") ||
+    hasPhrase(lower, "skilled migration");
 
   if (mentions189Explicit) {
     matches.add("189");
@@ -83,9 +109,14 @@ function detectSubclasses(message: string): Array<"500" | "482" | "189" | "190">
     matches.add("190");
   }
 
+  if (mentions491Explicit) {
+    matches.add("491");
+  }
+
   if (mentionsPrGeneric && !mentions189Explicit && !mentions190Explicit) {
     matches.add("189");
     matches.add("190");
+    matches.add("491");
   }
 
   return SUBCLASS_ORDER.filter((subclass) => matches.has(subclass));
@@ -156,7 +187,7 @@ export async function retrieveVisaContext(input: { message: string }): Promise<R
       );
 
       return {
-        subclass: visa.subclass as "500" | "482" | "189" | "190",
+        subclass: visa.subclass as "500" | "482" | "189" | "190" | "491",
         visa_name: visa.visa_name,
         category: visa.category,
         purpose: visa.purpose,

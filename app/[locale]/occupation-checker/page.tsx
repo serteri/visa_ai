@@ -32,8 +32,8 @@ export default function OccupationCheckerPage() {
       ? "Bu meslek mevcut dahili nitelikli meslek listesinde gorunuyor."
       : "This occupation appears in the current internal skilled occupation list.",
     foundB: isTr
-      ? "Ilgili yollar subclass 189 ve/veya subclass 190 olabilir."
-      : "Relevant pathways may include subclass 189 and/or subclass 190.",
+      ? "Ilgili yollar subclass 189, subclass 190 ve/veya subclass 491 olabilir."
+      : "Relevant pathways may include subclass 189, subclass 190 and/or subclass 491.",
     noMatch: isTr
       ? "Mevcut dahili listede eslesme bulunamadi. Bu durum meslegin uygun olmadigi anlamina gelmez."
       : "No match found in the current internal list. This does not mean the occupation is not eligible.",
@@ -43,6 +43,7 @@ export default function OccupationCheckerPage() {
     pathwaysLabel: isTr ? "Ilgili yollar" : "Relevant pathways",
     cta189: isTr ? "Subclass 189 detaylari" : "View subclass 189",
     cta190: isTr ? "Subclass 190 detaylari" : "View subclass 190",
+    cta491: isTr ? "Subclass 491 detaylari" : "View subclass 491",
     ctaPoints: isTr ? "Puan hesaplayiciyi ac" : "Open points calculator",
     ctaAgent: isTr
       ? "Kayitli bir goc danismani ile gorusun"
@@ -151,6 +152,9 @@ export default function OccupationCheckerPage() {
             </Button>
             <Button asChild variant="outline">
               <Link href={`/${locale}/visas/190`}>{copy.cta190}</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/${locale}/visas/491`}>{copy.cta491}</Link>
             </Button>
             <Button asChild variant="secondary">
               <Link href={`/${locale}/points-calculator`}>{copy.ctaPoints}</Link>

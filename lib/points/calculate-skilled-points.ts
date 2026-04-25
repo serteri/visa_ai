@@ -80,6 +80,7 @@ export function calculateSkilledPoints(input: SkilledPointsInput): SkilledPoints
     regionalStudy;
 
   const stateNomination190 = input.hasStateNomination190 ? 5 : 0;
+  const nominationOrSponsorship491 = input.hasNominationOrSponsorship491 ? 15 : 0;
 
   const baseTotal =
     age +
@@ -93,6 +94,7 @@ export function calculateSkilledPoints(input: SkilledPointsInput): SkilledPoints
     minimumThreshold: MINIMUM_THRESHOLD,
     total189: baseTotal,
     total190: baseTotal + stateNomination190,
+    total491: baseTotal + nominationOrSponsorship491,
     employmentCapApplied,
     age45OrOlder: input.age === "45_plus",
     breakdown: {
@@ -113,6 +115,7 @@ export function calculateSkilledPoints(input: SkilledPointsInput): SkilledPoints
       },
       partner,
       stateNomination190,
+      nominationOrSponsorship491,
     },
   };
 }

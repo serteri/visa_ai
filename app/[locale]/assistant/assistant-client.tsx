@@ -31,6 +31,11 @@ const QUICK_PROMPTS = [
 function getVisaInterestForReferral(sources: GroundedAssistantResult["sources"]): string {
   const subclasses = new Set(sources.map((source) => source.subclass));
 
+  if (subclasses.has("491")) {
+    const skilled = ["189", "190", "491"].filter((item) => subclasses.has(item));
+    return skilled.length > 0 ? skilled.join(",") : "491";
+  }
+
   if (subclasses.has("189") || subclasses.has("190")) {
     return "189,190";
   }

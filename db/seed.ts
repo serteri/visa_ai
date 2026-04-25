@@ -47,6 +47,12 @@ const SN_190_PDF_URL =
   "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20190%20Skilled%20Nominated%20visa/Subclass%20190%20Skilled%20Nominated%20visa_25April2026.pdf";
 const SN_190_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
 
+const SWR_491_SOURCE_URL =
+  "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491/main-applicant";
+const SWR_491_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant_25April2026.pdf";
+const SWR_491_CAPTURED_AT = new Date("2026-04-25T00:00:00.000Z");
+
 const studentVisa500Data = {
   visa_name: "Student visa",
   subclass: "500",
@@ -675,6 +681,238 @@ const skilledNominated190Data = {
   },
 };
 
+const skilledWorkRegional491Data = {
+  subclass: "491",
+  visa_name: "Skilled Work Regional (Provisional) visa",
+  stream: "Main applicant",
+  category: "Regional Skilled Migration",
+  purpose: "Live, work and study in a designated regional area of Australia as a skilled worker.",
+  stay_period: "5 years",
+  cost: "From AUD 4,910 for the main applicant. Additional charges may apply for family members and second instalment charges.",
+  work_rights: "Live, work and study in a designated regional area of Australia.",
+  source_url: SWR_491_SOURCE_URL,
+  last_checked: new Date("2026-04-25"),
+  reviewed_status: "needs_review",
+  key_requirements: [
+    "Be nominated by a state or territory government agency or sponsored by an eligible relative",
+    "Have an occupation on a relevant skilled occupation list",
+    "Have a suitable skills assessment for the occupation",
+    "Be invited to apply",
+    "Satisfy the points test",
+    "Score at least 65 points",
+    "Be aged under 45 when invited to apply",
+    "Have at least Competent English at time of invitation",
+    "Live, work and study in a designated regional area of Australia if granted",
+    "Meet health and character requirements",
+    "Have paid back any debt to the Australian Government",
+    "Sign the Australian Values Statement if 18 or older",
+  ],
+  documents_required: [
+    "Expression of Interest through SkillSelect",
+    "Invitation to apply",
+    "Suitable skills assessment",
+    "Identity documents",
+    "Competent English evidence",
+    "Evidence supporting points claims",
+    "Character documents and police certificates if required",
+    "Health examination results if requested",
+    "Partner documents if applicable",
+    "Dependent child documents if applicable",
+    "Sponsor declaration if sponsored by eligible relative",
+    "Proof sponsor is an eligible relative",
+    "Proof sponsor is 18 or older",
+    "Proof sponsor is Australian citizen, permanent resident, or eligible New Zealand citizen",
+    "Proof sponsor usually resides in a designated area of Australia",
+    "Translated documents for non-English documents",
+  ],
+  application_steps: [
+    "Submit an Expression of Interest through SkillSelect",
+    "Select Skilled Work Regional (Provisional) visa subclass 491 invited pathway",
+    "Indicate whether seeking state or territory nomination or eligible relative sponsorship",
+    "Wait for possible nomination, sponsorship invitation, or invitation round",
+    "Receive an invitation to apply if selected",
+    "Apply online through ImmiAccount within 60 calendar days of invitation",
+    "Attach documents and pay the first visa application charge",
+    "Respond to requests for more information if requested",
+    "Complete health examinations or biometrics if requested",
+    "Stay lawful while application is processed",
+    "Wait for written visa outcome",
+  ],
+  visa_conditions: [
+    "Temporary provisional visa valid for 5 years",
+    "Must live, work and study in designated regional areas of Australia",
+    "Travel to and from Australia while the visa is valid",
+    "Time spent outside Australia does not extend the visa",
+    "May apply for Permanent Residence (Skilled Regional) subclass 191 after 3 years if eligible",
+    "Cannot extend this visa",
+    "Family members who hold the visa must also live, work and study in designated regional areas",
+    "Must comply with all visa conditions and Australian laws",
+  ],
+  risks: [
+    "No invitation means the applicant cannot apply",
+    "A score below 65 points means the applicant will not be invited",
+    "Invitation points may be higher than 65 depending on EOI claims",
+    "Age must be under 45 at time of invitation",
+    "Skills assessment must be suitable and valid",
+    "Occupation must be on the relevant skilled occupation list",
+    "Nomination or sponsorship must be valid",
+    "If nomination is withdrawn, visa may not be granted",
+    "Applicants must live, work and study only in designated regional areas if granted",
+    "Subclass 491 holders generally cannot apply for certain permanent visas until holding the 491 for 3 years",
+    "Incomplete or incorrect information may delay or affect the application",
+  ],
+  english_requirements: {
+    required_level: "Competent English",
+    summary:
+      "At the time of invitation, the primary applicant must have at least Competent English. Family members aged 18 or older must have Functional English or may need to pay a second instalment visa application charge.",
+    competent_english: {
+      passport_exemptions: [
+        "Canada",
+        "New Zealand",
+        "Republic of Ireland",
+        "United Kingdom of Great Britain and Northern Ireland",
+        "United States of America",
+      ],
+      tests_taken_on_or_after_2025_08_07: {
+        C1_Advanced: { listening: 163, reading: 163, writing: 170, speaking: 179 },
+        CELPIP_General: { listening: 7, reading: 7, writing: 7, speaking: 7 },
+        IELTS_Academic: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        IELTS_General_Training: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        MET: { listening: 56, reading: 55, writing: 57, speaking: 48 },
+        OET: { listening: 290, reading: 310, writing: 290, speaking: 330 },
+        LANGUAGECERT_Academic: { listening: 57, reading: 60, writing: 64, speaking: 70 },
+        PTE_Academic: { listening: 47, reading: 48, writing: 51, speaking: 54 },
+        TOEFL_iBT: {
+          listening: 16,
+          reading: 16,
+          writing: 19,
+          speaking: 19,
+          note: "Applicant must select Taking TOEFL for Australia when registering.",
+        },
+      },
+      tests_taken_on_or_before_2025_08_06: {
+        C1_Advanced: { listening: 169, reading: 169, writing: 169, speaking: 169 },
+        IELTS: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        OET: { listening: "B", reading: "B", writing: "B", speaking: "B" },
+        PTE_Academic: { listening: 50, reading: 50, writing: 50, speaking: 50 },
+        TOEFL_iBT: {
+          listening: 12,
+          reading: 13,
+          writing: 21,
+          speaking: 21,
+          note:
+            "TOEFL iBT tests from 26 July 2023 to 4 May 2024 were not approved for Australian visa purposes.",
+        },
+      },
+    },
+    functional_english_for_family_members: {
+      summary:
+        "Family members aged 18 or older must show Functional English or may need to pay a second instalment charge.",
+      passport_exemptions: [
+        "Canada",
+        "New Zealand",
+        "Republic of Ireland",
+        "United Kingdom of Great Britain and Northern Ireland",
+        "United States of America",
+      ],
+      tests_taken_on_or_after_2025_08_07: {
+        CELPIP_General: { overall: 5 },
+        IELTS_Academic: { average: 4.5 },
+        IELTS_General_Training: { average: 4.5 },
+        MET: { overall: 38 },
+        OET: { overall: 1020 },
+        LANGUAGECERT_Academic: { overall: 38 },
+        PTE_Academic: { overall: 24 },
+        TOEFL_iBT: { overall: 26 },
+      },
+      tests_taken_on_or_before_2025_08_06: {
+        C1_Advanced: { overall: 147 },
+        IELTS: { average: 4.5 },
+        PTE_Academic: { overall: 30 },
+        TOEFL_iBT: {
+          overall: 32,
+          note:
+            "TOEFL iBT tests from 26 July 2023 to 4 May 2024 were not approved for Australian visa purposes.",
+        },
+      },
+    },
+    online_tests_not_accepted: [
+      "CELPIP Online",
+      "IELTS Online",
+      "LANGUAGECERT Academic Online",
+      "MET Digital taken at-home",
+      "OET@Home",
+      "TOEFL iBT Home Edition",
+    ],
+  },
+  financial_requirements: {
+    status: "not_primary_requirement_in_source_text",
+    notes: [
+      "The source text does not describe a specific personal financial capacity requirement for subclass 491.",
+      "Visa charges and possible second instalment charges may apply.",
+      "Second instalment charge for family members with less than functional English is AUD 4,890.",
+    ],
+  },
+  occupation_requirements: {
+    summary:
+      "Applicant must have an occupation on the combined list of eligible skilled occupations for a Skilled Regional subclass 491 visa.",
+    regional_or_sponsor_specific_review_required: true,
+    notes: [
+      "Subclass 491 can involve state or territory nomination or eligible relative sponsorship.",
+      "State and territory government agencies have their own nomination criteria.",
+      "Occupation eligibility should be checked against the relevant skilled occupation list and nomination or sponsorship pathway.",
+    ],
+  },
+  points_test_rules: {
+    minimum_points_required: 65,
+    summary:
+      "Subclass 491 is a points-tested visa. Applicant must score at least 65 points and may receive invitation based on EOI claims, nomination, or eligible relative sponsorship.",
+    note:
+      "Detailed points categories should reuse the skilled migration points table used for subclass 189/190 unless subclass-specific differences are identified.",
+  },
+  regional_requirements: {
+    summary: "Visa holders must live, work and study in designated regional areas of Australia.",
+    pathway_to_permanent_residence:
+      "May apply for Permanent Residence (Skilled Regional) subclass 191 after 3 years if eligible.",
+    cannot_apply_for_certain_permanent_visas_before_3_years: [
+      "Subclass 820 Partner visa",
+      "Subclass 132 Business Talent",
+      "Subclass 186 Employer Nomination Scheme",
+      "Subclass 188 Business Innovation and Investment",
+      "Subclass 189 Skilled Independent",
+      "Subclass 190 Skilled Nominated",
+      "Subclass 858 Global Talent",
+    ],
+  },
+  nomination_or_sponsorship: {
+    options: [
+      "Nomination by Australian state or territory government agency",
+      "Sponsorship by eligible relative",
+    ],
+    eligible_relative_sponsor_requirements: [
+      "18 years old or older",
+      "Usually resident in a designated area of Australia",
+      "Australian citizen, Australian permanent resident, or eligible New Zealand citizen",
+      "Eligible relative of the applicant or applicant's partner",
+    ],
+    eligible_relatives: [
+      "Parent",
+      "Child or step-child",
+      "Brother or sister",
+      "Adoptive brother or sister",
+      "Step-brother or step-sister",
+      "Aunt or uncle",
+      "Adoptive aunt or uncle",
+      "Step-aunt or step-uncle",
+      "Nephew or niece",
+      "Adoptive nephew or niece",
+      "Step-nephew or step-niece",
+      "Grandparent",
+      "First cousin",
+    ],
+  },
+};
+
 async function createTables() {
   try {
     console.log("📊 Creating tables if they don't exist...");
@@ -1125,6 +1363,99 @@ async function seed() {
         .values({ visa_type_id: upsertedVisa190.id, ...snapshot190 })
         .returning({ id: sourceSnapshots.id });
       console.log("✅ Inserted PDF snapshot 190:", inserted.id, "|", snapshot190.notes);
+    }
+
+    // ── Subclass 491: Skilled Work Regional (Provisional) visa ──────────────
+
+    const visa491Payload = {
+      subclass: skilledWorkRegional491Data.subclass,
+      visa_name: skilledWorkRegional491Data.visa_name,
+      category: skilledWorkRegional491Data.category,
+      purpose: skilledWorkRegional491Data.purpose,
+      stay_period: skilledWorkRegional491Data.stay_period,
+      cost: "From AUD 4,910 for the main applicant",
+      work_rights: "Live, work and study in a designated regional area of Australia",
+      source_url: skilledWorkRegional491Data.source_url,
+      last_checked: toIsoDate(skilledWorkRegional491Data.last_checked),
+      reviewed_status: skilledWorkRegional491Data.reviewed_status,
+      updated_at: new Date(),
+    };
+
+    const [upsertedVisa491] = await db
+      .insert(visaTypes)
+      .values(visa491Payload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visa491Payload,
+      })
+      .returning();
+
+    console.log("✅ Upserted visa type 491:", upsertedVisa491.id);
+
+    const structured491Payload = {
+      visa_type_id: upsertedVisa491.id,
+      key_requirements: skilledWorkRegional491Data.key_requirements,
+      documents_required: skilledWorkRegional491Data.documents_required,
+      application_steps: skilledWorkRegional491Data.application_steps,
+      visa_conditions: skilledWorkRegional491Data.visa_conditions,
+      risks: skilledWorkRegional491Data.risks,
+      english_requirements: skilledWorkRegional491Data.english_requirements,
+      financial_requirements: skilledWorkRegional491Data.financial_requirements,
+      raw_json: {
+        ...skilledWorkRegional491Data,
+        last_checked: toIsoDate(skilledWorkRegional491Data.last_checked),
+      },
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredData491] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedVisa491.id))
+      .limit(1);
+
+    if (existingStructuredData491) {
+      const [updated] = await db
+        .update(visaStructuredData)
+        .set(structured491Payload)
+        .where(eq(visaStructuredData.id, existingStructuredData491.id))
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Updated structured data 491:", updated.id);
+    } else {
+      const [inserted] = await db
+        .insert(visaStructuredData)
+        .values(structured491Payload)
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Inserted structured data 491:", inserted.id);
+    }
+
+    const existingSnapshots491 = await db
+      .select({ id: sourceSnapshots.id, pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, upsertedVisa491.id));
+
+    const snapshot491 = {
+      source_url: SWR_491_SOURCE_URL,
+      pdf_snapshot_url: SWR_491_PDF_URL,
+      captured_at: SWR_491_CAPTURED_AT,
+      notes:
+        "Manual PDF snapshot for subclass 491 Skilled Work Regional (Provisional) visa - Main applicant",
+    };
+
+    const existingSnapshot491 = existingSnapshots491.find(
+      (s) => s.pdf_snapshot_url === snapshot491.pdf_snapshot_url
+    );
+
+    if (existingSnapshot491) {
+      console.log("✅ PDF snapshot 491 already exists:", existingSnapshot491.id);
+    } else {
+      const [inserted] = await db
+        .insert(sourceSnapshots)
+        .values({ visa_type_id: upsertedVisa491.id, ...snapshot491 })
+        .returning({ id: sourceSnapshots.id });
+      console.log("✅ Inserted PDF snapshot 491:", inserted.id, "|", snapshot491.notes);
     }
 
     console.log("🎉 Database seed completed successfully!");

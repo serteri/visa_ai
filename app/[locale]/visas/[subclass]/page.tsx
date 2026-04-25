@@ -648,6 +648,100 @@ function PointsTestRulesSection({
   );
 }
 
+function RegionalRequirementsSection({ data }: { data: unknown }) {
+  if (!data || typeof data !== "object") {
+    return <p className="text-sm text-muted-foreground">No data available.</p>;
+  }
+
+  const regional = data as Record<string, unknown>;
+  const summary = regional.summary as string | undefined;
+  const pathwayToPermanentResidence = regional.pathway_to_permanent_residence as string | undefined;
+  const cannotApplyBefore3Years =
+    regional.cannot_apply_for_certain_permanent_visas_before_3_years as string[] | undefined;
+
+  return (
+    <div className="space-y-4">
+      {summary && <p className="text-sm text-muted-foreground">{summary}</p>}
+      {pathwayToPermanentResidence && (
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">Pathway to permanent residence: </span>
+          {pathwayToPermanentResidence}
+        </p>
+      )}
+      {cannotApplyBefore3Years && cannotApplyBefore3Years.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Cannot apply for certain permanent visas before 3 years</p>
+          <ul className="space-y-1">
+            {cannotApplyBefore3Years.map((item, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NominationOrSponsorshipSection({ data }: { data: unknown }) {
+  if (!data || typeof data !== "object") {
+    return <p className="text-sm text-muted-foreground">No data available.</p>;
+  }
+
+  const info = data as Record<string, unknown>;
+  const options = info.options as string[] | undefined;
+  const sponsorRequirements = info.eligible_relative_sponsor_requirements as string[] | undefined;
+  const eligibleRelatives = info.eligible_relatives as string[] | undefined;
+
+  return (
+    <div className="space-y-4">
+      {options && options.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Options</p>
+          <ul className="space-y-1">
+            {options.map((item, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {sponsorRequirements && sponsorRequirements.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Eligible relative sponsor requirements</p>
+          <ul className="space-y-1">
+            {sponsorRequirements.map((item, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {eligibleRelatives && eligibleRelatives.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Eligible relatives</p>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {eligibleRelatives.map((item, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 type PageProps = {
   params: Promise<{ locale: string; subclass: string }>;
 };
@@ -708,6 +802,30 @@ export default async function VisaDetailsPage({ params }: PageProps) {
           {
             title: "Points test rules",
             content: <PointsTestRulesSection data={(structured.raw_json as Record<string, unknown>).points_test_rules} />,
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "regional_requirements" in structured.raw_json
+      ? [
+          {
+            title: "Regional requirements",
+            content: (
+              <RegionalRequirementsSection
+                data={(structured.raw_json as Record<string, unknown>).regional_requirements}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "nomination_or_sponsorship" in structured.raw_json
+      ? [
+          {
+            title: "Nomination or sponsorship",
+            content: (
+              <NominationOrSponsorshipSection
+                data={(structured.raw_json as Record<string, unknown>).nomination_or_sponsorship}
+              />
+            ),
           },
         ]
       : []),

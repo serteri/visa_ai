@@ -33,6 +33,7 @@ const DEFAULT_INPUT: SkilledPointsInput = {
   regionalStudy: false,
   partner: "none_or_unsure",
   hasStateNomination190: false,
+  hasNominationOrSponsorship491: false,
 };
 
 function SelectRow<T extends string>({
@@ -105,8 +106,8 @@ export default function PointsCalculatorPage() {
     pageBadge: isTr ? "Genel Bilgi Aracı" : "General Information Tool",
     title: isTr ? "Nitelikli Göç Puan Hesaplayıcısı" : "Skilled Migration Points Calculator",
     subtitle: isTr
-      ? "Subclass 189 ve 190 için puanınızın genel bir tahminini görüntüleyin."
-      : "Estimate your points score for subclass 189 and 190 pathways.",
+      ? "Subclass 189, 190 ve 491 için puanınızın genel bir tahminini görüntüleyin."
+      : "Estimate your points score for subclass 189, 190 and 491 pathways.",
     warning45: isTr
       ? "45 yaş veya üzeri seçimi 0 yaş puanı verir."
       : "Age 45 or older gives 0 points for age.",
@@ -126,6 +127,7 @@ export default function PointsCalculatorPage() {
     estimatePrefix: isTr ? "Tahmini puanınız" : "Your estimated points score is",
     cta189: isTr ? "Subclass 189 detaylarını görüntüle" : "View subclass 189 details",
     cta190: isTr ? "Subclass 190 detaylarını görüntüle" : "View subclass 190 details",
+    cta491: isTr ? "Subclass 491 detaylarını görüntüle" : "View subclass 491 details",
     ctaAgent: isTr
       ? "Kayıtlı bir göç danışmanı ile görüşün"
       : "Speak with a registered migration agent",
@@ -286,6 +288,12 @@ export default function PointsCalculatorPage() {
                   checked={input.hasStateNomination190}
                   onChange={(checked) => setField("hasStateNomination190", checked)}
                 />
+                <CheckboxRow
+                  id="nom-or-sponsor-491"
+                  label="State or territory nomination or eligible relative sponsorship for subclass 491 (15 points)"
+                  checked={input.hasNominationOrSponsorship491}
+                  onChange={(checked) => setField("hasNominationOrSponsorship491", checked)}
+                />
               </div>
             </CardContent>
           </Card>
@@ -305,6 +313,10 @@ export default function PointsCalculatorPage() {
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">Subclass 190</p>
                     <p className="text-2xl font-bold">{result.total190}</p>
                   </div>
+                  <div className="rounded-lg border border-border bg-card p-3 sm:col-span-2">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Subclass 491</p>
+                    <p className="text-2xl font-bold">{result.total491}</p>
+                  </div>
                 </div>
 
                 <p className="text-muted-foreground">{content.minThreshold}</p>
@@ -314,6 +326,9 @@ export default function PointsCalculatorPage() {
                 </div>
                 <div className="rounded-md border border-primary/20 bg-primary/5 p-3 text-foreground">
                   <p>{result.total190 >= 65 ? content.statusAbove : content.statusBelow}</p>
+                </div>
+                <div className="rounded-md border border-primary/20 bg-primary/5 p-3 text-foreground">
+                  <p>{result.total491 >= 65 ? content.statusAbove : content.statusBelow}</p>
                 </div>
                 <p className="text-muted-foreground">{content.invitationNote}</p>
 
@@ -379,6 +394,10 @@ export default function PointsCalculatorPage() {
                         <td className="py-2 text-muted-foreground">State nomination (190)</td>
                         <td className="py-2 text-right font-semibold">{result.breakdown.stateNomination190}</td>
                       </tr>
+                      <tr>
+                        <td className="py-2 text-muted-foreground">Nomination or sponsorship (491)</td>
+                        <td className="py-2 text-right font-semibold">{result.breakdown.nominationOrSponsorship491}</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -397,6 +416,9 @@ export default function PointsCalculatorPage() {
             </Button>
             <Button asChild variant="outline">
               <Link href={`/${locale}/visas/190`}>{content.cta190}</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/${locale}/visas/491`}>{content.cta491}</Link>
             </Button>
             <Button asChild variant="secondary">
               <Link href={`/${locale}/agent-referral`}>{content.ctaAgent}</Link>

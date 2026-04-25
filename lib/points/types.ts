@@ -32,6 +32,7 @@ export type SkilledPointsInput = {
   regionalStudy: boolean;
   partner: PartnerOption;
   hasStateNomination190: boolean;
+  hasNominationOrSponsorship491: boolean;
 };
 
 export type PointsBreakdown = {
@@ -52,12 +53,14 @@ export type PointsBreakdown = {
   };
   partner: number;
   stateNomination190: number;
+  nominationOrSponsorship491: number;
 };
 
 export type SkilledPointsResult = {
   minimumThreshold: number;
   total189: number;
   total190: number;
+  total491: number;
   employmentCapApplied: boolean;
   age45OrOlder: boolean;
   breakdown: PointsBreakdown;
