@@ -806,6 +806,19 @@ function StructuredJsonSection({ data }: { data: unknown }) {
   );
 }
 
+function omitStructuredKeys(
+  data: unknown,
+  keysToOmit: string[]
+): unknown {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return data;
+
+  return Object.fromEntries(
+    Object.entries(data as Record<string, unknown>).filter(
+      ([key]) => !keysToOmit.includes(key)
+    )
+  );
+}
+
 function PathwaySection({ data }: { data: unknown }) {
   if (!data || typeof data !== "object") {
     return <p className="text-sm text-muted-foreground">No data available.</p>;
@@ -958,6 +971,21 @@ export default async function VisaDetailsPage({ params }: PageProps) {
           },
         ]
       : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "permanent_stage_801" in structured.raw_json
+      ? [
+          {
+            title: "Permanent stage 801",
+            content: (
+              <StructuredJsonSection
+                data={omitStructuredKeys(
+                  (structured.raw_json as Record<string, unknown>).permanent_stage_801,
+                  ["sponsor_801_requirements"]
+                )}
+              />
+            ),
+          },
+        ]
+      : []),
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "sponsor_requirements" in structured.raw_json
       ? [
           {
@@ -965,6 +993,26 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).sponsor_requirements}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(structured?.raw_json &&
+    typeof structured.raw_json === "object" &&
+    "permanent_stage_801" in structured.raw_json &&
+    typeof (structured.raw_json as Record<string, unknown>).permanent_stage_801 === "object" &&
+    (structured.raw_json as { permanent_stage_801?: Record<string, unknown> }).permanent_stage_801
+      ?.sponsor_801_requirements
+      ? [
+          {
+            title: "Sponsor 801 requirements",
+            content: (
+              <StructuredJsonSection
+                data={
+                  (structured.raw_json as { permanent_stage_801?: Record<string, unknown> })
+                    .permanent_stage_801?.sponsor_801_requirements
+                }
               />
             ),
           },

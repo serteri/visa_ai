@@ -35,20 +35,26 @@ async function loadTranslations(languageCode: Locale) {
 export function LanguageProvider({
   children,
   initialLocale = "en",
+  initialTranslations = {},
 }: {
   children: ReactNode;
   initialLocale?: Locale;
+  initialTranslations?: Record<string, string>;
 }) {
   const [language, setLanguageState] = useState<Locale>(initialLocale);
-  const [translations, setTranslations] = useState<Record<string, string>>({});
-  const [isReady, setIsReady] = useState(false);
+  const [translations, setTranslations] = useState<Record<string, string>>(initialTranslations);
+  const [isReady, setIsReady] = useState(Object.keys(initialTranslations).length > 0);
 
   useEffect(() => {
+    if (Object.keys(initialTranslations).length > 0) {
+      return;
+    }
+
     loadTranslations(initialLocale).then((trans) => {
       setTranslations(trans);
       setIsReady(true);
     });
-  }, [initialLocale]);
+  }, [initialLocale, initialTranslations]);
 
   const setLanguage = useCallback((code: Locale) => {
     setLanguageState(code);

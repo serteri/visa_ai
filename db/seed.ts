@@ -57,6 +57,10 @@ const PARTNER_820_801_SOURCE_URL =
   "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore";
 const PARTNER_820_801_PDF_URL =
   "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/%28Subclasses%20820%20and%20801%29%20Partner%20visas%20%28apply%20in%20Australia%29/Subclass%20820%20Partner%20visa%20%28temporary%29/Subclass%20820%20Partner%20visa%20%28temporary%29_26April2026.pdf";
+const PARTNER_801_SOURCE_URL =
+  "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore/permanent-801";
+const PARTNER_801_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/%28Subclasses%20820%20and%20801%29%20Partner%20visas%20%28apply%20in%20Australia%29/Subclass%20801%20Partner%20visa%20%28Permanent%29/Subclass%20801%20Partner%20visa%20%28Permanent%29_26April2026.pdf";
 const PARTNER_820_801_CAPTURED_AT = new Date("2026-04-26T00:00:00.000Z");
 
 const studentVisa500Data = {
@@ -1079,21 +1083,159 @@ const partnerVisa820801Data = {
   },
   pathway: {
     summary:
-      "Subclass 820 is the temporary stage and is the first step toward the permanent Partner visa subclass 801.",
+      "Subclass 820 is the temporary stage and subclass 801 is the permanent stage of the onshore Partner visa pathway.",
     stage_1: {
       subclass: "820",
       type: "temporary",
       description:
-        "Allows the applicant to stay temporarily while the permanent Partner visa subclass 801 is processed.",
+        "Allows the applicant to live in Australia temporarily while the permanent Partner visa is processed.",
     },
     stage_2: {
       subclass: "801",
       type: "permanent",
       description:
-        "Permanent Partner visa assessment generally occurs after the temporary stage and additional documents may be required.",
+        "Allows the applicant to live in Australia permanently after permanent stage assessment.",
     },
     permanent_stage_timing_note:
-      "The applicant is eligible for consideration of a permanent Partner visa two years after first applying for the temporary and permanent Partner visas.",
+      "Permanent stage assessment generally starts from the date of eligibility, usually 2 years after applying for the temporary and permanent Partner visas.",
+  },
+  permanent_stage_801: {
+    subclass: "801",
+    visa_name: "Partner visa (Permanent)",
+    stage: "permanent",
+    stay_period: "Permanently",
+    cost: "Paid when applying for the temporary and permanent Partner visas",
+    processing_time_note:
+      "Processing time starts from the date of eligibility, generally 2 years after applying for the temporary and permanent Partner visas.",
+    key_requirements: [
+      "Hold a temporary Partner visa subclass 820 or Dependent Child visa subclass 445",
+      "In most cases, continue to be in a genuine and ongoing relationship with the sponsor",
+      "Two years must usually have passed since applying for the subclass 820 and 801 visas",
+      "Continue to meet health requirements",
+      "Have no debt to the Australian Government or have arranged repayment",
+      "Visa grant must be in the best interests of any applicant under 18",
+    ],
+    rights_and_benefits: [
+      "Live, work and study in Australia permanently",
+      "Access Medicare",
+      "Sponsor eligible family members to come to Australia",
+      "Travel to and from Australia for 5 years from grant date",
+      "Apply for Australian citizenship if eligible",
+      "Attend free English language classes through the Adult Migrant English Program if eligible",
+    ],
+    documents_required: [
+      "Most recent passport identity pages",
+      "Current Australian police certificate if required",
+      "Overseas police certificates if required",
+      "Evidence that the relationship with the sponsor is continuing",
+      "Commonwealth statutory declaration completed by sponsor",
+      "Marriage certificate if married",
+      "Proof of de facto relationship if applicable",
+      "Financial evidence",
+      "Household evidence",
+      "Social evidence",
+      "Commitment evidence",
+      "Form 888 witness statements",
+      "Family member documents if applicable",
+      "Translated documents for non-English documents",
+    ],
+    relationship_evidence: {
+      summary:
+        "Applicant must provide evidence they continue to be the spouse or de facto partner of the same person who sponsored the temporary Partner visa.",
+      sponsor_statutory_declaration_should_cover: [
+        "Whether the couple has mutual commitment to the exclusion of all others",
+        "Whether the relationship is genuine and continuing",
+        "Whether the couple lives together or does not live permanently apart",
+        "When the relationship began and how long the couple has lived together",
+        "Financial commitments shared by the couple",
+        "Nature of the household including joint responsibility for children",
+        "Social aspects of the relationship",
+        "Nature of commitment to each other",
+        "Plans for the future",
+      ],
+      evidence_categories: {
+        financial: [
+          "Joint mortgage or lease documents",
+          "Joint loans for major assets",
+          "Joint bank account statements",
+          "Household bills in both names",
+        ],
+        household: [
+          "Statement about how housework is shared",
+          "Household bills in both names",
+          "Mail or emails addressed to both partners",
+          "Documents showing joint responsibility for children",
+          "Documents proving living arrangements",
+        ],
+        social: [
+          "Form 888 witness statements",
+          "Joint invitations",
+          "Proof of friends in common",
+          "Proof of informing government, public or commercial bodies about the relationship",
+          "Proof of joint sporting, cultural or social activities",
+          "Proof of travel together",
+        ],
+        commitment: [
+          "Knowledge of each other's background and family situation",
+          "Combined personal matters",
+          "Evidence of staying in touch while apart",
+          "Evidence partners are not related by family",
+          "Terms of wills if available",
+        ],
+      },
+    },
+    application_steps: [
+      "Check current visa status using VEVO",
+      "Wait until eligible for permanent stage assessment, generally 2 years after applying for the temporary and permanent Partner visas",
+      "Gather updated identity, character and relationship evidence",
+      "Log in to ImmiAccount",
+      "Select New application",
+      "Select Family",
+      "Select Stage 2 - Permanent Partner Visa Assessment",
+      "Complete the application",
+      "Attach supporting documents",
+      "Submit documents for permanent stage assessment",
+      "Track and manage the application in ImmiAccount",
+      "Respond to requests for more information if requested",
+      "Wait for written decision",
+    ],
+    visa_conditions: [
+      "Permanent residency",
+      "Must obey Australian laws",
+      "Travel facility valid for 5 years from grant date",
+      "Resident Return visa may be needed to re-enter Australia as permanent resident after travel facility expires",
+      "Cannot add family members after the permanent Partner visa is granted",
+    ],
+    risks: [
+      "Permanent stage generally cannot be assessed until 2 years after initial partner visa application",
+      "Relationship breakdown may affect the permanent visa outcome, though some exceptions may apply",
+      "Domestic and family violence provisions may be relevant in some circumstances",
+      "Incomplete documents may delay processing",
+      "Incorrect information may affect the application",
+      "Expired police certificates may need to be replaced",
+      "If permanent Partner visa is refused, the person may no longer hold a temporary Partner visa",
+    ],
+    family_members: {
+      dependent_child_445_pathway:
+        "To include a dependent child in the permanent Partner visa application after subclass 820 grant, the child must usually hold a Dependent Child visa subclass 445 and be in Australia.",
+      cannot_add_after_grant:
+        "Family members cannot be added after the permanent Partner visa subclass 801 is granted.",
+    },
+    sponsor_801_requirements: {
+      summary:
+        "The sponsor must be the same person who sponsored the applicant for the temporary Partner visa and must continue to be married or in a de facto relationship with the applicant.",
+      documents_required: [
+        "Personal details page of most recent passport showing signature or Australian driver licence",
+        "Completed Commonwealth statutory declaration about the relationship",
+      ],
+      obligations: [
+        "Sponsor the partner and included family members",
+        "Assist financially and with accommodation",
+        "Tell the Department if circumstances change",
+      ],
+      withdrawal_note:
+        "Sponsor cannot withdraw after the visa is granted, but may be able to withdraw sponsorship before the permanent Partner visa decision.",
+    },
   },
   sponsor_requirements: {
     summary: "The sponsor is usually the applicant's partner and must be approved.",
@@ -1779,25 +1921,37 @@ async function seed() {
       .from(sourceSnapshots)
       .where(eq(sourceSnapshots.visa_type_id, upsertedVisa820801.id));
 
-    const snapshot820801 = {
-      source_url: PARTNER_820_801_SOURCE_URL,
-      pdf_snapshot_url: PARTNER_820_801_PDF_URL,
-      captured_at: PARTNER_820_801_CAPTURED_AT,
-      notes: "Manual PDF snapshot for Partner visa subclass 820 temporary stage, onshore 820/801 pathway",
-    };
+    const snapshots820801 = [
+      {
+        source_url: PARTNER_820_801_SOURCE_URL,
+        pdf_snapshot_url: PARTNER_820_801_PDF_URL,
+        captured_at: PARTNER_820_801_CAPTURED_AT,
+        notes:
+          "Manual PDF snapshot for Partner visa subclass 820 temporary stage, onshore 820/801 pathway",
+      },
+      {
+        source_url: PARTNER_801_SOURCE_URL,
+        pdf_snapshot_url: PARTNER_801_PDF_URL,
+        captured_at: PARTNER_820_801_CAPTURED_AT,
+        notes:
+          "Manual PDF snapshot for Partner visa subclass 801 permanent stage, onshore 820/801 pathway",
+      },
+    ];
 
-    const existingSnapshot820801 = existingSnapshots820801.find(
-      (s) => s.pdf_snapshot_url === snapshot820801.pdf_snapshot_url
-    );
+    for (const snapshot820801 of snapshots820801) {
+      const existingSnapshot820801 = existingSnapshots820801.find(
+        (s) => s.pdf_snapshot_url === snapshot820801.pdf_snapshot_url
+      );
 
-    if (existingSnapshot820801) {
-      console.log("✅ PDF snapshot 820_801 already exists:", existingSnapshot820801.id);
-    } else {
-      const [inserted] = await db
-        .insert(sourceSnapshots)
-        .values({ visa_type_id: upsertedVisa820801.id, ...snapshot820801 })
-        .returning({ id: sourceSnapshots.id });
-      console.log("✅ Inserted PDF snapshot 820_801:", inserted.id, "|", snapshot820801.notes);
+      if (existingSnapshot820801) {
+        console.log("✅ PDF snapshot 820_801 already exists:", existingSnapshot820801.id);
+      } else {
+        const [inserted] = await db
+          .insert(sourceSnapshots)
+          .values({ visa_type_id: upsertedVisa820801.id, ...snapshot820801 })
+          .returning({ id: sourceSnapshots.id });
+        console.log("✅ Inserted PDF snapshot 820_801:", inserted.id, "|", snapshot820801.notes);
+      }
     }
 
     console.log("🎉 Database seed completed successfully!");

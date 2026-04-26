@@ -26,6 +26,7 @@ export type RetrievedVisaRecord = {
   family_members: unknown;
   domestic_and_family_violence: unknown;
   faq_summary: unknown;
+  permanent_stage_801: unknown;
   source_url: string | null;
   pdf_snapshot_urls: string[];
 };
@@ -135,6 +136,10 @@ function detectSubclasses(
     hasPhrase(lower, "spouse visa") ||
     hasPhrase(lower, "marriage visa") ||
     hasPhrase(lower, "de facto visa") ||
+    hasPhrase(lower, "permanent partner visa") ||
+    hasPhrase(lower, "partner permanent stage") ||
+    hasPhrase(lower, "stage 2 partner visa") ||
+    hasPhrase(lower, "stage 2 permanent partner") ||
     hasWord(lower, "partner") ||
     hasWord(lower, "spouse") ||
     hasWord(lower, "marriage") ||
@@ -242,6 +247,7 @@ export async function retrieveVisaContext(input: { message: string }): Promise<R
         family_members: rawJson?.family_members ?? null,
         domestic_and_family_violence: rawJson?.domestic_and_family_violence ?? null,
         faq_summary: rawJson?.faq_summary ?? null,
+        permanent_stage_801: rawJson?.permanent_stage_801 ?? null,
         source_url: sourceUrls[0] ?? null,
         pdf_snapshot_urls: pdfSnapshotUrls,
       };

@@ -309,7 +309,6 @@ export default function CheckerPage() {
                   <option value="Work in Australia">{t("checker.work")}</option>
                   <option value="Migrate permanently">{t("checker.migrate")}</option>
                   <option value="Join partner/family">{t("checker.family")}</option>
-                  <option value="Visit Australia">{t("checker.visit")}</option>
                   <option value="Not sure">{t("checker.notSure")}</option>
                 </select>
                 <FieldError msg={err.goal} />

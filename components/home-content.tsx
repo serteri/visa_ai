@@ -2,7 +2,21 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { CheckCircle2, Languages, Scale, ShieldCheck } from "lucide-react";
+import {
+  Bot,
+  BriefcaseBusiness,
+  Calculator,
+  CheckCircle2,
+  ClipboardCheck,
+  GraduationCap,
+  HeartHandshake,
+  Languages,
+  MapPinned,
+  Scale,
+  Search,
+  ShieldCheck,
+  UserCheck,
+} from "lucide-react";
 
 import { AgentReferralCta } from "@/components/sections/agent-referral-cta";
 import { ComplianceNotice } from "@/components/sections/compliance-notice";
@@ -26,13 +40,51 @@ const howItWorksKeys = [
   "howItWorks.step4",
 ];
 
-const categoryKeys = [
-  "categories.student",
-  "categories.skilled",
-  "categories.employer",
-  "categories.partner",
-  "categories.visitor",
-  "categories.regional",
+const supportedPathwayKeys = [
+  { title: "pathways.500.title", text: "pathways.500.text", icon: GraduationCap },
+  { title: "pathways.482.title", text: "pathways.482.text", icon: BriefcaseBusiness },
+  { title: "pathways.189.title", text: "pathways.189.text", icon: ClipboardCheck },
+  { title: "pathways.190.title", text: "pathways.190.text", icon: UserCheck },
+  { title: "pathways.491.title", text: "pathways.491.text", icon: MapPinned },
+  { title: "pathways.820801.title", text: "pathways.820801.text", icon: HeartHandshake },
+];
+
+const actionCardKeys = [
+  {
+    title: "cta.checker.title",
+    text: "cta.checker.text",
+    label: "cta.checker.label",
+    href: "checker",
+    icon: ClipboardCheck,
+  },
+  {
+    title: "cta.assistant.title",
+    text: "cta.assistant.text",
+    label: "cta.assistant.label",
+    href: "assistant",
+    icon: Bot,
+  },
+  {
+    title: "cta.points.title",
+    text: "cta.points.text",
+    label: "cta.points.label",
+    href: "points-calculator",
+    icon: Calculator,
+  },
+  {
+    title: "cta.occupation.title",
+    text: "cta.occupation.text",
+    label: "cta.occupation.label",
+    href: "occupation-checker",
+    icon: Search,
+  },
+  {
+    title: "cta.agent.title",
+    text: "cta.agent.text",
+    label: "cta.agent.label",
+    href: "agent-referral",
+    icon: HeartHandshake,
+  },
 ];
 
 export function HomeContent() {
@@ -56,7 +108,7 @@ export function HomeContent() {
               <Link href={`/${locale}/checker`}>{t("hero.cta")}</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-              <Link href="#how-it-works">{t("hero.secondary")}</Link>
+              <Link href={`/${locale}/assistant`}>{t("hero.secondary")}</Link>
             </Button>
           </div>
         </div>
@@ -80,6 +132,58 @@ export function HomeContent() {
         </div>
       </section>
 
+      <section id="supported-pathways" className="space-y-4">
+        <div className="space-y-2">
+          <Badge variant="outline">{t("pathways.badge")}</Badge>
+          <h2 className="text-2xl font-bold">{t("pathways.title")}</h2>
+          <p className="max-w-3xl text-sm text-muted-foreground">
+            {t("pathways.subtitle")}
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {supportedPathwayKeys.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Card key={item.title}>
+                <CardContent className="flex gap-3 p-4">
+                  <Icon className="mt-0.5 size-5 shrink-0 text-primary" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">{t(item.title)}</p>
+                    <p className="text-sm text-muted-foreground">{t(item.text)}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+
+      <section id="next-actions" className="space-y-4">
+        <div className="space-y-2">
+          <Badge variant="outline">{t("cta.badge")}</Badge>
+          <h2 className="text-2xl font-bold">{t("cta.title")}</h2>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-5">
+          {actionCardKeys.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Card key={item.href}>
+                <CardHeader className="space-y-3">
+                  <Icon className="size-5 text-primary" />
+                  <CardTitle className="text-base">{t(item.title)}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{t(item.text)}</p>
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link href={`/${locale}/${item.href}`}>{t(item.label)}</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+
       <section id="how-it-works" className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -99,14 +203,13 @@ export function HomeContent() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t("categories.title")}</CardTitle>
+            <CardTitle>{t("assistantCta.title")}</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {categoryKeys.map((key) => (
-              <div key={key} className="rounded-lg bg-muted px-3 py-2 text-sm">
-                {t(key)}
-              </div>
-            ))}
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">{t("assistantCta.text")}</p>
+            <Button asChild>
+              <Link href={`/${locale}/assistant`}>{t("assistantCta.label")}</Link>
+            </Button>
           </CardContent>
         </Card>
       </section>

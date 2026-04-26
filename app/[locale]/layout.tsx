@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { LanguageProvider } from "@/contexts/language-context";
 import { Header } from "@/components/header";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
+import { getTranslations } from "@/lib/i18n/get-translations";
 
 export const metadata: Metadata = {
   title: "Visa Pathway Checker",
@@ -26,8 +27,10 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  const translations = await getTranslations(locale as Locale);
+
   return (
-    <LanguageProvider initialLocale={locale as Locale}>
+    <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
       <Header />
       {children}
     </LanguageProvider>
