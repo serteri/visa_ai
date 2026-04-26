@@ -54,6 +54,17 @@
   "cta.agent.text": "Request to speak with a registered migration agent.",
   "cta.agent.label": "Request referral",
 
+  "premiumCta.badge": "Readiness report",
+  "premiumCta.title": "Need a deeper review?",
+  "premiumCta.subtitle": "Start with a quick pathway check, or join early access for a full readiness report with risk indicators, document readiness, and suggested next steps.",
+  "premiumCta.quick.title": "Quick Pathway Check",
+  "premiumCta.quick.text": "Answer a short set of questions and explore possible pathways based on your responses.",
+  "premiumCta.quick.label": "Start quick check",
+  "premiumCta.full.title": "Full Visa Readiness Report",
+  "premiumCta.full.text": "Join early access for a more structured review of risk indicators, document readiness, and suggested next steps.",
+  "premiumCta.full.label": "Join early access",
+  "premiumCta.full.badge": "Premium preview",
+
   "assistantCta.title": "Ask about a supported pathway",
   "assistantCta.text": "The assistant can summarise stored information for 500, 482, 189, 190, 491 and 820/801. It keeps answers to general information only and points you to source records.",
   "assistantCta.label": "Open assistant",

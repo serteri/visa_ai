@@ -8,6 +8,7 @@ import {
   Calculator,
   CheckCircle2,
   ClipboardCheck,
+  FileText,
   GraduationCap,
   HeartHandshake,
   Languages,
@@ -84,6 +85,24 @@ const actionCardKeys = [
     label: "cta.agent.label",
     href: "agent-referral",
     icon: HeartHandshake,
+  },
+];
+
+const fullCheckCtaCards = [
+  {
+    title: "premiumCta.quick.title",
+    text: "premiumCta.quick.text",
+    label: "premiumCta.quick.label",
+    href: "checker",
+    icon: ClipboardCheck,
+  },
+  {
+    title: "premiumCta.full.title",
+    text: "premiumCta.full.text",
+    label: "premiumCta.full.label",
+    href: "full-check",
+    icon: FileText,
+    badge: "premiumCta.full.badge",
   },
 ];
 
@@ -175,6 +194,46 @@ export function HomeContent() {
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">{t(item.text)}</p>
                   <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link href={`/${locale}/${item.href}`}>{t(item.label)}</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+
+      <section id="full-check-preview" className="space-y-4">
+        <div className="space-y-2">
+          <Badge variant="outline">{t("premiumCta.badge")}</Badge>
+          <h2 className="text-2xl font-bold">{t("premiumCta.title")}</h2>
+          <p className="max-w-3xl text-sm text-muted-foreground">
+            {t("premiumCta.subtitle")}
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {fullCheckCtaCards.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Card
+                key={item.href}
+                className={item.href === "full-check" ? "border-primary/40 bg-primary/5" : ""}
+              >
+                <CardHeader className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <Icon className="size-5 text-primary" />
+                    {item.badge && <Badge variant="secondary">{t(item.badge)}</Badge>}
+                  </div>
+                  <CardTitle className="text-lg">{t(item.title)}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{t(item.text)}</p>
+                  <Button
+                    asChild
+                    variant={item.href === "full-check" ? "default" : "outline"}
+                    className="w-full sm:w-auto"
+                  >
                     <Link href={`/${locale}/${item.href}`}>{t(item.label)}</Link>
                   </Button>
                 </CardContent>
