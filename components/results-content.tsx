@@ -32,6 +32,21 @@ const LOCKED_REPORT_BENEFITS = [
   "Suggested next steps",
 ];
 
+const LOCKED_PREVIEW_BLOCKS = [
+  {
+    title: "Risk indicators",
+    content: "Potential risks based on your situation",
+  },
+  {
+    title: "Document readiness",
+    content: "Checklist of documents you may need",
+  },
+  {
+    title: "Suggested next steps",
+    content: "Structured next steps based on your answers",
+  },
+];
+
 type ResultsContentProps = {
   locale: string;
   matchedVisas: MatchedVisa[];
@@ -149,6 +164,35 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
             ))}
           </div>
         )}
+
+        <section className="space-y-4">
+          <div className="space-y-2">
+            <Badge variant="outline">Limited insight</Badge>
+            <h2 className="text-2xl font-bold">You&apos;ve unlocked basic pathway results</h2>
+            <p className="max-w-3xl text-sm text-muted-foreground">
+              This quick check shows possible pathways. A full readiness report includes deeper insights. This is general information only.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {LOCKED_PREVIEW_BLOCKS.map((block) => (
+              <Card key={block.title} className="relative overflow-hidden border-dashed">
+                <CardHeader className="opacity-45 blur-[1px]">
+                  <CardTitle className="text-base">{block.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="opacity-45 blur-[1px]">
+                  <p className="text-sm text-muted-foreground">{block.content}</p>
+                </CardContent>
+                <div className="absolute inset-0 flex items-center justify-center bg-background/65 p-4 backdrop-blur-[1px]">
+                  <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-2 text-sm font-medium shadow-sm">
+                    <LockKeyhole className="size-4 text-primary" />
+                    <span>Available in full report</span>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
 
         <Card className="border-primary/40 bg-primary/5">
           <CardHeader className="space-y-2">
