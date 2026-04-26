@@ -419,6 +419,15 @@ function FinancialRequirementsSection({ data }: { data: unknown }) {
   }
 
   const fin = data as FinancialRequirements;
+  const hasKnownFinancialData =
+    fin.living_costs_12_months ||
+    fin.annual_income_option ||
+    fin.schooling_costs_per_child ||
+    fin.travel_costs_guidance;
+
+  if (!hasKnownFinancialData) {
+    return <StructuredJsonSection data={data} />;
+  }
 
   const KVTable = ({ rows }: { rows: Record<string, string> }) => (
     <div className="overflow-x-auto">
@@ -742,43 +751,57 @@ function NominationOrSponsorshipSection({ data }: { data: unknown }) {
   );
 }
 
-function RelationshipRequirementsSection({ data }: { data: unknown }) {
-  if (!data || typeof data !== "object") {
+function formatJsonLabel(key: string): string {
+  return key
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function StructuredJsonSection({ data }: { data: unknown }) {
+  if (data === null || data === undefined) {
     return <p className="text-sm text-muted-foreground">No data available.</p>;
   }
 
-  const info = data as Record<string, unknown>;
-  const spouse = info.spouse as string | undefined;
-  const deFacto = info.de_facto as string | undefined;
-  const evidenceCategories = info.evidence_categories as string[] | undefined;
+  if (typeof data === "string" || typeof data === "number" || typeof data === "boolean") {
+    return <p className="text-sm text-muted-foreground">{String(data)}</p>;
+  }
+
+  if (Array.isArray(data)) {
+    if (data.length === 0) {
+      return <p className="text-sm text-muted-foreground">No data available.</p>;
+    }
+
+    return (
+      <ul className="space-y-2">
+        {data.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+            <span className="mt-0.5 text-primary">•</span>
+            <div>
+              <StructuredJsonSection data={item} />
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (typeof data !== "object") {
+    return <p className="text-sm text-muted-foreground">No data available.</p>;
+  }
+
+  const entries = Object.entries(data as Record<string, unknown>);
+  if (entries.length === 0) {
+    return <p className="text-sm text-muted-foreground">No data available.</p>;
+  }
 
   return (
     <div className="space-y-4">
-      {spouse && (
-        <p className="text-sm text-muted-foreground">
-          <span className="font-semibold text-foreground">Spouse: </span>
-          {spouse}
-        </p>
-      )}
-      {deFacto && (
-        <p className="text-sm text-muted-foreground">
-          <span className="font-semibold text-foreground">De facto: </span>
-          {deFacto}
-        </p>
-      )}
-      {evidenceCategories && evidenceCategories.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-sm font-semibold">Evidence categories</p>
-          <ul className="space-y-1">
-            {evidenceCategories.map((item, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <span className="mt-0.5 text-primary">•</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+      {entries.map(([key, value]) => (
+        <div key={key} className="space-y-2">
+          <p className="text-sm font-semibold">{formatJsonLabel(key)}</p>
+          <StructuredJsonSection data={value} />
         </div>
-      )}
+      ))}
     </div>
   );
 }
@@ -799,15 +822,31 @@ function PathwaySection({ data }: { data: unknown }) {
           <p className="text-sm font-semibold">Stage 1</p>
           <p className="text-sm text-muted-foreground">Subclass: {String(stage1.subclass ?? "-")}</p>
           <p className="text-sm text-muted-foreground">Type: {String(stage1.type ?? "-")}</p>
+          {typeof stage1.description === "string" && (
+            <p className="text-sm text-muted-foreground">{String(stage1.description)}</p>
+          )}
         </div>
+      )}
+      {stage1 && stage2 && (
+        <p className="text-center text-sm font-semibold text-muted-foreground">820 -&gt; 801</p>
       )}
       {stage2 && (
         <div className="rounded-md border border-border/70 p-3">
           <p className="text-sm font-semibold">Stage 2</p>
           <p className="text-sm text-muted-foreground">Subclass: {String(stage2.subclass ?? "-")}</p>
           <p className="text-sm text-muted-foreground">Type: {String(stage2.type ?? "-")}</p>
+          {typeof stage2.description === "string" && (
+            <p className="text-sm text-muted-foreground">{String(stage2.description)}</p>
+          )}
         </div>
       )}
+      {"summary" in pathway && typeof pathway.summary === "string" && (
+        <p className="text-sm text-muted-foreground">{pathway.summary}</p>
+      )}
+      {"permanent_stage_timing_note" in pathway &&
+        typeof pathway.permanent_stage_timing_note === "string" && (
+          <p className="text-sm text-muted-foreground">{pathway.permanent_stage_timing_note}</p>
+        )}
     </div>
   );
 }
@@ -904,7 +943,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
           {
             title: "Relationship requirements",
             content: (
-              <RelationshipRequirementsSection
+              <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).relationship_requirements}
               />
             ),
@@ -916,6 +955,48 @@ export default async function VisaDetailsPage({ params }: PageProps) {
           {
             title: "Pathway",
             content: <PathwaySection data={(structured.raw_json as Record<string, unknown>).pathway} />,
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "sponsor_requirements" in structured.raw_json
+      ? [
+          {
+            title: "Sponsor requirements",
+            content: (
+              <StructuredJsonSection
+                data={(structured.raw_json as Record<string, unknown>).sponsor_requirements}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "family_members" in structured.raw_json
+      ? [
+          {
+            title: "Family members",
+            content: (
+              <StructuredJsonSection data={(structured.raw_json as Record<string, unknown>).family_members} />
+            ),
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "domestic_and_family_violence" in structured.raw_json
+      ? [
+          {
+            title: "Domestic and family violence",
+            content: (
+              <StructuredJsonSection
+                data={(structured.raw_json as Record<string, unknown>).domestic_and_family_violence}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "faq_summary" in structured.raw_json
+      ? [
+          {
+            title: "FAQ summary",
+            content: <StructuredJsonSection data={(structured.raw_json as Record<string, unknown>).faq_summary} />,
           },
         ]
       : []),

@@ -140,6 +140,7 @@ export default function AgentReferralPage() {
                     <option value="189">189</option>
                     <option value="190">190</option>
                     <option value="189,190">189/190</option>
+                    <option value="820_801">Partner visa (820/801)</option>
                     <option value="not sure">not sure</option>
                   </select>
                   <ErrorText message={state.errors?.visaInterest} />

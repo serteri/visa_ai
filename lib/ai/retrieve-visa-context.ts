@@ -20,6 +20,12 @@ export type RetrievedVisaRecord = {
   financial_requirements: unknown;
   occupation_requirements: unknown;
   points_test_rules: unknown;
+  relationship_requirements: unknown;
+  pathway: unknown;
+  sponsor_requirements: unknown;
+  family_members: unknown;
+  domestic_and_family_violence: unknown;
+  faq_summary: unknown;
   source_url: string | null;
   pdf_snapshot_urls: string[];
 };
@@ -63,7 +69,7 @@ function detectSubclasses(
   const lower = normalize(message);
   const matches = new Set<"500" | "482" | "189" | "190" | "491" | "820_801">();
 
-  const explicit = lower.match(/\b(500|482|189|190|491)\b/g) ?? [];
+  const explicit = lower.match(/\b(500|482|189|190|491|820|801)\b/g) ?? [];
   for (const value of explicit) {
     if (
       value === "500" ||
@@ -73,6 +79,8 @@ function detectSubclasses(
       value === "491"
     ) {
       matches.add(value);
+    } else if (value === "820" || value === "801") {
+      matches.add("820_801");
     }
   }
 
@@ -130,11 +138,15 @@ function detectSubclasses(
     hasWord(lower, "partner") ||
     hasWord(lower, "spouse") ||
     hasWord(lower, "marriage") ||
+    hasWord(lower, "married") ||
     hasWord(lower, "boyfriend") ||
     hasWord(lower, "girlfriend") ||
     hasPhrase(lower, "de facto") ||
     hasWord(lower, "relationship") ||
-    hasPhrase(lower, "820_801");
+    hasPhrase(lower, "sponsor my partner") ||
+    hasPhrase(lower, "bring my partner") ||
+    hasPhrase(lower, "820_801") ||
+    hasPhrase(lower, "family migration");
 
   if (mentionsPartnerVisa) {
     matches.add("820_801");
@@ -224,6 +236,12 @@ export async function retrieveVisaContext(input: { message: string }): Promise<R
         financial_requirements: structured?.financial_requirements ?? null,
         occupation_requirements: rawJson?.occupation_requirements ?? null,
         points_test_rules: rawJson?.points_test_rules ?? null,
+        relationship_requirements: rawJson?.relationship_requirements ?? null,
+        pathway: rawJson?.pathway ?? null,
+        sponsor_requirements: rawJson?.sponsor_requirements ?? null,
+        family_members: rawJson?.family_members ?? null,
+        domestic_and_family_violence: rawJson?.domestic_and_family_violence ?? null,
+        faq_summary: rawJson?.faq_summary ?? null,
         source_url: sourceUrls[0] ?? null,
         pdf_snapshot_urls: pdfSnapshotUrls,
       };

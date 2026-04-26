@@ -190,10 +190,13 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
     hasWord(normalised, "partner") ||
     hasWord(normalised, "spouse") ||
     hasWord(normalised, "marriage") ||
+    hasWord(normalised, "married") ||
     hasWord(normalised, "boyfriend") ||
     hasWord(normalised, "girlfriend") ||
     normalised.includes("de facto") ||
-    hasWord(normalised, "relationship");
+    hasWord(normalised, "relationship") ||
+    normalised.includes("sponsor my partner") ||
+    normalised.includes("bring my partner");
 
   if (wantsPartnerPathway) {
     const [row820801] = await db
@@ -215,7 +218,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: row820801.visa_name,
         purpose: row820801.purpose,
         match_reason:
-          "You mentioned a relationship or partner. This visa allows partners of Australian citizens or residents to live in Australia and later obtain permanent residency.",
+          "You mentioned a partner, spouse or relationship. This onshore partner pathway may be relevant to explore if the partner is an Australian citizen, permanent resident or eligible New Zealand citizen and the application is made in Australia.",
         confidence: "high",
         source_url: row820801.source_url,
         pdf_snapshot_url: row820801.pdf_snapshot_url ?? null,

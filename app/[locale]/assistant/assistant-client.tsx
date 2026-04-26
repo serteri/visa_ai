@@ -58,15 +58,10 @@ function getVisaInterestForReferral(sources: GroundedAssistantResult["sources"])
 function buildAssistantReferralHref(input: {
   locale: "en" | "tr";
   actionHref: string;
-  actionLabel: string;
   latestUserQuestion: string;
   sources: GroundedAssistantResult["sources"];
 }): string {
   if (!input.actionHref.endsWith("/agent-referral")) {
-    return input.actionHref;
-  }
-
-  if (!/speak with registered migration agent/i.test(input.actionLabel)) {
     return input.actionHref;
   }
 
@@ -236,7 +231,6 @@ export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
                           const href = buildAssistantReferralHref({
                             locale,
                             actionHref: action.href,
-                            actionLabel: action.label,
                             latestUserQuestion,
                             sources: message.result?.sources ?? [],
                           });
@@ -258,6 +252,7 @@ export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
               <Input
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
+                onInput={(event) => setInput(event.currentTarget.value)}
                 placeholder={
                   isTr
                     ? "Ornek: Sponsorlu calisma istiyorum"
