@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LockKeyhole } from "lucide-react";
 
 import { AgentReferralCta } from "@/components/sections/agent-referral-cta";
 import { ComplianceNotice } from "@/components/sections/compliance-notice";
@@ -24,6 +25,12 @@ const CONFIDENCE_VARIANTS: Record<
   medium: "secondary",
   low: "outline",
 };
+
+const LOCKED_REPORT_BENEFITS = [
+  "Risk indicators",
+  "Document checklist",
+  "Suggested next steps",
+];
 
 type ResultsContentProps = {
   locale: string;
@@ -142,6 +149,42 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
             ))}
           </div>
         )}
+
+        <Card className="border-primary/40 bg-primary/5">
+          <CardHeader className="space-y-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <CardTitle>Want a more detailed review?</CardTitle>
+              <Badge variant="secondary">Locked</Badge>
+            </div>
+            <p className="max-w-3xl text-sm text-muted-foreground">
+              Your quick check shows possible pathways. A full readiness report can help you review risks, documents, and next steps.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {LOCKED_REPORT_BENEFITS.map((benefit) => (
+                <div
+                  key={benefit}
+                  className="flex items-center gap-2 rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm"
+                >
+                  <LockKeyhole className="size-4 text-primary" />
+                  <span>{benefit}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button asChild>
+                <Link href={`/${locale}/full-check`}>Unlock full report</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={`/${locale}/agent-referral`}>
+                  Speak with a registered migration agent
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button asChild variant="outline">

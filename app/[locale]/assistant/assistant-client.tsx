@@ -75,8 +75,15 @@ function buildAssistantReferralHref(input: {
   return `/${input.locale}/agent-referral?${params.toString()}`;
 }
 
-export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
+export function AssistantClient({
+  locale,
+  initialMode = "simple",
+}: {
+  locale: "en" | "tr";
+  initialMode?: "simple" | "premium";
+}) {
   const isTr = locale === "tr";
+  const mode = initialMode;
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [messages, setMessages] = useState<AssistantMessage[]>([
@@ -139,132 +146,172 @@ export function AssistantClient({ locale }: { locale: "en" | "tr" }) {
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{isTr ? "Hizli istemler" : "Quick prompts"}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            {QUICK_PROMPTS.map((prompt) => (
-              <Button
-                key={prompt}
-                type="button"
-                variant="outline"
-                disabled={sending}
-                onClick={() => void submitMessage(prompt)}
-              >
-                {prompt}
-              </Button>
-            ))}
-          </CardContent>
-        </Card>
+        <div className="flex flex-col gap-2 rounded-lg border bg-card p-2 sm:flex-row">
+          <Button
+            asChild
+            variant={mode === "simple" ? "default" : "ghost"}
+            className="justify-center"
+          >
+            <Link href={`/${locale}/assistant`}>Ask Visa AI</Link>
+          </Button>
+          <Button
+            asChild
+            variant={mode === "premium" ? "default" : "ghost"}
+            className="justify-center"
+          >
+            <Link href={`/${locale}/assistant?mode=premium`}>
+              AI Readiness Review (Premium)
+            </Link>
+          </Button>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{isTr ? "Mesajlar" : "Messages"}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="max-h-[460px] space-y-3 overflow-auto pr-1">
-              {messages.map((message, idx) => (
-                <div
-                  key={`${message.role}-${idx}`}
-                  className={`rounded-lg border p-3 text-sm ${
-                    message.role === "assistant"
-                      ? "border-primary/20 bg-primary/5"
-                      : "border-border bg-card"
-                  }`}
-                >
-                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {message.role === "assistant"
-                      ? isTr
-                        ? "Asistan"
-                        : "Assistant"
-                      : isTr
-                        ? "Kullanici"
-                        : "User"}
-                  </p>
-                  <p>{message.text}</p>
+        {mode === "simple" ? (
+          <>
+            <Card>
+              <CardHeader>
+                <CardTitle>{isTr ? "Hizli istemler" : "Quick prompts"}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-2">
+                {QUICK_PROMPTS.map((prompt) => (
+                  <Button
+                    key={prompt}
+                    type="button"
+                    variant="outline"
+                    disabled={sending}
+                    onClick={() => void submitMessage(prompt)}
+                  >
+                    {prompt}
+                  </Button>
+                ))}
+              </CardContent>
+            </Card>
 
-                  {message.role === "assistant" && message.result && (
-                    <div className="mt-3 space-y-3">
-                      <div className="rounded-md border border-border/70 bg-background/70 p-3 text-sm">
-                        <p className="mb-2 font-semibold">
-                          {isTr ? "Kullanilan kaynaklar" : "Sources used"}
-                        </p>
+            <Card>
+              <CardHeader>
+                <CardTitle>{isTr ? "Mesajlar" : "Messages"}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="max-h-[460px] space-y-3 overflow-auto pr-1">
+                  {messages.map((message, idx) => (
+                    <div
+                      key={`${message.role}-${idx}`}
+                      className={`rounded-lg border p-3 text-sm ${
+                        message.role === "assistant"
+                          ? "border-primary/20 bg-primary/5"
+                          : "border-border bg-card"
+                      }`}
+                    >
+                      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {message.role === "assistant"
+                          ? isTr
+                            ? "Asistan"
+                            : "Assistant"
+                          : isTr
+                            ? "Kullanici"
+                            : "User"}
+                      </p>
+                      <p>{message.text}</p>
 
-                        {message.result.sources.map((source) => (
-                          <div key={`${source.subclass}-${source.detailUrl}`} className="mb-3 rounded border border-border/60 p-2">
-                            <p className="text-xs font-semibold text-muted-foreground">
-                              Subclass {source.subclass} - {source.visaName}
+                      {message.role === "assistant" && message.result && (
+                        <div className="mt-3 space-y-3">
+                          <div className="rounded-md border border-border/70 bg-background/70 p-3 text-sm">
+                            <p className="mb-2 font-semibold">
+                              {isTr ? "Kullanilan kaynaklar" : "Sources used"}
                             </p>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              <Button asChild size="sm" variant="outline">
-                                <Link href={source.detailUrl}>{isTr ? "Vize detayi" : "Visa details"}</Link>
-                              </Button>
-                              {source.sourceUrl && (
-                                <Button asChild size="sm" variant="outline">
-                                  <a href={source.sourceUrl} target="_blank" rel="noopener noreferrer">
-                                    {isTr ? "Resmi kaynak" : "Official source"}
-                                  </a>
-                                </Button>
-                              )}
-                              {source.pdfUrls.map((pdfUrl, index) => (
-                                <Button key={`${pdfUrl}-${index}`} asChild size="sm" variant="outline">
-                                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                                    PDF {index + 1}
-                                  </a>
-                                </Button>
-                              ))}
-                            </div>
+
+                            {message.result.sources.map((source) => (
+                              <div key={`${source.subclass}-${source.detailUrl}`} className="mb-3 rounded border border-border/60 p-2">
+                                <p className="text-xs font-semibold text-muted-foreground">
+                                  Subclass {source.subclass} - {source.visaName}
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  <Button asChild size="sm" variant="outline">
+                                    <Link href={source.detailUrl}>{isTr ? "Vize detayi" : "Visa details"}</Link>
+                                  </Button>
+                                  {source.sourceUrl && (
+                                    <Button asChild size="sm" variant="outline">
+                                      <a href={source.sourceUrl} target="_blank" rel="noopener noreferrer">
+                                        {isTr ? "Resmi kaynak" : "Official source"}
+                                      </a>
+                                    </Button>
+                                  )}
+                                  {source.pdfUrls.map((pdfUrl, index) => (
+                                    <Button key={`${pdfUrl}-${index}`} asChild size="sm" variant="outline">
+                                      <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                                        PDF {index + 1}
+                                      </a>
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
 
-                      <div className="flex flex-wrap gap-2">
-                        {message.result.nextActions.map((action) => {
-                          const latestUserQuestion =
-                            messages
-                              .slice(0, idx)
-                              .reverse()
-                              .find((item): item is Extract<AssistantMessage, { role: "user" }> => item.role === "user")
-                              ?.text ?? "";
+                          <div className="flex flex-wrap gap-2">
+                            {message.result.nextActions.map((action) => {
+                              const latestUserQuestion =
+                                messages
+                                  .slice(0, idx)
+                                  .reverse()
+                                  .find((item): item is Extract<AssistantMessage, { role: "user" }> => item.role === "user")
+                                  ?.text ?? "";
 
-                          const href = buildAssistantReferralHref({
-                            locale,
-                            actionHref: action.href,
-                            latestUserQuestion,
-                            sources: message.result?.sources ?? [],
-                          });
+                              const href = buildAssistantReferralHref({
+                                locale,
+                                actionHref: action.href,
+                                latestUserQuestion,
+                                sources: message.result?.sources ?? [],
+                              });
 
-                          return (
-                            <Button key={action.href + action.label} asChild size="sm" variant="secondary">
-                              <Link href={href}>{action.label}</Link>
-                            </Button>
-                          );
-                        })}
-                      </div>
+                              return (
+                                <Button key={action.href + action.label} asChild size="sm" variant="secondary">
+                                  <Link href={href}>{action.label}</Link>
+                                </Button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row">
-              <Input
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                onInput={(event) => setInput(event.currentTarget.value)}
-                placeholder={
-                  isTr
-                    ? "Ornek: Sponsorlu calisma istiyorum"
-                    : "Example: I want a sponsored work pathway"
-                }
-              />
-              <Button type="submit" disabled={sending || !input.trim()}>
-                {sending ? (isTr ? "Gonderiliyor..." : "Sending...") : isTr ? "Gonder" : "Send"}
+                <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row">
+                  <Input
+                    value={input}
+                    onChange={(event) => setInput(event.target.value)}
+                    onInput={(event) => setInput(event.currentTarget.value)}
+                    placeholder={
+                      isTr
+                        ? "Ornek: Sponsorlu calisma istiyorum"
+                        : "Example: I want a sponsored work pathway"
+                    }
+                  />
+                  <Button type="submit" disabled={sending || !input.trim()}>
+                    {sending ? (isTr ? "Gonderiliyor..." : "Sending...") : isTr ? "Gonder" : "Send"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </>
+        ) : (
+          <Card className="border-primary/40 bg-primary/5">
+            <CardHeader className="space-y-2">
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary">Premium</Badge>
+                <CardTitle>AI Readiness Review</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                This feature will provide a more detailed analysis of your situation.
+              </p>
+              <Button asChild>
+                <Link href={`/${locale}/full-check`}>Unlock detailed review</Link>
               </Button>
-            </form>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="border-l-4 border-l-primary">
           <CardContent className="p-5 text-sm text-muted-foreground">

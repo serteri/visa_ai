@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 
 import { ComplianceNotice } from "@/components/sections/compliance-notice";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -212,7 +213,46 @@ export default function CheckerPage() {
           </p>
         </div>
 
-        <Card>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader className="space-y-2">
+              <CardTitle>Quick Pathway Check</CardTitle>
+              <p className="text-sm font-semibold text-primary">Free · 2 minutes</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Get a simple overview of visa pathways that may be relevant based on your answers.
+              </p>
+              <Button asChild className="w-full sm:w-auto">
+                <Link href="#quick-pathway-check">Start quick check</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/50 bg-primary/5">
+            <CardHeader className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle>Full Visa Readiness Report</CardTitle>
+                <Badge variant="secondary">Premium</Badge>
+              </div>
+              <p className="text-sm font-semibold text-primary">Detailed · Premium</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                A structured review including risks, documents, and next steps tailored to your situation.
+              </p>
+              <Button asChild className="w-full sm:w-auto">
+                <Link href={`/${locale}/full-check`}>Unlock full report</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <p className="text-sm text-muted-foreground">
+          This tool provides general information only.
+        </p>
+
+        <Card id="quick-pathway-check">
           <CardHeader className="space-y-4">
             <div className="flex items-center justify-between gap-3">
               <CardTitle>

@@ -64,6 +64,18 @@ export const agentReferrals = pgTable("agent_referrals", {
   created_at: timestamp("created_at").defaultNow(),
 });
 
+export const fullCheckWaitlist = pgTable("full_check_waitlist", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull(),
+  full_name: text("full_name"),
+  visa_interest: text("visa_interest"),
+  preferred_language: text("preferred_language"),
+  current_country: text("current_country"),
+  main_goal: text("main_goal"),
+  source: text("source").default("full_check"),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
 export const agents = pgTable("agents", {
   id: uuid("id").primaryKey().defaultRandom(),
   full_name: text("full_name").notNull(),

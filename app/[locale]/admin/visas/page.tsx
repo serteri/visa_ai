@@ -3,6 +3,7 @@ import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AdminNav } from "@/app/[locale]/admin/admin-nav";
 
 async function getVisas() {
   const visas = await db.select().from(visaTypes);
@@ -63,12 +64,19 @@ function ExpandableJSON({ data }: { data: unknown }) {
   );
 }
 
-export default async function AdminVisasPage() {
+type AdminVisasPageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function AdminVisasPage({ params }: AdminVisasPageProps) {
+  const { locale } = await params;
   const visas = await getVisas();
 
   return (
     <main className="ambient-bg flex-1 py-12">
       <section className="section-shell space-y-6">
+        <AdminNav locale={locale} />
+
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">
             Admin

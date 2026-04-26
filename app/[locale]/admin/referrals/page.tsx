@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { assignReferralToAgent, updateReferralStatus } from "@/app/[locale]/admin/referrals/actions";
 import { matchAgents } from "@/lib/agents/match-agents";
+import { AdminNav } from "@/app/[locale]/admin/admin-nav";
 
 const STATUS_OPTIONS = ["new", "contacted", "referred", "closed"] as const;
 
@@ -126,6 +127,8 @@ export default async function AdminReferralsPage({ params }: AdminReferralsPageP
   return (
     <main className="ambient-bg flex-1 py-12">
       <section className="section-shell space-y-6">
+        <AdminNav locale={locale} />
+
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">Admin</p>
           <h1 className="text-3xl font-bold">Agent Referral Leads</h1>
