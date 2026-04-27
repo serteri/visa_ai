@@ -125,7 +125,7 @@ function neutralizeDeterministicLanguage(answer: string): string {
 
 function buildLocaleFallback(locale: string): string {
   if (locale === "tr") {
-    return "Saklanan bilgiler bu soru icin yeterli ayrinti icermiyor. Kayitli bir goc danismani veya Avustralya hukuk uygulayicisi destegi ilgili olabilir.";
+    return "Saklanan bilgiler bu soru için yeterli ayrıntı içermiyor. Kayıtlı bir göç danışmanı veya Avustralya hukuk uygulayıcısı desteği ilgili olabilir.";
   }
 
   return "The stored information does not contain enough detail for this question. Registered migration agent or Australian legal practitioner input may be relevant.";

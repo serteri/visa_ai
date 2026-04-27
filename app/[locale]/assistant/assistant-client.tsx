@@ -28,18 +28,32 @@ type AssistantMessage =
       result?: GroundedAssistantResult;
     };
 
-const QUICK_PROMPTS = [
+const QUICK_PROMPTS_EN = [
   "I want to study in Australia",
   "I have an employer sponsor",
   "I want PR in Australia",
   "I am a civil engineer and want to migrate",
 ] as const;
 
-const LOCKED_REVIEW_SECTIONS = [
+const QUICK_PROMPTS_TR = [
+  "Avustralya'da eğitim almak istiyorum",
+  "İşveren sponsorum var",
+  "Avustralya'da kalıcı oturum yollarını öğrenmek istiyorum",
+  "İnşaat mühendisiyim ve göç yollarını araştırmak istiyorum",
+] as const;
+
+const LOCKED_REVIEW_SECTIONS_EN = [
   "Detailed risk breakdown",
   "Document readiness checklist",
   "Agent-ready summary",
   "Downloadable report",
+];
+
+const LOCKED_REVIEW_SECTIONS_TR = [
+  "Detaylı risk analizi",
+  "Belge hazırlık kontrol listesi",
+  "Danışmana hazır özet",
+  "İndirilebilir rapor",
 ];
 
 type ReadinessPreviewForm = {
@@ -146,7 +160,7 @@ export function AssistantClient({
     {
       role: "assistant",
       text: isTr
-        ? "Genel bilgiye dayali vize yollarini kesfetmeye yardimci olabilirim."
+        ? "Genel bilgiye dayalı vize yollarını keşfetmenize yardımcı olabilirim."
         : "I can help you explore visa pathways based on general information.",
     },
   ]);
@@ -175,7 +189,7 @@ export function AssistantClient({
         {
           role: "assistant",
           text: isTr
-            ? "Su anda yanit olusturulamadi. Genel bilgiye dayali yollari kesfetmenize yardimci olabilirim ve kayitli bir goc danismani ile gorusmeyi degerlendirebilirsiniz."
+            ? "Şu anda yanıt oluşturulamadı. Genel bilgiye dayalı yolları keşfetmenize yardımcı olabilirim ve kayıtlı bir göç danışmanı ile görüşmeyi değerlendirebilirsiniz."
             : "A response could not be generated right now. I can still help you explore pathways based on general information, and you may consider speaking with a registered migration agent.",
         },
       ]);
@@ -229,15 +243,20 @@ export function AssistantClient({
     );
   }
 
+  const quickPrompts = isTr ? QUICK_PROMPTS_TR : QUICK_PROMPTS_EN;
+  const lockedSections = isTr ? LOCKED_REVIEW_SECTIONS_TR : LOCKED_REVIEW_SECTIONS_EN;
+
   return (
     <main className="ambient-bg flex-1 py-12">
       <section className="section-shell space-y-6">
         <div className="space-y-3">
-          <Badge variant="secondary">{isTr ? "Kontrollu Asistan" : "Controlled Assistant"}</Badge>
-          <h1 className="text-3xl font-bold sm:text-4xl">AI Visa Assistant</h1>
+          <Badge variant="secondary">{isTr ? "Kontrollü Asistan" : "Controlled Assistant"}</Badge>
+          <h1 className="text-3xl font-bold sm:text-4xl">
+            {isTr ? "AI Vize Asistanı" : "AI Visa Assistant"}
+          </h1>
           <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
             {isTr
-              ? "Bu asistan genel bilgi sunar, goc veya hukuki tavsiye vermez."
+              ? "Bu asistan yalnızca genel bilgi sunar; göç veya hukuki tavsiye vermez."
               : "This assistant provides general information and does not provide migration or legal advice."}
           </p>
         </div>
@@ -248,7 +267,9 @@ export function AssistantClient({
             variant={mode === "simple" ? "default" : "ghost"}
             className="justify-center"
           >
-            <Link href={`/${locale}/assistant`}>Ask Visa AI</Link>
+            <Link href={`/${locale}/assistant`}>
+              {isTr ? "Vize AI'a Sor" : "Ask Visa AI"}
+            </Link>
           </Button>
           <Button
             asChild
@@ -256,7 +277,7 @@ export function AssistantClient({
             className="justify-center"
           >
             <Link href={`/${locale}/assistant?mode=premium`}>
-              AI Readiness Review (Preview)
+              {isTr ? "AI Hazırlık İncelemesi" : "AI Readiness Review (Preview)"}
             </Link>
           </Button>
         </div>
@@ -265,10 +286,10 @@ export function AssistantClient({
           <>
             <Card>
               <CardHeader>
-                <CardTitle>{isTr ? "Hizli istemler" : "Quick prompts"}</CardTitle>
+                <CardTitle>{isTr ? "Hızlı istemler" : "Quick prompts"}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">
-                {QUICK_PROMPTS.map((prompt) => (
+                {quickPrompts.map((prompt) => (
                   <Button
                     key={prompt}
                     type="button"
@@ -303,7 +324,7 @@ export function AssistantClient({
                             ? "Asistan"
                             : "Assistant"
                           : isTr
-                            ? "Kullanici"
+                            ? "Kullanıcı"
                             : "User"}
                       </p>
                       <p>{message.text}</p>
@@ -312,7 +333,7 @@ export function AssistantClient({
                         <div className="mt-3 space-y-3">
                           <div className="rounded-md border border-border/70 bg-background/70 p-3 text-sm">
                             <p className="mb-2 font-semibold">
-                              {isTr ? "Kullanilan kaynaklar" : "Sources used"}
+                              {isTr ? "Kullanılan kaynaklar" : "Sources used"}
                             </p>
 
                             {message.result.sources.map((source) => (
@@ -322,7 +343,7 @@ export function AssistantClient({
                                 </p>
                                 <div className="mt-2 flex flex-wrap gap-2">
                                   <Button asChild size="sm" variant="outline">
-                                    <Link href={source.detailUrl}>{isTr ? "Vize detayi" : "Visa details"}</Link>
+                                    <Link href={source.detailUrl}>{isTr ? "Vize detayı" : "Visa details"}</Link>
                                   </Button>
                                   {source.sourceUrl && (
                                     <Button asChild size="sm" variant="outline">
@@ -379,12 +400,12 @@ export function AssistantClient({
                     onInput={(event) => setInput(event.currentTarget.value)}
                     placeholder={
                       isTr
-                        ? "Ornek: Sponsorlu calisma istiyorum"
+                        ? "Örnek: Sponsorlu çalışma vizesi hakkında bilgi almak istiyorum"
                         : "Example: I want a sponsored work pathway"
                     }
                   />
                   <Button type="submit" disabled={sending || !input.trim()}>
-                    {sending ? (isTr ? "Gonderiliyor..." : "Sending...") : isTr ? "Gonder" : "Send"}
+                    {sending ? (isTr ? "Gönderiliyor..." : "Sending...") : isTr ? "Gönder" : "Send"}
                   </Button>
                 </form>
               </CardContent>
@@ -395,28 +416,34 @@ export function AssistantClient({
             <Card className="border-primary/40 bg-primary/5">
               <CardHeader className="space-y-2">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant="secondary">Preview</Badge>
-                  <CardTitle>AI Readiness Review</CardTitle>
+                  <Badge variant="secondary">{isTr ? "Ön İnceleme" : "Preview"}</Badge>
+                  <CardTitle>{isTr ? "AI Hazırlık İncelemesi" : "AI Readiness Review"}</CardTitle>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Generate a limited preview across possible pathways, missing information, basic risk signals, and suggested next steps.
+                  {isTr
+                    ? "Olası vize yolları, eksik bilgiler, temel risk sinyalleri ve önerilen sonraki adımlar için yapılandırılmış bir ön inceleme oluşturun."
+                    : "Generate a limited preview across possible pathways, missing information, basic risk signals, and suggested next steps."}
                 </p>
               </CardHeader>
               <CardContent>
                 <form onSubmit={onPreviewSubmit} className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2 sm:col-span-2">
-                      <Label htmlFor="preview-main-goal">Main goal</Label>
+                      <Label htmlFor="preview-main-goal">{isTr ? "Ana hedef" : "Main goal"}</Label>
                       <Textarea
                         id="preview-main-goal"
                         value={previewForm.mainGoal}
                         onChange={(event) => updatePreviewField("mainGoal", event.target.value)}
-                        placeholder="Example: compare partner and skilled possible pathways"
+                        placeholder={
+                          isTr
+                            ? "Örnek: Partner ve yetenekli yolları karşılaştır"
+                            : "Example: compare partner and skilled possible pathways"
+                        }
                         rows={3}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="preview-current-country">Current country</Label>
+                      <Label htmlFor="preview-current-country">{isTr ? "Bulunduğunuz ülke" : "Current country"}</Label>
                       <Input
                         id="preview-current-country"
                         value={previewForm.currentCountry}
@@ -425,52 +452,52 @@ export function AssistantClient({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="preview-passport-country">Passport country</Label>
+                      <Label htmlFor="preview-passport-country">{isTr ? "Pasaport ülkesi" : "Passport country"}</Label>
                       <Input
                         id="preview-passport-country"
                         value={previewForm.passportCountry}
                         onChange={(event) => updatePreviewField("passportCountry", event.target.value)}
-                        placeholder="Passport country"
+                        placeholder={isTr ? "Pasaport ülkesi" : "Passport country"}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="preview-age">Age</Label>
+                      <Label htmlFor="preview-age">{isTr ? "Yaş" : "Age"}</Label>
                       <Input
                         id="preview-age"
                         value={previewForm.age}
                         onChange={(event) => updatePreviewField("age", event.target.value)}
-                        placeholder="Age"
+                        placeholder={isTr ? "Yaş" : "Age"}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="preview-occupation">Occupation</Label>
+                      <Label htmlFor="preview-occupation">{isTr ? "Meslek veya eğitim geçmişi" : "Occupation"}</Label>
                       <Input
                         id="preview-occupation"
                         value={previewForm.occupation}
                         onChange={(event) => updatePreviewField("occupation", event.target.value)}
-                        placeholder="Occupation or study background"
+                        placeholder={isTr ? "Meslek veya eğitim geçmişiniz" : "Occupation or study background"}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="preview-english">English level</Label>
+                      <Label htmlFor="preview-english">{isTr ? "İngilizce seviyesi" : "English level"}</Label>
                       <Input
                         id="preview-english"
                         value={previewForm.englishLevel}
                         onChange={(event) => updatePreviewField("englishLevel", event.target.value)}
-                        placeholder="Not sure, competent, IELTS/PTE score..."
+                        placeholder={isTr ? "Emin değilim, yetkin, IELTS/PTE skoru..." : "Not sure, competent, IELTS/PTE score..."}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="preview-sponsor-family">Sponsor / partner / family in Australia</Label>
+                      <Label htmlFor="preview-sponsor-family">{isTr ? "Avustralya'da sponsor, partner veya aile" : "Sponsor / partner / family in Australia"}</Label>
                       <Input
                         id="preview-sponsor-family"
                         value={previewForm.sponsorFamily}
                         onChange={(event) => updatePreviewField("sponsorFamily", event.target.value)}
-                        placeholder="Employer sponsor, partner, family, none..."
+                        placeholder={isTr ? "İşveren sponsoru, partner, aile, yok..." : "Employer sponsor, partner, family, none..."}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="preview-pathway">Preferred pathway if known</Label>
+                      <Label htmlFor="preview-pathway">{isTr ? "Biliniyorsa tercih edilen vize yolu" : "Preferred pathway if known"}</Label>
                       <Input
                         id="preview-pathway"
                         value={previewForm.preferredPathway}
@@ -479,19 +506,25 @@ export function AssistantClient({
                       />
                     </div>
                     <div className="space-y-2 sm:col-span-2">
-                      <Label htmlFor="preview-concern">Biggest concern</Label>
+                      <Label htmlFor="preview-concern">{isTr ? "En büyük endişe" : "Biggest concern"}</Label>
                       <Textarea
                         id="preview-concern"
                         value={previewForm.biggestConcern}
                         onChange={(event) => updatePreviewField("biggestConcern", event.target.value)}
-                        placeholder="Example: documents, timing, English score, sponsor, relationship evidence"
+                        placeholder={
+                          isTr
+                            ? "Örnek: belgeler, zamanlama, İngilizce skoru, sponsor, ilişki kanıtı"
+                            : "Example: documents, timing, English score, sponsor, relationship evidence"
+                        }
                         rows={3}
                       />
                     </div>
                   </div>
 
                   <Button type="submit" disabled={previewSending}>
-                    {previewSending ? "Generating..." : "Generate preview review"}
+                    {previewSending
+                      ? isTr ? "Oluşturuluyor..." : "Generating..."
+                      : isTr ? "Ön inceleme oluştur" : "Generate preview review"}
                   </Button>
                 </form>
               </CardContent>
@@ -500,35 +533,55 @@ export function AssistantClient({
             {previewResult && (
               <section className="space-y-4">
                 <div className="space-y-2">
-                  <Badge variant="outline">Limited preview</Badge>
-                  <h2 className="text-2xl font-bold">Preview review</h2>
+                  <Badge variant="outline">{isTr ? "Sınırlı ön inceleme" : "Limited preview"}</Badge>
+                  <h2 className="text-2xl font-bold">{isTr ? "Ön inceleme sonuçları" : "Preview review"}</h2>
                   <p className="text-sm text-muted-foreground">
-                    This preview uses general information only and is not migration advice.
+                    {isTr
+                      ? "Bu ön inceleme yalnızca genel bilgi kullanır ve göç tavsiyesi değildir."
+                      : "This preview uses general information only and is not migration advice."}
                   </p>
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-2">
-                  <PreviewList title="Possible pathway areas" items={previewResult.possiblePathwayAreas} />
-                  <PreviewList title="Missing information" items={previewResult.missingInformation} />
-                  <PreviewList title="Basic risk signals" items={previewResult.basicRiskSignals} />
-                  <PreviewList title="Suggested next steps" items={previewResult.suggestedNextSteps} />
+                  <PreviewList
+                    title={isTr ? "Olası vize yolları" : "Possible pathway areas"}
+                    items={previewResult.possiblePathwayAreas}
+                  />
+                  <PreviewList
+                    title={isTr ? "Eksik bilgiler" : "Missing information"}
+                    items={previewResult.missingInformation}
+                  />
+                  <PreviewList
+                    title={isTr ? "Temel risk sinyalleri" : "Basic risk signals"}
+                    items={previewResult.basicRiskSignals}
+                  />
+                  <PreviewList
+                    title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
+                    items={previewResult.suggestedNextSteps}
+                  />
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-2">
-                  {LOCKED_REVIEW_SECTIONS.map((section) => (
+                  {lockedSections.map((section) => (
                     <Card key={section} className="relative overflow-hidden border-dashed">
                       <CardHeader className="opacity-45 blur-[1px]">
                         <CardTitle className="text-base">{section}</CardTitle>
                       </CardHeader>
                       <CardContent className="opacity-45 blur-[1px]">
                         <p className="text-sm text-muted-foreground">
-                          This section is part of the full report.
+                          {isTr
+                            ? "Bu bölüm tam raporda yer almaktadır."
+                            : "This section is part of the full report."}
                         </p>
                       </CardContent>
                       <div className="absolute inset-0 flex items-center justify-center bg-background/65 p-4 backdrop-blur-[1px]">
                         <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-2 text-sm font-medium shadow-sm">
                           <LockKeyhole className="size-4 text-primary" />
-                          <span>Available in a later Full Visa Readiness Report version</span>
+                          <span>
+                            {isTr
+                              ? "Tam Vize Hazırlık Raporunda yer alacak"
+                              : "Included in the Full Visa Readiness Report"}
+                          </span>
                         </div>
                       </div>
                     </Card>
@@ -537,14 +590,22 @@ export function AssistantClient({
 
                 <Card className="border-primary/40 bg-primary/5">
                   <CardHeader>
-                    <CardTitle>Want the readiness report preview?</CardTitle>
+                    <CardTitle>
+                      {isTr
+                        ? "Hazırlık raporu ön izlemesini almak ister misiniz?"
+                        : "Want the readiness report preview?"}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="max-w-2xl text-sm text-muted-foreground">
-                      Your preview shows the basics. The readiness report preview includes a simplified overview while deeper risk review, document readiness, and agent-ready summary features continue improving.
+                      {isTr
+                        ? "Bu ön inceleme temel bilgileri gösterir. Hazırlık raporu ön izlemesi; olası yollar, risk göstergeleri, belge kontrol listesi ve önerilen sonraki adımları içeren yapılandırılmış bir genel bakış sunar."
+                        : "Your preview shows the basics. The readiness report preview includes a simplified overview with pathway comparison, risk indicators, document checklist, and suggested next steps."}
                     </p>
                     <Button asChild className="shrink-0">
-                      <Link href={fullCheckHref}>Continue to report preview</Link>
+                      <Link href={fullCheckHref}>
+                        {isTr ? "Rapor ön izlemesine devam et" : "Continue to report preview"}
+                      </Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -552,14 +613,18 @@ export function AssistantClient({
             )}
 
             <p className="text-sm text-muted-foreground">
-              This is general information only and not migration advice.
+              {isTr
+                ? "Bu yalnızca genel bilgidir ve göç tavsiyesi değildir."
+                : "This is general information only and not migration advice."}
             </p>
           </div>
         )}
 
         <Card className="border-l-4 border-l-primary">
           <CardContent className="p-5 text-sm text-muted-foreground">
-            This assistant provides general information only. It does not provide migration advice, legal advice, or predict visa outcomes.
+            {isTr
+              ? "Bu asistan yalnızca genel bilgi sunar. Göç tavsiyesi, hukuki tavsiye veya vize sonucu tahmini sağlamaz."
+              : "This assistant provides general information only. It does not provide migration advice, legal advice, or predict visa outcomes."}
           </CardContent>
         </Card>
       </section>

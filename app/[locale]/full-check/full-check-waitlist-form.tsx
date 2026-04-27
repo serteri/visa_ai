@@ -38,7 +38,7 @@ function ReportSection({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-function LockedSection({ title }: { title: string }) {
+function LockedSection({ title, isTr }: { title: string; isTr: boolean }) {
   return (
     <Card className="relative overflow-hidden border-dashed">
       <CardHeader className="opacity-45 blur-[1px]">
@@ -46,13 +46,15 @@ function LockedSection({ title }: { title: string }) {
       </CardHeader>
       <CardContent className="opacity-45 blur-[1px]">
         <p className="text-sm text-muted-foreground">
-          A deeper section will be available in the more detailed version.
+          {isTr
+            ? "Daha ayrıntılı bir bölüm geliştirilmektedir."
+            : "A deeper section is being developed."}
         </p>
       </CardContent>
       <div className="absolute inset-0 flex items-center justify-center bg-background/65 p-4 backdrop-blur-[1px]">
         <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-2 text-sm font-medium shadow-sm">
           <LockKeyhole className="size-4 text-primary" />
-          <span>Locked</span>
+          <span>{isTr ? "Kilitli" : "Locked"}</span>
         </div>
       </div>
     </Card>
@@ -71,6 +73,7 @@ export function FullCheckWaitlistForm({
     source?: string;
   };
 }) {
+  const isTr = locale === "tr";
   const initialState: FullCheckWaitlistState = {
     status: "idle",
   };
@@ -87,17 +90,17 @@ export function FullCheckWaitlistForm({
         <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-full-name">Full name</Label>
+          <Label htmlFor="waitlist-full-name">{isTr ? "Ad soyad" : "Full name"}</Label>
           <Input
             id="waitlist-full-name"
             name="fullName"
             autoComplete="name"
-            placeholder="Your name"
+            placeholder={isTr ? "Adınız" : "Your name"}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-email">Email address</Label>
+          <Label htmlFor="waitlist-email">{isTr ? "E-posta adresi" : "Email address"}</Label>
           <Input
             id="waitlist-email"
             name="email"
@@ -109,33 +112,33 @@ export function FullCheckWaitlistForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-visa-interest">Visa interest</Label>
+          <Label htmlFor="waitlist-visa-interest">{isTr ? "Vize ilgi alanı" : "Visa interest"}</Label>
           <Input
             id="waitlist-visa-interest"
             name="visaInterest"
             defaultValue={initialValues.visaInterest ?? ""}
-            placeholder="Student, skilled, partner, or not sure"
+            placeholder={isTr ? "Öğrenci, yetenekli, partner veya emin değilim" : "Student, skilled, partner, or not sure"}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-current-country">Current country</Label>
+          <Label htmlFor="waitlist-current-country">{isTr ? "Bulunduğunuz ülke" : "Current country"}</Label>
           <Input
             id="waitlist-current-country"
             name="currentCountry"
             defaultValue={initialValues.currentCountry ?? ""}
             autoComplete="country-name"
-            placeholder="Australia, Turkiye, India, or elsewhere"
+            placeholder={isTr ? "Avustralya, Türkiye, Hindistan veya başka bir ülke" : "Australia, Turkiye, India, or elsewhere"}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-main-goal">Main goal</Label>
+          <Label htmlFor="waitlist-main-goal">{isTr ? "Ana hedef" : "Main goal"}</Label>
           <Textarea
             id="waitlist-main-goal"
             name="mainGoal"
             defaultValue={initialValues.mainGoal ?? ""}
-            placeholder="Tell us what you want the report to help with"
+            placeholder={isTr ? "Raporun hangi konuda yardımcı olmasını istediğinizi belirtin" : "Tell us what you want the report to help with"}
             rows={3}
           />
         </div>
@@ -153,28 +156,55 @@ export function FullCheckWaitlistForm({
         )}
 
         <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? "Generating..." : "Get free basic report"}
+          {isPending
+            ? isTr ? "Oluşturuluyor..." : "Generating..."
+            : isTr ? "Ücretsiz temel raporu al" : "Get free basic report"}
         </Button>
       </form>
 
       {state.status === "success" && state.report && (
         <section className="space-y-4">
           <div className="space-y-1">
-            <h3 className="text-xl font-bold">Your basic readiness report</h3>
+            <h3 className="text-xl font-bold">
+              {isTr ? "Temel hazırlık raporunuz" : "Your basic readiness report"}
+            </h3>
             <p className="text-sm text-muted-foreground">
-              This limited report provides general information only and uses the details you submitted.
+              {isTr
+                ? "Bu sınırlı rapor yalnızca genel bilgi içerir ve gönderdiğiniz bilgileri kullanır."
+                : "This limited report provides general information only and uses the details you submitted."}
             </p>
           </div>
 
-          <ReportSection title="Possible pathways" items={state.report.possiblePathways} />
-          <ReportSection title="Basic risk indicators" items={state.report.riskIndicators} />
-          <ReportSection title="Basic document checklist" items={state.report.documentChecklist} />
-          <ReportSection title="Suggested next steps" items={state.report.nextSteps} />
+          <ReportSection
+            title={isTr ? "Olası vize yolları" : "Possible pathways"}
+            items={state.report.possiblePathways}
+          />
+          <ReportSection
+            title={isTr ? "Temel risk göstergeleri" : "Basic risk indicators"}
+            items={state.report.riskIndicators}
+          />
+          <ReportSection
+            title={isTr ? "Temel belge kontrol listesi" : "Basic document checklist"}
+            items={state.report.documentChecklist}
+          />
+          <ReportSection
+            title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
+            items={state.report.nextSteps}
+          />
 
           <div className="grid gap-3">
-            <LockedSection title="Detailed risk breakdown" />
-            <LockedSection title="Personal preparation plan" />
-            <LockedSection title="Downloadable report" />
+            <LockedSection
+              title={isTr ? "Detaylı risk analizi" : "Detailed risk breakdown"}
+              isTr={isTr}
+            />
+            <LockedSection
+              title={isTr ? "Kişisel hazırlık planı" : "Personal preparation plan"}
+              isTr={isTr}
+            />
+            <LockedSection
+              title={isTr ? "İndirilebilir rapor" : "Downloadable report"}
+              isTr={isTr}
+            />
           </div>
         </section>
       )}
