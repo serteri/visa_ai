@@ -25,6 +25,9 @@ const SYSTEM_PROMPT =
 const HARD_SAFETY_REPLY =
   "I can't determine outcomes or tell you which application to make. I can summarise the stored pathway information and suggest what you may want to review with a registered migration agent.";
 
+const PERSONALISED_ADVICE_FALLBACK =
+  "I can provide general information about visa pathways, but for personalised advice, you should speak with a registered migration agent.";
+
 function normalize(message: string): string {
   return message.trim().toLowerCase();
 }
@@ -36,9 +39,15 @@ function includesAny(text: string, tokens: string[]): boolean {
 function isSafetyEligibilityQuestion(message: string): boolean {
   const lower = normalize(message);
   return includesAny(lower, [
+    "eligible",
+    "qualify",
+    "approved",
     "am i eligible",
     "will i be approved",
     "will i get approved",
+    "can i get",
+    "should i",
+    "what should i do",
     "should i apply",
     "can i get this visa",
     "can i get approved",
@@ -51,6 +60,35 @@ function addGeneralInfoSentence(answer: string): string {
     return base;
   }
   return `${base} This is general information only.`;
+}
+
+function responseHasRiskOrDecisionLanguage(answer: string): boolean {
+  return /\b(risk|risks|decision|decide|apply|application to make|outcome|approved|approval|refusal|refused)\b/i.test(
+    answer
+  );
+}
+
+function appendPersonalisedAdviceFallback(answer: string): string {
+  const base = answer.trim();
+  if (base.includes(PERSONALISED_ADVICE_FALLBACK)) {
+    return base;
+  }
+  return `${base} ${PERSONALISED_ADVICE_FALLBACK}`;
+}
+
+function applyAssistantSafetyFooter(input: {
+  answer: string;
+  message: string;
+  appendFallback?: boolean;
+}) {
+  const withGeneralInfo = addGeneralInfoSentence(input.answer);
+  const shouldAppendFallback =
+    input.appendFallback ||
+    isSafetyEligibilityQuestion(input.message) ||
+    responseHasRiskOrDecisionLanguage(withGeneralInfo);
+
+  if (!shouldAppendFallback) return withGeneralInfo;
+  return appendPersonalisedAdviceFallback(withGeneralInfo);
 }
 
 function sanitizeModelOutput(text: string): string {
@@ -289,9 +327,13 @@ export async function generateGroundedAnswer(input: {
   const nextActions = buildActions(locale, input.context);
 
   if (isSafetyEligibilityQuestion(input.message)) {
-    const safeAnswer = addGeneralInfoSentence(
-      neutralizeDeterministicLanguage(withSourceSubclassFooter(HARD_SAFETY_REPLY, input.context))
-    );
+    const safeAnswer = applyAssistantSafetyFooter({
+      answer: neutralizeDeterministicLanguage(
+        withSourceSubclassFooter(HARD_SAFETY_REPLY, input.context)
+      ),
+      message: input.message,
+      appendFallback: true,
+    });
     return {
       answer: safeAnswer,
       sources,
@@ -300,7 +342,10 @@ export async function generateGroundedAnswer(input: {
   }
 
   if (input.context.length === 0) {
-    const fallback = addGeneralInfoSentence(buildLocaleFallback(locale));
+    const fallback = applyAssistantSafetyFooter({
+      answer: buildLocaleFallback(locale),
+      message: input.message,
+    });
     return {
       answer: fallback,
       sources,
@@ -313,9 +358,10 @@ export async function generateGroundedAnswer(input: {
     answer = deterministicAnswer(input.message, locale, input.context);
   }
 
-  const finalAnswer = addGeneralInfoSentence(
-    neutralizeDeterministicLanguage(withSourceSubclassFooter(answer, input.context))
-  );
+  const finalAnswer = applyAssistantSafetyFooter({
+    answer: neutralizeDeterministicLanguage(withSourceSubclassFooter(answer, input.context)),
+    message: input.message,
+  });
 
   return {
     answer: finalAnswer,
