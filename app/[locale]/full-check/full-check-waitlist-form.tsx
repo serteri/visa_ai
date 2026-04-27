@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { LockKeyhole } from "lucide-react";
+import { Download, LockKeyhole } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import {
   type FullCheckWaitlistState,
   submitFullCheckWaitlist,
 } from "@/app/[locale]/full-check/actions";
+import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 
 function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
@@ -82,6 +83,16 @@ export function FullCheckWaitlistForm({
     submitFullCheckWaitlist,
     initialState
   );
+
+  function handleDownloadPDF() {
+    if (!state.report) return;
+
+    generateReadinessPDF({
+      report: state.report,
+      locale: locale === "tr" ? "tr" : "en",
+      userInputSummary: state.userInput || {},
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -351,6 +362,13 @@ export function FullCheckWaitlistForm({
               <p className="text-xs text-amber-800">{state.report.disclaimer}</p>
             </CardContent>
           </Card>
+
+          <div className="flex gap-3">
+            <Button onClick={handleDownloadPDF} variant="default" className="flex gap-2">
+              <Download className="size-4" />
+              {isTr ? "Raporu PDF olarak indir" : "Download report PDF"}
+            </Button>
+          </div>
         </section>
       )}
     </div>

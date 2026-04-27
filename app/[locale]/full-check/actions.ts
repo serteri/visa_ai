@@ -12,6 +12,18 @@ export type FullCheckWaitlistState = {
   message?: string;
   errors?: Record<string, string>;
   report?: ReadinessReport;
+  userInput?: {
+    name?: string;
+    email?: string;
+    mainGoal?: string;
+    currentCountry?: string;
+    passportCountry?: string;
+    age?: string;
+    occupation?: string;
+    englishLevel?: string;
+    sponsorOrFamily?: string;
+    biggestConcern?: string;
+  };
 };
 
 async function ensureFullCheckWaitlistTable() {
@@ -129,5 +141,17 @@ export async function submitFullCheckWaitlist(
       ? "Raporunuz oluşturuldu. E-postanıza bir özet göndereceğiz."
       : "Your report has been generated. We'll send a summary to your email.",
     report,
+    userInput: {
+      name: fullName || undefined,
+      email,
+      mainGoal: mainGoal || undefined,
+      currentCountry: currentCountry || undefined,
+      passportCountry: passportCountry || undefined,
+      age: age || undefined,
+      occupation: occupation || undefined,
+      englishLevel: englishLevel || undefined,
+      sponsorOrFamily: sponsorOrFamily || undefined,
+      biggestConcern: biggestConcern || undefined,
+    },
   };
 }
