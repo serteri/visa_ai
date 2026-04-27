@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { LockKeyhole } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { runAssistantMessage } from "@/app/[locale]/assistant/actions";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  runAssistantMessage,
+  runReadinessPreview,
+  type ReadinessPreviewResult,
+} from "@/app/[locale]/assistant/actions";
 import type { GroundedAssistantResult } from "@/lib/ai/generate-grounded-answer";
 
 type AssistantMessage =
@@ -27,6 +34,37 @@ const QUICK_PROMPTS = [
   "I want PR in Australia",
   "I am a civil engineer and want to migrate",
 ] as const;
+
+const LOCKED_REVIEW_SECTIONS = [
+  "Detailed risk breakdown",
+  "Document readiness checklist",
+  "Agent-ready summary",
+  "Downloadable report",
+];
+
+type ReadinessPreviewForm = {
+  mainGoal: string;
+  currentCountry: string;
+  passportCountry: string;
+  age: string;
+  occupation: string;
+  englishLevel: string;
+  sponsorFamily: string;
+  preferredPathway: string;
+  biggestConcern: string;
+};
+
+const EMPTY_PREVIEW_FORM: ReadinessPreviewForm = {
+  mainGoal: "",
+  currentCountry: "",
+  passportCountry: "",
+  age: "",
+  occupation: "",
+  englishLevel: "",
+  sponsorFamily: "",
+  preferredPathway: "",
+  biggestConcern: "",
+};
 
 function getVisaInterestForReferral(sources: GroundedAssistantResult["sources"]): string {
   const subclasses = new Set(sources.map((source) => source.subclass));
@@ -86,6 +124,9 @@ export function AssistantClient({
   const mode = initialMode;
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [previewForm, setPreviewForm] = useState<ReadinessPreviewForm>(EMPTY_PREVIEW_FORM);
+  const [previewResult, setPreviewResult] = useState<ReadinessPreviewResult | null>(null);
+  const [previewSending, setPreviewSending] = useState(false);
   const [messages, setMessages] = useState<AssistantMessage[]>([
     {
       role: "assistant",
@@ -131,6 +172,46 @@ export function AssistantClient({
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void submitMessage(input);
+  }
+
+  function updatePreviewField(field: keyof ReadinessPreviewForm, value: string) {
+    setPreviewForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function onPreviewSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (previewSending) return;
+
+    setPreviewSending(true);
+    try {
+      const result = await runReadinessPreview({
+        locale,
+        ...previewForm,
+      });
+      setPreviewResult(result);
+    } finally {
+      setPreviewSending(false);
+    }
+  }
+
+  function PreviewList({ title, items }: { title: string; items: string[] }) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            {items.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="text-primary">-</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -295,22 +376,167 @@ export function AssistantClient({
             </Card>
           </>
         ) : (
-          <Card className="border-primary/40 bg-primary/5">
-            <CardHeader className="space-y-2">
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary">Premium</Badge>
-                <CardTitle>AI Readiness Review</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                This feature will provide a more detailed analysis of your situation.
-              </p>
-              <Button asChild>
-                <Link href={`/${locale}/full-check`}>Unlock detailed review</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <Card className="border-primary/40 bg-primary/5">
+              <CardHeader className="space-y-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge variant="secondary">Premium preview</Badge>
+                  <CardTitle>AI Readiness Review</CardTitle>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Generate a limited preview across possible pathways, missing information, basic risk signals, and suggested next steps.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={onPreviewSubmit} className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label htmlFor="preview-main-goal">Main goal</Label>
+                      <Textarea
+                        id="preview-main-goal"
+                        value={previewForm.mainGoal}
+                        onChange={(event) => updatePreviewField("mainGoal", event.target.value)}
+                        placeholder="Example: compare partner and skilled possible pathways"
+                        rows={3}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-current-country">Current country</Label>
+                      <Input
+                        id="preview-current-country"
+                        value={previewForm.currentCountry}
+                        onChange={(event) => updatePreviewField("currentCountry", event.target.value)}
+                        placeholder="Australia, Turkiye, India..."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-passport-country">Passport country</Label>
+                      <Input
+                        id="preview-passport-country"
+                        value={previewForm.passportCountry}
+                        onChange={(event) => updatePreviewField("passportCountry", event.target.value)}
+                        placeholder="Passport country"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-age">Age</Label>
+                      <Input
+                        id="preview-age"
+                        value={previewForm.age}
+                        onChange={(event) => updatePreviewField("age", event.target.value)}
+                        placeholder="Age"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-occupation">Occupation</Label>
+                      <Input
+                        id="preview-occupation"
+                        value={previewForm.occupation}
+                        onChange={(event) => updatePreviewField("occupation", event.target.value)}
+                        placeholder="Occupation or study background"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-english">English level</Label>
+                      <Input
+                        id="preview-english"
+                        value={previewForm.englishLevel}
+                        onChange={(event) => updatePreviewField("englishLevel", event.target.value)}
+                        placeholder="Not sure, competent, IELTS/PTE score..."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-sponsor-family">Sponsor / partner / family in Australia</Label>
+                      <Input
+                        id="preview-sponsor-family"
+                        value={previewForm.sponsorFamily}
+                        onChange={(event) => updatePreviewField("sponsorFamily", event.target.value)}
+                        placeholder="Employer sponsor, partner, family, none..."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-pathway">Preferred pathway if known</Label>
+                      <Input
+                        id="preview-pathway"
+                        value={previewForm.preferredPathway}
+                        onChange={(event) => updatePreviewField("preferredPathway", event.target.value)}
+                        placeholder="500, 482, 189, 190, 491, 820/801, not sure"
+                      />
+                    </div>
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label htmlFor="preview-concern">Biggest concern</Label>
+                      <Textarea
+                        id="preview-concern"
+                        value={previewForm.biggestConcern}
+                        onChange={(event) => updatePreviewField("biggestConcern", event.target.value)}
+                        placeholder="Example: documents, timing, English score, sponsor, relationship evidence"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+
+                  <Button type="submit" disabled={previewSending}>
+                    {previewSending ? "Generating..." : "Generate preview review"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {previewResult && (
+              <section className="space-y-4">
+                <div className="space-y-2">
+                  <Badge variant="outline">Limited preview</Badge>
+                  <h2 className="text-2xl font-bold">Preview review</h2>
+                  <p className="text-sm text-muted-foreground">
+                    This preview uses general information only and is not migration advice.
+                  </p>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <PreviewList title="Possible pathway areas" items={previewResult.possiblePathwayAreas} />
+                  <PreviewList title="Missing information" items={previewResult.missingInformation} />
+                  <PreviewList title="Basic risk signals" items={previewResult.basicRiskSignals} />
+                  <PreviewList title="Suggested next steps" items={previewResult.suggestedNextSteps} />
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  {LOCKED_REVIEW_SECTIONS.map((section) => (
+                    <Card key={section} className="relative overflow-hidden border-dashed">
+                      <CardHeader className="opacity-45 blur-[1px]">
+                        <CardTitle className="text-base">{section}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="opacity-45 blur-[1px]">
+                        <p className="text-sm text-muted-foreground">
+                          This section is part of the full report.
+                        </p>
+                      </CardContent>
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/65 p-4 backdrop-blur-[1px]">
+                        <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-2 text-sm font-medium shadow-sm">
+                          <LockKeyhole className="size-4 text-primary" />
+                          <span>Available in Full Visa Readiness Report</span>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+
+                <Card className="border-primary/40 bg-primary/5">
+                  <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Join early access to review the full report format when it is available.
+                    </p>
+                    <Button asChild>
+                      <Link href={`/${locale}/full-check`}>Join early access for full report</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            <p className="text-sm text-muted-foreground">
+              This is general information only and not migration advice.
+            </p>
+          </div>
         )}
 
         <Card className="border-l-4 border-l-primary">
