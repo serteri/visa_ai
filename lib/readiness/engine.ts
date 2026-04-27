@@ -12,7 +12,6 @@ import type {
   Locale,
   OccupationIndication,
   PathwayComparison,
-  PathwayComparisonRow,
   PathwayRelevance,
   PointsEstimate,
   ReadinessScore,
@@ -343,6 +342,7 @@ function getPathwayConfidenceLevel(
   subclass: string,
   input: ReadinessInput,
   relevance: PathwayRelevance,
+  dataCompletenessPercentage: number,
   estimatedPoints?: number
 ): ConfidenceLevel {
   const combinedGoal = [input.mainGoal ?? "", input.preferredPathway ?? ""].join(" ");
@@ -353,42 +353,54 @@ function getPathwayConfidenceLevel(
   }
 
   if (subclass === "500") {
-    return hasKw(combinedGoal, ["study", "student", "course", "eğitim", "öğrenci"])
+    const base = hasKw(combinedGoal, ["study", "student", "course", "eğitim", "öğrenci"])
       ? "high"
       : "medium";
+    if (dataCompletenessPercentage < 40) return "low";
+    if (dataCompletenessPercentage < 60 && base === "high") return "medium";
+    return base;
   }
 
   if (subclass === "482") {
-    return hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]) && Boolean(input.occupation)
+    const base = hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]) && Boolean(input.occupation)
       ? "high"
       : "medium";
+    if (dataCompletenessPercentage < 40) return "low";
+    if (dataCompletenessPercentage < 60 && base === "high") return "medium";
+    return base;
   }
 
   if (subclass === "189") {
     if (input.occupation && input.age && input.englishLevel && estimatedPoints !== undefined && estimatedPoints >= 65) {
-      return "high";
+      return dataCompletenessPercentage >= 60 ? "high" : "medium";
     }
+    if (dataCompletenessPercentage < 40) return "low";
     return input.occupation && (input.age || input.englishLevel) ? "medium" : "low";
   }
 
   if (subclass === "190") {
     if (input.occupation && input.age && input.englishLevel && estimatedPoints !== undefined && estimatedPoints >= 65) {
-      return "medium";
+      return dataCompletenessPercentage >= 60 ? "medium" : "low";
     }
+    if (dataCompletenessPercentage < 40) return "low";
     return input.occupation ? "medium" : "low";
   }
 
   if (subclass === "491") {
     if (input.occupation && input.age && input.englishLevel && hasKw(sponsorText, ["family", "relative", "regional", "akraba", "bölgesel"])) {
-      return "medium";
+      return dataCompletenessPercentage >= 60 ? "medium" : "low";
     }
+    if (dataCompletenessPercentage < 40) return "low";
     return input.occupation ? "medium" : "low";
   }
 
   if (subclass === "820_801") {
-    return hasKw(sponsorText, ["partner", "spouse", "de facto", "eş", "ilişki"]) && Boolean(input.sponsorOrFamily)
+    const base = hasKw(sponsorText, ["partner", "spouse", "de facto", "eş", "ilişki"]) && Boolean(input.sponsorOrFamily)
       ? "high"
       : "medium";
+    if (dataCompletenessPercentage < 40) return "low";
+    if (dataCompletenessPercentage < 60 && base === "high") return "medium";
+    return base;
   }
 
   return "low";
@@ -399,6 +411,7 @@ function getConfidenceExplanation(
   input: ReadinessInput,
   locale: Locale,
   confidenceLevel: ConfidenceLevel,
+  dataCompletenessPercentage: number,
   estimatedPoints?: number
 ): string {
   const isTr = locale === "tr";
@@ -413,21 +426,21 @@ function getConfidenceExplanation(
   if (subclass === "500") {
     return isTr
       ? confidenceLevel === "high"
-        ? "Eğitim amacı net göründüğü için bu yol için göreli güven sinyali daha güçlüdür."
-        : "Eğitim amacıyla ilgili bağlam mevcut, ancak kişisel durum detayları bu güven düzeyini değiştirebilir."
+        ? `Eğitim amacı net görünüyor ve veri tamamlanma düzeyi (%${dataCompletenessPercentage}) bu güven seviyesini destekliyor.`
+        : `Eğitim bağlamı mevcut; ancak veri tamamlanma düzeyi (%${dataCompletenessPercentage}) bu güveni sınırlıyor.`
       : confidenceLevel === "high"
-        ? "The study intent appears clear, so the relative confidence signal is stronger for this pathway."
-        : "There is study-related context, but personal details could still shift this confidence level.";
+        ? `Study intent is clear and data completeness (${dataCompletenessPercentage}%) supports this confidence level.`
+        : `There is study context, but data completeness (${dataCompletenessPercentage}%) limits confidence.`;
   }
 
   if (subclass === "482") {
     return isTr
       ? hasSponsorContext && hasOccupation
-        ? "Sponsor ve rol bağlamı birlikte göründüğü için güven seviyesi desteklenmektedir."
-        : "Sponsor veya rol bağlamı sınırlı olduğu için güven seviyesi daha temkinli tutulmuştur."
+        ? `Sponsor ve rol bağlamı mevcut; veri tamamlanma düzeyi (%${dataCompletenessPercentage}) ile birlikte güven destekleniyor.`
+        : `Sponsor/rol bağlamı veya veri tamamlanma düzeyi (%${dataCompletenessPercentage}) sınırlı olduğu için güven daha temkinli.`
       : hasSponsorContext && hasOccupation
-        ? "Sponsor and role context are both visible, which supports this confidence level."
-        : "Sponsor or role context is limited, so confidence is kept cautious.";
+        ? `Sponsor and role context are visible, and data completeness (${dataCompletenessPercentage}%) supports this confidence level.`
+        : `Sponsor/role context or data completeness (${dataCompletenessPercentage}%) is limited, so confidence remains cautious.`;
   }
 
   if (["189", "190", "491"].includes(subclass)) {
@@ -440,25 +453,25 @@ function getConfidenceExplanation(
           ? `kısmi puan görünümü ${estimatedPoints}`
           : `partial points picture is ${estimatedPoints}`;
     return isTr
-      ? `Güven seviyesi; yaş/İngilizce/meslek girdileri ve ${pointsText} üzerinden gösterge niteliğinde hesaplanmıştır.`
-      : `Confidence is estimated indicatively from age/English/occupation inputs and ${pointsText}.`;
+      ? `Güven seviyesi; yaş/İngilizce/meslek girdileri, ${pointsText} ve veri tamamlanma düzeyi (%${dataCompletenessPercentage}) ile göstergesel olarak hesaplanmıştır.`
+      : `Confidence is estimated indicatively from age/English/occupation inputs, ${pointsText}, and data completeness (${dataCompletenessPercentage}%).`;
   }
 
   if (subclass === "820_801") {
     return isTr
       ? hasSponsorContext
-        ? "İlişki ve sponsor bağlamı bulunduğunda güven seviyesi daha güçlü görünür."
-        : "İlişki/sponsor kanıt bağlamı sınırlı olduğunda güven seviyesi düşer."
+        ? `İlişki/sponsor bağlamı mevcut ve veri tamamlanma düzeyi (%${dataCompletenessPercentage}) güveni destekliyor.`
+        : `İlişki/sponsor bağlamı veya veri tamamlanma düzeyi (%${dataCompletenessPercentage}) sınırlı olduğu için güven düşüktür.`
       : hasSponsorContext
-        ? "Confidence tends to be stronger when relationship and sponsor context are present."
-        : "Confidence is lower when relationship/sponsor evidence context is limited.";
+        ? `Confidence is stronger with relationship/sponsor context and current data completeness (${dataCompletenessPercentage}%).`
+        : `Confidence is lower when relationship/sponsor context or data completeness (${dataCompletenessPercentage}%) is limited.`;
   }
 
   const knownSignals = [hasAge, hasEnglish, hasOccupation, hasSponsorContext].filter(Boolean)
     .length;
   return isTr
-    ? `Güven seviyesi, mevcut ${knownSignals}/4 temel sinyal üzerinden genel bir gösterge olarak oluşturuldu.`
-    : `Confidence is shown as a general indicator based on ${knownSignals}/4 available core signals.`;
+    ? `Güven seviyesi, mevcut ${knownSignals}/4 temel sinyal ve %${dataCompletenessPercentage} veri tamamlanma düzeyi ile genel bir gösterge olarak oluşturuldu.`
+    : `Confidence is shown as a general indicator based on ${knownSignals}/4 core signals and ${dataCompletenessPercentage}% data completeness.`;
 }
 
 // ─── Pathway reason builder ───────────────────────────────────────────────────
@@ -467,6 +480,7 @@ function buildPathwayEntry(
   subclass: string,
   input: ReadinessInput,
   locale: Locale,
+  dataCompletenessPercentage: number,
   estimatedPoints?: number
 ): PathwayComparison {
   const isTr = locale === "tr";
@@ -538,6 +552,7 @@ function buildPathwayEntry(
     subclass,
     input,
     relevance,
+    dataCompletenessPercentage,
     estimatedPoints
   );
   const confidenceExplanation = getConfidenceExplanation(
@@ -545,7 +560,17 @@ function buildPathwayEntry(
     input,
     locale,
     confidenceLevel,
+    dataCompletenessPercentage,
     estimatedPoints
+  );
+  const difficulty = getDifficultyForPathway({ subclass });
+  const requirementType = getRequirementType(
+    { subclass },
+    locale
+  );
+  const userRelativePosition = getUserRelativePosition(
+    { relevance, confidenceLevel },
+    locale
   );
   const keyRequirements = getPathwayKeyRequirements(subclass, locale);
   const pathwaySpecificRisks = getPathwaySpecificRisks(
@@ -562,13 +587,16 @@ function buildPathwayEntry(
     relevance,
     confidenceLevel,
     confidenceExplanation,
+    difficulty,
+    requirementType,
+    userRelativePosition,
     keyRequirements,
     pathwaySpecificRisks,
   };
 }
 
 function getDifficultyForPathway(
-  pathway: PathwayComparison
+  pathway: Pick<PathwayComparison, "subclass">
 ): "low" | "medium" | "high" {
   if (pathway.subclass === "general") return "medium";
   if (pathway.subclass === "500") return "medium";
@@ -579,7 +607,7 @@ function getDifficultyForPathway(
 }
 
 function getRequirementType(
-  pathway: PathwayComparison,
+  pathway: Pick<PathwayComparison, "subclass">,
   locale: Locale
 ): string {
   const isTr = locale === "tr";
@@ -607,7 +635,7 @@ function getRequirementType(
 }
 
 function getUserRelativePosition(
-  pathway: PathwayComparison,
+  pathway: Pick<PathwayComparison, "relevance" | "confidenceLevel">,
   locale: Locale
 ): string {
   const isTr = locale === "tr";
@@ -639,21 +667,6 @@ function getUserRelativePosition(
   return isTr
     ? "Düşük sinyal, sınırlı uyum görünümü"
     : "Lower signal with limited alignment";
-}
-
-function buildPathwayComparisonTable(
-  pathways: PathwayComparison[],
-  locale: Locale
-): PathwayComparisonRow[] {
-  return pathways.map((pathway) => ({
-    visa:
-      pathway.subclass === "general"
-        ? pathway.visaName
-        : `${pathway.visaName} (${pathway.subclass})`,
-    difficulty: getDifficultyForPathway(pathway),
-    requirementType: getRequirementType(pathway, locale),
-    userRelativePosition: getUserRelativePosition(pathway, locale),
-  }));
 }
 
 function buildDataCompleteness(
@@ -712,39 +725,48 @@ function buildDataCompleteness(
 function buildReadinessScore(params: {
   locale: Locale;
   pathways: PathwayComparison[];
+  dataCompleteness: DataCompleteness;
   missingInformation: string[];
   riskIndicators: ReturnType<typeof buildRiskIndicators>;
   pointsEstimate?: PointsEstimate;
 }): ReadinessScore {
-  const { locale, pathways, missingInformation, riskIndicators, pointsEstimate } = params;
+  const { locale, pathways, dataCompleteness, missingInformation, riskIndicators, pointsEstimate } = params;
   const isTr = locale === "tr";
 
-  let score = 100;
+  let score = 50;
 
   const hasSpecificPathway = pathways.some((p) => p.subclass !== "general");
-  if (!hasSpecificPathway) score -= 20;
+  score += hasSpecificPathway ? 8 : -10;
+
+  const highConfidenceCount = pathways.filter((p) => p.confidenceLevel === "high").length;
+  score += Math.min(12, highConfidenceCount * 4);
 
   const lowConfidenceCount = pathways.filter((p) => p.confidenceLevel === "low").length;
-  score -= lowConfidenceCount * 6;
+  score -= Math.min(18, lowConfidenceCount * 6);
 
-  const missingPenalty = Math.min(36, missingInformation.length * 6);
+  if (dataCompleteness.percentage >= 80) score += 12;
+  else if (dataCompleteness.percentage >= 60) score += 6;
+  else if (dataCompleteness.percentage < 40) score -= 8;
+
+  const missingPenalty = Math.min(18, missingInformation.length * 3);
   score -= missingPenalty;
 
   const riskPenalty = Math.min(
-    34,
+    24,
     riskIndicators.reduce((sum, risk) => {
-      if (risk.level === "high") return sum + 10;
-      if (risk.level === "medium") return sum + 5;
-      return sum + 2;
+      if (risk.level === "high") return sum + 8;
+      if (risk.level === "medium") return sum + 4;
+      return sum + 1;
     }, 0)
   );
   score -= riskPenalty;
 
   if (pointsEstimate?.estimatedPoints !== undefined) {
-    const shortfall = Math.max(0, 65 - pointsEstimate.estimatedPoints);
-    score -= Math.min(24, Math.round(shortfall * 1.2));
+    if (pointsEstimate.estimatedPoints >= 65) score += 10;
+    else if (pointsEstimate.estimatedPoints >= 55) score += 2;
+    else score -= 8;
   } else if (pathways.some((p) => ["189", "190", "491"].includes(p.subclass))) {
-    score -= 10;
+    score -= 6;
   }
 
   score = Math.max(0, Math.min(100, score));
@@ -759,11 +781,12 @@ function buildReadinessScore(params: {
 function buildPrimaryGap(params: {
   locale: Locale;
   pathways: PathwayComparison[];
+  dataCompleteness: DataCompleteness;
   missingInformation: string[];
   riskIndicators: ReturnType<typeof buildRiskIndicators>;
   pointsEstimate?: PointsEstimate;
 }): string {
-  const { locale, pathways, missingInformation, riskIndicators, pointsEstimate } = params;
+  const { locale, pathways, dataCompleteness, missingInformation, riskIndicators, pointsEstimate } = params;
   const isTr = locale === "tr";
 
   const hasSkilled = pathways.some((p) => ["189", "190", "491"].includes(p.subclass));
@@ -799,12 +822,18 @@ function buildPrimaryGap(params: {
       : `Primary gap: The risk signal in "${highRisk.title}" appears to be the dominant limiter.`;
   }
 
+  if (dataCompleteness.percentage < 60) {
+    return isTr
+      ? `Birincil boşluk: Veri tamamlanma düzeyi (%${dataCompleteness.percentage}) karar-destek sinyallerini sınırlıyor.`
+      : `Primary gap: Data completeness (${dataCompleteness.percentage}%) is limiting the decision-support signal strength.`;
+  }
+
   return isTr
     ? "Birincil boşluk: Karşılaştırmalı tabloyu güçlendirecek ek kişisel bağlam ihtiyacı."
     : "Primary gap: Additional personal context is needed to strengthen the comparison table.";
 }
 
-function buildFactorsThatMayAffectPathways(
+function buildFactorsAffectingPathways(
   locale: Locale,
   hasSkilledPathway: boolean,
   hasEmployerPathway: boolean,
@@ -1120,6 +1149,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const pointsEstimate = hasSkilledPathway
     ? buildPointsEstimate(input, locale)
     : undefined;
+  const dataCompleteness = buildDataCompleteness(input, locale);
 
   let pathwayComparison: PathwayComparison[];
 
@@ -1139,6 +1169,15 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
           locale === "tr"
             ? "Mevcut sinyal seti sınırlı olduğu için güven seviyesi düşük görünmektedir."
             : "Confidence is low because the available signal set is limited.",
+        difficulty: "medium",
+        requirementType:
+          locale === "tr"
+            ? "Genel uygunluk sinyali (eksik veri nedeniyle sınırlı)"
+            : "General eligibility signal (limited by missing data)",
+        userRelativePosition:
+          locale === "tr"
+            ? "Daha fazla bilgi olmadan göreli konum netleşmez."
+            : "Relative position is unclear without additional details.",
         keyRequirements:
           locale === "tr"
             ? ["Daha ayrıntılı hedef, meslek ve sponsorluk bağlamı"]
@@ -1151,7 +1190,13 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     ];
   } else {
     pathwayComparison = detectedSubclasses.map((subclass) =>
-      buildPathwayEntry(subclass, input, locale, pointsEstimate?.estimatedPoints)
+      buildPathwayEntry(
+        subclass,
+        input,
+        locale,
+        dataCompleteness.percentage,
+        pointsEstimate?.estimatedPoints
+      )
     );
   }
 
@@ -1181,14 +1226,10 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     locale
   );
 
-  const pathwayComparisonTable = buildPathwayComparisonTable(
-    pathwayComparison,
-    locale
-  );
-  const dataCompleteness = buildDataCompleteness(input, locale);
   const readinessScore = buildReadinessScore({
     locale,
     pathways: pathwayComparison,
+    dataCompleteness,
     missingInformation,
     riskIndicators,
     pointsEstimate,
@@ -1196,12 +1237,13 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const primaryGap = buildPrimaryGap({
     locale,
     pathways: pathwayComparison,
+    dataCompleteness,
     missingInformation,
     riskIndicators,
     pointsEstimate,
   });
 
-  const factorsThatMayAffectPathways = buildFactorsThatMayAffectPathways(
+  const factorsAffectingPathways = buildFactorsAffectingPathways(
     locale,
     hasSkilledPathway,
     detectedSubclasses.includes("482"),
@@ -1232,13 +1274,12 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   return {
     pathwayComparison,
-    pathwayComparisonTable,
     readinessScore,
     primaryGap,
     dataCompleteness,
     keyVisaRequirements,
     whatThisMeans,
-    factorsThatMayAffectPathways,
+    factorsAffectingPathways,
     pointsEstimate,
     occupationIndication,
     riskIndicators,

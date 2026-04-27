@@ -27,18 +27,14 @@ export type PathwayComparison = {
   relevance: PathwayRelevance;
   confidenceLevel: ConfidenceLevel;
   confidenceExplanation: string;
+  difficulty: ComparisonDifficulty;
+  requirementType: string;
+  userRelativePosition: string;
   keyRequirements: string[];
   pathwaySpecificRisks: string[];
 };
 
 export type ComparisonDifficulty = "low" | "medium" | "high";
-
-export type PathwayComparisonRow = {
-  visa: string;
-  difficulty: ComparisonDifficulty;
-  requirementType: string;
-  userRelativePosition: string;
-};
 
 export type ReadinessScore = {
   score: number;
@@ -94,13 +90,12 @@ export type DocumentCategory = {
 
 export type ReadinessReport = {
   pathwayComparison: PathwayComparison[];
-  pathwayComparisonTable: PathwayComparisonRow[];
   readinessScore: ReadinessScore;
   primaryGap: string;
   dataCompleteness: DataCompleteness;
   keyVisaRequirements: KeyVisaRequirement[];
   whatThisMeans: string[];
-  factorsThatMayAffectPathways: string[];
+  factorsAffectingPathways: string[];
   pointsEstimate?: PointsEstimate;
   occupationIndication?: OccupationIndication;
   riskIndicators: RiskIndicator[];

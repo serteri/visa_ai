@@ -371,7 +371,7 @@ export function FullCheckWaitlistForm({
               </CardContent>
             </Card>
 
-            {state.report.pathwayComparisonTable.length > 0 && (
+            {state.report.pathwayComparison.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -389,12 +389,19 @@ export function FullCheckWaitlistForm({
                       </tr>
                     </thead>
                     <tbody>
-                      {state.report.pathwayComparisonTable.map((row) => (
-                        <tr key={`${row.visa}-${row.requirementType}`} className="border-b align-top">
-                          <td className="py-2 pr-4">{row.visa}</td>
-                          <td className="py-2 pr-4">{getDifficultyLabel(row.difficulty)}</td>
-                          <td className="py-2 pr-4 text-muted-foreground">{row.requirementType}</td>
-                          <td className="py-2 text-muted-foreground">{row.userRelativePosition}</td>
+                      {state.report.pathwayComparison.map((pathway) => (
+                        <tr
+                          key={`${pathway.subclass}-${pathway.visaName}-table`}
+                          className="border-b align-top"
+                        >
+                          <td className="py-2 pr-4">
+                            {pathway.subclass === "general"
+                              ? pathway.visaName
+                              : `${pathway.visaName} (${pathway.subclass})`}
+                          </td>
+                          <td className="py-2 pr-4">{getDifficultyLabel(pathway.difficulty)}</td>
+                          <td className="py-2 pr-4 text-muted-foreground">{pathway.requirementType}</td>
+                          <td className="py-2 text-muted-foreground">{pathway.userRelativePosition}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -572,10 +579,10 @@ export function FullCheckWaitlistForm({
             items={state.report.suggestedNextSteps}
           />
 
-          {state.report.factorsThatMayAffectPathways.length > 0 && (
+          {state.report.factorsAffectingPathways.length > 0 && (
             <ReportSection
               title={isTr ? "Yolları etkileyebilecek faktörler" : "Factors that may affect pathways"}
-              items={state.report.factorsThatMayAffectPathways}
+              items={state.report.factorsAffectingPathways}
             />
           )}
 

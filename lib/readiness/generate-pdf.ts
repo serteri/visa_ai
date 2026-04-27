@@ -67,7 +67,7 @@ function getLocalizedText(locale: "en" | "tr") {
       pointsEstimate: "Puan Tahmini",
       occupationReview: "Meslek İncelemesi",
       suggestedNextSteps: "Önerilen Sonraki Adımlar",
-      factorsThatMayAffectPathways: "Yolları Etkileyebilecek Faktörler",
+      factorsAffectingPathways: "Yolları Etkileyebilecek Faktörler",
       missingInformation: "Eksik Bilgiler",
       disclaimer: "Uyarı / İçtihadı",
       estimatedPoints: "Tahmini Puan",
@@ -104,7 +104,7 @@ function getLocalizedText(locale: "en" | "tr") {
     pointsEstimate: "Points Estimate",
     occupationReview: "Occupation Review",
     suggestedNextSteps: "Suggested Next Steps",
-    factorsThatMayAffectPathways: "Factors that may affect pathways",
+    factorsAffectingPathways: "Factors that may affect pathways",
     missingInformation: "Missing Information",
     disclaimer: "Disclaimer",
     estimatedPoints: "Estimated Points",
@@ -262,14 +262,18 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   }
   yPosition += 3;
 
-  // Structured pathway comparison table (row format)
-  if (report.pathwayComparisonTable.length > 0) {
+  // Structured pathway comparison table (from pathwayComparison fields)
+  if (report.pathwayComparison.length > 0) {
     addHeading(text.pathwayTable);
-    report.pathwayComparisonTable.forEach((row) => {
-      addBody(`${text.visa}: ${row.visa}`);
-      addSmallText(`${text.difficulty}: ${formatDifficulty(row.difficulty)}`, 4);
-      addSmallText(`${text.requirementType}: ${row.requirementType}`, 4);
-      addSmallText(`${text.userRelativePosition}: ${row.userRelativePosition}`, 4);
+    report.pathwayComparison.forEach((pathway) => {
+      const visaLabel =
+        pathway.subclass === "general"
+          ? pathway.visaName
+          : `${pathway.visaName} (${pathway.subclass})`;
+      addBody(`${text.visa}: ${visaLabel}`);
+      addSmallText(`${text.difficulty}: ${formatDifficulty(pathway.difficulty)}`, 4);
+      addSmallText(`${text.requirementType}: ${pathway.requirementType}`, 4);
+      addSmallText(`${text.userRelativePosition}: ${pathway.userRelativePosition}`, 4);
       yPosition += 1;
     });
     yPosition += 3;
@@ -389,9 +393,9 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 3;
   }
 
-  if (report.factorsThatMayAffectPathways.length > 0) {
-    addHeading(text.factorsThatMayAffectPathways);
-    addBulletPoints(report.factorsThatMayAffectPathways);
+  if (report.factorsAffectingPathways.length > 0) {
+    addHeading(text.factorsAffectingPathways);
+    addBulletPoints(report.factorsAffectingPathways);
     yPosition += 3;
   }
 
