@@ -73,10 +73,43 @@ const previewCards = [
 
 type FullCheckPageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{
+    source?: string;
+    goal?: string;
+    occupation?: string;
+    preferredPathway?: string;
+    biggestConcern?: string;
+    currentCountry?: string;
+  }>;
 };
 
-export default async function FullCheckPage({ params }: FullCheckPageProps) {
+function buildPrefilledGoal(input: {
+  goal?: string;
+  occupation?: string;
+  biggestConcern?: string;
+}) {
+  const parts = [
+    input.goal ? `Goal: ${input.goal}` : null,
+    input.occupation ? `Occupation: ${input.occupation}` : null,
+    input.biggestConcern ? `Biggest concern: ${input.biggestConcern}` : null,
+  ].filter((item): item is string => Boolean(item));
+
+  return parts.join("\n");
+}
+
+export default async function FullCheckPage({ params, searchParams }: FullCheckPageProps) {
   const { locale } = await params;
+  const query = await searchParams;
+  const cameFromReadinessPreview = query.source === "readiness-preview";
+  const initialValues = {
+    visaInterest: query.preferredPathway ?? "",
+    currentCountry: query.currentCountry ?? "",
+    mainGoal: buildPrefilledGoal({
+      goal: query.goal,
+      occupation: query.occupation,
+      biggestConcern: query.biggestConcern,
+    }),
+  };
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -96,8 +129,13 @@ export default async function FullCheckPage({ params }: FullCheckPageProps) {
             <CardHeader>
               <CardTitle>Get your free basic report</CardTitle>
             </CardHeader>
-            <CardContent>
-              <FullCheckWaitlistForm locale={locale} />
+            <CardContent className="space-y-4">
+              {cameFromReadinessPreview && (
+                <p className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
+                  We added details from your readiness preview where possible. You can edit anything before submitting.
+                </p>
+              )}
+              <FullCheckWaitlistForm locale={locale} initialValues={initialValues} />
             </CardContent>
           </Card>
         </div>

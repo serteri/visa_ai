@@ -113,6 +113,20 @@ function buildAssistantReferralHref(input: {
   return `/${input.locale}/agent-referral?${params.toString()}`;
 }
 
+function buildFullCheckHref(locale: "en" | "tr", form: ReadinessPreviewForm): string {
+  const params = new URLSearchParams({
+    source: "readiness-preview",
+  });
+
+  if (form.mainGoal.trim()) params.set("goal", form.mainGoal.trim());
+  if (form.occupation.trim()) params.set("occupation", form.occupation.trim());
+  if (form.preferredPathway.trim()) params.set("preferredPathway", form.preferredPathway.trim());
+  if (form.biggestConcern.trim()) params.set("biggestConcern", form.biggestConcern.trim());
+  if (form.currentCountry.trim()) params.set("currentCountry", form.currentCountry.trim());
+
+  return `/${locale}/full-check?${params.toString()}`;
+}
+
 export function AssistantClient({
   locale,
   initialMode = "simple",
@@ -127,6 +141,7 @@ export function AssistantClient({
   const [previewForm, setPreviewForm] = useState<ReadinessPreviewForm>(EMPTY_PREVIEW_FORM);
   const [previewResult, setPreviewResult] = useState<ReadinessPreviewResult | null>(null);
   const [previewSending, setPreviewSending] = useState(false);
+  const fullCheckHref = buildFullCheckHref(locale, previewForm);
   const [messages, setMessages] = useState<AssistantMessage[]>([
     {
       role: "assistant",
@@ -521,12 +536,15 @@ export function AssistantClient({
                 </div>
 
                 <Card className="border-primary/40 bg-primary/5">
-                  <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm text-muted-foreground">
-                      Join early access to review the full report format when it is available.
+                  <CardHeader>
+                    <CardTitle>Want the full report?</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="max-w-2xl text-sm text-muted-foreground">
+                      Your preview shows the basics. The full report is designed to include a deeper risk review, document readiness, and an agent-ready summary.
                     </p>
-                    <Button asChild>
-                      <Link href={`/${locale}/full-check`}>Join early access for full report</Link>
+                    <Button asChild className="shrink-0">
+                      <Link href={fullCheckHref}>Continue to full report</Link>
                     </Button>
                   </CardContent>
                 </Card>

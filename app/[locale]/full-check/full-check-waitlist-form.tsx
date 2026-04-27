@@ -59,7 +59,17 @@ function LockedSection({ title }: { title: string }) {
   );
 }
 
-export function FullCheckWaitlistForm({ locale }: { locale: string }) {
+export function FullCheckWaitlistForm({
+  locale,
+  initialValues = {},
+}: {
+  locale: string;
+  initialValues?: {
+    visaInterest?: string;
+    currentCountry?: string;
+    mainGoal?: string;
+  };
+}) {
   const initialState: FullCheckWaitlistState = {
     status: "idle",
   };
@@ -102,6 +112,7 @@ export function FullCheckWaitlistForm({ locale }: { locale: string }) {
           <Input
             id="waitlist-visa-interest"
             name="visaInterest"
+            defaultValue={initialValues.visaInterest ?? ""}
             placeholder="Student, skilled, partner, or not sure"
           />
         </div>
@@ -111,6 +122,7 @@ export function FullCheckWaitlistForm({ locale }: { locale: string }) {
           <Input
             id="waitlist-current-country"
             name="currentCountry"
+            defaultValue={initialValues.currentCountry ?? ""}
             autoComplete="country-name"
             placeholder="Australia, Turkiye, India, or elsewhere"
           />
@@ -121,6 +133,7 @@ export function FullCheckWaitlistForm({ locale }: { locale: string }) {
           <Textarea
             id="waitlist-main-goal"
             name="mainGoal"
+            defaultValue={initialValues.mainGoal ?? ""}
             placeholder="Tell us what you want the report to help with"
             rows={3}
           />
