@@ -42,6 +42,7 @@ function ReportSection({ title, items }: { title: string; items: string[] }) {
 function PathwayDetailCard({
   title,
   confidenceLabel,
+  confidenceExplanation,
   summary,
   keyRequirements,
   pathwayRisks,
@@ -49,6 +50,7 @@ function PathwayDetailCard({
 }: {
   title: string;
   confidenceLabel: string;
+  confidenceExplanation: string;
   summary: string;
   keyRequirements: string[];
   pathwayRisks: string[];
@@ -64,10 +66,11 @@ function PathwayDetailCard({
           </span>
         </div>
         <p className="text-sm text-muted-foreground">{summary}</p>
+        <p className="text-xs text-muted-foreground">{confidenceExplanation}</p>
       </CardHeader>
       <CardContent className="space-y-4 text-sm">
         <div className="space-y-2">
-          <p className="font-medium">{isTr ? "Temel gereklilikler" : "Key requirements"}</p>
+          <p className="font-medium">{isTr ? "Temel Gereklilikler" : "Key Requirements"}</p>
           <ul className="space-y-2 text-muted-foreground">
             {keyRequirements.map((item) => (
               <li key={item} className="flex gap-2">
@@ -78,7 +81,7 @@ function PathwayDetailCard({
           </ul>
         </div>
         <div className="space-y-2">
-          <p className="font-medium">{isTr ? "Yola özgü riskler" : "Pathway-specific risks"}</p>
+          <p className="font-medium">{isTr ? "Yola Özgü Riskler" : "Pathway-Specific Risks"}</p>
           <ul className="space-y-2 text-muted-foreground">
             {pathwayRisks.map((item) => (
               <li key={item} className="flex gap-2">
@@ -149,6 +152,14 @@ export function FullCheckWaitlistForm({
   }
 
   function getConfidenceLabel(level: "low" | "medium" | "high") {
+    if (isTr) {
+      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
+    }
+
+    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
+  }
+
+  function getDifficultyLabel(level: "low" | "medium" | "high") {
     if (isTr) {
       return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
     }
@@ -306,6 +317,92 @@ export function FullCheckWaitlistForm({
           </div>
 
           <div className="space-y-3">
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    {isTr ? "Hazırlık Skoru" : "Readiness Score"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <p className="text-3xl font-bold">{state.report.readinessScore.score}/100</p>
+                  <p className="text-xs text-muted-foreground">
+                    {state.report.readinessScore.explanation}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    {isTr ? "Birincil Boşluk" : "Primary Gap"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{state.report.primaryGap}</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Veri Tamamlanma Düzeyi" : "Data Completeness"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <p className="font-semibold">
+                  {isTr ? "Tamamlanma:" : "Completeness:"} {state.report.dataCompleteness.percentage}%
+                </p>
+                {state.report.dataCompleteness.missingFields.length > 0 ? (
+                  <ul className="space-y-1 text-muted-foreground">
+                    {state.report.dataCompleteness.missingFields.map((field) => (
+                      <li key={field} className="flex gap-2">
+                        <span className="text-primary">-</span>
+                        <span>{field}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted-foreground">
+                    {isTr ? "Temel veri alanları tamamlandı." : "Core data fields are complete."}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {state.report.pathwayComparisonTable.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    {isTr ? "Yol Karşılaştırma Tablosu" : "Pathway Comparison Table"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="overflow-x-auto">
+                  <table className="w-full min-w-[720px] text-sm">
+                    <thead>
+                      <tr className="border-b text-left text-muted-foreground">
+                        <th className="pb-2 pr-4 font-medium">{isTr ? "Vize" : "Visa"}</th>
+                        <th className="pb-2 pr-4 font-medium">{isTr ? "Zorluk" : "Difficulty"}</th>
+                        <th className="pb-2 pr-4 font-medium">{isTr ? "Gereklilik Türü" : "Requirement Type"}</th>
+                        <th className="pb-2 font-medium">{isTr ? "Size Göre Konum" : "User-Relative Position"}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {state.report.pathwayComparisonTable.map((row) => (
+                        <tr key={`${row.visa}-${row.requirementType}`} className="border-b align-top">
+                          <td className="py-2 pr-4">{row.visa}</td>
+                          <td className="py-2 pr-4">{getDifficultyLabel(row.difficulty)}</td>
+                          <td className="py-2 pr-4 text-muted-foreground">{row.requirementType}</td>
+                          <td className="py-2 text-muted-foreground">{row.userRelativePosition}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </CardContent>
+              </Card>
+            )}
+
             <div className="space-y-1">
               <h4 className="text-base font-semibold">
                 {isTr ? "Olası vize yolları" : "Possible visa pathways"}
@@ -327,6 +424,7 @@ export function FullCheckWaitlistForm({
                       : `${pathway.visaName} (${pathway.subclass})`
                   }
                   confidenceLabel={getConfidenceLabel(pathway.confidenceLevel)}
+                  confidenceExplanation={pathway.confidenceExplanation}
                   summary={pathway.reason}
                   keyRequirements={pathway.keyRequirements}
                   pathwayRisks={pathway.pathwaySpecificRisks}
@@ -473,6 +571,13 @@ export function FullCheckWaitlistForm({
             title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
             items={state.report.suggestedNextSteps}
           />
+
+          {state.report.factorsThatMayAffectPathways.length > 0 && (
+            <ReportSection
+              title={isTr ? "Yolları etkileyebilecek faktörler" : "Factors that may affect pathways"}
+              items={state.report.factorsThatMayAffectPathways}
+            />
+          )}
 
           {state.report.missingInformation.length > 0 && (
             <ReportSection

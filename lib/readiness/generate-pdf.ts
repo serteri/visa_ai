@@ -46,10 +46,20 @@ function getLocalizedText(locale: "en" | "tr") {
       title: "Tam Vize Hazırlık Raporu",
       generatedDate: "Oluşturma Tarihi",
       userInfo: "Kullanıcı Bilgileri",
+      readinessScore: "Hazırlık Skoru",
+      primaryGap: "Birincil Boşluk",
+      dataCompleteness: "Veri Tamamlanma Düzeyi",
+      completionRate: "Tamamlanma",
+      pathwayTable: "Yol Karşılaştırma Tablosu",
+      visa: "Vize",
+      difficulty: "Zorluk",
+      requirementType: "Gereklilik Türü",
+      userRelativePosition: "Size Göre Konum",
       pathwayComparison: "Olası Vize Yolları",
       confidence: "Güven",
-      keyRequirements: "Temel gereklilikler",
-      pathwayRisks: "Yola özgü riskler",
+      confidenceExplanation: "Güven Açıklaması",
+      keyRequirements: "Temel Gereklilikler",
+      pathwayRisks: "Yola Özgü Riskler",
       keyVisaRequirements: "Temel Vize Gereklilikleri",
       whatThisMeans: "Bunun Anlamı",
       riskIndicators: "Risk Göstergeleri",
@@ -57,6 +67,7 @@ function getLocalizedText(locale: "en" | "tr") {
       pointsEstimate: "Puan Tahmini",
       occupationReview: "Meslek İncelemesi",
       suggestedNextSteps: "Önerilen Sonraki Adımlar",
+      factorsThatMayAffectPathways: "Yolları Etkileyebilecek Faktörler",
       missingInformation: "Eksik Bilgiler",
       disclaimer: "Uyarı / İçtihadı",
       estimatedPoints: "Tahmini Puan",
@@ -72,10 +83,20 @@ function getLocalizedText(locale: "en" | "tr") {
     title: "Full Visa Readiness Report",
     generatedDate: "Generated Date",
     userInfo: "User Information",
+    readinessScore: "Readiness Score",
+    primaryGap: "Primary Gap",
+    dataCompleteness: "Data Completeness",
+    completionRate: "Completeness",
+    pathwayTable: "Pathway Comparison Table",
+    visa: "Visa",
+    difficulty: "Difficulty",
+    requirementType: "Requirement Type",
+    userRelativePosition: "User-Relative Position",
     pathwayComparison: "Possible Visa Pathways",
     confidence: "Confidence",
-    keyRequirements: "Key requirements",
-    pathwayRisks: "Pathway-specific risks",
+    confidenceExplanation: "Confidence Explanation",
+    keyRequirements: "Key Requirements",
+    pathwayRisks: "Pathway-Specific Risks",
     keyVisaRequirements: "Key Visa Requirements",
     whatThisMeans: "What This Means",
     riskIndicators: "Risk Indicators",
@@ -83,6 +104,7 @@ function getLocalizedText(locale: "en" | "tr") {
     pointsEstimate: "Points Estimate",
     occupationReview: "Occupation Review",
     suggestedNextSteps: "Suggested Next Steps",
+    factorsThatMayAffectPathways: "Factors that may affect pathways",
     missingInformation: "Missing Information",
     disclaimer: "Disclaimer",
     estimatedPoints: "Estimated Points",
@@ -195,6 +217,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     });
   }
 
+  function formatDifficulty(level: "low" | "medium" | "high") {
+    if (level === "high") return text.highRisk;
+    if (level === "medium") return text.mediumRisk;
+    return text.lowRisk;
+  }
+
   // Title
   addTitle(text.title);
 
@@ -217,6 +245,36 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 5;
   }
 
+  // Readiness score and summary metrics
+  addHeading(text.readinessScore);
+  addBody(`${report.readinessScore.score}/100`);
+  addSmallText(report.readinessScore.explanation, 0);
+  yPosition += 2;
+
+  addHeading(text.primaryGap);
+  addBody(report.primaryGap);
+  yPosition += 2;
+
+  addHeading(text.dataCompleteness);
+  addBody(`${text.completionRate}: ${report.dataCompleteness.percentage}%`);
+  if (report.dataCompleteness.missingFields.length > 0) {
+    addBulletPoints(report.dataCompleteness.missingFields);
+  }
+  yPosition += 3;
+
+  // Structured pathway comparison table (row format)
+  if (report.pathwayComparisonTable.length > 0) {
+    addHeading(text.pathwayTable);
+    report.pathwayComparisonTable.forEach((row) => {
+      addBody(`${text.visa}: ${row.visa}`);
+      addSmallText(`${text.difficulty}: ${formatDifficulty(row.difficulty)}`, 4);
+      addSmallText(`${text.requirementType}: ${row.requirementType}`, 4);
+      addSmallText(`${text.userRelativePosition}: ${row.userRelativePosition}`, 4);
+      yPosition += 1;
+    });
+    yPosition += 3;
+  }
+
   // Pathway comparison
   if (report.pathwayComparison.length > 0) {
     addHeading(text.pathwayComparison);
@@ -231,6 +289,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
       addBody(`${p.visaName} (${p.subclass}) - ${relevance}`);
       addSmallText(`${text.confidence}: ${confidence}`, 4);
       addSmallText(p.reason, 4);
+      addSmallText(`${text.confidenceExplanation}: ${p.confidenceExplanation}`, 4);
       if (p.keyRequirements.length > 0) {
         addBody(text.keyRequirements, 4);
         addBulletPoints(p.keyRequirements);
@@ -327,6 +386,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   if (report.suggestedNextSteps.length > 0) {
     addHeading(text.suggestedNextSteps);
     addBulletPoints(report.suggestedNextSteps);
+    yPosition += 3;
+  }
+
+  if (report.factorsThatMayAffectPathways.length > 0) {
+    addHeading(text.factorsThatMayAffectPathways);
+    addBulletPoints(report.factorsThatMayAffectPathways);
     yPosition += 3;
   }
 

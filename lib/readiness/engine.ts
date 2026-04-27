@@ -6,13 +6,16 @@ import { buildRiskIndicators } from "./risk-rules";
 import { buildNextSteps } from "./next-steps";
 import type {
   ConfidenceLevel,
+  DataCompleteness,
   DocumentCategory,
   KeyVisaRequirement,
   Locale,
   OccupationIndication,
   PathwayComparison,
+  PathwayComparisonRow,
   PathwayRelevance,
   PointsEstimate,
+  ReadinessScore,
   ReadinessInput,
   ReadinessReport,
 } from "./types";
@@ -391,6 +394,73 @@ function getPathwayConfidenceLevel(
   return "low";
 }
 
+function getConfidenceExplanation(
+  subclass: string,
+  input: ReadinessInput,
+  locale: Locale,
+  confidenceLevel: ConfidenceLevel,
+  estimatedPoints?: number
+): string {
+  const isTr = locale === "tr";
+  const hasAge = Boolean(input.age);
+  const hasEnglish = Boolean(input.englishLevel);
+  const hasOccupation = Boolean(input.occupation);
+  const hasSponsorContext = hasKw(
+    [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "),
+    ["sponsor", "employer", "partner", "family", "işveren", "eş", "akraba"]
+  );
+
+  if (subclass === "500") {
+    return isTr
+      ? confidenceLevel === "high"
+        ? "Eğitim amacı net göründüğü için bu yol için göreli güven sinyali daha güçlüdür."
+        : "Eğitim amacıyla ilgili bağlam mevcut, ancak kişisel durum detayları bu güven düzeyini değiştirebilir."
+      : confidenceLevel === "high"
+        ? "The study intent appears clear, so the relative confidence signal is stronger for this pathway."
+        : "There is study-related context, but personal details could still shift this confidence level.";
+  }
+
+  if (subclass === "482") {
+    return isTr
+      ? hasSponsorContext && hasOccupation
+        ? "Sponsor ve rol bağlamı birlikte göründüğü için güven seviyesi desteklenmektedir."
+        : "Sponsor veya rol bağlamı sınırlı olduğu için güven seviyesi daha temkinli tutulmuştur."
+      : hasSponsorContext && hasOccupation
+        ? "Sponsor and role context are both visible, which supports this confidence level."
+        : "Sponsor or role context is limited, so confidence is kept cautious.";
+  }
+
+  if (["189", "190", "491"].includes(subclass)) {
+    const pointsText =
+      estimatedPoints === undefined
+        ? isTr
+          ? "kısmi puan görünümü yok"
+          : "no partial points picture"
+        : isTr
+          ? `kısmi puan görünümü ${estimatedPoints}`
+          : `partial points picture is ${estimatedPoints}`;
+    return isTr
+      ? `Güven seviyesi; yaş/İngilizce/meslek girdileri ve ${pointsText} üzerinden gösterge niteliğinde hesaplanmıştır.`
+      : `Confidence is estimated indicatively from age/English/occupation inputs and ${pointsText}.`;
+  }
+
+  if (subclass === "820_801") {
+    return isTr
+      ? hasSponsorContext
+        ? "İlişki ve sponsor bağlamı bulunduğunda güven seviyesi daha güçlü görünür."
+        : "İlişki/sponsor kanıt bağlamı sınırlı olduğunda güven seviyesi düşer."
+      : hasSponsorContext
+        ? "Confidence tends to be stronger when relationship and sponsor context are present."
+        : "Confidence is lower when relationship/sponsor evidence context is limited.";
+  }
+
+  const knownSignals = [hasAge, hasEnglish, hasOccupation, hasSponsorContext].filter(Boolean)
+    .length;
+  return isTr
+    ? `Güven seviyesi, mevcut ${knownSignals}/4 temel sinyal üzerinden genel bir gösterge olarak oluşturuldu.`
+    : `Confidence is shown as a general indicator based on ${knownSignals}/4 available core signals.`;
+}
+
 // ─── Pathway reason builder ───────────────────────────────────────────────────
 
 function buildPathwayEntry(
@@ -470,6 +540,13 @@ function buildPathwayEntry(
     relevance,
     estimatedPoints
   );
+  const confidenceExplanation = getConfidenceExplanation(
+    subclass,
+    input,
+    locale,
+    confidenceLevel,
+    estimatedPoints
+  );
   const keyRequirements = getPathwayKeyRequirements(subclass, locale);
   const pathwaySpecificRisks = getPathwaySpecificRisks(
     subclass,
@@ -484,9 +561,293 @@ function buildPathwayEntry(
     reason,
     relevance,
     confidenceLevel,
+    confidenceExplanation,
     keyRequirements,
     pathwaySpecificRisks,
   };
+}
+
+function getDifficultyForPathway(
+  pathway: PathwayComparison
+): "low" | "medium" | "high" {
+  if (pathway.subclass === "general") return "medium";
+  if (pathway.subclass === "500") return "medium";
+  if (pathway.subclass === "482") return "medium";
+  if (pathway.subclass === "820_801") return "high";
+  if (["189", "190", "491"].includes(pathway.subclass)) return "high";
+  return "medium";
+}
+
+function getRequirementType(
+  pathway: PathwayComparison,
+  locale: Locale
+): string {
+  const isTr = locale === "tr";
+  if (pathway.subclass === "500") {
+    return isTr
+      ? "Eğitim ve mali kanıt ağırlıklı"
+      : "Study and financial evidence focused";
+  }
+  if (pathway.subclass === "482") {
+    return isTr
+      ? "İşveren sponsorluğu ve rol uyumu"
+      : "Employer sponsorship and role alignment";
+  }
+  if (["189", "190", "491"].includes(pathway.subclass)) {
+    return isTr
+      ? "Puan, meslek ve davet/adaylık temelli"
+      : "Points, occupation, and invitation/nomination based";
+  }
+  if (pathway.subclass === "820_801") {
+    return isTr
+      ? "İlişki ve sponsor kanıtı temelli"
+      : "Relationship and sponsor evidence based";
+  }
+  return isTr ? "Daha fazla kişisel bağlam gerektirir" : "Requires more personal context";
+}
+
+function getUserRelativePosition(
+  pathway: PathwayComparison,
+  locale: Locale
+): string {
+  const isTr = locale === "tr";
+
+  if (pathway.relevance === "not_enough_information") {
+    return isTr
+      ? "Konumlandırma için veri yetersiz"
+      : "Insufficient data for relative positioning";
+  }
+
+  if (pathway.relevance === "needs_more_information") {
+    return isTr
+      ? "Ek kişisel veriyle netleşebilir"
+      : "Could become clearer with additional personal data";
+  }
+
+  if (pathway.confidenceLevel === "high") {
+    return isTr
+      ? "Mevcut veride göreli olarak daha güçlü"
+      : "Relatively stronger in current data";
+  }
+
+  if (pathway.confidenceLevel === "medium") {
+    return isTr
+      ? "Orta düzey sinyal, belirgin boşluklarla"
+      : "Moderate signal with notable gaps";
+  }
+
+  return isTr
+    ? "Düşük sinyal, sınırlı uyum görünümü"
+    : "Lower signal with limited alignment";
+}
+
+function buildPathwayComparisonTable(
+  pathways: PathwayComparison[],
+  locale: Locale
+): PathwayComparisonRow[] {
+  return pathways.map((pathway) => ({
+    visa:
+      pathway.subclass === "general"
+        ? pathway.visaName
+        : `${pathway.visaName} (${pathway.subclass})`,
+    difficulty: getDifficultyForPathway(pathway),
+    requirementType: getRequirementType(pathway, locale),
+    userRelativePosition: getUserRelativePosition(pathway, locale),
+  }));
+}
+
+function buildDataCompleteness(
+  input: ReadinessInput,
+  locale: Locale
+): DataCompleteness {
+  const isTr = locale === "tr";
+  const fields: Array<{ value?: string; label: string }> = [
+    {
+      value: input.mainGoal,
+      label: isTr ? "Ana hedef" : "Main goal",
+    },
+    {
+      value: input.preferredPathway,
+      label: isTr ? "Vize ilgi alanı" : "Visa interest",
+    },
+    {
+      value: input.currentCountry,
+      label: isTr ? "Bulunduğunuz ülke" : "Current country",
+    },
+    {
+      value: input.passportCountry,
+      label: isTr ? "Pasaport ülkesi" : "Passport country",
+    },
+    {
+      value: input.age,
+      label: isTr ? "Yaş" : "Age",
+    },
+    {
+      value: input.occupation,
+      label: isTr ? "Meslek" : "Occupation",
+    },
+    {
+      value: input.englishLevel,
+      label: isTr ? "İngilizce seviyesi" : "English level",
+    },
+    {
+      value: input.sponsorOrFamily,
+      label: isTr ? "Sponsor/aile durumu" : "Sponsor/family context",
+    },
+    {
+      value: input.biggestConcern,
+      label: isTr ? "En büyük endişe" : "Biggest concern",
+    },
+  ];
+
+  const completed = fields.filter((f) => Boolean(f.value)).length;
+  const percentage = Math.round((completed / fields.length) * 100);
+  const missingFields = fields
+    .filter((f) => !f.value)
+    .map((f) => f.label);
+
+  return { percentage, missingFields };
+}
+
+function buildReadinessScore(params: {
+  locale: Locale;
+  pathways: PathwayComparison[];
+  missingInformation: string[];
+  riskIndicators: ReturnType<typeof buildRiskIndicators>;
+  pointsEstimate?: PointsEstimate;
+}): ReadinessScore {
+  const { locale, pathways, missingInformation, riskIndicators, pointsEstimate } = params;
+  const isTr = locale === "tr";
+
+  let score = 100;
+
+  const hasSpecificPathway = pathways.some((p) => p.subclass !== "general");
+  if (!hasSpecificPathway) score -= 20;
+
+  const lowConfidenceCount = pathways.filter((p) => p.confidenceLevel === "low").length;
+  score -= lowConfidenceCount * 6;
+
+  const missingPenalty = Math.min(36, missingInformation.length * 6);
+  score -= missingPenalty;
+
+  const riskPenalty = Math.min(
+    34,
+    riskIndicators.reduce((sum, risk) => {
+      if (risk.level === "high") return sum + 10;
+      if (risk.level === "medium") return sum + 5;
+      return sum + 2;
+    }, 0)
+  );
+  score -= riskPenalty;
+
+  if (pointsEstimate?.estimatedPoints !== undefined) {
+    const shortfall = Math.max(0, 65 - pointsEstimate.estimatedPoints);
+    score -= Math.min(24, Math.round(shortfall * 1.2));
+  } else if (pathways.some((p) => ["189", "190", "491"].includes(p.subclass))) {
+    score -= 10;
+  }
+
+  score = Math.max(0, Math.min(100, score));
+
+  const explanation = isTr
+    ? `Gösterge puanı; eksik alanlar, risk yoğunluğu ve mevcut puan görünümüne göre hesaplanır. Bu bir karar-destek göstergesidir, sonuç/uygunluk beyanı değildir.`
+    : `The indicative score is calculated from missing-data load, risk intensity, and the current points picture. It is a decision-support indicator, not an outcome/eligibility statement.`;
+
+  return { score, explanation };
+}
+
+function buildPrimaryGap(params: {
+  locale: Locale;
+  pathways: PathwayComparison[];
+  missingInformation: string[];
+  riskIndicators: ReturnType<typeof buildRiskIndicators>;
+  pointsEstimate?: PointsEstimate;
+}): string {
+  const { locale, pathways, missingInformation, riskIndicators, pointsEstimate } = params;
+  const isTr = locale === "tr";
+
+  const hasSkilled = pathways.some((p) => ["189", "190", "491"].includes(p.subclass));
+  if (hasSkilled && pointsEstimate?.estimatedPoints !== undefined && pointsEstimate.estimatedPoints < 65) {
+    return isTr
+      ? "Birincil boşluk: Mevcut kısmi puan görünümü puan-temelli yollar için sınırlayıcı kalıyor."
+      : "Primary gap: The current partial points picture remains a limiting factor for points-tested pathways.";
+  }
+
+  const priorityMissing = [
+    "Occupation",
+    "Meslek",
+    "English level",
+    "İngilizce seviyesi",
+    "Sponsor",
+    "sponsor",
+    "partner",
+    "Partner",
+  ];
+  const majorMissing = missingInformation.find((item) =>
+    priorityMissing.some((needle) => item.includes(needle))
+  );
+  if (majorMissing) {
+    return isTr
+      ? `Birincil boşluk: ${majorMissing} alanı netleşmeden karşılaştırmalı değerlendirme sınırlı kalır.`
+      : `Primary gap: Comparative assessment remains limited until ${majorMissing} is clarified.`;
+  }
+
+  const highRisk = riskIndicators.find((risk) => risk.level === "high");
+  if (highRisk) {
+    return isTr
+      ? `Birincil boşluk: "${highRisk.title}" başlığındaki risk etkisi baskın görünüyor.`
+      : `Primary gap: The risk signal in "${highRisk.title}" appears to be the dominant limiter.`;
+  }
+
+  return isTr
+    ? "Birincil boşluk: Karşılaştırmalı tabloyu güçlendirecek ek kişisel bağlam ihtiyacı."
+    : "Primary gap: Additional personal context is needed to strengthen the comparison table.";
+}
+
+function buildFactorsThatMayAffectPathways(
+  locale: Locale,
+  hasSkilledPathway: boolean,
+  hasEmployerPathway: boolean,
+  hasPartnerPathway: boolean
+): string[] {
+  const isTr = locale === "tr";
+  const items: string[] = [
+    isTr
+      ? "Başvuru dönemlerindeki davet/öncelik seviyeleri zamanla değişebilir."
+      : "Invitation and processing priority settings can change over time.",
+    isTr
+      ? "Sunulan belgelerin tutarlılığı ve kapsamı, yol karşılaştırmasını etkileyebilir."
+      : "Consistency and coverage of supporting evidence may change pathway comparisons.",
+    isTr
+      ? "Resmi kriter ve politika güncellemeleri değerlendirme sinyallerini değiştirebilir."
+      : "Official criteria and policy updates may shift pathway signals.",
+  ];
+
+  if (hasSkilledPathway) {
+    items.push(
+      isTr
+        ? "Puan-temelli yollar için davet seviyeleri ve eyalet/bölge öncelikleri dönemsel dalgalanabilir."
+        : "For points-tested pathways, invitation levels and state/territory priorities may fluctuate by period."
+    );
+  }
+
+  if (hasEmployerPathway) {
+    items.push(
+      isTr
+        ? "İşverenin rol, ücret ve sponsorluk gerekliliklerine uygunluğu sonucu etkileyebilir."
+        : "Employer alignment with role, salary, and sponsorship settings can affect pathway viability signals."
+    );
+  }
+
+  if (hasPartnerPathway) {
+    items.push(
+      isTr
+        ? "İlişki kanıtlarının türü ve süreklilik düzeyi partner yolunun gücünü değiştirebilir."
+        : "The type and continuity of relationship evidence can alter the relative strength of partner pathways."
+    );
+  }
+
+  return items;
 }
 
 // ─── Points estimate ──────────────────────────────────────────────────────────
@@ -774,6 +1135,10 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
             : "No specific pathway was detected from available information. Goal, occupation, and sponsorship details would provide a more complete assessment.",
         relevance: "not_enough_information",
         confidenceLevel: "low",
+        confidenceExplanation:
+          locale === "tr"
+            ? "Mevcut sinyal seti sınırlı olduğu için güven seviyesi düşük görünmektedir."
+            : "Confidence is low because the available signal set is limited.",
         keyRequirements:
           locale === "tr"
             ? ["Daha ayrıntılı hedef, meslek ve sponsorluk bağlamı"]
@@ -816,6 +1181,33 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     locale
   );
 
+  const pathwayComparisonTable = buildPathwayComparisonTable(
+    pathwayComparison,
+    locale
+  );
+  const dataCompleteness = buildDataCompleteness(input, locale);
+  const readinessScore = buildReadinessScore({
+    locale,
+    pathways: pathwayComparison,
+    missingInformation,
+    riskIndicators,
+    pointsEstimate,
+  });
+  const primaryGap = buildPrimaryGap({
+    locale,
+    pathways: pathwayComparison,
+    missingInformation,
+    riskIndicators,
+    pointsEstimate,
+  });
+
+  const factorsThatMayAffectPathways = buildFactorsThatMayAffectPathways(
+    locale,
+    hasSkilledPathway,
+    detectedSubclasses.includes("482"),
+    detectedSubclasses.includes("820_801")
+  );
+
   const keyVisaRequirements = buildKeyVisaRequirements(pathwayComparison);
   const whatThisMeans = buildWhatThisMeans(
     input,
@@ -840,8 +1232,13 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   return {
     pathwayComparison,
+    pathwayComparisonTable,
+    readinessScore,
+    primaryGap,
+    dataCompleteness,
     keyVisaRequirements,
     whatThisMeans,
+    factorsThatMayAffectPathways,
     pointsEstimate,
     occupationIndication,
     riskIndicators,
