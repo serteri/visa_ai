@@ -47,6 +47,11 @@ function getLocalizedText(locale: "en" | "tr") {
       generatedDate: "Oluşturma Tarihi",
       userInfo: "Kullanıcı Bilgileri",
       pathwayComparison: "Olası Vize Yolları",
+      confidence: "Güven",
+      keyRequirements: "Temel gereklilikler",
+      pathwayRisks: "Yola özgü riskler",
+      keyVisaRequirements: "Temel Vize Gereklilikleri",
+      whatThisMeans: "Bunun Anlamı",
       riskIndicators: "Risk Göstergeleri",
       documentChecklist: "Belge Kontrol Listesi",
       pointsEstimate: "Puan Tahmini",
@@ -68,6 +73,11 @@ function getLocalizedText(locale: "en" | "tr") {
     generatedDate: "Generated Date",
     userInfo: "User Information",
     pathwayComparison: "Possible Visa Pathways",
+    confidence: "Confidence",
+    keyRequirements: "Key requirements",
+    pathwayRisks: "Pathway-specific risks",
+    keyVisaRequirements: "Key Visa Requirements",
+    whatThisMeans: "What This Means",
     riskIndicators: "Risk Indicators",
     documentChecklist: "Document Checklist",
     pointsEstimate: "Points Estimate",
@@ -212,10 +222,41 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     addHeading(text.pathwayComparison);
     report.pathwayComparison.forEach((p) => {
       const relevance = p.relevance.toUpperCase().replace(/_/g, " ");
+      const confidence =
+        p.confidenceLevel === "high"
+          ? text.highRisk
+          : p.confidenceLevel === "medium"
+            ? text.mediumRisk
+            : text.lowRisk;
       addBody(`${p.visaName} (${p.subclass}) - ${relevance}`);
+      addSmallText(`${text.confidence}: ${confidence}`, 4);
       addSmallText(p.reason, 4);
+      if (p.keyRequirements.length > 0) {
+        addBody(text.keyRequirements, 4);
+        addBulletPoints(p.keyRequirements);
+      }
+      if (p.pathwaySpecificRisks.length > 0) {
+        addBody(text.pathwayRisks, 4);
+        addBulletPoints(p.pathwaySpecificRisks);
+      }
       yPosition += 2;
     });
+    yPosition += 3;
+  }
+
+  if (report.keyVisaRequirements.length > 0) {
+    addHeading(text.keyVisaRequirements);
+    report.keyVisaRequirements.forEach((requirement) => {
+      addBody(requirement.pathway);
+      addBulletPoints(requirement.items);
+      yPosition += 2;
+    });
+    yPosition += 3;
+  }
+
+  if (report.whatThisMeans.length > 0) {
+    addHeading(text.whatThisMeans);
+    addBulletPoints(report.whatThisMeans);
     yPosition += 3;
   }
 

@@ -18,11 +18,21 @@ export type PathwayRelevance =
   | "needs_more_information"
   | "not_enough_information";
 
+export type ConfidenceLevel = "low" | "medium" | "high";
+
 export type PathwayComparison = {
   subclass: string;
   visaName: string;
   reason: string;
   relevance: PathwayRelevance;
+  confidenceLevel: ConfidenceLevel;
+  keyRequirements: string[];
+  pathwaySpecificRisks: string[];
+};
+
+export type KeyVisaRequirement = {
+  pathway: string;
+  items: string[];
 };
 
 export type PointsBreakdownItem = {
@@ -64,6 +74,8 @@ export type DocumentCategory = {
 
 export type ReadinessReport = {
   pathwayComparison: PathwayComparison[];
+  keyVisaRequirements: KeyVisaRequirement[];
+  whatThisMeans: string[];
   pointsEstimate?: PointsEstimate;
   occupationIndication?: OccupationIndication;
   riskIndicators: RiskIndicator[];

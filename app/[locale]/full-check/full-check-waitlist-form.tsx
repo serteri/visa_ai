@@ -39,6 +39,60 @@ function ReportSection({ title, items }: { title: string; items: string[] }) {
   );
 }
 
+function PathwayDetailCard({
+  title,
+  confidenceLabel,
+  summary,
+  keyRequirements,
+  pathwayRisks,
+  isTr,
+}: {
+  title: string;
+  confidenceLabel: string;
+  summary: string;
+  keyRequirements: string[];
+  pathwayRisks: string[];
+  isTr: boolean;
+}) {
+  return (
+    <Card>
+      <CardHeader className="space-y-2">
+        <div className="flex items-start justify-between gap-3">
+          <CardTitle className="text-base">{title}</CardTitle>
+          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+            {isTr ? "Güven:" : "Confidence:"} {confidenceLabel}
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground">{summary}</p>
+      </CardHeader>
+      <CardContent className="space-y-4 text-sm">
+        <div className="space-y-2">
+          <p className="font-medium">{isTr ? "Temel gereklilikler" : "Key requirements"}</p>
+          <ul className="space-y-2 text-muted-foreground">
+            {keyRequirements.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="text-primary">-</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-2">
+          <p className="font-medium">{isTr ? "Yola özgü riskler" : "Pathway-specific risks"}</p>
+          <ul className="space-y-2 text-muted-foreground">
+            {pathwayRisks.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="text-primary">-</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function LockedSection({ title, isTr }: { title: string; isTr: boolean }) {
   return (
     <Card className="relative overflow-hidden border-dashed">
@@ -92,6 +146,14 @@ export function FullCheckWaitlistForm({
       locale: locale === "tr" ? "tr" : "en",
       userInputSummary: state.userInput || {},
     });
+  }
+
+  function getConfidenceLabel(level: "low" | "medium" | "high") {
+    if (isTr) {
+      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
+    }
+
+    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
   return (
@@ -243,14 +305,81 @@ export function FullCheckWaitlistForm({
             </p>
           </div>
 
-          <ReportSection
-            title={isTr ? "Olası vize yolları" : "Possible visa pathways"}
-            items={state.report.pathwayComparison.map((p) =>
-              p.subclass === "general" 
-                ? p.reason 
-                : `${p.visaName} (${p.subclass}): ${p.reason}`
-            )}
-          />
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <h4 className="text-base font-semibold">
+                {isTr ? "Olası vize yolları" : "Possible visa pathways"}
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                {isTr
+                  ? "Her yol, güven seviyesi, temel gereklilikler ve yola özgü risklerle birlikte gösterilir."
+                  : "Each pathway is shown with a confidence level, key requirements, and pathway-specific risks."}
+              </p>
+            </div>
+
+            <div className="grid gap-4">
+              {state.report.pathwayComparison.map((pathway) => (
+                <PathwayDetailCard
+                  key={`${pathway.subclass}-${pathway.visaName}`}
+                  title={
+                    pathway.subclass === "general"
+                      ? pathway.visaName
+                      : `${pathway.visaName} (${pathway.subclass})`
+                  }
+                  confidenceLabel={getConfidenceLabel(pathway.confidenceLevel)}
+                  summary={pathway.reason}
+                  keyRequirements={pathway.keyRequirements}
+                  pathwayRisks={pathway.pathwaySpecificRisks}
+                  isTr={isTr}
+                />
+              ))}
+            </div>
+          </div>
+
+          {state.report.keyVisaRequirements.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Temel vize gereklilikleri" : "Key visa requirements"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {state.report.keyVisaRequirements.map((requirement) => (
+                  <div key={requirement.pathway} className="space-y-2">
+                    <p className="font-medium text-sm">{requirement.pathway}</p>
+                    <ul className="space-y-1 text-sm text-muted-foreground ml-4">
+                      {requirement.items.map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <span className="text-primary">-</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {state.report.whatThisMeans.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Bunun anlamı" : "What this means"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {state.report.whatThisMeans.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="text-primary">-</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
 
           <ReportSection
             title={isTr ? "Risk göstergeleri" : "Risk indicators"}

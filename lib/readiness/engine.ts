@@ -5,7 +5,9 @@ import { getDocumentChecklist } from "./document-checklists";
 import { buildRiskIndicators } from "./risk-rules";
 import { buildNextSteps } from "./next-steps";
 import type {
+  ConfidenceLevel,
   DocumentCategory,
+  KeyVisaRequirement,
   Locale,
   OccupationIndication,
   PathwayComparison,
@@ -135,12 +137,267 @@ const VISA_NAMES: Record<string, { en: string; tr: string }> = {
   "820_801": { en: "Partner Visa (Onshore)", tr: "Partner Vizesi (Yerinde)" },
 };
 
+function getPathwayKeyRequirements(
+  subclass: string,
+  locale: Locale
+): string[] {
+  const isTr = locale === "tr";
+
+  switch (subclass) {
+    case "500":
+      return isTr
+        ? [
+            "Kayıtlı bir eğitim kurumu ve kurs bağlamı",
+            "Gerçek öğrenci niyetine ilişkin destekleyici bilgiler",
+            "Maddi yeterlilik ve eğitim planı bağlamı",
+          ]
+        : [
+            "A registered education provider and course context",
+            "Supporting information relevant to genuine student intent",
+            "Financial capacity and study plan context",
+          ];
+    case "482":
+      return isTr
+        ? [
+            "Uygun bir işveren sponsorluğu bağlamı",
+            "Görev ile uyumlu meslek ve deneyim bilgisi",
+            "İngilizce ve iş koşullarına ilişkin destekleyici bilgiler",
+          ]
+        : [
+            "Eligible employer sponsorship context",
+            "Occupation and experience information aligned with the role",
+            "Supporting information relevant to English and employment conditions",
+          ];
+    case "189":
+      return isTr
+        ? [
+            "Puan testine konu olabilecek yaş ve İngilizce bilgisi",
+            "Meslek ve beceri değerlendirmesi bağlamı",
+            "Davet gereksinimine ilişkin genel uygunluk bağlamı",
+          ]
+        : [
+            "Age and English information relevant to a points-tested pathway",
+            "Occupation and skills assessment context",
+            "General context relevant to the invitation requirement",
+          ];
+    case "190":
+      return isTr
+        ? [
+            "Puan testine konu olabilecek yaş ve İngilizce bilgisi",
+            "Meslek ve beceri değerlendirmesi bağlamı",
+            "Eyalet veya bölge adaylığına ilişkin bağlam",
+          ]
+        : [
+            "Age and English information relevant to a points-tested pathway",
+            "Occupation and skills assessment context",
+            "State or territory nomination context",
+          ];
+    case "491":
+      return isTr
+        ? [
+            "Puan testine konu olabilecek yaş ve İngilizce bilgisi",
+            "Meslek ve beceri değerlendirmesi bağlamı",
+            "Bölgesel adaylık veya uygun akraba sponsorluğu bağlamı",
+          ]
+        : [
+            "Age and English information relevant to a points-tested pathway",
+            "Occupation and skills assessment context",
+            "Regional nomination or eligible relative sponsorship context",
+          ];
+    case "820_801":
+      return isTr
+        ? [
+            "Uygun partner sponsorluğu statüsü bağlamı",
+            "İlişkinin niteliği ve sürekliliğine ilişkin bilgiler",
+            "Birlikte yaşam veya ortak yaşam düzenine ilişkin destekleyici bağlam",
+          ]
+        : [
+            "Eligible partner sponsorship status context",
+            "Information relevant to the nature and continuity of the relationship",
+            "Supporting context about living arrangements or shared life",
+          ];
+    default:
+      return isTr
+        ? ["Daha ayrıntılı kişisel bağlam"]
+        : ["Additional personal context"];
+  }
+}
+
+function getPathwaySpecificRisks(
+  subclass: string,
+  input: ReadinessInput,
+  locale: Locale,
+  estimatedPoints?: number
+): string[] {
+  const isTr = locale === "tr";
+  const risks: string[] = [];
+
+  if (subclass === "500") {
+    if (!hasKw([input.mainGoal ?? "", input.preferredPathway ?? ""].join(" "), ["study", "student", "course", "eğitim", "öğrenci"])) {
+      risks.push(
+        isTr
+          ? "Eğitim amacı açık biçimde belirtilmediği için bu yolun ağırlığı sınırlı kalabilir."
+          : "The study purpose is not clearly stated, which may limit the weight of this pathway."
+      );
+    }
+    if (!input.currentCountry) {
+      risks.push(
+        isTr
+          ? "Mevcut ülke bağlamı olmadan öğrenci konumuna ilişkin değerlendirme sınırlı kalır."
+          : "Without current-country context, the student-position review remains limited."
+      );
+    }
+  }
+
+  if (subclass === "482") {
+    if (!hasKw([input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "), ["sponsor", "employer", "işveren", "sponsored"])) {
+      risks.push(
+        isTr
+          ? "İşveren sponsorluğu bağlamı açık değil."
+          : "Employer sponsorship context is not yet clear."
+      );
+    }
+    if (!input.occupation) {
+      risks.push(
+        isTr
+          ? "Meslek bilgisi olmadan rol uyumu daha sınırlı incelenebilir."
+          : "Without occupation information, role alignment can only be reviewed at a limited level."
+      );
+    }
+  }
+
+  if (["189", "190", "491"].includes(subclass)) {
+    if (!input.occupation) {
+      risks.push(
+        isTr
+          ? "Meslek bilgisi eksik olduğu için yetenekli yol incelemesi sınırlıdır."
+          : "The skilled-pathway review is limited because occupation information is missing."
+      );
+    }
+    if (!input.englishLevel || !input.age) {
+      risks.push(
+        isTr
+          ? "Yaş ve İngilizce bilgisi eksik olduğunda puan temelli değerlendirme eksik kalır."
+          : "When age and English details are missing, the points-based review remains incomplete."
+      );
+    }
+    if (estimatedPoints !== undefined && estimatedPoints < 65) {
+      risks.push(
+        isTr
+          ? "Mevcut kısmi puan görünümü, tipik minimum eşiğin altında kalmaktadır."
+          : "The current partial points picture sits below the typical minimum threshold."
+      );
+    }
+  }
+
+  if (subclass === "190") {
+    risks.push(
+      isTr
+        ? "Eyalet veya bölge adaylığına ilişkin bağlam olmadan bu yol daha temkinli değerlendirilir."
+        : "Without nomination context, this pathway is assessed more cautiously."
+    );
+  }
+
+  if (subclass === "491") {
+    if (!hasKw(input.sponsorOrFamily ?? "", ["family", "relative", "akraba", "sponsor"])) {
+      risks.push(
+        isTr
+          ? "Bölgesel adaylık veya uygun akraba sponsorluğu bağlamı henüz net değil."
+          : "Regional nomination or eligible-relative sponsorship context is not yet clear."
+      );
+    }
+  }
+
+  if (subclass === "820_801") {
+    if (!input.sponsorOrFamily) {
+      risks.push(
+        isTr
+          ? "Partner sponsorluğu bağlamı olmadan bu yol sınırlı görünür."
+          : "Without partner sponsorship context, this pathway remains limited."
+      );
+    }
+    if (!hasKw([input.mainGoal ?? "", input.sponsorOrFamily ?? ""].join(" "), ["partner", "spouse", "de facto", "eş", "ilişki"])) {
+      risks.push(
+        isTr
+          ? "İlişki bağlamı açık biçimde görünmediği için bu yol için güven seviyesi düşer."
+          : "Because the relationship context is not clearly visible, confidence in this pathway is lower."
+      );
+    }
+  }
+
+  if (risks.length === 0) {
+    risks.push(
+      isTr
+        ? "Mevcut bilgiler bu yol için bazı temel sinyaller sunuyor, ancak bireysel bağlam sonucu değiştirebilir."
+        : "The available information provides some baseline signals for this pathway, but individual context could change the picture."
+    );
+  }
+
+  return risks;
+}
+
+function getPathwayConfidenceLevel(
+  subclass: string,
+  input: ReadinessInput,
+  relevance: PathwayRelevance,
+  estimatedPoints?: number
+): ConfidenceLevel {
+  const combinedGoal = [input.mainGoal ?? "", input.preferredPathway ?? ""].join(" ");
+  const sponsorText = [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" ");
+
+  if (relevance !== "possible") {
+    return relevance === "needs_more_information" ? "low" : "low";
+  }
+
+  if (subclass === "500") {
+    return hasKw(combinedGoal, ["study", "student", "course", "eğitim", "öğrenci"])
+      ? "high"
+      : "medium";
+  }
+
+  if (subclass === "482") {
+    return hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]) && Boolean(input.occupation)
+      ? "high"
+      : "medium";
+  }
+
+  if (subclass === "189") {
+    if (input.occupation && input.age && input.englishLevel && estimatedPoints !== undefined && estimatedPoints >= 65) {
+      return "high";
+    }
+    return input.occupation && (input.age || input.englishLevel) ? "medium" : "low";
+  }
+
+  if (subclass === "190") {
+    if (input.occupation && input.age && input.englishLevel && estimatedPoints !== undefined && estimatedPoints >= 65) {
+      return "medium";
+    }
+    return input.occupation ? "medium" : "low";
+  }
+
+  if (subclass === "491") {
+    if (input.occupation && input.age && input.englishLevel && hasKw(sponsorText, ["family", "relative", "regional", "akraba", "bölgesel"])) {
+      return "medium";
+    }
+    return input.occupation ? "medium" : "low";
+  }
+
+  if (subclass === "820_801") {
+    return hasKw(sponsorText, ["partner", "spouse", "de facto", "eş", "ilişki"]) && Boolean(input.sponsorOrFamily)
+      ? "high"
+      : "medium";
+  }
+
+  return "low";
+}
+
 // ─── Pathway reason builder ───────────────────────────────────────────────────
 
 function buildPathwayEntry(
   subclass: string,
   input: ReadinessInput,
-  locale: Locale
+  locale: Locale,
+  estimatedPoints?: number
 ): PathwayComparison {
   const isTr = locale === "tr";
   const names = VISA_NAMES[subclass] ?? {
@@ -207,7 +464,29 @@ function buildPathwayEntry(
       : "This pathway may be relevant to explore based on available information.";
   }
 
-  return { subclass, visaName, reason, relevance };
+  const confidenceLevel = getPathwayConfidenceLevel(
+    subclass,
+    input,
+    relevance,
+    estimatedPoints
+  );
+  const keyRequirements = getPathwayKeyRequirements(subclass, locale);
+  const pathwaySpecificRisks = getPathwaySpecificRisks(
+    subclass,
+    input,
+    locale,
+    estimatedPoints
+  );
+
+  return {
+    subclass,
+    visaName,
+    reason,
+    relevance,
+    confidenceLevel,
+    keyRequirements,
+    pathwaySpecificRisks,
+  };
 }
 
 // ─── Points estimate ──────────────────────────────────────────────────────────
@@ -392,12 +671,94 @@ function buildDisclaimer(locale: Locale): string {
     : "This report contains general information only. It does not provide migration advice, legal advice, or predict visa outcomes. For advice based on personal circumstances, speak with a registered migration agent or Australian legal practitioner.";
 }
 
+function buildKeyVisaRequirements(
+  pathways: PathwayComparison[]
+): KeyVisaRequirement[] {
+  return pathways
+    .filter((pathway) => pathway.subclass !== "general")
+    .map((pathway) => ({
+      pathway: `${pathway.visaName} (${pathway.subclass})`,
+      items: pathway.keyRequirements,
+    }));
+}
+
+function buildWhatThisMeans(
+  input: ReadinessInput,
+  pathways: PathwayComparison[],
+  locale: Locale,
+  missingInformation: string[],
+  estimatedPoints?: number
+): string[] {
+  const isTr = locale === "tr";
+  const strongestPathway = pathways.find((pathway) => pathway.subclass !== "general");
+  const highConfidenceCount = pathways.filter((pathway) => pathway.confidenceLevel === "high").length;
+  const skilledVisible = pathways.some((pathway) => ["189", "190", "491"].includes(pathway.subclass));
+
+  const items: string[] = [];
+
+  if (strongestPathway) {
+    items.push(
+      isTr
+        ? `${strongestPathway.visaName} (${strongestPathway.subclass}) yolu mevcut bilgiler içinde daha güçlü bir sinyal göstermektedir ve güven seviyesi ${strongestPathway.confidenceLevel === "high" ? "yüksek" : strongestPathway.confidenceLevel === "medium" ? "orta" : "düşük"} görünmektedir.`
+        : `${strongestPathway.visaName} (${strongestPathway.subclass}) shows the strongest signal in the current information, with ${strongestPathway.confidenceLevel} confidence.`
+    );
+  } else {
+    items.push(
+      isTr
+        ? "Mevcut bilgi seti belirli bir vize yolunu güçlü biçimde öne çıkarmamaktadır."
+        : "The current information set does not strongly point to one visa pathway yet."
+    );
+  }
+
+  items.push(
+    isTr
+      ? highConfidenceCount > 0
+        ? `Birden fazla yol ilgili görünebilir; bu nedenle rapor tek bir sonuç yerine karşılaştırmalı bir görünüm sunmaktadır.`
+        : `Bu rapor, daha fazla bilgi sağlandığında değişebilecek erken aşama bir yapılandırılmış görünüm sunmaktadır.`
+      : highConfidenceCount > 0
+        ? "More than one pathway may be relevant, so the report is framed as a comparison rather than a single outcome."
+        : "This report presents an early structured view that could change when more detail is available."
+  );
+
+  if (skilledVisible && estimatedPoints !== undefined) {
+    items.push(
+      isTr
+        ? `Kısmi puan görünümü ${estimatedPoints} olarak oluşmuştur; bu rakam yalnızca sınırlı girdilere dayanmaktadır.`
+        : `The partial points picture is ${estimatedPoints}, and that figure is based on limited inputs only.`
+    );
+  }
+
+  if (missingInformation.length > 0) {
+    items.push(
+      isTr
+        ? `Eksik bilgi alanları (${missingInformation.join(", ")}) bu rapordaki güven seviyelerini aşağı çekebilir.`
+        : `Missing information areas (${missingInformation.join(", ")}) may reduce the confidence levels shown in this report.`
+    );
+  }
+
+  if (input.biggestConcern) {
+    items.push(
+      isTr
+        ? `Belirtilen ana endişe (${input.biggestConcern}) rapordaki risk ve gereklilik vurgularını etkilemektedir.`
+        : `The stated main concern (${input.biggestConcern}) influences the report's risk and requirement emphasis.`
+    );
+  }
+
+  return items;
+}
+
 // ─── Main engine ──────────────────────────────────────────────────────────────
 
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const locale = input.locale;
 
   const detectedSubclasses = detectSubclasses(input);
+  const hasSkilledPathway = detectedSubclasses.some((s) =>
+    ["189", "190", "491"].includes(s)
+  );
+  const pointsEstimate = hasSkilledPathway
+    ? buildPointsEstimate(input, locale)
+    : undefined;
 
   let pathwayComparison: PathwayComparison[];
 
@@ -412,22 +773,24 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
             ? "Mevcut bilgilerle belirli bir yol tespit edilemedi. Hedef, meslek ve sponsorluk ayrıntıları daha kapsamlı bir değerlendirme sağlayacaktır."
             : "No specific pathway was detected from available information. Goal, occupation, and sponsorship details would provide a more complete assessment.",
         relevance: "not_enough_information",
+        confidenceLevel: "low",
+        keyRequirements:
+          locale === "tr"
+            ? ["Daha ayrıntılı hedef, meslek ve sponsorluk bağlamı"]
+            : ["More detailed goal, occupation, and sponsorship context"],
+        pathwaySpecificRisks:
+          locale === "tr"
+            ? ["Belirli bir yol için yeterli sinyal bulunmadığı için değerlendirme genel düzeyde kalmaktadır."]
+            : ["The review remains general because there is not yet enough signal for a specific pathway."],
       },
     ];
   } else {
     pathwayComparison = detectedSubclasses.map((subclass) =>
-      buildPathwayEntry(subclass, input, locale)
+      buildPathwayEntry(subclass, input, locale, pointsEstimate?.estimatedPoints)
     );
   }
 
   const occupationIndication = buildOccupationIndication(input, locale);
-
-  const hasSkilledPathway = detectedSubclasses.some((s) =>
-    ["189", "190", "491"].includes(s)
-  );
-  const pointsEstimate = hasSkilledPathway
-    ? buildPointsEstimate(input, locale)
-    : undefined;
 
   const riskIndicators = buildRiskIndicators({
     locale,
@@ -453,6 +816,15 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     locale
   );
 
+  const keyVisaRequirements = buildKeyVisaRequirements(pathwayComparison);
+  const whatThisMeans = buildWhatThisMeans(
+    input,
+    pathwayComparison,
+    locale,
+    missingInformation,
+    pointsEstimate?.estimatedPoints
+  );
+
   const suggestedNextSteps = buildNextSteps({
     locale,
     pathways: pathwayComparison,
@@ -468,6 +840,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   return {
     pathwayComparison,
+    keyVisaRequirements,
+    whatThisMeans,
     pointsEstimate,
     occupationIndication,
     riskIndicators,
