@@ -182,7 +182,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
         <section className="space-y-4">
           <div className="space-y-2">
             <Badge variant="outline">Limited insight</Badge>
-            <h2 className="text-2xl font-bold">You&apos;ve unlocked basic pathway results</h2>
+            <h2 className="text-2xl font-bold">You are viewing basic pathway results</h2>
             <p className="max-w-3xl text-sm text-muted-foreground">
               This quick check shows possible pathways only. A full readiness report includes deeper insights. This is general information only.
             </p>
@@ -203,7 +203,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
                 <div className="absolute inset-0 flex items-center justify-center bg-background/65 p-4 backdrop-blur-[1px]">
                   <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-2 text-sm font-medium shadow-sm">
                     <LockKeyhole className="size-4 text-primary" />
-                    <span>Available in full report</span>
+                    <span>Available in a later report version</span>
                   </div>
                 </div>
               </Card>
@@ -214,11 +214,11 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
         <Card className="border-primary/40 bg-primary/5">
           <CardHeader className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
-              <CardTitle>Want a more detailed review?</CardTitle>
+              <CardTitle>Want a readiness report preview?</CardTitle>
               <Badge variant="secondary">Locked</Badge>
             </div>
             <p className="max-w-3xl text-sm text-muted-foreground">
-              Your quick check shows possible pathways. A full readiness report can help you review risks, documents, and next steps.
+              Your quick check shows possible pathways. The readiness report preview adds a simplified view of risks, documents, and next steps while deeper features continue improving.
             </p>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -236,7 +236,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild>
-                <Link href={fullCheckHref}>Unlock full report</Link>
+                <Link href={fullCheckHref}>Open report preview</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href={`/${locale}/agent-referral`}>

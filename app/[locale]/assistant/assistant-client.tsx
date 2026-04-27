@@ -256,7 +256,7 @@ export function AssistantClient({
             className="justify-center"
           >
             <Link href={`/${locale}/assistant?mode=premium`}>
-              AI Readiness Review (Premium)
+              AI Readiness Review (Preview)
             </Link>
           </Button>
         </div>
@@ -395,7 +395,7 @@ export function AssistantClient({
             <Card className="border-primary/40 bg-primary/5">
               <CardHeader className="space-y-2">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant="secondary">Premium preview</Badge>
+                  <Badge variant="secondary">Preview</Badge>
                   <CardTitle>AI Readiness Review</CardTitle>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -528,7 +528,7 @@ export function AssistantClient({
                       <div className="absolute inset-0 flex items-center justify-center bg-background/65 p-4 backdrop-blur-[1px]">
                         <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-2 text-sm font-medium shadow-sm">
                           <LockKeyhole className="size-4 text-primary" />
-                          <span>Available in Full Visa Readiness Report</span>
+                          <span>Available in a later Full Visa Readiness Report version</span>
                         </div>
                       </div>
                     </Card>
@@ -537,14 +537,14 @@ export function AssistantClient({
 
                 <Card className="border-primary/40 bg-primary/5">
                   <CardHeader>
-                    <CardTitle>Want the full report?</CardTitle>
+                    <CardTitle>Want the readiness report preview?</CardTitle>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="max-w-2xl text-sm text-muted-foreground">
-                      Your preview shows the basics. The full report is designed to include a deeper risk review, document readiness, and an agent-ready summary.
+                      Your preview shows the basics. The readiness report preview includes a simplified overview while deeper risk review, document readiness, and agent-ready summary features continue improving.
                     </p>
                     <Button asChild className="shrink-0">
-                      <Link href={fullCheckHref}>Continue to full report</Link>
+                      <Link href={fullCheckHref}>Continue to report preview</Link>
                     </Button>
                   </CardContent>
                 </Card>

@@ -233,16 +233,16 @@ export default function CheckerPage() {
             <CardHeader className="space-y-2">
               <div className="flex items-center justify-between gap-3">
                 <CardTitle>Full Visa Readiness Report</CardTitle>
-                <Badge variant="secondary">Premium</Badge>
+                <Badge variant="secondary">Preview</Badge>
               </div>
-              <p className="text-sm font-semibold text-primary">Detailed · Premium</p>
+              <p className="text-sm font-semibold text-primary">Detailed - Early access</p>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                A structured review including risks, documents, and next steps tailored to your situation.
+                A preview review with pathway areas, basic risk signals, document readiness, and next steps.
               </p>
               <Button asChild className="w-full sm:w-auto">
-                <Link href={`/${locale}/full-check`}>Unlock full report</Link>
+                  <Link href={`/${locale}/full-check`}>View preview report</Link>
               </Button>
             </CardContent>
           </Card>

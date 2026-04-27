@@ -9,37 +9,37 @@ const comparisonRows = [
   {
     label: "Possible pathways",
     quick: "Possible pathways only",
-    full: "Included",
+    full: "Included in preview",
   },
   {
     label: "Risk indicators",
     quick: "Not included",
-    full: "Included",
+    full: "Basic indicators (preview)",
   },
   {
     label: "Document checklist",
     quick: "Not included",
-    full: "Included",
+    full: "Basic checklist (preview)",
   },
   {
     label: "Points estimate",
     quick: "No report",
-    full: "Included",
+    full: "Basic estimate (preview)",
   },
   {
     label: "Occupation review",
     quick: "No report",
-    full: "Included",
+    full: "Basic overview (preview)",
   },
   {
     label: "Agent-ready summary",
     quick: "No report",
-    full: "Included",
+    full: "Coming soon",
   },
   {
     label: "Downloadable report",
     quick: "No report",
-    full: "Included",
+    full: "Coming soon",
   },
 ];
 
@@ -62,12 +62,12 @@ const previewCards = [
   {
     title: "Suggested next steps",
     description:
-      "Get a structured preparation sequence you can use before speaking with a registered migration agent.",
+      "Preview suggested preparation steps you may want to discuss with a registered migration agent.",
   },
   {
     title: "Agent-ready summary",
     description:
-      "Create a concise summary of your situation to make a future agent conversation easier.",
+      "Coming soon: a concise summary format to make a future agent conversation easier.",
   },
 ];
 
@@ -119,12 +119,16 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
       <section className="section-shell space-y-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr] lg:items-start">
           <div className="space-y-4">
-            <Badge variant="secondary">Free limited report</Badge>
+            <Badge variant="secondary">Preview</Badge>
             <h1 className="text-3xl font-bold sm:text-4xl">
               Full Visa Readiness Report
             </h1>
             <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-              Submit your details to unlock a structured report with pathway comparison, risk indicators, document checklist, and suggested next steps. More detailed sections are coming soon.
+              Submit your details to view a structured preview with pathway comparison, basic risk indicators, a basic document checklist, and suggested next steps. More detailed sections are coming soon.
+            </p>
+            <p className="max-w-3xl rounded-md border border-primary/20 bg-card px-4 py-3 text-sm text-muted-foreground">
+              You are viewing a preview version of the full readiness report.
+              This version provides a simplified overview while we continue improving deeper analysis features.
             </p>
           </div>
 
