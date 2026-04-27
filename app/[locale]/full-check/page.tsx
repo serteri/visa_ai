@@ -83,18 +83,18 @@ export default async function FullCheckPage({ params }: FullCheckPageProps) {
       <section className="section-shell space-y-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr] lg:items-start">
           <div className="space-y-4">
-            <Badge variant="secondary">Premium</Badge>
+            <Badge variant="secondary">Free limited report</Badge>
             <h1 className="text-3xl font-bold sm:text-4xl">
               Full Visa Readiness Report
             </h1>
             <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-              A deeper review of your situation across pathway fit, risk indicators, document readiness, and suggested next steps.
+              Submit your details to unlock a free basic report across possible pathways, basic risk indicators, and document readiness. More detailed sections are coming soon.
             </p>
           </div>
 
           <Card className="border-primary/40 bg-primary/5">
             <CardHeader>
-              <CardTitle>Get early access</CardTitle>
+              <CardTitle>Get your free basic report</CardTitle>
             </CardHeader>
             <CardContent>
               <FullCheckWaitlistForm locale={locale} />

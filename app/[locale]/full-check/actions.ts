@@ -9,6 +9,11 @@ export type FullCheckWaitlistState = {
   status: "idle" | "success" | "error";
   message?: string;
   errors?: Record<string, string>;
+  report?: {
+    possiblePathways: string[];
+    riskIndicators: string[];
+    documentChecklist: string[];
+  };
 };
 
 async function ensureFullCheckWaitlistTable() {
@@ -61,6 +66,69 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function buildBasicReport(input: {
+  visaInterest: string;
+  currentCountry: string;
+  mainGoal: string;
+}) {
+  const combined = `${input.visaInterest} ${input.mainGoal}`.toLowerCase();
+  const possiblePathways: string[] = [];
+
+  if (combined.includes("partner") || combined.includes("spouse")) {
+    possiblePathways.push("820/801 Partner onshore pathway may be relevant to review.");
+  }
+
+  if (
+    combined.includes("student") ||
+    combined.includes("study") ||
+    combined.includes("course")
+  ) {
+    possiblePathways.push("500 Student visa pathway may be relevant to review.");
+  }
+
+  if (
+    combined.includes("skilled") ||
+    combined.includes("points") ||
+    combined.includes("occupation") ||
+    combined.includes("pr")
+  ) {
+    possiblePathways.push("189, 190 or 491 skilled pathways may be relevant to review.");
+  }
+
+  if (
+    combined.includes("work") ||
+    combined.includes("employer") ||
+    combined.includes("sponsor")
+  ) {
+    possiblePathways.push("482 Skills in Demand pathway may be relevant to review.");
+  }
+
+  if (possiblePathways.length === 0) {
+    possiblePathways.push(
+      "500, 482, 189, 190, 491 and 820/801 pathways may be useful starting points to compare."
+    );
+  }
+
+  return {
+    possiblePathways,
+    riskIndicators: [
+      input.currentCountry
+        ? `Your current country is recorded as ${input.currentCountry}; location can affect which steps may be available.`
+        : "Your current location was not provided, so location-based risks need further review.",
+      input.visaInterest
+        ? "Your selected visa interest should be checked against current pathway requirements."
+        : "No visa interest was selected, so the report is using broad pathway signals only.",
+      "Timing, documents and personal circumstances may affect next steps.",
+    ],
+    documentChecklist: [
+      "Passport and identity documents",
+      "Evidence related to your study, work, partner or skilled background",
+      "English test, skills assessment, sponsor or relationship evidence if relevant",
+      "Current visa details and travel history if you are in Australia",
+    ],
+  };
+}
+
 export async function submitFullCheckWaitlist(
   _prevState: FullCheckWaitlistState,
   formData: FormData
@@ -100,6 +168,11 @@ export async function submitFullCheckWaitlist(
 
   return {
     status: "success",
-    message: "Thanks — you're on the early access list.",
+    message: "You’ve unlocked a basic report. A more detailed version will be available soon.",
+    report: buildBasicReport({
+      visaInterest,
+      currentCountry,
+      mainGoal,
+    }),
   };
 }
