@@ -69,9 +69,11 @@ function normalizeSource(source: string | null): string {
 }
 
 function sourceLabel(source: string): string {
+  if (source === "homepage") return "Homepage";
+  if (source === "results") return "Results";
   if (source === "readiness-preview") return "readiness-preview";
   if (source === "full_check") return "full_check";
-  return source;
+  return "unknown";
 }
 
 type FullCheckWaitlistAdminPageProps = {

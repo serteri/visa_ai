@@ -68,6 +68,7 @@ export function FullCheckWaitlistForm({
     visaInterest?: string;
     currentCountry?: string;
     mainGoal?: string;
+    source?: string;
   };
 }) {
   const initialState: FullCheckWaitlistState = {
@@ -83,7 +84,7 @@ export function FullCheckWaitlistForm({
     <div className="space-y-6">
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="preferredLanguage" value={locale} />
-        <input type="hidden" name="source" value="full_check" />
+        <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-full-name">Full name</Label>

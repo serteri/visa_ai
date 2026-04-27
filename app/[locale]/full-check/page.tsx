@@ -78,6 +78,7 @@ type FullCheckPageProps = {
     goal?: string;
     occupation?: string;
     preferredPathway?: string;
+    visaInterest?: string;
     biggestConcern?: string;
     currentCountry?: string;
   }>;
@@ -101,9 +102,11 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const { locale } = await params;
   const query = await searchParams;
   const cameFromReadinessPreview = query.source === "readiness-preview";
+  const cameFromResults = query.source === "results";
   const initialValues = {
-    visaInterest: query.preferredPathway ?? "",
+    visaInterest: query.visaInterest ?? query.preferredPathway ?? "",
     currentCountry: query.currentCountry ?? "",
+    source: query.source ?? "full_check",
     mainGoal: buildPrefilledGoal({
       goal: query.goal,
       occupation: query.occupation,
@@ -130,9 +133,9 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
               <CardTitle>Get your free basic report</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {cameFromReadinessPreview && (
+              {(cameFromReadinessPreview || cameFromResults) && (
                 <p className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
-                  We added details from your readiness preview where possible. You can edit anything before submitting.
+                  We added details from your {cameFromResults ? "quick check results" : "readiness preview"} where possible. You can edit anything before submitting.
                 </p>
               )}
               <FullCheckWaitlistForm locale={locale} initialValues={initialValues} />

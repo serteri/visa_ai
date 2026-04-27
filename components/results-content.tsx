@@ -53,6 +53,25 @@ type ResultsContentProps = {
   goal?: string;
 };
 
+function buildFullCheckHref(input: {
+  locale: string;
+  matchedVisas: MatchedVisa[];
+  goal: string;
+}) {
+  const params = new URLSearchParams({
+    source: "results",
+  });
+  const visaInterest = input.matchedVisas
+    .slice(0, 3)
+    .map((visa) => visa.subclass)
+    .join(",");
+
+  if (visaInterest) params.set("visaInterest", visaInterest);
+  if (input.goal.trim()) params.set("goal", input.goal.trim());
+
+  return `/${input.locale}/full-check?${params.toString()}`;
+}
+
 export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsContentProps) {
   const { t } = useTranslation();
   const normalisedGoal = goal.toLowerCase();
@@ -78,6 +97,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
       ? "Kayitli bir goc danismani ile gorusun"
       : "Speak with a registered migration agent";
   const visibleMatchedVisas = matchedVisas.slice(0, 3);
+  const fullCheckHref = buildFullCheckHref({ locale, matchedVisas, goal });
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -216,7 +236,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild>
-                <Link href={`/${locale}/full-check`}>Unlock full report</Link>
+                <Link href={fullCheckHref}>Unlock full report</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href={`/${locale}/agent-referral`}>
