@@ -517,7 +517,7 @@ function OccupationRequirementsSection({
       )}
       {occupations && occupations.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Eligible occupations (sample)</p>
+          <p className="text-sm font-semibold">Listed occupations (sample)</p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {occupations.map((occ, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -722,7 +722,7 @@ function NominationOrSponsorshipSection({ data }: { data: unknown }) {
 
       {sponsorRequirements && sponsorRequirements.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Eligible relative sponsor requirements</p>
+          <p className="text-sm font-semibold">Relative sponsor requirements</p>
           <ul className="space-y-1">
             {sponsorRequirements.map((item, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -736,7 +736,7 @@ function NominationOrSponsorshipSection({ data }: { data: unknown }) {
 
       {eligibleRelatives && eligibleRelatives.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Eligible relatives</p>
+          <p className="text-sm font-semibold">Relative categories</p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {eligibleRelatives.map((item, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -881,6 +881,10 @@ export default async function VisaDetailsPage({ params }: PageProps) {
       : visa.reviewed_status === "needs_review"
         ? "secondary"
         : "outline";
+  const reviewedBadgeLabel =
+    visa.reviewed_status === "approved"
+      ? "reviewed"
+      : visa.reviewed_status ?? "needs_review";
 
   const sections = [
     {
@@ -1072,7 +1076,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="outline">Subclass {visa.subclass}</Badge>
             <Badge variant="secondary">{visa.category}</Badge>
-            <Badge variant={reviewedBadgeVariant}>{visa.reviewed_status ?? "needs_review"}</Badge>
+            <Badge variant={reviewedBadgeVariant}>{reviewedBadgeLabel}</Badge>
           </div>
           <h1 className="text-3xl font-bold sm:text-4xl">{visa.visa_name}</h1>
           {visa.purpose && (

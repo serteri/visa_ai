@@ -23,7 +23,7 @@ const SYSTEM_PROMPT =
   "You are a controlled Australian visa information assistant. You are not a migration agent and do not provide migration advice or legal advice. You must answer only using the supplied database context. Do not use outside knowledge. Do not guess. If the answer is not in the context, say that the stored information does not contain enough detail and suggest speaking with a registered migration agent or Australian legal practitioner. Never say the user is eligible, qualifies, should apply, or will be approved. Use wording such as may be relevant, could be worth exploring, general information only.";
 
 const HARD_SAFETY_REPLY =
-  "I can't determine eligibility or tell you what to apply for. I can summarise the stored pathway information and suggest what you may want to review with a registered migration agent.";
+  "I can't determine outcomes or tell you which application to make. I can summarise the stored pathway information and suggest what you may want to review with a registered migration agent.";
 
 function normalize(message: string): string {
   return message.trim().toLowerCase();
@@ -55,11 +55,28 @@ function addGeneralInfoSentence(answer: string): string {
 
 function sanitizeModelOutput(text: string): string {
   const lower = text.toLowerCase();
-  const banned = ["you are eligible", "you qualify", "you should apply", "you will be approved"];
+  const banned = [
+    "you are eligible",
+    "you qualify",
+    "you should apply",
+    "you will be approved",
+    "you will get",
+    "guaranteed",
+  ];
   if (banned.some((term) => lower.includes(term))) {
     return "The stored information does not contain enough detail for this question. Consider speaking with a registered migration agent or Australian legal practitioner.";
   }
   return text.trim();
+}
+
+function neutralizeDeterministicLanguage(answer: string): string {
+  return answer
+    .replace(/\byou are eligible\b/gi, "this may be relevant")
+    .replace(/\byou qualify\b/gi, "this may be relevant")
+    .replace(/\byou should apply\b/gi, "you may want to explore this pathway")
+    .replace(/\byou will be approved\b/gi, "an outcome cannot be predicted")
+    .replace(/\byou will get\b/gi, "you may want to explore")
+    .replace(/\bguaranteed\b/gi, "not assured");
 }
 
 function buildLocaleFallback(locale: string): string {
@@ -272,7 +289,9 @@ export async function generateGroundedAnswer(input: {
   const nextActions = buildActions(locale, input.context);
 
   if (isSafetyEligibilityQuestion(input.message)) {
-    const safeAnswer = addGeneralInfoSentence(withSourceSubclassFooter(HARD_SAFETY_REPLY, input.context));
+    const safeAnswer = addGeneralInfoSentence(
+      neutralizeDeterministicLanguage(withSourceSubclassFooter(HARD_SAFETY_REPLY, input.context))
+    );
     return {
       answer: safeAnswer,
       sources,
@@ -294,7 +313,9 @@ export async function generateGroundedAnswer(input: {
     answer = deterministicAnswer(input.message, locale, input.context);
   }
 
-  const finalAnswer = addGeneralInfoSentence(withSourceSubclassFooter(answer, input.context));
+  const finalAnswer = addGeneralInfoSentence(
+    neutralizeDeterministicLanguage(withSourceSubclassFooter(answer, input.context))
+  );
 
   return {
     answer: finalAnswer,

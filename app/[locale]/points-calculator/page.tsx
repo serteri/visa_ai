@@ -117,13 +117,13 @@ export default function PointsCalculatorPage() {
     minThreshold: isTr ? "Asgari puan eşiği: 65" : "Minimum points required: 65",
     statusAbove: isTr
       ? "Tahmini puanınız asgari puan eşiğini karşılayabilir. Bu durum davet veya vize sonucunu garanti etmez."
-      : "Your estimated score may meet the minimum points threshold. This does not guarantee invitation or visa grant.",
+      : "Your estimated score may meet the minimum points threshold. This does not predict invitation or visa grant.",
     statusBelow: isTr
       ? "Tahmini puanınız asgari puan eşiğinin altında. Bu yol için daha fazla puana ihtiyaç duyabilirsiniz."
       : "Your estimated score is below the minimum points threshold. You may need more points before this pathway is relevant.",
     invitationNote: isTr
       ? "Davet garantili değildir. Eyalet veya bölge adaylık kriterleri ayrıca uygulanabilir."
-      : "Invitation is not guaranteed. State or territory nomination criteria may also apply.",
+      : "Invitation cannot be assumed. State or territory nomination criteria may also apply.",
     estimatePrefix: isTr ? "Tahmini puanınız" : "Your estimated points score is",
     cta189: isTr ? "Subclass 189 detaylarını görüntüle" : "View subclass 189 details",
     cta190: isTr ? "Subclass 190 detaylarını görüntüle" : "View subclass 190 details",
@@ -133,7 +133,7 @@ export default function PointsCalculatorPage() {
       : "Speak with a registered migration agent",
     compliance: isTr
       ? "Bu hesaplayıcı yalnızca genel bir tahmin sağlar. Göç tavsiyesi, hukuki tavsiye vermez ve davet veya vize sonucunu garanti etmez."
-      : "This calculator provides a general estimate only. It does not provide migration advice, legal advice, or guarantee invitation or visa grant.",
+      : "This calculator provides a general estimate only. It does not provide migration advice, legal advice, or predict invitation or visa grant.",
   };
 
   const setField = <K extends keyof SkilledPointsInput>(key: K, value: SkilledPointsInput[K]) => {
@@ -290,7 +290,7 @@ export default function PointsCalculatorPage() {
                 />
                 <CheckboxRow
                   id="nom-or-sponsor-491"
-                  label="State or territory nomination or eligible relative sponsorship for subclass 491 (15 points)"
+                  label="State or territory nomination or relative sponsorship for subclass 491 (15 points)"
                   checked={input.hasNominationOrSponsorship491}
                   onChange={(checked) => setField("hasNominationOrSponsorship491", checked)}
                 />

@@ -46,7 +46,9 @@ function ReviewBadge({ status }: { status: string | null | undefined }) {
         ? "secondary"
         : "outline";
 
-  return <Badge variant={variant}>{status || "unknown"}</Badge>;
+  const label = status === "approved" ? "reviewed" : status || "unknown";
+
+  return <Badge variant={variant}>{label}</Badge>;
 }
 
 function ExpandableJSON({ data }: { data: unknown }) {
@@ -137,7 +139,11 @@ export default async function AdminVisasPage({ params }: AdminVisasPageProps) {
                       <p className="text-xs font-semibold uppercase text-muted-foreground">
                         Reviewed Status
                       </p>
-                      <p className="text-sm">{visa.reviewed_status || "needs_review"}</p>
+                      <p className="text-sm">
+                        {visa.reviewed_status === "approved"
+                          ? "reviewed"
+                          : visa.reviewed_status || "needs_review"}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs font-semibold uppercase text-muted-foreground">

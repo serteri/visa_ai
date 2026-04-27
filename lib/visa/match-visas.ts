@@ -148,7 +148,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: row189.visa_name,
         purpose: row189.purpose,
         match_reason:
-          "This independent points-tested skilled pathway may be relevant if you have an eligible occupation, suitable skills assessment, invitation and enough points.",
+          "This independent points-tested skilled pathway may be relevant to explore if your occupation, skills assessment, invitation status and points align with the stored pathway information.",
         confidence: "medium",
         source_url: row189.source_url,
         pdf_snapshot_url: row189.pdf_snapshot_url ?? null,
@@ -162,7 +162,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: row190.visa_name,
         purpose: row190.purpose,
         match_reason:
-          "This state-nominated skilled pathway may be relevant if you have an eligible occupation, suitable skills assessment, enough points and state or territory nomination.",
+          "This state-nominated skilled pathway may be relevant to explore if your occupation, skills assessment, points and state or territory nomination align with the stored pathway information.",
         confidence: "medium",
         source_url: row190.source_url,
         pdf_snapshot_url: row190.pdf_snapshot_url ?? null,
@@ -176,7 +176,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: row491.visa_name,
         purpose: row491.purpose,
         match_reason:
-          "You selected skilled or regional migration. This provisional regional skilled pathway may be relevant if you have an eligible occupation, nomination or eligible relative sponsorship, enough points and are willing to live, work and study in a designated regional area.",
+          "You selected skilled or regional migration. This provisional regional skilled pathway may be relevant to explore if your occupation, nomination or relative sponsorship context, points and regional plans align with the stored pathway information.",
         confidence: "medium",
         source_url: row491.source_url,
         pdf_snapshot_url: row491.pdf_snapshot_url ?? null,
@@ -218,7 +218,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: row820801.visa_name,
         purpose: row820801.purpose,
         match_reason:
-          "You mentioned a partner, spouse or relationship. This onshore partner pathway may be relevant to explore if the partner is an Australian citizen, permanent resident or eligible New Zealand citizen and the application is made in Australia.",
+          "You mentioned a partner, spouse or relationship. This onshore partner pathway may be relevant to explore where the partner has Australian citizen, permanent resident or New Zealand citizen status and the application is made in Australia.",
         confidence: "high",
         source_url: row820801.source_url,
         pdf_snapshot_url: row820801.pdf_snapshot_url ?? null,

@@ -36,7 +36,7 @@ export default function OccupationCheckerPage() {
       : "Relevant pathways may include subclass 189, subclass 190 and/or subclass 491.",
     noMatch: isTr
       ? "Mevcut dahili listede eslesme bulunamadi. Bu durum meslegin uygun olmadigi anlamina gelmez."
-      : "No match found in the current internal list. This does not mean the occupation is not eligible.",
+      : "No match found in the current internal list. This does not determine whether the occupation may be relevant under official criteria.",
     confidenceExact: isTr ? "Eslesme: Tam" : "Match type: Exact",
     confidencePartial: isTr ? "Eslesme: Kismi" : "Match type: Partial",
     listLabel: isTr ? "Liste" : "List",
@@ -50,7 +50,7 @@ export default function OccupationCheckerPage() {
       : "Speak with a registered migration agent",
     compliance: isTr
       ? "Bu meslek kontrol araci yalnizca genel bilgi saglar. Meslek uygunlugu resmi meslek listelerine, degerlendirme kurumlarina ve eyalet veya bolge adaylik kriterlerine bagli olabilir."
-      : "This occupation checker provides general information only. Occupation eligibility can depend on official occupation lists, assessing authorities, and state or territory nomination criteria.",
+      : "This occupation checker provides general information only. Occupation relevance can depend on official occupation lists, assessing authorities, and state or territory nomination criteria.",
   };
 
   return (

@@ -315,7 +315,7 @@ export function AssistantClient({
 
         <Card className="border-l-4 border-l-primary">
           <CardContent className="p-5 text-sm text-muted-foreground">
-            This assistant provides general information only. It does not provide migration advice, legal advice, or guarantee visa outcomes.
+            This assistant provides general information only. It does not provide migration advice, legal advice, or predict visa outcomes.
           </CardContent>
         </Card>
       </section>
