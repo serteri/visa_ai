@@ -1,4 +1,5 @@
 import { jsPDF } from "jspdf";
+import { notoSansRegularBase64 } from "./pdf-font";
 import type { ReadinessReport } from "./types";
 
 const COLORS = {
@@ -18,6 +19,9 @@ const FONTS = {
   body: 10,
   small: 8,
 };
+
+const PDF_FONT_NAME = "NotoSans";
+const PDF_FONT_FILE = "NotoSans-Regular.ttf";
 
 interface PDFGeneratorInput {
   report: ReadinessReport;
@@ -89,6 +93,9 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     unit: "mm",
     format: "a4",
   });
+  doc.addFileToVFS(PDF_FONT_FILE, notoSansRegularBase64);
+  doc.addFont(PDF_FONT_FILE, PDF_FONT_NAME, "normal");
+  doc.setFont(PDF_FONT_NAME, "normal");
 
   let yPosition = 20;
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -97,7 +104,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   const lineHeight = 5;
 
   // Helper functions
+  function setBaseFont() {
+    doc.setFont(PDF_FONT_NAME, "normal");
+  }
+
   function addTitle(title: string) {
+    setBaseFont();
     doc.setFontSize(FONTS.title);
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
     doc.text(title, margin, yPosition);
@@ -109,6 +121,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
       doc.addPage();
       yPosition = 20;
     }
+    setBaseFont();
     doc.setFontSize(FONTS.heading);
     doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
     doc.text(heading, margin, yPosition);
@@ -116,6 +129,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   }
 
   function addBody(text: string, indent = 0) {
+    setBaseFont();
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
     const x = margin + indent;
@@ -125,12 +139,14 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
         doc.addPage();
         yPosition = 20;
       }
+      setBaseFont();
       doc.text(line, x, yPosition);
       yPosition += lineHeight;
     });
   }
 
   function addSmallText(text: string, indent = 0) {
+    setBaseFont();
     doc.setFontSize(FONTS.small);
     doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
     const x = margin + indent;
@@ -140,6 +156,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
         doc.addPage();
         yPosition = 20;
       }
+      setBaseFont();
       doc.text(line, x, yPosition);
       yPosition += lineHeight;
     });
@@ -151,6 +168,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
         doc.addPage();
         yPosition = 20;
       }
+      setBaseFont();
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
       const lines = doc.splitTextToSize(item, contentWidth - 8);
@@ -160,6 +178,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
           doc.addPage();
           yPosition = 20;
         }
+        setBaseFont();
         doc.text(line, margin + 8, yPosition);
         yPosition += lineHeight;
       });
