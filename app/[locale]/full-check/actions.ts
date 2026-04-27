@@ -13,6 +13,7 @@ export type FullCheckWaitlistState = {
     possiblePathways: string[];
     riskIndicators: string[];
     documentChecklist: string[];
+    nextSteps: string[];
   };
 };
 
@@ -125,6 +126,12 @@ function buildBasicReport(input: {
       "Evidence related to your study, work, partner or skilled background",
       "English test, skills assessment, sponsor or relationship evidence if relevant",
       "Current visa details and travel history if you are in Australia",
+    ],
+    nextSteps: [
+      "Compare the possible pathways shown in this basic report.",
+      "Gather the documents listed for any pathway that may be relevant.",
+      "Use the detailed review when you want a more structured preparation plan.",
+      "Speak with a registered migration agent before making decisions about your situation.",
     ],
   };
 }

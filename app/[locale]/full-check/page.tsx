@@ -13,12 +13,12 @@ const comparisonRows = [
   },
   {
     label: "Risk indicators",
-    quick: "Basic guidance",
+    quick: "Not included",
     full: "Included",
   },
   {
     label: "Document checklist",
-    quick: "No detailed checklist",
+    quick: "Not included",
     full: "Included",
   },
   {
@@ -88,7 +88,7 @@ export default async function FullCheckPage({ params }: FullCheckPageProps) {
               Full Visa Readiness Report
             </h1>
             <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-              Submit your details to unlock a free basic report across possible pathways, basic risk indicators, and document readiness. More detailed sections are coming soon.
+              Submit your details to unlock a structured report with pathway comparison, risk indicators, document checklist, and suggested next steps. More detailed sections are coming soon.
             </p>
           </div>
 
@@ -136,7 +136,7 @@ export default async function FullCheckPage({ params }: FullCheckPageProps) {
           <div>
             <h2 className="text-2xl font-bold">Report preview</h2>
             <p className="text-sm text-muted-foreground">
-              A full report is designed to make the next conversation more organized and practical.
+              Unlike the quick check, this report is organized as a practical review with separate sections.
             </p>
           </div>
 

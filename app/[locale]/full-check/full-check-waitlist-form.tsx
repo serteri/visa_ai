@@ -155,10 +155,11 @@ export function FullCheckWaitlistForm({ locale }: { locale: string }) {
           <ReportSection title="Possible pathways" items={state.report.possiblePathways} />
           <ReportSection title="Basic risk indicators" items={state.report.riskIndicators} />
           <ReportSection title="Basic document checklist" items={state.report.documentChecklist} />
+          <ReportSection title="Suggested next steps" items={state.report.nextSteps} />
 
           <div className="grid gap-3">
             <LockedSection title="Detailed risk breakdown" />
-            <LockedSection title="Step-by-step plan" />
+            <LockedSection title="Personal preparation plan" />
             <LockedSection title="Downloadable report" />
           </div>
         </section>

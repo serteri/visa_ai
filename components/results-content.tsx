@@ -35,15 +35,15 @@ const LOCKED_REPORT_BENEFITS = [
 const LOCKED_PREVIEW_BLOCKS = [
   {
     title: "Risk indicators",
-    content: "Potential risks based on your situation",
+    content: "Risk analysis is not included in the quick check",
   },
   {
     title: "Document readiness",
-    content: "Checklist of documents you may need",
+    content: "Document preparation is not included in the quick check",
   },
   {
-    title: "Suggested next steps",
-    content: "Structured next steps based on your answers",
+    title: "Next steps",
+    content: "Preparation steps are not included in the quick check",
   },
 ];
 
@@ -77,6 +77,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
     locale === "tr"
       ? "Kayitli bir goc danismani ile gorusun"
       : "Speak with a registered migration agent";
+  const visibleMatchedVisas = matchedVisas.slice(0, 3);
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -98,10 +99,11 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-5 lg:grid-cols-2">
-            {matchedVisas.map((visa) => (
+          <div className="space-y-4">
+            <div className="grid gap-3">
+            {visibleMatchedVisas.map((visa) => (
               <Card key={visa.subclass}>
-                <CardHeader>
+                <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
                       <CardTitle className="text-lg">{visa.visa_name}</CardTitle>
@@ -115,20 +117,10 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-4 text-sm">
-                  <p className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2 text-foreground">
-                    This pathway may be relevant based on your answers.
+                <CardContent className="space-y-3 text-sm">
+                  <p className="text-muted-foreground">
+                    This possible pathway may be relevant based on your broad answers.
                   </p>
-
-                  <p className="text-muted-foreground">{visa.match_reason}</p>
-
-                  {visa.purpose && (
-                    <p>
-                      <strong className="text-foreground">Purpose:</strong>{" "}
-                      {visa.purpose}
-                    </p>
-                  )}
-
                   <div className="flex flex-wrap gap-2">
                     {visa.is_database_record ? (
                       <Button asChild variant="default" size="sm">
@@ -162,6 +154,8 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
                 </CardContent>
               </Card>
             ))}
+            </div>
+
           </div>
         )}
 
@@ -170,7 +164,10 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
             <Badge variant="outline">Limited insight</Badge>
             <h2 className="text-2xl font-bold">You&apos;ve unlocked basic pathway results</h2>
             <p className="max-w-3xl text-sm text-muted-foreground">
-              This quick check shows possible pathways. A full readiness report includes deeper insights. This is general information only.
+              This quick check shows possible pathways only. A full readiness report includes deeper insights. This is general information only.
+            </p>
+            <p className="max-w-3xl rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              This quick check does not include risk analysis or preparation steps.
             </p>
           </div>
 
