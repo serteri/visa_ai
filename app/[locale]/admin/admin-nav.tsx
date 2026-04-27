@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 const ADMIN_LINKS = [
+  { href: "dashboard", label: "Dashboard" },
   { href: "visas", label: "Visas" },
   { href: "referrals", label: "Referrals" },
   { href: "agents", label: "Agents" },
