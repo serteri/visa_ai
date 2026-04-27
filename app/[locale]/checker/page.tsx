@@ -221,7 +221,7 @@ export default function CheckerPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Get a simple overview of visa pathways that may be relevant based on your answers.
+                Get a simple overview of visa pathways that may be relevant based on the answers provided.
               </p>
               <Button asChild className="w-full sm:w-auto">
                 <Link href="#quick-pathway-check">Start quick check</Link>

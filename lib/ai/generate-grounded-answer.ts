@@ -20,13 +20,13 @@ export type GroundedAssistantResult = {
 };
 
 const SYSTEM_PROMPT =
-  "You are a controlled Australian visa information assistant. You are not a migration agent and do not provide migration advice or legal advice. You must answer only using the supplied database context. Do not use outside knowledge. Do not guess. If the answer is not in the context, say that the stored information does not contain enough detail and suggest speaking with a registered migration agent or Australian legal practitioner. Never say the user is eligible, qualifies, should apply, or will be approved. Use wording such as may be relevant, could be worth exploring, general information only.";
+  "You are a controlled Australian visa information assistant. You are not a migration agent and do not provide migration advice or legal advice. You must answer only using the supplied database context. Do not use outside knowledge. Do not guess. If the answer is not in the context, say that the stored information does not contain enough detail and that personalised advice is handled by a registered migration agent or Australian legal practitioner. Never say the user is eligible, qualifies, should apply, or will be approved. Use wording such as may be relevant, is commonly required, is often considered, may affect outcomes, general information only.";
 
 const HARD_SAFETY_REPLY =
-  "I can't determine outcomes or tell you which application to make. I can summarise the stored pathway information and suggest what you may want to review with a registered migration agent.";
+  "I can't determine outcomes or identify an application to make. The stored pathway information can be summarised for general review with a registered migration agent.";
 
 const PERSONALISED_ADVICE_FALLBACK =
-  "I can provide general information about visa pathways, but for personalised advice, you should speak with a registered migration agent.";
+  "General information about visa pathways can be provided, but personalised advice is handled by a registered migration agent.";
 
 function normalize(message: string): string {
   return message.trim().toLowerCase();
@@ -100,9 +100,12 @@ function sanitizeModelOutput(text: string): string {
     "you will be approved",
     "you will get",
     "guaranteed",
+    "you should",
+    "you need to",
+    "you may want to",
   ];
   if (banned.some((term) => lower.includes(term))) {
-    return "The stored information does not contain enough detail for this question. Consider speaking with a registered migration agent or Australian legal practitioner.";
+    return "The stored information does not contain enough detail for this question. Registered migration agent or Australian legal practitioner input may be relevant.";
   }
   return text.trim();
 }
@@ -111,18 +114,21 @@ function neutralizeDeterministicLanguage(answer: string): string {
   return answer
     .replace(/\byou are eligible\b/gi, "this may be relevant")
     .replace(/\byou qualify\b/gi, "this may be relevant")
-    .replace(/\byou should apply\b/gi, "you may want to explore this pathway")
+    .replace(/\byou should apply\b/gi, "this pathway may be relevant")
+    .replace(/\byou should\b/gi, "it is often considered")
+    .replace(/\byou need to\b/gi, "it is commonly required to")
+    .replace(/\byou may want to\b/gi, "it may be relevant to")
     .replace(/\byou will be approved\b/gi, "an outcome cannot be predicted")
-    .replace(/\byou will get\b/gi, "you may want to explore")
+    .replace(/\byou will get\b/gi, "it may be relevant to explore")
     .replace(/\bguaranteed\b/gi, "not assured");
 }
 
 function buildLocaleFallback(locale: string): string {
   if (locale === "tr") {
-    return "Saklanan bilgiler bu soru icin yeterli ayrinti icermiyor. Kayitli bir goc danismani veya Avustralya hukuk uygulayicisi ile gorusmeyi degerlendirin.";
+    return "Saklanan bilgiler bu soru icin yeterli ayrinti icermiyor. Kayitli bir goc danismani veya Avustralya hukuk uygulayicisi destegi ilgili olabilir.";
   }
 
-  return "The stored information does not contain enough detail for this question. Consider speaking with a registered migration agent or Australian legal practitioner.";
+  return "The stored information does not contain enough detail for this question. Registered migration agent or Australian legal practitioner input may be relevant.";
 }
 
 function extractMinPoints(pointsRules: unknown): string | null {

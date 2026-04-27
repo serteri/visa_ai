@@ -114,7 +114,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
           <Card>
             <CardContent className="pt-6">
               <p className="text-center text-muted-foreground">
-                No clear pathway found. You may need to speak with a migration agent.
+                No clear pathway found. Registered migration agent input may be relevant for personal circumstances.
               </p>
             </CardContent>
           </Card>
@@ -139,7 +139,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
 
                 <CardContent className="space-y-3 text-sm">
                   <p className="text-muted-foreground">
-                    This possible pathway may be relevant based on your broad answers.
+                    This possible pathway may be relevant based on the broad answers provided.
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {visa.is_database_record ? (
@@ -182,7 +182,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
         <section className="space-y-4">
           <div className="space-y-2">
             <Badge variant="outline">Limited insight</Badge>
-            <h2 className="text-2xl font-bold">You are viewing basic pathway results</h2>
+            <h2 className="text-2xl font-bold">Basic pathway results are unlocked</h2>
             <p className="max-w-3xl text-sm text-muted-foreground">
               This quick check shows possible pathways only. A full readiness report includes deeper insights. This is general information only.
             </p>
@@ -218,7 +218,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
               <Badge variant="secondary">Locked</Badge>
             </div>
             <p className="max-w-3xl text-sm text-muted-foreground">
-              Your quick check shows possible pathways. The readiness report preview adds a simplified view of risks, documents, and next steps while deeper features continue improving.
+              The quick check shows possible pathways. The readiness report preview adds a simplified view of risks, documents, and next steps while deeper features continue improving.
             </p>
           </CardHeader>
           <CardContent className="space-y-5">

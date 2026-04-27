@@ -120,7 +120,7 @@ export default function PointsCalculatorPage() {
       : "Your estimated score may meet the minimum points threshold. This does not predict invitation or visa grant.",
     statusBelow: isTr
       ? "Tahmini puanınız asgari puan eşiğinin altında. Bu yol için daha fazla puana ihtiyaç duyabilirsiniz."
-      : "Your estimated score is below the minimum points threshold. You may need more points before this pathway is relevant.",
+      : "The estimated score is below the minimum points threshold. More points are commonly required before this pathway is relevant.",
     invitationNote: isTr
       ? "Davet garantili değildir. Eyalet veya bölge adaylık kriterleri ayrıca uygulanabilir."
       : "Invitation cannot be assumed. State or territory nomination criteria may also apply.",

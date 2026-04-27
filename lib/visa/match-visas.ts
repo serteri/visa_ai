@@ -41,7 +41,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: row.visa_name,
         purpose: row.purpose,
         match_reason:
-          "Your goal is to study in Australia. The Student visa (subclass 500) is the standard pathway for international students enrolled in a registered Australian course.",
+          "The study goal indicates the Student visa (subclass 500) may be relevant for international students enrolled in a registered Australian course.",
         confidence: "high",
         source_url: row.source_url,
         pdf_snapshot_url: row.pdf_snapshot_url ?? null,
@@ -71,7 +71,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: row482.visa_name,
         purpose: row482.purpose,
         match_reason:
-          "You selected work in Australia and indicated you have an employer sponsor. This employer-sponsored pathway may be relevant to review.",
+          "The work goal and employer sponsor context indicate this employer-sponsored pathway may be relevant to review.",
         confidence: "medium",
         source_url: row482.source_url,
         pdf_snapshot_url: row482.pdf_snapshot_url ?? null,
@@ -84,7 +84,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
         visa_name: "Skills in Demand visa",
         purpose: "Temporary employer-sponsored work in Australia",
         match_reason:
-          "You selected work in Australia and indicated you have an employer sponsor. This employer-sponsored pathway may be relevant to review.",
+          "The work goal and employer sponsor context indicate this employer-sponsored pathway may be relevant to review.",
         confidence: "medium",
         source_url:
           "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482/core-skills-stream",

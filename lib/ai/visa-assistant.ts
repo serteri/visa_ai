@@ -23,7 +23,7 @@ export type VisaAssistantResult = {
 };
 
 const HARD_SAFETY_REPLY =
-  "I can't determine eligibility or tell you what to apply for. I can help you explore general Australian visa pathways based on the information you share.";
+  "I can't determine outcomes or identify an application to make. General Australian visa pathway information can be explored based on broad study, work, or migration goals.";
 
 function normalize(text: string): string {
   return text.trim().toLowerCase();
@@ -70,7 +70,7 @@ export function analyzeVisaMessage(message: string): VisaAssistantResult {
       occupation,
       suggestedVisas: [],
       safeResponse:
-        "I can help you explore Australian visa pathways based on general information only. You may share your study, work, or migration goals, and consider speaking with a registered migration agent.",
+        "General Australian visa pathways can be explored based on broad study, work, or migration goals. Registered migration agent input may be relevant for personalised circumstances.",
       nextActions: defaultActions(),
     };
   }

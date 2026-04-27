@@ -114,24 +114,24 @@ function buildBasicReport(input: {
     possiblePathways,
     riskIndicators: [
       input.currentCountry
-        ? `Your current country is recorded as ${input.currentCountry}; location can affect which steps may be available.`
-        : "Your current location was not provided, so location-based risks need further review.",
+        ? `Current country is recorded as ${input.currentCountry}; location can affect which steps may be available.`
+        : "Current location was not provided, so location-based risks need further review.",
       input.visaInterest
-        ? "Your selected visa interest should be checked against current pathway requirements."
+        ? "The selected visa interest is often considered against current pathway requirements."
         : "No visa interest was selected, so the report is using broad pathway signals only.",
       "Timing, documents and personal circumstances may affect next steps.",
     ],
     documentChecklist: [
       "Passport and identity documents",
-      "Evidence related to your study, work, partner or skilled background",
+      "Evidence related to study, work, partner or skilled background",
       "English test, skills assessment, sponsor or relationship evidence if relevant",
-      "Current visa details and travel history if you are in Australia",
+      "Current visa details and travel history if the person is in Australia",
     ],
     nextSteps: [
-      "Compare the possible pathways shown in this basic report.",
-      "Gather the documents listed for any pathway that may be relevant.",
-      "Use the detailed review when you want a more structured preparation plan.",
-      "Speak with a registered migration agent before making decisions about your situation.",
+      "Possible pathways are often compared before deeper preparation.",
+      "Listed document categories are commonly required for pathway review.",
+      "A structured preparation plan may be relevant for a later detailed review.",
+      "Personalised advice is handled by a registered migration agent.",
     ],
   };
 }

@@ -101,14 +101,14 @@ export async function runReadinessPreview(
         ? "English level may affect some study, skilled or sponsored pathway settings."
         : "English level was not provided.",
       input.biggestConcern
-        ? "Your stated concern may need a more detailed document and timing review."
+        ? "The stated concern may affect document readiness or timing review."
         : "No main concern was provided, so this preview stays broad.",
     ],
     suggestedNextSteps: [
-      "Review the possible pathway areas shown in this preview.",
-      "Gather identity, study, work, English, sponsor, partner or family documents that may relate to your situation.",
-      "Use the Full Visa Readiness Report when you want document readiness and an agent-ready summary.",
-      "Speak with a registered migration agent for personalised advice.",
+      "Possible pathway areas are often compared before deeper preparation.",
+      "Identity, study, work, English, sponsor, partner or family documents are commonly considered for pathway review.",
+      "Document readiness and an agent-ready summary may be relevant for a later full report version.",
+      "Personalised advice is handled by a registered migration agent.",
     ],
   };
 }
