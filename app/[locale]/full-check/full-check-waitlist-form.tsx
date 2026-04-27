@@ -143,6 +143,63 @@ export function FullCheckWaitlistForm({
           />
         </div>
 
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-passport-country">{isTr ? "Pasaport ülkesi" : "Passport country"}</Label>
+            <Input
+              id="waitlist-passport-country"
+              name="passportCountry"
+              placeholder={isTr ? "Ülke adı" : "Country name"}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-age">{isTr ? "Yaş" : "Age"}</Label>
+            <Input
+              id="waitlist-age"
+              name="age"
+              type="number"
+              placeholder={isTr ? "Örn: 28" : "E.g., 28"}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-occupation">{isTr ? "Meslek" : "Occupation"}</Label>
+          <Input
+            id="waitlist-occupation"
+            name="occupation"
+            placeholder={isTr ? "Örn: Yazılım Mühendisi" : "E.g., Software Engineer"}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-english">{isTr ? "İngilizce seviyesi" : "English level"}</Label>
+          <Input
+            id="waitlist-english"
+            name="englishLevel"
+            placeholder={isTr ? "Örn: IELTS 7.0 veya Yüksek" : "E.g., IELTS 7.0 or Proficient"}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-sponsor">{isTr ? "Sponsor veya aile durumu" : "Sponsor or family status"}</Label>
+          <Input
+            id="waitlist-sponsor"
+            name="sponsorOrFamily"
+            placeholder={isTr ? "Örn: İşveren sponsor, Partner veya Aile" : "E.g., Employer sponsor, Partner, or Family"}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-concern">{isTr ? "En büyük endişe" : "Biggest concern"}</Label>
+          <Input
+            id="waitlist-concern"
+            name="biggestConcern"
+            placeholder={isTr ? "Örn: Belgeler, Puan, Dil testi" : "E.g., Documents, Points, English test"}
+          />
+        </div>
+
         {state.status === "success" && state.message && (
           <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
             {state.message}
@@ -166,46 +223,134 @@ export function FullCheckWaitlistForm({
         <section className="space-y-4">
           <div className="space-y-1">
             <h3 className="text-xl font-bold">
-              {isTr ? "Temel hazırlık raporunuz" : "Your basic readiness report"}
+              {isTr ? "Tam vize hazırlık raporu" : "Full visa readiness report"}
             </h3>
             <p className="text-sm text-muted-foreground">
               {isTr
-                ? "Bu sınırlı rapor yalnızca genel bilgi içerir ve gönderdiğiniz bilgileri kullanır."
-                : "This limited report provides general information only and uses the details you submitted."}
+                ? "Bu rapor yapısal bilgiye ve kişisel duruma bağlıdır. Kayıtlı bir göç danışmanı ile yapılan görüşme ek inceleme sağlar."
+                : "This report is based on structured information and personal circumstances. A consultation with a registered migration agent provides additional review."}
             </p>
           </div>
 
           <ReportSection
-            title={isTr ? "Olası vize yolları" : "Possible pathways"}
-            items={state.report.possiblePathways}
-          />
-          <ReportSection
-            title={isTr ? "Temel risk göstergeleri" : "Basic risk indicators"}
-            items={state.report.riskIndicators}
-          />
-          <ReportSection
-            title={isTr ? "Temel belge kontrol listesi" : "Basic document checklist"}
-            items={state.report.documentChecklist}
-          />
-          <ReportSection
-            title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
-            items={state.report.nextSteps}
+            title={isTr ? "Olası vize yolları" : "Possible visa pathways"}
+            items={state.report.pathwayComparison.map((p) =>
+              p.subclass === "general" 
+                ? p.reason 
+                : `${p.visaName} (${p.subclass}): ${p.reason}`
+            )}
           />
 
-          <div className="grid gap-3">
-            <LockedSection
-              title={isTr ? "Detaylı risk analizi" : "Detailed risk breakdown"}
-              isTr={isTr}
+          <ReportSection
+            title={isTr ? "Risk göstergeleri" : "Risk indicators"}
+            items={state.report.riskIndicators.map(
+              (r) => `[${isTr ? (r.level === "high" ? "Yüksek" : r.level === "medium" ? "Orta" : "Düşük") : (r.level === "high" ? "High" : r.level === "medium" ? "Medium" : "Low")}] ${r.title}: ${r.explanation}`
+            )}
+          />
+
+          {state.report.documentChecklist.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Belge kontrol listesi" : "Document checklist"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {state.report.documentChecklist.map((category) => (
+                  <div key={category.category}>
+                    <p className="font-medium text-sm mb-2">{category.category}</p>
+                    <ul className="space-y-1 text-sm text-muted-foreground ml-4">
+                      {category.items.map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <span className="text-primary">-</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {state.report.pointsEstimate && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Puan tahmini" : "Points estimate"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {state.report.pointsEstimate.estimatedPoints !== undefined && (
+                  <p className="font-semibold">
+                    {isTr ? "Tahmini puan:" : "Estimated points:"} {state.report.pointsEstimate.estimatedPoints}
+                  </p>
+                )}
+                {state.report.pointsEstimate.breakdown.length > 0 && (
+                  <div className="space-y-1">
+                    {state.report.pointsEstimate.breakdown.map((item) => (
+                      <div key={item.label} className="flex justify-between text-sm">
+                        <span>{item.label}</span>
+                        <span className="font-medium">{item.points}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground mt-2">{state.report.pointsEstimate.note}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {state.report.occupationIndication && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Meslek incelemesi" : "Occupation review"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {state.report.occupationIndication.occupation && (
+                  <p className="font-medium">{state.report.occupationIndication.occupation}</p>
+                )}
+                {state.report.occupationIndication.matches.length > 0 && (
+                  <ul className="space-y-1 text-sm">
+                    {state.report.occupationIndication.matches.map((match) => (
+                      <li key={match.title}>
+                        <p className="font-medium">{match.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {isTr ? "İlgili vizeler:" : "Relevant visas:"} {match.relevantVisas.join(", ")}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <p className="text-xs text-muted-foreground mt-2">{state.report.occupationIndication.note}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          <ReportSection
+            title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
+            items={state.report.suggestedNextSteps}
+          />
+
+          {state.report.missingInformation.length > 0 && (
+            <ReportSection
+              title={isTr ? "Eksik bilgiler" : "Missing information"}
+              items={state.report.missingInformation}
             />
-            <LockedSection
-              title={isTr ? "Kişisel hazırlık planı" : "Personal preparation plan"}
-              isTr={isTr}
-            />
-            <LockedSection
-              title={isTr ? "İndirilebilir rapor" : "Downloadable report"}
-              isTr={isTr}
-            />
-          </div>
+          )}
+
+          <Card className="bg-amber-50 border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-sm text-amber-900">
+                {isTr ? "Uyarı" : "Disclaimer"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-amber-800">{state.report.disclaimer}</p>
+            </CardContent>
+          </Card>
         </section>
       )}
     </div>

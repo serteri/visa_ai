@@ -5,6 +5,7 @@ import {
   type GroundedAssistantResult,
 } from "@/lib/ai/generate-grounded-answer";
 import { retrieveVisaContext } from "@/lib/ai/retrieve-visa-context";
+import { runReadinessEngine } from "@/lib/readiness/engine";
 
 type RunAssistantInput = {
   locale: "en" | "tr";
@@ -57,100 +58,44 @@ export async function runReadinessPreview(
   input: ReadinessPreviewInput
 ): Promise<ReadinessPreviewResult> {
   const isTr = input.locale === "tr";
-  const message = [
-    input.mainGoal,
-    input.preferredPathway,
-    input.occupation,
-    input.sponsorFamily,
-    input.biggestConcern,
-  ]
-    .filter(Boolean)
-    .join(" ");
 
-  const context = await retrieveVisaContext({ message });
+  const report = runReadinessEngine({
+    locale: input.locale,
+    mainGoal: input.mainGoal || undefined,
+    currentCountry: input.currentCountry || undefined,
+    passportCountry: input.passportCountry || undefined,
+    age: input.age || undefined,
+    occupation: input.occupation || undefined,
+    englishLevel: input.englishLevel || undefined,
+    sponsorOrFamily: input.sponsorFamily || undefined,
+    preferredPathway: input.preferredPathway || undefined,
+    biggestConcern: input.biggestConcern || undefined,
+  });
 
-  const possiblePathwayAreas = isTr
-    ? context.length > 0
-      ? context.slice(0, 4).map((item) => `${item.visa_name} (alt sınıf ${item.subclass}) incelemeye değer olabilir.`)
-      : ["Öğrenci, yetenekli, işveren sponsorlu, bölgesel veya partner yolları karşılaştırılmaya değer başlangıç noktaları olabilir."]
-    : context.length > 0
-      ? context.slice(0, 4).map((item) => `${item.visa_name} (subclass ${item.subclass}) may be relevant to explore.`)
-      : ["Student, skilled, employer sponsored, regional or partner pathways may be useful starting points to compare."];
+  const possiblePathwayAreas = report.pathwayComparison.map((p) => {
+    if (p.subclass === "general") return p.reason;
+    return `${p.visaName} (${p.subclass}): ${p.reason}`;
+  });
 
-  const missingInformation = isTr
-    ? [
-        !input.mainGoal ? "Ana hedef" : null,
-        !input.currentCountry ? "Bulunduğunuz ülke" : null,
-        !input.passportCountry ? "Pasaport ülkesi" : null,
-        !input.age ? "Yaş" : null,
-        !input.occupation ? "Meslek veya eğitim geçmişi" : null,
-        !input.englishLevel ? "İngilizce seviyesi" : null,
-        !input.sponsorFamily ? "Avustralya'da sponsor, partner veya aile" : null,
-        !input.preferredPathway ? "Biliniyorsa tercih edilen vize yolu" : null,
-        !input.biggestConcern ? "En büyük endişe veya hazırlık sorusu" : null,
-      ].filter((item): item is string => Boolean(item))
-    : [
-        !input.mainGoal ? "Main goal" : null,
-        !input.currentCountry ? "Current country" : null,
-        !input.passportCountry ? "Passport country" : null,
-        !input.age ? "Age" : null,
-        !input.occupation ? "Occupation or study background" : null,
-        !input.englishLevel ? "English level" : null,
-        !input.sponsorFamily ? "Sponsor, partner or family context in Australia" : null,
-        !input.preferredPathway ? "Preferred pathway if known" : null,
-        !input.biggestConcern ? "Biggest concern or preparation question" : null,
-      ].filter((item): item is string => Boolean(item));
+  const basicRiskSignals = report.riskIndicators.map((r) => {
+    const levelLabel = isTr
+      ? r.level === "high" ? "Yüksek" : r.level === "medium" ? "Orta" : "Düşük"
+      : r.level === "high" ? "High" : r.level === "medium" ? "Medium" : "Low";
+    return `[${levelLabel}] ${r.explanation}`;
+  });
 
-  const missingInformationFallback = isTr
+  const missingFallback = isTr
     ? "Ön inceleme formunda büyük bir eksiklik tespit edilmedi, ancak destekleyici kanıtların incelenmesi gerekiyor."
     : "No major gaps were detected in the preview form, but supporting evidence still needs review.";
-
-  const basicRiskSignals = isTr
-    ? [
-        input.currentCountry
-          ? `Bulunduğunuz ülke ${input.currentCountry} olarak kaydedildi; konum mevcut adımları etkileyebilir.`
-          : "Bulunduğunuz ülke belirtilmedi, bu nedenle konuma dayalı adımlar daha fazla inceleme gerektirir.",
-        input.age ? "Yaş, bazı yetenekli yol ayarlarını etkileyebilir." : "Yaş belirtilmedi.",
-        input.englishLevel
-          ? "İngilizce seviyesi bazı eğitim, yetenekli veya sponsorlu yol ayarlarını etkileyebilir."
-          : "İngilizce seviyesi belirtilmedi.",
-        input.biggestConcern
-          ? "Belirtilen endişe belge hazırlığı veya zamanlama incelemesini etkileyebilir."
-          : "Ana endişe belirtilmedi, bu nedenle bu ön inceleme geniş kapsamlı kalıyor.",
-      ]
-    : [
-        input.currentCountry
-          ? `Current country is recorded as ${input.currentCountry}; location can affect available steps.`
-          : "Current country was not provided, so location-based steps need further review.",
-        input.age ? "Age can affect some skilled pathway settings." : "Age was not provided.",
-        input.englishLevel
-          ? "English level may affect some study, skilled or sponsored pathway settings."
-          : "English level was not provided.",
-        input.biggestConcern
-          ? "The stated concern may affect document readiness or timing review."
-          : "No main concern was provided, so this preview stays broad.",
-      ];
-
-  const suggestedNextSteps = isTr
-    ? [
-        "Olası yol alanları genellikle daha derin hazırlıktan önce karşılaştırılır.",
-        "Kimlik, eğitim, iş, İngilizce, sponsor, partner veya aile belgeleri genellikle yol incelemesi için değerlendirilir.",
-        "Belge hazırlığı ve danışmana hazır özet, daha sonraki tam rapor için ilgili olabilir.",
-        "Kişiselleştirilmiş tavsiye kayıtlı bir göç danışmanı tarafından verilir.",
-      ]
-    : [
-        "Possible pathway areas are often compared before deeper preparation.",
-        "Identity, study, work, English, sponsor, partner or family documents are commonly considered for pathway review.",
-        "Document readiness and an agent-ready summary may be relevant for a later full report version.",
-        "Personalised advice is handled by a registered migration agent.",
-      ];
 
   return {
     possiblePathwayAreas,
     missingInformation:
-      missingInformation.length > 0 ? missingInformation : [missingInformationFallback],
+      report.missingInformation.length > 0
+        ? report.missingInformation
+        : [missingFallback],
     basicRiskSignals,
-    suggestedNextSteps,
+    suggestedNextSteps: report.suggestedNextSteps,
   };
 }
 
