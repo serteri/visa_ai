@@ -163,8 +163,8 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
             </h1>
             <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
               {isTr
-                ? "Bilgilerinizi göndererek yol karşılaştırması, risk göstergeleri, belge kontrol listesi, hazırlık skoru ve önerilen sonraki adımları içeren yapılandırılmış hazırlık raporu oluşturun."
-                : "Submit your details to generate a structured readiness report with pathway comparison, risk indicators, document checklist, readiness score, and suggested next steps."}
+                ? "Yapılandırılmış hazırlık raporu; detaylı analiz, riskler, belgeler ve hazırlık içgörüleri sunar."
+                : "Structured readiness report with detailed analysis, risks, documents, and preparation insights."}
             </p>
             <p className="max-w-3xl rounded-md border border-primary/20 bg-card px-4 py-3 text-sm text-muted-foreground">
               {isTr

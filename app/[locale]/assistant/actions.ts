@@ -29,7 +29,6 @@ export type ReadinessPreviewResult = {
   possiblePathwayAreas: string[];
   missingInformation: string[];
   basicRiskSignals: string[];
-  suggestedNextSteps: string[];
 };
 
 export async function runAssistantMessage(
@@ -95,7 +94,6 @@ export async function runReadinessPreview(
         ? report.missingInformation
         : [missingFallback],
     basicRiskSignals,
-    suggestedNextSteps: report.suggestedNextSteps,
   };
 }
 

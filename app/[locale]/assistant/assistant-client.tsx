@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { LockKeyhole } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,19 +41,6 @@ const QUICK_PROMPTS_TR = [
   "İnşaat mühendisiyim ve göç yollarını araştırmak istiyorum",
 ] as const;
 
-const LOCKED_REVIEW_SECTIONS_EN = [
-  "Detailed risk breakdown",
-  "Document readiness checklist",
-  "Agent-ready summary",
-  "Downloadable report",
-];
-
-const LOCKED_REVIEW_SECTIONS_TR = [
-  "Detaylı risk analizi",
-  "Belge hazırlık kontrol listesi",
-  "Danışmana hazır özet",
-  "İndirilebilir rapor",
-];
 
 type ReadinessPreviewForm = {
   mainGoal: string;
@@ -244,7 +230,6 @@ export function AssistantClient({
   }
 
   const quickPrompts = isTr ? QUICK_PROMPTS_TR : QUICK_PROMPTS_EN;
-  const lockedSections = isTr ? LOCKED_REVIEW_SECTIONS_TR : LOCKED_REVIEW_SECTIONS_EN;
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -421,8 +406,8 @@ export function AssistantClient({
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {isTr
-                    ? "Olası vize yolları, eksik bilgiler, temel risk sinyalleri ve önerilen sonraki adımlar için yapılandırılmış bir ön inceleme oluşturun."
-                    : "Generate a limited preview across possible pathways, missing information, basic risk signals, and suggested next steps."}
+                    ? "Sınırlı girdilere dayalı olası yollar için hızlı bir ön izleme."
+                    : "Quick preview of possible pathways based on limited input."}
                 </p>
               </CardHeader>
               <CardContent>
@@ -537,8 +522,8 @@ export function AssistantClient({
                   <h2 className="text-2xl font-bold">{isTr ? "Ön inceleme sonuçları" : "Preview review"}</h2>
                   <p className="text-sm text-muted-foreground">
                     {isTr
-                      ? "Bu ön inceleme yalnızca genel bilgi kullanır ve göç tavsiyesi değildir."
-                      : "This preview uses general information only and is not migration advice."}
+                      ? "Sınırlı girdilere dayalı olası yollar için hızlı bir ön izleme."
+                      : "Quick preview of possible pathways based on limited input."}
                   </p>
                 </div>
 
@@ -555,56 +540,25 @@ export function AssistantClient({
                     title={isTr ? "Temel risk sinyalleri" : "Basic risk signals"}
                     items={previewResult.basicRiskSignals}
                   />
-                  <PreviewList
-                    title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
-                    items={previewResult.suggestedNextSteps}
-                  />
-                </div>
-
-                <div className="grid gap-3 md:grid-cols-2">
-                  {lockedSections.map((section) => (
-                    <Card key={section} className="relative overflow-hidden border-dashed">
-                      <CardHeader className="opacity-45 blur-[1px]">
-                        <CardTitle className="text-base">{section}</CardTitle>
-                      </CardHeader>
-                      <CardContent className="opacity-45 blur-[1px]">
-                        <p className="text-sm text-muted-foreground">
-                          {isTr
-                            ? "Bu bölüm tam raporda yer almaktadır."
-                            : "This section is part of the full report."}
-                        </p>
-                      </CardContent>
-                      <div className="absolute inset-0 flex items-center justify-center bg-background/65 p-4 backdrop-blur-[1px]">
-                        <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-2 text-sm font-medium shadow-sm">
-                          <LockKeyhole className="size-4 text-primary" />
-                          <span>
-                            {isTr
-                              ? "Tam Vize Hazırlık Raporunda yer alacak"
-                              : "Included in the Full Visa Readiness Report"}
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
                 </div>
 
                 <Card className="border-primary/40 bg-primary/5">
                   <CardHeader>
                     <CardTitle>
                       {isTr
-                        ? "Hazırlık raporu ön izlemesini almak ister misiniz?"
-                        : "Want the readiness report preview?"}
+                        ? "Tam vize hazırlık raporuna geçmek ister misiniz?"
+                        : "Move to the full readiness report?"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="max-w-2xl text-sm text-muted-foreground">
                       {isTr
-                        ? "Bu ön inceleme temel bilgileri gösterir. Hazırlık raporu ön izlemesi; olası yollar, risk göstergeleri, belge kontrol listesi ve önerilen sonraki adımları içeren yapılandırılmış bir genel bakış sunar."
-                        : "Your preview shows the basics. The readiness report preview includes a simplified overview with pathway comparison, risk indicators, document checklist, and suggested next steps."}
+                        ? "Yapılandırılmış hazırlık raporu; detaylı analiz, riskler, belgeler ve hazırlık içgörüleri sunar."
+                        : "Structured readiness report with detailed analysis, risks, documents, and preparation insights."}
                     </p>
                     <Button asChild className="shrink-0">
                       <Link href={fullCheckHref}>
-                        {isTr ? "Rapor ön izlemesine devam et" : "Continue to report preview"}
+                        {isTr ? "Tam rapora devam et" : "Continue to full report"}
                       </Link>
                     </Button>
                   </CardContent>
