@@ -156,7 +156,7 @@ async function sendFullCheckAdminEmail(payload: {
   }
 
   const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "Visa AI <onboarding@resend.dev>";
+  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
   const bodyLines = [
     "A new full readiness report lead has been submitted.",
     "",
@@ -200,7 +200,7 @@ async function sendFullCheckConfirmationEmail(payload: {
   }
 
   const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "Visa AI <onboarding@resend.dev>";
+  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
   const isTr = payload.locale === "tr";
   const greeting = payload.fullName
     ? `${isTr ? "Merhaba" : "Hi"} ${payload.fullName},`

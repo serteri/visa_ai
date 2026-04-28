@@ -35,7 +35,7 @@ async function sendAssignedReferralEmail(payload: {
   }
 
   const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "Visa AI <onboarding@resend.dev>";
+  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
 
   const lines = [
     "A new visa referral lead has been assigned to you.",

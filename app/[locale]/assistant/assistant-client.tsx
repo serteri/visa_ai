@@ -253,7 +253,7 @@ export function AssistantClient({
             className="justify-center"
           >
             <Link href={`/${locale}/assistant`}>
-              {isTr ? "Vize AI'a Sor" : "Ask Visa AI"}
+              {isTr ? "Logivisa'ya Sor" : "Ask Logivisa"}
             </Link>
           </Button>
           <Button

@@ -14,9 +14,9 @@ const notoSans = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Visa Pathway Checker",
+  title: "Logivisa",
   description:
-    "Understand your possible Australian visa pathways before speaking with a registered migration agent.",
+    "Structured visa pathway analysis and readiness reports for Australia.",
 };
 
 export default function RootLayout({

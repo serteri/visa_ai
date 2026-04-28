@@ -6,11 +6,21 @@ import { Header } from "@/components/header";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
 
-export const metadata: Metadata = {
-  title: "Visa Pathway Checker",
-  description:
-    "Understand your possible Australian visa pathways before speaking with a registered migration agent.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const isTr = locale === "tr";
+
+  return {
+    title: "Logivisa",
+    description: isTr
+      ? "Avustralya vize yollari icin yapilandirilmis analiz ve hazirlik raporlari."
+      : "Structured visa pathway analysis and readiness reports for Australia.",
+  };
+}
 
 type LocaleLayoutProps = {
   children: React.ReactNode;

@@ -7,7 +7,7 @@
   "hero.subheadline": "Birkaç soruya cevap verin ve kayıtlı bir göç danışmanı ile konuşmadan önce genel bir yol haritası özeti alın.",
   "hero.cta": "Ücretsiz kontrolü başlat",
   "hero.secondary": "Nasıl çalışır",
-  "hero.trustBadge": "Avustralya Vize Yolları Kontrol Aracı",
+  "hero.trustBadge": "Logivisa",
 
   "trustIndicators.gov": "Avustralya resmi hükümet kaynaklarına dayalı",
   "trustIndicators.info": "Yalnızca genel bilgiler",
@@ -111,8 +111,8 @@
   "legal.whatDoesNotText2": "Vize uygunluğunu, sonuçlarını veya onayları doğrulamaz.",
   "legal.whatDoesNotText3": "Kayıtlı bir göç danışmanı ile danışmayı değiştirmez."
 ,
-  "hero.headline": "Guncel yapilandirilmis vize verileriyle olasi Avustralya vize yollarini kesfedin",
-  "hero.subheadline": "Ogrenci, isveren sponsorlu, nitelikli, bolgesel ve partner onshore yollari icin genel bilgileri kayitli bir goc danismani ile gorusmeden once inceleyin.",
+  "hero.headline": "Logivisa",
+  "hero.subheadline": "Avustralya vize yollari icin yapilandirilmis analiz ve hazirlik raporlari.",
   "hero.cta": "Yol kontrolunu baslat",
   "hero.secondary": "Asistana sor",
   "howItWorks.step1": "Egitim, is, nitelikli, bolgesel veya partner hedefinizi paylasin",

@@ -119,7 +119,7 @@ async function sendReferralNotificationEmail(payload: {
   ];
 
   await resend.emails.send({
-    from: "Visa AI <onboarding@resend.dev>",
+    from: "Logivisa <onboarding@resend.dev>",
     to: [notificationEmail],
     subject: "New visa referral lead",
     text: bodyLines.join("\n"),
