@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 
 import { ComplianceNotice } from "@/components/sections/compliance-notice";
 import { Badge } from "@/components/ui/badge";
@@ -143,11 +143,13 @@ function Req() {
 export default function CheckerPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<CheckerFormData>(initialData);
   const [showErrors, setShowErrors] = useState(false);
+  const [showQuickCheck, setShowQuickCheck] = useState(false);
 
   const progressValue = useMemo(() => (step / totalSteps) * 100, [step]);
 
@@ -199,6 +201,28 @@ export default function CheckerPage() {
   }
 
   const err = showErrors ? stepErrors : {};
+  const isTr = locale === "tr";
+  const quickCheckVisible = showQuickCheck || searchParams.get("quick") === "1";
+  const choiceCopy = {
+    quickTitle: isTr ? "Hızlı Yol Kontrolü" : "Quick Pathway Check",
+    quickLabel: isTr ? "Ücretsiz · 2 dakika" : "Free · 2 minutes",
+    quickDescription: isTr
+      ? "Yalnızca olası yol alanlarını gösteren kısa bir anket."
+      : "A short questionnaire that shows possible pathway areas only.",
+    quickBestFor: isTr ? "hızlı yön bulma" : "quick orientation",
+    quickButton: isTr ? "Hızlı kontrolü başlat" : "Start quick check",
+    fullTitle: isTr ? "Tam Vize Hazırlık Raporu" : "Full Visa Readiness Report",
+    fullLabel: isTr ? "Detaylı rapor" : "Detailed report",
+    fullDescription: isTr
+      ? "Yol karşılaştırması, risk göstergeleri, belge kontrol listesi, hazırlık skoru ve PDF indirme içeren yapılandırılmış rapor."
+      : "A structured report with pathway comparison, risk indicators, document checklist, readiness score, and PDF download.",
+    fullBestFor: isTr ? "daha derin hazırlık incelemesi" : "deeper preparation review",
+    fullButton: isTr ? "Tam rapor oluştur" : "Generate full report",
+    bestFor: isTr ? "En uygun:" : "Best for:",
+    compliance: isTr
+      ? "Bu araç yalnızca genel bilgiler sağlar."
+      : "This tool provides general information only.",
+  };
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -213,45 +237,59 @@ export default function CheckerPage() {
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader className="space-y-2">
-              <CardTitle>Quick Pathway Check</CardTitle>
-              <p className="text-sm font-semibold text-primary">Free · 2 minutes</p>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        <div className="grid gap-5 md:grid-cols-2">
+          <Card className="border-border bg-card">
+            <CardHeader className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <CardTitle>{choiceCopy.quickTitle}</CardTitle>
+                <Badge variant="outline">{choiceCopy.quickLabel}</Badge>
+              </div>
               <p className="text-sm text-muted-foreground">
-                Get a simple overview of visa pathways that may be relevant based on the answers provided.
+                {choiceCopy.quickDescription}
               </p>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="rounded-md border border-border/70 bg-background/70 px-3 py-2 text-sm">
+                <span className="font-semibold">{choiceCopy.bestFor}</span>{" "}
+                <span className="text-muted-foreground">{choiceCopy.quickBestFor}</span>
+              </div>
               <Button asChild className="w-full sm:w-auto">
-                <Link href="#quick-pathway-check">Start quick check</Link>
+                <Link
+                  href={`/${locale}/checker?quick=1#quick-pathway-check`}
+                  onClick={() => setShowQuickCheck(true)}
+                >
+                  {choiceCopy.quickButton}
+                </Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-primary/50 bg-primary/5">
-            <CardHeader className="space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <CardTitle>Full Visa Readiness Report</CardTitle>
-                <Badge variant="secondary">Preview</Badge>
+          <Card className="border-primary/60 bg-primary/5 shadow-sm ring-1 ring-primary/10">
+            <CardHeader className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <CardTitle>{choiceCopy.fullTitle}</CardTitle>
+                <Badge variant="secondary">{choiceCopy.fullLabel}</Badge>
               </div>
-              <p className="text-sm font-semibold text-primary">Detailed - Early access</p>
-            </CardHeader>
-            <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                A preview review with pathway areas, basic risk signals, document readiness, and next steps.
+                {choiceCopy.fullDescription}
               </p>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm">
+                <span className="font-semibold">{choiceCopy.bestFor}</span>{" "}
+                <span className="text-muted-foreground">{choiceCopy.fullBestFor}</span>
+              </div>
               <Button asChild className="w-full sm:w-auto">
-                  <Link href={`/${locale}/full-check`}>View preview report</Link>
+                <Link href={`/${locale}/full-check`}>{choiceCopy.fullButton}</Link>
               </Button>
             </CardContent>
           </Card>
         </div>
 
         <p className="text-sm text-muted-foreground">
-          This tool provides general information only.
+          {choiceCopy.compliance}
         </p>
-
+        {quickCheckVisible && (
         <Card id="quick-pathway-check">
           <CardHeader className="space-y-4">
             <div className="flex items-center justify-between gap-3">
@@ -599,6 +637,7 @@ export default function CheckerPage() {
             </div>
           </CardContent>
         </Card>
+        )}
 
         <ComplianceNotice />
 
