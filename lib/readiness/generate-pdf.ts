@@ -67,7 +67,7 @@ function getLocalizedText(locale: "en" | "tr") {
       keyRequirements: "Ana Gereklilikler",
       pathwayRisks: "Yola Özgü Riskler",
       keyVisaRequirements: "Ana Vize Gereklilikleri",
-      whatThisMeans: "Bunun Anlamı",
+      executiveSummary: "Yonetici Ozeti",
       riskIndicators: "Risk Göstergeleri",
       documentChecklist: "Belge Kontrol Listesi",
       pointsEstimate: "Puan Tahmini",
@@ -121,7 +121,7 @@ function getLocalizedText(locale: "en" | "tr") {
     keyRequirements: "Key Requirements",
     pathwayRisks: "Pathway-Specific Risks",
     keyVisaRequirements: "Key Visa Requirements",
-    whatThisMeans: "What This Means",
+    executiveSummary: "Executive Summary",
     riskIndicators: "Risk Indicators",
     documentChecklist: "Document Checklist",
     pointsEstimate: "Points Estimate",
@@ -263,6 +263,17 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     return text.lowRisk;
   }
 
+  function formatCoverage(level: "basic" | "partial" | "comprehensive") {
+    if (locale === "tr") {
+      if (level === "comprehensive") return "Kapsamli";
+      if (level === "partial") return "Kismi";
+      return "Temel";
+    }
+    if (level === "comprehensive") return "Comprehensive";
+    if (level === "partial") return "Partial";
+    return "Basic";
+  }
+
   // Title
   addTitle(text.title);
 
@@ -294,7 +305,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     `${text.documentReadinessIndicator}: ${formatIndicator(report.reportIndicators.documentReadinessIndicator)}`
   );
   addBody(
-    `${text.informationCoverageLevel}: ${formatIndicator(report.reportIndicators.informationCoverageLevel)}`
+    `${text.informationCoverageLevel}: ${formatCoverage(report.reportIndicators.informationCoverageLevel)}`
   );
   addSmallText(report.reportIndicators.explanation, 0);
   yPosition += 2;
@@ -365,9 +376,9 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 3;
   }
 
-  if (report.whatThisMeans.length > 0) {
-    addHeading(text.whatThisMeans);
-    addBulletPoints(report.whatThisMeans);
+  if (report.executiveSummary.length > 0) {
+    addHeading(text.executiveSummary);
+    addBulletPoints(report.executiveSummary);
     yPosition += 3;
   }
 

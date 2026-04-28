@@ -8,6 +8,7 @@ import type {
   ConfidenceLevel,
   DataCompleteness,
   DocumentCategory,
+  InformationCoverageLevel,
   IndicatorLevel,
   KeyVisaRequirement,
   Locale,
@@ -23,6 +24,7 @@ import type {
 export type LeadTier = "High intent" | "Moderate intent" | "Low intent";
 
 export type LeadQuality = {
+  leadValueScore: number;
   leadScore: number;
   leadTier: LeadTier;
 };
@@ -740,21 +742,23 @@ function hasClearGoal(mainGoal?: string): boolean {
 
 export function buildLeadQuality(input: ReadinessInput): LeadQuality {
   const completeness = buildDataCompleteness(input, input.locale).percentage;
-  const englishTestTaken = (input.englishTestTaken ?? "").trim().toLowerCase();
-  const occupationConfirmed = (input.occupationConfirmed ?? "").trim().toLowerCase();
+  const occupationConfirmed = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
+
+  const englishIsValid = Boolean(input.englishLevel?.trim() && parseEnglishOption(input.englishLevel) !== null);
+  const occupationHasMatch = Boolean(
+    input.occupation?.trim() && checkOccupation({ occupation: input.occupation }).matches.length > 0
+  );
+  const clearOccupationMatch = occupationConfirmed || occupationHasMatch;
+  const timelineDefined = Boolean(input.timeline?.trim());
+  const goalClear = hasClearGoal(input.mainGoal);
+  const completenessScore = Math.round(completeness * 0.4);
 
   let score = 0;
-  if (input.englishLevel?.trim()) score += 20;
-  if (input.occupation?.trim()) score += 15;
-  if (input.passportCountry?.trim()) score += 15;
-  if (hasClearGoal(input.mainGoal)) score += 15;
-  if (input.sponsorOrFamily?.trim()) score += 10;
-  if (input.age?.trim()) score += 10;
-  if (completeness > 70) score += 15;
-  if (englishTestTaken === "yes") score += 8;
-  if (occupationConfirmed === "yes") score += 8;
-  if (input.estimatedBudgetRange?.trim()) score += 4;
-  if (input.timeline?.trim()) score += 6;
+  if (englishIsValid) score += 20;
+  if (clearOccupationMatch) score += 20;
+  if (timelineDefined) score += 10;
+  if (goalClear) score += 10;
+  score += completenessScore;
 
   score = Math.max(0, Math.min(100, score));
 
@@ -762,6 +766,7 @@ export function buildLeadQuality(input: ReadinessInput): LeadQuality {
     score >= 70 ? "High intent" : score >= 40 ? "Moderate intent" : "Low intent";
 
   return {
+    leadValueScore: score,
     leadScore: score,
     leadTier,
   };
@@ -775,22 +780,20 @@ function getDataCompletenessLabel(score: number, locale: Locale): string {
 }
 
 function buildDocumentReadinessIndicator(input: ReadinessInput): IndicatorLevel {
-  const signals = [
-    Boolean(input.occupation),
-    Boolean(input.englishLevel),
-    Boolean(input.sponsorOrFamily),
-    Boolean(input.mainGoal),
-  ].filter(Boolean).length;
+  const englishTestTaken = (input.englishTestTaken ?? "").trim().toLowerCase() === "yes";
+  const skillsSignal = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
 
-  if (signals >= 3) return "high";
-  if (signals >= 2) return "medium";
+  const readinessSignals = [englishTestTaken, skillsSignal].filter(Boolean).length;
+
+  if (readinessSignals === 2) return "high";
+  if (readinessSignals === 1) return "medium";
   return "low";
 }
 
-function buildInformationCoverageLevel(dataCompletenessScore: number): IndicatorLevel {
-  if (dataCompletenessScore >= 75) return "high";
-  if (dataCompletenessScore >= 45) return "medium";
-  return "low";
+function buildInformationCoverageLevel(dataCompletenessScore: number): InformationCoverageLevel {
+  if (dataCompletenessScore >= 80) return "comprehensive";
+  if (dataCompletenessScore >= 50) return "partial";
+  return "basic";
 }
 
 function buildReportIndicators(params: {
@@ -806,8 +809,8 @@ function buildReportIndicators(params: {
   const documentReadinessIndicator = buildDocumentReadinessIndicator(input);
   const informationCoverageLevel = buildInformationCoverageLevel(dataCompletenessScore);
   const explanation = isTr
-    ? "Bu gösterge yalnızca sağlanan bilgilerin tamamlanma ve yapısal düzeyini yansıtır. Vize uygunluğu, onay olasılığı veya sonuçları göstermez."
-    : "This indicator reflects the completeness and structure of the provided information only. It does not indicate visa eligibility, approval likelihood, or outcomes.";
+    ? "Bu göstergeler yalnızca bilgi tamamlanmasını yansıtır ve vize sonucunu garanti etmez."
+    : "These indicators reflect information completeness only and do not guarantee visa outcomes.";
 
   return {
     dataCompletenessScore,
@@ -1169,7 +1172,7 @@ function buildKeyVisaRequirements(
     }));
 }
 
-function buildWhatThisMeans(
+function buildExecutiveSummary(
   input: ReadinessInput,
   pathways: PathwayComparison[],
   locale: Locale,
@@ -1203,7 +1206,7 @@ function buildWhatThisMeans(
         ? `Birden fazla yol ilgili görünebilir; bu nedenle rapor tek bir sonuç yerine karşılaştırmalı bir görünüm sunmaktadır.`
         : `Bu rapor, daha fazla bilgi sağlandığında değişebilecek erken aşama bir yapılandırılmış görünüm sunmaktadır.`
       : highConfidenceCount > 0
-        ? "More than one pathway may be relevant, so the report is framed as a comparison rather than a single outcome."
+          ? "More than one possible pathway may be relevant, so this report is presented as a comparison rather than a single outcome."
         : "This report presents an early structured view that could change when more detail is available."
   );
 
@@ -1211,7 +1214,7 @@ function buildWhatThisMeans(
     items.push(
       isTr
         ? `Kısmi puan görünümü ${estimatedPoints} olarak oluşmuştur; bu rakam yalnızca sınırlı girdilere dayanmaktadır.`
-        : `The partial points picture is ${estimatedPoints}, and that figure is based on limited inputs only.`
+        : `The partial points picture is ${estimatedPoints}, and that figure depends on limited inputs only.`
     );
   }
 
@@ -1347,7 +1350,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   );
 
   const keyVisaRequirements = buildKeyVisaRequirements(pathwayComparison);
-  const whatThisMeans = buildWhatThisMeans(
+  const executiveSummary = buildExecutiveSummary(
     input,
     pathwayComparison,
     locale,
@@ -1369,12 +1372,12 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const disclaimer = buildDisclaimer(locale);
 
   return {
+    executiveSummary,
     pathwayComparison,
     reportIndicators,
     primaryGap,
     dataCompleteness,
     keyVisaRequirements,
-    whatThisMeans,
     factorsAffectingPathways,
     pointsEstimate,
     occupationIndication,

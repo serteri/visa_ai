@@ -175,6 +175,18 @@ export function FullCheckWaitlistForm({
     return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
+  function getCoverageLabel(level: "basic" | "partial" | "comprehensive") {
+    if (isTr) {
+      if (level === "comprehensive") return "Kapsamlı";
+      if (level === "partial") return "Kısmi";
+      return "Temel";
+    }
+
+    if (level === "comprehensive") return "Comprehensive";
+    if (level === "partial") return "Partial";
+    return "Basic";
+  }
+
   return (
     <div className="space-y-6">
       <form action={formAction} className="space-y-4" noValidate>
@@ -411,7 +423,7 @@ export function FullCheckWaitlistForm({
                     {isTr ? "Belge Hazırlık Göstergesi:" : "Document Readiness Indicator:"} {getIndicatorLabel(state.report.reportIndicators.documentReadinessIndicator)}
                   </p>
                   <p className="text-sm font-semibold">
-                    {isTr ? "Bilgi Kapsam Düzeyi:" : "Information Coverage Level:"} {getIndicatorLabel(state.report.reportIndicators.informationCoverageLevel)}
+                    {isTr ? "Bilgi Kapsam Düzeyi:" : "Information Coverage Level:"} {getCoverageLabel(state.report.reportIndicators.informationCoverageLevel)}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {state.report.reportIndicators.explanation}
@@ -553,16 +565,16 @@ export function FullCheckWaitlistForm({
             </Card>
           )}
 
-          {state.report.whatThisMeans.length > 0 && (
+          {state.report.executiveSummary.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {isTr ? "Bunun anlamı" : "What this means"}
+                  {isTr ? "Yönetici Özeti" : "Executive Summary"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  {state.report.whatThisMeans.map((item) => (
+                  {state.report.executiveSummary.map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="text-primary">-</span>
                       <span>{item}</span>

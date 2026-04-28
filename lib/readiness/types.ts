@@ -42,11 +42,13 @@ export type ComparisonDifficulty = "low" | "medium" | "high";
 
 export type IndicatorLevel = "low" | "medium" | "high";
 
+export type InformationCoverageLevel = "basic" | "partial" | "comprehensive";
+
 export type ReportIndicators = {
   dataCompletenessScore: number;
   dataCompletenessLabel: string;
   documentReadinessIndicator: IndicatorLevel;
-  informationCoverageLevel: IndicatorLevel;
+  informationCoverageLevel: InformationCoverageLevel;
   explanation: string;
 };
 
@@ -98,12 +100,12 @@ export type DocumentCategory = {
 };
 
 export type ReadinessReport = {
+  executiveSummary: string[];
   pathwayComparison: PathwayComparison[];
   reportIndicators: ReportIndicators;
   primaryGap: string;
   dataCompleteness: DataCompleteness;
   keyVisaRequirements: KeyVisaRequirement[];
-  whatThisMeans: string[];
   factorsAffectingPathways: string[];
   pointsEstimate?: PointsEstimate;
   occupationIndication?: OccupationIndication;
