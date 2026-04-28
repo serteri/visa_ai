@@ -38,10 +38,11 @@ export default async function LocaleLayout({
   }
 
   const translations = await getTranslations(locale as Locale);
+  const showAdmin = process.env.SHOW_ADMIN === "true";
 
   return (
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
-      <Header />
+      <Header locale={locale} showAdmin={showAdmin} />
       {children}
     </LanguageProvider>
   );

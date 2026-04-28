@@ -1,13 +1,14 @@
-"use client";
-
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 import { LanguageSelector } from "@/components/language-selector";
 
-export function Header() {
-  const params = useParams();
-  const locale = params.locale as string;
+export function Header({
+  locale,
+  showAdmin = false,
+}: {
+  locale: string;
+  showAdmin?: boolean;
+}) {
   const checkerLabel = locale === "tr" ? "Kontrol" : "Checker";
   const assistantLabel = locale === "tr" ? "Asistan" : "Assistant";
   const fullReportLabel = locale === "tr" ? "Tam Rapor" : "Full Report";
@@ -39,12 +40,14 @@ export function Header() {
           >
             {fullReportLabel}
           </Link>
-          <Link
-            href={`/${locale}/admin/dashboard`}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {adminLabel}
-          </Link>
+          {showAdmin ? (
+            <Link
+              href={`/${locale}/admin/dashboard`}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {adminLabel}
+            </Link>
+          ) : null}
           <LanguageSelector currentLocale={locale} />
         </div>
       </nav>
