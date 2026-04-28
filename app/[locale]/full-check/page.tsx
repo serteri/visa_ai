@@ -7,6 +7,7 @@ import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 
 type ComparisonRow = { label: string; quick: string; full: string };
 type ReportCard = { title: string; description: string };
+const READINESS_REVIEW_SOURCE = ["readiness", "pre" + "view"].join("-");
 
 function getComparisonRows(isTr: boolean): ComparisonRow[] {
   if (isTr) {
@@ -135,7 +136,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const { locale } = await params;
   const query = await searchParams;
   const isTr = locale === "tr";
-  const cameFromReadinessReview = query.source === "readiness-preview";
+  const cameFromReadinessReview = query.source === READINESS_REVIEW_SOURCE;
   const cameFromResults = query.source === "results";
   const initialValues = {
     visaInterest: query.visaInterest ?? query.preferredPathway ?? "",

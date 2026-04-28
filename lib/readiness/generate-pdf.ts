@@ -50,7 +50,7 @@ function getLocalizedText(locale: "en" | "tr") {
       primaryGap: "Birincil Boşluk",
       dataCompleteness: "Veri Tamamlanma Düzeyi",
       completionRate: "Tamamlanma",
-      pathwayTable: "Yol Karşılaştırma Tablosu",
+      pathwayTable: "Yapılandırılmış Yol Karşılaştırması",
       visa: "Vize",
       difficulty: "Zorluk",
       requirementType: "Gereklilik Türü",
@@ -65,8 +65,9 @@ function getLocalizedText(locale: "en" | "tr") {
       riskIndicators: "Risk Göstergeleri",
       documentChecklist: "Belge Kontrol Listesi",
       pointsEstimate: "Puan Tahmini",
-      occupationReview: "Meslek İncelemesi",
+      occupationReview: "Meslek Göstergesi",
       suggestedNextSteps: "Önerilen Sonraki Adımlar",
+      downloadablePdf: "İndirilebilir PDF",
       factorsAffectingPathways: "Yolları Etkileyebilecek Faktörler",
       missingInformation: "Eksik Bilgiler",
       disclaimer: "Uyarı / İçtihadı",
@@ -97,7 +98,7 @@ function getLocalizedText(locale: "en" | "tr") {
     primaryGap: "Primary Gap",
     dataCompleteness: "Data Completeness",
     completionRate: "Completeness",
-    pathwayTable: "Pathway Comparison Table",
+    pathwayTable: "Structured Pathway Comparison",
     visa: "Visa",
     difficulty: "Difficulty",
     requirementType: "Requirement Type",
@@ -112,8 +113,9 @@ function getLocalizedText(locale: "en" | "tr") {
     riskIndicators: "Risk Indicators",
     documentChecklist: "Document Checklist",
     pointsEstimate: "Points Estimate",
-    occupationReview: "Occupation Review",
+    occupationReview: "Occupation Indication",
     suggestedNextSteps: "Suggested Next Steps",
+    downloadablePdf: "Downloadable PDF",
     factorsAffectingPathways: "Factors that may affect pathways",
     missingInformation: "Missing Information",
     disclaimer: "Disclaimer",
@@ -412,6 +414,15 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     addBulletPoints(report.suggestedNextSteps);
     yPosition += 3;
   }
+
+  addHeading(text.downloadablePdf);
+  addSmallText(
+    locale === "tr"
+      ? "Bu dosya, oluşturulan tam vize hazırlık raporunun indirilebilir PDF sürümüdür."
+      : "This file is the downloadable PDF version of the generated full visa readiness report.",
+    0
+  );
+  yPosition += 3;
 
   if (report.factorsAffectingPathways.length > 0) {
     addHeading(text.factorsAffectingPathways);

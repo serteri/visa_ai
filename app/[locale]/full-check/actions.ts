@@ -152,13 +152,13 @@ async function sendFullCheckConfirmationEmail(payload: {
           greeting,
           "",
           "Tam vize hazirlik raporu talebiniz alindi.",
-          "Rapor on izlemesi ekranda olusturuldu. Bu genel bilgi niteligindedir ve goc tavsiyesi degildir.",
+          "Yapilandirilmis rapor ekranda olusturuldu. Bu genel bilgi niteligindedir ve goc tavsiyesi degildir.",
         ].join("\n")
       : [
           greeting,
           "",
           "Your full visa readiness report request has been received.",
-          "The report preview was generated on screen. This is general information only and not migration advice.",
+          "The structured report was generated on screen. This is general information only and not migration advice.",
         ].join("\n"),
   });
 }

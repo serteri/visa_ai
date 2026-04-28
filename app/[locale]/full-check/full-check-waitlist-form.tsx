@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Download, LockKeyhole } from "lucide-react";
+import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -105,13 +105,13 @@ function LockedSection({ title, isTr }: { title: string; isTr: boolean }) {
       <CardContent className="opacity-45 blur-[1px]">
         <p className="text-sm text-muted-foreground">
           {isTr
-            ? "Daha ayrıntılı bir bölüm geliştirilmektedir."
-            : "A deeper section is being developed."}
+            ? "Bu bölüm ilgili ayrıntılar sağlandığında oluşturulan raporda yer alır."
+            : "This section is included in the generated report when relevant details are provided."}
         </p>
       </CardContent>
       <div className="absolute inset-0 flex items-center justify-center bg-background/65 p-4 backdrop-blur-[1px]">
         <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-2 text-sm font-medium shadow-sm">
-          <LockKeyhole className="size-4 text-primary" />
+          <Download className="size-4 text-primary" />
           <span>{isTr ? "Kilitli" : "Locked"}</span>
         </div>
       </div>
@@ -382,7 +382,7 @@ export function FullCheckWaitlistForm({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {isTr ? "Yol Karşılaştırma Tablosu" : "Pathway Comparison Table"}
+                    {isTr ? "Yapılandırılmış yol karşılaştırması" : "Structured pathway comparison"}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
@@ -557,7 +557,7 @@ export function FullCheckWaitlistForm({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {isTr ? "Meslek incelemesi" : "Occupation review"}
+                  {isTr ? "Meslek göstergesi" : "Occupation indication"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -611,12 +611,19 @@ export function FullCheckWaitlistForm({
             </CardContent>
           </Card>
 
-          <div className="flex gap-3">
-            <Button onClick={handleDownloadPDF} variant="default" className="flex gap-2">
-              <Download className="size-4" />
-              {isTr ? "Raporu PDF olarak indir" : "Download report PDF"}
-            </Button>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {isTr ? "İndirilebilir PDF" : "Downloadable PDF"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={handleDownloadPDF} variant="default" className="flex gap-2">
+                <Download className="size-4" />
+                {isTr ? "PDF indir" : "Download PDF"}
+              </Button>
+            </CardContent>
+          </Card>
         </section>
       )}
     </div>
