@@ -152,7 +152,7 @@ export async function submitAgentReferral(
   if (!shortMessage) errors.shortMessage = "Short message is required.";
   if (!consent) {
     errors.consent =
-      "You must acknowledge that this platform provides general information only.";
+      "Please acknowledge that this platform provides general information only.";
   }
 
   if (Object.keys(errors).length > 0) {

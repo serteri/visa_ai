@@ -73,7 +73,7 @@ export function buildNextSteps(ctx: NextStepsContext): string[] {
 
   steps.push(
     isTr
-      ? "Yol değerlendirmesi yapmadan önce ilgili belge kategorilerinin hazırlanması genellikle ilk adım olarak önerilir."
+      ? "Yol değerlendirmesi yapmadan önce ilgili belge kategorilerinin hazırlanması genellikle dikkate alınabilir bir ilk adımdır."
       : "Preparing relevant document categories is generally considered a useful step before a detailed pathway assessment."
   );
 

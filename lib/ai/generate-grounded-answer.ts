@@ -20,7 +20,7 @@ export type GroundedAssistantResult = {
 };
 
 const SYSTEM_PROMPT =
-  "You are a controlled Australian visa information assistant. You are not a migration agent and do not provide migration advice or legal advice. You must answer only using the supplied database context. Do not use outside knowledge. Do not guess. If the answer is not in the context, say that the stored information does not contain enough detail and that personalised advice is handled by a registered migration agent or Australian legal practitioner. Never say the user is eligible, qualifies, should apply, or will be approved. Use wording such as may be relevant, is commonly required, is often considered, may affect outcomes, general information only.";
+  "You are a controlled Australian visa information assistant. You are not a migration agent and do not provide migration advice or legal advice. Answer only using the supplied database context. Do not use outside knowledge. Do not guess. If the answer is not in the context, say that the stored information does not contain enough detail and that personalised advice is handled by a registered migration agent or Australian legal practitioner. Do not state personal outcomes or deterministic conclusions. Use wording such as may be relevant, depends on circumstances, typically, can be considered, and general information only.";
 
 const PERSONALIZED_INTENT_REPLY =
   "I can provide general information about visa pathways. For a structured assessment based on your situation, you can generate a readiness report.";
@@ -86,17 +86,19 @@ function applyAssistantSafetyFooter(input: {
 function sanitizeModelOutput(text: string): string {
   const lower = text.toLowerCase();
   const banned = [
-    "you are eligible",
-    "you qualify",
-    "you should apply",
-    "you will be approved",
-    "you will get",
+    /you\s+are\s+eligible/i,
+    /you\s+qualif(?:y|ies|ied)/i,
+    /you\s+should\s+apply/i,
+    /you\s+will\s+be\s+approved/i,
+    /you\s+will\s+get/i,
     "guaranteed",
-    "you should",
-    "you need to",
-    "you may want to",
+    /you\s+should/i,
+    /you\s+must/i,
+    /you\s+need\s+to/i,
+    /you\s+may\s+want\s+to/i,
+    /rec(?:ommended)/i,
   ];
-  if (banned.some((term) => lower.includes(term))) {
+  if (banned.some((term) => (typeof term === "string" ? lower.includes(term) : term.test(lower)))) {
     return "The stored information does not contain enough detail for this question. Registered migration agent or Australian legal practitioner input may be relevant.";
   }
   return text.trim();
@@ -104,14 +106,16 @@ function sanitizeModelOutput(text: string): string {
 
 function neutralizeDeterministicLanguage(answer: string): string {
   return answer
-    .replace(/\byou are eligible\b/gi, "this may be relevant")
-    .replace(/\byou qualify\b/gi, "this may be relevant")
-    .replace(/\byou should apply\b/gi, "this pathway may be relevant")
-    .replace(/\byou should\b/gi, "it is often considered")
-    .replace(/\byou need to\b/gi, "it is commonly required to")
-    .replace(/\byou may want to\b/gi, "it may be relevant to")
-    .replace(/\byou will be approved\b/gi, "an outcome cannot be predicted")
-    .replace(/\byou will get\b/gi, "it may be relevant to explore")
+    .replace(/\byou\s+are\s+eligible\b/gi, "this may be relevant")
+    .replace(/\byou\s+qualif(?:y|ies|ied)\b/gi, "this may be relevant")
+    .replace(/\byou\s+should\s+apply\b/gi, "this pathway may be relevant")
+    .replace(/\byou\s+should\b/gi, "it can be considered")
+    .replace(/\byou\s+must\b/gi, "it depends on circumstances")
+    .replace(/\byou\s+need\s+to\b/gi, "it is typically required to")
+    .replace(/\byou\s+may\s+want\s+to\b/gi, "it may be relevant to")
+    .replace(/\brec(?:ommended)\b/gi, "can be considered")
+    .replace(/\byou\s+will\s+be\s+approved\b/gi, "an outcome depends on circumstances")
+    .replace(/\byou\s+will\s+get\b/gi, "it may be relevant to explore")
     .replace(/\bguaranteed\b/gi, "not assured");
 }
 

@@ -174,7 +174,7 @@ function getPathwayKeyRequirements(
             "İngilizce ve iş koşullarına ilişkin destekleyici bilgiler",
           ]
         : [
-            "Eligible employer sponsorship context",
+            "Employer sponsorship context",
             "Occupation and experience information aligned with the role",
             "Supporting information relevant to English and employment conditions",
           ];
@@ -212,7 +212,7 @@ function getPathwayKeyRequirements(
         : [
             "Age and English information relevant to a points-tested pathway",
             "Occupation and skills assessment context",
-            "Regional nomination or eligible relative sponsorship context",
+            "Regional nomination or relative sponsorship context",
           ];
     case "820_801":
       return isTr
@@ -222,7 +222,7 @@ function getPathwayKeyRequirements(
             "Birlikte yaşam veya ortak yaşam düzenine ilişkin destekleyici bağlam",
           ]
         : [
-            "Eligible partner sponsorship status context",
+            "Partner sponsorship status context",
             "Information relevant to the nature and continuity of the relationship",
             "Supporting context about living arrangements or shared life",
           ];
@@ -313,7 +313,7 @@ function getPathwaySpecificRisks(
       risks.push(
         isTr
           ? "Bölgesel adaylık veya uygun akraba sponsorluğu bağlamı henüz net değil."
-          : "Regional nomination or eligible-relative sponsorship context is not yet clear."
+          : "Regional nomination or relative sponsorship context is not yet clear."
       );
     }
   }

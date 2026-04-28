@@ -24,7 +24,7 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
       { label: "Veri tamamlanma düzeyi", quick: "Dahil değil", full: "Dahil" },
       { label: "Puan tahmini", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
       { label: "Meslek göstergesi", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
-      { label: "Önerilen sonraki adımlar", quick: "Dahil değil", full: "Dahil" },
+      { label: "Değerlendirilebilecek sonraki adımlar", quick: "Dahil değil", full: "Dahil" },
       { label: "İndirilebilir PDF", quick: "Dahil değil", full: "Dahil" },
     ];
   }
@@ -42,7 +42,7 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
     { label: "Data completeness", quick: "Not included", full: "Included" },
     { label: "Points estimate", quick: "Not included", full: "Included where relevant" },
     { label: "Occupation indication", quick: "Not included", full: "Included where relevant" },
-    { label: "Suggested next steps", quick: "Not included", full: "Included" },
+    { label: "Next steps that can be considered", quick: "Not included", full: "Included" },
     { label: "Downloadable PDF", quick: "Not included", full: "Included" },
   ];
 }
@@ -71,7 +71,7 @@ function getReportCards(isTr: boolean): ReportCard[] {
           "Veri tamamlanma skoru, belge hazırlık göstergesi ve bilgi kapsam düzeyi birlikte sunulur.",
       },
       {
-        title: "Önerilen sonraki adımlar",
+        title: "Değerlendirilebilecek sonraki adımlar",
         description:
           "Sağlanan ayrıntılara göre genel hazırlık adımları ayrı bir bölümde listelenir.",
       },
@@ -99,7 +99,7 @@ function getReportCards(isTr: boolean): ReportCard[] {
         "The report shows data completeness score, document readiness indicator, and information coverage level.",
     },
     {
-      title: "Suggested next steps",
+      title: "Next steps that can be considered",
       description: "General preparation steps are listed based on the details provided.",
     },
   ];

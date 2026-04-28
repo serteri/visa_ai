@@ -72,7 +72,7 @@ function getLocalizedText(locale: "en" | "tr") {
       documentChecklist: "Belge Kontrol Listesi",
       pointsEstimate: "Puan Tahmini",
       occupationReview: "Meslek Göstergesi",
-      suggestedNextSteps: "Önerilen Sonraki Adımlar",
+      suggestedNextSteps: "Değerlendirilebilecek Sonraki Adımlar",
       downloadablePdf: "İndirilebilir PDF",
       factorsAffectingPathways: "Yolları Etkileyebilecek Faktörler",
       missingInformation: "Eksik Bilgiler",
@@ -126,7 +126,7 @@ function getLocalizedText(locale: "en" | "tr") {
     documentChecklist: "Document Checklist",
     pointsEstimate: "Points Estimate",
     occupationReview: "Occupation Indication",
-    suggestedNextSteps: "Suggested Next Steps",
+    suggestedNextSteps: "Next Steps That Can Be Considered",
     downloadablePdf: "Downloadable PDF",
     factorsAffectingPathways: "Factors that may affect pathways",
     missingInformation: "Missing Information",
@@ -434,7 +434,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 3;
   }
 
-  // Suggested next steps
+  // Next steps that can be considered
   if (report.suggestedNextSteps.length > 0) {
     addHeading(text.suggestedNextSteps);
     addBulletPoints(report.suggestedNextSteps);

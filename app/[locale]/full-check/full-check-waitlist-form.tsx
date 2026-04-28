@@ -662,7 +662,7 @@ export function FullCheckWaitlistForm({
           )}
 
           <ReportSection
-            title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
+            title={isTr ? "Değerlendirilebilecek sonraki adımlar" : "Next steps that can be considered"}
             items={state.report.suggestedNextSteps}
           />
 
