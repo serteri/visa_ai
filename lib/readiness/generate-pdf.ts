@@ -76,6 +76,16 @@ function getLocalizedText(locale: "en" | "tr") {
       mediumRisk: "Orta",
       lowRisk: "Düşük",
       noData: "Veri bulunmamaktadır",
+      nameLabel: "Ad soyad",
+      emailLabel: "E-posta",
+      goalLabel: "Ana hedef",
+      currentCountryLabel: "Bulunduğu ülke",
+      passportCountryLabel: "Pasaport ülkesi",
+      ageLabel: "Yaş",
+      occupationLabel: "Meslek",
+      englishLevelLabel: "İngilizce seviyesi",
+      sponsorFamilyLabel: "Sponsor/aile",
+      biggestConcernLabel: "En büyük endişe",
     };
   }
 
@@ -113,6 +123,16 @@ function getLocalizedText(locale: "en" | "tr") {
     mediumRisk: "Medium",
     lowRisk: "Low",
     noData: "No data available",
+    nameLabel: "Name",
+    emailLabel: "Email",
+    goalLabel: "Goal",
+    currentCountryLabel: "Current Country",
+    passportCountryLabel: "Passport Country",
+    ageLabel: "Age",
+    occupationLabel: "Occupation",
+    englishLevelLabel: "English Level",
+    sponsorFamilyLabel: "Sponsor/Family",
+    biggestConcernLabel: "Biggest Concern",
   };
 }
 
@@ -232,16 +252,16 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
 
   if (Object.values(userInputSummary).some((v) => v)) {
     addHeading(text.userInfo);
-    if (userInputSummary.name) addBody(`Name: ${userInputSummary.name}`);
-    if (userInputSummary.email) addBody(`Email: ${userInputSummary.email}`);
-    if (userInputSummary.mainGoal) addBody(`Goal: ${userInputSummary.mainGoal}`);
-    if (userInputSummary.currentCountry) addBody(`Current Country: ${userInputSummary.currentCountry}`);
-    if (userInputSummary.passportCountry) addBody(`Passport Country: ${userInputSummary.passportCountry}`);
-    if (userInputSummary.age) addBody(`Age: ${userInputSummary.age}`);
-    if (userInputSummary.occupation) addBody(`Occupation: ${userInputSummary.occupation}`);
-    if (userInputSummary.englishLevel) addBody(`English Level: ${userInputSummary.englishLevel}`);
-    if (userInputSummary.sponsorOrFamily) addBody(`Sponsor/Family: ${userInputSummary.sponsorOrFamily}`);
-    if (userInputSummary.biggestConcern) addBody(`Biggest Concern: ${userInputSummary.biggestConcern}`);
+    if (userInputSummary.name) addBody(`${text.nameLabel}: ${userInputSummary.name}`);
+    if (userInputSummary.email) addBody(`${text.emailLabel}: ${userInputSummary.email}`);
+    if (userInputSummary.mainGoal) addBody(`${text.goalLabel}: ${userInputSummary.mainGoal}`);
+    if (userInputSummary.currentCountry) addBody(`${text.currentCountryLabel}: ${userInputSummary.currentCountry}`);
+    if (userInputSummary.passportCountry) addBody(`${text.passportCountryLabel}: ${userInputSummary.passportCountry}`);
+    if (userInputSummary.age) addBody(`${text.ageLabel}: ${userInputSummary.age}`);
+    if (userInputSummary.occupation) addBody(`${text.occupationLabel}: ${userInputSummary.occupation}`);
+    if (userInputSummary.englishLevel) addBody(`${text.englishLevelLabel}: ${userInputSummary.englishLevel}`);
+    if (userInputSummary.sponsorOrFamily) addBody(`${text.sponsorFamilyLabel}: ${userInputSummary.sponsorOrFamily}`);
+    if (userInputSummary.biggestConcern) addBody(`${text.biggestConcernLabel}: ${userInputSummary.biggestConcern}`);
     yPosition += 5;
   }
 
@@ -371,7 +391,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   if (report.occupationIndication) {
     addHeading(text.occupationReview);
     if (report.occupationIndication.occupation) {
-      addBody(`Occupation: ${report.occupationIndication.occupation}`);
+      addBody(`${text.occupationLabel}: ${report.occupationIndication.occupation}`);
     }
     if (report.occupationIndication.matches.length > 0) {
       addBody("Matches Found:");

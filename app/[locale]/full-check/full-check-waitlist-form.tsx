@@ -169,7 +169,7 @@ export function FullCheckWaitlistForm({
 
   return (
     <div className="space-y-6">
-      <form action={formAction} className="space-y-4">
+      <form action={formAction} className="space-y-4" noValidate>
         <input type="hidden" name="preferredLanguage" value={locale} />
         <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
 
