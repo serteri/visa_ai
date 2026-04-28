@@ -74,6 +74,28 @@ async function ensureFullCheckWaitlistTable() {
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'full_check'`);
 }
 
+async function ensureFullCheckUsageTable() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS full_check_usage (
+      id INT PRIMARY KEY DEFAULT 1,
+      free_reports_used INT DEFAULT 0,
+      free_limit INT DEFAULT 500,
+      is_free_active BOOLEAN DEFAULT TRUE,
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+
+  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS free_reports_used INT DEFAULT 0`);
+  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS free_limit INT DEFAULT 500`);
+  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS is_free_active BOOLEAN DEFAULT TRUE`);
+  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW()`);
+  await db.execute(sql`
+    INSERT INTO full_check_usage (id, free_reports_used, free_limit, is_free_active)
+    VALUES (1, 0, 500, TRUE)
+    ON CONFLICT (id) DO NOTHING
+  `);
+}
+
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -252,6 +274,7 @@ export async function submitFullCheckWaitlist(
   }
 
   await ensureFullCheckWaitlistTable();
+  await ensureFullCheckUsageTable();
 
   const leadQuality = buildLeadQuality({
     locale: preferredLanguage === "tr" ? "tr" : "en",

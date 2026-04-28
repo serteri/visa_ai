@@ -88,6 +88,14 @@ export const fullCheckWaitlist = pgTable("full_check_waitlist", {
   created_at: timestamp("created_at").defaultNow(),
 });
 
+export const fullCheckUsage = pgTable("full_check_usage", {
+  id: integer("id").primaryKey().default(1),
+  free_reports_used: integer("free_reports_used").default(0),
+  free_limit: integer("free_limit").default(500),
+  is_free_active: boolean("is_free_active").default(true),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
 export const agents = pgTable("agents", {
   id: uuid("id").primaryKey().defaultRandom(),
   full_name: text("full_name").notNull(),
