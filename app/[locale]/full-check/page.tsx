@@ -6,32 +6,47 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 
 type ComparisonRow = { label: string; quick: string; full: string };
-type PreviewCard = { title: string; description: string };
+type ReportCard = { title: string; description: string };
 
 function getComparisonRows(isTr: boolean): ComparisonRow[] {
   if (isTr) {
     return [
-      { label: "Olası vize yolları", quick: "Yalnızca olası yollar", full: "Ön izlemede dahil" },
-      { label: "Risk göstergeleri", quick: "Dahil değil", full: "Temel göstergeler (ön izleme)" },
-      { label: "Belge kontrol listesi", quick: "Dahil değil", full: "Temel liste (ön izleme)" },
-      { label: "Puan tahmini", quick: "Rapor yok", full: "Temel tahmin (ön izleme)" },
-      { label: "Meslek incelemesi", quick: "Rapor yok", full: "Temel genel bakış (ön izleme)" },
-      { label: "Danışmana hazır özet", quick: "Rapor yok", full: "Geliştiriliyor" },
-      { label: "İndirilebilir rapor", quick: "Rapor yok", full: "Geliştiriliyor" },
+      {
+        label: "Olası vize yolları",
+        quick: "Yalnızca olası yol alanları",
+        full: "Yapılandırılmış yol karşılaştırması",
+      },
+      { label: "Risk göstergeleri", quick: "Dahil değil", full: "Dahil" },
+      { label: "Belge kontrol listesi", quick: "Dahil değil", full: "Dahil" },
+      { label: "Hazırlık skoru", quick: "Dahil değil", full: "Dahil" },
+      { label: "Birincil boşluk", quick: "Dahil değil", full: "Dahil" },
+      { label: "Veri tamamlanma düzeyi", quick: "Dahil değil", full: "Dahil" },
+      { label: "Puan tahmini", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
+      { label: "Meslek göstergesi", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
+      { label: "Önerilen sonraki adımlar", quick: "Dahil değil", full: "Dahil" },
+      { label: "İndirilebilir PDF", quick: "Dahil değil", full: "Dahil" },
     ];
   }
+
   return [
-    { label: "Possible pathways", quick: "Possible pathways only", full: "Included in preview" },
-    { label: "Risk indicators", quick: "Not included", full: "Basic indicators (preview)" },
-    { label: "Document checklist", quick: "Not included", full: "Basic checklist (preview)" },
-    { label: "Points estimate", quick: "No report", full: "Basic estimate (preview)" },
-    { label: "Occupation review", quick: "No report", full: "Basic overview (preview)" },
-    { label: "Agent-ready summary", quick: "No report", full: "In development" },
-    { label: "Downloadable report", quick: "No report", full: "In development" },
+    {
+      label: "Possible pathways",
+      quick: "Possible pathway areas only",
+      full: "Structured pathway comparison",
+    },
+    { label: "Risk indicators", quick: "Not included", full: "Included" },
+    { label: "Document checklist", quick: "Not included", full: "Included" },
+    { label: "Readiness score", quick: "Not included", full: "Included" },
+    { label: "Primary gap", quick: "Not included", full: "Included" },
+    { label: "Data completeness", quick: "Not included", full: "Included" },
+    { label: "Points estimate", quick: "Not included", full: "Included where relevant" },
+    { label: "Occupation indication", quick: "Not included", full: "Included where relevant" },
+    { label: "Suggested next steps", quick: "Not included", full: "Included" },
+    { label: "Downloadable PDF", quick: "Not included", full: "Included" },
   ];
 }
 
-function getPreviewCards(isTr: boolean): PreviewCard[] {
+function getReportCards(isTr: boolean): ReportCard[] {
   if (isTr) {
     return [
       {
@@ -42,25 +57,26 @@ function getPreviewCards(isTr: boolean): PreviewCard[] {
       {
         title: "Risk göstergeleri",
         description:
-          "Bir sonraki adıma geçmeden önce daha yakından incelenmesi gerekebilecek faktörler vurgulanır.",
+          "Daha yakından incelenmesi gerekebilecek faktörler ayrı bir bölümde gösterilir.",
       },
       {
         title: "Belge hazırlığı",
         description:
-          "Her yol için hazırlanması faydalı olabilecek belge ve kanıt türleri gösterilir.",
+          "Her yol için hazırlıkta değerlendirilen belge ve kanıt türleri gösterilir.",
+      },
+      {
+        title: "Hazırlık skoru",
+        description:
+          "Veri tamamlanma düzeyi, risk yoğunluğu ve ilgili yol sinyallerine göre gösterge skoru sunulur.",
       },
       {
         title: "Önerilen sonraki adımlar",
         description:
-          "Kayıtlı göç danışmanı görüşmesinden önce sıklıkla değerlendirilen hazırlık adımlarının ön izlemesi.",
-      },
-      {
-        title: "Danışmana hazır özet",
-        description:
-          "Kayıtlı göç danışmanı görüşmesine hazırlanmayı kolaylaştırmak için tasarlanmış yapılandırılmış özet format.",
+          "Sağlanan ayrıntılara göre genel hazırlık adımları ayrı bir bölümde listelenir.",
       },
     ];
   }
+
   return [
     {
       title: "Pathway comparison",
@@ -69,23 +85,21 @@ function getPreviewCards(isTr: boolean): PreviewCard[] {
     },
     {
       title: "Risk indicators",
-      description:
-        "Highlight factors that may need closer review before you prepare the next step.",
+      description: "Factors that may need closer review are shown in a separate section.",
     },
     {
       title: "Document readiness",
       description:
-        "See the kinds of documents and evidence that may be useful to prepare for each pathway.",
+        "The report shows document and evidence categories commonly considered for each pathway.",
+    },
+    {
+      title: "Readiness score",
+      description:
+        "An indicative score is shown using data completeness, risk intensity, and relevant pathway signals.",
     },
     {
       title: "Suggested next steps",
-      description:
-        "Preview suggested preparation steps that are often considered before registered migration agent input.",
-    },
-    {
-      title: "Agent-ready summary",
-      description:
-        "A concise summary format designed to help prepare for a registered migration agent conversation.",
+      description: "General preparation steps are listed based on the details provided.",
     },
   ];
 }
@@ -121,7 +135,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const { locale } = await params;
   const query = await searchParams;
   const isTr = locale === "tr";
-  const cameFromReadinessPreview = query.source === "readiness-preview";
+  const cameFromReadinessReview = query.source === "readiness-preview";
   const cameFromResults = query.source === "results";
   const initialValues = {
     visaInterest: query.visaInterest ?? query.preferredPathway ?? "",
@@ -135,41 +149,41 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   };
 
   const comparisonRows = getComparisonRows(isTr);
-  const previewCards = getPreviewCards(isTr);
+  const reportCards = getReportCards(isTr);
 
   return (
     <main className="ambient-bg flex-1 py-12">
       <section className="section-shell space-y-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr] lg:items-start">
           <div className="space-y-4">
-            <Badge variant="secondary">{isTr ? "Ön İzleme" : "Preview"}</Badge>
+            <Badge variant="secondary">{isTr ? "Yapılandırılmış rapor" : "Structured report"}</Badge>
             <h1 className="text-3xl font-bold sm:text-4xl">
               {isTr ? "Tam Vize Hazırlık Raporu" : "Full Visa Readiness Report"}
             </h1>
             <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
               {isTr
-                ? "Bilgilerinizi göndererek olası vize yolları, risk göstergeleri, belge kontrol listesi ve önerilen sonraki adımları içeren yapılandırılmış bir ön rapor oluşturun."
-                : "Submit your details to generate a structured preview report with pathway comparison, risk indicators, document checklist, and suggested next steps."}
+                ? "Bilgilerinizi göndererek yol karşılaştırması, risk göstergeleri, belge kontrol listesi, hazırlık skoru ve önerilen sonraki adımları içeren yapılandırılmış hazırlık raporu oluşturun."
+                : "Submit your details to generate a structured readiness report with pathway comparison, risk indicators, document checklist, readiness score, and suggested next steps."}
             </p>
             <p className="max-w-3xl rounded-md border border-primary/20 bg-card px-4 py-3 text-sm text-muted-foreground">
               {isTr
-                ? "Bu, tam hazırlık raporunun ön izleme sürümüdür. Bu sürüm daha ayrıntılı analiz özellikleri geliştirilirken basitleştirilmiş bir genel bakış sunar."
-                : "This is a preview version of the full readiness report. This version provides a simplified overview while we continue improving deeper analysis features."}
+                ? "Bu rapor, sağlanan ayrıntılara dayalı yapılandırılmış bilgi raporudur."
+                : "This is a structured information report based on the details provided."}
             </p>
           </div>
 
           <Card className="border-primary/40 bg-primary/5">
             <CardHeader>
               <CardTitle>
-                {isTr ? "Tam hazirlik raporu olustur" : "Generate full readiness report"}
+                {isTr ? "Tam hazırlık raporu oluştur" : "Generate full readiness report"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {(cameFromReadinessPreview || cameFromResults) && (
+              {(cameFromReadinessReview || cameFromResults) && (
                 <p className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
                   {isTr
-                    ? `${cameFromResults ? "Hızlı kontrol sonuçlarından" : "Hazırlık ön incelemesinden"} gelen bilgiler mümkün olan alanlara eklendi. Göndermeden önce alanları düzenleyebilirsiniz.`
-                    : `Details from the ${cameFromResults ? "quick check results" : "readiness preview"} were added where possible. Fields can be edited before submitting.`}
+                    ? `${cameFromResults ? "Hızlı kontrol sonuçlarından" : "Hazırlık incelemesinden"} gelen bilgiler mümkün olan alanlara eklendi. Göndermeden önce alanları düzenleyebilirsiniz.`
+                    : `Details from the ${cameFromResults ? "quick check results" : "readiness review"} were added where possible. Fields can be edited before submitting.`}
                 </p>
               )}
               <FullCheckWaitlistForm locale={locale} initialValues={initialValues} />
@@ -216,7 +230,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
         <div className="space-y-3">
           <div>
             <h2 className="text-2xl font-bold">
-              {isTr ? "Rapor ön izlemesi" : "Report preview"}
+              {isTr ? "Rapor bölümleri" : "Report sections"}
             </h2>
             <p className="text-sm text-muted-foreground">
               {isTr
@@ -226,7 +240,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {previewCards.map((card) => (
+            {reportCards.map((card) => (
               <Card key={card.title}>
                 <CardHeader>
                   <CardTitle className="text-lg">{card.title}</CardTitle>
