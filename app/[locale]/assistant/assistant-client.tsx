@@ -553,8 +553,8 @@ export function AssistantClient({
                   <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="max-w-2xl text-sm text-muted-foreground">
                       {isTr
-                        ? "Yapılandırılmış hazırlık raporu; detaylı analiz, riskler, belgeler ve hazırlık içgörüleri sunar."
-                        : "Structured readiness report with detailed analysis, risks, documents, and preparation insights."}
+                        ? "Yapılandırılmış analiz için tam hazırlık raporu oluşturun."
+                        : "Generate a full readiness report for a structured analysis."}
                     </p>
                     <Button asChild className="shrink-0">
                       <Link href={fullCheckHref}>

@@ -76,12 +76,20 @@ export async function runReadinessPreview(
     return `${p.visaName} (${p.subclass}): ${p.reason}`;
   });
 
-  const basicRiskSignals = report.riskIndicators.map((r) => {
+  const basicRiskSignals = report.riskIndicators.slice(0, 3).map((r) => {
     const levelLabel = isTr
       ? r.level === "high" ? "Yüksek" : r.level === "medium" ? "Orta" : "Düşük"
       : r.level === "high" ? "High" : r.level === "medium" ? "Medium" : "Low";
-    return `[${levelLabel}] ${r.explanation}`;
+    return `[${levelLabel}] ${r.title}`;
   });
+
+  if (basicRiskSignals.length === 0) {
+    basicRiskSignals.push(
+      isTr
+        ? "[Düşük] Temel sinyal görünümü şu an sınırlı."
+        : "[Low] Basic signal visibility is currently limited."
+    );
+  }
 
   const missingFallback = isTr
     ? "Ön inceleme formunda büyük bir eksiklik tespit edilmedi, ancak destekleyici kanıtların incelenmesi gerekiyor."
