@@ -46,7 +46,13 @@ function getLocalizedText(locale: "en" | "tr") {
       title: "Tam Vize Hazırlık Raporu",
       generatedDate: "Oluşturma Tarihi",
       userInfo: "Kullanıcı Bilgileri",
-      readinessScore: "Hazırlık Skoru",
+      reportIndicators: "Rapor göstergeleri",
+      dataCompletenessScore: "Veri Tamamlanma Skoru",
+      documentReadinessIndicator: "Belge Hazırlık Göstergesi",
+      informationCoverageLevel: "Bilgi Kapsam Düzeyi",
+      highCompleteness: "Yüksek tamamlanma",
+      mediumCompleteness: "Orta tamamlanma",
+      lowCompleteness: "Düşük tamamlanma",
       primaryGap: "Birincil Boşluk",
       dataCompleteness: "Veri Tamamlanma Düzeyi",
       completionRate: "Tamamlanma",
@@ -94,7 +100,13 @@ function getLocalizedText(locale: "en" | "tr") {
     title: "Full Visa Readiness Report",
     generatedDate: "Generated Date",
     userInfo: "User Information",
-    readinessScore: "Readiness Score",
+    reportIndicators: "Report indicators",
+    dataCompletenessScore: "Data Completeness Score",
+    documentReadinessIndicator: "Document Readiness Indicator",
+    informationCoverageLevel: "Information Coverage Level",
+    highCompleteness: "High completeness",
+    mediumCompleteness: "Medium completeness",
+    lowCompleteness: "Low completeness",
     primaryGap: "Primary Gap",
     dataCompleteness: "Data Completeness",
     completionRate: "Completeness",
@@ -245,6 +257,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     return text.lowRisk;
   }
 
+  function formatIndicator(level: "low" | "medium" | "high") {
+    if (level === "high") return text.highRisk;
+    if (level === "medium") return text.mediumRisk;
+    return text.lowRisk;
+  }
+
   // Title
   addTitle(text.title);
 
@@ -267,10 +285,18 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 5;
   }
 
-  // Readiness score and summary metrics
-  addHeading(text.readinessScore);
-  addBody(`${report.readinessScore.score}/100`);
-  addSmallText(report.readinessScore.explanation, 0);
+  // Compliance-safe indicators
+  addHeading(text.reportIndicators);
+  addBody(
+    `${text.dataCompletenessScore}: ${report.reportIndicators.dataCompletenessLabel} (${report.reportIndicators.dataCompletenessScore}/100)`
+  );
+  addBody(
+    `${text.documentReadinessIndicator}: ${formatIndicator(report.reportIndicators.documentReadinessIndicator)}`
+  );
+  addBody(
+    `${text.informationCoverageLevel}: ${formatIndicator(report.reportIndicators.informationCoverageLevel)}`
+  );
+  addSmallText(report.reportIndicators.explanation, 0);
   yPosition += 2;
 
   addHeading(text.primaryGap);

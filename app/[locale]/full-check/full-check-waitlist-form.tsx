@@ -167,6 +167,14 @@ export function FullCheckWaitlistForm({
     return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
+  function getIndicatorLabel(level: "low" | "medium" | "high") {
+    if (isTr) {
+      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
+    }
+
+    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
+  }
+
   return (
     <div className="space-y-6">
       <form action={formAction} className="space-y-4" noValidate>
@@ -306,7 +314,7 @@ export function FullCheckWaitlistForm({
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending
             ? isTr ? "Oluşturuluyor..." : "Generating..."
-            : isTr ? "Tam hazirlik raporu olustur" : "Generate full readiness report"}
+            : isTr ? "Hazırlık raporunuzu oluşturun" : "Generate your readiness report"}
         </Button>
       </form>
 
@@ -328,13 +336,21 @@ export function FullCheckWaitlistForm({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {isTr ? "Hazırlık Skoru" : "Readiness Score"}
+                    {isTr ? "Rapor göstergeleri" : "Report indicators"}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <p className="text-3xl font-bold">{state.report.readinessScore.score}/100</p>
+                  <p className="text-sm font-semibold">
+                    {isTr ? "Veri Tamamlanma Skoru:" : "Data Completeness Score:"} {state.report.reportIndicators.dataCompletenessLabel} ({state.report.reportIndicators.dataCompletenessScore}/100)
+                  </p>
+                  <p className="text-sm font-semibold">
+                    {isTr ? "Belge Hazırlık Göstergesi:" : "Document Readiness Indicator:"} {getIndicatorLabel(state.report.reportIndicators.documentReadinessIndicator)}
+                  </p>
+                  <p className="text-sm font-semibold">
+                    {isTr ? "Bilgi Kapsam Düzeyi:" : "Information Coverage Level:"} {getIndicatorLabel(state.report.reportIndicators.informationCoverageLevel)}
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    {state.report.readinessScore.explanation}
+                    {state.report.reportIndicators.explanation}
                   </p>
                 </CardContent>
               </Card>
@@ -359,7 +375,7 @@ export function FullCheckWaitlistForm({
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <p className="font-semibold">
-                  {isTr ? "Tamamlanma:" : "Completeness:"} {state.report.dataCompleteness.percentage}%
+                  {isTr ? "Tamamlanma:" : "Completeness:"} {state.report.reportIndicators.dataCompletenessLabel} ({state.report.dataCompleteness.percentage}%)
                 </p>
                 {state.report.dataCompleteness.missingFields.length > 0 ? (
                   <ul className="space-y-1 text-muted-foreground">

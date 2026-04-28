@@ -36,8 +36,13 @@ export type PathwayComparison = {
 
 export type ComparisonDifficulty = "low" | "medium" | "high";
 
-export type ReadinessScore = {
-  score: number;
+export type IndicatorLevel = "low" | "medium" | "high";
+
+export type ReportIndicators = {
+  dataCompletenessScore: number;
+  dataCompletenessLabel: string;
+  documentReadinessIndicator: IndicatorLevel;
+  informationCoverageLevel: IndicatorLevel;
   explanation: string;
 };
 
@@ -90,7 +95,7 @@ export type DocumentCategory = {
 
 export type ReadinessReport = {
   pathwayComparison: PathwayComparison[];
-  readinessScore: ReadinessScore;
+  reportIndicators: ReportIndicators;
   primaryGap: string;
   dataCompleteness: DataCompleteness;
   keyVisaRequirements: KeyVisaRequirement[];

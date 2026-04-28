@@ -19,7 +19,7 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
       },
       { label: "Risk göstergeleri", quick: "Dahil değil", full: "Dahil" },
       { label: "Belge kontrol listesi", quick: "Dahil değil", full: "Dahil" },
-      { label: "Hazırlık skoru", quick: "Dahil değil", full: "Dahil" },
+      { label: "Veri/Belge bilgi göstergeleri", quick: "Dahil değil", full: "Dahil" },
       { label: "Birincil boşluk", quick: "Dahil değil", full: "Dahil" },
       { label: "Veri tamamlanma düzeyi", quick: "Dahil değil", full: "Dahil" },
       { label: "Puan tahmini", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
@@ -37,7 +37,7 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
     },
     { label: "Risk indicators", quick: "Not included", full: "Included" },
     { label: "Document checklist", quick: "Not included", full: "Included" },
-    { label: "Readiness score", quick: "Not included", full: "Included" },
+    { label: "Data/document information indicators", quick: "Not included", full: "Included" },
     { label: "Primary gap", quick: "Not included", full: "Included" },
     { label: "Data completeness", quick: "Not included", full: "Included" },
     { label: "Points estimate", quick: "Not included", full: "Included where relevant" },
@@ -66,9 +66,9 @@ function getReportCards(isTr: boolean): ReportCard[] {
           "Her yol için hazırlıkta değerlendirilen belge ve kanıt türleri gösterilir.",
       },
       {
-        title: "Hazırlık skoru",
+        title: "Bilgi göstergeleri",
         description:
-          "Veri tamamlanma düzeyi, risk yoğunluğu ve ilgili yol sinyallerine göre gösterge skoru sunulur.",
+          "Veri tamamlanma skoru, belge hazırlık göstergesi ve bilgi kapsam düzeyi birlikte sunulur.",
       },
       {
         title: "Önerilen sonraki adımlar",
@@ -94,9 +94,9 @@ function getReportCards(isTr: boolean): ReportCard[] {
         "The report shows document and evidence categories commonly considered for each pathway.",
     },
     {
-      title: "Readiness score",
+      title: "Information indicators",
       description:
-        "An indicative score is shown using data completeness, risk intensity, and relevant pathway signals.",
+        "The report shows data completeness score, document readiness indicator, and information coverage level.",
     },
     {
       title: "Suggested next steps",
@@ -157,7 +157,10 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
       <section className="section-shell space-y-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr] lg:items-start">
           <div className="space-y-4">
-            <Badge variant="secondary">{isTr ? "Yapılandırılmış rapor" : "Structured report"}</Badge>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">{isTr ? "Erken erişim" : "Early access"}</Badge>
+              <Badge variant="outline">{isTr ? "Yapılandırılmış rapor" : "Structured report"}</Badge>
+            </div>
             <h1 className="text-3xl font-bold sm:text-4xl">
               {isTr ? "Tam Vize Hazırlık Raporu" : "Full Visa Readiness Report"}
             </h1>
@@ -176,10 +179,22 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           <Card className="border-primary/40 bg-primary/5">
             <CardHeader>
               <CardTitle>
-                {isTr ? "Tam hazırlık raporu oluştur" : "Generate full readiness report"}
+                {isTr ? "Hazırlık raporunuzu oluşturun" : "Generate your readiness report"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="space-y-2 rounded-md border border-primary/20 bg-background/80 px-3 py-2">
+                <p className="text-sm text-muted-foreground">
+                  {isTr
+                    ? "Ürünü geliştirirken ilk 500 hazırlık raporu ücretsizdir."
+                    : "The first 500 readiness reports are free while we improve the product."}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {isTr
+                    ? "Erken erişim döneminde ödeme gerekmez."
+                    : "No payment required during early access."}
+                </p>
+              </div>
               {(cameFromReadinessReview || cameFromResults) && (
                 <p className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
                   {isTr

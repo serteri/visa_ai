@@ -8,15 +8,16 @@ import type {
   ConfidenceLevel,
   DataCompleteness,
   DocumentCategory,
+  IndicatorLevel,
   KeyVisaRequirement,
   Locale,
   OccupationIndication,
   PathwayComparison,
   PathwayRelevance,
   PointsEstimate,
-  ReadinessScore,
   ReadinessInput,
   ReadinessReport,
+  ReportIndicators,
 } from "./types";
 
 // ─── Keyword helpers ─────────────────────────────────────────────────────────
@@ -722,60 +723,55 @@ function buildDataCompleteness(
   return { percentage, missingFields };
 }
 
-function buildReadinessScore(params: {
+function getDataCompletenessLabel(score: number, locale: Locale): string {
+  const isTr = locale === "tr";
+  if (score >= 80) return isTr ? "Yüksek tamamlanma" : "High completeness";
+  if (score >= 50) return isTr ? "Orta tamamlanma" : "Medium completeness";
+  return isTr ? "Düşük tamamlanma" : "Low completeness";
+}
+
+function buildDocumentReadinessIndicator(input: ReadinessInput): IndicatorLevel {
+  const signals = [
+    Boolean(input.occupation),
+    Boolean(input.englishLevel),
+    Boolean(input.sponsorOrFamily),
+    Boolean(input.mainGoal),
+  ].filter(Boolean).length;
+
+  if (signals >= 3) return "high";
+  if (signals >= 2) return "medium";
+  return "low";
+}
+
+function buildInformationCoverageLevel(dataCompletenessScore: number): IndicatorLevel {
+  if (dataCompletenessScore >= 75) return "high";
+  if (dataCompletenessScore >= 45) return "medium";
+  return "low";
+}
+
+function buildReportIndicators(params: {
   locale: Locale;
-  pathways: PathwayComparison[];
   dataCompleteness: DataCompleteness;
-  missingInformation: string[];
-  riskIndicators: ReturnType<typeof buildRiskIndicators>;
-  pointsEstimate?: PointsEstimate;
-}): ReadinessScore {
-  const { locale, pathways, dataCompleteness, missingInformation, riskIndicators, pointsEstimate } = params;
+  input: ReadinessInput;
+}): ReportIndicators {
+  const { locale, dataCompleteness, input } = params;
   const isTr = locale === "tr";
 
-  let score = 50;
-
-  const hasSpecificPathway = pathways.some((p) => p.subclass !== "general");
-  score += hasSpecificPathway ? 8 : -10;
-
-  const highConfidenceCount = pathways.filter((p) => p.confidenceLevel === "high").length;
-  score += Math.min(12, highConfidenceCount * 4);
-
-  const lowConfidenceCount = pathways.filter((p) => p.confidenceLevel === "low").length;
-  score -= Math.min(18, lowConfidenceCount * 6);
-
-  if (dataCompleteness.percentage >= 80) score += 12;
-  else if (dataCompleteness.percentage >= 60) score += 6;
-  else if (dataCompleteness.percentage < 40) score -= 8;
-
-  const missingPenalty = Math.min(18, missingInformation.length * 3);
-  score -= missingPenalty;
-
-  const riskPenalty = Math.min(
-    24,
-    riskIndicators.reduce((sum, risk) => {
-      if (risk.level === "high") return sum + 8;
-      if (risk.level === "medium") return sum + 4;
-      return sum + 1;
-    }, 0)
-  );
-  score -= riskPenalty;
-
-  if (pointsEstimate?.estimatedPoints !== undefined) {
-    if (pointsEstimate.estimatedPoints >= 65) score += 10;
-    else if (pointsEstimate.estimatedPoints >= 55) score += 2;
-    else score -= 8;
-  } else if (pathways.some((p) => ["189", "190", "491"].includes(p.subclass))) {
-    score -= 6;
-  }
-
-  score = Math.max(0, Math.min(100, score));
-
+  const dataCompletenessScore = dataCompleteness.percentage;
+  const dataCompletenessLabel = getDataCompletenessLabel(dataCompletenessScore, locale);
+  const documentReadinessIndicator = buildDocumentReadinessIndicator(input);
+  const informationCoverageLevel = buildInformationCoverageLevel(dataCompletenessScore);
   const explanation = isTr
-    ? `Gösterge puanı; eksik alanlar, risk yoğunluğu ve mevcut puan görünümüne göre hesaplanır. Bu bir karar-destek göstergesidir, sonuç/uygunluk beyanı değildir.`
-    : `The indicative score is calculated from missing-data load, risk intensity, and the current points picture. It is a decision-support indicator, not an outcome/eligibility statement.`;
+    ? "Bu gösterge yalnızca sağlanan bilgilerin tamamlanma ve yapısal düzeyini yansıtır. Vize uygunluğu, onay olasılığı veya sonuçları göstermez."
+    : "This indicator reflects the completeness and structure of the provided information only. It does not indicate visa eligibility, approval likelihood, or outcomes.";
 
-  return { score, explanation };
+  return {
+    dataCompletenessScore,
+    dataCompletenessLabel,
+    documentReadinessIndicator,
+    informationCoverageLevel,
+    explanation,
+  };
 }
 
 function buildPrimaryGap(params: {
@@ -1172,8 +1168,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
         difficulty: "medium",
         requirementType:
           locale === "tr"
-            ? "Genel uygunluk sinyali (eksik veri nedeniyle sınırlı)"
-            : "General eligibility signal (limited by missing data)",
+            ? "Genel yol sinyali (eksik veri nedeniyle sınırlı)"
+            : "General pathway signal (limited by missing data)",
         userRelativePosition:
           locale === "tr"
             ? "Daha fazla bilgi olmadan göreli konum netleşmez."
@@ -1226,13 +1222,10 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     locale
   );
 
-  const readinessScore = buildReadinessScore({
+  const reportIndicators = buildReportIndicators({
     locale,
-    pathways: pathwayComparison,
     dataCompleteness,
-    missingInformation,
-    riskIndicators,
-    pointsEstimate,
+    input,
   });
   const primaryGap = buildPrimaryGap({
     locale,
@@ -1274,7 +1267,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   return {
     pathwayComparison,
-    readinessScore,
+    reportIndicators,
     primaryGap,
     dataCompleteness,
     keyVisaRequirements,
