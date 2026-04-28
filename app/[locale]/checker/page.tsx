@@ -212,12 +212,17 @@ export default function CheckerPage() {
     quickBestFor: isTr ? "hızlı yön bulma" : "quick orientation",
     quickButton: isTr ? "Hızlı kontrolü başlat" : "Start quick check",
     fullTitle: isTr ? "Tam Vize Hazırlık Raporu" : "Full Visa Readiness Report",
-    fullLabel: isTr ? "Detaylı rapor" : "Detailed report",
+    fullLabel: isTr
+      ? "Erken erişim · Erken erişimde ücretsiz"
+      : "Early access · Free during early access",
     fullDescription: isTr
-      ? "Yol karşılaştırması, risk göstergeleri, belge kontrol listesi, hazırlık skoru ve PDF indirme içeren yapılandırılmış rapor."
-      : "A structured report with pathway comparison, risk indicators, document checklist, readiness score, and PDF download.",
+      ? "Olası vize yolları, hazırlık skoru, risk göstergeleri, belge kontrol listesi ve PDF indirme içeren yapılandırılmış bir rapor oluşturun."
+      : "Generate a structured report with pathway comparison, readiness score, risk indicators, document checklist, and PDF download.",
     fullBestFor: isTr ? "daha derin hazırlık incelemesi" : "deeper preparation review",
-    fullButton: isTr ? "Tam rapor oluştur" : "Generate full report",
+    fullButton: isTr ? "Hazırlık raporunuzu oluşturun" : "Generate your readiness report",
+    fullTrustNote: isTr
+      ? "Erken erişim döneminde ödeme gerekmez."
+      : "No payment required during early access.",
     bestFor: isTr ? "En uygun:" : "Best for:",
     compliance: isTr
       ? "Bu araç yalnızca genel bilgiler sağlar."
@@ -282,6 +287,7 @@ export default function CheckerPage() {
               <Button asChild className="w-full sm:w-auto">
                 <Link href={`/${locale}/full-check`}>{choiceCopy.fullButton}</Link>
               </Button>
+              <p className="text-xs text-muted-foreground">{choiceCopy.fullTrustNote}</p>
             </CardContent>
           </Card>
         </div>
