@@ -279,7 +279,7 @@ function getPathwaySpecificRisks(
     if (!input.englishLevel || !input.age) {
       risks.push(
         isTr
-          ? "Yaş ve İngilizce bilgisi eksik olduğunda puan temelli değerlendirme eksik kalır."
+          ? "Yaş ve İngilizce bilgisi eksik olduğunda puan testli değerlendirme eksik kalır."
           : "When age and English details are missing, the points-based review remains incomplete."
       );
     }
@@ -330,7 +330,7 @@ function getPathwaySpecificRisks(
   if (risks.length === 0) {
     risks.push(
       isTr
-        ? "Mevcut bilgiler bu yol için bazı temel sinyaller sunuyor, ancak bireysel bağlam sonucu değiştirebilir."
+        ? "Mevcut bilgiler bu yol için bazı ana sinyaller sunuyor, ancak bireysel bağlam sonucu değiştirebilir."
         : "The available information provides some baseline signals for this pathway, but individual context could change the picture."
     );
   }
@@ -470,7 +470,7 @@ function getConfidenceExplanation(
   const knownSignals = [hasAge, hasEnglish, hasOccupation, hasSponsorContext].filter(Boolean)
     .length;
   return isTr
-    ? `Güven seviyesi, mevcut ${knownSignals}/4 temel sinyal ve %${dataCompletenessPercentage} veri tamamlanma düzeyi ile genel bir gösterge olarak oluşturuldu.`
+    ? `Güven seviyesi, mevcut ${knownSignals}/4 ana sinyal ve %${dataCompletenessPercentage} veri tamamlanma düzeyi ile genel bir gösterge olarak oluşturuldu.`
     : `Confidence is shown as a general indicator based on ${knownSignals}/4 core signals and ${dataCompletenessPercentage}% data completeness.`;
 }
 
@@ -623,12 +623,12 @@ function getRequirementType(
   }
   if (["189", "190", "491"].includes(pathway.subclass)) {
     return isTr
-      ? "Puan, meslek ve davet/adaylık temelli"
+      ? "Puan, meslek ve davet/adaylık odaklı"
       : "Points, occupation, and invitation/nomination based";
   }
   if (pathway.subclass === "820_801") {
     return isTr
-      ? "İlişki ve sponsor kanıtı temelli"
+      ? "İlişki ve sponsor kanıtı odaklı"
       : "Relationship and sponsor evidence based";
   }
   return isTr ? "Daha fazla kişisel bağlam gerektirir" : "Requires more personal context";
@@ -792,7 +792,7 @@ function buildPrimaryGap(params: {
   const hasSkilled = pathways.some((p) => ["189", "190", "491"].includes(p.subclass));
   if (hasSkilled && pointsEstimate?.estimatedPoints !== undefined && pointsEstimate.estimatedPoints < 65) {
     return isTr
-      ? "Birincil boşluk: Mevcut kısmi puan görünümü puan-temelli yollar için sınırlayıcı kalıyor."
+      ? "Birincil boşluk: Mevcut kısmi puan görünümü puan testli yollar için sınırlayıcı kalıyor."
       : "Primary gap: The current partial points picture remains a limiting factor for points-tested pathways.";
   }
 
@@ -855,7 +855,7 @@ function buildFactorsAffectingPathways(
   if (hasSkilledPathway) {
     items.push(
       isTr
-        ? "Puan-temelli yollar için davet seviyeleri ve eyalet/bölge öncelikleri dönemsel dalgalanabilir."
+        ? "Puan testli yollar için davet seviyeleri ve eyalet/bölge öncelikleri dönemsel dalgalanabilir."
         : "For points-tested pathways, invitation levels and state/territory priorities may fluctuate by period."
     );
   }

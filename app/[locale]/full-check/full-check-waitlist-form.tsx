@@ -70,7 +70,7 @@ function PathwayDetailCard({
       </CardHeader>
       <CardContent className="space-y-4 text-sm">
         <div className="space-y-2">
-          <p className="font-medium">{isTr ? "Temel Gereklilikler" : "Key Requirements"}</p>
+          <p className="font-medium">{isTr ? "Ana Gereklilikler" : "Key Requirements"}</p>
           <ul className="space-y-2 text-muted-foreground">
             {keyRequirements.map((item) => (
               <li key={item} className="flex gap-2">
@@ -372,7 +372,7 @@ export function FullCheckWaitlistForm({
                   </ul>
                 ) : (
                   <p className="text-muted-foreground">
-                    {isTr ? "Temel veri alanları tamamlandı." : "Core data fields are complete."}
+                    {isTr ? "Ana veri alanları tamamlandı." : "Core data fields are complete."}
                   </p>
                 )}
               </CardContent>
@@ -423,7 +423,7 @@ export function FullCheckWaitlistForm({
               </h4>
               <p className="text-sm text-muted-foreground">
                 {isTr
-                  ? "Her yol, güven seviyesi, temel gereklilikler ve yola özgü risklerle birlikte gösterilir."
+                  ? "Her yol, güven seviyesi, ana gereklilikler ve yola özgü risklerle birlikte gösterilir."
                   : "Each pathway is shown with a confidence level, key requirements, and pathway-specific risks."}
               </p>
             </div>
@@ -452,7 +452,7 @@ export function FullCheckWaitlistForm({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {isTr ? "Temel vize gereklilikleri" : "Key visa requirements"}
+                  {isTr ? "Ana vize gereklilikleri" : "Key visa requirements"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
