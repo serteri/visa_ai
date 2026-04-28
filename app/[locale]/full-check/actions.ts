@@ -1,6 +1,7 @@
 "use server";
 
 import { sql } from "drizzle-orm";
+import { Resend } from "resend";
 
 import { db } from "@/db";
 import { fullCheckWaitlist } from "@/db/schema";
@@ -35,45 +36,131 @@ async function ensureFullCheckWaitlistTable() {
       visa_interest TEXT,
       preferred_language TEXT,
       current_country TEXT,
+      passport_country TEXT,
+      age TEXT,
+      occupation TEXT,
+      english_level TEXT,
+      sponsor_or_family TEXT,
+      biggest_concern TEXT,
       main_goal TEXT,
       source TEXT DEFAULT 'full_check',
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
 
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS full_name TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS visa_interest TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS preferred_language TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS current_country TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS main_goal TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'full_check'
-  `);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS full_name TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS visa_interest TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS preferred_language TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS current_country TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS passport_country TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS age TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_level TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS biggest_concern TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS main_goal TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'full_check'`);
 }
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function sendFullCheckAdminEmail(payload: {
+  fullName: string;
+  email: string;
+  visaInterest: string;
+  preferredLanguage: string;
+  currentCountry: string;
+  passportCountry: string;
+  age: string;
+  occupation: string;
+  englishLevel: string;
+  sponsorOrFamily: string;
+  biggestConcern: string;
+  mainGoal: string;
+  source: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const notificationEmail =
+    process.env.FULL_CHECK_NOTIFICATION_EMAIL || process.env.REFERRAL_NOTIFICATION_EMAIL;
+
+  if (!apiKey || !notificationEmail) {
+    console.error(
+      "Full check admin email skipped: RESEND_API_KEY and notification email are required."
+    );
+    return;
+  }
+
+  const resend = new Resend(apiKey);
+  const fromEmail = process.env.FROM_EMAIL || "Visa AI <onboarding@resend.dev>";
+  const bodyLines = [
+    "A new full readiness report lead has been submitted.",
+    "",
+    `full name: ${payload.fullName || "-"}`,
+    `email: ${payload.email}`,
+    `visa interest: ${payload.visaInterest || "-"}`,
+    `preferred language: ${payload.preferredLanguage || "-"}`,
+    `current country: ${payload.currentCountry || "-"}`,
+    `passport country: ${payload.passportCountry}`,
+    `age: ${payload.age}`,
+    `occupation: ${payload.occupation || "-"}`,
+    `english level: ${payload.englishLevel || "-"}`,
+    `sponsor/family: ${payload.sponsorOrFamily || "-"}`,
+    `biggest concern: ${payload.biggestConcern || "-"}`,
+    `main goal: ${payload.mainGoal}`,
+    `source: ${payload.source}`,
+  ];
+
+  await resend.emails.send({
+    from: fromEmail,
+    to: [notificationEmail],
+    subject: "New full readiness report lead",
+    text: bodyLines.join("\n"),
+  });
+}
+
+async function sendFullCheckConfirmationEmail(payload: {
+  email: string;
+  fullName: string;
+  locale: "en" | "tr";
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    console.error("Full check confirmation email skipped: RESEND_API_KEY is missing.");
+    return;
+  }
+
+  const resend = new Resend(apiKey);
+  const fromEmail = process.env.FROM_EMAIL || "Visa AI <onboarding@resend.dev>";
+  const isTr = payload.locale === "tr";
+  const greeting = payload.fullName
+    ? `${isTr ? "Merhaba" : "Hi"} ${payload.fullName},`
+    : isTr
+      ? "Merhaba,"
+      : "Hi,";
+
+  await resend.emails.send({
+    from: fromEmail,
+    to: [payload.email],
+    subject: isTr
+      ? "Tam vize hazirlik raporu talebiniz"
+      : "Your full visa readiness report request",
+    text: isTr
+      ? [
+          greeting,
+          "",
+          "Tam vize hazirlik raporu talebiniz alindi.",
+          "Rapor on izlemesi ekranda olusturuldu. Bu genel bilgi niteligindedir ve goc tavsiyesi degildir.",
+        ].join("\n")
+      : [
+          greeting,
+          "",
+          "Your full visa readiness report request has been received.",
+          "The report preview was generated on screen. This is general information only and not migration advice.",
+        ].join("\n"),
+  });
 }
 
 export async function submitFullCheckWaitlist(
@@ -98,36 +185,49 @@ export async function submitFullCheckWaitlist(
   const errors: Record<string, string> = {};
 
   if (!email) errors.email = isTr ? "E-posta adresi gereklidir." : "Email is required.";
-  if (email && !isValidEmail(email)) errors.email = isTr ? "Geçerli bir e-posta adresi girin." : "Enter a valid email address.";
+  if (email && !isValidEmail(email)) {
+    errors.email = isTr ? "Gecerli bir e-posta adresi girin." : "Enter a valid email address.";
+  }
+  if (!passportCountry) {
+    errors.passportCountry = isTr ? "Pasaport ulkesi gereklidir." : "Passport country is required.";
+  }
+  if (!age) errors.age = isTr ? "Yas gereklidir." : "Age is required.";
+  if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : "Main goal is required.";
 
   if (Object.keys(errors).length > 0) {
     return {
       status: "error",
       errors,
-      message: isTr ? "Lütfen geçerli bir e-posta adresi girin." : "Please enter a valid email address.",
+      message: isTr
+        ? "Yapilandirilmis bir rapor icin daha fazla bilgi gereklidir."
+        : "More information required for a structured report.",
     };
   }
 
   await ensureFullCheckWaitlistTable();
 
-  // Save lead to database
   await db.insert(fullCheckWaitlist).values({
     email,
     full_name: fullName || null,
     visa_interest: visaInterest || null,
     preferred_language: preferredLanguage || null,
     current_country: currentCountry || null,
-    main_goal: mainGoal || null,
+    passport_country: passportCountry,
+    age,
+    occupation: occupation || null,
+    english_level: englishLevel || null,
+    sponsor_or_family: sponsorOrFamily || null,
+    biggest_concern: biggestConcern || null,
+    main_goal: mainGoal,
     source,
   });
 
-  // Generate readiness report
   const report = runReadinessEngine({
     locale: preferredLanguage === "tr" ? "tr" : "en",
-    mainGoal: mainGoal || undefined,
+    mainGoal,
     currentCountry: currentCountry || undefined,
-    passportCountry: passportCountry || undefined,
-    age: age || undefined,
+    passportCountry,
+    age,
     occupation: occupation || undefined,
     englishLevel: englishLevel || undefined,
     sponsorOrFamily: sponsorOrFamily || undefined,
@@ -135,19 +235,49 @@ export async function submitFullCheckWaitlist(
     biggestConcern: biggestConcern || undefined,
   });
 
+  try {
+    await sendFullCheckAdminEmail({
+      fullName,
+      email,
+      visaInterest,
+      preferredLanguage,
+      currentCountry,
+      passportCountry,
+      age,
+      occupation,
+      englishLevel,
+      sponsorOrFamily,
+      biggestConcern,
+      mainGoal,
+      source,
+    });
+  } catch (error) {
+    console.error("Failed to send full check admin email", error);
+  }
+
+  try {
+    await sendFullCheckConfirmationEmail({
+      email,
+      fullName,
+      locale: preferredLanguage === "tr" ? "tr" : "en",
+    });
+  } catch (error) {
+    console.error("Failed to send full check confirmation email", error);
+  }
+
   return {
     status: "success",
     message: isTr
-      ? "Raporunuz oluşturuldu. E-postanıza bir özet göndereceğiz."
-      : "Your report has been generated. We'll send a summary to your email.",
+      ? "Tam hazirlik raporu olusturuldu. E-posta onayi gonderildi."
+      : "Full readiness report generated. A confirmation email has been sent.",
     report,
     userInput: {
       name: fullName || undefined,
       email,
-      mainGoal: mainGoal || undefined,
+      mainGoal,
       currentCountry: currentCountry || undefined,
-      passportCountry: passportCountry || undefined,
-      age: age || undefined,
+      passportCountry,
+      age,
       occupation: occupation || undefined,
       englishLevel: englishLevel || undefined,
       sponsorOrFamily: sponsorOrFamily || undefined,

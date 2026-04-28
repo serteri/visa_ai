@@ -191,6 +191,7 @@ export function FullCheckWaitlistForm({
             type="email"
             placeholder="you@example.com"
             autoComplete="email"
+            required
           />
           <ErrorText message={state.errors?.email} />
         </div>
@@ -224,7 +225,9 @@ export function FullCheckWaitlistForm({
             defaultValue={initialValues.mainGoal ?? ""}
             placeholder={isTr ? "Raporun hangi konuda yardımcı olmasını istediğinizi belirtin" : "Tell us what you want the report to help with"}
             rows={3}
+            required
           />
+          <ErrorText message={state.errors?.mainGoal} />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -233,8 +236,10 @@ export function FullCheckWaitlistForm({
             <Input
               id="waitlist-passport-country"
               name="passportCountry"
+              required
               placeholder={isTr ? "Ülke adı" : "Country name"}
             />
+            <ErrorText message={state.errors?.passportCountry} />
           </div>
 
           <div className="space-y-2">
@@ -243,8 +248,10 @@ export function FullCheckWaitlistForm({
               id="waitlist-age"
               name="age"
               type="number"
+              required
               placeholder={isTr ? "Örn: 28" : "E.g., 28"}
             />
+            <ErrorText message={state.errors?.age} />
           </div>
         </div>
 
@@ -299,7 +306,7 @@ export function FullCheckWaitlistForm({
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending
             ? isTr ? "Oluşturuluyor..." : "Generating..."
-            : isTr ? "Ücretsiz temel raporu al" : "Get free basic report"}
+            : isTr ? "Tam hazirlik raporu olustur" : "Generate full readiness report"}
         </Button>
       </form>
 

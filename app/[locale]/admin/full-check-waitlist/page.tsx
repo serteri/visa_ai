@@ -15,6 +15,12 @@ async function ensureFullCheckWaitlistTable() {
       visa_interest TEXT,
       preferred_language TEXT,
       current_country TEXT,
+      passport_country TEXT,
+      age TEXT,
+      occupation TEXT,
+      english_level TEXT,
+      sponsor_or_family TEXT,
+      biggest_concern TEXT,
       main_goal TEXT,
       source TEXT DEFAULT 'full_check',
       created_at TIMESTAMP DEFAULT NOW()
@@ -39,6 +45,36 @@ async function ensureFullCheckWaitlistTable() {
   await db.execute(sql`
     ALTER TABLE full_check_waitlist
     ADD COLUMN IF NOT EXISTS current_country TEXT
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE full_check_waitlist
+    ADD COLUMN IF NOT EXISTS passport_country TEXT
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE full_check_waitlist
+    ADD COLUMN IF NOT EXISTS age TEXT
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE full_check_waitlist
+    ADD COLUMN IF NOT EXISTS occupation TEXT
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE full_check_waitlist
+    ADD COLUMN IF NOT EXISTS english_level TEXT
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE full_check_waitlist
+    ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT
+  `);
+
+  await db.execute(sql`
+    ALTER TABLE full_check_waitlist
+    ADD COLUMN IF NOT EXISTS biggest_concern TEXT
   `);
 
   await db.execute(sql`
@@ -162,6 +198,25 @@ export default async function FullCheckWaitlistAdminPage({
                         {record.current_country || "-"}
                       </p>
                       <p>
+                        <span className="font-semibold">Passport country:</span>{" "}
+                        {record.passport_country || "-"}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Age:</span> {record.age || "-"}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Occupation:</span>{" "}
+                        {record.occupation || "-"}
+                      </p>
+                      <p>
+                        <span className="font-semibold">English level:</span>{" "}
+                        {record.english_level || "-"}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Sponsor/family:</span>{" "}
+                        {record.sponsor_or_family || "-"}
+                      </p>
+                      <p>
                         <span className="font-semibold">Source:</span> {sourceLabel(source)}
                       </p>
                       <p>
@@ -176,6 +231,15 @@ export default async function FullCheckWaitlistAdminPage({
                         {record.main_goal || "-"}
                       </p>
                     </div>
+
+                    {record.biggest_concern && (
+                      <div className="rounded-md border border-border/70 bg-background/80 p-4">
+                        <p className="mb-2 text-sm font-semibold">Biggest concern</p>
+                        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+                          {record.biggest_concern}
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               );

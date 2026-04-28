@@ -161,7 +161,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           <Card className="border-primary/40 bg-primary/5">
             <CardHeader>
               <CardTitle>
-                {isTr ? "Ücretsiz temel raporunuzu alın" : "Get your free basic report"}
+                {isTr ? "Tam hazirlik raporu olustur" : "Generate full readiness report"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
