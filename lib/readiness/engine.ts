@@ -20,6 +20,13 @@ import type {
   ReportIndicators,
 } from "./types";
 
+export type LeadTier = "High intent" | "Moderate intent" | "Low intent";
+
+export type LeadQuality = {
+  leadScore: number;
+  leadTier: LeadTier;
+};
+
 // ─── Keyword helpers ─────────────────────────────────────────────────────────
 
 function norm(text: string): string {
@@ -721,6 +728,37 @@ function buildDataCompleteness(
     .map((f) => f.label);
 
   return { percentage, missingFields };
+}
+
+function hasClearGoal(mainGoal?: string): boolean {
+  if (!mainGoal) return false;
+  const trimmed = mainGoal.trim();
+  if (!trimmed) return false;
+  const wordCount = trimmed.split(/\s+/).filter(Boolean).length;
+  return wordCount >= 3;
+}
+
+export function buildLeadQuality(input: ReadinessInput): LeadQuality {
+  const completeness = buildDataCompleteness(input, input.locale).percentage;
+
+  let score = 0;
+  if (input.englishLevel?.trim()) score += 20;
+  if (input.occupation?.trim()) score += 15;
+  if (input.passportCountry?.trim()) score += 15;
+  if (hasClearGoal(input.mainGoal)) score += 15;
+  if (input.sponsorOrFamily?.trim()) score += 10;
+  if (input.age?.trim()) score += 10;
+  if (completeness > 70) score += 15;
+
+  score = Math.max(0, Math.min(100, score));
+
+  const leadTier: LeadTier =
+    score >= 70 ? "High intent" : score >= 40 ? "Moderate intent" : "Low intent";
+
+  return {
+    leadScore: score,
+    leadTier,
+  };
 }
 
 function getDataCompletenessLabel(score: number, locale: Locale): string {

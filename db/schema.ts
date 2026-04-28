@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, jsonb, date, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, jsonb, date, boolean, integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const visaTypes = pgTable("visa_types", {
@@ -78,6 +78,8 @@ export const fullCheckWaitlist = pgTable("full_check_waitlist", {
   sponsor_or_family: text("sponsor_or_family"),
   biggest_concern: text("biggest_concern"),
   main_goal: text("main_goal"),
+  lead_score: integer("lead_score"),
+  lead_tier: text("lead_tier"),
   source: text("source").default("full_check"),
   created_at: timestamp("created_at").defaultNow(),
 });

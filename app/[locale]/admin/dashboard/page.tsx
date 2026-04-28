@@ -1,4 +1,5 @@
 import { count, desc, sql } from "drizzle-orm";
+import Link from "next/link";
 
 import { AdminNav } from "@/app/[locale]/admin/admin-nav";
 import { db } from "@/db";
@@ -24,6 +25,8 @@ async function ensureFullCheckWaitlistTable() {
       sponsor_or_family TEXT,
       biggest_concern TEXT,
       main_goal TEXT,
+      lead_score INT,
+      lead_tier TEXT,
       source TEXT DEFAULT 'full_check',
       created_at TIMESTAMP DEFAULT NOW()
     )
@@ -40,6 +43,8 @@ async function ensureFullCheckWaitlistTable() {
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS biggest_concern TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS main_goal TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS lead_score INT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS lead_tier TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'full_check'`);
 }
 
@@ -74,23 +79,29 @@ async function getDashboardData() {
     count: waitlistLeads.filter((lead) => normalizeSource(lead.source) === source).length,
   }));
 
+  const highIntentLeads = waitlistLeads.filter((lead) => lead.lead_tier === "High intent");
+
   return {
     waitlistTotal: waitlistTotal?.value ?? 0,
     referralTotal: referralTotal?.value ?? 0,
     agentTotal: agentTotal?.value ?? 0,
     visaTotal: visaTotal?.value ?? 0,
-    highIntentTotal: waitlistLeads.filter((lead) => normalizeSource(lead.source) === "readiness-preview").length,
+    highIntentTotal: highIntentLeads.length,
     sourceCounts,
     recentLeads: waitlistLeads.slice(0, 10),
+    highIntentLeads: highIntentLeads.slice(0, 10),
   };
 }
 
 type DashboardPageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ intent?: string }>;
 };
 
-export default async function AdminDashboardPage({ params }: DashboardPageProps) {
+export default async function AdminDashboardPage({ params, searchParams }: DashboardPageProps) {
   const { locale } = await params;
+  const query = await searchParams;
+  const intentFilter = query.intent === "high" ? "high" : "all";
   const data = await getDashboardData();
 
   const metricCards = [
@@ -100,6 +111,8 @@ export default async function AdminDashboardPage({ params }: DashboardPageProps)
     { label: "Total agents", value: data.agentTotal },
     { label: "Total visas in database", value: data.visaTotal },
   ];
+
+  const visibleLeads = intentFilter === "high" ? data.highIntentLeads : data.recentLeads;
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -147,27 +160,47 @@ export default async function AdminDashboardPage({ params }: DashboardPageProps)
 
           <Card>
             <CardHeader>
-              <CardTitle>Recent 10 waitlist leads</CardTitle>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <CardTitle>
+                  {intentFilter === "high" ? "High-intent leads (latest 10)" : "Recent 10 waitlist leads"}
+                </CardTitle>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/${locale}/admin/dashboard?intent=all`}
+                    className={`rounded border px-2 py-1 text-xs ${intentFilter === "all" ? "border-primary text-primary" : "border-border text-muted-foreground"}`}
+                  >
+                    All
+                  </Link>
+                  <Link
+                    href={`/${locale}/admin/dashboard?intent=high`}
+                    className={`rounded border px-2 py-1 text-xs ${intentFilter === "high" ? "border-primary text-primary" : "border-border text-muted-foreground"}`}
+                  >
+                    High intent
+                  </Link>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              {data.recentLeads.length === 0 ? (
+              {visibleLeads.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No waitlist leads yet.</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[720px] text-sm">
+                  <table className="w-full min-w-[860px] text-sm">
                     <thead>
                       <tr className="border-b border-border text-left">
                         <th className="py-2 pr-3 font-semibold">Created</th>
                         <th className="px-3 py-2 font-semibold">Email</th>
                         <th className="px-3 py-2 font-semibold">Source</th>
+                        <th className="px-3 py-2 font-semibold">Lead score</th>
+                        <th className="px-3 py-2 font-semibold">Lead tier</th>
                         <th className="px-3 py-2 font-semibold">Priority</th>
                         <th className="px-3 py-2 font-semibold">Visa interest</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {data.recentLeads.map((lead) => {
+                      {visibleLeads.map((lead) => {
                         const source = normalizeSource(lead.source);
-                        const highIntent = source === "readiness-preview";
+                        const highIntent = lead.lead_tier === "High intent";
 
                         return (
                           <tr key={lead.id} className="border-b border-border/70 last:border-0">
@@ -176,6 +209,8 @@ export default async function AdminDashboardPage({ params }: DashboardPageProps)
                             </td>
                             <td className="px-3 py-2">{lead.email}</td>
                             <td className="px-3 py-2">{sourceLabel(source)}</td>
+                            <td className="px-3 py-2">{lead.lead_score ?? "-"}</td>
+                            <td className="px-3 py-2">{lead.lead_tier ?? "-"}</td>
                             <td className="px-3 py-2">
                               <Badge variant={highIntent ? "default" : "outline"}>
                                 {highIntent ? "High intent" : "Standard"}

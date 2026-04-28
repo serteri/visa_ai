@@ -5,7 +5,7 @@ import { Resend } from "resend";
 
 import { db } from "@/db";
 import { fullCheckWaitlist } from "@/db/schema";
-import { runReadinessEngine } from "@/lib/readiness/engine";
+import { buildLeadQuality, runReadinessEngine } from "@/lib/readiness/engine";
 import type { ReadinessReport } from "@/lib/readiness/types";
 
 export type FullCheckWaitlistState = {
@@ -43,6 +43,8 @@ async function ensureFullCheckWaitlistTable() {
       sponsor_or_family TEXT,
       biggest_concern TEXT,
       main_goal TEXT,
+      lead_score INT,
+      lead_tier TEXT,
       source TEXT DEFAULT 'full_check',
       created_at TIMESTAMP DEFAULT NOW()
     )
@@ -59,6 +61,8 @@ async function ensureFullCheckWaitlistTable() {
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS biggest_concern TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS main_goal TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS lead_score INT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS lead_tier TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'full_check'`);
 }
 
@@ -229,6 +233,19 @@ export async function submitFullCheckWaitlist(
 
   await ensureFullCheckWaitlistTable();
 
+  const leadQuality = buildLeadQuality({
+    locale: preferredLanguage === "tr" ? "tr" : "en",
+    mainGoal,
+    currentCountry: currentCountry || undefined,
+    passportCountry,
+    age,
+    occupation: occupation || undefined,
+    englishLevel: englishLevel || undefined,
+    sponsorOrFamily: sponsorOrFamily || undefined,
+    preferredPathway: visaInterest || undefined,
+    biggestConcern: biggestConcern || undefined,
+  });
+
   const emailDeliveryEnabled = isEmailDeliveryEnabled();
   const suppressNotifications = await hasRecentSubmission(email, source);
 
@@ -245,6 +262,8 @@ export async function submitFullCheckWaitlist(
     sponsor_or_family: sponsorOrFamily || null,
     biggest_concern: biggestConcern || null,
     main_goal: mainGoal,
+    lead_score: leadQuality.leadScore,
+    lead_tier: leadQuality.leadTier,
     source,
   });
 
