@@ -1,6 +1,6 @@
 "use server";
 
-import { sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { Resend } from "resend";
 
 import { db } from "@/db";
@@ -64,6 +64,29 @@ async function ensureFullCheckWaitlistTable() {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isEmailDeliveryEnabled(): boolean {
+  if (process.env.ENABLE_TRANSACTIONAL_EMAILS === "true") return true;
+  if (process.env.ENABLE_TRANSACTIONAL_EMAILS === "false") return false;
+  return process.env.NODE_ENV === "production";
+}
+
+async function hasRecentSubmission(email: string, source: string): Promise<boolean> {
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const rows = await db
+    .select({ id: fullCheckWaitlist.id })
+    .from(fullCheckWaitlist)
+    .where(
+      and(
+        eq(fullCheckWaitlist.email, email),
+        eq(fullCheckWaitlist.source, source),
+        gte(fullCheckWaitlist.created_at, fiveMinutesAgo)
+      )
+    )
+    .limit(1);
+
+  return rows.length > 0;
 }
 
 async function sendFullCheckAdminEmail(payload: {
@@ -206,6 +229,9 @@ export async function submitFullCheckWaitlist(
 
   await ensureFullCheckWaitlistTable();
 
+  const emailDeliveryEnabled = isEmailDeliveryEnabled();
+  const suppressNotifications = await hasRecentSubmission(email, source);
+
   await db.insert(fullCheckWaitlist).values({
     email,
     full_name: fullName || null,
@@ -235,41 +261,54 @@ export async function submitFullCheckWaitlist(
     biggestConcern: biggestConcern || undefined,
   });
 
-  try {
-    await sendFullCheckAdminEmail({
-      fullName,
-      email,
-      visaInterest,
-      preferredLanguage,
-      currentCountry,
-      passportCountry,
-      age,
-      occupation,
-      englishLevel,
-      sponsorOrFamily,
-      biggestConcern,
-      mainGoal,
-      source,
-    });
-  } catch (error) {
-    console.error("Failed to send full check admin email", error);
-  }
+  let confirmationEmailSent = false;
 
-  try {
-    await sendFullCheckConfirmationEmail({
-      email,
-      fullName,
-      locale: preferredLanguage === "tr" ? "tr" : "en",
-    });
-  } catch (error) {
-    console.error("Failed to send full check confirmation email", error);
+  if (emailDeliveryEnabled && !suppressNotifications) {
+    try {
+      await sendFullCheckAdminEmail({
+        fullName,
+        email,
+        visaInterest,
+        preferredLanguage,
+        currentCountry,
+        passportCountry,
+        age,
+        occupation,
+        englishLevel,
+        sponsorOrFamily,
+        biggestConcern,
+        mainGoal,
+        source,
+      });
+    } catch (error) {
+      console.error("Failed to send full check admin email", error);
+    }
+
+    try {
+      await sendFullCheckConfirmationEmail({
+        email,
+        fullName,
+        locale: preferredLanguage === "tr" ? "tr" : "en",
+      });
+      confirmationEmailSent = true;
+    } catch (error) {
+      console.error("Failed to send full check confirmation email", error);
+    }
+  } else if (suppressNotifications) {
+    console.warn("Full check email notifications suppressed due to recent duplicate submission.");
+  } else {
+    console.warn("Full check email notifications are disabled in this environment.");
   }
 
   return {
     status: "success",
     message: isTr
-      ? "Tam hazirlik raporu olusturuldu. E-posta onayi gonderildi."
-      : "Full readiness report generated. A confirmation email has been sent.",
+      ? confirmationEmailSent
+        ? "Tam hazirlik raporu olusturuldu. E-posta onayi gonderildi."
+        : "Tam hazirlik raporu olusturuldu."
+      : confirmationEmailSent
+        ? "Full readiness report generated. A confirmation email has been sent."
+        : "Full readiness report generated.",
     report,
     userInput: {
       name: fullName || undefined,
