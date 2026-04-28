@@ -22,6 +22,10 @@ async function ensureFullCheckWaitlistTable() {
       age TEXT,
       occupation TEXT,
       english_level TEXT,
+      english_test_taken TEXT,
+      occupation_confirmed TEXT,
+      estimated_budget_range TEXT,
+      timeline TEXT,
       sponsor_or_family TEXT,
       biggest_concern TEXT,
       main_goal TEXT,
@@ -40,6 +44,10 @@ async function ensureFullCheckWaitlistTable() {
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS age TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_level TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_test_taken TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation_confirmed TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS estimated_budget_range TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS timeline TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS biggest_concern TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS main_goal TEXT`);
@@ -185,7 +193,7 @@ export default async function AdminDashboardPage({ params, searchParams }: Dashb
                 <p className="text-sm text-muted-foreground">No waitlist leads yet.</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[860px] text-sm">
+                  <table className="w-full min-w-[1200px] text-sm">
                     <thead>
                       <tr className="border-b border-border text-left">
                         <th className="py-2 pr-3 font-semibold">Created</th>
@@ -193,6 +201,10 @@ export default async function AdminDashboardPage({ params, searchParams }: Dashb
                         <th className="px-3 py-2 font-semibold">Source</th>
                         <th className="px-3 py-2 font-semibold">Lead score</th>
                         <th className="px-3 py-2 font-semibold">Lead tier</th>
+                        <th className="px-3 py-2 font-semibold">English test</th>
+                        <th className="px-3 py-2 font-semibold">Occupation confirmed</th>
+                        <th className="px-3 py-2 font-semibold">Budget range</th>
+                        <th className="px-3 py-2 font-semibold">Timeline</th>
                         <th className="px-3 py-2 font-semibold">Priority</th>
                         <th className="px-3 py-2 font-semibold">Visa interest</th>
                       </tr>
@@ -211,6 +223,10 @@ export default async function AdminDashboardPage({ params, searchParams }: Dashb
                             <td className="px-3 py-2">{sourceLabel(source)}</td>
                             <td className="px-3 py-2">{lead.lead_score ?? "-"}</td>
                             <td className="px-3 py-2">{lead.lead_tier ?? "-"}</td>
+                            <td className="px-3 py-2">{lead.english_test_taken || "-"}</td>
+                            <td className="px-3 py-2">{lead.occupation_confirmed || "-"}</td>
+                            <td className="px-3 py-2">{lead.estimated_budget_range || "-"}</td>
+                            <td className="px-3 py-2">{lead.timeline || "-"}</td>
                             <td className="px-3 py-2">
                               <Badge variant={highIntent ? "default" : "outline"}>
                                 {highIntent ? "High intent" : "Standard"}

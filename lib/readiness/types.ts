@@ -8,6 +8,10 @@ export type ReadinessInput = {
   age?: string;
   occupation?: string;
   englishLevel?: string;
+  englishTestTaken?: string;
+  occupationConfirmed?: string;
+  estimatedBudgetRange?: string;
+  timeline?: string;
   sponsorOrFamily?: string;
   preferredPathway?: string;
   biggestConcern?: string;

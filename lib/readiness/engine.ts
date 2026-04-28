@@ -740,6 +740,8 @@ function hasClearGoal(mainGoal?: string): boolean {
 
 export function buildLeadQuality(input: ReadinessInput): LeadQuality {
   const completeness = buildDataCompleteness(input, input.locale).percentage;
+  const englishTestTaken = (input.englishTestTaken ?? "").trim().toLowerCase();
+  const occupationConfirmed = (input.occupationConfirmed ?? "").trim().toLowerCase();
 
   let score = 0;
   if (input.englishLevel?.trim()) score += 20;
@@ -749,6 +751,10 @@ export function buildLeadQuality(input: ReadinessInput): LeadQuality {
   if (input.sponsorOrFamily?.trim()) score += 10;
   if (input.age?.trim()) score += 10;
   if (completeness > 70) score += 15;
+  if (englishTestTaken === "yes") score += 8;
+  if (occupationConfirmed === "yes") score += 8;
+  if (input.estimatedBudgetRange?.trim()) score += 4;
+  if (input.timeline?.trim()) score += 6;
 
   score = Math.max(0, Math.min(100, score));
 

@@ -299,6 +299,70 @@ export function FullCheckWaitlistForm({
           />
         </div>
 
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-english-test-taken">
+              {isTr ? "İngilizce testi alındı mı? (opsiyonel)" : "English test taken? (optional)"}
+            </Label>
+            <select
+              id="waitlist-english-test-taken"
+              name="englishTestTaken"
+              defaultValue=""
+              className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            >
+              <option value="">{isTr ? "Belirtmek istemiyorum" : "Prefer not to say"}</option>
+              <option value="yes">{isTr ? "Evet" : "Yes"}</option>
+              <option value="no">{isTr ? "Hayır" : "No"}</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-occupation-confirmed">
+              {isTr ? "Meslek bilgisi net mi? (opsiyonel)" : "Occupation confirmed? (optional)"}
+            </Label>
+            <select
+              id="waitlist-occupation-confirmed"
+              name="occupationConfirmed"
+              defaultValue=""
+              className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            >
+              <option value="">{isTr ? "Belirtmek istemiyorum" : "Prefer not to say"}</option>
+              <option value="yes">{isTr ? "Evet" : "Yes"}</option>
+              <option value="no">{isTr ? "Hayır" : "No"}</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-budget-range">
+              {isTr ? "Tahmini bütçe aralığı (opsiyonel)" : "Estimated budget range (optional)"}
+            </Label>
+            <Input
+              id="waitlist-budget-range"
+              name="estimatedBudgetRange"
+              placeholder={isTr ? "Örn: 10k-20k AUD" : "E.g., 10k-20k AUD"}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-timeline">
+              {isTr ? "Zamanlama (opsiyonel)" : "Timeline (optional)"}
+            </Label>
+            <select
+              id="waitlist-timeline"
+              name="timeline"
+              defaultValue=""
+              className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            >
+              <option value="">{isTr ? "Belirtmek istemiyorum" : "Prefer not to say"}</option>
+              <option value="0-6">{isTr ? "0-6 ay" : "0-6 months"}</option>
+              <option value="6-12">{isTr ? "6-12 ay" : "6-12 months"}</option>
+              <option value="12+">{isTr ? "12+ ay" : "12+ months"}</option>
+            </select>
+          </div>
+        </div>
+
         {state.status === "success" && state.message && (
           <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
             {state.message}

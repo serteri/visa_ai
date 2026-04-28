@@ -40,6 +40,10 @@ async function ensureFullCheckWaitlistTable() {
       age TEXT,
       occupation TEXT,
       english_level TEXT,
+      english_test_taken TEXT,
+      occupation_confirmed TEXT,
+      estimated_budget_range TEXT,
+      timeline TEXT,
       sponsor_or_family TEXT,
       biggest_concern TEXT,
       main_goal TEXT,
@@ -58,6 +62,10 @@ async function ensureFullCheckWaitlistTable() {
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS age TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_level TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_test_taken TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation_confirmed TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS estimated_budget_range TEXT`);
+  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS timeline TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS biggest_concern TEXT`);
   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS main_goal TEXT`);
@@ -103,6 +111,10 @@ async function sendFullCheckAdminEmail(payload: {
   age: string;
   occupation: string;
   englishLevel: string;
+  englishTestTaken: string;
+  occupationConfirmed: string;
+  estimatedBudgetRange: string;
+  timeline: string;
   sponsorOrFamily: string;
   biggestConcern: string;
   mainGoal: string;
@@ -133,6 +145,10 @@ async function sendFullCheckAdminEmail(payload: {
     `age: ${payload.age}`,
     `occupation: ${payload.occupation || "-"}`,
     `english level: ${payload.englishLevel || "-"}`,
+    `english test taken: ${payload.englishTestTaken || "-"}`,
+    `occupation confirmed: ${payload.occupationConfirmed || "-"}`,
+    `estimated budget range: ${payload.estimatedBudgetRange || "-"}`,
+    `timeline: ${payload.timeline || "-"}`,
     `sponsor/family: ${payload.sponsorOrFamily || "-"}`,
     `biggest concern: ${payload.biggestConcern || "-"}`,
     `main goal: ${payload.mainGoal}`,
@@ -204,6 +220,10 @@ export async function submitFullCheckWaitlist(
   const age = String(formData.get("age") ?? "").trim();
   const occupation = String(formData.get("occupation") ?? "").trim();
   const englishLevel = String(formData.get("englishLevel") ?? "").trim();
+  const englishTestTaken = String(formData.get("englishTestTaken") ?? "").trim();
+  const occupationConfirmed = String(formData.get("occupationConfirmed") ?? "").trim();
+  const estimatedBudgetRange = String(formData.get("estimatedBudgetRange") ?? "").trim();
+  const timeline = String(formData.get("timeline") ?? "").trim();
   const sponsorOrFamily = String(formData.get("sponsorOrFamily") ?? "").trim();
   const biggestConcern = String(formData.get("biggestConcern") ?? "").trim();
   const source = String(formData.get("source") ?? "").trim() || "full_check";
@@ -241,6 +261,10 @@ export async function submitFullCheckWaitlist(
     age,
     occupation: occupation || undefined,
     englishLevel: englishLevel || undefined,
+    englishTestTaken: englishTestTaken || undefined,
+    occupationConfirmed: occupationConfirmed || undefined,
+    estimatedBudgetRange: estimatedBudgetRange || undefined,
+    timeline: timeline || undefined,
     sponsorOrFamily: sponsorOrFamily || undefined,
     preferredPathway: visaInterest || undefined,
     biggestConcern: biggestConcern || undefined,
@@ -259,6 +283,10 @@ export async function submitFullCheckWaitlist(
     age,
     occupation: occupation || null,
     english_level: englishLevel || null,
+    english_test_taken: englishTestTaken || null,
+    occupation_confirmed: occupationConfirmed || null,
+    estimated_budget_range: estimatedBudgetRange || null,
+    timeline: timeline || null,
     sponsor_or_family: sponsorOrFamily || null,
     biggest_concern: biggestConcern || null,
     main_goal: mainGoal,
@@ -275,6 +303,10 @@ export async function submitFullCheckWaitlist(
     age,
     occupation: occupation || undefined,
     englishLevel: englishLevel || undefined,
+    englishTestTaken: englishTestTaken || undefined,
+    occupationConfirmed: occupationConfirmed || undefined,
+    estimatedBudgetRange: estimatedBudgetRange || undefined,
+    timeline: timeline || undefined,
     sponsorOrFamily: sponsorOrFamily || undefined,
     preferredPathway: visaInterest || undefined,
     biggestConcern: biggestConcern || undefined,
@@ -294,6 +326,10 @@ export async function submitFullCheckWaitlist(
         age,
         occupation,
         englishLevel,
+        englishTestTaken,
+        occupationConfirmed,
+        estimatedBudgetRange,
+        timeline,
         sponsorOrFamily,
         biggestConcern,
         mainGoal,
