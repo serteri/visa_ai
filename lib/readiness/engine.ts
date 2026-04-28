@@ -875,22 +875,46 @@ function buildPrimaryGap(params: {
 
 function buildFactorsAffectingPathways(
   locale: Locale,
+  input: ReadinessInput,
+  dataCompleteness: DataCompleteness,
   hasSkilledPathway: boolean,
   hasEmployerPathway: boolean,
   hasPartnerPathway: boolean
 ): string[] {
   const isTr = locale === "tr";
-  const items: string[] = [
-    isTr
-      ? "Başvuru dönemlerindeki davet/öncelik seviyeleri zamanla değişebilir."
-      : "Invitation and processing priority settings can change over time.",
-    isTr
-      ? "Sunulan belgelerin tutarlılığı ve kapsamı, yol karşılaştırmasını etkileyebilir."
-      : "Consistency and coverage of supporting evidence may change pathway comparisons.",
-    isTr
-      ? "Resmi kriter ve politika güncellemeleri değerlendirme sinyallerini değiştirebilir."
-      : "Official criteria and policy updates may shift pathway signals.",
-  ];
+  const items: string[] = [];
+
+  if (!input.englishLevel?.trim()) {
+    items.push(
+      isTr
+        ? "İngilizce seviyesi netleşmediği için puan testli ve işveren odaklı yolların karşılaştırması zayıflayabilir."
+        : "Without a defined English level, comparison signals for points-tested and employer pathways can remain weak."
+    );
+  }
+
+  if (!input.occupation?.trim()) {
+    items.push(
+      isTr
+        ? "Meslek bilgisi olmadan beceri değerlendirmesi gerektiren yolların göreli gücü netleşmez."
+        : "Without occupation detail, the relative strength of pathways that rely on skills assessment remains unclear."
+    );
+  }
+
+  if (!input.sponsorOrFamily?.trim()) {
+    items.push(
+      isTr
+        ? "Sponsor/aile bağlamı eksik olduğunda işveren veya partner sponsorluğu içeren seçenekler sınırlı görünür."
+        : "When sponsorship/family context is missing, employer- or partner-sponsored options can appear more limited."
+    );
+  }
+
+  if (dataCompleteness.percentage < 60) {
+    items.push(
+      isTr
+        ? `Veri tamamlanma düzeyi (%${dataCompleteness.percentage}) düşük olduğu için yol karşılaştırmasındaki güven sinyali azalır.`
+        : `Low information completeness (${dataCompleteness.percentage}%) reduces confidence in pathway comparison signals.`
+    );
+  }
 
   if (hasSkilledPathway) {
     items.push(
@@ -916,7 +940,40 @@ function buildFactorsAffectingPathways(
     );
   }
 
-  return items;
+  if (!input.currentCountry?.trim()) {
+    items.push(
+      isTr
+        ? "Mevcut ülke bilgisi olmadan bazı başvuru senaryolarının uygulanabilirlik değerlendirmesi eksik kalabilir."
+        : "Without current-country context, feasibility checks for some application scenarios may stay incomplete."
+    );
+  }
+
+  if (!input.mainGoal?.trim()) {
+    items.push(
+      isTr
+        ? "Ana hedef netleşmediğinde uygun yol önceliği daha düşük güvenle sıralanır."
+        : "When the primary migration goal is unclear, pathway prioritization is ranked with lower confidence."
+    );
+  }
+
+  const fallbackFactors = [
+    isTr
+      ? "Resmi kriter ve politika güncellemeleri karşılaştırmalı sinyalleri dönemsel olarak değiştirebilir."
+      : "Official criteria and policy updates can periodically shift comparative pathway signals.",
+    isTr
+      ? "Sunulan bilgilerin belgeyle tutarlılığı, yol sıralamasında nihai ağırlığı etkileyebilir."
+      : "How submitted information aligns with supporting evidence can influence final pathway weighting.",
+    isTr
+      ? "Başvuru zamanlaması, dönemsel davet ve işlem öncelikleri nedeniyle sonuç sinyallerini etkileyebilir."
+      : "Application timing can influence outcome signals due to period-based invitation and processing priorities.",
+  ];
+
+  for (const factor of fallbackFactors) {
+    if (items.length >= 3) break;
+    if (!items.includes(factor)) items.push(factor);
+  }
+
+  return items.slice(0, 5);
 }
 
 // ─── Points estimate ──────────────────────────────────────────────────────────
@@ -1282,6 +1339,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   const factorsAffectingPathways = buildFactorsAffectingPathways(
     locale,
+    input,
+    dataCompleteness,
     hasSkilledPathway,
     detectedSubclasses.includes("482"),
     detectedSubclasses.includes("820_801")
