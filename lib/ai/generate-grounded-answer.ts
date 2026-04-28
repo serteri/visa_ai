@@ -22,8 +22,8 @@ export type GroundedAssistantResult = {
 const SYSTEM_PROMPT =
   "You are a controlled Australian visa information assistant. You are not a migration agent and do not provide migration advice or legal advice. You must answer only using the supplied database context. Do not use outside knowledge. Do not guess. If the answer is not in the context, say that the stored information does not contain enough detail and that personalised advice is handled by a registered migration agent or Australian legal practitioner. Never say the user is eligible, qualifies, should apply, or will be approved. Use wording such as may be relevant, is commonly required, is often considered, may affect outcomes, general information only.";
 
-const HARD_SAFETY_REPLY =
-  "I can't determine outcomes or identify an application to make. The stored pathway information can be summarised for general review with a registered migration agent.";
+const PERSONALIZED_INTENT_REPLY =
+  "I can provide general information about visa pathways. For a structured assessment based on your situation, you can generate a readiness report.";
 
 const PERSONALISED_ADVICE_FALLBACK =
   "General information about visa pathways can be provided, but personalised advice is handled by a registered migration agent.";
@@ -36,22 +36,14 @@ function includesAny(text: string, tokens: string[]): boolean {
   return tokens.some((token) => text.includes(token));
 }
 
-function isSafetyEligibilityQuestion(message: string): boolean {
+function isPersonalizedIntentQuestion(message: string): boolean {
   const lower = normalize(message);
-  return includesAny(lower, [
-    "eligible",
-    "qualify",
-    "approved",
-    "am i eligible",
-    "will i be approved",
-    "will i get approved",
-    "can i get",
-    "should i",
-    "what should i do",
-    "should i apply",
-    "can i get this visa",
-    "can i get approved",
-  ]);
+  return (
+    /\bam i eligible\b/.test(lower) ||
+    /\bcan i get\b/.test(lower) ||
+    /\bwhat should i do\b/.test(lower) ||
+    /\bwhich visa should i choose\b/.test(lower)
+  );
 }
 
 function addGeneralInfoSentence(answer: string): string {
@@ -84,7 +76,7 @@ function applyAssistantSafetyFooter(input: {
   const withGeneralInfo = addGeneralInfoSentence(input.answer);
   const shouldAppendFallback =
     input.appendFallback ||
-    isSafetyEligibilityQuestion(input.message) ||
+    isPersonalizedIntentQuestion(input.message) ||
     responseHasRiskOrDecisionLanguage(withGeneralInfo);
 
   if (!shouldAppendFallback) return withGeneralInfo;
@@ -332,13 +324,13 @@ export async function generateGroundedAnswer(input: {
   const sources = buildSources(locale, input.context);
   const nextActions = buildActions(locale, input.context);
 
-  if (isSafetyEligibilityQuestion(input.message)) {
+  if (isPersonalizedIntentQuestion(input.message)) {
     const safeAnswer = applyAssistantSafetyFooter({
       answer: neutralizeDeterministicLanguage(
-        withSourceSubclassFooter(HARD_SAFETY_REPLY, input.context)
+        withSourceSubclassFooter(PERSONALIZED_INTENT_REPLY, input.context)
       ),
       message: input.message,
-      appendFallback: true,
+      appendFallback: false,
     });
     return {
       answer: safeAnswer,
