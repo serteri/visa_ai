@@ -468,7 +468,7 @@ export function FullCheckWaitlistForm({
                   </CardTitle>
                   <p className="text-xs text-muted-foreground">
                     {isTr
-                      ? "Her yolun sinyal gücü, sürtünme düzeyi ve kanıt durumu sağlanan bilgilere göre değerlendirilmiştir."
+                      ? "Her yolun sinyal gücü, zorluk seviyesi ve belge durumu sağlanan bilgilere göre değerlendirilmiştir."
                       : "Signal strength, friction level, and evidence status for each pathway based on provided information."}
                   </p>
                 </CardHeader>
@@ -486,10 +486,10 @@ export function FullCheckWaitlistForm({
                             {getStrengthLabel(item.strength)}
                           </span>
                           <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">
-                            {isTr ? "Sürtünme:" : "Friction:"} {getDifficultyLabel(item.friction)}
+                            {isTr ? "Zorluk seviyesi:" : "Friction:"} {getDifficultyLabel(item.friction)}
                           </span>
                           <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">
-                            {isTr ? "Kanıt yükü:" : "Evidence load:"} {getEvidenceLoadLabel(item.evidenceLoad)}
+                            {isTr ? "Gerekli belge düzeyi:" : "Evidence load:"} {getEvidenceLoadLabel(item.evidenceLoad)}
                           </span>
                         </div>
                       </div>

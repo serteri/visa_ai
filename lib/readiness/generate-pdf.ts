@@ -46,7 +46,7 @@ function getLocalizedText(locale: "en" | "tr") {
       title: "Tam Vize Hazırlık Raporu",
       generatedDate: "Oluşturma Tarihi",
       userInfo: "Kullanıcı Bilgileri",
-      pathwayTable: "Yapılandırılmış Yol Karşılaştırması",
+      pathwayTable: "Vize Yolu Karşılaştırması",
       pathwayStrengthComparison: "Vize Yolu Güç Karşılaştırması",
       evidenceReadiness: "Kanıt/Bilgi Hazırlık Özeti",
       pointsBoosterSimulator: "Puan Senaryo Simülatörü",
@@ -303,8 +303,8 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     report.pathwayStrengthComparison.forEach((item) => {
       addBody(`${item.visaName} (${item.subclass})`);
       addSmallText(`${locale === "tr" ? "Güç" : "Strength"}: ${formatStrength(item.strength)}`, 4);
-      addSmallText(`${locale === "tr" ? "Sürtünme" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
-      addSmallText(`${locale === "tr" ? "Kanıt yükü" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
+      addSmallText(`${locale === "tr" ? "Zorluk seviyesi" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
+      addSmallText(`${locale === "tr" ? "Gerekli belge düzeyi" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
       addSmallText(`${locale === "tr" ? "Tipik yol" : "Typical path"}: ${item.typicalPath}`, 4);
       if (item.signalReasons.length > 0) {
         addSmallText(locale === "tr" ? "Sinyal nedenleri:" : "Signal reasons:", 4);

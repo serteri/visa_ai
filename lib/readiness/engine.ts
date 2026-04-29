@@ -1285,44 +1285,24 @@ function buildExecutiveSummary(
   estimatedPoints?: number
 ): string[] {
   const isTr = locale === "tr";
-  const strongestPathway = pathways.find((pathway) => pathway.subclass !== "general" && pathway.relevance === "possible");
   const skilledVisible = pathways.some((pathway) => ["189", "190", "491"].includes(pathway.subclass));
-  const relevanceLine = strongestPathway
-    ? isTr
-      ? `Verilen profile göre ${strongestPathway.visaName} (${strongestPathway.subclass}) yolu ilgili görünüyor.`
-      : `${strongestPathway.visaName} (${strongestPathway.subclass}) appears relevant based on the provided profile.`
-    : isTr
-      ? "Verilen profile göre birden fazla yol ilgili olabilir ve karşılaştırmalı değerlendirme daha anlamlıdır."
-      : "More than one pathway may be relevant based on the provided profile, so a comparative view is used.";
-
-  const pointsLine = skilledVisible
-    ? estimatedPoints !== undefined
-      ? isTr
-        ? `Mevcut puan sinyali ${estimatedPoints} seviyesindedir ve yaygın olarak referans alınan eşikleri etkileyebileceği için vize yolu sinyallerini değiştirebilir.`
-        : `The current points signal is ${estimatedPoints}, which may affect pathway signals against commonly referenced thresholds.`
-      : isTr
-        ? "Puan tablosu sinyali için mevcut veri sınırlıdır; bu durum nitelikli yol karşılaştırmasını etkileyebilir."
-        : "The points-table signal remains limited due to missing factors, which may affect skilled-pathway comparison."
-    : isTr
-      ? "Bu profilde puan tabanlı yollar ana odakta görünmediği için puan sinyali ikincil düzeydedir."
-      : "Points-tested pathways are not the primary focus in this profile, so points signal is secondary.";
-
-  const changeDrivers: string[] = [];
-  if (missingInformation.length > 0) {
-    changeDrivers.push(missingInformation.slice(0, 3).join(", "));
-  }
-  if (input.occupationConfirmed !== "yes") {
-    changeDrivers.push(isTr ? "beceri değerlendirmesi bağlamı" : "skills assessment context");
-  }
-  if (!input.sponsorOrFamily && pathways.some((p) => ["190", "491", "482", "820_801"].includes(p.subclass))) {
-    changeDrivers.push(isTr ? "adaylık veya sponsorluk bağlamı" : "nomination or sponsorship context");
+  if (isTr) {
+    return [
+      "Verilen profile göre yetenekli göç yolları ilgili görünmektedir.",
+      skilledVisible && estimatedPoints !== undefined
+        ? "Kısmi puan görünümü yaygın eşiklerin altında olup yol sinyallerini etkileyebilir."
+        : "Kısmi puan bağlamı sınırlı olduğu için yol sinyalleri değişebilir.",
+      "Ek bilgiler (beceri değerlendirmesi veya adaylık bağlamı) yol gücünü değiştirebilir.",
+    ];
   }
 
-  const changeLine = isTr
-    ? `Ek bilgiler (${changeDrivers.length > 0 ? changeDrivers.join("; ") : "yol-özel kanıtlar"}) vize yolu gücünü değiştirebilir.`
-    : `Additional detail (${changeDrivers.length > 0 ? changeDrivers.join("; ") : "pathway-specific evidence"}) may change pathway strength.`;
-
-  return [relevanceLine, pointsLine, changeLine];
+  return [
+    "Skilled migration pathways appear relevant based on the provided profile.",
+    skilledVisible && estimatedPoints !== undefined
+      ? "The partial points signal sits below commonly referenced thresholds, which may affect pathway signals."
+      : "Points context remains limited, which may affect pathway signals.",
+    "Additional detail such as skills assessment or nomination context may change pathway strength.",
+  ];
 }
 
 // Per-pathway evidence status items based on form input
@@ -1827,10 +1807,10 @@ function buildProgressionPathways(
     items.push({
       from: "500",
       to: "485 / 189 / 190 / 491",
-      label: isTr ? "Öğrenci sonrası tipik seçenekler" : "Typical post-study options",
+      label: isTr ? "Öğrenci yolu bağlamı" : "Student pathway context",
       explanation: isTr
-        ? "Avustralya sistemindeki tipik geçiş yolları 500 → 485 → 189/190/491 seçeneklerini içerebilir. Bu PR vaadi değildir."
-        : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This does not promise PR.",
+        ? "Avustralya vize sisteminde tipik geçiş yolları şunları içerebilir: 500 → 485 → 189/190/491. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
+        : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This is general information only and depends on individual circumstances."
     });
   }
 
@@ -1838,7 +1818,7 @@ function buildProgressionPathways(
     items.push({
       from: "500",
       to: "485 / 189 / 190 / 491",
-      label: isTr ? "Eğitimden nitelikli yollara tipik akış" : "Typical study-to-skilled context",
+      label: isTr ? "Öğrenci yolu bağlamı" : "Student pathway context",
       explanation: isTr
         ? "Avustralya vize sisteminde tipik geçiş yolları şunları içerebilir: 500 → 485 → 189/190/491. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
         : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This is general information only and depends on individual circumstances.",
@@ -1849,9 +1829,9 @@ function buildProgressionPathways(
     items.push({
       from: "482",
       to: "Employer-sponsored permanent pathways",
-      label: isTr ? "İşveren sponsorlu geçiş bağlamı" : "Employer-sponsored context",
+      label: isTr ? "İş sponsorluğu bağlamı" : "Employer sponsorship context",
       explanation: isTr
-        ? "Bazı profillerde 482 bağlamı, işveren sponsorlu kalıcı yollarla birlikte değerlendirilebilir; sonuçlar bireysel koşullara bağlıdır."
+        ? "İş sponsorluğu bağlamında 482 sonrası kalıcı sponsorlu yollar bazı profillerde değerlendirilebilir; bu durum bireysel koşullara bağlıdır."
         : "In some profiles, 482 context may be considered alongside employer-sponsored permanent pathways; outcomes depend on individual circumstances.",
     });
   }
@@ -1870,9 +1850,9 @@ function buildProgressionPathways(
     items.push({
       from: "482",
       to: "Employer-sponsored permanent pathways",
-      label: isTr ? "İşveren sponsorlu kalıcı seçenekler" : "Employer-sponsored permanent options",
+      label: isTr ? "İş sponsorluğu bağlamı" : "Employer sponsorship context",
       explanation: isTr
-        ? "482 sonrası işveren sponsorlu kalıcı yollar bazı durumlarda ilgili olabilir; kriterler ve işveren bağlamı belirleyicidir."
+        ? "İş sponsorluğu bağlamında 482 sonrası kalıcı sponsorlu yollar bazı profillerde değerlendirilebilir; bu durum bireysel koşullara bağlıdır."
         : "After 482, employer-sponsored permanent pathways may be relevant in some cases; criteria and employer context matter.",
     });
   }
@@ -1992,7 +1972,7 @@ function buildConfidenceExplanation(
   }
 
   return isTr
-    ? `Güven düzeyi orta seviyededir çünkü İngilizce ve meslek bilgileri mevcut, ancak beceri değerlendirmesi ve tam puan bağlamı net değildir${estimatedPoints !== undefined ? ` (kısmi puan sinyali: ${estimatedPoints})` : ""}. ${hasSponsor ? "Sponsorluk bağlamı sağlanmıştır." : "Sponsorluk bağlamı sınırlı görünmektedir."} Bu yalnızca genel bilgidir ve kişisel koşullara bağlıdır.`
+    ? "Güven düzeyi orta seviyededir çünkü İngilizce ve meslek bilgileri sağlanmıştır; ancak beceri değerlendirmesi ve puan bağlamı net değildir."
     : `Confidence is moderate because English and occupation details are available, but skills assessment and full points context remain unclear${estimatedPoints !== undefined ? ` (partial points signal: ${estimatedPoints})` : ""}. ${hasSponsor ? "Sponsorship context is provided." : "Sponsorship context appears limited."} This is general information only and depends on individual circumstances.`;
 }
 
