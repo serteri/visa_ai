@@ -1317,11 +1317,11 @@ const tempGraduate485Data = {
   visa_name: "Temporary Graduate visa",
   subclass: "485",
   stream: "Post-Higher Education Work stream",
-  category: "Temporary Work",
+  category: "Post-study Work",
   purpose:
-    "Allow recent graduates of Australian institutions to live, study and work in Australia temporarily following completion of eligible study.",
+    "Allows eligible recent graduates to live, work and study in Australia temporarily after completing Australian study.",
   stay_period:
-    "2 to 3 years depending on qualification level: bachelor or masters coursework (2 years); masters research or doctoral degree (3 years)",
+    "Usually between 2 and 3 years depending on qualification; Hong Kong and British National Overseas passport holders may stay for 5 years.",
   cost: "From AUD 4,600",
   work_rights:
     "Live, work and study in Australia. Travel in and out of Australia while the visa is valid. Include eligible family members.",
