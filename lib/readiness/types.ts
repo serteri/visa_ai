@@ -42,7 +42,7 @@ export type ComparisonDifficulty = "low" | "medium" | "high";
 
 export type IndicatorLevel = "low" | "medium" | "high";
 
-export type InformationCoverageLevel = "basic" | "partial" | "comprehensive";
+export type InformationCoverageLevel = "initial" | "partial" | "comprehensive";
 
 export type ReportIndicators = {
   dataCompletenessScore: number;
@@ -99,9 +99,63 @@ export type DocumentCategory = {
   items: string[];
 };
 
+export type PathwayStrengthComparison = {
+  subclass: string;
+  visaName: string;
+  strength: "limited" | "moderate" | "strong";
+  friction: "low" | "medium" | "high";
+  explanation: string;
+};
+
+export type EvidenceReadinessItem = {
+  category: string;
+  status: "provided" | "missing" | "unclear" | "typically_required";
+  explanation: string;
+};
+
+export type PointsBoosterScenario = {
+  label: string;
+  estimatedChange: number;
+  resultingEstimate?: number;
+  explanation: string;
+};
+
+export type PointsBoosterSimulator = {
+  currentEstimate?: number;
+  scenarios: PointsBoosterScenario[];
+  note: string;
+};
+
+export type FinancialRoadmapItem = {
+  category: string;
+  estimateType: "official_fee" | "third_party_estimate" | "variable";
+  amountLabel: string;
+  explanation: string;
+};
+
+export type ProgressionPathway = {
+  from: string;
+  to: string;
+  label: string;
+  explanation: string;
+};
+
+export type PathwayFriction = {
+  pathway: string;
+  frictionType: string;
+  explanation: string;
+};
+
 export type ReadinessReport = {
   executiveSummary: string[];
   pathwayComparison: PathwayComparison[];
+  pathwayStrengthComparison: PathwayStrengthComparison[];
+  evidenceReadiness: EvidenceReadinessItem[];
+  pointsBoosterSimulator?: PointsBoosterSimulator;
+  financialRoadmap: FinancialRoadmapItem[];
+  progressionPathways: ProgressionPathway[];
+  pathwayFriction: PathwayFriction[];
+  confidenceExplanation: string;
   reportIndicators: ReportIndicators;
   primaryGap: string;
   dataCompleteness: DataCompleteness;

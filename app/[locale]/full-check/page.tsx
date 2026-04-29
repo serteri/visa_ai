@@ -62,13 +62,13 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
         quick: "Yalnızca olası yol alanları",
         full: "Yapılandırılmış yol karşılaştırması",
       },
+      { label: "Vize yolu güç karşılaştırması", quick: "Dahil değil", full: "Dahil" },
       { label: "Risk göstergeleri", quick: "Dahil değil", full: "Dahil" },
-      { label: "Belge kontrol listesi", quick: "Dahil değil", full: "Dahil" },
-      { label: "Veri/Belge bilgi göstergeleri", quick: "Dahil değil", full: "Dahil" },
-      { label: "Birincil boşluk", quick: "Dahil değil", full: "Dahil" },
-      { label: "Veri tamamlanma düzeyi", quick: "Dahil değil", full: "Dahil" },
-      { label: "Puan tahmini", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
-      { label: "Meslek göstergesi", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
+      { label: "Kanıt/Bilgi hazırlık özeti", quick: "Dahil değil", full: "Dahil" },
+      { label: "Puan senaryo simülatörü", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
+      { label: "Tahmini maliyet yol haritası", quick: "Dahil değil", full: "Dahil" },
+      { label: "Tipik geçiş yolları", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
+      { label: "Vize yolu gerçeklik kontrolü", quick: "Dahil değil", full: "Dahil" },
       { label: "Değerlendirilebilecek sonraki adımlar", quick: "Dahil değil", full: "Dahil" },
       { label: "İndirilebilir PDF", quick: "Dahil değil", full: "Dahil" },
     ];
@@ -80,13 +80,13 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
       quick: "Possible pathway areas only",
       full: "Structured pathway comparison",
     },
+    { label: "Pathway strength comparison", quick: "Not included", full: "Included" },
     { label: "Risk indicators", quick: "Not included", full: "Included" },
-    { label: "Document checklist", quick: "Not included", full: "Included" },
-    { label: "Data/document information indicators", quick: "Not included", full: "Included" },
-    { label: "Primary gap", quick: "Not included", full: "Included" },
-    { label: "Data completeness", quick: "Not included", full: "Included" },
-    { label: "Points estimate", quick: "Not included", full: "Included where relevant" },
-    { label: "Occupation indication", quick: "Not included", full: "Included where relevant" },
+    { label: "Evidence readiness snapshot", quick: "Not included", full: "Included" },
+    { label: "Points booster simulator", quick: "Not included", full: "Included where relevant" },
+    { label: "Financial roadmap", quick: "Not included", full: "Included" },
+    { label: "Bridge to PR / progression pathways", quick: "Not included", full: "Included where relevant" },
+    { label: "Pathway friction / reality check", quick: "Not included", full: "Included" },
     { label: "Next steps that can be considered", quick: "Not included", full: "Included" },
     { label: "Downloadable PDF", quick: "Not included", full: "Included" },
   ];
@@ -96,29 +96,29 @@ function getReportCards(isTr: boolean): ReportCard[] {
   if (isTr) {
     return [
       {
-        title: "Yol karşılaştırması",
+        title: "Vize yolu güç karşılaştırması",
         description:
-          "Desteklenen vize yolları yan yana karşılaştırılarak hangi seçeneklerin ilgili olabileceği gösterilir.",
+          "Olası yollar güç, sürtünme ve açıklama ile karşılaştırılır.",
       },
       {
-        title: "Risk göstergeleri",
+        title: "Kanıt/Bilgi hazırlık özeti",
         description:
-          "Daha yakından incelenmesi gerekebilecek faktörler ayrı bir bölümde gösterilir.",
+          "Form bilgileri ile tipik kanıt kategorileri birlikte gösterilir.",
       },
       {
-        title: "Belge hazırlığı",
+        title: "Puan senaryo simülatörü",
         description:
-          "Her yol için hazırlıkta değerlendirilen belge ve kanıt türleri gösterilir.",
+          "Puan testli yollar için matematiksel puan senaryoları ilgili olduğunda gösterilir.",
       },
       {
-        title: "Bilgi göstergeleri",
+        title: "Tahmini maliyet yol haritası",
         description:
-          "Veri tamamlanma skoru, belge hazırlık göstergesi ve bilgi kapsam düzeyi birlikte sunulur.",
+          "Resmi ücret ve üçüncü taraf maliyet kategorileri genel bilgi olarak ayrılır.",
       },
       {
-        title: "Değerlendirilebilecek sonraki adımlar",
+        title: "Vize yolu gerçeklik kontrolü",
         description:
-          "Sağlanan ayrıntılara göre genel hazırlık adımları ayrı bir bölümde listelenir.",
+          "Her yol için sürtünme ve pratik sınırlayıcı faktörler özetlenir.",
       },
     ];
   }
@@ -130,22 +130,26 @@ function getReportCards(isTr: boolean): ReportCard[] {
         "Supported visa pathways are compared side by side to show which options may be relevant.",
     },
     {
-      title: "Risk indicators",
-      description: "Factors that may need closer review are shown in a separate section.",
+      title: "Pathway strength comparison",
+      description: "Possible pathways are compared by strength, friction, and explanation.",
     },
     {
-      title: "Document readiness",
+      title: "Evidence readiness snapshot",
       description:
-        "The report shows document and evidence categories commonly considered for each pathway.",
+        "Form details are mapped against typical evidence categories.",
     },
     {
-      title: "Information indicators",
+      title: "Points booster simulator",
       description:
-        "The report shows data completeness score, document readiness indicator, and information coverage level.",
+        "Points-tested pathways show mathematical score scenarios where relevant.",
     },
     {
-      title: "Next steps that can be considered",
-      description: "General preparation steps are listed based on the details provided.",
+      title: "Financial roadmap",
+      description: "Official fee and third-party cost categories are separated as general information.",
+    },
+    {
+      title: "Pathway friction / reality check",
+      description: "Practical friction factors are summarized for each pathway.",
     },
   ];
 }

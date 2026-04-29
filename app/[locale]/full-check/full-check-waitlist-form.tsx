@@ -167,24 +167,12 @@ export function FullCheckWaitlistForm({
     return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
-  function getIndicatorLabel(level: "low" | "medium" | "high") {
+  function getStrengthLabel(level: "limited" | "moderate" | "strong") {
     if (isTr) {
-      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
+      return level === "strong" ? "Güçlü" : level === "moderate" ? "Orta" : "Sınırlı";
     }
 
-    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
-  }
-
-  function getCoverageLabel(level: "basic" | "partial" | "comprehensive") {
-    if (isTr) {
-      if (level === "comprehensive") return "Kapsamlı";
-      if (level === "partial") return "Kısmi";
-      return "Temel";
-    }
-
-    if (level === "comprehensive") return "Comprehensive";
-    if (level === "partial") return "Partial";
-    return "Basic";
+    return level === "strong" ? "Strong" : level === "moderate" ? "Moderate" : "Limited";
   }
 
   return (
@@ -408,68 +396,6 @@ export function FullCheckWaitlistForm({
           </div>
 
           <div className="space-y-3">
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    {isTr ? "Rapor göstergeleri" : "Report indicators"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <p className="text-sm font-semibold">
-                    {isTr ? "Veri Tamamlanma Skoru:" : "Data Completeness Score:"} {state.report.reportIndicators.dataCompletenessLabel} ({state.report.reportIndicators.dataCompletenessScore}/100)
-                  </p>
-                  <p className="text-sm font-semibold">
-                    {isTr ? "Belge Hazırlık Göstergesi:" : "Document Readiness Indicator:"} {getIndicatorLabel(state.report.reportIndicators.documentReadinessIndicator)}
-                  </p>
-                  <p className="text-sm font-semibold">
-                    {isTr ? "Bilgi Kapsam Düzeyi:" : "Information Coverage Level:"} {getCoverageLabel(state.report.reportIndicators.informationCoverageLevel)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {state.report.reportIndicators.explanation}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="md:col-span-2">
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    {isTr ? "Birincil Boşluk" : "Primary Gap"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{state.report.primaryGap}</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">
-                  {isTr ? "Veri Tamamlanma Düzeyi" : "Data Completeness"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <p className="font-semibold">
-                  {isTr ? "Tamamlanma:" : "Completeness:"} {state.report.reportIndicators.dataCompletenessLabel} ({state.report.dataCompleteness.percentage}%)
-                </p>
-                {state.report.dataCompleteness.missingFields.length > 0 ? (
-                  <ul className="space-y-1 text-muted-foreground">
-                    {state.report.dataCompleteness.missingFields.map((field) => (
-                      <li key={field} className="flex gap-2">
-                        <span className="text-primary">-</span>
-                        <span>{field}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-muted-foreground">
-                    {isTr ? "Ana veri alanları tamamlandı." : "Core data fields are complete."}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
             {state.report.pathwayComparison.length > 0 && (
               <Card>
                 <CardHeader>
@@ -508,6 +434,40 @@ export function FullCheckWaitlistForm({
                 </CardContent>
               </Card>
             )}
+
+            {state.report.pathwayStrengthComparison.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    {isTr ? "Vize Yolu Güç Karşılaştırması" : "Pathway Strength Comparison"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {state.report.pathwayStrengthComparison.map((item) => (
+                    <div key={`${item.subclass}-${item.visaName}-strength`} className="rounded-md border border-border/70 p-3 text-sm">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="font-medium">{item.visaName} ({item.subclass})</p>
+                        <p className="text-xs text-muted-foreground">
+                          {isTr ? "Güç:" : "Strength:"} {getStrengthLabel(item.strength)} · {isTr ? "Sürtünme:" : "Friction:"} {getDifficultyLabel(item.friction)}
+                        </p>
+                      </div>
+                      <p className="mt-2 text-muted-foreground">{item.explanation}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Güven Açıklaması" : "Confidence Explanation"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{state.report.confidenceExplanation}</p>
+              </CardContent>
+            </Card>
 
             <div className="space-y-1">
               <h4 className="text-base font-semibold">
@@ -592,89 +552,135 @@ export function FullCheckWaitlistForm({
             )}
           />
 
-          {state.report.documentChecklist.length > 0 && (
+          {state.report.evidenceReadiness.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {isTr ? "Belge kontrol listesi" : "Document checklist"}
+                  {isTr ? "Kanıt/Bilgi Hazırlık Özeti" : "Evidence Readiness Snapshot"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {state.report.documentChecklist.map((category) => (
-                  <div key={category.category}>
-                    <p className="font-medium text-sm mb-2">{category.category}</p>
-                    <ul className="space-y-1 text-sm text-muted-foreground ml-4">
-                      {category.items.map((item) => (
-                        <li key={item} className="flex gap-2">
-                          <span className="text-primary">-</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
+                {state.report.evidenceReadiness.map((item) => (
+                  <div key={item.category} className="rounded-md border border-border/70 p-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-medium">{item.category}</p>
+                      <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+                        {item.status === "provided"
+                          ? isTr ? "Sağlandı" : "Provided"
+                          : item.status === "missing"
+                            ? isTr ? "Eksik" : "Missing"
+                            : item.status === "typically_required"
+                              ? isTr ? "Tipik olarak gerekir" : "Typically required"
+                              : isTr ? "Net değil" : "Unclear"}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-muted-foreground">{item.explanation}</p>
                   </div>
                 ))}
               </CardContent>
             </Card>
           )}
 
-          {state.report.pointsEstimate && (
+          {state.report.pointsBoosterSimulator && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {isTr ? "Puan tahmini" : "Points estimate"}
+                  {isTr ? "Puan Senaryo Simülatörü" : "Points Booster Simulator"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {state.report.pointsEstimate.estimatedPoints !== undefined && (
+                {state.report.pointsBoosterSimulator.currentEstimate !== undefined && (
                   <p className="font-semibold">
-                    {isTr ? "Tahmini puan:" : "Estimated points:"} {state.report.pointsEstimate.estimatedPoints}
+                    {isTr ? "Mevcut matematiksel tahmin:" : "Current mathematical estimate:"} {state.report.pointsBoosterSimulator.currentEstimate}
                   </p>
                 )}
-                {state.report.pointsEstimate.breakdown.length > 0 && (
-                  <div className="space-y-1">
-                    {state.report.pointsEstimate.breakdown.map((item) => (
-                      <div key={item.label} className="flex justify-between text-sm">
-                        <span>{item.label}</span>
-                        <span className="font-medium">{item.points}</span>
+                <p className="text-xs text-muted-foreground">{state.report.pointsBoosterSimulator.note}</p>
+                <div className="space-y-2">
+                  {state.report.pointsBoosterSimulator.scenarios.map((scenario) => (
+                    <div key={scenario.label} className="rounded-md border border-border/70 p-3 text-sm">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="font-medium">{scenario.label}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {scenario.estimatedChange >= 0 ? "+" : ""}{scenario.estimatedChange}
+                          {scenario.resultingEstimate !== undefined ? ` → ${scenario.resultingEstimate}` : ""}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                )}
-                <p className="text-xs text-muted-foreground mt-2">{state.report.pointsEstimate.note}</p>
+                      <p className="mt-2 text-muted-foreground">{scenario.explanation}</p>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           )}
 
-          {state.report.occupationIndication && (
+          {state.report.financialRoadmap.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {isTr ? "Meslek göstergesi" : "Occupation indication"}
+                  {isTr ? "Tahmini Maliyet Yol Haritası" : "Financial Roadmap"}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                {state.report.occupationIndication.occupation && (
-                  <p className="font-medium">{state.report.occupationIndication.occupation}</p>
-                )}
-                {state.report.occupationIndication.matches.length > 0 && (
-                  <ul className="space-y-1 text-sm">
-                    {state.report.occupationIndication.matches.map((match) => (
-                      <li key={match.title}>
-                        <p className="font-medium">{match.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {isTr ? "İlgili vizeler:" : "Relevant visas:"} {match.relevantVisas.join(", ")}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <p className="text-xs text-muted-foreground mt-2">{state.report.occupationIndication.note}</p>
+              <CardContent className="space-y-3">
+                {state.report.financialRoadmap.map((item) => (
+                  <div key={item.category} className="rounded-md border border-border/70 p-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-medium">{item.category}</p>
+                      <p className="text-xs text-muted-foreground">{item.amountLabel}</p>
+                    </div>
+                    <p className="mt-2 text-muted-foreground">{item.explanation}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {state.report.progressionPathways.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Tipik Geçiş Yolları" : "Bridge to PR / Typical Progression Pathways"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  {isTr
+                    ? "Avustralya vize sistemindeki tipik geçiş yolları aşağıdaki seçenekleri içerebilir."
+                    : "Typical progression pathways in the Australian visa system may include the following options."}
+                </p>
+                {state.report.progressionPathways.map((item) => (
+                  <div key={`${item.from}-${item.to}`} className="rounded-md border border-border/70 p-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-medium">{item.label}</p>
+                      <p className="text-xs text-muted-foreground">{item.from} → {item.to}</p>
+                    </div>
+                    <p className="mt-2 text-muted-foreground">{item.explanation}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {state.report.pathwayFriction.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Vize Yolu Gerçeklik Kontrolü" : "Pathway Friction / Reality Check"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {state.report.pathwayFriction.map((item) => (
+                  <div key={`${item.pathway}-${item.frictionType}`} className="rounded-md border border-border/70 p-3 text-sm">
+                    <p className="font-medium">{item.pathway}</p>
+                    <p className="text-xs text-muted-foreground">{item.frictionType}</p>
+                    <p className="mt-2 text-muted-foreground">{item.explanation}</p>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           )}
 
           <ReportSection
-            title={isTr ? "Değerlendirilebilecek sonraki adımlar" : "Next steps that can be considered"}
+            title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
             items={state.report.suggestedNextSteps}
           />
 

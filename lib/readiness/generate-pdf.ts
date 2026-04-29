@@ -46,17 +46,13 @@ function getLocalizedText(locale: "en" | "tr") {
       title: "Tam Vize Hazırlık Raporu",
       generatedDate: "Oluşturma Tarihi",
       userInfo: "Kullanıcı Bilgileri",
-      reportIndicators: "Rapor göstergeleri",
-      dataCompletenessScore: "Veri Tamamlanma Skoru",
-      documentReadinessIndicator: "Belge Hazırlık Göstergesi",
-      informationCoverageLevel: "Bilgi Kapsam Düzeyi",
-      highCompleteness: "Yüksek tamamlanma",
-      mediumCompleteness: "Orta tamamlanma",
-      lowCompleteness: "Düşük tamamlanma",
-      primaryGap: "Birincil Boşluk",
-      dataCompleteness: "Veri Tamamlanma Düzeyi",
-      completionRate: "Tamamlanma",
       pathwayTable: "Yapılandırılmış Yol Karşılaştırması",
+      pathwayStrengthComparison: "Vize Yolu Güç Karşılaştırması",
+      evidenceReadiness: "Kanıt/Bilgi Hazırlık Özeti",
+      pointsBoosterSimulator: "Puan Senaryo Simülatörü",
+      financialRoadmap: "Tahmini Maliyet Yol Haritası",
+      progressionPathways: "Tipik Geçiş Yolları",
+      pathwayFriction: "Vize Yolu Gerçeklik Kontrolü",
       visa: "Vize",
       difficulty: "Zorluk",
       requirementType: "Gereklilik Türü",
@@ -69,10 +65,7 @@ function getLocalizedText(locale: "en" | "tr") {
       keyVisaRequirements: "Ana Vize Gereklilikleri",
       executiveSummary: "Yonetici Ozeti",
       riskIndicators: "Risk Göstergeleri",
-      documentChecklist: "Belge Kontrol Listesi",
-      pointsEstimate: "Puan Tahmini",
-      occupationReview: "Meslek Göstergesi",
-      suggestedNextSteps: "Değerlendirilebilecek Sonraki Adımlar",
+      suggestedNextSteps: "Önerilen Sonraki Adımlar",
       downloadablePdf: "İndirilebilir PDF",
       factorsAffectingPathways: "Yolları Etkileyebilecek Faktörler",
       missingInformation: "Eksik Bilgiler",
@@ -100,17 +93,13 @@ function getLocalizedText(locale: "en" | "tr") {
     title: "Full Visa Readiness Report",
     generatedDate: "Generated Date",
     userInfo: "User Information",
-    reportIndicators: "Report indicators",
-    dataCompletenessScore: "Data Completeness Score",
-    documentReadinessIndicator: "Document Readiness Indicator",
-    informationCoverageLevel: "Information Coverage Level",
-    highCompleteness: "High completeness",
-    mediumCompleteness: "Medium completeness",
-    lowCompleteness: "Low completeness",
-    primaryGap: "Primary Gap",
-    dataCompleteness: "Data Completeness",
-    completionRate: "Completeness",
     pathwayTable: "Structured Pathway Comparison",
+    pathwayStrengthComparison: "Pathway Strength Comparison",
+    evidenceReadiness: "Evidence Readiness Snapshot",
+    pointsBoosterSimulator: "Points Booster Simulator",
+    financialRoadmap: "Financial Roadmap",
+    progressionPathways: "Bridge to PR / Typical Progression Pathways",
+    pathwayFriction: "Pathway Friction / Reality Check",
     visa: "Visa",
     difficulty: "Difficulty",
     requirementType: "Requirement Type",
@@ -123,10 +112,7 @@ function getLocalizedText(locale: "en" | "tr") {
     keyVisaRequirements: "Key Visa Requirements",
     executiveSummary: "Executive Summary",
     riskIndicators: "Risk Indicators",
-    documentChecklist: "Document Checklist",
-    pointsEstimate: "Points Estimate",
-    occupationReview: "Occupation Indication",
-    suggestedNextSteps: "Next Steps That Can Be Considered",
+    suggestedNextSteps: "Suggested Next Steps",
     downloadablePdf: "Downloadable PDF",
     factorsAffectingPathways: "Factors that may affect pathways",
     missingInformation: "Missing Information",
@@ -257,21 +243,24 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     return text.lowRisk;
   }
 
-  function formatIndicator(level: "low" | "medium" | "high") {
-    if (level === "high") return text.highRisk;
-    if (level === "medium") return text.mediumRisk;
-    return text.lowRisk;
+  function formatStrength(level: "limited" | "moderate" | "strong") {
+    if (locale === "tr") {
+      return level === "strong" ? "Güçlü" : level === "moderate" ? "Orta" : "Sınırlı";
+    }
+    return level === "strong" ? "Strong" : level === "moderate" ? "Moderate" : "Limited";
   }
 
-  function formatCoverage(level: "basic" | "partial" | "comprehensive") {
+  function formatEvidenceStatus(status: "provided" | "missing" | "unclear" | "typically_required") {
     if (locale === "tr") {
-      if (level === "comprehensive") return "Kapsamli";
-      if (level === "partial") return "Kismi";
-      return "Temel";
+      if (status === "provided") return "Sağlandı";
+      if (status === "missing") return "Eksik";
+      if (status === "typically_required") return "Tipik olarak gerekir";
+      return "Net değil";
     }
-    if (level === "comprehensive") return "Comprehensive";
-    if (level === "partial") return "Partial";
-    return "Basic";
+    if (status === "provided") return "Provided";
+    if (status === "missing") return "Missing";
+    if (status === "typically_required") return "Typically required";
+    return "Unclear";
   }
 
   // Title
@@ -296,31 +285,6 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 5;
   }
 
-  // Compliance-safe indicators
-  addHeading(text.reportIndicators);
-  addBody(
-    `${text.dataCompletenessScore}: ${report.reportIndicators.dataCompletenessLabel} (${report.reportIndicators.dataCompletenessScore}/100)`
-  );
-  addBody(
-    `${text.documentReadinessIndicator}: ${formatIndicator(report.reportIndicators.documentReadinessIndicator)}`
-  );
-  addBody(
-    `${text.informationCoverageLevel}: ${formatCoverage(report.reportIndicators.informationCoverageLevel)}`
-  );
-  addSmallText(report.reportIndicators.explanation, 0);
-  yPosition += 2;
-
-  addHeading(text.primaryGap);
-  addBody(report.primaryGap);
-  yPosition += 2;
-
-  addHeading(text.dataCompleteness);
-  addBody(`${text.completionRate}: ${report.dataCompleteness.percentage}%`);
-  if (report.dataCompleteness.missingFields.length > 0) {
-    addBulletPoints(report.dataCompleteness.missingFields);
-  }
-  yPosition += 3;
-
   // Structured pathway comparison table (from pathwayComparison fields)
   if (report.pathwayComparison.length > 0) {
     addHeading(text.pathwayTable);
@@ -337,6 +301,21 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     });
     yPosition += 3;
   }
+
+  if (report.pathwayStrengthComparison.length > 0) {
+    addHeading(text.pathwayStrengthComparison);
+    report.pathwayStrengthComparison.forEach((item) => {
+      addBody(`${item.visaName} (${item.subclass})`);
+      addSmallText(`${locale === "tr" ? "Güç" : "Strength"}: ${formatStrength(item.strength)}`, 4);
+      addSmallText(`${locale === "tr" ? "Sürtünme" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
+      addSmallText(item.explanation, 4);
+    });
+    yPosition += 3;
+  }
+
+  addHeading(text.confidenceExplanation);
+  addBody(report.confidenceExplanation);
+  yPosition += 3;
 
   // Pathway comparison
   if (report.pathwayComparison.length > 0) {
@@ -399,49 +378,55 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 3;
   }
 
-  // Document checklist
-  if (report.documentChecklist.length > 0) {
-    addHeading(text.documentChecklist);
-    report.documentChecklist.forEach((category) => {
-      addBody(category.category);
-      addBulletPoints(category.items);
-      yPosition += 2;
+  if (report.evidenceReadiness.length > 0) {
+    addHeading(text.evidenceReadiness);
+    report.evidenceReadiness.forEach((item) => {
+      addBody(`${item.category}: ${formatEvidenceStatus(item.status)}`);
+      addSmallText(item.explanation, 4);
     });
     yPosition += 3;
   }
 
-  // Points estimate
-  if (report.pointsEstimate) {
-    addHeading(text.pointsEstimate);
-    if (report.pointsEstimate.estimatedPoints !== undefined) {
-      addBody(`${text.estimatedPoints}: ${report.pointsEstimate.estimatedPoints}`);
+  if (report.pointsBoosterSimulator) {
+    addHeading(text.pointsBoosterSimulator);
+    if (report.pointsBoosterSimulator.currentEstimate !== undefined) {
+      addBody(`${text.estimatedPoints}: ${report.pointsBoosterSimulator.currentEstimate}`);
     }
-    if (report.pointsEstimate.breakdown.length > 0) {
-      report.pointsEstimate.breakdown.forEach((item) => {
-        addBody(`${item.label}: ${item.points} points`);
-        if (item.note) addSmallText(`(${item.note})`, 4);
-      });
-    }
-    addSmallText(report.pointsEstimate.note, 0);
+    addSmallText(report.pointsBoosterSimulator.note, 0);
+    report.pointsBoosterSimulator.scenarios.forEach((scenario) => {
+      addBody(`${scenario.label}: ${scenario.estimatedChange >= 0 ? "+" : ""}${scenario.estimatedChange}`);
+      if (scenario.resultingEstimate !== undefined) {
+        addSmallText(`${locale === "tr" ? "Sonraki matematiksel tahmin" : "Resulting mathematical estimate"}: ${scenario.resultingEstimate}`, 4);
+      }
+      addSmallText(scenario.explanation, 4);
+    });
     yPosition += 3;
   }
 
-  // Occupation indication
-  if (report.occupationIndication) {
-    addHeading(text.occupationReview);
-    if (report.occupationIndication.occupation) {
-      addBody(`${text.occupationLabel}: ${report.occupationIndication.occupation}`);
-    }
-    if (report.occupationIndication.matches.length > 0) {
-      addBody("Matches Found:");
-      report.occupationIndication.matches.forEach((match) => {
-        addBody(match.title);
-        addSmallText(`${text.relevantVisas}: ${match.relevantVisas.join(", ")}`, 4);
-      });
-    } else {
-      addSmallText(text.noData, 0);
-    }
-    addSmallText(report.occupationIndication.note, 0);
+  if (report.financialRoadmap.length > 0) {
+    addHeading(text.financialRoadmap);
+    report.financialRoadmap.forEach((item) => {
+      addBody(`${item.category}: ${item.amountLabel}`);
+      addSmallText(item.explanation, 4);
+    });
+    yPosition += 3;
+  }
+
+  if (report.progressionPathways.length > 0) {
+    addHeading(text.progressionPathways);
+    report.progressionPathways.forEach((item) => {
+      addBody(`${item.label}: ${item.from} -> ${item.to}`);
+      addSmallText(item.explanation, 4);
+    });
+    yPosition += 3;
+  }
+
+  if (report.pathwayFriction.length > 0) {
+    addHeading(text.pathwayFriction);
+    report.pathwayFriction.forEach((item) => {
+      addBody(`${item.pathway}: ${item.frictionType}`);
+      addSmallText(item.explanation, 4);
+    });
     yPosition += 3;
   }
 

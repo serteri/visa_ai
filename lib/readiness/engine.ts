@@ -8,14 +8,20 @@ import type {
   ConfidenceLevel,
   DataCompleteness,
   DocumentCategory,
+  EvidenceReadinessItem,
+  FinancialRoadmapItem,
   InformationCoverageLevel,
   IndicatorLevel,
   KeyVisaRequirement,
   Locale,
   OccupationIndication,
   PathwayComparison,
+  PathwayFriction,
   PathwayRelevance,
+  PathwayStrengthComparison,
+  PointsBoosterSimulator,
   PointsEstimate,
+  ProgressionPathway,
   ReadinessInput,
   ReadinessReport,
   ReportIndicators,
@@ -439,8 +445,8 @@ function getConfidenceExplanation(
         ? `Eğitim amacı net görünüyor ve veri tamamlanma düzeyi (%${dataCompletenessPercentage}) bu güven seviyesini destekliyor.`
         : `Eğitim bağlamı mevcut; ancak veri tamamlanma düzeyi (%${dataCompletenessPercentage}) bu güveni sınırlıyor.`
       : confidenceLevel === "high"
-        ? `Study intent is clear and data completeness (${dataCompletenessPercentage}%) supports this confidence level.`
-        : `There is study context, but data completeness (${dataCompletenessPercentage}%) limits confidence.`;
+        ? `Study intent is clear and the available detail (${dataCompletenessPercentage}%) supports this confidence level.`
+        : `There is study context, but available detail (${dataCompletenessPercentage}%) limits confidence.`;
   }
 
   if (subclass === "482") {
@@ -449,8 +455,8 @@ function getConfidenceExplanation(
         ? `Sponsor ve rol bağlamı mevcut; veri tamamlanma düzeyi (%${dataCompletenessPercentage}) ile birlikte güven destekleniyor.`
         : `Sponsor/rol bağlamı veya veri tamamlanma düzeyi (%${dataCompletenessPercentage}) sınırlı olduğu için güven daha temkinli.`
       : hasSponsorContext && hasOccupation
-        ? `Sponsor and role context are visible, and data completeness (${dataCompletenessPercentage}%) supports this confidence level.`
-        : `Sponsor/role context or data completeness (${dataCompletenessPercentage}%) is limited, so confidence remains cautious.`;
+        ? `Sponsor and role context are visible, and the available detail (${dataCompletenessPercentage}%) supports this confidence level.`
+        : `Sponsor/role context or available detail (${dataCompletenessPercentage}%) is limited, so confidence remains cautious.`;
   }
 
   if (["189", "190", "491"].includes(subclass)) {
@@ -464,7 +470,7 @@ function getConfidenceExplanation(
           : `partial points picture is ${estimatedPoints}`;
     return isTr
       ? `Güven seviyesi; yaş/İngilizce/meslek girdileri, ${pointsText} ve veri tamamlanma düzeyi (%${dataCompletenessPercentage}) ile göstergesel olarak hesaplanmıştır.`
-      : `Confidence is estimated indicatively from age/English/occupation inputs, ${pointsText}, and data completeness (${dataCompletenessPercentage}%).`;
+      : `Confidence is estimated indicatively from age/English/occupation inputs, ${pointsText}, and available detail (${dataCompletenessPercentage}%).`;
   }
 
   if (subclass === "820_801") {
@@ -473,15 +479,15 @@ function getConfidenceExplanation(
         ? `İlişki/sponsor bağlamı mevcut ve veri tamamlanma düzeyi (%${dataCompletenessPercentage}) güveni destekliyor.`
         : `İlişki/sponsor bağlamı veya veri tamamlanma düzeyi (%${dataCompletenessPercentage}) sınırlı olduğu için güven düşüktür.`
       : hasSponsorContext
-        ? `Confidence is stronger with relationship/sponsor context and current data completeness (${dataCompletenessPercentage}%).`
-        : `Confidence is lower when relationship/sponsor context or data completeness (${dataCompletenessPercentage}%) is limited.`;
+        ? `Confidence is stronger with relationship/sponsor context and current available detail (${dataCompletenessPercentage}%).`
+        : `Confidence is lower when relationship/sponsor context or available detail (${dataCompletenessPercentage}%) is limited.`;
   }
 
   const knownSignals = [hasAge, hasEnglish, hasOccupation, hasSponsorContext].filter(Boolean)
     .length;
   return isTr
     ? `Güven seviyesi, mevcut ${knownSignals}/4 ana sinyal ve %${dataCompletenessPercentage} veri tamamlanma düzeyi ile genel bir gösterge olarak oluşturuldu.`
-    : `Confidence is shown as a general indicator based on ${knownSignals}/4 core signals and ${dataCompletenessPercentage}% data completeness.`;
+    : `Confidence is shown as a general indicator based on ${knownSignals}/4 core signals and ${dataCompletenessPercentage}% available detail.`;
 }
 
 // ─── Pathway reason builder ───────────────────────────────────────────────────
@@ -793,7 +799,7 @@ function buildDocumentReadinessIndicator(input: ReadinessInput): IndicatorLevel 
 function buildInformationCoverageLevel(dataCompletenessScore: number): InformationCoverageLevel {
   if (dataCompletenessScore >= 80) return "comprehensive";
   if (dataCompletenessScore >= 50) return "partial";
-  return "basic";
+  return "initial";
 }
 
 function buildReportIndicators(params: {
@@ -810,7 +816,7 @@ function buildReportIndicators(params: {
   const informationCoverageLevel = buildInformationCoverageLevel(dataCompletenessScore);
   const explanation = isTr
     ? "Bu göstergeler yalnızca bilgi tamamlanmasını yansıtır ve vize sonucunu garanti etmez."
-    : "These indicators reflect information completeness only and do not guarantee visa outcomes.";
+    : "These indicators reflect information coverage only and do not predict visa outcomes.";
 
   return {
     dataCompletenessScore,
@@ -836,7 +842,7 @@ function buildPrimaryGap(params: {
   if (hasSkilled && pointsEstimate?.estimatedPoints !== undefined && pointsEstimate.estimatedPoints < 65) {
     return isTr
       ? "Birincil boşluk: Mevcut kısmi puan görünümü puan testli yollar için sınırlayıcı kalıyor."
-      : "Primary gap: The current partial points picture remains a limiting factor for points-tested pathways.";
+      : "Internal signal: The current partial points picture remains a limiting factor for points-tested pathways.";
   }
 
   const priorityMissing = [
@@ -855,25 +861,25 @@ function buildPrimaryGap(params: {
   if (majorMissing) {
     return isTr
       ? `Birincil boşluk: ${majorMissing} alanı netleşmeden karşılaştırmalı değerlendirme sınırlı kalır.`
-      : `Primary gap: Comparative assessment remains limited until ${majorMissing} is clarified.`;
+      : `Internal signal: Comparative assessment remains limited until ${majorMissing} is clarified.`;
   }
 
   const highRisk = riskIndicators.find((risk) => risk.level === "high");
   if (highRisk) {
     return isTr
       ? `Birincil boşluk: "${highRisk.title}" başlığındaki risk etkisi baskın görünüyor.`
-      : `Primary gap: The risk signal in "${highRisk.title}" appears to be the dominant limiter.`;
+      : `Internal signal: The risk signal in "${highRisk.title}" appears to be the dominant limiter.`;
   }
 
   if (dataCompleteness.percentage < 60) {
     return isTr
       ? `Birincil boşluk: Veri tamamlanma düzeyi (%${dataCompleteness.percentage}) karar-destek sinyallerini sınırlıyor.`
-      : `Primary gap: Data completeness (${dataCompleteness.percentage}%) is limiting the decision-support signal strength.`;
+      : `Internal signal: Available detail (${dataCompleteness.percentage}%) is limiting the decision-support signal strength.`;
   }
 
   return isTr
     ? "Birincil boşluk: Karşılaştırmalı tabloyu güçlendirecek ek kişisel bağlam ihtiyacı."
-    : "Primary gap: Additional personal context is needed to strengthen the comparison table.";
+    : "Internal signal: Additional personal context is needed to strengthen the comparison table.";
 }
 
 function buildFactorsAffectingPathways(
@@ -1237,6 +1243,391 @@ function buildExecutiveSummary(
   return items;
 }
 
+function buildPathwayStrengthComparison(
+  pathways: PathwayComparison[],
+  locale: Locale
+): PathwayStrengthComparison[] {
+  const isTr = locale === "tr";
+
+  function strengthFor(pathway: PathwayComparison): "limited" | "moderate" | "strong" {
+    if (pathway.confidenceLevel === "high" && pathway.difficulty !== "high") return "strong";
+    if (pathway.confidenceLevel === "low" || pathway.relevance !== "possible") return "limited";
+    return "moderate";
+  }
+
+  return pathways.map((pathway) => {
+    const strength = strengthFor(pathway);
+    const friction = pathway.difficulty === "high" ? "high" : pathway.difficulty === "medium" ? "medium" : "low";
+    const strengthLabel = isTr
+      ? strength === "strong"
+        ? "güçlü"
+        : strength === "moderate"
+          ? "orta"
+          : "sınırlı"
+      : strength;
+    const frictionLabel = isTr
+      ? friction === "high"
+        ? "yüksek"
+        : friction === "medium"
+          ? "orta"
+          : "düşük"
+      : friction;
+
+    return {
+      subclass: pathway.subclass,
+      visaName: pathway.visaName,
+      strength,
+      friction,
+      explanation: isTr
+        ? `${pathway.visaName} için sinyal ${strengthLabel} görünüyor; sürtünme seviyesi ${frictionLabel}. Bu, mevcut forma girilen bilgilere göre genel bir karşılaştırmadır.`
+        : `${pathway.visaName} shows a ${strengthLabel} signal with ${frictionLabel} friction. This is a general comparison based on the details provided.`,
+    };
+  });
+}
+
+function buildEvidenceReadiness(
+  input: ReadinessInput,
+  subclasses: string[],
+  locale: Locale
+): EvidenceReadinessItem[] {
+  const isTr = locale === "tr";
+  const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
+  const has482 = subclasses.includes("482");
+  const hasPartner = subclasses.includes("820_801");
+  const items: EvidenceReadinessItem[] = [
+    {
+      category: isTr ? "Kimlik ve pasaport" : "Identity and passport",
+      status: input.passportCountry ? "provided" : "typically_required",
+      explanation: isTr
+        ? input.passportCountry
+          ? "Pasaport ülkesi sağlandı; kimlik belgeleri tipik olarak ayrıca hazırlanır."
+          : "Kimlik ve pasaport belgeleri tipik olarak gerekir."
+        : input.passportCountry
+          ? "Passport country was provided; identity documents are typically prepared separately."
+          : "Identity and passport evidence is typically required.",
+    },
+    {
+      category: isTr ? "İngilizce kanıtı" : "English evidence",
+      status: input.englishLevel ? "provided" : hasSkilled || has482 ? "missing" : "unclear",
+      explanation: isTr
+        ? input.englishLevel
+          ? "İngilizce seviyesi formda belirtildi."
+          : hasSkilled || has482
+            ? "Yetenekli veya işveren odaklı yollarda İngilizce kanıtı genellikle değerlendirilir."
+            : "Bu yolda İngilizce kanıtının rolü bağlama göre değişebilir."
+        : input.englishLevel
+          ? "English level was provided in the form."
+          : hasSkilled || has482
+            ? "English evidence is commonly considered for skilled or employer-sponsored pathways."
+            : "The role of English evidence depends on pathway context.",
+    },
+    {
+      category: isTr ? "Meslek ve beceri kanıtı" : "Occupation and skills evidence",
+      status: input.occupation ? (input.occupationConfirmed === "yes" ? "provided" : "unclear") : hasSkilled || has482 ? "missing" : "unclear",
+      explanation: isTr
+        ? input.occupation
+          ? "Meslek bilgisi sağlandı; beceri değerlendirmesi veya deneyim kanıtı ayrıca değişebilir."
+          : "Meslek bilgisi özellikle yetenekli ve işveren odaklı yollar için önemlidir."
+        : input.occupation
+          ? "Occupation was provided; skills assessment or work evidence may still vary by pathway."
+          : "Occupation detail is important for skilled and employer-sponsored pathways.",
+    },
+  ];
+
+  if (has482 || hasPartner) {
+    items.push({
+      category: isTr ? "Sponsorluk kanıtı" : "Sponsorship evidence",
+      status: input.sponsorOrFamily ? "provided" : "missing",
+      explanation: isTr
+        ? "İşveren veya partner sponsorluğu içeren yollar için sponsorluk bağlamı merkezi olabilir."
+        : "Sponsorship context can be central for employer or partner pathways.",
+    });
+  }
+
+  if (hasPartner) {
+    items.push({
+      category: isTr ? "İlişki kanıtı" : "Relationship evidence",
+      status: input.sponsorOrFamily || hasKw(input.mainGoal ?? "", ["partner", "spouse", "eş", "ilişki"]) ? "unclear" : "missing",
+      explanation: isTr
+        ? "820/801 için ilişki kanıtı kategorileri tipik olarak ayrıntılı şekilde değerlendirilir."
+        : "Relationship evidence categories are typically reviewed in detail for 820/801.",
+    });
+  }
+
+  items.push({
+    category: isTr ? "Sağlık, karakter ve çeviri belgeleri" : "Health, character, and translation documents",
+    status: "typically_required",
+    explanation: isTr
+      ? "Sağlık kontrolleri, polis belgeleri ve çeviriler yol ve kişisel duruma göre değişebilir."
+      : "Health checks, police certificates, and translations can vary by pathway and individual circumstances.",
+  });
+
+  return items;
+}
+
+function buildPointsBoosterSimulator(
+  input: ReadinessInput,
+  subclasses: string[],
+  pointsEstimate: PointsEstimate | undefined,
+  locale: Locale
+): PointsBoosterSimulator | undefined {
+  const isTr = locale === "tr";
+  const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
+  if (!hasSkilled) return undefined;
+
+  const currentEstimate = pointsEstimate?.estimatedPoints;
+  const scenarios: PointsBoosterSimulator["scenarios"] = [];
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const ageOption = input.age ? parseAgeOption(input.age) : null;
+
+  if (englishOption === "competent" || englishOption === "proficient") {
+    scenarios.push({
+      label: isTr ? "İngilizce seviyesi senaryosu" : "English level scenario",
+      estimatedChange: 10,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 10,
+      explanation: isTr
+        ? `İngilizce faktörü ${englishOption === "competent" ? "proficient" : "superior"} düzeye değişirse matematiksel puan konumu +10 değişebilir.`
+        : `If the English factor changes to ${englishOption === "competent" ? "proficient" : "superior"}, the mathematical score position may change by +10.`,
+    });
+  }
+
+  if (subclasses.includes("190")) {
+    scenarios.push({
+      label: isTr ? "190 adaylık puanı senaryosu" : "190 nomination points scenario",
+      estimatedChange: 5,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
+      explanation: isTr
+        ? "190 eyalet/bölge adaylığı faktörü mevcut olursa matematiksel puan konumu +5 değişebilir."
+        : "If the 190 state or territory nomination factor is present, the mathematical score position may change by +5.",
+    });
+  }
+
+  if (subclasses.includes("491")) {
+    scenarios.push({
+      label: isTr ? "491 adaylık/sponsorluk puanı senaryosu" : "491 nomination/sponsorship points scenario",
+      estimatedChange: 15,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 15,
+      explanation: isTr
+        ? "491 adaylık veya uygun akraba sponsorluğu faktörü mevcut olursa matematiksel puan konumu +15 değişebilir."
+        : "If the 491 nomination or relative sponsorship factor is present, the mathematical score position may change by +15.",
+    });
+  }
+
+  if (ageOption === "18_24" || ageOption === "40_44") {
+    const estimatedChange = ageOption === "18_24" ? 5 : -10;
+    scenarios.push({
+      label: isTr ? "Yaş bandı senaryosu" : "Age band scenario",
+      estimatedChange,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + estimatedChange,
+      explanation: isTr
+        ? "Yaş bandı değişirse puan tablosundaki matematiksel konum da değişebilir."
+        : "If the age band changes, the mathematical position in the points table may also change.",
+    });
+  }
+
+  if (scenarios.length === 0) {
+    scenarios.push({
+      label: isTr ? "Eksik puan faktörleri" : "Missing points-table factors",
+      estimatedChange: 0,
+      resultingEstimate: currentEstimate,
+      explanation: isTr
+        ? "İstihdam, eğitim, partner ve bonus faktörleri sağlanmadığı için ek matematiksel senaryo hesaplanmadı."
+        : "Employment, education, partner, and bonus factors were not provided, so no additional mathematical scenario was calculated.",
+    });
+  }
+
+  return {
+    currentEstimate,
+    scenarios,
+    note: isTr
+      ? "Bir puan tablosu faktörü değişirse matematiksel puan konumu aşağıdaki gibi değişebilir. Bu yalnızca genel bilgidir."
+      : "If a points-table factor changes, the mathematical score position may change as follows. This is general information only.",
+  };
+}
+
+function buildFinancialRoadmap(
+  subclasses: string[],
+  input: ReadinessInput,
+  locale: Locale
+): FinancialRoadmapItem[] {
+  const isTr = locale === "tr";
+  const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
+  const has482 = subclasses.includes("482");
+  const variable = isTr ? "Değişken / sağlayıcıya bağlı" : "Variable / depends on provider";
+  const items: FinancialRoadmapItem[] = [
+    {
+      category: isTr ? "Devlet başvuru ücreti" : "Government application charge",
+      estimateType: "official_fee",
+      amountLabel: input.estimatedBudgetRange || (isTr ? "Resmi ücret yol ve tarihe göre değişir" : "Official fee varies by pathway and date"),
+      explanation: isTr
+        ? "Resmi devlet ücretleri ve tahmini üçüncü taraf maliyet kategorileri birlikte değerlendirilir."
+        : "Official government fees and estimated third-party cost categories are considered together.",
+    },
+    {
+      category: isTr ? "İngilizce test maliyet kategorisi" : "English test cost category",
+      estimateType: "third_party_estimate",
+      amountLabel: variable,
+      explanation: isTr
+        ? "Test sağlayıcısı, lokasyon ve tekrar sayısı maliyeti etkileyebilir."
+        : "Provider, location, and repeat attempts can affect this cost category.",
+    },
+  ];
+
+  if (hasSkilled || has482) {
+    items.push({
+      category: isTr ? "Beceri değerlendirmesi maliyet kategorisi" : "Skills assessment cost category",
+      estimateType: "third_party_estimate",
+      amountLabel: isTr ? "Değişken / değerlendirme kurumuna bağlı" : "Variable / depends on assessing authority",
+      explanation: isTr
+        ? "Meslek ve değerlendirme kurumu maliyet aralığını etkileyebilir."
+        : "Occupation and assessing authority can affect the cost range.",
+    });
+  }
+
+  items.push(
+    {
+      category: isTr ? "Sağlık kontrolleri / polis belgeleri" : "Health checks / police certificates",
+      estimateType: "variable",
+      amountLabel: isTr ? "Değişken / ülke ve sağlayıcıya bağlı" : "Variable / depends on country and provider",
+      explanation: isTr
+        ? "Kişisel geçmiş ve başvuru yeri maliyet kategorisini değiştirebilir."
+        : "Personal history and application location may change this cost category.",
+    },
+    {
+      category: isTr ? "Çeviri / belge hazırlığı" : "Translation / document preparation",
+      estimateType: "variable",
+      amountLabel: isTr ? "Değişken / belge sayısına bağlı" : "Variable / depends on document volume",
+      explanation: isTr
+        ? "İngilizce olmayan belgeler ve belge sayısı maliyeti etkileyebilir."
+        : "Non-English documents and document volume can affect this cost category.",
+    }
+  );
+
+  return items;
+}
+
+function buildProgressionPathways(
+  subclasses: string[],
+  locale: Locale
+): ProgressionPathway[] {
+  const isTr = locale === "tr";
+  const items: ProgressionPathway[] = [];
+
+  if (subclasses.includes("500")) {
+    items.push({
+      from: "500",
+      to: "485 / 189 / 190 / 491",
+      label: isTr ? "Öğrenci sonrası tipik seçenekler" : "Typical post-study options",
+      explanation: isTr
+        ? "Avustralya sistemindeki tipik geçiş yolları 500 → 485 → 189/190/491 seçeneklerini içerebilir. Bu PR vaadi değildir."
+        : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This does not promise PR.",
+    });
+  }
+  if (subclasses.includes("482")) {
+    items.push({
+      from: "482",
+      to: "Employer-sponsored permanent pathways",
+      label: isTr ? "İşveren sponsorlu kalıcı seçenekler" : "Employer-sponsored permanent options",
+      explanation: isTr
+        ? "482 sonrası işveren sponsorlu kalıcı yollar bazı durumlarda ilgili olabilir; kriterler ve işveren bağlamı belirleyicidir."
+        : "After 482, employer-sponsored permanent pathways may be relevant in some cases; criteria and employer context matter.",
+    });
+  }
+  if (subclasses.includes("491")) {
+    items.push({
+      from: "491",
+      to: "191",
+      label: isTr ? "Bölgesel geçiş bağlamı" : "Regional progression context",
+      explanation: isTr
+        ? "491 → 191 ilgili dönem ve kriterler karşılanırsa tipik bir sistem geçişi olarak değerlendirilebilir."
+        : "491 → 191 may be considered a typical system progression after the relevant period if criteria are met.",
+    });
+  }
+  if (subclasses.includes("820_801")) {
+    items.push({
+      from: "820",
+      to: "801",
+      label: isTr ? "Partner yolu aşamaları" : "Partner pathway stages",
+      explanation: isTr
+        ? "820 geçici aşama ve 801 kalıcı aşama aynı onshore partner yolunun tipik aşamalarıdır."
+        : "820 temporary stage and 801 permanent stage are typical stages of the same onshore partner pathway.",
+    });
+  }
+
+  if (items.length === 0) {
+    items.push({
+      from: isTr ? "Mevcut bilgiler" : "Current information",
+      to: isTr ? "Daha net yol bağlamı" : "Clearer pathway context",
+      label: isTr ? "Tipik geçiş bağlamı net değil" : "Typical progression context is unclear",
+      explanation: isTr
+        ? "Tipik geçiş yolları, daha net hedef ve vize ilgisi sağlandığında daha anlamlı şekilde gösterilebilir."
+        : "Typical progression pathways can be shown more meaningfully when clearer goal and visa-interest details are provided.",
+    });
+  }
+
+  return items;
+}
+
+function buildPathwayFriction(
+  pathways: PathwayComparison[],
+  locale: Locale
+): PathwayFriction[] {
+  const isTr = locale === "tr";
+  return pathways.map((pathway) => {
+    const visaLabel =
+      pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName} (${pathway.subclass})`;
+    const detail: Record<string, { en: string; tr: string }> = {
+      "500": {
+        en: "Course enrolment, OSHC, and genuine student settings may affect this pathway.",
+        tr: "Kurs kaydı, OSHC ve gerçek öğrenci ayarları bu yolu etkileyebilir.",
+      },
+      "482": {
+        en: "Employer sponsorship context is central to this pathway.",
+        tr: "İşveren sponsorluğu bağlamı bu yol için merkezi önemdedir.",
+      },
+      "189": {
+        en: "Invitation rounds and points competition may affect this pathway.",
+        tr: "Davet dönemleri ve puan rekabeti bu yolu etkileyebilir.",
+      },
+      "190": {
+        en: "State or territory nomination settings may affect this pathway.",
+        tr: "Eyalet veya bölge adaylık ayarları bu yolu etkileyebilir.",
+      },
+      "491": {
+        en: "Regional requirements and nomination or sponsorship context may affect this pathway.",
+        tr: "Bölgesel gereklilikler ve adaylık veya sponsorluk bağlamı bu yolu etkileyebilir.",
+      },
+      "820_801": {
+        en: "Relationship evidence is central to this pathway.",
+        tr: "İlişki kanıtı bu yol için merkezi önemdedir.",
+      },
+      general: {
+        en: "More detail is needed before pathway friction can be compared.",
+        tr: "Yol sürtünmesi karşılaştırılmadan önce daha fazla ayrıntı gerekir.",
+      },
+    };
+    const selected = detail[pathway.subclass] ?? detail.general;
+    return {
+      pathway: visaLabel,
+      frictionType: isTr ? "Gerçeklik kontrolü" : "Reality check",
+      explanation: isTr ? selected.tr : selected.en,
+    };
+  });
+}
+
+function buildConfidenceExplanation(
+  pathways: PathwayComparison[],
+  evidenceReadiness: EvidenceReadinessItem[],
+  locale: Locale
+): string {
+  const isTr = locale === "tr";
+  const strongCount = pathways.filter((pathway) => pathway.confidenceLevel === "high").length;
+  const missingEvidence = evidenceReadiness.filter((item) => item.status === "missing").length;
+  return isTr
+    ? `Güven açıklaması; yol sinyalleri, kanıt hazırlığı ve sürtünme faktörlerine göre oluşturulur. ${strongCount} yol güçlü sinyal gösteriyor; ${missingEvidence} kanıt alanı eksik görünüyor. Bu yalnızca genel bilgidir.`
+    : `Confidence is explained using pathway signals, evidence readiness, and friction factors. ${strongCount} pathway(s) show strong signals; ${missingEvidence} evidence area(s) appear missing. This is general information only.`;
+}
+
 // ─── Main engine ──────────────────────────────────────────────────────────────
 
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
@@ -1357,6 +1748,39 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     missingInformation,
     pointsEstimate?.estimatedPoints
   );
+  const pathwayStrengthComparison = buildPathwayStrengthComparison(
+    pathwayComparison,
+    locale
+  );
+  const evidenceReadiness = buildEvidenceReadiness(
+    input,
+    detectedSubclasses,
+    locale
+  );
+  const pointsBoosterSimulator = buildPointsBoosterSimulator(
+    input,
+    detectedSubclasses,
+    pointsEstimate,
+    locale
+  );
+  const financialRoadmap = buildFinancialRoadmap(
+    detectedSubclasses,
+    input,
+    locale
+  );
+  const progressionPathways = buildProgressionPathways(
+    detectedSubclasses,
+    locale
+  );
+  const pathwayFriction = buildPathwayFriction(
+    pathwayComparison,
+    locale
+  );
+  const confidenceExplanation = buildConfidenceExplanation(
+    pathwayComparison,
+    evidenceReadiness,
+    locale
+  );
 
   const suggestedNextSteps = buildNextSteps({
     locale,
@@ -1374,6 +1798,13 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   return {
     executiveSummary,
     pathwayComparison,
+    pathwayStrengthComparison,
+    evidenceReadiness,
+    pointsBoosterSimulator,
+    financialRoadmap,
+    progressionPathways,
+    pathwayFriction,
+    confidenceExplanation,
     reportIndicators,
     primaryGap,
     dataCompleteness,

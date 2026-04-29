@@ -203,7 +203,7 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section id="full-check-preview" className="space-y-4">
+      <section id="full-check" className="space-y-4">
         <div className="space-y-2">
           <Badge variant="outline">{t("premiumCta.badge")}</Badge>
           <h2 className="text-2xl font-bold">{t("premiumCta.title")}</h2>

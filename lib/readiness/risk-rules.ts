@@ -129,7 +129,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
       level: "high",
       title: isTr
         ? "Puan tahmini eşiğin altında"
-        : "Points estimate below minimum threshold",
+        : "Points-table position below minimum threshold",
       explanation: isTr
         ? `Mevcut bilgiye dayanarak tahmini puan ${ctx.estimatedPoints}. Yetenekli yollar için genellikle 65 minimum olarak belirtilmekte olup davet eşikleri bunun üzerinde olabilir. Bu yalnızca kısmi bir tahmindir ve kişisel duruma göre değişebilir.`
         : `Based on available information, estimated points are ${ctx.estimatedPoints}. Skilled pathways generally list 65 as the minimum and invitation thresholds may be higher. This is a partial estimate only and depends on individual circumstances.`,
