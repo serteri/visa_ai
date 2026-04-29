@@ -37,6 +37,31 @@ export function getDocumentChecklist(
     });
   }
 
+  if (subclasses.includes("485")) {
+    categories.push({
+      category: isTr ? "485 Geçici Mezun Vizesi" : "485 Temporary Graduate Visa",
+      items: isTr
+        ? [
+            "CRICOS kayıtlı kurumdan tamamlanan nitelik belgesi ve transkript",
+            "Son 6 ayda öğrenci vizesi (500) tutulduğuna dair kanıt",
+            "İngilizce dil testi sonuçları (minimum eşikler uygulanır)",
+            "Sağlık sigortası (Yurt dışı Öğrenci Sağlık Sigortası veya eşdeğeri)",
+            "Avustralya polis taraması sertifikası",
+            "Gerekiyorsa yurt dışı polis sertifikaları",
+            "Gerekiyorsa sağlık muayenesi sonuçları",
+          ]
+        : [
+            "Qualification certificate and transcript from CRICOS-registered institution",
+            "Evidence of having held a Student visa (subclass 500) in the last 6 months",
+            "English language test results (minimum thresholds apply)",
+            "Health insurance (Overseas Student Health Cover or equivalent)",
+            "Australian police clearance certificate",
+            "Overseas police certificates if required",
+            "Health examination results if requested",
+          ],
+    });
+  }
+
   if (subclasses.includes("482")) {
     categories.push({
       category: isTr ? "482 Skills in Demand Vizesi" : "482 Skills in Demand Visa",

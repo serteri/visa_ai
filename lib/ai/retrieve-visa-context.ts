@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
 
 export type RetrievedVisaRecord = {
-  subclass: "500" | "482" | "189" | "190" | "491" | "820_801";
+  subclass: "500" | "485" | "482" | "189" | "190" | "491" | "820_801";
   visa_name: string;
   category: string;
   purpose: string | null;
@@ -55,8 +55,9 @@ function unique(values: string[]): string[] {
   return Array.from(new Set(values));
 }
 
-const SUBCLASS_ORDER: Array<"500" | "482" | "189" | "190" | "491" | "820_801"> = [
+const SUBCLASS_ORDER: Array<"500" | "485" | "482" | "189" | "190" | "491" | "820_801"> = [
   "500",
+  "485",
   "482",
   "189",
   "190",
@@ -66,14 +67,15 @@ const SUBCLASS_ORDER: Array<"500" | "482" | "189" | "190" | "491" | "820_801"> =
 
 function detectSubclasses(
   message: string
-): Array<"500" | "482" | "189" | "190" | "491" | "820_801"> {
+): Array<"500" | "485" | "482" | "189" | "190" | "491" | "820_801"> {
   const lower = normalize(message);
-  const matches = new Set<"500" | "482" | "189" | "190" | "491" | "820_801">();
+  const matches = new Set<"500" | "485" | "482" | "189" | "190" | "491" | "820_801">();
 
-  const explicit = lower.match(/\b(500|482|189|190|491|820|801)\b/g) ?? [];
+  const explicit = lower.match(/\b(500|485|482|189|190|491|820|801)\b/g) ?? [];
   for (const value of explicit) {
     if (
       value === "500" ||
+      value === "485" ||
       value === "482" ||
       value === "189" ||
       value === "190" ||
@@ -88,6 +90,19 @@ function detectSubclasses(
   const mentions500 = ["500", "student", "study", "course"].some((token) => hasWord(lower, token));
   if (mentions500) {
     matches.add("500");
+  }
+
+  const mentions485 =
+    hasWord(lower, "485") ||
+    hasPhrase(lower, "graduate visa") ||
+    hasPhrase(lower, "post study visa") ||
+    hasPhrase(lower, "post-study visa") ||
+    hasPhrase(lower, "after study australia") ||
+    hasPhrase(lower, "after study") ||
+    hasPhrase(lower, "temporary graduate") ||
+    hasPhrase(lower, "485 visa");
+  if (mentions485) {
+    matches.add("485");
   }
 
   const mentions482 = ["482", "work", "sponsor", "employer"].some((token) => hasWord(lower, token));
@@ -225,7 +240,7 @@ export async function retrieveVisaContext(input: { message: string }): Promise<R
       );
 
       return {
-        subclass: visa.subclass as "500" | "482" | "189" | "190" | "491" | "820_801",
+        subclass: visa.subclass as "500" | "485" | "482" | "189" | "190" | "491" | "820_801",
         visa_name: visa.visa_name,
         category: visa.category,
         purpose: visa.purpose,
@@ -255,7 +270,8 @@ export async function retrieveVisaContext(input: { message: string }): Promise<R
     .sort(
       (a, b) =>
         SUBCLASS_ORDER.indexOf(a.subclass) - SUBCLASS_ORDER.indexOf(b.subclass)
-    );
+    )
+    .filter((r) => SUBCLASS_ORDER.includes(r.subclass));
 
   return records;
 }

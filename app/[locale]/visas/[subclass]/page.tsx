@@ -1,3 +1,4 @@
+import type React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
@@ -825,36 +826,60 @@ function PathwaySection({ data }: { data: unknown }) {
   }
 
   const pathway = data as Record<string, unknown>;
-  const stage1 = pathway.stage_1 as Record<string, unknown> | undefined;
-  const stage2 = pathway.stage_2 as Record<string, unknown> | undefined;
+
+  const renderStageBox = (label: string, stage: unknown) => {
+    if (!stage) return null;
+    if (typeof stage === "string") {
+      return (
+        <div className="rounded-md border border-border/70 p-3">
+          <p className="text-sm font-semibold">{label}</p>
+          <p className="text-sm text-muted-foreground">{stage}</p>
+        </div>
+      );
+    }
+    const s = stage as Record<string, unknown>;
+    const subclassStr = s.subclass != null ? String(s.subclass) : null;
+    const typeStr = s.type != null ? String(s.type) : null;
+    return (
+      <div className="rounded-md border border-border/70 p-3">
+        <p className="text-sm font-semibold">{label}</p>
+        {subclassStr && (
+          <p className="text-sm text-muted-foreground">Subclass: {subclassStr}</p>
+        )}
+        {typeStr && (
+          <p className="text-sm text-muted-foreground">Type: {typeStr}</p>
+        )}
+        {typeof s.description === "string" && (
+          <p className="text-sm text-muted-foreground">{s.description}</p>
+        )}
+      </div>
+    );
+  };
+
+  const rawStages: Array<{ label: string; stageData: unknown } | null> = [
+    pathway.stage_1 != null ? { label: "Stage 1", stageData: pathway.stage_1 } : null,
+    pathway.stage_2 != null ? { label: "Stage 2", stageData: pathway.stage_2 } : null,
+    pathway.stage_3 != null ? { label: "Stage 3", stageData: pathway.stage_3 } : null,
+  ];
+  const stageEntries = rawStages.filter(
+    (e): e is { label: string; stageData: unknown } => e !== null
+  );
 
   return (
     <div className="space-y-4">
-      {stage1 && (
-        <div className="rounded-md border border-border/70 p-3">
-          <p className="text-sm font-semibold">Stage 1</p>
-          <p className="text-sm text-muted-foreground">Subclass: {String(stage1.subclass ?? "-")}</p>
-          <p className="text-sm text-muted-foreground">Type: {String(stage1.type ?? "-")}</p>
-          {typeof stage1.description === "string" && (
-            <p className="text-sm text-muted-foreground">{String(stage1.description)}</p>
+      {stageEntries.map((entry, i) => (
+        <div key={i} className="space-y-4">
+          {renderStageBox(entry.label, entry.stageData)}
+          {i < stageEntries.length - 1 && (
+            <p className="text-center text-sm font-semibold text-muted-foreground">{"→"}</p>
           )}
         </div>
-      )}
-      {stage1 && stage2 && (
-        <p className="text-center text-sm font-semibold text-muted-foreground">820 -&gt; 801</p>
-      )}
-      {stage2 && (
-        <div className="rounded-md border border-border/70 p-3">
-          <p className="text-sm font-semibold">Stage 2</p>
-          <p className="text-sm text-muted-foreground">Subclass: {String(stage2.subclass ?? "-")}</p>
-          <p className="text-sm text-muted-foreground">Type: {String(stage2.type ?? "-")}</p>
-          {typeof stage2.description === "string" && (
-            <p className="text-sm text-muted-foreground">{String(stage2.description)}</p>
-          )}
-        </div>
-      )}
+      ))}
       {"summary" in pathway && typeof pathway.summary === "string" && (
         <p className="text-sm text-muted-foreground">{pathway.summary}</p>
+      )}
+      {"progression_note" in pathway && typeof pathway.progression_note === "string" && (
+        <p className="text-xs italic text-muted-foreground">{pathway.progression_note}</p>
       )}
       {"permanent_stage_timing_note" in pathway &&
         typeof pathway.permanent_stage_timing_note === "string" && (
@@ -915,6 +940,18 @@ export default async function VisaDetailsPage({ params }: PageProps) {
       title: "Financial requirements",
       content: <FinancialRequirementsSection data={structured?.financial_requirements} />,
     },
+    ...(structured?.raw_json && typeof structured.raw_json === "object" && "eligibility" in structured.raw_json
+      ? [
+          {
+            title: "Eligibility",
+            content: (
+              <StructuredJsonSection
+                data={(structured.raw_json as Record<string, unknown>).eligibility}
+              />
+            ),
+          },
+        ]
+      : []),
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "occupation_requirements" in structured.raw_json
       ? [
           {

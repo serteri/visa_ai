@@ -64,6 +64,7 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // Explicit subclass numbers first
   const pref = norm(input.preferredPathway ?? "");
   if (/\b500\b/.test(pref)) found.add("500");
+  if (/\b485\b/.test(pref)) found.add("485");
   if (/\b482\b/.test(pref)) found.add("482");
   if (/\b189\b/.test(pref)) found.add("189");
   if (/\b190\b/.test(pref)) found.add("190");
@@ -73,6 +74,27 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // Study → 500
   if (hasKw(combined, ["study", "student", "course", "university", "college", "school", "eğitim", "öğrenci", "okul"])) {
     found.add("500");
+  }
+
+  // Graduate/post-study → 485
+  if (
+    hasKw(combined, [
+      "485",
+      "graduate visa",
+      "post study",
+      "post-study",
+      "after study",
+      "temporary graduate",
+      "graduated",
+      "graduate work",
+      "485 visa",
+      "mezun",
+      "geçici mezun",
+    ]) ||
+    (hasKw(combined, ["study", "student", "eğitim", "öğrenci"]) &&
+      hasKw(norm(input.currentCountry ?? ""), ["australia", "avustralya"]))
+  ) {
+    found.add("485");
   }
 
   // Sponsor/employer → 482
@@ -148,6 +170,7 @@ function detectSubclasses(input: ReadinessInput): string[] {
 
 const VISA_NAMES: Record<string, { en: string; tr: string }> = {
   "500": { en: "Student Visa", tr: "Öğrenci Vizesi" },
+  "485": { en: "Temporary Graduate Visa (subclass 485)", tr: "Geçici Mezun Vizesi (subclass 485)" },
   "482": { en: "Skills in Demand Visa", tr: "Skills in Demand Vizesi" },
   "189": { en: "Skilled Independent Visa", tr: "Yetenekli Bağımsız Vize" },
   "190": { en: "Skilled Nominated Visa", tr: "Yetenekli Aday Gösterilen Vize" },
@@ -173,6 +196,18 @@ function getPathwayKeyRequirements(
             "A registered education provider and course context",
             "Supporting information relevant to genuine student intent",
             "Financial capacity and study plan context",
+          ];
+    case "485":
+      return isTr
+        ? [
+            "Tamamlanmış uygun Avustralya niteliği ve CRICOS kayıtlı kurum bağlamı",
+            "Son 6 ayda öğrenci vizesi (500) tutulduğuna ilişkin kanıt",
+            "İngilizce eşik gereksinimlerine ilişkin bilgiler ve yaş uygunluğu bağlamı",
+          ]
+        : [
+            "Completed eligible Australian qualification from a CRICOS-registered institution",
+            "Evidence of having held a Student visa (subclass 500) in the last 6 months",
+            "Information relevant to English threshold requirements and age eligibility context",
           ];
     case "482":
       return isTr
@@ -263,6 +298,21 @@ function getPathwaySpecificRisks(
         isTr
           ? "Mevcut ülke bağlamı olmadan öğrenci konumuna ilişkin değerlendirme sınırlı kalır."
           : "Without current-country context, the student-position review remains limited."
+      );
+    }
+  }
+
+  if (subclass === "485") {
+    risks.push(
+      isTr
+        ? "İstihdam sonuçları ve nitelikli yollara geçiş bireysel koşullara bağlı olabilir."
+        : "Employment outcomes and transition to skilled pathways may affect this pathway."
+    );
+    if (!hasKw([input.mainGoal ?? "", input.preferredPathway ?? ""].join(" "), ["study", "student", "graduated", "eğitim", "mezun"])) {
+      risks.push(
+        isTr
+          ? "Eğitim veya mezuniyet bağlamı açık biçimde görünmediği için bu yolun değerlendirmesi sınırlı kalabilir."
+          : "The study or graduation context is not clearly visible, which may limit the review of this pathway."
       );
     }
   }
@@ -377,6 +427,16 @@ function getPathwayConfidenceLevel(
     return base;
   }
 
+  if (subclass === "485") {
+    const hasGradContext = hasKw(
+      [input.mainGoal ?? "", input.preferredPathway ?? ""].join(" "),
+      ["study", "student", "graduated", "graduate", "485", "eğitim", "mezun"]
+    );
+    const base = hasGradContext ? "medium" : "low";
+    if (dataCompletenessPercentage < 40) return "low";
+    return base;
+  }
+
   if (subclass === "482") {
     const base = hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]) && Boolean(input.occupation)
       ? "high"
@@ -447,6 +507,20 @@ function getConfidenceExplanation(
       : confidenceLevel === "high"
         ? `Study intent is clear and the available detail (${dataCompletenessPercentage}%) supports this confidence level.`
         : `There is study context, but available detail (${dataCompletenessPercentage}%) limits confidence.`;
+  }
+
+  if (subclass === "485") {
+    const hasGradContext = hasKw(
+      [input.mainGoal ?? "", input.preferredPathway ?? ""].join(" "),
+      ["study", "student", "graduated", "graduate", "485", "eğitim", "mezun"]
+    );
+    return isTr
+      ? hasGradContext
+        ? `Eğitim veya mezuniyet bağlamı mevcut; veri tamamlanma düzeyi (%${dataCompletenessPercentage}) bu yolun genel bir göstergesi olarak kullanılıyor.`
+        : `485 yolu için eğitim/mezuniyet bağlamı veya veri tamamlanma düzeyi (%${dataCompletenessPercentage}) sınırlı olduğu için güven daha temkinli.`
+      : hasGradContext
+        ? `Study or graduation context is visible; available detail (${dataCompletenessPercentage}%) is used as a general indicator for this pathway.`
+        : `Graduate or study context or available detail (${dataCompletenessPercentage}%) is limited, so confidence for the 485 pathway remains cautious.`;
   }
 
   if (subclass === "482") {
@@ -522,6 +596,16 @@ function buildPathwayEntry(
       : studySignal
         ? "The study goal indicates the Student Visa (subclass 500) may be a possible pathway. This is general information only and depends on individual circumstances."
         : "The 500 Student Visa may be relevant for study at a registered Australian institution. More context would support this assessment.";
+  } else if (subclass === "485") {
+    const hasGradSignal = hasKw(goalText, ["study", "student", "graduated", "graduate", "485", "eğitim", "mezun"]);
+    relevance = hasGradSignal ? "possible" : "needs_more_information";
+    reason = isTr
+      ? hasGradSignal
+        ? "485 Geçici Mezun Vizesi (Post-Yükseköğretim Çalışma akışı), Avustralya'da uygun bir kurumdan mezun olan kişiler için ilgili bir yol olabilir. Bu yalnızca genel bilgidir ve bireysel koşullara bağlıdır."
+        : "485 Geçici Mezun Vizesi, Avustralya'da uygun çalışmayı tamamlayan mezunlar için ilgili olabilir. Bu yolun değerlendirilebilmesi için daha fazla eğitim ve mezuniyet bağlamı gereklidir."
+      : hasGradSignal
+        ? "The 485 Temporary Graduate Visa (Post-Higher Education Work stream) may be a possible pathway for those who have completed eligible study in Australia. This is general information only and depends on individual circumstances."
+        : "The 485 Temporary Graduate Visa may be relevant for those who have completed eligible Australian study. More graduate or study context would support this assessment.";
   } else if (subclass === "482") {
     const hasSponsor = hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]);
     relevance = hasSponsor ? "possible" : "needs_more_information";
@@ -616,6 +700,7 @@ function getDifficultyForPathway(
 ): "low" | "medium" | "high" {
   if (pathway.subclass === "general") return "medium";
   if (pathway.subclass === "500") return "medium";
+  if (pathway.subclass === "485") return "medium";
   if (pathway.subclass === "482") return "medium";
   if (pathway.subclass === "820_801") return "high";
   if (["189", "190", "491"].includes(pathway.subclass)) return "high";
@@ -631,6 +716,11 @@ function getRequirementType(
     return isTr
       ? "Eğitim ve mali kanıt ağırlıklı"
       : "Study and financial evidence focused";
+  }
+  if (pathway.subclass === "485") {
+    return isTr
+      ? "Mezuniyet, İngilizce ve polis taraması kanıtı odaklı"
+      : "Graduation, English, and police clearance evidence focused";
   }
   if (pathway.subclass === "482") {
     return isTr
@@ -1123,6 +1213,7 @@ function buildMissingInformation(
   const isTr = locale === "tr";
   const missing: string[] = [];
   const skilled = subclasses.some((s) => ["189", "190", "491"].includes(s));
+  const has485 = subclasses.includes("485");
   const has482 = subclasses.includes("482");
   const hasPartner = subclasses.includes("820_801");
 
@@ -1145,7 +1236,7 @@ function buildMissingInformation(
         : "Occupation or study background (for skilled pathway)"
     );
   }
-  if ((skilled || has482) && !input.englishLevel) {
+  if ((skilled || has482 || has485) && !input.englishLevel) {
     missing.push(isTr ? "İngilizce seviyesi" : "English level");
   }
   if ((has482 || hasPartner) && !input.sponsorOrFamily) {
@@ -1292,6 +1383,7 @@ function buildEvidenceReadiness(
 ): EvidenceReadinessItem[] {
   const isTr = locale === "tr";
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
+  const has485 = subclasses.includes("485");
   const has482 = subclasses.includes("482");
   const hasPartner = subclasses.includes("820_801");
   const items: EvidenceReadinessItem[] = [
@@ -1308,17 +1400,17 @@ function buildEvidenceReadiness(
     },
     {
       category: isTr ? "İngilizce kanıtı" : "English evidence",
-      status: input.englishLevel ? "provided" : hasSkilled || has482 ? "missing" : "unclear",
+      status: input.englishLevel ? "provided" : hasSkilled || has482 || has485 ? "missing" : "unclear",
       explanation: isTr
         ? input.englishLevel
           ? "İngilizce seviyesi formda belirtildi."
-          : hasSkilled || has482
-            ? "Yetenekli veya işveren odaklı yollarda İngilizce kanıtı genellikle değerlendirilir."
+          : hasSkilled || has482 || has485
+            ? "Yetenekli, işveren odaklı veya 485 mezun vizesi yollarında İngilizce kanıtı genellikle değerlendirilir."
             : "Bu yolda İngilizce kanıtının rolü bağlama göre değişebilir."
         : input.englishLevel
           ? "English level was provided in the form."
-          : hasSkilled || has482
-            ? "English evidence is commonly considered for skilled or employer-sponsored pathways."
+          : hasSkilled || has482 || has485
+            ? "English evidence is commonly considered for skilled, employer-sponsored, or 485 graduate visa pathways."
             : "The role of English evidence depends on pathway context.",
     },
     {
@@ -1333,6 +1425,23 @@ function buildEvidenceReadiness(
           : "Occupation detail is important for skilled and employer-sponsored pathways.",
     },
   ];
+
+  if (has485) {
+    items.push({
+      category: isTr ? "Eğitim tamamlama kanıtı" : "Study completion evidence",
+      status: hasKw([input.mainGoal ?? "", input.preferredPathway ?? ""].join(" "), ["study", "student", "graduated", "eğitim", "mezun"]) ? "unclear" : "typically_required",
+      explanation: isTr
+        ? "485 vizesi için CRICOS kayıtlı bir kurumdan uygun bir Avustralya niteliğinin tamamlanmasına ilişkin kanıt tipik olarak gereklidir."
+        : "Evidence of completing an eligible Australian qualification from a CRICOS-registered institution is typically required for the 485 visa.",
+    });
+    items.push({
+      category: isTr ? "Polis taraması ve karakter belgesi" : "Police clearance and character evidence",
+      status: "typically_required",
+      explanation: isTr
+        ? "485 vizesi için Avustralya polis taraması tipik olarak gereklidir. Yurt dışı polis sertifikaları da gerekebilir."
+        : "Australian police clearance is typically required for the 485 visa. Overseas police certificates may also be required.",
+    });
+  }
 
   if (has482 || hasPartner) {
     items.push({
@@ -1523,6 +1632,17 @@ function buildProgressionPathways(
         : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This does not promise PR.",
     });
   }
+  if (subclasses.includes("485")) {
+    items.push({
+      from: "485",
+      to: "189 / 190 / 491",
+      label: isTr ? "485 sonrası tipik seçenekler" : "Typical post-485 options",
+      explanation: isTr
+        ? "485 Geçici Mezun vizesinden sonra, bireysel koşullara ve uygunluğa bağlı olarak nitelikli göç yolları ilgili olabilir. Bu PR garantisi değildir ve kişisel duruma göre değişebilir."
+        : "After the 485 Temporary Graduate visa, skilled migration pathways may be relevant depending on individual circumstances and eligibility. This does not guarantee access to permanent residence and depends on individual circumstances.",
+    });
+  }
+
   if (subclasses.includes("482")) {
     items.push({
       from: "482",
@@ -1580,6 +1700,10 @@ function buildPathwayFriction(
       "500": {
         en: "Course enrolment, OSHC, and genuine student settings may affect this pathway.",
         tr: "Kurs kaydı, OSHC ve gerçek öğrenci ayarları bu yolu etkileyebilir.",
+      },
+      "485": {
+        en: "Employment outcomes and transition to skilled pathways may affect this pathway.",
+        tr: "İstihdam sonuçları ve nitelikli yollara geçiş bu yolu etkileyebilir.",
       },
       "482": {
         en: "Employer sponsorship context is central to this pathway.",

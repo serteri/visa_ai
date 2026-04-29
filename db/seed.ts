@@ -63,6 +63,10 @@ const PARTNER_801_PDF_URL =
   "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/%28Subclasses%20820%20and%20801%29%20Partner%20visas%20%28apply%20in%20Australia%29/Subclass%20801%20Partner%20visa%20%28Permanent%29/Subclass%20801%20Partner%20visa%20%28Permanent%29_26April2026.pdf";
 const PARTNER_820_801_CAPTURED_AT = new Date("2026-04-26T00:00:00.000Z");
 
+const TG_485_SOURCE_URL =
+  "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485/post-higher-education-work";
+const TG_485_CAPTURED_AT = new Date("2026-04-29T00:00:00.000Z");
+
 const studentVisa500Data = {
   visa_name: "Student visa",
   subclass: "500",
@@ -1306,6 +1310,158 @@ const partnerVisa820801Data = {
   },
 };
 
+const tempGraduate485Data = {
+  visa_key: "485_post_higher_education",
+  visa_name: "Temporary Graduate visa",
+  subclass: "485",
+  stream: "Post-Higher Education Work stream",
+  category: "Temporary Work",
+  purpose:
+    "Allow recent graduates of Australian institutions to live, study and work in Australia temporarily following completion of eligible study.",
+  stay_period:
+    "2 to 3 years depending on qualification level: bachelor or masters coursework (2 years); masters research or doctoral degree (3 years)",
+  cost: "From AUD 4,600",
+  work_rights:
+    "Live, work and study in Australia. Travel in and out of Australia while the visa is valid. Include eligible family members.",
+  source_url: TG_485_SOURCE_URL,
+  last_checked: new Date("2026-04-29"),
+  reviewed_status: "needs_review",
+  key_requirements: [
+    "Must be in Australia when applying",
+    "Must have held a Student visa (subclass 500) at some point in the last 6 months before applying",
+    "Must have completed an eligible Australian qualification (bachelor degree or higher) from a CRICOS-registered institution",
+    "Must be under 50 years of age in most cases (standard age limit is under 35; higher limits may apply for doctoral or research degrees and certain passport holders)",
+    "Must meet English language requirements — minimum thresholds apply",
+    "Must hold acceptable health insurance throughout the visa period",
+    "Must meet health and character requirements, including police clearance",
+    "Must have no outstanding debt to the Australian Government",
+    "Must sign the Australian Values Statement if 18 or older",
+  ],
+  documents_required: [
+    "Valid passport",
+    "Evidence of completing an eligible Australian qualification from a CRICOS-registered institution",
+    "Evidence of having held a Student visa (subclass 500) within the last 6 months",
+    "English language test results meeting the minimum threshold",
+    "Health insurance evidence (Overseas Student Health Cover or equivalent)",
+    "Australian police clearance certificate",
+    "Overseas police certificates if required",
+    "Identity documents and proof of name change if applicable",
+    "Health examination results if requested",
+    "Family member documents if including dependants",
+    "Translated documents for non-English documents",
+  ],
+  application_steps: [
+    "Confirm eligibility including age, recency of student visa, qualification, and English requirements",
+    "Gather all required documents including qualification evidence, police certificates, and health insurance",
+    "Apply online through ImmiAccount while in Australia",
+    "Pay the visa application charge",
+    "Complete health examination if requested",
+    "Provide police certificates and any additional documents requested",
+    "Respond to any requests for further information",
+    "Wait for written visa outcome",
+  ],
+  visa_conditions: [
+    "Temporary visa — must find own employment",
+    "The visa cannot be extended; a new application must be submitted if further stay is sought",
+    "May apply for the Graduate Work stream (second stream) under subclass 485 if eligible for that stream",
+    "Must maintain acceptable health insurance throughout the visa period",
+    "Must comply with all visa conditions and Australian laws",
+    "Travel to and from Australia while the visa is valid",
+    "Time spent outside Australia does not extend the visa",
+    "Notify the Department if circumstances change",
+  ],
+  risks: [
+    "Applicants must be in Australia when applying — offshore applications are not eligible",
+    "Must have held a student visa within the 6 months before applying — timing is critical",
+    "Age requirements apply; standard applicants must generally be under 35 at time of application",
+    "English language test results must meet minimum thresholds",
+    "Qualification must be at bachelor level or higher from a CRICOS-registered provider",
+    "Employment outcomes and transition to further pathways depend on individual circumstances",
+    "The visa does not guarantee access to skilled migration pathways",
+    "Incomplete or incorrect information may delay or affect the application",
+  ],
+  english_requirements: {
+    summary:
+      "English language requirements apply. Minimum thresholds must be met. The applicable test type and score depend on individual circumstances and the test date.",
+    approximate_standard:
+      "Approximately equivalent to IELTS 6.5 overall; minimum thresholds apply per skill band depending on test type and date taken.",
+    tests_typically_accepted: [
+      "IELTS Academic or General Training",
+      "TOEFL iBT",
+      "PTE Academic",
+      "Cambridge C1 Advanced",
+      "OET",
+      "CELPIP General",
+    ],
+    online_tests_note:
+      "At-home or fully online English tests may not be accepted. Refer to official sources for current accepted test formats.",
+    notes: [
+      "Minimum thresholds apply. Specific band or score requirements depend on the test chosen and the date the test was taken.",
+      "Refer to the official Department of Home Affairs website for current requirements.",
+    ],
+  },
+  financial_requirements: {
+    status: "no_income_threshold_stated_in_source",
+    notes: [
+      "No specific personal income threshold is stated for this visa stream.",
+      "Applicants must pay the government application charge.",
+      "Acceptable health insurance must be maintained throughout the visa period.",
+      "Additional costs may include health examinations, police certificates, and translation of documents.",
+    ],
+  },
+  eligibility: {
+    age_limit: {
+      default: 35,
+      note: "Standard age limit is under 35. Higher limits may apply in certain circumstances.",
+      exceptions: [
+        "Doctoral (PhD) or research degree graduates may qualify up to age 50 in some circumstances",
+        "Hong Kong or British National (Overseas) passport holders may have different age thresholds",
+        "Age requirements should be verified against current official sources",
+      ],
+    },
+    location_requirement: {
+      must_be_in_australia: true,
+      note: "Applicant must be in Australia at the time of application",
+    },
+    student_visa_requirement: {
+      description:
+        "Must have held a Student visa (subclass 500) at some point in the last 6 months before applying",
+    },
+    qualification_requirement: {
+      description:
+        "Must have completed a bachelor degree or higher from a CRICOS-registered Australian institution",
+      qualification_levels: [
+        "Bachelor degree",
+        "Bachelor honours degree",
+        "Graduate certificate",
+        "Graduate diploma",
+        "Masters degree by coursework",
+        "Masters degree by research",
+        "Doctoral degree",
+      ],
+    },
+    police_check_required: true,
+    health_insurance_required: true,
+  },
+  pathway: {
+    summary:
+      "Typical progression pathways in the Australian visa system may include moving from a Student visa to a Temporary Graduate visa, and later to skilled migration pathways depending on individual circumstances.",
+    stage_1: "Student visa (500)",
+    stage_2: "Temporary Graduate visa (485) — Post-Higher Education Work stream",
+    stage_3: "Skilled migration pathways (189/190/491) — may be relevant depending on individual circumstances",
+    progression_note:
+      "This represents a typical progression context only. It does not constitute migration advice or guarantee access to permanent residence pathways.",
+  },
+  conditions_summary: {
+    must_find_own_employment: true,
+    visa_is_temporary: true,
+    cannot_extend:
+      "The visa cannot be extended. A new application may be possible for the Graduate Work stream or other pathways.",
+    may_apply_for_second_stream:
+      "Applicants who qualify may apply for the Graduate Work stream under the same subclass 485 category if eligible.",
+  },
+};
+
 async function createTables() {
   try {
     console.log("📊 Creating tables if they don't exist...");
@@ -1952,6 +2108,98 @@ async function seed() {
           .returning({ id: sourceSnapshots.id });
         console.log("✅ Inserted PDF snapshot 820_801:", inserted.id, "|", snapshot820801.notes);
       }
+    }
+
+    // ── Subclass 485: Temporary Graduate visa (Post-Higher Education Work stream) ─
+
+    const visa485Payload = {
+      subclass: tempGraduate485Data.subclass,
+      visa_name: tempGraduate485Data.visa_name,
+      category: tempGraduate485Data.category,
+      purpose: tempGraduate485Data.purpose,
+      stay_period: tempGraduate485Data.stay_period,
+      cost: tempGraduate485Data.cost,
+      work_rights: tempGraduate485Data.work_rights,
+      source_url: tempGraduate485Data.source_url,
+      last_checked: toIsoDate(tempGraduate485Data.last_checked),
+      reviewed_status: tempGraduate485Data.reviewed_status,
+      updated_at: new Date(),
+    };
+
+    const [upsertedVisa485] = await db
+      .insert(visaTypes)
+      .values(visa485Payload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visa485Payload,
+      })
+      .returning();
+
+    console.log("✅ Upserted visa type 485:", upsertedVisa485.id);
+
+    const structured485Payload = {
+      visa_type_id: upsertedVisa485.id,
+      key_requirements: tempGraduate485Data.key_requirements,
+      documents_required: tempGraduate485Data.documents_required,
+      application_steps: tempGraduate485Data.application_steps,
+      visa_conditions: tempGraduate485Data.visa_conditions,
+      risks: tempGraduate485Data.risks,
+      english_requirements: tempGraduate485Data.english_requirements,
+      financial_requirements: tempGraduate485Data.financial_requirements,
+      raw_json: {
+        ...tempGraduate485Data,
+        last_checked: toIsoDate(tempGraduate485Data.last_checked),
+      },
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredData485] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedVisa485.id))
+      .limit(1);
+
+    if (existingStructuredData485) {
+      const [updated] = await db
+        .update(visaStructuredData)
+        .set(structured485Payload)
+        .where(eq(visaStructuredData.id, existingStructuredData485.id))
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Updated structured data 485:", updated.id);
+    } else {
+      const [inserted] = await db
+        .insert(visaStructuredData)
+        .values(structured485Payload)
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Inserted structured data 485:", inserted.id);
+    }
+
+    const existingSnapshots485 = await db
+      .select({ id: sourceSnapshots.id, source_url: sourceSnapshots.source_url })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, upsertedVisa485.id));
+
+    const snapshot485SourceUrl = TG_485_SOURCE_URL;
+    const existingSnapshot485 = existingSnapshots485.find(
+      (s) => s.source_url === snapshot485SourceUrl
+    );
+
+    if (existingSnapshot485) {
+      console.log("✅ Source snapshot 485 already exists:", existingSnapshot485.id);
+    } else {
+      const [inserted] = await db
+        .insert(sourceSnapshots)
+        .values({
+          visa_type_id: upsertedVisa485.id,
+          source_url: TG_485_SOURCE_URL,
+          pdf_snapshot_url: null,
+          captured_at: TG_485_CAPTURED_AT,
+          notes: "Source URL reference for subclass 485 Post-Higher Education Work stream — no PDF snapshot yet",
+        })
+        .returning({ id: sourceSnapshots.id });
+      console.log("✅ Inserted source snapshot 485:", inserted.id);
     }
 
     console.log("🎉 Database seed completed successfully!");

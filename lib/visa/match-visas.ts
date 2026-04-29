@@ -227,5 +227,44 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
     }
   }
 
+  // Graduate/post-study → subclass 485
+  const wantsGraduateVisa =
+    normalised.includes("graduate visa") ||
+    normalised.includes("post study") ||
+    normalised.includes("post-study") ||
+    normalised.includes("after study") ||
+    normalised.includes("temporary graduate") ||
+    hasWord(normalised, "485") ||
+    (normalised.includes("study") && input.inAustralia && !input.hasSponsor);
+
+  if (wantsGraduateVisa) {
+    const [row485] = await db
+      .select({
+        subclass: visaTypes.subclass,
+        visa_name: visaTypes.visa_name,
+        purpose: visaTypes.purpose,
+        source_url: visaTypes.source_url,
+        pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+      })
+      .from(visaTypes)
+      .leftJoin(sourceSnapshots, eq(sourceSnapshots.visa_type_id, visaTypes.id))
+      .where(eq(visaTypes.subclass, "485"))
+      .limit(1);
+
+    if (row485) {
+      results.push({
+        subclass: row485.subclass,
+        visa_name: row485.visa_name,
+        purpose: row485.purpose,
+        match_reason:
+          "The graduate or post-study context indicates the Temporary Graduate visa (subclass 485) Post-Higher Education Work stream may be a possible pathway. This depends on individual circumstances including qualification, age, and English requirements.",
+        confidence: "medium",
+        source_url: row485.source_url,
+        pdf_snapshot_url: row485.pdf_snapshot_url ?? null,
+        is_database_record: true,
+      });
+    }
+  }
+
   return results;
 }

@@ -35,6 +35,8 @@
   "pathways.491.text": "Regional provisional skilled pathway information.",
   "pathways.820801.title": "820/801 Partner onshore",
   "pathways.820801.text": "Onshore partner pathway covering temporary 820 and permanent 801 stages.",
+  "pathways.485.title": "485 Temporary Graduate visa",
+  "pathways.485.text": "Post-Higher Education Work stream for recent graduates of eligible Australian institutions.",
 
   "cta.badge": "Explore",
   "cta.title": "Choose a starting point",
@@ -67,7 +69,7 @@
   "premiumCta.full.trustNote": "No payment required during early access.",
 
   "assistantCta.title": "Ask about a supported pathway",
-  "assistantCta.text": "The assistant can summarise stored information for 500, 482, 189, 190, 491 and 820/801. It keeps answers to general information only and points you to source records.",
+  "assistantCta.text": "The assistant can summarise stored information for 500, 485, 482, 189, 190, 491 and 820/801. It keeps answers to general information only and points you to source records.",
   "assistantCta.label": "Open assistant",
 
   "languages.title": "Multilingual support",
