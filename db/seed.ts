@@ -65,6 +65,8 @@ const PARTNER_820_801_CAPTURED_AT = new Date("2026-04-26T00:00:00.000Z");
 
 const TG_485_SOURCE_URL =
   "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485/post-higher-education-work";
+const TG_485_PDF_URL =
+  "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Temporary%20Graduate%20visa%20%28subclass%20485%29%20Post-Higher%20Education%20Work%20stream/Temporary%20Graduate%20visa%20%28subclass%20485%29%20Post-Higher%20Education%20Work%20stream%20_29April2026.pdf";
 const TG_485_CAPTURED_AT = new Date("2026-04-29T00:00:00.000Z");
 
 const studentVisa500Data = {
@@ -2177,29 +2179,28 @@ async function seed() {
     }
 
     const existingSnapshots485 = await db
-      .select({ id: sourceSnapshots.id, source_url: sourceSnapshots.source_url })
+      .select({ id: sourceSnapshots.id, pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url })
       .from(sourceSnapshots)
       .where(eq(sourceSnapshots.visa_type_id, upsertedVisa485.id));
 
-    const snapshot485SourceUrl = TG_485_SOURCE_URL;
     const existingSnapshot485 = existingSnapshots485.find(
-      (s) => s.source_url === snapshot485SourceUrl
+      (s) => s.pdf_snapshot_url === TG_485_PDF_URL
     );
 
     if (existingSnapshot485) {
-      console.log("✅ Source snapshot 485 already exists:", existingSnapshot485.id);
+      console.log("✅ PDF snapshot 485 already exists:", existingSnapshot485.id);
     } else {
       const [inserted] = await db
         .insert(sourceSnapshots)
         .values({
           visa_type_id: upsertedVisa485.id,
           source_url: TG_485_SOURCE_URL,
-          pdf_snapshot_url: null,
+          pdf_snapshot_url: TG_485_PDF_URL,
           captured_at: TG_485_CAPTURED_AT,
-          notes: "Source URL reference for subclass 485 Post-Higher Education Work stream — no PDF snapshot yet",
+          notes: "Manual PDF snapshot for subclass 485 Post-Higher Education Work stream",
         })
         .returning({ id: sourceSnapshots.id });
-      console.log("✅ Inserted source snapshot 485:", inserted.id);
+      console.log("✅ Inserted PDF snapshot 485:", inserted.id);
     }
 
     console.log("🎉 Database seed completed successfully!");
