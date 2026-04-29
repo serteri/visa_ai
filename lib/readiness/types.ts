@@ -107,6 +107,13 @@ export type PathwayStrengthComparison = {
   evidenceLoad: "low" | "medium" | "high";
   typicalPath: string;
   explanation: string;
+  relativePosition: "stronger_signal" | "moderate_signal" | "limited_signal";
+  signalReasons: string[];
+  limitingFactors: string[];
+  evidenceStatus: Array<{
+    label: string;
+    status: "provided" | "missing" | "unclear" | "typically_required";
+  }>;
 };
 
 export type EvidenceReadinessItem = {

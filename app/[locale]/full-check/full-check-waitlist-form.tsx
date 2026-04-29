@@ -182,6 +182,32 @@ export function FullCheckWaitlistForm({
     return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
+  function getRelativePositionClass(pos: "stronger_signal" | "moderate_signal" | "limited_signal") {
+    if (pos === "stronger_signal") return "bg-emerald-100 text-emerald-800";
+    if (pos === "moderate_signal") return "bg-amber-100 text-amber-800";
+    return "bg-slate-100 text-slate-700";
+  }
+
+  function getEvidenceStatusClass(status: "provided" | "missing" | "unclear" | "typically_required") {
+    if (status === "provided") return "bg-emerald-100 text-emerald-800";
+    if (status === "missing") return "bg-red-100 text-red-700";
+    if (status === "unclear") return "bg-amber-100 text-amber-800";
+    return "bg-slate-100 text-slate-600";
+  }
+
+  function getEvidenceStatusLabel(status: "provided" | "missing" | "unclear" | "typically_required") {
+    if (isTr) {
+      if (status === "provided") return "Sağlandı";
+      if (status === "missing") return "Eksik";
+      if (status === "unclear") return "Net değil";
+      return "Tipik gereklilik";
+    }
+    if (status === "provided") return "Provided";
+    if (status === "missing") return "Missing";
+    if (status === "unclear") return "Unclear";
+    return "Typically required";
+  }
+
   return (
     <div className="space-y-6">
       <form action={formAction} className="space-y-4" noValidate>
@@ -459,20 +485,72 @@ export function FullCheckWaitlistForm({
                   <CardTitle className="text-base">
                     {isTr ? "Vize Yolu Güç Karşılaştırması" : "Pathway Strength Comparison"}
                   </CardTitle>
+                  <p className="text-xs text-muted-foreground">
+                    {isTr
+                      ? "Her yolun sinyal gücü, sürtünme düzeyi ve kanıt durumu sağlanan bilgilere göre değerlendirilmiştir."
+                      : "Signal strength, friction level, and evidence status for each pathway based on provided information."}
+                  </p>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-4">
                   {state.report.pathwayStrengthComparison.map((item) => (
-                    <div key={`${item.subclass}-${item.visaName}-strength`} className="rounded-md border border-border/70 p-3 text-sm">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <p className="font-medium">{item.visaName} ({item.subclass})</p>
-                        <p className="text-xs text-muted-foreground">
-                          {isTr ? "Güç:" : "Strength:"} {getStrengthLabel(item.strength)} · {isTr ? "Sürtünme:" : "Friction:"} {getDifficultyLabel(item.friction)}
-                        </p>
+                    <div key={`${item.subclass}-${item.visaName}-strength`} className="rounded-md border border-border/60 p-4 space-y-3 text-sm">
+                      {/* Header row */}
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div>
+                          <p className="font-semibold">{item.visaName} ({item.subclass})</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{item.typicalPath}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 text-xs">
+                          <span className={`rounded-full px-2.5 py-0.5 font-medium ${getRelativePositionClass(item.relativePosition)}`}>
+                            {getStrengthLabel(item.strength)}
+                          </span>
+                          <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">
+                            {isTr ? "Sürtünme:" : "Friction:"} {getDifficultyLabel(item.friction)}
+                          </span>
+                          <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">
+                            {isTr ? "Kanıt yükü:" : "Evidence load:"} {getEvidenceLoadLabel(item.evidenceLoad)}
+                          </span>
+                        </div>
                       </div>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {isTr ? "Kanıt yükü:" : "Evidence load:"} {getEvidenceLoadLabel(item.evidenceLoad)} · {isTr ? "Tipik yol:" : "Typical path:"} {item.typicalPath}
-                      </p>
-                      <p className="mt-2 text-muted-foreground">{item.explanation}</p>
+                      {/* Signal reasons and limiting factors */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <p className="font-medium text-xs mb-1">{isTr ? "Sinyal nedenleri" : "Signal reasons"}</p>
+                          <ul className="space-y-0.5">
+                            {item.signalReasons.map((reason) => (
+                              <li key={reason} className="flex gap-1.5 text-muted-foreground text-xs">
+                                <span className="text-emerald-500 mt-px shrink-0">–</span>
+                                <span>{reason}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="font-medium text-xs mb-1">{isTr ? "Sınırlayıcı faktörler" : "Limiting factors"}</p>
+                          <ul className="space-y-0.5">
+                            {item.limitingFactors.map((factor) => (
+                              <li key={factor} className="flex gap-1.5 text-muted-foreground text-xs">
+                                <span className="text-amber-500 mt-px shrink-0">–</span>
+                                <span>{factor}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      {/* Evidence status chips */}
+                      <div>
+                        <p className="font-medium text-xs mb-1.5">{isTr ? "Kanıt durumu" : "Evidence status"}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {item.evidenceStatus.map((ev) => (
+                            <span
+                              key={ev.label}
+                              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${getEvidenceStatusClass(ev.status)}`}
+                            >
+                              {ev.label}: {getEvidenceStatusLabel(ev.status)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </CardContent>

@@ -317,6 +317,25 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
       addSmallText(`${locale === "tr" ? "Sürtünme" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
       addSmallText(`${locale === "tr" ? "Kanıt yükü" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
       addSmallText(`${locale === "tr" ? "Tipik yol" : "Typical path"}: ${item.typicalPath}`, 4);
+      if (item.signalReasons.length > 0) {
+        addSmallText(locale === "tr" ? "Sinyal nedenleri:" : "Signal reasons:", 4);
+        item.signalReasons.forEach((r) => addSmallText(`– ${r}`, 8));
+      }
+      if (item.limitingFactors.length > 0) {
+        addSmallText(locale === "tr" ? "Sınırlayıcı faktörler:" : "Limiting factors:", 4);
+        item.limitingFactors.forEach((f) => addSmallText(`– ${f}`, 8));
+      }
+      if (item.evidenceStatus.length > 0) {
+        addSmallText(locale === "tr" ? "Kanıt durumu:" : "Evidence status:", 4);
+        item.evidenceStatus.forEach((ev) => {
+          const statusLabel =
+            ev.status === "provided" ? (locale === "tr" ? "Sağlandı" : "Provided")
+            : ev.status === "missing" ? (locale === "tr" ? "Eksik" : "Missing")
+            : ev.status === "unclear" ? (locale === "tr" ? "Net değil" : "Unclear")
+            : (locale === "tr" ? "Tipik gereklilik" : "Typically required");
+          addSmallText(`– ${ev.label}: ${statusLabel}`, 8);
+        });
+      }
       addSmallText(item.explanation, 4);
     });
     yPosition += 3;

@@ -1334,6 +1334,63 @@ function buildExecutiveSummary(
   return items;
 }
 
+// Per-pathway evidence status items based on form input
+function getEvidenceStatusItems(
+  subclass: string,
+  input: ReadinessInput,
+  isTr: boolean
+): Array<{ label: string; status: "provided" | "missing" | "unclear" | "typically_required" }> {
+  const hasEnglish = Boolean(input.englishLevel || input.englishTestTaken);
+  const hasOccupation = Boolean(input.occupation);
+  const hasSponsor = Boolean(input.sponsorOrFamily);
+  const skillsStatus: "provided" | "missing" | "unclear" =
+    input.occupationConfirmed === "yes" ? "provided" : input.occupationConfirmed === "no" ? "missing" : "unclear";
+
+  switch (subclass) {
+    case "189":
+    case "190":
+    case "491":
+      return [
+        { label: isTr ? "İngilizce kanıtı" : "English evidence", status: hasEnglish ? "provided" : "missing" },
+        { label: isTr ? "Meslek ayrıntıları" : "Occupation details", status: hasOccupation ? "provided" : "missing" },
+        { label: isTr ? "Beceri değerlendirmesi" : "Skills assessment", status: skillsStatus },
+        { label: isTr ? "Puan tablosu konumu" : "Points table position", status: hasEnglish && hasOccupation ? "unclear" : "typically_required" },
+      ];
+    case "482":
+      return [
+        { label: isTr ? "İşveren sponsoru bağlamı" : "Employer sponsor context", status: hasSponsor ? "provided" : "missing" },
+        { label: isTr ? "Meslek ayrıntıları" : "Occupation details", status: hasOccupation ? "provided" : "missing" },
+        { label: isTr ? "İngilizce kanıtı" : "English evidence", status: hasEnglish ? "provided" : "missing" },
+        { label: isTr ? "Beceri değerlendirmesi" : "Skills assessment", status: skillsStatus },
+      ];
+    case "485":
+      return [
+        { label: isTr ? "Son Avustralya eğitimi" : "Recent Australian study", status: "typically_required" },
+        { label: isTr ? "İngilizce kanıtı" : "English evidence", status: hasEnglish ? "provided" : "missing" },
+        { label: isTr ? "AFP kontrolü" : "AFP check", status: "typically_required" },
+        { label: isTr ? "Sağlık sigortası" : "Health insurance", status: "typically_required" },
+      ];
+    case "500":
+      return [
+        { label: isTr ? "Kurs / CoE" : "Course / CoE", status: "typically_required" },
+        { label: isTr ? "OSHC" : "OSHC", status: "typically_required" },
+        { label: isTr ? "Mali kanıt" : "Financial evidence", status: "typically_required" },
+        { label: isTr ? "Pasaport ülkesi" : "Passport country", status: input.passportCountry ? "provided" : "typically_required" },
+      ];
+    case "820_801":
+      return [
+        { label: isTr ? "İlişki kanıtı" : "Relationship evidence", status: hasSponsor ? "provided" : "missing" },
+        { label: isTr ? "Sponsor kanıtı" : "Sponsor evidence", status: hasSponsor ? "provided" : "typically_required" },
+        { label: isTr ? "Kimlik belgeleri" : "Identity documents", status: "typically_required" },
+      ];
+    default:
+      return [
+        { label: isTr ? "Kimlik ve pasaport" : "Identity and passport", status: input.passportCountry ? "provided" : "typically_required" },
+        { label: isTr ? "Belge seti" : "Document set", status: "typically_required" },
+      ];
+  }
+}
+
 // Per-pathway metadata used in strength comparison
 const PATHWAY_STRENGTH_META: Record<
   string,
@@ -1342,6 +1399,10 @@ const PATHWAY_STRENGTH_META: Record<
     evidenceLoad: "low" | "medium" | "high";
     typicalPathEn: string;
     typicalPathTr: string;
+    signalReasonsEn: string[];
+    signalReasonsTr: string[];
+    limitingFactorsEn: string[];
+    limitingFactorsTr: string[];
   }
 > = {
   "500": {
@@ -1349,48 +1410,89 @@ const PATHWAY_STRENGTH_META: Record<
     evidenceLoad: "medium",
     typicalPathEn: "Study pathway",
     typicalPathTr: "Eğitim yolu",
+    signalReasonsEn: ["Study pathway context"],
+    signalReasonsTr: ["Eğitim yolu bağlamı"],
+    limitingFactorsEn: ["Course enrolment, OSHC and financial evidence context may affect pathway"],
+    limitingFactorsTr: ["Kurs kaydı, OSHC ve mali kanıt bağlamı bu yolu etkileyebilir"],
   },
   "485": {
     friction: "medium",
     evidenceLoad: "medium",
     typicalPathEn: "Post-study temporary graduate pathway",
     typicalPathTr: "Mezuniyet sonrası geçici mezun yolu",
+    signalReasonsEn: ["Post-study temporary graduate pathway context"],
+    signalReasonsTr: ["Mezuniyet sonrası geçici mezun yolu bağlamı"],
+    limitingFactorsEn: ["Recent Australian study, age, English, AFP check and insurance context may affect pathway"],
+    limitingFactorsTr: ["Son Avustralya eğitimi, yaş, İngilizce, AFP kontrolü ve sigorta bağlamı bu yolu etkileyebilir"],
   },
   "482": {
     friction: "medium",
     evidenceLoad: "high",
     typicalPathEn: "Employer-sponsored work pathway",
     typicalPathTr: "İşveren sponsorlu çalışma yolu",
+    signalReasonsEn: ["Employer-sponsored work pathway context"],
+    signalReasonsTr: ["İşveren sponsorlu çalışma yolu bağlamı"],
+    limitingFactorsEn: ["Employer sponsor context is central to this pathway"],
+    limitingFactorsTr: ["İşveren sponsoru bağlamı bu yol için merkezi önemdedir"],
   },
   "189": {
     friction: "high",
     evidenceLoad: "high",
     typicalPathEn: "Invitation-based skilled pathway",
     typicalPathTr: "Davet tabanlı nitelikli yol",
+    signalReasonsEn: [
+      "Points-tested skilled pathway context",
+      "Occupation and English inputs affect signal",
+    ],
+    signalReasonsTr: [
+      "Puan tabanlı nitelikli yol bağlamı",
+      "Meslek ve İngilizce girdileri sinyali etkiler",
+    ],
+    limitingFactorsEn: [
+      "Invitation round settings may affect pathway",
+      "Points estimate may be incomplete based on provided information",
+    ],
+    limitingFactorsTr: [
+      "Davet turu ayarları bu yolu etkileyebilir",
+      "Puan tahmini sağlanan bilgilere göre eksik olabilir",
+    ],
   },
   "190": {
     friction: "high",
     evidenceLoad: "high",
     typicalPathEn: "State or territory nomination pathway",
     typicalPathTr: "Eyalet veya bölge adaylık yolu",
+    signalReasonsEn: ["Skilled nomination pathway context"],
+    signalReasonsTr: ["Nitelikli adaylık yolu bağlamı"],
+    limitingFactorsEn: ["State or territory nomination settings may affect pathway"],
+    limitingFactorsTr: ["Eyalet veya bölge adaylık ayarları bu yolu etkileyebilir"],
   },
   "491": {
     friction: "medium",
     evidenceLoad: "high",
     typicalPathEn: "Regional provisional pathway",
     typicalPathTr: "Bölgesel geçici yol",
+    signalReasonsEn: ["Regional skilled pathway context"],
+    signalReasonsTr: ["Bölgesel nitelikli yol bağlamı"],
+    limitingFactorsEn: ["Regional nomination or eligible relative sponsorship context may affect pathway"],
+    limitingFactorsTr: ["Bölgesel adaylık veya akraba sponsorluğu bağlamı bu yolu etkileyebilir"],
   },
   "820_801": {
     friction: "high",
     evidenceLoad: "high",
     typicalPathEn: "Onshore partner pathway",
     typicalPathTr: "Avustralya içi partner yolu",
+    signalReasonsEn: ["Partner pathway context"],
+    signalReasonsTr: ["Partner yolu bağlamı"],
+    limitingFactorsEn: ["Relationship evidence and sponsor context are central to this pathway"],
+    limitingFactorsTr: ["İlişki kanıtı ve sponsor bağlamı bu yol için merkezi önemdedir"],
   },
 };
 
 function buildPathwayStrengthComparison(
   pathways: PathwayComparison[],
-  locale: Locale
+  locale: Locale,
+  input: ReadinessInput
 ): PathwayStrengthComparison[] {
   const isTr = locale === "tr";
 
@@ -1408,6 +1510,17 @@ function buildPathwayStrengthComparison(
     const typicalPath = meta
       ? isTr ? meta.typicalPathTr : meta.typicalPathEn
       : isTr ? "Genel yol" : "General pathway";
+    const signalReasons = meta
+      ? isTr ? meta.signalReasonsTr : meta.signalReasonsEn
+      : [isTr ? "Genel sinyal bağlamı" : "General signal context"];
+    const limitingFactors = meta
+      ? isTr ? meta.limitingFactorsTr : meta.limitingFactorsEn
+      : [isTr ? "Daha fazla bilgi bu yolu netleştirebilir" : "More information may clarify this pathway"];
+
+    const relativePosition: "stronger_signal" | "moderate_signal" | "limited_signal" =
+      strength === "strong" ? "stronger_signal" : strength === "moderate" ? "moderate_signal" : "limited_signal";
+
+    const evidenceStatus = getEvidenceStatusItems(pathway.subclass, input, isTr);
 
     const strengthLabel = isTr
       ? strength === "strong" ? "daha güçlü sinyal" : strength === "moderate" ? "orta sinyal" : "sınırlı sinyal"
@@ -1427,8 +1540,12 @@ function buildPathwayStrengthComparison(
       evidenceLoad,
       typicalPath,
       explanation: isTr
-        ? `${pathway.visaName}: sinyal ${strengthLabel}; sürtünme ${frictionLabel}; kanıt yükü ${evidenceLoadLabel}. Tipik yol: ${typicalPath}. Mevcut forma girilen bilgilere göre genel karşılaştırmadır.`
-        : `${pathway.visaName}: ${strengthLabel}; ${frictionLabel} friction; ${evidenceLoadLabel} evidence load. Typical path: ${typicalPath}. General comparison based on the details provided.`,
+        ? `${pathway.visaName}: sinyal ${strengthLabel}; sürtünme ${frictionLabel}; kanıt yükü ${evidenceLoadLabel}. Tipik yol: ${typicalPath}. Sağlanan bilgilere göre genel karşılaştırmadır.`
+        : `${pathway.visaName}: ${strengthLabel}; ${frictionLabel} friction; ${evidenceLoadLabel} evidence load. Typical path: ${typicalPath}. General comparison based on provided information.`,
+      relativePosition,
+      signalReasons,
+      limitingFactors,
+      evidenceStatus,
     };
   });
 }
@@ -1966,7 +2083,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   );
   const pathwayStrengthComparison = buildPathwayStrengthComparison(
     pathwayComparison,
-    locale
+    locale,
+    input
   );
   const evidenceReadiness = buildEvidenceReadiness(
     input,
