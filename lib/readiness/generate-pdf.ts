@@ -292,20 +292,9 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 5;
   }
 
-  // Structured pathway comparison table (from pathwayComparison fields)
-  if (report.pathwayComparison.length > 0) {
-    addHeading(text.pathwayTable);
-    report.pathwayComparison.forEach((pathway) => {
-      const visaLabel =
-        pathway.subclass === "general"
-          ? pathway.visaName
-          : `${pathway.visaName} (${pathway.subclass})`;
-      addBody(`${text.visa}: ${visaLabel}`);
-      addSmallText(`${text.difficulty}: ${formatDifficulty(pathway.difficulty)}`, 4);
-      addSmallText(`${text.requirementType}: ${pathway.requirementType}`, 4);
-      addSmallText(`${text.userRelativePosition}: ${pathway.userRelativePosition}`, 4);
-      yPosition += 1;
-    });
+  if (report.executiveSummary.length > 0) {
+    addHeading(text.executiveSummary);
+    addBulletPoints(report.executiveSummary);
     yPosition += 3;
   }
 
@@ -336,7 +325,6 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
           addSmallText(`– ${ev.label}: ${statusLabel}`, 8);
         });
       }
-      addSmallText(item.explanation, 4);
     });
     yPosition += 3;
   }
@@ -344,67 +332,6 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   addHeading(text.confidenceExplanation);
   addBody(report.confidenceExplanation);
   yPosition += 3;
-
-  // Pathway comparison
-  if (report.pathwayComparison.length > 0) {
-    addHeading(text.pathwayComparison);
-    report.pathwayComparison.forEach((p) => {
-      const relevance = p.relevance.toUpperCase().replace(/_/g, " ");
-      const confidence =
-        p.confidenceLevel === "high"
-          ? text.highRisk
-          : p.confidenceLevel === "medium"
-            ? text.mediumRisk
-            : text.lowRisk;
-      addBody(`${p.visaName} (${p.subclass}) - ${relevance}`);
-      addSmallText(`${text.confidence}: ${confidence}`, 4);
-      addSmallText(p.reason, 4);
-      addSmallText(`${text.confidenceExplanation}: ${p.confidenceExplanation}`, 4);
-      if (p.keyRequirements.length > 0) {
-        addBody(text.keyRequirements, 4);
-        addBulletPoints(p.keyRequirements);
-      }
-      if (p.pathwaySpecificRisks.length > 0) {
-        addBody(text.pathwayRisks, 4);
-        addBulletPoints(p.pathwaySpecificRisks);
-      }
-      yPosition += 2;
-    });
-    yPosition += 3;
-  }
-
-  if (report.keyVisaRequirements.length > 0) {
-    addHeading(text.keyVisaRequirements);
-    report.keyVisaRequirements.forEach((requirement) => {
-      addBody(requirement.pathway);
-      addBulletPoints(requirement.items);
-      yPosition += 2;
-    });
-    yPosition += 3;
-  }
-
-  if (report.executiveSummary.length > 0) {
-    addHeading(text.executiveSummary);
-    addBulletPoints(report.executiveSummary);
-    yPosition += 3;
-  }
-
-  // Risk indicators
-  if (report.riskIndicators.length > 0) {
-    addHeading(text.riskIndicators);
-    report.riskIndicators.forEach((r) => {
-      const levelText =
-        r.level === "high"
-          ? text.highRisk
-          : r.level === "medium"
-            ? text.mediumRisk
-            : text.lowRisk;
-      addBody(`[${levelText}] ${r.title}`);
-      addSmallText(r.explanation, 4);
-      yPosition += 2;
-    });
-    yPosition += 3;
-  }
 
   if (report.evidenceReadiness.length > 0) {
     addHeading(text.evidenceReadiness);
@@ -420,6 +347,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     if (report.pointsBoosterSimulator.currentEstimate !== undefined) {
       addBody(`${text.estimatedPoints}: ${report.pointsBoosterSimulator.currentEstimate}`);
     }
+    addSmallText(
+      locale === "tr"
+        ? "Bu senaryolar yalnızca matematiksel puan değişimini gösterir; uygunluk veya sonuç anlamına gelmez."
+        : "This scenario reflects a mathematical change only and does not represent eligibility or outcome.",
+      0
+    );
     addSmallText(report.pointsBoosterSimulator.note, 0);
     report.pointsBoosterSimulator.scenarios.forEach((scenario) => {
       addBody(`${scenario.label}: ${scenario.estimatedChange >= 0 ? "+" : ""}${scenario.estimatedChange}`);
@@ -442,6 +375,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
 
   if (report.progressionPathways.length > 0) {
     addHeading(text.progressionPathways);
+    addSmallText(
+      locale === "tr"
+        ? "Avustralya vize sisteminde tipik geçiş yolları şunları içerebilir:"
+        : "Typical progression pathways in the Australian visa system may include:",
+      0
+    );
     report.progressionPathways.forEach((item) => {
       addBody(`${item.label}: ${item.from} -> ${item.to}`);
       addSmallText(item.explanation, 4);
@@ -454,6 +393,23 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     report.pathwayFriction.forEach((item) => {
       addBody(`${item.pathway}: ${item.frictionType}`);
       addSmallText(item.explanation, 4);
+    });
+    yPosition += 3;
+  }
+
+  // Risk indicators
+  if (report.riskIndicators.length > 0) {
+    addHeading(text.riskIndicators);
+    report.riskIndicators.forEach((r) => {
+      const levelText =
+        r.level === "high"
+          ? text.highRisk
+          : r.level === "medium"
+            ? text.mediumRisk
+            : text.lowRisk;
+      addBody(`[${levelText}] ${r.title}`);
+      addSmallText(r.explanation, 4);
+      yPosition += 2;
     });
     yPosition += 3;
   }

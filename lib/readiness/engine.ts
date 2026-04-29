@@ -46,6 +46,14 @@ function hasKw(text: string, keywords: string[]): boolean {
   return keywords.some((kw) => n.includes(kw));
 }
 
+function hasSponsorContext(raw?: string): boolean {
+  if (!raw) return false;
+  const s = norm(raw);
+  if (!s) return false;
+  const noneKeywords = ["none", "no", "yok", "hayir", "belirtmek istemiyorum", "n/a", "na"];
+  return !noneKeywords.some((kw) => s === kw || s.includes(kw));
+}
+
 // ─── Pathway detection ────────────────────────────────────────────────────────
 
 function detectSubclasses(input: ReadinessInput): string[] {
@@ -1277,61 +1285,44 @@ function buildExecutiveSummary(
   estimatedPoints?: number
 ): string[] {
   const isTr = locale === "tr";
-  const strongestPathway = pathways.find((pathway) => pathway.subclass !== "general");
-  const highConfidenceCount = pathways.filter((pathway) => pathway.confidenceLevel === "high").length;
+  const strongestPathway = pathways.find((pathway) => pathway.subclass !== "general" && pathway.relevance === "possible");
   const skilledVisible = pathways.some((pathway) => ["189", "190", "491"].includes(pathway.subclass));
+  const relevanceLine = strongestPathway
+    ? isTr
+      ? `Verilen profile göre ${strongestPathway.visaName} (${strongestPathway.subclass}) yolu ilgili görünüyor.`
+      : `${strongestPathway.visaName} (${strongestPathway.subclass}) appears relevant based on the provided profile.`
+    : isTr
+      ? "Verilen profile göre birden fazla yol ilgili olabilir ve karşılaştırmalı değerlendirme daha anlamlıdır."
+      : "More than one pathway may be relevant based on the provided profile, so a comparative view is used.";
 
-  const items: string[] = [];
+  const pointsLine = skilledVisible
+    ? estimatedPoints !== undefined
+      ? isTr
+        ? `Mevcut puan sinyali ${estimatedPoints} seviyesindedir ve yaygın olarak referans alınan eşikleri etkileyebileceği için vize yolu sinyallerini değiştirebilir.`
+        : `The current points signal is ${estimatedPoints}, which may affect pathway signals against commonly referenced thresholds.`
+      : isTr
+        ? "Puan tablosu sinyali için mevcut veri sınırlıdır; bu durum nitelikli yol karşılaştırmasını etkileyebilir."
+        : "The points-table signal remains limited due to missing factors, which may affect skilled-pathway comparison."
+    : isTr
+      ? "Bu profilde puan tabanlı yollar ana odakta görünmediği için puan sinyali ikincil düzeydedir."
+      : "Points-tested pathways are not the primary focus in this profile, so points signal is secondary.";
 
-  if (strongestPathway) {
-    items.push(
-      isTr
-        ? `${strongestPathway.visaName} (${strongestPathway.subclass}) yolu mevcut bilgiler içinde daha güçlü bir sinyal göstermektedir ve güven seviyesi ${strongestPathway.confidenceLevel === "high" ? "yüksek" : strongestPathway.confidenceLevel === "medium" ? "orta" : "düşük"} görünmektedir.`
-        : `${strongestPathway.visaName} (${strongestPathway.subclass}) shows the strongest signal in the current information, with ${strongestPathway.confidenceLevel} confidence.`
-    );
-  } else {
-    items.push(
-      isTr
-        ? "Mevcut bilgi seti belirli bir vize yolunu güçlü biçimde öne çıkarmamaktadır."
-        : "The current information set does not strongly point to one visa pathway yet."
-    );
-  }
-
-  items.push(
-    isTr
-      ? highConfidenceCount > 0
-        ? `Birden fazla yol ilgili görünebilir; bu nedenle rapor tek bir sonuç yerine karşılaştırmalı bir görünüm sunmaktadır.`
-        : `Bu rapor, daha fazla bilgi sağlandığında değişebilecek erken aşama bir yapılandırılmış görünüm sunmaktadır.`
-      : highConfidenceCount > 0
-          ? "More than one possible pathway may be relevant, so this report is presented as a comparison rather than a single outcome."
-        : "This report presents an early structured view that could change when more detail is available."
-  );
-
-  if (skilledVisible && estimatedPoints !== undefined) {
-    items.push(
-      isTr
-        ? `Kısmi puan görünümü ${estimatedPoints} olarak oluşmuştur; bu rakam yalnızca sınırlı girdilere dayanmaktadır.`
-        : `The partial points picture is ${estimatedPoints}, and that figure depends on limited inputs only.`
-    );
-  }
-
+  const changeDrivers: string[] = [];
   if (missingInformation.length > 0) {
-    items.push(
-      isTr
-        ? `Eksik bilgi alanları (${missingInformation.join(", ")}) bu rapordaki güven seviyelerini aşağı çekebilir.`
-        : `Missing information areas (${missingInformation.join(", ")}) may reduce the confidence levels shown in this report.`
-    );
+    changeDrivers.push(missingInformation.slice(0, 3).join(", "));
+  }
+  if (input.occupationConfirmed !== "yes") {
+    changeDrivers.push(isTr ? "beceri değerlendirmesi bağlamı" : "skills assessment context");
+  }
+  if (!input.sponsorOrFamily && pathways.some((p) => ["190", "491", "482", "820_801"].includes(p.subclass))) {
+    changeDrivers.push(isTr ? "adaylık veya sponsorluk bağlamı" : "nomination or sponsorship context");
   }
 
-  if (input.biggestConcern) {
-    items.push(
-      isTr
-        ? `Belirtilen ana endişe (${input.biggestConcern}) rapordaki risk ve gereklilik vurgularını etkilemektedir.`
-        : `The stated main concern (${input.biggestConcern}) influences the report's risk and requirement emphasis.`
-    );
-  }
+  const changeLine = isTr
+    ? `Ek bilgiler (${changeDrivers.length > 0 ? changeDrivers.join("; ") : "yol-özel kanıtlar"}) vize yolu gücünü değiştirebilir.`
+    : `Additional detail (${changeDrivers.length > 0 ? changeDrivers.join("; ") : "pathway-specific evidence"}) may change pathway strength.`;
 
-  return items;
+  return [relevanceLine, pointsLine, changeLine];
 }
 
 // Per-pathway evidence status items based on form input
@@ -1342,7 +1333,7 @@ function getEvidenceStatusItems(
 ): Array<{ label: string; status: "provided" | "missing" | "unclear" | "typically_required" }> {
   const hasEnglish = Boolean(input.englishLevel || input.englishTestTaken);
   const hasOccupation = Boolean(input.occupation);
-  const hasSponsor = Boolean(input.sponsorOrFamily);
+  const hasSponsor = hasSponsorContext(input.sponsorOrFamily);
   const skillsStatus: "provided" | "missing" | "unclear" =
     input.occupationConfirmed === "yes" ? "provided" : input.occupationConfirmed === "no" ? "missing" : "unclear";
 
@@ -1723,8 +1714,8 @@ function buildPointsBoosterSimulator(
     currentEstimate,
     scenarios,
     note: isTr
-      ? "Bir puan tablosu faktörü değişirse matematiksel puan konumu aşağıdaki gibi değişebilir. Bu yalnızca genel bilgidir."
-      : "If a points-table factor changes, the mathematical score position may change as follows. This is general information only.",
+      ? "Bir puan tablosu faktörü değişirse matematiksel puan konumu aşağıdaki gibi değişebilir."
+      : "If a points-table factor changes, the mathematical score position may change as follows.",
   };
 }
 
@@ -1830,6 +1821,7 @@ function buildProgressionPathways(
 ): ProgressionPathway[] {
   const isTr = locale === "tr";
   const items: ProgressionPathway[] = [];
+  const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
 
   if (subclasses.includes("500")) {
     items.push({
@@ -1839,6 +1831,28 @@ function buildProgressionPathways(
       explanation: isTr
         ? "Avustralya sistemindeki tipik geçiş yolları 500 → 485 → 189/190/491 seçeneklerini içerebilir. Bu PR vaadi değildir."
         : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This does not promise PR.",
+    });
+  }
+
+  if (hasSkilled && !subclasses.includes("500") && !subclasses.includes("485")) {
+    items.push({
+      from: "500",
+      to: "485 / 189 / 190 / 491",
+      label: isTr ? "Eğitimden nitelikli yollara tipik akış" : "Typical study-to-skilled context",
+      explanation: isTr
+        ? "Avustralya vize sisteminde tipik geçiş yolları şunları içerebilir: 500 → 485 → 189/190/491. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
+        : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This is general information only and depends on individual circumstances.",
+    });
+  }
+
+  if (hasSkilled && !subclasses.includes("482")) {
+    items.push({
+      from: "482",
+      to: "Employer-sponsored permanent pathways",
+      label: isTr ? "İşveren sponsorlu geçiş bağlamı" : "Employer-sponsored context",
+      explanation: isTr
+        ? "Bazı profillerde 482 bağlamı, işveren sponsorlu kalıcı yollarla birlikte değerlendirilebilir; sonuçlar bireysel koşullara bağlıdır."
+        : "In some profiles, 482 context may be considered alongside employer-sponsored permanent pathways; outcomes depend on individual circumstances.",
     });
   }
   if (subclasses.includes("485")) {
@@ -1951,14 +1965,35 @@ function buildPathwayFriction(
 function buildConfidenceExplanation(
   pathways: PathwayComparison[],
   evidenceReadiness: EvidenceReadinessItem[],
-  locale: Locale
+  locale: Locale,
+  input: ReadinessInput,
+  estimatedPoints?: number
 ): string {
   const isTr = locale === "tr";
-  const strongCount = pathways.filter((pathway) => pathway.confidenceLevel === "high").length;
-  const missingEvidence = evidenceReadiness.filter((item) => item.status === "missing").length;
+  const hasEnglish = Boolean(input.englishLevel);
+  const hasOccupation = Boolean(input.occupation);
+  const hasPassport = Boolean(input.passportCountry);
+  const hasSponsor = hasSponsorContext(input.sponsorOrFamily);
+  const hasAge = Boolean(input.age);
+  const skillsClear = input.occupationConfirmed === "yes";
+  const missingCore = [hasEnglish, hasOccupation, hasPassport, hasAge].filter(Boolean).length;
+  const hasMissingEvidence = evidenceReadiness.some((item) => item.status === "missing");
+
+  if (missingCore <= 1) {
+    return isTr
+      ? "Güven düzeyi sınırlıdır çünkü meslek ve İngilizce gibi temel bilgiler eksiktir. Bu rapor yalnızca genel bilgidir ve kişisel koşullara bağlıdır."
+      : "Confidence is limited because key inputs such as occupation and English level are missing. This report is general information only and depends on individual circumstances.";
+  }
+
+  if (missingCore >= 3 && skillsClear) {
+    return isTr
+      ? `Güven düzeyi daha güçlüdür çünkü yaş, İngilizce ve meslek gibi temel bilgiler sağlanmıştır; ancak bazı yol-özel kanıtlar hâlâ net değildir${estimatedPoints !== undefined ? ` (kısmi puan sinyali: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
+      : `Confidence is stronger because multiple core inputs (age, English, occupation) are provided, although some pathway-specific evidence remains unclear${estimatedPoints !== undefined ? ` (partial points signal: ${estimatedPoints})` : ""}. This is general information only.`;
+  }
+
   return isTr
-    ? `Güven açıklaması; yol sinyalleri, kanıt hazırlığı ve sürtünme faktörlerine göre oluşturulur. ${strongCount} yol güçlü sinyal gösteriyor; ${missingEvidence} kanıt alanı eksik görünüyor. Bu yalnızca genel bilgidir.`
-    : `Confidence is explained using pathway signals, evidence readiness, and friction factors. ${strongCount} pathway(s) show strong signals; ${missingEvidence} evidence area(s) appear missing. This is general information only.`;
+    ? `Güven düzeyi orta seviyededir çünkü İngilizce ve meslek bilgileri mevcut, ancak beceri değerlendirmesi ve tam puan bağlamı net değildir${estimatedPoints !== undefined ? ` (kısmi puan sinyali: ${estimatedPoints})` : ""}. ${hasSponsor ? "Sponsorluk bağlamı sağlanmıştır." : "Sponsorluk bağlamı sınırlı görünmektedir."} Bu yalnızca genel bilgidir ve kişisel koşullara bağlıdır.`
+    : `Confidence is moderate because English and occupation details are available, but skills assessment and full points context remain unclear${estimatedPoints !== undefined ? ` (partial points signal: ${estimatedPoints})` : ""}. ${hasSponsor ? "Sponsorship context is provided." : "Sponsorship context appears limited."} This is general information only and depends on individual circumstances.`;
 }
 
 // ─── Main engine ──────────────────────────────────────────────────────────────
@@ -2113,7 +2148,9 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const confidenceExplanation = buildConfidenceExplanation(
     pathwayComparison,
     evidenceReadiness,
-    locale
+    locale,
+    input,
+    pointsEstimate?.estimatedPoints
   );
 
   const suggestedNextSteps = buildNextSteps({
