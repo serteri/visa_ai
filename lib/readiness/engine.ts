@@ -604,8 +604,8 @@ function buildPathwayEntry(
         ? "485 Geçici Mezun Vizesi (Post-Yükseköğretim Çalışma akışı), Avustralya'da uygun bir kurumdan mezun olan kişiler için ilgili bir yol olabilir. Bu yalnızca genel bilgidir ve bireysel koşullara bağlıdır."
         : "485 Geçici Mezun Vizesi, Avustralya'da uygun çalışmayı tamamlayan mezunlar için ilgili olabilir. Bu yolun değerlendirilebilmesi için daha fazla eğitim ve mezuniyet bağlamı gereklidir."
       : hasGradSignal
-        ? "The 485 Temporary Graduate Visa (Post-Higher Education Work stream) may be a possible pathway for those who have completed approved study in Australia. This is general information only and depends on individual circumstances."
-        : "The 485 Temporary Graduate Visa may be relevant for those who have completed Australian study at an approved institution. More graduate or study context would support this assessment.";
+        ? "The 485 Temporary Graduate Visa (Post-Higher Education Work stream) may be a possible pathway for those who have completed Australian study in Australia. This is general information only and depends on individual circumstances."
+        : "The 485 Temporary Graduate Visa may be relevant for those who have completed Australian study at a CRICOS-registered institution. More graduate or study context would support this assessment.";
   } else if (subclass === "482") {
     const hasSponsor = hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]);
     relevance = hasSponsor ? "possible" : "needs_more_information";
@@ -1474,7 +1474,7 @@ const PATHWAY_STRENGTH_META: Record<
     typicalPathTr: "Bölgesel geçici yol",
     signalReasonsEn: ["Regional skilled pathway context"],
     signalReasonsTr: ["Bölgesel nitelikli yol bağlamı"],
-    limitingFactorsEn: ["Regional nomination or eligible relative sponsorship context may affect pathway"],
+    limitingFactorsEn: ["Regional nomination or relative sponsorship context may affect pathway"],
     limitingFactorsTr: ["Bölgesel adaylık veya akraba sponsorluğu bağlamı bu yolu etkileyebilir"],
   },
   "820_801": {
@@ -1606,7 +1606,7 @@ function buildEvidenceReadiness(
       status: hasKw([input.mainGoal ?? "", input.preferredPathway ?? ""].join(" "), ["study", "student", "graduated", "eğitim", "mezun"]) ? "unclear" : "typically_required",
       explanation: isTr
         ? "485 vizesi için CRICOS kayıtlı bir kurumdan uygun bir Avustralya niteliğinin tamamlanmasına ilişkin kanıt tipik olarak gereklidir."
-        : "Evidence of completing an approved Australian qualification from a CRICOS-registered institution is typically required for the 485 visa.",
+        : "Evidence of completing an Australian qualification from a CRICOS-registered institution is typically required for the 485 visa.",
     });
     items.push({
       category: isTr ? "Polis taraması ve karakter belgesi" : "Police clearance and character evidence",

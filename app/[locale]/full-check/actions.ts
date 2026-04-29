@@ -295,84 +295,80 @@ export async function submitFullCheckWaitlist(
     biggestConcern: biggestConcern || undefined,
   });
 
-  const submissionResult = await db.transaction(async (tx) => {
-    const usageResult = await tx.execute(sql`
-      SELECT free_reports_used, free_limit, is_free_active
-      FROM full_check_usage
-      WHERE id = 1
-      FOR UPDATE
-    `);
+  const usageResult = await db.execute(sql`
+    SELECT free_reports_used, free_limit, is_free_active
+    FROM full_check_usage
+    WHERE id = 1
+  `);
 
-    const usageRow = usageResult.rows[0] as
-      | {
-          free_reports_used: number | null;
-          free_limit: number | null;
-          is_free_active: boolean | null;
-        }
-      | undefined;
+  const usageRow = usageResult.rows[0] as
+    | {
+        free_reports_used: number | null;
+        free_limit: number | null;
+        is_free_active: boolean | null;
+      }
+    | undefined;
 
-    const freeReportsUsed = Number(usageRow?.free_reports_used ?? 0);
-    const freeLimit = Number(usageRow?.free_limit ?? 500);
-    const isFreeActive = Boolean(usageRow?.is_free_active ?? true);
+  const freeReportsUsed = Number(usageRow?.free_reports_used ?? 0);
+  const freeLimit = Number(usageRow?.free_limit ?? 500);
+  const isFreeActive = Boolean(usageRow?.is_free_active ?? true);
 
-    if (!isFreeActive || freeReportsUsed >= freeLimit) {
-      return {
-        blocked: true as const,
-      };
-    }
-
-    const report = runReadinessEngine({
-      locale: preferredLanguage === "tr" ? "tr" : "en",
-      mainGoal,
-      currentCountry: currentCountry || undefined,
-      passportCountry,
-      age,
-      occupation: occupation || undefined,
-      englishLevel: englishLevel || undefined,
-      englishTestTaken: englishTestTaken || undefined,
-      occupationConfirmed: occupationConfirmed || undefined,
-      estimatedBudgetRange: estimatedBudgetRange || undefined,
-      timeline: timeline || undefined,
-      sponsorOrFamily: sponsorOrFamily || undefined,
-      preferredPathway: visaInterest || undefined,
-      biggestConcern: biggestConcern || undefined,
-    });
-
-    await tx.insert(fullCheckWaitlist).values({
-      email,
-      full_name: fullName || null,
-      visa_interest: visaInterest || null,
-      preferred_language: preferredLanguage || null,
-      current_country: currentCountry || null,
-      passport_country: passportCountry,
-      age,
-      occupation: occupation || null,
-      english_level: englishLevel || null,
-      english_test_taken: englishTestTaken || null,
-      occupation_confirmed: occupationConfirmed || null,
-      estimated_budget_range: estimatedBudgetRange || null,
-      timeline: timeline || null,
-      sponsor_or_family: sponsorOrFamily || null,
-      biggest_concern: biggestConcern || null,
-      main_goal: mainGoal,
-      lead_score: leadQuality.leadScore,
-      lead_tier: leadQuality.leadTier,
-      source,
-    });
-
-    await tx.execute(sql`
-      UPDATE full_check_usage
-      SET
-        free_reports_used = free_reports_used + 1,
-        updated_at = NOW()
-      WHERE id = 1
-    `);
-
-    return {
-      blocked: false as const,
-      report,
-    };
+  const generatedReport = runReadinessEngine({
+    locale: preferredLanguage === "tr" ? "tr" : "en",
+    mainGoal,
+    currentCountry: currentCountry || undefined,
+    passportCountry,
+    age,
+    occupation: occupation || undefined,
+    englishLevel: englishLevel || undefined,
+    englishTestTaken: englishTestTaken || undefined,
+    occupationConfirmed: occupationConfirmed || undefined,
+    estimatedBudgetRange: estimatedBudgetRange || undefined,
+    timeline: timeline || undefined,
+    sponsorOrFamily: sponsorOrFamily || undefined,
+    preferredPathway: visaInterest || undefined,
+    biggestConcern: biggestConcern || undefined,
   });
+
+  const submissionResult =
+    !isFreeActive || freeReportsUsed >= freeLimit
+      ? { blocked: true as const, report: generatedReport }
+      : await (async () => {
+          await db.insert(fullCheckWaitlist).values({
+            email,
+            full_name: fullName || null,
+            visa_interest: visaInterest || null,
+            preferred_language: preferredLanguage || null,
+            current_country: currentCountry || null,
+            passport_country: passportCountry,
+            age,
+            occupation: occupation || null,
+            english_level: englishLevel || null,
+            english_test_taken: englishTestTaken || null,
+            occupation_confirmed: occupationConfirmed || null,
+            estimated_budget_range: estimatedBudgetRange || null,
+            timeline: timeline || null,
+            sponsor_or_family: sponsorOrFamily || null,
+            biggest_concern: biggestConcern || null,
+            main_goal: mainGoal,
+            lead_score: leadQuality.leadScore,
+            lead_tier: leadQuality.leadTier,
+            source,
+          });
+
+          await db.execute(sql`
+            UPDATE full_check_usage
+            SET
+              free_reports_used = free_reports_used + 1,
+              updated_at = NOW()
+            WHERE id = 1
+          `);
+
+          return {
+            blocked: false as const,
+            report: generatedReport,
+          };
+        })();
 
   if (submissionResult.blocked) {
     return {
