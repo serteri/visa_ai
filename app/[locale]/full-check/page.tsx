@@ -1,58 +1,13 @@
 import Link from "next/link";
-import { eq, sql } from "drizzle-orm";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { db } from "@/db";
-import { fullCheckUsage } from "@/db/schema";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 
 type ComparisonRow = { label: string; quick: string; full: string };
 type ReportCard = { title: string; description: string };
 const READINESS_REVIEW_SOURCE = ["readiness", "pre" + "view"].join("-");
-
-async function ensureFullCheckUsageTable() {
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS full_check_usage (
-      id INT PRIMARY KEY DEFAULT 1,
-      free_reports_used INT DEFAULT 0,
-      free_limit INT DEFAULT 500,
-      is_free_active BOOLEAN DEFAULT TRUE,
-      updated_at TIMESTAMP DEFAULT NOW()
-    )
-  `);
-
-  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS free_reports_used INT DEFAULT 0`);
-  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS free_limit INT DEFAULT 500`);
-  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS is_free_active BOOLEAN DEFAULT TRUE`);
-  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW()`);
-  await db.execute(sql`
-    INSERT INTO full_check_usage (id, free_reports_used, free_limit, is_free_active)
-    VALUES (1, 0, 500, TRUE)
-    ON CONFLICT (id) DO NOTHING
-  `);
-}
-
-async function getFullCheckUsageStatus() {
-  await ensureFullCheckUsageTable();
-
-  const [usage] = await db
-    .select()
-    .from(fullCheckUsage)
-    .where(eq(fullCheckUsage.id, 1))
-    .limit(1);
-
-  const freeReportsUsed = usage?.free_reports_used ?? 0;
-  const freeLimit = usage?.free_limit ?? 500;
-  const isFreeActive = usage?.is_free_active ?? true;
-  const remaining = isFreeActive ? Math.max(0, freeLimit - freeReportsUsed) : 0;
-
-  return {
-    remaining,
-    isFreeActive,
-  };
-}
 
 function getComparisonRows(isTr: boolean): ComparisonRow[] {
   if (isTr) {
@@ -185,7 +140,6 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const { locale } = await params;
   const query = await searchParams;
   const isTr = locale === "tr";
-  const usageStatus = await getFullCheckUsageStatus();
   const cameFromReadinessReview = query.source === READINESS_REVIEW_SOURCE;
   const cameFromResults = query.source === "results";
   const initialValues = {
@@ -201,7 +155,6 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
 
   const comparisonRows = getComparisonRows(isTr);
   const reportCards = getReportCards(isTr);
-  const showLimitWarning = usageStatus.remaining > 0 && usageStatus.remaining <= 50;
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -225,22 +178,10 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                 ? "Bu rapor, sağlanan ayrıntılara dayalı yapılandırılmış bilgi raporudur."
                 : "This is a structured information report based on the details provided."}
             </p>
-            <p
-              className={`max-w-3xl rounded-md px-4 py-3 text-sm ${
-                usageStatus.remaining <= 0
-                  ? "border border-amber-300 bg-amber-50 text-amber-900"
-                  : showLimitWarning
-                    ? "border border-amber-300 bg-amber-50 text-amber-900"
-                    : "border border-primary/20 bg-card text-muted-foreground"
-              }`}
-            >
-              {usageStatus.remaining > 0
-                ? isTr
-                  ? `Erken erişim · ${usageStatus.remaining} ücretsiz rapor kaldı`
-                  : `Early access · ${usageStatus.remaining} free reports remaining`
-                : isTr
-                  ? "Erken erişim limiti doldu"
-                  : "Early access limit reached"}
+            <p className="max-w-3xl rounded-md border border-primary/20 bg-card px-4 py-3 text-sm text-muted-foreground">
+              {isTr
+                ? "Erken erişim · Erken erişimde ödeme gerekmez."
+                : "Early access · No payment required during early access."}
             </p>
           </div>
 
@@ -251,23 +192,42 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2 rounded-md border border-primary/20 bg-background/80 px-3 py-2">
-                <p className="text-sm text-muted-foreground">
-                  {isTr
-                    ? "Ürünü geliştirirken ilk 500 hazırlık raporu ücretsizdir."
-                    : "The first 500 readiness reports are free while we improve the product."}
+              <div className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
+                {isTr
+                  ? "Erken erişim · Ödeme gerekmez."
+                  : "Early access · No payment required."}
+              </div>
+              <div className="space-y-1 text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">
+                  {isTr ? "Bu rapor neler içerir?" : "What this report covers"}
                 </p>
-                {usageStatus.remaining > 0 ? (
-                  <p className={`text-xs ${showLimitWarning ? "text-amber-800" : "text-muted-foreground"}`}>
-                    {isTr
-                      ? `${usageStatus.remaining} ücretsiz rapor kaldı.`
-                      : `${usageStatus.remaining} free reports remaining.`}
-                  </p>
-                ) : (
-                  <p className="text-xs text-amber-800">
-                    {isTr ? "Erken erişim limiti doldu." : "Early access limit reached."}
-                  </p>
-                )}
+                <ul className="space-y-1 pl-3">
+                  {(isTr
+                    ? [
+                        "Vize yolu güç karşılaştırması — olası yollar güç ve sürtünme açısından karşılaştırılır",
+                        "Kanıt hazırlık özeti — tipik kanıt kategorileri form bilgileriyle eşleştirilir",
+                        "Tahmini maliyet kategorileri — resmi ücretler ve üçüncü taraf maliyet aralıkları ayrılır",
+                        "Puan senaryo simülatörü — puan testli yollar için matematiksel senaryolar (ilgili olduğunda)",
+                        "Tipik geçiş yolları — Avustralya vize sistemindeki olası ilerleyiş adımları",
+                        "Vize yolu gerçeklik kontrolü — her yol için pratik sürtünme faktörleri",
+                        "İndirilebilir PDF",
+                      ]
+                    : [
+                        "Pathway strength comparison — possible pathways compared by strength and friction",
+                        "Evidence readiness snapshot — typical evidence categories mapped against form details",
+                        "Estimated cost categories — official fees and third-party cost ranges separated",
+                        "Points booster simulator — mathematical scenarios for points-tested pathways (where relevant)",
+                        "Typical progression pathways — possible next steps in the Australian visa system",
+                        "Pathway reality check — practical friction factors summarised for each pathway",
+                        "Downloadable PDF",
+                      ]
+                  ).map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="text-primary shrink-0">–</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
               {(cameFromReadinessReview || cameFromResults) && (
                 <p className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm text-muted-foreground">

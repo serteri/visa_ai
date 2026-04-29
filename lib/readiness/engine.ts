@@ -205,9 +205,9 @@ function getPathwayKeyRequirements(
             "İngilizce eşik gereksinimlerine ilişkin bilgiler ve yaş uygunluğu bağlamı",
           ]
         : [
-            "Completed eligible Australian qualification from a CRICOS-registered institution",
+            "Completed Australian qualification from a CRICOS-registered institution",
             "Evidence of having held a Student visa (subclass 500) in the last 6 months",
-            "Information relevant to English threshold requirements and age eligibility context",
+            "Information relevant to English threshold requirements and age context",
           ];
     case "482":
       return isTr
@@ -604,8 +604,8 @@ function buildPathwayEntry(
         ? "485 Geçici Mezun Vizesi (Post-Yükseköğretim Çalışma akışı), Avustralya'da uygun bir kurumdan mezun olan kişiler için ilgili bir yol olabilir. Bu yalnızca genel bilgidir ve bireysel koşullara bağlıdır."
         : "485 Geçici Mezun Vizesi, Avustralya'da uygun çalışmayı tamamlayan mezunlar için ilgili olabilir. Bu yolun değerlendirilebilmesi için daha fazla eğitim ve mezuniyet bağlamı gereklidir."
       : hasGradSignal
-        ? "The 485 Temporary Graduate Visa (Post-Higher Education Work stream) may be a possible pathway for those who have completed eligible study in Australia. This is general information only and depends on individual circumstances."
-        : "The 485 Temporary Graduate Visa may be relevant for those who have completed eligible Australian study. More graduate or study context would support this assessment.";
+        ? "The 485 Temporary Graduate Visa (Post-Higher Education Work stream) may be a possible pathway for those who have completed approved study in Australia. This is general information only and depends on individual circumstances."
+        : "The 485 Temporary Graduate Visa may be relevant for those who have completed Australian study at an approved institution. More graduate or study context would support this assessment.";
   } else if (subclass === "482") {
     const hasSponsor = hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]);
     relevance = hasSponsor ? "possible" : "needs_more_information";
@@ -1432,7 +1432,7 @@ function buildEvidenceReadiness(
       status: hasKw([input.mainGoal ?? "", input.preferredPathway ?? ""].join(" "), ["study", "student", "graduated", "eğitim", "mezun"]) ? "unclear" : "typically_required",
       explanation: isTr
         ? "485 vizesi için CRICOS kayıtlı bir kurumdan uygun bir Avustralya niteliğinin tamamlanmasına ilişkin kanıt tipik olarak gereklidir."
-        : "Evidence of completing an eligible Australian qualification from a CRICOS-registered institution is typically required for the 485 visa.",
+        : "Evidence of completing an approved Australian qualification from a CRICOS-registered institution is typically required for the 485 visa.",
     });
     items.push({
       category: isTr ? "Polis taraması ve karakter belgesi" : "Police clearance and character evidence",

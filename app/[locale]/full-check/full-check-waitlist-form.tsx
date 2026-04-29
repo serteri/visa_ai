@@ -205,13 +205,24 @@ export function FullCheckWaitlistForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-visa-interest">{isTr ? "Vize ilgi alanı" : "Visa interest"}</Label>
-          <Input
+          <Label htmlFor="waitlist-visa-interest">
+            {isTr ? "Bu rapor hangi vize yoluna odaklanmalı?" : "Which visa pathway should this report focus on?"}
+          </Label>
+          <select
             id="waitlist-visa-interest"
             name="visaInterest"
             defaultValue={initialValues.visaInterest ?? ""}
-            placeholder={isTr ? "Öğrenci, yetenekli, partner veya emin değilim" : "Student, skilled, partner, or not sure"}
-          />
+            className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+          >
+            <option value="">{isTr ? "Tüm yollar / Emin değilim" : "All pathways / Not sure"}</option>
+            <option value="500">{isTr ? "Öğrenci Vizesi 500" : "Student visa 500"}</option>
+            <option value="485">{isTr ? "Geçici Mezun Vizesi 485" : "Temporary Graduate visa 485"}</option>
+            <option value="482">{isTr ? "Skills in Demand Vizesi 482" : "Skills in Demand visa 482"}</option>
+            <option value="189">{isTr ? "Skilled Independent Vizesi 189" : "Skilled Independent visa 189"}</option>
+            <option value="190">{isTr ? "Skilled Nominated Vizesi 190" : "Skilled Nominated visa 190"}</option>
+            <option value="491">{isTr ? "Skilled Work Regional Vizesi 491" : "Skilled Work Regional visa 491"}</option>
+            <option value="820_801">{isTr ? "Partner Vizesi 820/801" : "Partner visa 820/801"}</option>
+          </select>
         </div>
 
         <div className="space-y-2">
@@ -686,7 +697,7 @@ export function FullCheckWaitlistForm({
 
           {state.report.factorsAffectingPathways.length > 0 && (
             <ReportSection
-              title={isTr ? "Yolları etkileyebilecek faktörler" : "Factors that may affect pathways"}
+              title={isTr ? "Durumunuzu Değiştirebilecek Faktörler" : "What May Change Your Position"}
               items={state.report.factorsAffectingPathways}
             />
           )}
