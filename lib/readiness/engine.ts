@@ -1334,6 +1334,60 @@ function buildExecutiveSummary(
   return items;
 }
 
+// Per-pathway metadata used in strength comparison
+const PATHWAY_STRENGTH_META: Record<
+  string,
+  {
+    friction: "low" | "medium" | "high";
+    evidenceLoad: "low" | "medium" | "high";
+    typicalPathEn: string;
+    typicalPathTr: string;
+  }
+> = {
+  "500": {
+    friction: "medium",
+    evidenceLoad: "medium",
+    typicalPathEn: "Study pathway",
+    typicalPathTr: "Eğitim yolu",
+  },
+  "485": {
+    friction: "medium",
+    evidenceLoad: "medium",
+    typicalPathEn: "Post-study temporary graduate pathway",
+    typicalPathTr: "Mezuniyet sonrası geçici mezun yolu",
+  },
+  "482": {
+    friction: "medium",
+    evidenceLoad: "high",
+    typicalPathEn: "Employer-sponsored work pathway",
+    typicalPathTr: "İşveren sponsorlu çalışma yolu",
+  },
+  "189": {
+    friction: "high",
+    evidenceLoad: "high",
+    typicalPathEn: "Invitation-based skilled pathway",
+    typicalPathTr: "Davet tabanlı nitelikli yol",
+  },
+  "190": {
+    friction: "high",
+    evidenceLoad: "high",
+    typicalPathEn: "State or territory nomination pathway",
+    typicalPathTr: "Eyalet veya bölge adaylık yolu",
+  },
+  "491": {
+    friction: "medium",
+    evidenceLoad: "high",
+    typicalPathEn: "Regional provisional pathway",
+    typicalPathTr: "Bölgesel geçici yol",
+  },
+  "820_801": {
+    friction: "high",
+    evidenceLoad: "high",
+    typicalPathEn: "Onshore partner pathway",
+    typicalPathTr: "Avustralya içi partner yolu",
+  },
+};
+
 function buildPathwayStrengthComparison(
   pathways: PathwayComparison[],
   locale: Locale
@@ -1348,30 +1402,33 @@ function buildPathwayStrengthComparison(
 
   return pathways.map((pathway) => {
     const strength = strengthFor(pathway);
-    const friction = pathway.difficulty === "high" ? "high" : pathway.difficulty === "medium" ? "medium" : "low";
+    const meta = PATHWAY_STRENGTH_META[pathway.subclass];
+    const friction: "low" | "medium" | "high" = meta?.friction ?? (pathway.difficulty === "high" ? "high" : pathway.difficulty === "medium" ? "medium" : "low");
+    const evidenceLoad: "low" | "medium" | "high" = meta?.evidenceLoad ?? "medium";
+    const typicalPath = meta
+      ? isTr ? meta.typicalPathTr : meta.typicalPathEn
+      : isTr ? "Genel yol" : "General pathway";
+
     const strengthLabel = isTr
-      ? strength === "strong"
-        ? "güçlü"
-        : strength === "moderate"
-          ? "orta"
-          : "sınırlı"
-      : strength;
+      ? strength === "strong" ? "daha güçlü sinyal" : strength === "moderate" ? "orta sinyal" : "sınırlı sinyal"
+      : strength === "strong" ? "stronger signal" : strength === "moderate" ? "moderate signal" : "limited signal";
     const frictionLabel = isTr
-      ? friction === "high"
-        ? "yüksek"
-        : friction === "medium"
-          ? "orta"
-          : "düşük"
+      ? friction === "high" ? "yüksek" : friction === "medium" ? "orta" : "düşük"
       : friction;
+    const evidenceLoadLabel = isTr
+      ? evidenceLoad === "high" ? "yüksek" : evidenceLoad === "medium" ? "orta" : "düşük"
+      : evidenceLoad;
 
     return {
       subclass: pathway.subclass,
       visaName: pathway.visaName,
       strength,
       friction,
+      evidenceLoad,
+      typicalPath,
       explanation: isTr
-        ? `${pathway.visaName} için sinyal ${strengthLabel} görünüyor; sürtünme seviyesi ${frictionLabel}. Bu, mevcut forma girilen bilgilere göre genel bir karşılaştırmadır.`
-        : `${pathway.visaName} shows a ${strengthLabel} signal with ${frictionLabel} friction. This is a general comparison based on the details provided.`,
+        ? `${pathway.visaName}: sinyal ${strengthLabel}; sürtünme ${frictionLabel}; kanıt yükü ${evidenceLoadLabel}. Tipik yol: ${typicalPath}. Mevcut forma girilen bilgilere göre genel karşılaştırmadır.`
+        : `${pathway.visaName}: ${strengthLabel}; ${frictionLabel} friction; ${evidenceLoadLabel} evidence load. Typical path: ${typicalPath}. General comparison based on the details provided.`,
     };
   });
 }
@@ -1554,6 +1611,27 @@ function buildPointsBoosterSimulator(
   };
 }
 
+// Indicative government application charges by subclass
+// Source: Australian Government Department of Home Affairs (subject to change)
+const GOV_FEES_EN: Record<string, string> = {
+  "500": "From AUD 2,000 (unless exempt)",
+  "482": "From AUD 3,210 (main applicant and dependants 18+); AUD 805 (dependants under 18)",
+  "485": "From AUD 4,600",
+  "189": "From AUD 4,910 (main applicant)",
+  "190": "From AUD 4,910 (main applicant)",
+  "491": "From AUD 4,910 (main applicant)",
+  "820_801": "From AUD 9,365 (most applicants)",
+};
+const GOV_FEES_TR: Record<string, string> = {
+  "500": "AUD 2.000'den itibaren (muaf olmayan başvurular için)",
+  "482": "AUD 3.210'dan itibaren (ana başvurucu ve 18+ bağımlılar); AUD 805 (18 yaş altı bağımlılar)",
+  "485": "AUD 4.600'dan itibaren",
+  "189": "AUD 4.910'dan itibaren (ana başvurucu)",
+  "190": "AUD 4.910'dan itibaren (ana başvurucu)",
+  "491": "AUD 4.910'dan itibaren (ana başvurucu)",
+  "820_801": "AUD 9.365'ten itibaren (çoğu başvurucu)",
+};
+
 function buildFinancialRoadmap(
   subclasses: string[],
   input: ReadinessInput,
@@ -1563,14 +1641,20 @@ function buildFinancialRoadmap(
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
   const has482 = subclasses.includes("482");
   const variable = isTr ? "Değişken / sağlayıcıya bağlı" : "Variable / depends on provider";
+
+  const feeSubclass = subclasses.find((s) => GOV_FEES_EN[s]);
+  const govFeeLabel = feeSubclass
+    ? (isTr ? GOV_FEES_TR[feeSubclass] : GOV_FEES_EN[feeSubclass])
+    : (isTr ? "Resmi ücret yol ve tarihe göre değişir" : "Official fee varies by pathway and date");
+
   const items: FinancialRoadmapItem[] = [
     {
       category: isTr ? "Devlet başvuru ücreti" : "Government application charge",
       estimateType: "official_fee",
-      amountLabel: input.estimatedBudgetRange || (isTr ? "Resmi ücret yol ve tarihe göre değişir" : "Official fee varies by pathway and date"),
+      amountLabel: govFeeLabel,
       explanation: isTr
-        ? "Resmi devlet ücretleri ve tahmini üçüncü taraf maliyet kategorileri birlikte değerlendirilir."
-        : "Official government fees and estimated third-party cost categories are considered together.",
+        ? "Resmi devlet ücretleri ve tahmini üçüncü taraf maliyet kategorileri. Ücretler değişebilir; resmi kaynaklar incelenmelidir."
+        : "Official government fees and estimated third-party cost categories. Fees may change; official sources should be reviewed.",
     },
     {
       category: isTr ? "İngilizce test maliyet kategorisi" : "English test cost category",
@@ -1609,6 +1693,14 @@ function buildFinancialRoadmap(
       explanation: isTr
         ? "İngilizce olmayan belgeler ve belge sayısı maliyeti etkileyebilir."
         : "Non-English documents and document volume can affect this cost category.",
+    },
+    {
+      category: isTr ? "Danışman / profesyonel inceleme" : "Agent / professional review",
+      estimateType: "variable",
+      amountLabel: variable,
+      explanation: isTr
+        ? "Kayıtlı bir göç danışmanı veya avukat ile çalışmayı seçen başvurucular için bu maliyet kategorisi bireysel koşullara ve sağlayıcıya göre değişebilir."
+        : "For those who choose to seek input from a registered migration agent or legal practitioner, this cost category varies by individual circumstances and provider.",
     }
   );
 

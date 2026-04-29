@@ -245,9 +245,16 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
 
   function formatStrength(level: "limited" | "moderate" | "strong") {
     if (locale === "tr") {
-      return level === "strong" ? "Güçlü" : level === "moderate" ? "Orta" : "Sınırlı";
+      return level === "strong" ? "Daha güçlü sinyal" : level === "moderate" ? "Orta sinyal" : "Sınırlı sinyal";
     }
-    return level === "strong" ? "Strong" : level === "moderate" ? "Moderate" : "Limited";
+    return level === "strong" ? "Stronger signal" : level === "moderate" ? "Moderate signal" : "Limited signal";
+  }
+
+  function formatLoad(level: "low" | "medium" | "high") {
+    if (locale === "tr") {
+      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
+    }
+    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
   function formatEvidenceStatus(status: "provided" | "missing" | "unclear" | "typically_required") {
@@ -308,6 +315,8 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
       addBody(`${item.visaName} (${item.subclass})`);
       addSmallText(`${locale === "tr" ? "Güç" : "Strength"}: ${formatStrength(item.strength)}`, 4);
       addSmallText(`${locale === "tr" ? "Sürtünme" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
+      addSmallText(`${locale === "tr" ? "Kanıt yükü" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
+      addSmallText(`${locale === "tr" ? "Tipik yol" : "Typical path"}: ${item.typicalPath}`, 4);
       addSmallText(item.explanation, 4);
     });
     yPosition += 3;

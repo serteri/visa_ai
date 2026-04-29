@@ -169,10 +169,17 @@ export function FullCheckWaitlistForm({
 
   function getStrengthLabel(level: "limited" | "moderate" | "strong") {
     if (isTr) {
-      return level === "strong" ? "Güçlü" : level === "moderate" ? "Orta" : "Sınırlı";
+      return level === "strong" ? "Daha güçlü sinyal" : level === "moderate" ? "Orta sinyal" : "Sınırlı sinyal";
     }
 
-    return level === "strong" ? "Strong" : level === "moderate" ? "Moderate" : "Limited";
+    return level === "strong" ? "Stronger signal" : level === "moderate" ? "Moderate signal" : "Limited signal";
+  }
+
+  function getEvidenceLoadLabel(level: "low" | "medium" | "high") {
+    if (isTr) {
+      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
+    }
+    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
   return (
@@ -462,6 +469,9 @@ export function FullCheckWaitlistForm({
                           {isTr ? "Güç:" : "Strength:"} {getStrengthLabel(item.strength)} · {isTr ? "Sürtünme:" : "Friction:"} {getDifficultyLabel(item.friction)}
                         </p>
                       </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {isTr ? "Kanıt yükü:" : "Evidence load:"} {getEvidenceLoadLabel(item.evidenceLoad)} · {isTr ? "Tipik yol:" : "Typical path:"} {item.typicalPath}
+                      </p>
                       <p className="mt-2 text-muted-foreground">{item.explanation}</p>
                     </div>
                   ))}

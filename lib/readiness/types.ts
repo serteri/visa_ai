@@ -104,6 +104,8 @@ export type PathwayStrengthComparison = {
   visaName: string;
   strength: "limited" | "moderate" | "strong";
   friction: "low" | "medium" | "high";
+  evidenceLoad: "low" | "medium" | "high";
+  typicalPath: string;
   explanation: string;
 };
 
