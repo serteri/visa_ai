@@ -43,6 +43,7 @@ const howItWorksKeys = [
 
 const supportedPathwayKeys = [
   { title: "pathways.500.title", text: "pathways.500.text", icon: GraduationCap },
+  { title: "pathways.485.title", text: "pathways.485.text", icon: BriefcaseBusiness },
   { title: "pathways.482.title", text: "pathways.482.text", icon: BriefcaseBusiness },
   { title: "pathways.189.title", text: "pathways.189.text", icon: ClipboardCheck },
   { title: "pathways.190.title", text: "pathways.190.text", icon: UserCheck },

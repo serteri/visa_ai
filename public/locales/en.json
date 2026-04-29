@@ -22,7 +22,7 @@
 
   "pathways.badge": "Current coverage",
   "pathways.title": "Supported pathways",
-  "pathways.subtitle": "The platform currently uses structured records for these six visa pathways. Each summary is general information only and should be reviewed with a registered migration agent for personal circumstances.",
+  "pathways.subtitle": "The platform currently uses structured records for these seven visa pathways. Each summary is general information only and should be reviewed with a registered migration agent for personal circumstances.",
   "pathways.500.title": "500 Student visa",
   "pathways.500.text": "Study in Australia through the current Student visa record.",
   "pathways.482.title": "482 Skills in Demand",
@@ -36,7 +36,7 @@
   "pathways.820801.title": "820/801 Partner onshore",
   "pathways.820801.text": "Onshore partner pathway covering temporary 820 and permanent 801 stages.",
   "pathways.485.title": "485 Temporary Graduate visa",
-  "pathways.485.text": "Post-Higher Education Work stream for recent graduates of eligible Australian institutions.",
+  "pathways.485.text": "Post-study temporary work pathway for eligible recent graduates in Australia.",
 
   "cta.badge": "Explore",
   "cta.title": "Choose a starting point",
