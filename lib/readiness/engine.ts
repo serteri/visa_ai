@@ -1286,22 +1286,31 @@ function buildExecutiveSummary(
 ): string[] {
   const isTr = locale === "tr";
   const skilledVisible = pathways.some((pathway) => ["189", "190", "491"].includes(pathway.subclass));
+  const pathwayNames = pathways
+    .filter((pathway) => pathway.subclass !== "general")
+    .slice(0, 6)
+    .map((pathway) => pathway.subclass)
+    .join(", ");
   if (isTr) {
     return [
-      "Verilen profile göre yetenekli göç yolları ilgili görünmektedir.",
+      pathwayNames
+        ? `Bu rapor ${pathwayNames} yollarını aynı çerçevede karşılaştırır; çalışma, mezuniyet, iş sponsorluğu ve nitelikli göç sinyalleri birlikte ele alınır.`
+        : "Bu rapor, verilen bilgilerle görünen yol sinyallerini aynı çerçevede karşılaştırır.",
       skilledVisible && estimatedPoints !== undefined
-        ? "Kısmi puan görünümü yaygın eşiklerin altında olup yol sinyallerini etkileyebilir."
-        : "Kısmi puan bağlamı sınırlı olduğu için yol sinyalleri değişebilir.",
-      "Ek bilgiler (beceri değerlendirmesi veya adaylık bağlamı) yol gücünü değiştirebilir.",
+        ? `Kısmi puan görünümü ${estimatedPoints}; bu matematiksel sinyal puan testli yolların göreli konumunu etkileyebilir.`
+        : "Puan bağlamı sınırlı olduğunda puan testli yolların göreli konumu daha temkinli okunur.",
+      "Beceri değerlendirmesi, adaylık bağlamı, sponsor bilgisi ve belge hazırlığı gibi ayrıntılar yol gücü karşılaştırmasını değiştirebilir.",
     ];
   }
 
   return [
-    "Skilled migration pathways appear relevant based on the provided profile.",
+    pathwayNames
+      ? `This report compares ${pathwayNames} in one view, bringing study, graduate, employer-sponsored, and skilled pathway signals together.`
+      : "This report compares visible pathway signals from the details provided.",
     skilledVisible && estimatedPoints !== undefined
-      ? "The partial points signal sits below commonly referenced thresholds, which may affect pathway signals."
-      : "Points context remains limited, which may affect pathway signals.",
-    "Additional detail such as skills assessment or nomination context may change pathway strength.",
+      ? `The partial points signal is ${estimatedPoints}; this mathematical signal may affect the relative position of points-tested pathways.`
+      : "Limited points context may affect the relative position of points-tested pathways.",
+    "Skills assessment, nomination context, sponsorship details, and evidence preparation can materially change the pathway strength comparison.",
   ];
 }
 
@@ -1806,22 +1815,22 @@ function buildProgressionPathways(
   if (subclasses.includes("500")) {
     items.push({
       from: "500",
-      to: "485 / 189 / 190 / 491",
+      to: "485 → 189/190/491",
       label: isTr ? "Öğrenci yolu bağlamı" : "Student pathway context",
       explanation: isTr
-        ? "Avustralya vize sisteminde tipik geçiş yolları şunları içerebilir: 500 → 485 → 189/190/491. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
-        : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This is general information only and depends on individual circumstances."
+        ? "Öğrenci yolu sonrasında mezuniyet ve nitelikli göç seçenekleri bazı profillerde birlikte değerlendirilebilir. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
+        : "After a student pathway, graduate and skilled migration options may be considered together in some profiles. This is general information only and depends on individual circumstances."
     });
   }
 
   if (hasSkilled && !subclasses.includes("500") && !subclasses.includes("485")) {
     items.push({
       from: "500",
-      to: "485 / 189 / 190 / 491",
+      to: "485 → 189/190/491",
       label: isTr ? "Öğrenci yolu bağlamı" : "Student pathway context",
       explanation: isTr
-        ? "Avustralya vize sisteminde tipik geçiş yolları şunları içerebilir: 500 → 485 → 189/190/491. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
-        : "Typical progression pathways in the Australian visa system may include 500 → 485 → 189/190/491. This is general information only and depends on individual circumstances.",
+        ? "Öğrenci yolu sonrasında mezuniyet ve nitelikli göç seçenekleri bazı profillerde birlikte değerlendirilebilir. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
+        : "After a student pathway, graduate and skilled migration options may be considered together in some profiles. This is general information only and depends on individual circumstances.",
     });
   }
 
@@ -1841,8 +1850,8 @@ function buildProgressionPathways(
       to: "189 / 190 / 491",
       label: isTr ? "485 sonrası tipik seçenekler" : "Typical post-485 options",
       explanation: isTr
-        ? "485 Geçici Mezun vizesinden sonra, bireysel koşullara ve uygunluğa bağlı olarak nitelikli göç yolları ilgili olabilir. Bu PR garantisi değildir ve kişisel duruma göre değişebilir."
-        : "After the 485 Temporary Graduate visa, skilled migration pathways may be relevant depending on individual circumstances and eligibility. This does not guarantee access to permanent residence and depends on individual circumstances.",
+        ? "485 Geçici Mezun vizesinden sonra nitelikli göç yolları bazı profillerde ilgili olabilir. Bu PR vaadi değildir ve kişisel duruma göre değişebilir."
+        : "After the 485 Temporary Graduate visa, skilled migration pathways may be relevant in some profiles. This does not promise permanent residence and depends on individual circumstances.",
     });
   }
 
@@ -1862,8 +1871,8 @@ function buildProgressionPathways(
       to: "191",
       label: isTr ? "Bölgesel geçiş bağlamı" : "Regional progression context",
       explanation: isTr
-        ? "491 → 191 ilgili dönem ve kriterler karşılanırsa tipik bir sistem geçişi olarak değerlendirilebilir."
-        : "491 → 191 may be considered a typical system progression after the relevant period if criteria are met.",
+        ? "İlgili dönem ve kriterler karşılanırsa bu tipik bir sistem geçişi olarak değerlendirilebilir."
+        : "This may be considered a typical system progression after the relevant period if criteria are met.",
     });
   }
   if (subclasses.includes("820_801")) {
@@ -1967,8 +1976,8 @@ function buildConfidenceExplanation(
 
   if (missingCore >= 3 && skillsClear) {
     return isTr
-      ? `Güven düzeyi daha güçlüdür çünkü yaş, İngilizce ve meslek gibi temel bilgiler sağlanmıştır; ancak bazı yol-özel kanıtlar hâlâ net değildir${estimatedPoints !== undefined ? ` (kısmi puan sinyali: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
-      : `Confidence is stronger because multiple core inputs (age, English, occupation) are provided, although some pathway-specific evidence remains unclear${estimatedPoints !== undefined ? ` (partial points signal: ${estimatedPoints})` : ""}. This is general information only.`;
+      ? `Güven düzeyi daha güçlüdür çünkü yaş (${input.age}), İngilizce seviyesi, meslek (${input.occupation}) ve pasaport ülkesi (${input.passportCountry}) sağlanmıştır; bazı yol-özel kanıtlar hâlâ ayrıca incelenir${estimatedPoints !== undefined ? ` (kısmi puan sinyali: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
+      : `Confidence is stronger because age (${input.age}), English level, occupation (${input.occupation}), and passport country (${input.passportCountry}) are provided, while some pathway-specific evidence still needs separate review${estimatedPoints !== undefined ? ` (partial points signal: ${estimatedPoints})` : ""}. This is general information only.`;
   }
 
   return isTr

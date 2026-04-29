@@ -464,7 +464,7 @@ export function FullCheckWaitlistForm({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {isTr ? "Vize Yolu Güç Karşılaştırması" : "Pathway Strength Comparison"}
+                    {isTr ? "Vize Yolu Karşılaştırması" : "Pathway Strength Comparison"}
                   </CardTitle>
                   <p className="text-xs text-muted-foreground">
                     {isTr
