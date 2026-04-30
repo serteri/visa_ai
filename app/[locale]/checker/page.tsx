@@ -368,7 +368,7 @@ export default function CheckerPage() {
                   >
                     {activeLocales.map((langCode) => (
                       <option key={langCode} value={langCode}>
-                        {langCode === "en" ? "English" : langCode === "tr" ? "Türkçe" : langCode}
+                        {langCode === "en" ? "English" : langCode === "tr" ? "Türkçe" : langCode === "zh-Hans" ? "简体中文" : langCode}
                       </option>
                     ))}
                   </select>

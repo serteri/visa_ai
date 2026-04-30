@@ -24,7 +24,7 @@ export function LanguageSelector({ currentLocale }: LanguageSelectorProps) {
     }
 
     // Replace the current locale in the pathname with the new locale
-    const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(\/|$)/, "/$1") || "/";
+    const pathWithoutLocale = pathname.replace(/^\/[A-Za-z-]+(?=\/|$)/, "") || "/";
     const newPath = `/${languageCode}${pathWithoutLocale === "/" ? "" : pathWithoutLocale}`;
     
     router.push(newPath);

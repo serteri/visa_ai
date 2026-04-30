@@ -33,6 +33,7 @@ export function PremiumFeatureGate({
   onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string }) => void;
 }) {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   const [showModal, setShowModal] = useState(false);
   const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">("lead_capture");
 
@@ -58,15 +59,15 @@ export function PremiumFeatureGate({
         <CardHeader>
           <div className="flex flex-wrap items-center gap-2">
             <CardTitle className="text-base">
-              {isTr ? "Quick Pathway Check Sonucu" : "Quick Pathway Check Result"}
+              {isTr ? "Quick Pathway Check Sonucu" : isZh ? "快速路径评估结果" : "Quick Pathway Check Result"}
             </CardTitle>
-            <Badge variant="secondary">{isTr ? "Ücretsiz görünüm" : "Free preview"}</Badge>
+            <Badge variant="secondary">{isTr ? "Ücretsiz görünüm" : isZh ? "免费预览" : "Free preview"}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-md border border-emerald-300/60 bg-white px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
-              {isTr ? "Temel puan" : "Base points"}
+              {isTr ? "Temel puan" : isZh ? "基础分" : "Base points"}
             </p>
             <p className="mt-1 text-2xl font-bold text-emerald-900">
               {preview.estimatedPoints ?? "-"}
@@ -75,7 +76,7 @@ export function PremiumFeatureGate({
 
           <div className="space-y-2">
             <p className="text-sm font-medium text-foreground">
-              {isTr ? "Muhtemel vize yolları" : "Likely visa pathways"}
+              {isTr ? "Muhtemel vize yolları" : isZh ? "可能签证路径" : "Likely visa pathways"}
             </p>
             <div className="grid gap-2">
               {preview.pathways.map((item) => (
@@ -91,7 +92,7 @@ export function PremiumFeatureGate({
 
       <Card className="relative overflow-hidden border-dashed border-primary/40 bg-background">
         <CardHeader className="opacity-45 blur-[1.6px]">
-          <CardTitle>{isTr ? "Premium bölümler" : "Premium sections"}</CardTitle>
+          <CardTitle>{isTr ? "Premium bölümler" : isZh ? "高级内容模块" : "Premium sections"}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-2 opacity-45 blur-[1.6px]">
           {[
@@ -110,16 +111,16 @@ export function PremiumFeatureGate({
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/70 p-4 backdrop-blur-[2px]">
           <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-card px-4 py-2 text-sm font-semibold shadow-sm">
             <Lock className="size-4 text-primary" />
-            <span>{isTr ? "Kilidi aç" : "Unlock premium"}</span>
+            <span>{isTr ? "Kilidi aç" : isZh ? "解锁高级内容" : "Unlock premium"}</span>
           </div>
 
           <Button size="lg" className="text-base" onClick={() => setShowModal(true)}>
             <Sparkles className="size-4" />
-            {isTr ? "Unlock Your Full Readiness Report" : "Unlock Your Full Readiness Report"}
+            {isTr ? "Unlock Your Full Readiness Report" : isZh ? "解锁完整准备度报告" : "Unlock Your Full Readiness Report"}
           </Button>
 
           <p className="text-sm text-muted-foreground">
-            {isTr ? "$29 Tek rapor ücreti" : "$29 for a Single Report"}
+            {isTr ? "$29 Tek rapor ücreti" : isZh ? "$29 单份报告" : "$29 for a Single Report"}
           </p>
         </div>
       </Card>
@@ -128,10 +129,12 @@ export function PremiumFeatureGate({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
           <Card className="w-full max-w-lg">
             <CardHeader className="space-y-2">
-              <CardTitle>{isTr ? "Raporu aç" : "Unlock report"}</CardTitle>
+              <CardTitle>{isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}</CardTitle>
               <p className="text-sm text-muted-foreground">
                 {isTr
                   ? "Ödeme veya iletişim formu sonrası premium raporunuz açılır ve PDF e-posta ile gönderilir."
+                  : isZh
+                    ? "完成支付或提交联系方式后，将解锁高级报告并自动通过邮箱发送 PDF。"
                   : "After payment or lead form submission, your premium report is unlocked and the PDF is emailed automatically."}
               </p>
             </CardHeader>
@@ -140,12 +143,12 @@ export function PremiumFeatureGate({
                 <input type="hidden" name="reportId" value={reportId} />
 
                 <div className="space-y-2">
-                  <Label htmlFor="unlock-full-name">{isTr ? "Ad soyad" : "Full name"}</Label>
+                  <Label htmlFor="unlock-full-name">{isTr ? "Ad soyad" : isZh ? "姓名" : "Full name"}</Label>
                   <Input id="unlock-full-name" name="fullName" defaultValue={defaultName ?? ""} />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="unlock-email">{isTr ? "E-posta" : "Email"}</Label>
+                  <Label htmlFor="unlock-email">{isTr ? "E-posta" : isZh ? "邮箱" : "Email"}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3.5 size-4 text-muted-foreground" />
                     <Input
@@ -163,7 +166,7 @@ export function PremiumFeatureGate({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="unlock-phone">{isTr ? "Telefon" : "Phone"}</Label>
+                  <Label htmlFor="unlock-phone">{isTr ? "Telefon" : isZh ? "电话" : "Phone"}</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3.5 size-4 text-muted-foreground" />
                     <Input id="unlock-phone" name="phone" className="pl-9" />
@@ -171,7 +174,7 @@ export function PremiumFeatureGate({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="unlock-method">{isTr ? "Açma yöntemi" : "Unlock method"}</Label>
+                  <Label htmlFor="unlock-method">{isTr ? "Açma yöntemi" : isZh ? "解锁方式" : "Unlock method"}</Label>
                   <select
                     id="unlock-method"
                     name="unlockMethod"
@@ -179,8 +182,8 @@ export function PremiumFeatureGate({
                     onChange={(event) => setUnlockMethod(event.target.value === "payment" ? "payment" : "lead_capture")}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
-                    <option value="lead_capture">{isTr ? "Form ile aç (Lead Capture)" : "Unlock with lead capture form"}</option>
-                    <option value="payment">{isTr ? "Ödeme ile aç ($29)" : "Unlock with payment ($29)"}</option>
+                    <option value="lead_capture">{isTr ? "Form ile aç (Lead Capture)" : isZh ? "提交线索表单解锁" : "Unlock with lead capture form"}</option>
+                    <option value="payment">{isTr ? "Ödeme ile aç ($29)" : isZh ? "支付解锁（$29）" : "Unlock with payment ($29)"}</option>
                   </select>
                 </div>
 
@@ -192,12 +195,12 @@ export function PremiumFeatureGate({
 
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" className="flex-1" onClick={() => setShowModal(false)}>
-                    {isTr ? "İptal" : "Cancel"}
+                    {isTr ? "İptal" : isZh ? "取消" : "Cancel"}
                   </Button>
                   <Button type="submit" className="flex-1" disabled={unlockPending}>
                     {unlockPending
-                      ? isTr ? "İşleniyor..." : "Processing..."
-                      : isTr ? "Raporu aç" : "Unlock report"}
+                      ? isTr ? "İşleniyor..." : isZh ? "处理中..." : "Processing..."
+                      : isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}
                   </Button>
                 </div>
               </form>

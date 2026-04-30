@@ -1,5 +1,7 @@
 import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
+import { notoSansSCRegularBase64 } from "./pdf-font-sc";
+import { frictionBandLabel } from "@/src/lib/readiness/localization";
 import type { ReadinessReport } from "./types";
 
 const COLORS = {
@@ -28,10 +30,12 @@ const GLOBAL_FOOTER_TEXT =
 
 const PDF_FONT_NAME = "NotoSans";
 const PDF_FONT_FILE = "NotoSans-Regular.ttf";
+const PDF_CJK_FONT_NAME = "NotoSansSC";
+const PDF_CJK_FONT_FILE = "NotoSansSC-Regular.ttf";
 
 interface PDFGeneratorInput {
   report: ReadinessReport;
-  locale: "en" | "tr";
+  locale: "en" | "tr" | "zh-Hans";
   saveToFile?: boolean;
   userInputSummary: {
     name?: string;
@@ -47,7 +51,7 @@ interface PDFGeneratorInput {
   };
 }
 
-function getLocalizedText(locale: "en" | "tr") {
+function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
   if (locale === "tr") {
     return {
       title: "Tam Vize Hazırlık Raporu",
@@ -114,6 +118,75 @@ function getLocalizedText(locale: "en" | "tr") {
       englishLevelLabel: "İngilizce seviyesi",
       sponsorFamilyLabel: "Sponsor/aile",
       biggestConcernLabel: "En büyük endişe",
+    };
+  }
+
+  if (locale === "zh-Hans") {
+    return {
+      title: "完整签证准备度报告",
+      generatedDate: "生成日期",
+      userInfo: "用户信息",
+      signalSnapshot: "信号摘要",
+      strongestSignal: "最强信号",
+      secondarySignals: "次要信号",
+      primaryLimitingFactor: "主要限制因素",
+      positionChangers: "可能改变你位置的因素",
+      pathwayTable: "签证路径结构化对比",
+      pathwayStrengthComparison: "路径强度对比",
+      evidenceReadiness: "材料/信息准备度摘要",
+      pointsBoosterSimulator: "加分场景模拟",
+      financialRoadmap: "费用路线图",
+      progressionPathways: "通往永居的常见过渡路径",
+      pathwayFriction: "路径阻力 / 现实校验",
+      premiumSections: "高级章节",
+      invitationTrends: "历史邀请趋势",
+      livingCostProjection: "生活成本预测",
+      strategicGanttChart: "战略甘特图",
+      ganttStep: "步骤",
+      ganttWindow: "时间窗口",
+      monthlyRent: "月租",
+      monthlyGroceries: "月度食品",
+      monthlyTransport: "月度交通",
+      monthlyTotal: "月总计",
+      frictionLevel: "阻力等级",
+      frictionScore: "阻力评分",
+      realityCheck: "现实校验",
+      successSignals: "成功信号",
+      visa: "签证",
+      difficulty: "难度",
+      requirementType: "要求类型",
+      userRelativePosition: "相对位置",
+      pathwayComparison: "可能签证路径",
+      confidence: "置信度",
+      confidenceExplanation: "置信度说明",
+      keyRequirements: "关键要求",
+      pathwayRisks: "路径特定风险",
+      keyVisaRequirements: "关键签证要求",
+      executiveSummary: "执行摘要",
+      riskIndicators: "风险指标",
+      suggestedNextSteps: "建议下一步",
+      documentLevelSpecificity: "文件级具体性",
+      yourImmediateActionPlan: "你的立即行动计划",
+      downloadablePdf: "可下载 PDF",
+      factorsAffectingPathways: "可能影响路径的因素",
+      missingInformation: "缺失信息",
+      disclaimer: "免责声明",
+      estimatedPoints: "估算分数",
+      relevantVisas: "相关签证",
+      highRisk: "高",
+      mediumRisk: "中",
+      lowRisk: "低",
+      noData: "暂无数据",
+      nameLabel: "姓名",
+      emailLabel: "邮箱",
+      goalLabel: "目标",
+      currentCountryLabel: "当前国家",
+      passportCountryLabel: "护照国家",
+      ageLabel: "年龄",
+      occupationLabel: "职业",
+      englishLevelLabel: "英语水平",
+      sponsorFamilyLabel: "担保/家庭",
+      biggestConcernLabel: "最大担忧",
     };
   }
 
@@ -187,7 +260,10 @@ function getLocalizedText(locale: "en" | "tr") {
 
 export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
   const { report, locale, userInputSummary } = input;
-  const text = getLocalizedText(locale);
+  const cjkRequested = locale === "zh-Hans";
+  const cjkFontAvailable = cjkRequested && notoSansSCRegularBase64.length > 0;
+  const effectiveLocale = cjkRequested && !cjkFontAvailable ? "en" : locale;
+  const text = getLocalizedText(effectiveLocale);
 
   const doc = new jsPDF({
     orientation: "portrait",
@@ -196,7 +272,18 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
   });
   doc.addFileToVFS(PDF_FONT_FILE, notoSansRegularBase64);
   doc.addFont(PDF_FONT_FILE, PDF_FONT_NAME, "normal");
+  if (cjkFontAvailable) {
+    doc.addFileToVFS(PDF_CJK_FONT_FILE, notoSansSCRegularBase64);
+    doc.addFont(PDF_CJK_FONT_FILE, PDF_CJK_FONT_NAME, "normal");
+  }
   doc.setFont(PDF_FONT_NAME, "normal");
+
+  const activeFontName = cjkFontAvailable ? PDF_CJK_FONT_NAME : PDF_FONT_NAME;
+
+  function safeText(value: string): string {
+    if (!cjkRequested || cjkFontAvailable) return value;
+    return value.replace(/[^\x00-\x7F]/g, "?");
+  }
 
   let yPosition = 20;
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -215,11 +302,11 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
 
   // Helper functions
   function setBaseFont() {
-    doc.setFont(PDF_FONT_NAME, "normal");
+    doc.setFont(activeFontName, "normal");
   }
 
   function setBoldFont() {
-    doc.setFont(PDF_FONT_NAME, "normal");
+    doc.setFont(activeFontName, "normal");
   }
 
   function drawSeparator() {
@@ -236,7 +323,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     setBoldFont();
     doc.setFontSize(FONTS.heading);
     doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.text(`${symbol} ${heading}`, margin, yPosition);
+    doc.text(safeText(`${symbol} ${heading}`), margin, yPosition);
     yPosition += 8;
   }
 
@@ -253,7 +340,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
       const footerLines = doc.splitTextToSize(GLOBAL_FOOTER_TEXT, footerWidth);
-      doc.text(footerLines, margin, pageHeight - 10);
+      doc.text(footerLines.map((line: string) => safeText(line)), margin, pageHeight - 10);
       doc.text(`${page}/${totalPages}`, pageWidth - margin, pageHeight - 4, { align: "right" });
     }
   }
@@ -273,12 +360,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     setBoldFont();
     doc.setFontSize(18);
     doc.setTextColor(255, 255, 255);
-    doc.text("CONFIDENTIAL READINESS ASSESSMENT", margin, 22);
+    doc.text(safeText("CONFIDENTIAL READINESS ASSESSMENT"), margin, 22);
 
     setBoldFont();
     doc.setFontSize(26);
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-    doc.text(text.title, margin, 68);
+    doc.text(safeText(text.title), margin, 68);
 
     doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
     doc.setLineWidth(0.4);
@@ -291,9 +378,9 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     doc.text("Report ID", margin, 116);
 
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-    doc.text(subjectName, margin + 34, 92);
+    doc.text(safeText(subjectName), margin + 34, 92);
     doc.text(reportDate, margin + 34, 104);
-    doc.text(reportId, margin + 34, 116);
+    doc.text(safeText(reportId), margin + 34, 116);
 
     doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
     doc.setFontSize(10);
@@ -316,7 +403,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     setBaseFont();
     doc.setFontSize(FONTS.title);
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-    doc.text(title, margin, yPosition);
+    doc.text(safeText(title), margin, yPosition);
     yPosition += 15;
   }
 
@@ -329,11 +416,11 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
     const x = margin + indent;
-    const lines = doc.splitTextToSize(text, contentWidth - indent);
+    const lines = doc.splitTextToSize(safeText(text), contentWidth - indent);
     lines.forEach((line: string) => {
       ensurePageSpace(lineHeight + 1);
       setBaseFont();
-      doc.text(line, x, yPosition);
+      doc.text(safeText(line), x, yPosition);
       yPosition += lineHeight;
     });
   }
@@ -343,11 +430,11 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     doc.setFontSize(FONTS.small);
     doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
     const x = margin + indent;
-    const lines = doc.splitTextToSize(text, contentWidth - indent);
+    const lines = doc.splitTextToSize(safeText(text), contentWidth - indent);
     lines.forEach((line: string) => {
       ensurePageSpace(lineHeight + 1);
       setBaseFont();
-      doc.text(line, x, yPosition);
+      doc.text(safeText(line), x, yPosition);
       yPosition += lineHeight;
     });
   }
@@ -358,12 +445,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
       setBaseFont();
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-      const lines = doc.splitTextToSize(item, contentWidth - 8);
+      const lines = doc.splitTextToSize(safeText(item), contentWidth - 8);
       doc.text("-", margin + 2, yPosition);
       lines.forEach((line: string, index: number) => {
         ensurePageSpace(lineHeight + 1);
         setBaseFont();
-        doc.text(line, margin + 8, yPosition);
+        doc.text(safeText(line), margin + 8, yPosition);
         yPosition += lineHeight;
       });
     });
@@ -391,7 +478,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
     headers.forEach((h, i) => {
-      doc.text(h, cursorX, yPosition + 4.7);
+      doc.text(safeText(h), cursorX, yPosition + 4.7);
       cursorX += colWidths[i];
     });
     yPosition += rowHeight;
@@ -415,7 +502,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
         } else {
           doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
         }
-        doc.text(clipped, x, yPosition + 4.7);
+        doc.text(safeText(clipped), x, yPosition + 4.7);
         x += colWidths[i];
       });
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
@@ -444,7 +531,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
       setBoldFont();
       doc.setFontSize(FONTS.subheading);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.text(phase.title, margin, yPosition);
+      doc.text(safeText(phase.title), margin, yPosition);
       yPosition += 6;
 
       const lineX = margin + 4;
@@ -465,12 +552,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
         setBoldFont();
         doc.setFontSize(FONTS.body);
         doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-        doc.text(`${text.ganttStep} ${step.step}: ${step.title}`, blockX + 2, yPosition + 4.5);
+        doc.text(safeText(`${text.ganttStep} ${step.step}: ${step.title}`), blockX + 2, yPosition + 4.5);
 
         setBaseFont();
         doc.setFontSize(FONTS.small);
         doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-        doc.text(`${text.ganttWindow}: ${step.window}`, blockX + 2, yPosition + 8.3);
+        doc.text(safeText(`${text.ganttWindow}: ${step.window}`), blockX + 2, yPosition + 8.3);
 
         yPosition += 15;
       });
@@ -501,17 +588,17 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
       } else {
         doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
       }
-      doc.text(category.category, margin + 2, yPosition + 5);
+      doc.text(safeText(category.category), margin + 2, yPosition + 5);
 
       setBaseFont();
       doc.setFontSize(FONTS.body);
       category.items.forEach((item, idx) => {
         if (isCritical) {
           doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
-          doc.text(`[ ] ${item}`, margin + 4, yPosition + 10 + idx * 5);
+          doc.text(safeText(`[ ] ${item}`), margin + 4, yPosition + 10 + idx * 5);
         } else {
           doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-          doc.text(`[ ] ${item}`, margin + 4, yPosition + 10 + idx * 5);
+          doc.text(safeText(`[ ] ${item}`), margin + 4, yPosition + 10 + idx * 5);
         }
       });
 
@@ -533,7 +620,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     setBoldFont();
     doc.setFontSize(12);
     doc.setTextColor(6, 95, 70);
-    doc.text(text.yourImmediateActionPlan, margin + 3, yPosition + 7.5);
+    doc.text(safeText(text.yourImmediateActionPlan), margin + 3, yPosition + 7.5);
     yPosition += 15;
 
     report.suggestedNextSteps.forEach((step, idx) => {
@@ -550,32 +637,47 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
   }
 
   function formatStrength(level: "limited" | "moderate" | "strong") {
-    if (locale === "tr") {
+    if (effectiveLocale === "tr") {
       return level === "strong" ? "Daha güçlü sinyal" : level === "moderate" ? "Orta sinyal" : "Sınırlı sinyal";
+    }
+    if (effectiveLocale === "zh-Hans") {
+      return level === "strong" ? "较强信号" : level === "moderate" ? "中等信号" : "有限信号";
     }
     return level === "strong" ? "Stronger signal" : level === "moderate" ? "Moderate signal" : "Limited signal";
   }
 
   function formatSignalConfidence(level: "limited" | "moderate" | "stronger") {
-    if (locale === "tr") {
+    if (effectiveLocale === "tr") {
       return level === "stronger" ? "Daha güçlü" : level === "moderate" ? "Orta" : "Sınırlı";
+    }
+    if (effectiveLocale === "zh-Hans") {
+      return level === "stronger" ? "较强" : level === "moderate" ? "中等" : "有限";
     }
     return level === "stronger" ? "Stronger" : level === "moderate" ? "Moderate" : "Limited";
   }
 
   function formatLoad(level: "low" | "medium" | "high") {
-    if (locale === "tr") {
+    if (effectiveLocale === "tr") {
       return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
+    }
+    if (effectiveLocale === "zh-Hans") {
+      return level === "high" ? "高" : level === "medium" ? "中" : "低";
     }
     return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
   function formatEvidenceStatus(status: "provided" | "missing" | "unclear" | "typically_required") {
-    if (locale === "tr") {
+    if (effectiveLocale === "tr") {
       if (status === "provided") return "Sağlandı";
       if (status === "missing") return "Eksik";
       if (status === "typically_required") return "Tipik olarak gerekir";
       return "Net değil";
+    }
+    if (effectiveLocale === "zh-Hans") {
+      if (status === "provided") return "已提供";
+      if (status === "missing") return "缺失";
+      if (status === "typically_required") return "通常需要";
+      return "不明确";
     }
     if (status === "provided") return "Provided";
     if (status === "missing") return "Missing";
@@ -637,7 +739,11 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     `${text.secondarySignals}: ${
       report.signalSnapshot.secondary.length > 0
         ? report.signalSnapshot.secondary.join(", ")
-        : locale === "tr" ? "Belirgin ikincil sinyal yok" : "No clear secondary signal"
+        : effectiveLocale === "tr"
+          ? "Belirgin ikincil sinyal yok"
+          : effectiveLocale === "zh-Hans"
+            ? "暂无明显次要信号"
+            : "No clear secondary signal"
     }`
   );
   addBody(`${text.confidence}: ${formatSignalConfidence(report.signalSnapshot.confidenceLabel)}`);
@@ -662,23 +768,25 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     addHeading(text.pathwayTable);
     const pathwayRows = report.pathwayComparison.map((item) => {
       const friction = getFrictionForPathway(item.subclass);
+      const frictionScore = friction?.frictionScore ?? "MEDIUM";
       return {
         visa: `${item.visaName} (${item.subclass})`,
         confidence: item.confidenceLevel,
-        frictionLevel: friction ? mapFrictionLabel(friction.frictionScore) : "MEDIUM",
+        frictionScore,
+        frictionLabel: frictionBandLabel(effectiveLocale, frictionScore),
         realityCheck: friction?.realityCheck ?? item.reason,
       };
     });
 
     drawTable(
       [text.visa, text.confidence, text.frictionLevel],
-      pathwayRows.map((row) => [row.visa, row.confidence, row.frictionLevel]),
+      pathwayRows.map((row) => [row.visa, row.confidence, row.frictionLabel]),
       [0.5, 0.2, 0.3],
       (rowIndex, colIndex) => {
         if (colIndex !== 2) return null;
         const row = pathwayRows[rowIndex];
         if (!row) return null;
-        return getFrictionColorByLabel(row.frictionLevel as "LOW" | "MEDIUM" | "HIGH" | "EXTREME");
+        return getFrictionColorByLabel(row.frictionScore);
       }
     );
 
@@ -692,26 +800,26 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     addHeading(text.pathwayStrengthComparison);
     report.pathwayStrengthComparison.forEach((item) => {
       addBody(`${item.visaName} (${item.subclass})`);
-      addSmallText(`${locale === "tr" ? "Güç" : "Strength"}: ${formatStrength(item.strength)}`, 4);
-      addSmallText(`${locale === "tr" ? "Zorluk seviyesi" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
-      addSmallText(`${locale === "tr" ? "Gerekli belge düzeyi" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
-      addSmallText(`${locale === "tr" ? "Tipik yol" : "Typical path"}: ${item.typicalPath}`, 4);
+      addSmallText(`${effectiveLocale === "tr" ? "Güç" : effectiveLocale === "zh-Hans" ? "强度" : "Strength"}: ${formatStrength(item.strength)}`, 4);
+      addSmallText(`${effectiveLocale === "tr" ? "Zorluk seviyesi" : effectiveLocale === "zh-Hans" ? "阻力" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
+      addSmallText(`${effectiveLocale === "tr" ? "Gerekli belge düzeyi" : effectiveLocale === "zh-Hans" ? "证据负载" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
+      addSmallText(`${effectiveLocale === "tr" ? "Tipik yol" : effectiveLocale === "zh-Hans" ? "典型路径" : "Typical path"}: ${item.typicalPath}`, 4);
       if (item.signalReasons.length > 0) {
-        addSmallText(locale === "tr" ? "Sinyal nedenleri:" : "Signal reasons:", 4);
+        addSmallText(effectiveLocale === "tr" ? "Sinyal nedenleri:" : effectiveLocale === "zh-Hans" ? "信号原因：" : "Signal reasons:", 4);
         item.signalReasons.forEach((r) => addSmallText(`– ${r}`, 8));
       }
       if (item.limitingFactors.length > 0) {
-        addSmallText(locale === "tr" ? "Sınırlayıcı faktörler:" : "Limiting factors:", 4);
+        addSmallText(effectiveLocale === "tr" ? "Sınırlayıcı faktörler:" : effectiveLocale === "zh-Hans" ? "限制因素：" : "Limiting factors:", 4);
         item.limitingFactors.forEach((f) => addSmallText(`– ${f}`, 8));
       }
       if (item.evidenceStatus.length > 0) {
-        addSmallText(locale === "tr" ? "Kanıt durumu:" : "Evidence status:", 4);
+        addSmallText(effectiveLocale === "tr" ? "Kanıt durumu:" : effectiveLocale === "zh-Hans" ? "证据状态：" : "Evidence status:", 4);
         item.evidenceStatus.forEach((ev) => {
           const statusLabel =
-            ev.status === "provided" ? (locale === "tr" ? "Sağlandı" : "Provided")
-            : ev.status === "missing" ? (locale === "tr" ? "Eksik" : "Missing")
-            : ev.status === "unclear" ? (locale === "tr" ? "Net değil" : "Unclear")
-            : (locale === "tr" ? "Tipik gereklilik" : "Typically required");
+            ev.status === "provided" ? (effectiveLocale === "tr" ? "Sağlandı" : effectiveLocale === "zh-Hans" ? "已提供" : "Provided")
+            : ev.status === "missing" ? (effectiveLocale === "tr" ? "Eksik" : effectiveLocale === "zh-Hans" ? "缺失" : "Missing")
+            : ev.status === "unclear" ? (effectiveLocale === "tr" ? "Net değil" : effectiveLocale === "zh-Hans" ? "不明确" : "Unclear")
+            : (effectiveLocale === "tr" ? "Tipik gereklilik" : effectiveLocale === "zh-Hans" ? "通常需要" : "Typically required");
           addSmallText(`– ${ev.label}: ${statusLabel}`, 8);
         });
       }
@@ -738,8 +846,10 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
       addBody(`${text.estimatedPoints}: ${report.pointsBoosterSimulator.currentEstimate}`);
     }
     addSmallText(
-      locale === "tr"
+      effectiveLocale === "tr"
         ? "Bu senaryolar yalnızca matematiksel puan değişimini gösterir; uygunluk veya sonuç anlamına gelmez."
+        : effectiveLocale === "zh-Hans"
+          ? "该模拟仅表示数学分数变化，不代表资格结论或结果保证。"
         : "This scenario reflects a mathematical change only and does not represent eligibility or outcome.",
       0
     );
@@ -747,7 +857,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
     report.pointsBoosterSimulator.scenarios.forEach((scenario) => {
       addBody(`${scenario.label}: ${scenario.estimatedChange >= 0 ? "+" : ""}${scenario.estimatedChange}`);
       if (scenario.resultingEstimate !== undefined) {
-        addSmallText(`${locale === "tr" ? "Sonraki matematiksel tahmin" : "Resulting mathematical estimate"}: ${scenario.resultingEstimate}`, 4);
+        addSmallText(`${effectiveLocale === "tr" ? "Sonraki matematiksel tahmin" : effectiveLocale === "zh-Hans" ? "调整后估算分" : "Resulting mathematical estimate"}: ${scenario.resultingEstimate}`, 4);
       }
       addSmallText(scenario.explanation, 4);
     });
@@ -871,7 +981,11 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
 
   // Generate filename
   const timestamp = new Date().toISOString().split("T")[0];
-  const filename = locale === "tr" ? `vize-hazırlık-raporu-${timestamp}.pdf` : `visa-readiness-report-${timestamp}.pdf`;
+  const filename = effectiveLocale === "tr"
+    ? `vize-hazırlık-raporu-${timestamp}.pdf`
+    : effectiveLocale === "zh-Hans"
+      ? `qianzheng-zhunbeibaogao-${timestamp}.pdf`
+      : `visa-readiness-report-${timestamp}.pdf`;
   const pdfBytes = new Uint8Array(doc.output("arraybuffer"));
 
   // Save PDF

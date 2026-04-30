@@ -227,7 +227,7 @@ async function sendFullCheckAdminEmail(payload: {
 async function sendFullCheckConfirmationEmail(payload: {
   email: string;
   fullName: string;
-  locale: "en" | "tr";
+  locale: "en" | "tr" | "zh-Hans";
   pdfAttachment?: Uint8Array;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
@@ -240,10 +240,13 @@ async function sendFullCheckConfirmationEmail(payload: {
   const resend = new Resend(apiKey);
   const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
   const isTr = payload.locale === "tr";
+  const isZh = payload.locale === "zh-Hans";
   const greeting = payload.fullName
-    ? `${isTr ? "Merhaba" : "Hi"} ${payload.fullName},`
+    ? `${isTr ? "Merhaba" : isZh ? "您好" : "Hi"} ${payload.fullName},`
     : isTr
       ? "Merhaba,"
+      : isZh
+        ? "您好，"
       : "Hi,";
 
   await resend.emails.send({
@@ -251,7 +254,9 @@ async function sendFullCheckConfirmationEmail(payload: {
     to: [payload.email],
     subject: isTr
       ? "Tam vize hazirlik raporu talebiniz"
-      : "Your full visa readiness report request",
+      : isZh
+        ? "你的完整签证准备度报告"
+        : "Your full visa readiness report request",
     text: isTr
       ? [
           greeting,
@@ -259,6 +264,14 @@ async function sendFullCheckConfirmationEmail(payload: {
           "Tam vize hazirlik raporu talebiniz alindi.",
           "Yapilandirilmis rapor ekranda olusturuldu. Bu genel bilgi niteligindedir ve goc tavsiyesi degildir.",
         ].join("\n")
+      : isZh
+        ? [
+            greeting,
+            "",
+            "我们已收到你的完整签证准备度报告请求。",
+            "你的高级 PDF 报告已作为附件发送。",
+            "本内容仅供一般信息参考，不构成移民建议。",
+          ].join("\n")
       : [
           greeting,
           "",
@@ -313,17 +326,19 @@ export async function submitFullCheckWaitlist(
   const source = String(formData.get("source") ?? "").trim() || "full_check";
 
   const isTr = preferredLanguage === "tr";
+  const isZh = preferredLanguage === "zh-Hans";
+  const resolvedLocale = preferredLanguage === "tr" ? "tr" : preferredLanguage === "zh-Hans" ? "zh-Hans" : "en";
   const errors: Record<string, string> = {};
 
-  if (!email) errors.email = isTr ? "E-posta adresi gereklidir." : "Email is required.";
+  if (!email) errors.email = isTr ? "E-posta adresi gereklidir." : isZh ? "邮箱为必填项。" : "Email is required.";
   if (email && !isValidEmail(email)) {
-    errors.email = isTr ? "Gecerli bir e-posta adresi girin." : "Enter a valid email address.";
+    errors.email = isTr ? "Gecerli bir e-posta adresi girin." : isZh ? "请输入有效的邮箱地址。" : "Enter a valid email address.";
   }
   if (!passportCountry) {
-    errors.passportCountry = isTr ? "Pasaport ulkesi gereklidir." : "Passport country is required.";
+    errors.passportCountry = isTr ? "Pasaport ulkesi gereklidir." : isZh ? "护照国家为必填项。" : "Passport country is required.";
   }
-  if (!age) errors.age = isTr ? "Yas gereklidir." : "Age is required.";
-  if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : "Main goal is required.";
+  if (!age) errors.age = isTr ? "Yas gereklidir." : isZh ? "年龄为必填项。" : "Age is required.";
+  if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : isZh ? "主要目标为必填项。" : "Main goal is required.";
 
   if (Object.keys(errors).length > 0) {
     return {
@@ -331,6 +346,8 @@ export async function submitFullCheckWaitlist(
       errors,
       message: isTr
         ? "Yapilandirilmis bir rapor icin daha fazla bilgi gereklidir."
+        : isZh
+          ? "需要更多信息以生成结构化报告。"
         : "More information required for a structured report.",
     };
   }
@@ -340,7 +357,7 @@ export async function submitFullCheckWaitlist(
   await ensureUserReportsTable();
 
   const leadQuality = buildLeadQuality({
-    locale: preferredLanguage === "tr" ? "tr" : "en",
+    locale: resolvedLocale,
     mainGoal,
     currentCountry: currentCountry || undefined,
     passportCountry,
@@ -375,7 +392,7 @@ export async function submitFullCheckWaitlist(
   const isFreeActive = Boolean(usageRow?.is_free_active ?? true);
 
   const generatedReport = runReadinessEngine({
-    locale: preferredLanguage === "tr" ? "tr" : "en",
+    locale: resolvedLocale,
     mainGoal,
     currentCountry: currentCountry || undefined,
     passportCountry,
@@ -449,12 +466,12 @@ export async function submitFullCheckWaitlist(
     email,
     preferredPath: visaInterest || undefined,
     source,
-    locale: preferredLanguage === "tr" ? "tr" : "en",
+    locale: resolvedLocale,
     leadScore: leadQuality.leadScore,
     leadTier: leadQuality.leadTier,
     report,
     input: {
-      locale: preferredLanguage === "tr" ? "tr" : "en",
+      locale: resolvedLocale,
       mainGoal,
       currentCountry: currentCountry || undefined,
       passportCountry,
@@ -475,6 +492,8 @@ export async function submitFullCheckWaitlist(
     status: "success",
     message: isTr
       ? "Hizli sonuclar hazir. Tam rapor icin kilidi acin."
+      : isZh
+        ? "快速结果已生成。解锁后可查看完整报告。"
       : "Quick results are ready. Unlock to access the full report.",
     preview: buildQuickPreview(report),
     reportId: reportRecord.id,
@@ -538,7 +557,7 @@ export async function unlockPremiumReport(
     try {
       const pdfAttachment = generateReadinessPDF({
         report: record.report,
-        locale: record.locale === "tr" ? "tr" : "en",
+        locale: record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en",
         saveToFile: false,
         userInputSummary: {
           name: fullName || undefined,
@@ -557,7 +576,7 @@ export async function unlockPremiumReport(
       await sendFullCheckConfirmationEmail({
         email,
         fullName,
-        locale: record.locale === "tr" ? "tr" : "en",
+        locale: record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en",
         pdfAttachment,
       });
       pdfSent = true;

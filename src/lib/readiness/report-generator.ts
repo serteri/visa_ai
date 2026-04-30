@@ -1,5 +1,7 @@
 import livingCostsData from "@/src/data/living-costs.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
+import { localizeText, localizeWaitWindow } from "@/src/lib/readiness/localization";
+import type { Locale } from "@/lib/readiness/types";
 
 export type FamilyProfile = "Single" | "Couple" | "Family of 4";
 
@@ -248,6 +250,7 @@ function buildGanttByTimeline(timeline?: string): GanttSection {
 }
 
 export function generatePremiumSections(input: {
+  locale?: Locale;
   occupation?: string;
   selectedCity?: string;
   familyStatus?: string;
@@ -255,6 +258,7 @@ export function generatePremiumSections(input: {
   mainGoal?: string;
   biggestConcern?: string;
 }): PremiumSections {
+  const locale = input.locale ?? "en";
   const trend = matchTrendByOccupation(input.occupation);
   const city = inferCity({
     selectedCity: input.selectedCity,
@@ -264,25 +268,41 @@ export function generatePremiumSections(input: {
   const familyProfile = inferFamilyProfile(input.familyStatus);
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
+  const gantt = buildGanttByTimeline(input.timeline);
 
   return {
     historicalInvitationTrends: {
-      matchedOccupationGroup: trend.occupation_group,
+      matchedOccupationGroup: localizeText(locale, trend.occupation_group),
       anzscoCode: trend.anzsco_code,
       estimates: trend.estimates.map((e) => ({
         subclass: e.subclass,
         estimatedPoints: e.last_invited_point ?? e.estimated_points,
-        estimatedWait: e.estimated_wait,
+        estimatedWait: localizeWaitWindow(locale, e.estimated_wait),
       })),
-      note: "Trend estimates are analytical planning references only and do not guarantee invitation outcomes.",
+      note: localizeText(
+        locale,
+        "Trend estimates are analytical planning references only and do not guarantee invitation outcomes."
+      ),
     },
     livingCostProjection: {
       city,
       familyProfile,
       currency: LIVING_DATA.currency,
       monthly,
-      note: "Living cost projections are indicative monthly planning estimates and may vary by suburb and lifestyle.",
+      note: localizeText(
+        locale,
+        "Living cost projections are indicative monthly planning estimates and may vary by suburb and lifestyle."
+      ),
     },
-    strategicGanttChart: buildGanttByTimeline(input.timeline),
+    strategicGanttChart: {
+      ...gantt,
+      steps: gantt.steps.map((step) => ({
+        ...step,
+        title: localizeText(locale, step.title),
+        window: localizeWaitWindow(locale, step.window),
+        description: localizeText(locale, step.description),
+      })),
+      timelineBand: localizeWaitWindow(locale, gantt.timelineBand),
+    },
   };
 }

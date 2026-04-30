@@ -1,4 +1,4 @@
-export const activeLocales = ["en", "tr"] as const;
+export const activeLocales = ["en", "tr", "zh-Hans"] as const;
 export const comingSoonLocales = ["hi", "pa", "zh", "ar", "es", "vi", "ne"] as const;
 
 export type Locale = (typeof activeLocales)[number];
@@ -12,4 +12,5 @@ export function isValidLocale(locale: unknown): locale is Locale {
 export const localeLabels: Record<Locale, string> = {
   en: "English",
   tr: "Türkçe",
+  "zh-Hans": "简体中文",
 };

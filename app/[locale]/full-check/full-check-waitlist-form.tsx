@@ -134,6 +134,9 @@ export function FullCheckWaitlistForm({
   };
 }) {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const txt = (trText: string, enText: string, zhText: string) =>
+    isTr ? trText : isZh ? zhText : enText;
   const initialState: FullCheckWaitlistState = {
     status: "idle",
   };
@@ -159,7 +162,7 @@ export function FullCheckWaitlistForm({
 
     generateReadinessPDF({
       report,
-      locale: locale === "tr" ? "tr" : "en",
+      locale: locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en",
       userInputSummary: {
         ...(state.userInput || {}),
         name: unlockedName ?? state.userInput?.name,
@@ -240,17 +243,17 @@ export function FullCheckWaitlistForm({
         <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-full-name">{isTr ? "Ad soyad" : "Full name"}</Label>
+          <Label htmlFor="waitlist-full-name">{txt("Ad soyad", "Full name", "姓名")}</Label>
           <Input
             id="waitlist-full-name"
             name="fullName"
             autoComplete="name"
-            placeholder={isTr ? "Adınız" : "Your name"}
+            placeholder={txt("Adınız", "Your name", "请输入姓名")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-email">{isTr ? "E-posta adresi" : "Email address"}</Label>
+          <Label htmlFor="waitlist-email">{txt("E-posta adresi", "Email address", "邮箱地址")}</Label>
           <Input
             id="waitlist-email"
             name="email"
@@ -264,7 +267,7 @@ export function FullCheckWaitlistForm({
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-visa-interest">
-            {isTr ? "Bu rapor hangi vize yoluna odaklanmalı?" : "Which visa pathway should this report focus on?"}
+            {txt("Bu rapor hangi vize yoluna odaklanmalı?", "Which visa pathway should this report focus on?", "本报告应重点分析哪条签证路径？")}
           </Label>
           <select
             id="waitlist-visa-interest"
@@ -272,7 +275,7 @@ export function FullCheckWaitlistForm({
             defaultValue={initialValues.visaInterest ?? ""}
             className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
           >
-            <option value="">{isTr ? "Tüm yollar / Emin değilim" : "All pathways / Not sure"}</option>
+            <option value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
             <option value="500">{isTr ? "Öğrenci Vizesi 500" : "Student visa 500"}</option>
             <option value="485">{isTr ? "Geçici Mezun Vizesi 485" : "Temporary Graduate visa 485"}</option>
             <option value="482">{isTr ? "Skills in Demand Vizesi 482" : "Skills in Demand visa 482"}</option>
@@ -284,23 +287,23 @@ export function FullCheckWaitlistForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-current-country">{isTr ? "Bulunduğunuz ülke" : "Current country"}</Label>
+          <Label htmlFor="waitlist-current-country">{txt("Bulunduğunuz ülke", "Current country", "当前国家")}</Label>
           <Input
             id="waitlist-current-country"
             name="currentCountry"
             defaultValue={initialValues.currentCountry ?? ""}
             autoComplete="country-name"
-            placeholder={isTr ? "Avustralya, Türkiye, Hindistan veya başka bir ülke" : "Australia, Turkiye, India, or elsewhere"}
+            placeholder={txt("Avustralya, Türkiye, Hindistan veya başka bir ülke", "Australia, Turkiye, India, or elsewhere", "例如：澳大利亚、中国、土耳其等")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-main-goal">{isTr ? "Ana hedef" : "Main goal"}</Label>
+          <Label htmlFor="waitlist-main-goal">{txt("Ana hedef", "Main goal", "主要目标")}</Label>
           <Textarea
             id="waitlist-main-goal"
             name="mainGoal"
             defaultValue={initialValues.mainGoal ?? ""}
-            placeholder={isTr ? "Raporun hangi konuda yardımcı olmasını istediğinizi belirtin" : "Tell us what you want the report to help with"}
+            placeholder={txt("Raporun hangi konuda yardımcı olmasını istediğinizi belirtin", "Tell us what you want the report to help with", "请说明你希望报告重点解决的问题")}
             rows={3}
             required
           />
@@ -309,62 +312,62 @@ export function FullCheckWaitlistForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="waitlist-passport-country">{isTr ? "Pasaport ülkesi" : "Passport country"}</Label>
+            <Label htmlFor="waitlist-passport-country">{txt("Pasaport ülkesi", "Passport country", "护照国家")}</Label>
             <Input
               id="waitlist-passport-country"
               name="passportCountry"
               required
-              placeholder={isTr ? "Ülke adı" : "Country name"}
+              placeholder={txt("Ülke adı", "Country name", "国家名称")}
             />
             <ErrorText message={state.errors?.passportCountry} />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="waitlist-age">{isTr ? "Yaş" : "Age"}</Label>
+            <Label htmlFor="waitlist-age">{txt("Yaş", "Age", "年龄")}</Label>
             <Input
               id="waitlist-age"
               name="age"
               type="number"
               required
-              placeholder={isTr ? "Örn: 28" : "E.g., 28"}
+              placeholder={txt("Örn: 28", "E.g., 28", "例如：28")}
             />
             <ErrorText message={state.errors?.age} />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-occupation">{isTr ? "Meslek" : "Occupation"}</Label>
+          <Label htmlFor="waitlist-occupation">{txt("Meslek", "Occupation", "职业")}</Label>
           <Input
             id="waitlist-occupation"
             name="occupation"
-            placeholder={isTr ? "Örn: Yazılım Mühendisi" : "E.g., Software Engineer"}
+            placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-english">{isTr ? "İngilizce seviyesi" : "English level"}</Label>
+          <Label htmlFor="waitlist-english">{txt("İngilizce seviyesi", "English level", "英语水平")}</Label>
           <Input
             id="waitlist-english"
             name="englishLevel"
-            placeholder={isTr ? "Örn: IELTS 7.0 veya Yüksek" : "E.g., IELTS 7.0 or Proficient"}
+            placeholder={txt("Örn: IELTS 7.0 veya Yüksek", "E.g., IELTS 7.0 or Proficient", "例如：IELTS 7.0 或 Proficient")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-sponsor">{isTr ? "Sponsor veya aile durumu" : "Sponsor or family status"}</Label>
+          <Label htmlFor="waitlist-sponsor">{txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}</Label>
           <Input
             id="waitlist-sponsor"
             name="sponsorOrFamily"
-            placeholder={isTr ? "Örn: İşveren sponsor, Partner veya Aile" : "E.g., Employer sponsor, Partner, or Family"}
+            placeholder={txt("Örn: İşveren sponsor, Partner veya Aile", "E.g., Employer sponsor, Partner, or Family", "例如：雇主担保、配偶或家庭")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-concern">{isTr ? "En büyük endişe" : "Biggest concern"}</Label>
+          <Label htmlFor="waitlist-concern">{txt("En büyük endişe", "Biggest concern", "最大担忧")}</Label>
           <Input
             id="waitlist-concern"
             name="biggestConcern"
-            placeholder={isTr ? "Örn: Belgeler, Puan, Dil testi" : "E.g., Documents, Points, English test"}
+            placeholder={txt("Örn: Belgeler, Puan, Dil testi", "E.g., Documents, Points, English test", "例如：材料、分数、英语考试")}
           />
         </div>
 
@@ -446,8 +449,8 @@ export function FullCheckWaitlistForm({
 
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending
-            ? isTr ? "Oluşturuluyor..." : "Generating..."
-            : isTr ? "Hazırlık raporunuzu oluşturun" : "Generate your readiness report"}
+            ? txt("Oluşturuluyor...", "Generating...", "生成中...")
+            : txt("Hazırlık raporunuzu oluşturun", "Generate your readiness report", "生成准备度报告")}
         </Button>
       </form>
 

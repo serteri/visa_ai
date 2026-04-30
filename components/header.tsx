@@ -3,13 +3,13 @@ import Link from "next/link";
 import { LanguageSelector } from "@/components/language-selector";
 
 const VISA_LINKS = [
-  { subclass: "500", en: "Student visa 500", tr: "Öğrenci Vizesi 500" },
-  { subclass: "485", en: "Temporary Graduate visa 485", tr: "Geçici Mezun Vizesi 485" },
-  { subclass: "482", en: "Skills in Demand visa 482", tr: "Skills in Demand Vizesi 482" },
-  { subclass: "189", en: "Skilled Independent visa 189", tr: "Skilled Independent Vizesi 189" },
-  { subclass: "190", en: "Skilled Nominated visa 190", tr: "Skilled Nominated Vizesi 190" },
-  { subclass: "491", en: "Skilled Work Regional visa 491", tr: "Skilled Work Regional Vizesi 491" },
-  { subclass: "820_801", en: "Partner visa 820/801", tr: "Partner Vizesi 820/801" },
+  { subclass: "500", en: "Student visa 500", tr: "Öğrenci Vizesi 500", zh: "500 学生签证" },
+  { subclass: "485", en: "Temporary Graduate visa 485", tr: "Geçici Mezun Vizesi 485", zh: "485 临时毕业生签证" },
+  { subclass: "482", en: "Skills in Demand visa 482", tr: "Skills in Demand Vizesi 482", zh: "482 紧缺技能签证" },
+  { subclass: "189", en: "Skilled Independent visa 189", tr: "Skilled Independent Vizesi 189", zh: "189 独立技术移民" },
+  { subclass: "190", en: "Skilled Nominated visa 190", tr: "Skilled Nominated Vizesi 190", zh: "190 州担保技术移民" },
+  { subclass: "491", en: "Skilled Work Regional visa 491", tr: "Skilled Work Regional Vizesi 491", zh: "491 偏远地区技术签证" },
+  { subclass: "820_801", en: "Partner visa 820/801", tr: "Partner Vizesi 820/801", zh: "820/801 配偶签证" },
 ];
 
 export function Header({
@@ -20,10 +20,11 @@ export function Header({
   showAdmin?: boolean;
 }) {
   const isTr = locale === "tr";
-  const checkerLabel = isTr ? "Kontrol" : "Checker";
-  const assistantLabel = isTr ? "Asistan" : "Assistant";
-  const fullReportLabel = isTr ? "Tam Rapor" : "Full Report";
-  const visasLabel = isTr ? "Vizeler" : "Visas";
+  const isZh = locale === "zh-Hans";
+  const checkerLabel = isTr ? "Kontrol" : isZh ? "评估" : "Checker";
+  const assistantLabel = isTr ? "Asistan" : isZh ? "助手" : "Assistant";
+  const fullReportLabel = isTr ? "Tam Rapor" : isZh ? "完整报告" : "Full Report";
+  const visasLabel = isTr ? "Vizeler" : isZh ? "签证" : "Visas";
   const adminLabel = "Admin";
 
   return (
@@ -58,7 +59,7 @@ export function Header({
                   href={`/${locale}/visas/${v.subclass}`}
                   className="block px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
-                  {isTr ? v.tr : v.en}
+                  {isTr ? v.tr : isZh ? v.zh : v.en}
                 </Link>
               ))}
             </div>

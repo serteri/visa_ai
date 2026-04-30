@@ -1,4 +1,4 @@
-export type Locale = "en" | "tr";
+export type Locale = "en" | "tr" | "zh-Hans";
 
 export type ReadinessInput = {
   locale: Locale;

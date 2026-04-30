@@ -13,11 +13,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
 
   return {
     title: "Logivisa",
     description: isTr
       ? "Avustralya vize yollari icin yapilandirilmis analiz ve hazirlik raporlari."
+      : isZh
+        ? "面向澳大利亚签证路径的结构化分析与准备度报告。"
       : "Structured visa pathway analysis and readiness reports for Australia.",
   };
 }

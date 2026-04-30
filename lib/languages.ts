@@ -8,6 +8,7 @@ export interface Language {
 export const languages: Language[] = [
   { code: "en", label: "English", localLabel: "English", enabled: true },
   { code: "tr", label: "Turkish", localLabel: "Türkçe", enabled: true },
+  { code: "zh-Hans", label: "Simplified Chinese", localLabel: "简体中文", enabled: true },
   { code: "hi", label: "Hindi", localLabel: "हिन्दी", enabled: false },
   { code: "pa", label: "Punjabi", localLabel: "ਪੰਜਾਬੀ", enabled: false },
   { code: "zh", label: "Mandarin", localLabel: "中文", enabled: false },

@@ -2303,6 +2303,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     locale
   );
   const premiumSections: PremiumSections = generatePremiumSections({
+    locale,
     occupation: input.occupation,
     selectedCity: input.preferredCity,
     familyStatus: input.sponsorOrFamily,

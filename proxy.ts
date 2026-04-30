@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 function isLocaleAdminPath(pathname: string): boolean {
-  return /^\/(en|tr)\/admin(?:\/.*)?$/.test(pathname);
+  return /^\/(en|tr|zh-Hans)\/admin(?:\/.*)?$/.test(pathname);
 }
 
 function isRootAdminPath(pathname: string): boolean {
@@ -24,7 +24,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const locale = pathname.startsWith("/tr/") ? "tr" : "en";
+  const locale = pathname.startsWith("/tr/") ? "tr" : pathname.startsWith("/zh-Hans/") ? "zh-Hans" : "en";
   const homeUrl = new URL(`/${locale}`, request.url);
   const configuredAdminToken = process.env.ADMIN_TOKEN?.trim();
   const providedAdminToken = searchParams.get("ADMIN_TOKEN")?.trim();
@@ -41,5 +41,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/en/admin/:path*", "/tr/admin/:path*"],
+  matcher: ["/admin/:path*", "/en/admin/:path*", "/tr/admin/:path*", "/zh-Hans/admin/:path*"],
 };

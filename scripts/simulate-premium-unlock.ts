@@ -50,8 +50,18 @@ async function run() {
     unlockedReportAvailable: Boolean(unlockState.report),
     spouseDocsPresent:
       unlockState.report?.documentChecklist
-        ?.find((c) => c.category === "Spouse/Family")
-        ?.items?.filter((i) => i.toLowerCase().includes("spouse") || i.toLowerCase().includes("marriage")) ?? [],
+        ?.flatMap((c) => c.items)
+        ?.filter((i) => {
+          const n = i.toLowerCase();
+          return (
+            n.includes("spouse") ||
+            n.includes("marriage") ||
+            n.includes("esin") ||
+            n.includes("evlilik") ||
+            n.includes("配偶") ||
+            n.includes("结婚")
+          );
+        }) ?? [],
   });
 }
 
