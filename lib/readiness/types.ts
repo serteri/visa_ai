@@ -4,6 +4,7 @@ export type ReadinessInput = {
   locale: Locale;
   mainGoal?: string;
   currentCountry?: string;
+  preferredCity?: string;
   passportCountry?: string;
   age?: string;
   occupation?: string;
@@ -172,6 +173,50 @@ export type PositionChanger = {
   explanation: string;
 };
 
+export type PremiumInvitationTrendEstimate = {
+  subclass: "189" | "190" | "491";
+  estimatedPoints: number;
+  estimatedWait: string;
+};
+
+export type PremiumInvitationTrendSection = {
+  matchedOccupationGroup: string;
+  anzscoCode: string;
+  estimates: PremiumInvitationTrendEstimate[];
+  note: string;
+};
+
+export type PremiumLivingCostSection = {
+  city: string;
+  familyProfile: "Single" | "Couple" | "Family of 4";
+  currency: "AUD";
+  monthly: {
+    rent: number;
+    groceries: number;
+    transport: number;
+    total: number;
+  };
+  note: string;
+};
+
+export type PremiumGanttStep = {
+  step: number;
+  title: string;
+  window: string;
+  description: string;
+};
+
+export type PremiumGanttSection = {
+  timelineBand: string;
+  steps: PremiumGanttStep[];
+};
+
+export type PremiumSections = {
+  historicalInvitationTrends: PremiumInvitationTrendSection;
+  livingCostProjection: PremiumLivingCostSection;
+  strategicGanttChart: PremiumGanttSection;
+};
+
 export type ReadinessReport = {
   executiveSummary: string[];
   signalSnapshot: SignalSnapshot;
@@ -194,6 +239,7 @@ export type ReadinessReport = {
   occupationIndication?: OccupationIndication;
   riskIndicators: RiskIndicator[];
   documentChecklist: DocumentCategory[];
+  premiumSections: PremiumSections;
   suggestedNextSteps: string[];
   missingInformation: string[];
   disclaimer: string;

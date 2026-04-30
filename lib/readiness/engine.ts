@@ -1,6 +1,7 @@
 import { checkOccupation } from "@/lib/occupations/check-occupation";
 import { calculateSkilledPoints } from "@/lib/points/calculate-skilled-points";
 import type { AgeOption, EnglishOption } from "@/lib/points/types";
+import { generatePremiumSections } from "@/src/lib/readiness/report-generator";
 import { getDocumentChecklist } from "./document-checklists";
 import { buildRiskIndicators } from "./risk-rules";
 import { buildNextSteps } from "./next-steps";
@@ -20,6 +21,7 @@ import type {
   PathwayRelevance,
   PathwayStrengthComparison,
   PositionChanger,
+  PremiumSections,
   PointsBoosterSimulator,
   PointsEstimate,
   PrimaryLimitingFactor,
@@ -2300,6 +2302,14 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     detectedSubclasses,
     locale
   );
+  const premiumSections: PremiumSections = generatePremiumSections({
+    occupation: input.occupation,
+    selectedCity: input.preferredCity,
+    familyStatus: input.sponsorOrFamily,
+    timeline: input.timeline,
+    mainGoal: input.mainGoal,
+    biggestConcern: input.biggestConcern,
+  });
   const pathwayFriction = buildPathwayFriction(
     pathwayComparison,
     locale
@@ -2363,6 +2373,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     occupationIndication,
     riskIndicators,
     documentChecklist,
+    premiumSections,
     suggestedNextSteps,
     missingInformation,
     disclaimer,

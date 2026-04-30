@@ -58,6 +58,16 @@ function getLocalizedText(locale: "en" | "tr") {
       financialRoadmap: "Tahmini Maliyet Yol Haritası",
       progressionPathways: "Tipik Geçiş Yolları",
       pathwayFriction: "Vize Yolu Gerçeklik Kontrolü",
+      premiumSections: "Premium Sections",
+      invitationTrends: "Historical Invitation Trends",
+      livingCostProjection: "Living Cost Projection",
+      strategicGanttChart: "Strategic Gantt Chart",
+      ganttStep: "Adım",
+      ganttWindow: "Pencere",
+      monthlyRent: "Aylık Kira",
+      monthlyGroceries: "Aylık Market",
+      monthlyTransport: "Aylık Ulaşım",
+      monthlyTotal: "Aylık Toplam",
       visa: "Vize",
       difficulty: "Zorluk",
       requirementType: "Gereklilik Türü",
@@ -110,6 +120,16 @@ function getLocalizedText(locale: "en" | "tr") {
     financialRoadmap: "Financial Roadmap",
     progressionPathways: "Bridge to PR / Typical Progression Pathways",
     pathwayFriction: "Pathway Friction / Reality Check",
+    premiumSections: "Premium Sections",
+    invitationTrends: "Historical Invitation Trends",
+    livingCostProjection: "Living Cost Projection",
+    strategicGanttChart: "Strategic Gantt Chart",
+    ganttStep: "Step",
+    ganttWindow: "Window",
+    monthlyRent: "Monthly Rent",
+    monthlyGroceries: "Monthly Groceries",
+    monthlyTransport: "Monthly Transport",
+    monthlyTotal: "Monthly Total",
     visa: "Visa",
     difficulty: "Difficulty",
     requirementType: "Requirement Type",
@@ -447,6 +467,56 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     report.pathwayFriction.forEach((item) => {
       addBody(`${item.pathway}: ${item.frictionType}`);
       addSmallText(item.explanation, 4);
+    });
+    yPosition += 3;
+  }
+
+  if (report.premiumSections) {
+    addHeading(text.premiumSections);
+
+    addBody(text.invitationTrends);
+    addSmallText(
+      `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
+      4
+    );
+    report.premiumSections.historicalInvitationTrends.estimates.forEach((item) => {
+      addSmallText(
+        `${item.subclass}: ${item.estimatedPoints} pts | ${item.estimatedWait}`,
+        8
+      );
+    });
+    addSmallText(report.premiumSections.historicalInvitationTrends.note, 4);
+    yPosition += 3;
+
+    addBody(text.livingCostProjection);
+    addSmallText(
+      `${report.premiumSections.livingCostProjection.city} - ${report.premiumSections.livingCostProjection.familyProfile} (${report.premiumSections.livingCostProjection.currency})`,
+      4
+    );
+    addSmallText(
+      `${text.monthlyRent}: ${report.premiumSections.livingCostProjection.monthly.rent}`,
+      8
+    );
+    addSmallText(
+      `${text.monthlyGroceries}: ${report.premiumSections.livingCostProjection.monthly.groceries}`,
+      8
+    );
+    addSmallText(
+      `${text.monthlyTransport}: ${report.premiumSections.livingCostProjection.monthly.transport}`,
+      8
+    );
+    addSmallText(
+      `${text.monthlyTotal}: ${report.premiumSections.livingCostProjection.monthly.total}`,
+      8
+    );
+    addSmallText(report.premiumSections.livingCostProjection.note, 4);
+    yPosition += 3;
+
+    addBody(text.strategicGanttChart);
+    addSmallText(`${text.ganttWindow}: ${report.premiumSections.strategicGanttChart.timelineBand}`, 4);
+    report.premiumSections.strategicGanttChart.steps.forEach((step) => {
+      addSmallText(`${text.ganttStep} ${step.step}: ${step.title} (${step.window})`, 8);
+      addSmallText(step.description, 12);
     });
     yPosition += 3;
   }

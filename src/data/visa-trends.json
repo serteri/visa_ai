@@ -1,0 +1,187 @@
+{
+  "generated_on": "2026-04-30",
+  "jurisdiction": "Australia",
+  "methodology_note": "Estimated invitation points and wait windows derived from 2025-2026 trend patterns. For planning context only.",
+  "occupation_trends": [
+    {
+      "occupation_group": "Software Engineer",
+      "anzsco_code": "261313",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 95, "estimated_wait": "6-9 months" },
+        { "subclass": "190", "estimated_points": 85, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 75, "estimated_wait": "3-7 months" }
+      ]
+    },
+    {
+      "occupation_group": "ICT Business Analyst",
+      "anzsco_code": "261111",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 95, "estimated_wait": "6-10 months" },
+        { "subclass": "190", "estimated_points": 85, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 75, "estimated_wait": "4-8 months" }
+      ]
+    },
+    {
+      "occupation_group": "Developer Programmer",
+      "anzsco_code": "261312",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 95, "estimated_wait": "6-10 months" },
+        { "subclass": "190", "estimated_points": 85, "estimated_wait": "4-9 months" },
+        { "subclass": "491", "estimated_points": 75, "estimated_wait": "4-8 months" }
+      ]
+    },
+    {
+      "occupation_group": "Registered Nurse",
+      "anzsco_code": "254499",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 85, "estimated_wait": "4-8 months" },
+        { "subclass": "190", "estimated_points": 75, "estimated_wait": "3-6 months" },
+        { "subclass": "491", "estimated_points": 65, "estimated_wait": "2-6 months" }
+      ]
+    },
+    {
+      "occupation_group": "Civil Engineer",
+      "anzsco_code": "233211",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "5-9 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-7 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-7 months" }
+      ]
+    },
+    {
+      "occupation_group": "Mechanical Engineer",
+      "anzsco_code": "233512",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "6-10 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-8 months" }
+      ]
+    },
+    {
+      "occupation_group": "Electrical Engineer",
+      "anzsco_code": "233311",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "5-9 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-7 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-7 months" }
+      ]
+    },
+    {
+      "occupation_group": "Accountant (General)",
+      "anzsco_code": "221111",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 95, "estimated_wait": "7-12 months" },
+        { "subclass": "190", "estimated_points": 85, "estimated_wait": "5-10 months" },
+        { "subclass": "491", "estimated_points": 75, "estimated_wait": "4-9 months" }
+      ]
+    },
+    {
+      "occupation_group": "Auditor",
+      "anzsco_code": "221213",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "6-10 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "4-8 months" }
+      ]
+    },
+    {
+      "occupation_group": "Teacher (Secondary)",
+      "anzsco_code": "241411",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 85, "estimated_wait": "5-9 months" },
+        { "subclass": "190", "estimated_points": 75, "estimated_wait": "3-7 months" },
+        { "subclass": "491", "estimated_points": 65, "estimated_wait": "2-6 months" }
+      ]
+    },
+    {
+      "occupation_group": "Early Childhood Teacher",
+      "anzsco_code": "241111",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 85, "estimated_wait": "5-9 months" },
+        { "subclass": "190", "estimated_points": 75, "estimated_wait": "3-7 months" },
+        { "subclass": "491", "estimated_points": 65, "estimated_wait": "2-6 months" }
+      ]
+    },
+    {
+      "occupation_group": "Chef",
+      "anzsco_code": "351311",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "6-11 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-7 months" }
+      ]
+    },
+    {
+      "occupation_group": "Motor Mechanic",
+      "anzsco_code": "321211",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "6-11 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-9 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-8 months" }
+      ]
+    },
+    {
+      "occupation_group": "Plumber",
+      "anzsco_code": "334111",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "6-10 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-7 months" }
+      ]
+    },
+    {
+      "occupation_group": "Electrician",
+      "anzsco_code": "341111",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "6-10 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-7 months" }
+      ]
+    },
+    {
+      "occupation_group": "Construction Project Manager",
+      "anzsco_code": "133111",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "6-10 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-7 months" }
+      ]
+    },
+    {
+      "occupation_group": "Architect",
+      "anzsco_code": "232111",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 90, "estimated_wait": "6-10 months" },
+        { "subclass": "190", "estimated_points": 80, "estimated_wait": "4-9 months" },
+        { "subclass": "491", "estimated_points": 70, "estimated_wait": "3-8 months" }
+      ]
+    },
+    {
+      "occupation_group": "University Lecturer",
+      "anzsco_code": "242111",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 85, "estimated_wait": "5-9 months" },
+        { "subclass": "190", "estimated_points": 75, "estimated_wait": "4-8 months" },
+        { "subclass": "491", "estimated_points": 65, "estimated_wait": "3-7 months" }
+      ]
+    },
+    {
+      "occupation_group": "Medical Laboratory Scientist",
+      "anzsco_code": "234611",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 85, "estimated_wait": "5-9 months" },
+        { "subclass": "190", "estimated_points": 75, "estimated_wait": "3-7 months" },
+        { "subclass": "491", "estimated_points": 65, "estimated_wait": "2-6 months" }
+      ]
+    },
+    {
+      "occupation_group": "Social Worker",
+      "anzsco_code": "272511",
+      "estimates": [
+        { "subclass": "189", "estimated_points": 85, "estimated_wait": "5-9 months" },
+        { "subclass": "190", "estimated_points": 75, "estimated_wait": "3-7 months" },
+        { "subclass": "491", "estimated_points": 65, "estimated_wait": "2-6 months" }
+      ]
+    }
+  ]
+}
