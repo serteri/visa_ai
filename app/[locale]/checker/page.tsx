@@ -216,8 +216,8 @@ export default function CheckerPage() {
       ? "Erken erişim · Erken erişimde ücretsiz"
       : "Early access · Free during early access",
     fullDescription: isTr
-      ? "Olası vize yolları, veri tamamlanma skoru, belge hazırlık göstergesi, bilgi kapsam düzeyi, belge kontrol listesi ve PDF indirme içeren yapılandırılmış bir rapor oluşturun."
-      : "Generate a structured report with pathway comparison, data completeness score, document readiness indicator, information coverage level, document checklist, and PDF download.",
+      ? "Vize yolu karşılaştırması, kanıt hazırlığı, ilgili olduğunda puan senaryoları, tahmini maliyet yol haritası, geçiş yolları ve PDF indirme içeren yapılandırılmış bir rapor oluşturun."
+      : "Generate a structured report with pathway comparison, evidence readiness, points scenarios where relevant, financial roadmap, progression pathways, and PDF download.",
     fullBestFor: isTr ? "daha derin hazırlık incelemesi" : "deeper preparation review",
     fullButton: isTr ? "Hazırlık raporunuzu oluşturun" : "Generate your readiness report",
     fullTrustNote: isTr

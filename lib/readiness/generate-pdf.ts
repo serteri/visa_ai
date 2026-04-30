@@ -298,6 +298,16 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 3;
   }
 
+  if (report.pathwayComparison.length > 0) {
+    addHeading(text.pathwayTable);
+    report.pathwayComparison.forEach((item) => {
+      addBody(`${item.visaName} (${item.subclass})`);
+      addSmallText(`${text.confidence}: ${item.confidenceLevel}`, 4);
+      addSmallText(item.reason, 4);
+    });
+    yPosition += 3;
+  }
+
   if (report.pathwayStrengthComparison.length > 0) {
     addHeading(text.pathwayStrengthComparison);
     report.pathwayStrengthComparison.forEach((item) => {

@@ -105,7 +105,7 @@ function isValidEmail(email: string): boolean {
 function isEmailDeliveryEnabled(): boolean {
   if (process.env.ENABLE_TRANSACTIONAL_EMAILS === "true") return true;
   if (process.env.ENABLE_TRANSACTIONAL_EMAILS === "false") return false;
-  return process.env.NODE_ENV === "production";
+  return Boolean(process.env.RESEND_API_KEY);
 }
 
 async function hasRecentSubmission(email: string, source: string): Promise<boolean> {
@@ -334,6 +334,8 @@ export async function submitFullCheckWaitlist(
     !isFreeActive || freeReportsUsed >= freeLimit
       ? { blocked: true as const, report: generatedReport }
       : await (async () => {
+          const suppressNotifications = await hasRecentSubmission(email, source);
+
           await db.insert(fullCheckWaitlist).values({
             email,
             full_name: fullName || null,
@@ -367,6 +369,7 @@ export async function submitFullCheckWaitlist(
           return {
             blocked: false as const,
             report: generatedReport,
+            suppressNotifications,
           };
         })();
 
@@ -380,7 +383,7 @@ export async function submitFullCheckWaitlist(
   }
 
   const emailDeliveryEnabled = isEmailDeliveryEnabled();
-  const suppressNotifications = await hasRecentSubmission(email, source);
+  const suppressNotifications = submissionResult.suppressNotifications;
   const { report } = submissionResult;
 
   let confirmationEmailSent = false;

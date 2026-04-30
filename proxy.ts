@@ -29,7 +29,11 @@ export function proxy(request: NextRequest) {
   const configuredAdminToken = process.env.ADMIN_TOKEN?.trim();
   const providedAdminToken = searchParams.get("ADMIN_TOKEN")?.trim();
 
-  if (!configuredAdminToken && !providedAdminToken) {
+  if (!configuredAdminToken) {
+    return NextResponse.next();
+  }
+
+  if (providedAdminToken !== configuredAdminToken) {
     return NextResponse.redirect(homeUrl);
   }
 

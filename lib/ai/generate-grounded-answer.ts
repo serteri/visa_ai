@@ -40,7 +40,12 @@ function isPersonalizedIntentQuestion(message: string): boolean {
   const lower = normalize(message);
   return (
     /\bam i eligible\b/.test(lower) ||
+    /\beligible\b/.test(lower) ||
+    /\bqualif(?:y|ies|ied)\b/.test(lower) ||
+    /\bapproved\b/.test(lower) ||
+    /\bapproval\b/.test(lower) ||
     /\bcan i get\b/.test(lower) ||
+    /\bshould i\b/.test(lower) ||
     /\bwhat should i do\b/.test(lower) ||
     /\bwhich visa should i choose\b/.test(lower)
   );
@@ -55,7 +60,7 @@ function addGeneralInfoSentence(answer: string): string {
 }
 
 function responseHasRiskOrDecisionLanguage(answer: string): boolean {
-  return /\b(risk|risks|decision|decide|apply|application to make|outcome|approved|approval|refusal|refused)\b/i.test(
+  return /\b(you are|you can get|you will|get approved|approved|approval guaranteed|guaranteed|best option|you should|you need to|you must|qualify|eligible)\b/i.test(
     answer
   );
 }
@@ -107,7 +112,15 @@ function sanitizeModelOutput(text: string): string {
 function neutralizeDeterministicLanguage(answer: string): string {
   return answer
     .replace(/\byou\s+are\s+eligible\b/gi, "this may be relevant")
+    .replace(/\ban\s+eligible\s+Australian\s+qualification\b/gi, "a relevant Australian qualification")
+    .replace(/\beligible\s+recent\s+graduates\b/gi, "certain recent graduates")
+    .replace(/\bEligible\s+family\s+members\b/g, "Certain family members")
+    .replace(/\beligible\s+family\s+members\b/gi, "certain family members")
+    .replace(/\bif\s+eligible\b/gi, "if relevant criteria are met")
+    .replace(/\beligibility\b/gi, "relevant criteria")
+    .replace(/\beligible\b/gi, "relevant under the criteria")
     .replace(/\byou\s+qualif(?:y|ies|ied)\b/gi, "this may be relevant")
+    .replace(/\bqualif(?:y|ies|ied)\b/gi, "may be relevant under the criteria")
     .replace(/\byou\s+should\s+apply\b/gi, "this pathway may be relevant")
     .replace(/\byou\s+should\b/gi, "it can be considered")
     .replace(/\byou\s+must\b/gi, "it depends on circumstances")
