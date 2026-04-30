@@ -5,7 +5,7 @@ import { Resend } from "resend";
 
 import { db } from "@/db";
 import { fullCheckWaitlist } from "@/db/schema";
-import { buildLeadQuality, runReadinessEngine } from "@/lib/readiness/engine";
+import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
 import type { ReadinessReport } from "@/lib/readiness/types";
 
 export type FullCheckWaitlistState = {

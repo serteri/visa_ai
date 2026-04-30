@@ -5,7 +5,7 @@ import {
   type GroundedAssistantResult,
 } from "@/lib/ai/generate-grounded-answer";
 import { retrieveVisaContext } from "@/lib/ai/retrieve-visa-context";
-import { runReadinessEngine } from "@/lib/readiness/engine";
+import { runReadinessEngine } from "@/src/lib/readiness-engine";
 
 type RunAssistantInput = {
   locale: "en" | "tr";

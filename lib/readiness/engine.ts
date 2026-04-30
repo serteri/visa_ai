@@ -2374,6 +2374,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     riskIndicators,
     documentChecklist,
     premiumSections,
+    frictionAnalysis: [],
     suggestedNextSteps,
     missingInformation,
     disclaimer,

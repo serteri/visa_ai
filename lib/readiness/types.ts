@@ -16,6 +16,11 @@ export type ReadinessInput = {
   sponsorOrFamily?: string;
   preferredPathway?: string;
   biggestConcern?: string;
+  qualificationLevel?: "PhD" | "Bachelor" | "Diploma" | "Certificate" | "Other";
+  offshoreExperienceYears?: number;
+  onshoreExperienceYears?: number;
+  regionalWilling?: boolean;
+  educationRelevance?: "relevant" | "non_relevant" | "unknown";
 };
 
 export type PathwayRelevance =
@@ -173,6 +178,15 @@ export type PositionChanger = {
   explanation: string;
 };
 
+export type FrictionScore = "Low" | "Medium" | "High" | "Extreme";
+
+export type FrictionAnalysisItem = {
+  pathway: string;
+  frictionScore: FrictionScore;
+  realityCheck: string;
+  successSignals: string[];
+};
+
 export type PremiumInvitationTrendEstimate = {
   subclass: "189" | "190" | "491";
   estimatedPoints: number;
@@ -240,6 +254,7 @@ export type ReadinessReport = {
   riskIndicators: RiskIndicator[];
   documentChecklist: DocumentCategory[];
   premiumSections: PremiumSections;
+  frictionAnalysis: FrictionAnalysisItem[];
   suggestedNextSteps: string[];
   missingInformation: string[];
   disclaimer: string;

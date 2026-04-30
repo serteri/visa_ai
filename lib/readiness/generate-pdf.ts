@@ -74,6 +74,9 @@ function getLocalizedText(locale: "en" | "tr") {
       monthlyGroceries: "Aylık Market",
       monthlyTransport: "Aylık Ulaşım",
       monthlyTotal: "Aylık Toplam",
+      frictionScore: "Friction Score",
+      realityCheck: "Reality Check",
+      successSignals: "Success Signals",
       visa: "Vize",
       difficulty: "Zorluk",
       requirementType: "Gereklilik Türü",
@@ -136,6 +139,9 @@ function getLocalizedText(locale: "en" | "tr") {
     monthlyGroceries: "Monthly Groceries",
     monthlyTransport: "Monthly Transport",
     monthlyTotal: "Monthly Total",
+    frictionScore: "Friction Score",
+    realityCheck: "Reality Check",
+    successSignals: "Success Signals",
     visa: "Visa",
     difficulty: "Difficulty",
     requirementType: "Requirement Type",
@@ -498,6 +504,13 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     return "Unclear";
   }
 
+  function getFrictionColor(score: "Low" | "Medium" | "High" | "Extreme") {
+    if (score === "Extreme") return { r: 220, g: 38, b: 38 };
+    if (score === "High") return { r: 217, g: 119, b: 6 };
+    if (score === "Medium") return { r: 202, g: 138, b: 4 };
+    return { r: 22, g: 163, b: 74 };
+  }
+
   // Cover page
   addCoverPage();
 
@@ -559,8 +572,23 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   if (report.pathwayComparison.length > 0) {
     addHeading(text.pathwayTable);
     report.pathwayComparison.forEach((item) => {
+      const friction = report.frictionAnalysis.find((f) => f.pathway === item.subclass || (item.subclass === "820_801" && f.pathway === "820/801"));
       addBody(`${item.visaName} (${item.subclass})`);
       addSmallText(`${text.confidence}: ${item.confidenceLevel}`, 4);
+      if (friction) {
+        const c = getFrictionColor(friction.frictionScore);
+        ensurePageSpace(6);
+        setBoldFont();
+        doc.setFontSize(FONTS.body);
+        doc.setTextColor(c.r, c.g, c.b);
+        doc.text(`${text.frictionScore}: ${friction.frictionScore}`, margin + 4, yPosition);
+        yPosition += 5;
+        addSmallText(`${text.realityCheck}: ${friction.realityCheck}`, 4);
+        if (friction.successSignals.length > 0) {
+          addSmallText(`${text.successSignals}:`, 4);
+          friction.successSignals.forEach((signal) => addSmallText(`- ${signal}`, 8));
+        }
+      }
       addSmallText(item.reason, 4);
     });
     yPosition += 3;
