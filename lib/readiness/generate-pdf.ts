@@ -32,6 +32,7 @@ const PDF_FONT_FILE = "NotoSans-Regular.ttf";
 interface PDFGeneratorInput {
   report: ReadinessReport;
   locale: "en" | "tr";
+  saveToFile?: boolean;
   userInputSummary: {
     name?: string;
     email?: string;
@@ -184,7 +185,7 @@ function getLocalizedText(locale: "en" | "tr") {
   };
 }
 
-export function generateReadinessPDF(input: PDFGeneratorInput): void {
+export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
   const { report, locale, userInputSummary } = input;
   const text = getLocalizedText(locale);
 
@@ -871,7 +872,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   // Generate filename
   const timestamp = new Date().toISOString().split("T")[0];
   const filename = locale === "tr" ? `vize-hazırlık-raporu-${timestamp}.pdf` : `visa-readiness-report-${timestamp}.pdf`;
+  const pdfBytes = new Uint8Array(doc.output("arraybuffer"));
 
   // Save PDF
-  doc.save(filename);
+  if (typeof window !== "undefined" && input.saveToFile !== false) {
+    doc.save(filename);
+  }
+
+  return pdfBytes;
 }

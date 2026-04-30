@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,9 @@ import {
   type FullCheckWaitlistState,
   submitFullCheckWaitlist,
 } from "@/app/[locale]/full-check/actions";
+import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
+import type { ReadinessReport } from "@/lib/readiness/types";
 
 function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
@@ -140,14 +142,29 @@ export function FullCheckWaitlistForm({
     submitFullCheckWaitlist,
     initialState
   );
+  const [unlockedReport, setUnlockedReport] = useState<ReadinessReport | null>(null);
+  const [unlockedName, setUnlockedName] = useState<string | undefined>(undefined);
+  const [unlockedEmail, setUnlockedEmail] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    setUnlockedReport(null);
+    setUnlockedName(undefined);
+    setUnlockedEmail(undefined);
+  }, [state.reportId]);
+
+  const report = unlockedReport;
 
   function handleDownloadPDF() {
-    if (!state.report) return;
+    if (!report) return;
 
     generateReadinessPDF({
-      report: state.report,
+      report,
       locale: locale === "tr" ? "tr" : "en",
-      userInputSummary: state.userInput || {},
+      userInputSummary: {
+        ...(state.userInput || {}),
+        name: unlockedName ?? state.userInput?.name,
+        email: unlockedEmail ?? state.userInput?.email,
+      },
     });
   }
 
@@ -434,7 +451,22 @@ export function FullCheckWaitlistForm({
         </Button>
       </form>
 
-      {state.status === "success" && state.report && (
+      {state.status === "success" && state.preview && state.reportId && !report && (
+        <PremiumFeatureGate
+          locale={locale}
+          reportId={state.reportId}
+          preview={state.preview}
+          defaultEmail={state.userInput?.email}
+          defaultName={state.userInput?.name}
+          onUnlocked={({ report: unlocked, email, name }) => {
+            setUnlockedReport(unlocked);
+            setUnlockedEmail(email);
+            setUnlockedName(name);
+          }}
+        />
+      )}
+
+      {state.status === "success" && report && (
         <section className="space-y-4">
           <div className="space-y-1">
             <h3 className="text-xl font-bold">
@@ -448,7 +480,7 @@ export function FullCheckWaitlistForm({
           </div>
 
           <div className="space-y-3">
-            {state.report.executiveSummary.length > 0 && (
+            {report.executiveSummary.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -457,7 +489,7 @@ export function FullCheckWaitlistForm({
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    {state.report.executiveSummary.map((item) => (
+                    {report.executiveSummary.map((item) => (
                       <li key={item} className="flex gap-2">
                         <span className="text-primary">-</span>
                         <span>{item}</span>
@@ -480,15 +512,15 @@ export function FullCheckWaitlistForm({
                     <p className="text-xs font-semibold uppercase text-muted-foreground">
                       {isTr ? "En güçlü sinyal" : "Strongest signal"}
                     </p>
-                    <p className="mt-1 font-medium">{state.report.signalSnapshot.strongest}</p>
+                    <p className="mt-1 font-medium">{report.signalSnapshot.strongest}</p>
                   </div>
                   <div className="rounded-md border border-primary/20 bg-background/80 p-3 sm:col-span-2">
                     <p className="text-xs font-semibold uppercase text-muted-foreground">
                       {isTr ? "İkincil sinyaller" : "Secondary signals"}
                     </p>
                     <p className="mt-1 font-medium">
-                      {state.report.signalSnapshot.secondary.length > 0
-                        ? state.report.signalSnapshot.secondary.join(", ")
+                      {report.signalSnapshot.secondary.length > 0
+                        ? report.signalSnapshot.secondary.join(", ")
                         : isTr ? "Belirgin ikincil sinyal yok" : "No clear secondary signal"}
                     </p>
                   </div>
@@ -496,9 +528,9 @@ export function FullCheckWaitlistForm({
                 <p className="text-muted-foreground">
                   <span className="font-medium text-foreground">
                     {isTr ? "Güven:" : "Confidence:"}{" "}
-                    {getSignalConfidenceLabel(state.report.signalSnapshot.confidenceLabel)}
+                    {getSignalConfidenceLabel(report.signalSnapshot.confidenceLabel)}
                   </span>{" "}
-                  — {state.report.signalSnapshot.confidenceExplanation}
+                  — {report.signalSnapshot.confidenceExplanation}
                 </p>
               </CardContent>
             </Card>
@@ -510,12 +542,12 @@ export function FullCheckWaitlistForm({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-amber-900">
-                <p className="font-semibold">{state.report.primaryLimitingFactor.label}</p>
-                <p>{state.report.primaryLimitingFactor.explanation}</p>
+                <p className="font-semibold">{report.primaryLimitingFactor.label}</p>
+                <p>{report.primaryLimitingFactor.explanation}</p>
               </CardContent>
             </Card>
 
-            {state.report.positionChangers.length > 0 && (
+            {report.positionChangers.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -524,7 +556,7 @@ export function FullCheckWaitlistForm({
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    {state.report.positionChangers.map((item) => (
+                    {report.positionChangers.map((item) => (
                       <li key={`${item.label}-${item.explanation}`} className="flex gap-2">
                         <span className="text-primary">-</span>
                         <span>
@@ -538,7 +570,7 @@ export function FullCheckWaitlistForm({
               </Card>
             )}
 
-            {state.report.pathwayStrengthComparison.length > 0 && (
+            {report.pathwayStrengthComparison.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -551,7 +583,7 @@ export function FullCheckWaitlistForm({
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {state.report.pathwayStrengthComparison.map((item) => (
+                  {report.pathwayStrengthComparison.map((item) => (
                     <div key={`${item.subclass}-${item.visaName}-strength`} className="rounded-md border border-border/60 p-4 space-y-3 text-sm">
                       {/* Header row */}
                       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -623,13 +655,13 @@ export function FullCheckWaitlistForm({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">{state.report.confidenceExplanation}</p>
+                <p className="text-sm text-muted-foreground">{report.confidenceExplanation}</p>
               </CardContent>
             </Card>
 
           </div>
 
-          {state.report.evidenceReadiness.length > 0 && (
+          {report.evidenceReadiness.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
@@ -637,7 +669,7 @@ export function FullCheckWaitlistForm({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {state.report.evidenceReadiness.map((item) => (
+                {report.evidenceReadiness.map((item) => (
                   <div key={item.category} className="rounded-md border border-border/70 p-3 text-sm">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="font-medium">{item.category}</p>
@@ -658,7 +690,7 @@ export function FullCheckWaitlistForm({
             </Card>
           )}
 
-          {state.report.pointsBoosterSimulator && (
+          {report.pointsBoosterSimulator && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
@@ -666,9 +698,9 @@ export function FullCheckWaitlistForm({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {state.report.pointsBoosterSimulator.currentEstimate !== undefined && (
+                {report.pointsBoosterSimulator.currentEstimate !== undefined && (
                   <p className="font-semibold">
-                    {isTr ? "Mevcut matematiksel tahmin:" : "Current mathematical estimate:"} {state.report.pointsBoosterSimulator.currentEstimate}
+                    {isTr ? "Mevcut matematiksel tahmin:" : "Current mathematical estimate:"} {report.pointsBoosterSimulator.currentEstimate}
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground">
@@ -676,9 +708,9 @@ export function FullCheckWaitlistForm({
                     ? "Bu senaryolar yalnızca matematiksel puan değişimini gösterir; uygunluk veya sonuç anlamına gelmez."
                     : "This scenario reflects a mathematical change only and does not represent eligibility or outcome."}
                 </p>
-                <p className="text-xs text-muted-foreground">{state.report.pointsBoosterSimulator.note}</p>
+                <p className="text-xs text-muted-foreground">{report.pointsBoosterSimulator.note}</p>
                 <div className="space-y-2">
-                  {state.report.pointsBoosterSimulator.scenarios.map((scenario) => (
+                  {report.pointsBoosterSimulator.scenarios.map((scenario) => (
                     <div key={scenario.label} className="rounded-md border border-border/70 p-3 text-sm">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="font-medium">{scenario.label}</p>
@@ -695,7 +727,7 @@ export function FullCheckWaitlistForm({
             </Card>
           )}
 
-          {state.report.financialRoadmap.length > 0 && (
+          {report.financialRoadmap.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
@@ -703,7 +735,7 @@ export function FullCheckWaitlistForm({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {state.report.financialRoadmap.map((item) => (
+                {report.financialRoadmap.map((item) => (
                   <div key={item.category} className="rounded-md border border-border/70 p-3 text-sm">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="font-medium">{item.category}</p>
@@ -716,7 +748,7 @@ export function FullCheckWaitlistForm({
             </Card>
           )}
 
-          {state.report.progressionPathways.length > 0 && (
+          {report.progressionPathways.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
@@ -729,7 +761,7 @@ export function FullCheckWaitlistForm({
                     ? "Avustralya vize sistemindeki tipik geçiş yolları aşağıdaki seçenekleri içerebilir."
                     : "Typical progression pathways in the Australian visa system may include the following options."}
                 </p>
-                {state.report.progressionPathways.map((item) => (
+                {report.progressionPathways.map((item) => (
                   <div key={`${item.from}-${item.to}`} className="rounded-md border border-border/70 p-3 text-sm">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="font-medium">{item.label}</p>
@@ -742,7 +774,7 @@ export function FullCheckWaitlistForm({
             </Card>
           )}
 
-          {state.report.pathwayFriction.length > 0 && (
+          {report.pathwayFriction.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
@@ -750,7 +782,7 @@ export function FullCheckWaitlistForm({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {state.report.pathwayFriction.map((item) => (
+                {report.pathwayFriction.map((item) => (
                   <div key={`${item.pathway}-${item.frictionType}`} className="rounded-md border border-border/70 p-3 text-sm">
                     <p className="font-medium">{item.pathway}</p>
                     <p className="text-xs text-muted-foreground">{item.frictionType}</p>
@@ -763,20 +795,20 @@ export function FullCheckWaitlistForm({
 
           <ReportSection
             title={isTr ? "Risk göstergeleri" : "Risk indicators"}
-            items={state.report.riskIndicators.map(
+            items={report.riskIndicators.map(
               (r) => `[${isTr ? (r.level === "high" ? "Yüksek" : r.level === "medium" ? "Orta" : "Düşük") : (r.level === "high" ? "High" : r.level === "medium" ? "Medium" : "Low")}] ${r.title}: ${r.explanation}`
             )}
           />
 
           <ReportSection
             title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
-            items={state.report.suggestedNextSteps}
+            items={report.suggestedNextSteps}
           />
 
-          {state.report.missingInformation.length > 0 && (
+          {report.missingInformation.length > 0 && (
             <ReportSection
               title={isTr ? "Eksik bilgiler" : "Missing information"}
-              items={state.report.missingInformation}
+              items={report.missingInformation}
             />
           )}
 
@@ -787,7 +819,7 @@ export function FullCheckWaitlistForm({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-amber-800">{state.report.disclaimer}</p>
+              <p className="text-xs text-amber-800">{report.disclaimer}</p>
             </CardContent>
           </Card>
 
@@ -797,7 +829,24 @@ export function FullCheckWaitlistForm({
                 {isTr ? "İndirilebilir PDF" : "Downloadable PDF"}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-primary">
+                Premium PDF Report (25+ Pages of Deep Analysis)
+              </div>
+
+              <div className="rounded-md border border-border bg-card/60 px-3 py-3">
+                <p className="text-sm font-medium">{isTr ? "Sample Report önizlemesi" : "Sample Report preview"}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {isTr
+                    ? "İçerik örneği: stratejik gantt, sürtünme analizi, maliyet yol haritası, audit checklist ve aksiyon planı."
+                    : "Preview includes: strategic gantt, friction analysis, financial roadmap, audit checklist, and action plan."}
+                </p>
+              </div>
+
+              <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
+                {isTr ? "$29 Tek rapor ücreti" : "$29 for a Single Report"}
+              </div>
+
               <Button onClick={handleDownloadPDF} variant="default" className="flex gap-2">
                 <Download className="size-4" />
                 {isTr ? "PDF indir" : "Download PDF"}

@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserReport {
+  id             String   @id @default(uuid())
+  fullName       String?
+  email          String
+  phone          String?
+  preferredPath  String?
+  source         String   @default("full_check")
+  locale         String   @default("en")
+  leadScore      Int?
+  leadTier       String?
+  paymentStatus  String   @default("pending")
+  unlockMethod   String?
+  isUnlocked     Boolean  @default(false)
+  pdfSent        Boolean  @default(false)
+  reportJson     Json
+  inputJson      Json
+  createdAt      DateTime @default(now())
+  unlockedAt     DateTime?
+
+  @@map("user_reports")
+}

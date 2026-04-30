@@ -5,14 +5,51 @@ import { Resend } from "resend";
 
 import { db } from "@/db";
 import { fullCheckWaitlist } from "@/db/schema";
+import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
 import type { ReadinessReport } from "@/lib/readiness/types";
+import {
+  createUserReport,
+  ensureUserReportsTable,
+  getUserReportById,
+  markUserReportUnlocked,
+} from "@/src/lib/user-reports";
+
+export type FullCheckQuickPreview = {
+  estimatedPoints?: number;
+  pathways: Array<{
+    subclass: string;
+    visaName: string;
+    confidenceLevel: "low" | "medium" | "high";
+    reason: string;
+  }>;
+};
 
 export type FullCheckWaitlistState = {
   status: "idle" | "success" | "error";
   error?: string;
   message?: string;
   requirePayment?: boolean;
+  errors?: Record<string, string>;
+  preview?: FullCheckQuickPreview;
+  reportId?: string;
+  userInput?: {
+    name?: string;
+    email?: string;
+    mainGoal?: string;
+    currentCountry?: string;
+    passportCountry?: string;
+    age?: string;
+    occupation?: string;
+    englishLevel?: string;
+    sponsorOrFamily?: string;
+    biggestConcern?: string;
+  };
+};
+
+export type PremiumUnlockState = {
+  status: "idle" | "success" | "error";
+  message?: string;
   errors?: Record<string, string>;
   report?: ReadinessReport;
   userInput?: {
@@ -191,6 +228,7 @@ async function sendFullCheckConfirmationEmail(payload: {
   email: string;
   fullName: string;
   locale: "en" | "tr";
+  pdfAttachment?: Uint8Array;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
 
@@ -225,9 +263,31 @@ async function sendFullCheckConfirmationEmail(payload: {
           greeting,
           "",
           "Your full visa readiness report request has been received.",
-          "The structured report was generated on screen. This is general information only and not migration advice.",
+          "Your premium PDF report is attached.",
+          "This is general information only and not migration advice.",
         ].join("\n"),
+    attachments: payload.pdfAttachment
+      ? [
+          {
+            filename: "visa-readiness-report.pdf",
+            content: Buffer.from(payload.pdfAttachment),
+          },
+        ]
+      : undefined,
   });
+}
+
+function buildQuickPreview(report: ReadinessReport): FullCheckQuickPreview {
+  return {
+    estimatedPoints:
+      report.pointsBoosterSimulator?.currentEstimate ?? report.pointsEstimate?.estimatedPoints,
+    pathways: report.pathwayComparison.slice(0, 3).map((item) => ({
+      subclass: item.subclass,
+      visaName: item.visaName,
+      confidenceLevel: item.confidenceLevel,
+      reason: item.reason,
+    })),
+  };
 }
 
 export async function submitFullCheckWaitlist(
@@ -277,6 +337,7 @@ export async function submitFullCheckWaitlist(
 
   await ensureFullCheckWaitlistTable();
   await ensureFullCheckUsageTable();
+  await ensureUserReportsTable();
 
   const leadQuality = buildLeadQuality({
     locale: preferredLanguage === "tr" ? "tr" : "en",
@@ -382,63 +443,41 @@ export async function submitFullCheckWaitlist(
     };
   }
 
-  const emailDeliveryEnabled = isEmailDeliveryEnabled();
-  const suppressNotifications = submissionResult.suppressNotifications;
   const { report } = submissionResult;
-
-  let confirmationEmailSent = false;
-
-  if (emailDeliveryEnabled && !suppressNotifications) {
-    try {
-      await sendFullCheckAdminEmail({
-        fullName,
-        email,
-        visaInterest,
-        preferredLanguage,
-        currentCountry,
-        passportCountry,
-        age,
-        occupation,
-        englishLevel,
-        englishTestTaken,
-        occupationConfirmed,
-        estimatedBudgetRange,
-        timeline,
-        sponsorOrFamily,
-        biggestConcern,
-        mainGoal,
-        source,
-      });
-    } catch (error) {
-      console.error("Failed to send full check admin email", error);
-    }
-
-    try {
-      await sendFullCheckConfirmationEmail({
-        email,
-        fullName,
-        locale: preferredLanguage === "tr" ? "tr" : "en",
-      });
-      confirmationEmailSent = true;
-    } catch (error) {
-      console.error("Failed to send full check confirmation email", error);
-    }
-  } else if (suppressNotifications) {
-    console.warn("Full check email notifications suppressed due to recent duplicate submission.");
-  } else {
-    console.warn("Full check email notifications are disabled in this environment.");
-  }
+  const reportRecord = await createUserReport({
+    fullName,
+    email,
+    preferredPath: visaInterest || undefined,
+    source,
+    locale: preferredLanguage === "tr" ? "tr" : "en",
+    leadScore: leadQuality.leadScore,
+    leadTier: leadQuality.leadTier,
+    report,
+    input: {
+      locale: preferredLanguage === "tr" ? "tr" : "en",
+      mainGoal,
+      currentCountry: currentCountry || undefined,
+      passportCountry,
+      age,
+      occupation: occupation || undefined,
+      englishLevel: englishLevel || undefined,
+      englishTestTaken: englishTestTaken || undefined,
+      occupationConfirmed: occupationConfirmed || undefined,
+      estimatedBudgetRange: estimatedBudgetRange || undefined,
+      timeline: timeline || undefined,
+      sponsorOrFamily: sponsorOrFamily || undefined,
+      preferredPathway: visaInterest || undefined,
+      biggestConcern: biggestConcern || undefined,
+    },
+  });
 
   return {
     status: "success",
     message: isTr
-      ? confirmationEmailSent
-        ? "Tam hazirlik raporu olusturuldu. E-posta onayi gonderildi."
-        : "Tam hazirlik raporu olusturuldu."
-      : confirmationEmailSent
-        ? "Full readiness report generated. A confirmation email has been sent."
-        : "Full readiness report generated.",
-    report,
+      ? "Hizli sonuclar hazir. Tam rapor icin kilidi acin."
+      : "Quick results are ready. Unlock to access the full report.",
+    preview: buildQuickPreview(report),
+    reportId: reportRecord.id,
     userInput: {
       name: fullName || undefined,
       email,
@@ -450,6 +489,109 @@ export async function submitFullCheckWaitlist(
       englishLevel: englishLevel || undefined,
       sponsorOrFamily: sponsorOrFamily || undefined,
       biggestConcern: biggestConcern || undefined,
+    },
+  };
+}
+
+export async function unlockPremiumReport(
+  _prevState: PremiumUnlockState,
+  formData: FormData
+): Promise<PremiumUnlockState> {
+  const reportId = String(formData.get("reportId") ?? "").trim();
+  const fullName = String(formData.get("fullName") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const unlockMethodRaw = String(formData.get("unlockMethod") ?? "lead_capture").trim();
+  const unlockMethod = unlockMethodRaw === "payment" ? "payment" : "lead_capture";
+
+  const errors: Record<string, string> = {};
+  if (!reportId) errors.reportId = "Missing report id.";
+  if (!email) errors.email = "Email is required.";
+  if (email && !isValidEmail(email)) errors.email = "Enter a valid email address.";
+
+  if (Object.keys(errors).length > 0) {
+    return {
+      status: "error",
+      errors,
+      message: "Please fix the highlighted fields.",
+    };
+  }
+
+  await ensureUserReportsTable();
+  const record = await getUserReportById(reportId);
+
+  if (!record) {
+    return {
+      status: "error",
+      message: "Report could not be found.",
+    };
+  }
+
+  let pdfSent = false;
+  const emailEnabled = isEmailDeliveryEnabled();
+  const simulateEmailDelivery = process.env.SIMULATE_EMAIL_DELIVERY === "true";
+
+  if (simulateEmailDelivery) {
+    pdfSent = true;
+    console.log(`Simulated PDF email delivery for report ${reportId} to ${email}`);
+  } else if (emailEnabled) {
+    try {
+      const pdfAttachment = generateReadinessPDF({
+        report: record.report,
+        locale: record.locale === "tr" ? "tr" : "en",
+        saveToFile: false,
+        userInputSummary: {
+          name: fullName || undefined,
+          email,
+          mainGoal: record.input.mainGoal,
+          currentCountry: record.input.currentCountry,
+          passportCountry: record.input.passportCountry,
+          age: record.input.age,
+          occupation: record.input.occupation,
+          englishLevel: record.input.englishLevel,
+          sponsorOrFamily: record.input.sponsorOrFamily,
+          biggestConcern: record.input.biggestConcern,
+        },
+      });
+
+      await sendFullCheckConfirmationEmail({
+        email,
+        fullName,
+        locale: record.locale === "tr" ? "tr" : "en",
+        pdfAttachment,
+      });
+      pdfSent = true;
+    } catch (error) {
+      console.error("Failed to send premium report PDF email", error);
+    }
+  }
+
+  await markUserReportUnlocked({
+    reportId,
+    email,
+    phone: phone || undefined,
+    unlockMethod,
+    pdfSent,
+  });
+
+  return {
+    status: "success",
+    message:
+      unlockMethod === "payment"
+        ? "Payment successful. Full report unlocked and PDF delivery triggered."
+        : "Details received. Full report unlocked and PDF delivery triggered.",
+    report: record.report,
+    userInput: {
+      name: fullName || undefined,
+      email,
+      mainGoal: record.input.mainGoal,
+      currentCountry: record.input.currentCountry,
+      passportCountry: record.input.passportCountry,
+      age: record.input.age,
+      occupation: record.input.occupation,
+      englishLevel: record.input.englishLevel,
+      sponsorOrFamily: record.input.sponsorOrFamily,
+      biggestConcern: record.input.biggestConcern,
     },
   };
 }
