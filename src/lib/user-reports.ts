@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
+import type { Locale, ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 
 export type CreateUserReportInput = {
   fullName?: string;
   email: string;
   preferredPath?: string;
   source: string;
-  locale: "en" | "tr";
+  locale: Locale;
   leadScore?: number;
   leadTier?: string;
   report: ReadinessReport;
