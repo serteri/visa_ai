@@ -91,6 +91,8 @@ function getLocalizedText(locale: "en" | "tr") {
       executiveSummary: "Yönetici Özeti",
       riskIndicators: "Risk Göstergeleri",
       suggestedNextSteps: "Önerilen Sonraki Adımlar",
+      documentLevelSpecificity: "Document-Level Specificity",
+      yourImmediateActionPlan: "Your Immediate Action Plan",
       downloadablePdf: "İndirilebilir PDF",
       factorsAffectingPathways: "Yolları Etkileyebilecek Faktörler",
       missingInformation: "Eksik Bilgiler",
@@ -157,6 +159,8 @@ function getLocalizedText(locale: "en" | "tr") {
     executiveSummary: "Executive Summary",
     riskIndicators: "Risk Indicators",
     suggestedNextSteps: "Suggested Next Steps",
+    documentLevelSpecificity: "Document-Level Specificity",
+    yourImmediateActionPlan: "Your Immediate Action Plan",
     downloadablePdf: "Downloadable PDF",
     factorsAffectingPathways: "Factors that may affect pathways",
     missingInformation: "Missing Information",
@@ -473,6 +477,71 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     });
   }
 
+  function drawAuditChecklistBox() {
+    if (!report.documentChecklist?.length) return;
+
+    addSectionHeading("[ ]", text.documentLevelSpecificity);
+
+    report.documentChecklist.forEach((category) => {
+      const isCritical = category.category.toUpperCase() === "CRITICAL";
+      const itemCount = Math.max(1, category.items.length);
+      const boxHeight = 8 + itemCount * 5;
+      ensurePageSpace(boxHeight + 6);
+
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.25);
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(margin, yPosition, contentWidth, boxHeight, 1.2, 1.2, "FD");
+
+      setBoldFont();
+      doc.setFontSize(FONTS.subheading);
+      if (isCritical) {
+        doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
+      } else {
+        doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      }
+      doc.text(category.category, margin + 2, yPosition + 5);
+
+      setBaseFont();
+      doc.setFontSize(FONTS.body);
+      category.items.forEach((item, idx) => {
+        if (isCritical) {
+          doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
+          doc.text(`[ ] ${item}`, margin + 4, yPosition + 10 + idx * 5);
+        } else {
+          doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+          doc.text(`[ ] ${item}`, margin + 4, yPosition + 10 + idx * 5);
+        }
+      });
+
+      yPosition += boxHeight + 4;
+    });
+  }
+
+  function drawImmediateActionPlan() {
+    if (!report.suggestedNextSteps?.length) return;
+
+    addSectionHeading("[!]", text.yourImmediateActionPlan);
+    ensurePageSpace(18);
+
+    doc.setFillColor(236, 253, 245);
+    doc.setDrawColor(16, 185, 129);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin, yPosition, contentWidth, 12, 1.2, 1.2, "FD");
+
+    setBoldFont();
+    doc.setFontSize(12);
+    doc.setTextColor(6, 95, 70);
+    doc.text(text.yourImmediateActionPlan, margin + 3, yPosition + 7.5);
+    yPosition += 15;
+
+    report.suggestedNextSteps.forEach((step, idx) => {
+      addBody(`${idx + 1}. ${step}`, 2);
+      yPosition += 1;
+    });
+    yPosition += 2;
+  }
+
   function formatDifficulty(level: "low" | "medium" | "high") {
     if (level === "high") return text.highRisk;
     if (level === "medium") return text.mediumRisk;
@@ -773,12 +842,8 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     yPosition += 3;
   }
 
-  // Next steps that can be considered
-  if (report.suggestedNextSteps.length > 0) {
-    addHeading(text.suggestedNextSteps);
-    addBulletPoints(report.suggestedNextSteps);
-    yPosition += 3;
-  }
+  drawAuditChecklistBox();
+  drawImmediateActionPlan();
 
   addHeading(text.downloadablePdf);
   addSmallText(

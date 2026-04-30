@@ -1,8 +1,10 @@
 import occupationsData from "@/src/data/occupations.json";
+import documentRequirementsData from "@/src/data/document-requirements.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateVisaPoints, type AgeRange, type EnglishLevel } from "@/lib/readiness/visa-points-calculator";
 import type {
+  DocumentCategory,
   FrictionAnalysisItem,
   FrictionScore,
   ReadinessInput,
@@ -26,8 +28,23 @@ type OccupationRecord = {
   authority: string;
 };
 
+type RequirementCategory = {
+  category: string;
+  items: string[];
+  appliesTo: string[];
+  requiresMarried?: boolean;
+};
+
+type RequirementsDataset = {
+  baseCategories: RequirementCategory[];
+  criticalWarnings: {
+    occupationUnconfirmed: string;
+  };
+};
+
 const TREND_ROWS = (visaTrendsData as { occupation_trends: TrendRecord[] }).occupation_trends;
 const OCCUPATION_ROWS = (occupationsData as { occupations: OccupationRecord[] }).occupations;
+const REQUIREMENTS = documentRequirementsData as RequirementsDataset;
 
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
@@ -168,6 +185,115 @@ function toPathwayKey(subclass: string): string {
   return subclass === "820_801" ? "820/801" : subclass;
 }
 
+function isMarriedContext(raw?: string): boolean {
+  const n = normalize(raw);
+  if (!n) return false;
+  return ["married", "spouse", "wife", "husband", "eş", "evli", "partner"].some((k) => n.includes(k));
+}
+
+function normalizeItems(items: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of items) {
+    const key = normalize(item);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+
+function buildPremiumDocumentChecklist(input: ReadinessInput, base: ReadinessReport): DocumentCategory[] {
+  const pathwaySet = new Set(base.pathwayComparison.map((p) => toPathwayKey(p.subclass)));
+  const married = isMarriedContext(input.sponsorOrFamily);
+
+  const categories: DocumentCategory[] = REQUIREMENTS.baseCategories
+    .filter((cat) => cat.appliesTo.some((p) => pathwaySet.has(p)))
+    .filter((cat) => (cat.requiresMarried ? married : true))
+    .map((cat) => {
+      const items = [...cat.items];
+      if (married && cat.category === "Spouse/Family") {
+        if (!items.some((i) => normalize(i).includes("spouse english"))) {
+          items.push("Spouse English evidence");
+        }
+        if (!items.some((i) => normalize(i).includes("marriage certificate"))) {
+          items.push("Marriage Certificate");
+        }
+      }
+      return {
+        category: cat.category,
+        items: normalizeItems(items),
+      };
+    });
+
+  const occupationConfirmed = normalize(input.occupationConfirmed) === "yes";
+  if (!occupationConfirmed) {
+    categories.unshift({
+      category: "CRITICAL",
+      items: [REQUIREMENTS.criticalWarnings.occupationUnconfirmed],
+    });
+  }
+
+  return categories;
+}
+
+function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport, occupationCode?: string): string[] {
+  const ageRange = parseAgeRange(input.age);
+  const englishLevel = parseEnglishLevel(input.englishLevel);
+
+  const points = ageRange && englishLevel
+    ? calculateVisaPoints({
+        ageRange,
+        englishLevel,
+        qualificationLevel: input.qualificationLevel ?? "Bachelor",
+        offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
+        onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
+        anzscoCode: occupationCode,
+        occupationName: input.occupation,
+        hasNAATI: false,
+        hasProfessionalYear: false,
+        hasRegionalStudy: false,
+        partnerSkilled: false,
+      })
+    : undefined;
+
+  const score190 = points?.scores.subclass190 ?? 0;
+  const expYears = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
+  const occupationConfirmed = normalize(input.occupationConfirmed) === "yes";
+  const lowPointsGap = score190 > 0 && score190 < 85;
+  const lowExperienceGap = expYears < 3;
+
+  if (lowPointsGap) {
+    return [
+      "Focus on PTE/IELTS to reach Superior level (79+) as your primary priority.",
+      "Model a +5 to +15 point pathway immediately (NAATI CCL, state nomination, regional nomination) and set a target subclass sequence.",
+      "Rebuild EOI positioning only after score uplift so invitation competitiveness improves materially.",
+    ];
+  }
+
+  if (lowExperienceGap) {
+    return [
+      "Target Professional Year (PY) or NAATI CCL to compensate for missing experience points.",
+      "Strengthen employment evidence quality (detailed references, duties mapping, exact dates) to maximize claimable points.",
+      "Run a timeline strategy that prioritizes nomination pathways while experience depth is still building.",
+    ];
+  }
+
+  if (!occupationConfirmed) {
+    return [
+      "Finalize your occupation strategy first and align ANZSCO mapping with your real employment history.",
+      "Prioritize Skills Assessment evidence pack quality before any invitation-stage assumptions.",
+      "Sequence English, assessment, and EOI milestones into one controlled evidence timeline.",
+    ];
+  }
+
+  return [
+    "Maintain score competitiveness through periodic invitation-trend checks and pathway reprioritization.",
+    "Audit every core document category now to reduce post-invitation lodgement pressure.",
+    "Prepare a submission-ready evidence bundle so you can act quickly when opportunity windows open.",
+  ];
+}
+
 function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclass: string): FrictionAnalysisItem {
   const occupation = findOccupationRecord(input);
   const trend = findTrendRecord(input, occupation);
@@ -272,8 +398,11 @@ function buildFrictionAnalysis(input: ReadinessInput, base: ReadinessReport): Fr
 
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const base = runBaseReadinessEngine(input);
+  const occupation = findOccupationRecord(input);
   return {
     ...base,
+    documentChecklist: buildPremiumDocumentChecklist(input, base),
+    suggestedNextSteps: buildImmediateActionPlan(input, base, occupation?.anzsco_code),
     frictionAnalysis: buildFrictionAnalysis(input, base),
   };
 }

@@ -93,6 +93,8 @@ console.log(JSON.stringify({
   visaTarget: "190",
   points,
   financial,
+  documentChecklist: readiness.documentChecklist,
+  actionPlan: readiness.suggestedNextSteps,
   frictionAnalysis: readiness.frictionAnalysis,
   premiumSections: readiness.premiumSections,
 }, null, 2));

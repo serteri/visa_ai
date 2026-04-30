@@ -1,0 +1,42 @@
+{
+  "version": "2026-04-30",
+  "baseCategories": [
+    {
+      "category": "Identity",
+      "items": [
+        "Passport (6+ months validity)",
+        "Birth Certificate (NAATI translated)"
+      ],
+      "appliesTo": ["189", "190", "491", "482", "500", "485", "820/801"]
+    },
+    {
+      "category": "English",
+      "items": [
+        "Test Results (Less than 2 years old)"
+      ],
+      "appliesTo": ["189", "190", "491", "482", "500", "485"]
+    },
+    {
+      "category": "Skills",
+      "items": [
+        "Degree Certificates",
+        "Academic Transcripts",
+        "Employment References (aligned with Authority rules)"
+      ],
+      "appliesTo": ["189", "190", "491", "482", "485"]
+    },
+    {
+      "category": "Spouse/Family",
+      "items": [
+        "Marriage Certificate",
+        "Evidence of de-facto (if applicable)",
+        "Spouse English evidence"
+      ],
+      "appliesTo": ["189", "190", "491", "482", "500", "485", "820/801"],
+      "requiresMarried": true
+    }
+  ],
+  "criticalWarnings": {
+    "occupationUnconfirmed": "Your documentation strategy must first focus on Skills Assessment evidence."
+  }
+}
