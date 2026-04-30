@@ -1,0 +1,96 @@
+{
+  "generated_on": "2026-04-30",
+  "currency": "AUD",
+  "source_note": "Estimated using publicly available fee guides and July 2025 increase baseline. Confirm exact charges on Home Affairs before lodgement.",
+  "visas": {
+    "500": {
+      "label": "Student visa (subclass 500)",
+      "vac": {
+        "main": 2000,
+        "partner_18_plus": 1000,
+        "child_under_18": 400
+      }
+    },
+    "485": {
+      "label": "Temporary Graduate visa (subclass 485)",
+      "vac": {
+        "main": 2235,
+        "partner_18_plus": 1120,
+        "child_under_18": 560
+      }
+    },
+    "482": {
+      "label": "Skills in Demand / TSS visa (subclass 482)",
+      "vac": {
+        "main": 3210,
+        "partner_18_plus": 3210,
+        "child_under_18": 805
+      }
+    },
+    "189": {
+      "label": "Skilled Independent visa (subclass 189)",
+      "vac": {
+        "main": 4910,
+        "partner_18_plus": 2455,
+        "child_under_18": 1230
+      }
+    },
+    "190": {
+      "label": "Skilled Nominated visa (subclass 190)",
+      "vac": {
+        "main": 4910,
+        "partner_18_plus": 2455,
+        "child_under_18": 1230
+      }
+    },
+    "491": {
+      "label": "Skilled Work Regional visa (subclass 491)",
+      "vac": {
+        "main": 4910,
+        "partner_18_plus": 2455,
+        "child_under_18": 1230
+      }
+    },
+    "820_801": {
+      "label": "Partner visa (subclass 820/801)",
+      "vac": {
+        "main": 9365,
+        "partner_18_plus": 0,
+        "child_under_18": 2345
+      }
+    }
+  },
+  "mandatory_estimates": {
+    "medical_check_per_person": 350,
+    "biometrics_per_person": 100,
+    "police_check_per_country_per_adult": 50
+  },
+  "skills_assessment_estimates": {
+    "ACS": {
+      "min": 560,
+      "max": 560,
+      "typical": 560
+    },
+    "Engineers Australia": {
+      "min": 800,
+      "max": 1100,
+      "typical": 950
+    },
+    "VETASSESS": {
+      "min": 1000,
+      "max": 1000,
+      "typical": 1000
+    },
+    "default": {
+      "min": 700,
+      "max": 1000,
+      "typical": 850
+    }
+  },
+  "optional_estimates": {
+    "naati_ccl": 814,
+    "professional_year": 9000,
+    "translation_notarization_buffer": 300
+  },
+  "disclaimer": "Official fees are subject to change by the Department of Home Affairs."
+}
