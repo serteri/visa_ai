@@ -46,6 +46,11 @@ function getLocalizedText(locale: "en" | "tr") {
       title: "Tam Vize Hazırlık Raporu",
       generatedDate: "Oluşturma Tarihi",
       userInfo: "Kullanıcı Bilgileri",
+      signalSnapshot: "Sinyal Özeti",
+      strongestSignal: "En güçlü sinyal",
+      secondarySignals: "İkincil sinyaller",
+      primaryLimitingFactor: "Birincil Sınırlayıcı Faktör",
+      positionChangers: "Durumunuzu Değiştirebilecek Faktörler",
       pathwayTable: "Vize Yolu Karşılaştırması",
       pathwayStrengthComparison: "Vize Yolu Karşılaştırması",
       evidenceReadiness: "Kanıt/Bilgi Hazırlık Özeti",
@@ -93,6 +98,11 @@ function getLocalizedText(locale: "en" | "tr") {
     title: "Full Visa Readiness Report",
     generatedDate: "Generated Date",
     userInfo: "User Information",
+    signalSnapshot: "Signal Snapshot",
+    strongestSignal: "Strongest signal",
+    secondarySignals: "Secondary signals",
+    primaryLimitingFactor: "Primary Limiting Factor",
+    positionChangers: "What May Change Your Position",
     pathwayTable: "Structured Pathway Comparison",
     pathwayStrengthComparison: "Pathway Strength Comparison",
     evidenceReadiness: "Evidence Readiness Snapshot",
@@ -250,6 +260,13 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     return level === "strong" ? "Stronger signal" : level === "moderate" ? "Moderate signal" : "Limited signal";
   }
 
+  function formatSignalConfidence(level: "limited" | "moderate" | "stronger") {
+    if (locale === "tr") {
+      return level === "stronger" ? "Daha güçlü" : level === "moderate" ? "Orta" : "Sınırlı";
+    }
+    return level === "stronger" ? "Stronger" : level === "moderate" ? "Moderate" : "Limited";
+  }
+
   function formatLoad(level: "low" | "medium" | "high") {
     if (locale === "tr") {
       return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
@@ -295,6 +312,33 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   if (report.executiveSummary.length > 0) {
     addHeading(text.executiveSummary);
     addBulletPoints(report.executiveSummary);
+    yPosition += 3;
+  }
+
+  addHeading(text.signalSnapshot);
+  addBody(`${text.strongestSignal}: ${report.signalSnapshot.strongest}`);
+  addBody(
+    `${text.secondarySignals}: ${
+      report.signalSnapshot.secondary.length > 0
+        ? report.signalSnapshot.secondary.join(", ")
+        : locale === "tr" ? "Belirgin ikincil sinyal yok" : "No clear secondary signal"
+    }`
+  );
+  addBody(`${text.confidence}: ${formatSignalConfidence(report.signalSnapshot.confidenceLabel)}`);
+  addSmallText(report.signalSnapshot.confidenceExplanation, 4);
+  yPosition += 3;
+
+  addHeading(text.primaryLimitingFactor);
+  addBody(report.primaryLimitingFactor.label);
+  addSmallText(report.primaryLimitingFactor.explanation, 4);
+  yPosition += 3;
+
+  if (report.positionChangers.length > 0) {
+    addHeading(text.positionChangers);
+    report.positionChangers.forEach((item) => {
+      addBody(item.label);
+      addSmallText(item.explanation, 4);
+    });
     yPosition += 3;
   }
 
@@ -439,12 +483,6 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     0
   );
   yPosition += 3;
-
-  if (report.factorsAffectingPathways.length > 0) {
-    addHeading(text.factorsAffectingPathways);
-    addBulletPoints(report.factorsAffectingPathways);
-    yPosition += 3;
-  }
 
   // Missing information
   if (report.missingInformation.length > 0) {

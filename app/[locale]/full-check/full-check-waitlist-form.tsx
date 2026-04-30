@@ -175,6 +175,14 @@ export function FullCheckWaitlistForm({
     return level === "strong" ? "Stronger signal" : level === "moderate" ? "Moderate signal" : "Limited signal";
   }
 
+  function getSignalConfidenceLabel(level: "limited" | "moderate" | "stronger") {
+    if (isTr) {
+      return level === "stronger" ? "Daha güçlü" : level === "moderate" ? "Orta" : "Sınırlı";
+    }
+
+    return level === "stronger" ? "Stronger" : level === "moderate" ? "Moderate" : "Limited";
+  }
+
   function getEvidenceLoadLabel(level: "low" | "medium" | "high") {
     if (isTr) {
       return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
@@ -460,6 +468,76 @@ export function FullCheckWaitlistForm({
               </Card>
             )}
 
+            <Card className="border-primary/40 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {isTr ? "Sinyal Özeti" : "Signal Snapshot"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-md border border-primary/20 bg-background/80 p-3">
+                    <p className="text-xs font-semibold uppercase text-muted-foreground">
+                      {isTr ? "En güçlü sinyal" : "Strongest signal"}
+                    </p>
+                    <p className="mt-1 font-medium">{state.report.signalSnapshot.strongest}</p>
+                  </div>
+                  <div className="rounded-md border border-primary/20 bg-background/80 p-3 sm:col-span-2">
+                    <p className="text-xs font-semibold uppercase text-muted-foreground">
+                      {isTr ? "İkincil sinyaller" : "Secondary signals"}
+                    </p>
+                    <p className="mt-1 font-medium">
+                      {state.report.signalSnapshot.secondary.length > 0
+                        ? state.report.signalSnapshot.secondary.join(", ")
+                        : isTr ? "Belirgin ikincil sinyal yok" : "No clear secondary signal"}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-muted-foreground">
+                  <span className="font-medium text-foreground">
+                    {isTr ? "Güven:" : "Confidence:"}{" "}
+                    {getSignalConfidenceLabel(state.report.signalSnapshot.confidenceLabel)}
+                  </span>{" "}
+                  — {state.report.signalSnapshot.confidenceExplanation}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-amber-300 bg-amber-50">
+              <CardHeader>
+                <CardTitle className="text-base text-amber-950">
+                  {isTr ? "Birincil Sınırlayıcı Faktör" : "Primary Limiting Factor"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-amber-900">
+                <p className="font-semibold">{state.report.primaryLimitingFactor.label}</p>
+                <p>{state.report.primaryLimitingFactor.explanation}</p>
+              </CardContent>
+            </Card>
+
+            {state.report.positionChangers.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    {isTr ? "Durumunuzu Değiştirebilecek Faktörler" : "What May Change Your Position"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {state.report.positionChangers.map((item) => (
+                      <li key={`${item.label}-${item.explanation}`} className="flex gap-2">
+                        <span className="text-primary">-</span>
+                        <span>
+                          <span className="font-medium text-foreground">{item.label}:</span>{" "}
+                          {item.explanation}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+
             {state.report.pathwayStrengthComparison.length > 0 && (
               <Card>
                 <CardHeader>
@@ -694,13 +772,6 @@ export function FullCheckWaitlistForm({
             title={isTr ? "Önerilen sonraki adımlar" : "Suggested next steps"}
             items={state.report.suggestedNextSteps}
           />
-
-          {state.report.factorsAffectingPathways.length > 0 && (
-            <ReportSection
-              title={isTr ? "Durumunuzu Değiştirebilecek Faktörler" : "What May Change Your Position"}
-              items={state.report.factorsAffectingPathways}
-            />
-          )}
 
           {state.report.missingInformation.length > 0 && (
             <ReportSection

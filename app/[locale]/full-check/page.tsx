@@ -13,19 +13,22 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
   if (isTr) {
     return [
       {
-        label: "Olası vize yolları",
-        quick: "Yalnızca olası yol alanları",
-        full: "Yapılandırılmış yol karşılaştırması",
+        label: "Olas? vize yollar?",
+        quick: "Yaln?zca olas? yol alanlar?",
+        full: "Yap?land?r?lm?? yol kar??la?t?rmas?",
       },
-      { label: "Vize yolu güç karşılaştırması", quick: "Dahil değil", full: "Dahil" },
-      { label: "Risk göstergeleri", quick: "Dahil değil", full: "Dahil" },
-      { label: "Kanıt/Bilgi hazırlık özeti", quick: "Dahil değil", full: "Dahil" },
-      { label: "Puan senaryo simülatörü", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
-      { label: "Tahmini maliyet yol haritası", quick: "Dahil değil", full: "Dahil" },
-      { label: "Tipik geçiş yolları", quick: "Dahil değil", full: "İlgili olduğunda dahil" },
-      { label: "Vize yolu gerçeklik kontrolü", quick: "Dahil değil", full: "Dahil" },
-      { label: "Değerlendirilebilecek sonraki adımlar", quick: "Dahil değil", full: "Dahil" },
-      { label: "İndirilebilir PDF", quick: "Dahil değil", full: "Dahil" },
+      { label: "Sinyal ?zeti", quick: "Dahil de?il", full: "Dahil" },
+      { label: "Birincil s?n?rlay?c? fakt?r", quick: "Dahil de?il", full: "Dahil" },
+      { label: "Durumunuzu de?i?tirebilecek fakt?rler", quick: "Dahil de?il", full: "Dahil" },
+      { label: "Vize yolu g?? kar??la?t?rmas?", quick: "Dahil de?il", full: "Dahil" },
+      { label: "Risk g?stergeleri", quick: "Dahil de?il", full: "Dahil" },
+      { label: "Kan?t/Bilgi haz?rl?k ?zeti", quick: "Dahil de?il", full: "Dahil" },
+      { label: "Puan senaryo sim?lat?r?", quick: "Dahil de?il", full: "?lgili oldu?unda dahil" },
+      { label: "Tahmini maliyet yol haritas?", quick: "Dahil de?il", full: "Dahil" },
+      { label: "Tipik ge?i? yollar?", quick: "Dahil de?il", full: "?lgili oldu?unda dahil" },
+      { label: "Vize yolu ger?eklik kontrol?", quick: "Dahil de?il", full: "Dahil" },
+      { label: "De?erlendirilebilecek sonraki ad?mlar", quick: "Dahil de?il", full: "Dahil" },
+      { label: "?ndirilebilir PDF", quick: "Dahil de?il", full: "Dahil" },
     ];
   }
 
@@ -35,6 +38,9 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
       quick: "Possible pathway areas only",
       full: "Structured pathway comparison",
     },
+    { label: "Signal snapshot", quick: "Not included", full: "Included" },
+    { label: "Primary limiting factor", quick: "Not included", full: "Included" },
+    { label: "What may change your position", quick: "Not included", full: "Included" },
     { label: "Pathway strength comparison", quick: "Not included", full: "Included" },
     { label: "Risk indicators", quick: "Not included", full: "Included" },
     { label: "Evidence readiness snapshot", quick: "Not included", full: "Included" },
@@ -46,43 +52,56 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
     { label: "Downloadable PDF", quick: "Not included", full: "Included" },
   ];
 }
-
 function getReportCards(isTr: boolean): ReportCard[] {
   if (isTr) {
     return [
       {
-        title: "Vize yolu güç karşılaştırması",
-        description:
-          "Olası yollar güç, sürtünme ve açıklama ile karşılaştırılır.",
+        title: "Sinyal ?zeti",
+        description: "En g??l? ve ikincil sinyaller tek bak??ta g?sterilir.",
       },
       {
-        title: "Kanıt/Bilgi hazırlık özeti",
-        description:
-          "Form bilgileri ile tipik kanıt kategorileri birlikte gösterilir.",
+        title: "Birincil s?n?rlay?c? fakt?r",
+        description: "Rapor, ?u anda konumu en ?ok s?n?rlayan tek ana fakt?r? ?ne ??kar?r.",
       },
       {
-        title: "Puan senaryo simülatörü",
-        description:
-          "Puan testli yollar için matematiksel puan senaryoları ilgili olduğunda gösterilir.",
+        title: "Durumunuzu de?i?tirebilecek fakt?rler",
+        description: "Puan, kan?t ve adayl?k gibi sinyali etkileyebilecek alanlar listelenir.",
       },
       {
-        title: "Tahmini maliyet yol haritası",
-        description:
-          "Resmi ücret ve üçüncü taraf maliyet kategorileri genel bilgi olarak ayrılır.",
+        title: "Vize yolu g?? kar??la?t?rmas?",
+        description: "Olas? yollar g??, s?rt?nme ve a??klama ile kar??la?t?r?l?r.",
       },
       {
-        title: "Vize yolu gerçeklik kontrolü",
-        description:
-          "Her yol için sürtünme ve pratik sınırlayıcı faktörler özetlenir.",
+        title: "Kan?t/Bilgi haz?rl?k ?zeti",
+        description: "Form bilgileri ile tipik kan?t kategorileri birlikte g?sterilir.",
+      },
+      {
+        title: "Puan senaryo sim?lat?r?",
+        description: "Puan testli yollar i?in matematiksel puan senaryolar? ilgili oldu?unda g?sterilir.",
+      },
+      {
+        title: "Tahmini maliyet yol haritas?",
+        description: "Resmi ?cret ve ???nc? taraf maliyet kategorileri genel bilgi olarak ayr?l?r.",
+      },
+      {
+        title: "Vize yolu ger?eklik kontrol?",
+        description: "Her yol i?in s?rt?nme ve pratik s?n?rlay?c? fakt?rler ?zetlenir.",
       },
     ];
   }
 
   return [
     {
-      title: "Pathway comparison",
-      description:
-        "Supported visa pathways are compared side by side to show which options may be relevant.",
+      title: "Signal snapshot",
+      description: "The strongest and secondary pathway signals are shown at a glance.",
+    },
+    {
+      title: "Primary limiting factor",
+      description: "The report highlights the single main factor currently limiting the position.",
+    },
+    {
+      title: "What may change your position",
+      description: "Points, evidence, and nomination factors that may affect signals are listed.",
     },
     {
       title: "Pathway strength comparison",
@@ -90,13 +109,11 @@ function getReportCards(isTr: boolean): ReportCard[] {
     },
     {
       title: "Evidence readiness snapshot",
-      description:
-        "Form details are mapped against typical evidence categories.",
+      description: "Form details are mapped against typical evidence categories.",
     },
     {
       title: "Points booster simulator",
-      description:
-        "Points-tested pathways show mathematical score scenarios where relevant.",
+      description: "Points-tested pathways show mathematical score scenarios where relevant.",
     },
     {
       title: "Financial roadmap",
@@ -108,7 +125,6 @@ function getReportCards(isTr: boolean): ReportCard[] {
     },
   ];
 }
-
 type FullCheckPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{

@@ -155,8 +155,28 @@ export type PathwayFriction = {
   explanation: string;
 };
 
+export type SignalSnapshot = {
+  strongest: string;
+  secondary: string[];
+  confidenceLabel: "limited" | "moderate" | "stronger";
+  confidenceExplanation: string;
+};
+
+export type PrimaryLimitingFactor = {
+  label: string;
+  explanation: string;
+};
+
+export type PositionChanger = {
+  label: string;
+  explanation: string;
+};
+
 export type ReadinessReport = {
   executiveSummary: string[];
+  signalSnapshot: SignalSnapshot;
+  primaryLimitingFactor: PrimaryLimitingFactor;
+  positionChangers: PositionChanger[];
   pathwayComparison: PathwayComparison[];
   pathwayStrengthComparison: PathwayStrengthComparison[];
   evidenceReadiness: EvidenceReadinessItem[];

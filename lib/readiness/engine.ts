@@ -19,12 +19,15 @@ import type {
   PathwayFriction,
   PathwayRelevance,
   PathwayStrengthComparison,
+  PositionChanger,
   PointsBoosterSimulator,
   PointsEstimate,
+  PrimaryLimitingFactor,
   ProgressionPathway,
   ReadinessInput,
   ReadinessReport,
   ReportIndicators,
+  SignalSnapshot,
 } from "./types";
 
 export type LeadTier = "High intent" | "Moderate intent" | "Low intent";
@@ -1987,6 +1990,173 @@ function buildConfidenceExplanation(
 
 // ─── Main engine ──────────────────────────────────────────────────────────────
 
+function relativePositionScore(position: PathwayStrengthComparison["relativePosition"]): number {
+  if (position === "stronger_signal") return 3;
+  if (position === "moderate_signal") return 2;
+  return 1;
+}
+
+function buildSignalSnapshot(
+  pathwayStrengthComparison: PathwayStrengthComparison[],
+  confidenceExplanation: string
+): SignalSnapshot {
+  const sorted = [...pathwayStrengthComparison].sort((a, b) => {
+    const positionDiff =
+      relativePositionScore(b.relativePosition) - relativePositionScore(a.relativePosition);
+    if (positionDiff !== 0) return positionDiff;
+    const frictionRank = { low: 3, medium: 2, high: 1 };
+    return frictionRank[b.friction] - frictionRank[a.friction];
+  });
+
+  const strongestPathway = sorted[0];
+  const confidenceLabel: SignalSnapshot["confidenceLabel"] =
+    strongestPathway?.relativePosition === "stronger_signal"
+      ? "stronger"
+      : strongestPathway?.relativePosition === "moderate_signal"
+        ? "moderate"
+        : "limited";
+
+  return {
+    strongest: strongestPathway
+      ? `${strongestPathway.visaName} (${strongestPathway.subclass})`
+      : "General pathway signal",
+    secondary: sorted.slice(1, 3).map((item) => `${item.visaName} (${item.subclass})`),
+    confidenceLabel,
+    confidenceExplanation,
+  };
+}
+
+function buildPrimaryLimitingFactor(
+  input: ReadinessInput,
+  subclasses: string[],
+  estimatedPoints: number | undefined,
+  locale: Locale
+): PrimaryLimitingFactor {
+  const isTr = locale === "tr";
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const sponsorRequired = subclasses.some((subclass) => subclass === "482" || subclass === "820_801");
+  const sponsorMissing = sponsorRequired && !hasSponsorContext(input.sponsorOrFamily);
+
+  if (estimatedPoints !== undefined && estimatedPoints < 65) {
+    return {
+      label: isTr
+        ? "Puan sinyali yaygın eşiklerin altında"
+        : "Points signal below commonly referenced thresholds",
+      explanation: isTr
+        ? `Kısmi matematiksel puan sinyali ${estimatedPoints}. Puan testli yollar için bu sinyal, yol gücünü sınırlayabilir ve bireysel koşullara bağlıdır.`
+        : `The partial mathematical points signal is ${estimatedPoints}. For points-tested pathways, this signal may limit pathway strength and depends on individual circumstances.`,
+    };
+  }
+
+  if (!input.englishLevel?.trim() || !englishOption) {
+    return {
+      label: isTr ? "İngilizce seviyesi net değil" : "English test level not yet clear",
+      explanation: isTr
+        ? "İngilizce test düzeyi netleşmediğinde puan testli, mezun ve işveren odaklı yolların karşılaştırması sınırlı kalabilir."
+        : "When the English test level is not clear, comparison across skilled, graduate, and employer-sponsored pathways may remain limited.",
+    };
+  }
+
+  if (input.occupationConfirmed !== "yes") {
+    return {
+      label: isTr
+        ? "Beceri değerlendirmesi net değil"
+        : "Skills assessment or occupation verification unclear",
+      explanation: isTr
+        ? "Meslek veya beceri değerlendirmesi netleşmediğinde nitelikli ve işveren odaklı yol sinyalleri değişebilir."
+        : "When occupation or skills assessment context is unclear, skilled and employer-sponsored pathway signals may change.",
+    };
+  }
+
+  if (sponsorMissing) {
+    return {
+      label: isTr
+        ? "Sponsor veya ilişki bağlamı net değil"
+        : "Sponsor or relationship context not established",
+      explanation: isTr
+        ? "Sponsor veya ilişki bağlamı net olmadığında işveren sponsorlu ya da partner yollarının sinyali sınırlı kalabilir."
+        : "When sponsor or relationship context is not established, employer-sponsored or partner pathway signals may remain limited.",
+    };
+  }
+
+  return {
+    label: isTr
+      ? "Yola özgü kanıtların ayrıca incelenmesi gerekir"
+      : "Pathway-specific evidence still needs separate review",
+    explanation: isTr
+      ? "Ana form bilgileri güçlü olsa bile, belge kategorileri ve yol-özel kanıtlar sonucu etkileyebilir."
+      : "Even when the main form details are strong, document categories and pathway-specific evidence may affect the final position.",
+  };
+}
+
+function buildPositionChangers(
+  input: ReadinessInput,
+  subclasses: string[],
+  estimatedPoints: number | undefined,
+  locale: Locale
+): PositionChanger[] {
+  const isTr = locale === "tr";
+  const items: PositionChanger[] = [];
+  const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+
+  if (hasSkilled && englishOption !== "superior") {
+    items.push({
+      label: isTr ? "İngilizce test kategorisi" : "English test category",
+      explanation: isTr
+        ? "Daha yüksek İngilizce seviyesi puan sinyalini değiştirebilir."
+        : "A higher English test category may change the points signal.",
+    });
+  }
+
+  if ((hasSkilled || subclasses.includes("482")) && input.occupationConfirmed !== "yes") {
+    items.push({
+      label: isTr ? "Beceri değerlendirmesi" : "Skills assessment",
+      explanation: isTr
+        ? "Beceri değerlendirmesinin netleşmesi yol gücünü etkileyebilir."
+        : "Confirming skills assessment may affect pathway strength.",
+    });
+  }
+
+  if (subclasses.includes("190") || subclasses.includes("491")) {
+    items.push({
+      label: isTr ? "Adaylık bağlamı" : "Nomination context",
+      explanation: isTr
+        ? "Eyalet adaylık veya bölgesel bağlam yol sinyallerini etkileyebilir."
+        : "State nomination or regional context may affect pathway signals.",
+    });
+  }
+
+  if (subclasses.includes("482") || subclasses.includes("820_801")) {
+    items.push({
+      label: isTr ? "Sponsor veya ilişki kanıtı" : "Sponsor or relationship evidence",
+      explanation: isTr
+        ? "Sponsor veya ilişki kanıtı netleştikçe ilgili yol sinyali değişebilir."
+        : "Sponsor or relationship evidence may change the signal for related pathways.",
+    });
+  }
+
+  if (estimatedPoints !== undefined && estimatedPoints < 65 && items.length < 3) {
+    items.push({
+      label: isTr ? "Puan tablosu faktörleri" : "Points-table factors",
+      explanation: isTr
+        ? "Yaş, İngilizce, adaylık ve diğer puan faktörleri matematiksel konumu değiştirebilir."
+        : "Age, English, nomination, and other points factors may change the mathematical position.",
+    });
+  }
+
+  if (items.length < 2) {
+    items.push({
+      label: isTr ? "Belge hazırlık düzeyi" : "Evidence preparation level",
+      explanation: isTr
+        ? "Kanıt kategorilerinin netleşmesi, rapordaki yol karşılaştırmasını etkileyebilir."
+        : "Clarifying evidence categories may affect the pathway comparison in the report.",
+    });
+  }
+
+  return items.slice(0, 3);
+}
+
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const locale = input.locale;
 
@@ -2141,6 +2311,22 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     input,
     pointsEstimate?.estimatedPoints
   );
+  const signalSnapshot = buildSignalSnapshot(
+    pathwayStrengthComparison,
+    confidenceExplanation
+  );
+  const primaryLimitingFactor = buildPrimaryLimitingFactor(
+    input,
+    detectedSubclasses,
+    pointsEstimate?.estimatedPoints,
+    locale
+  );
+  const positionChangers = buildPositionChangers(
+    input,
+    detectedSubclasses,
+    pointsEstimate?.estimatedPoints,
+    locale
+  );
 
   const suggestedNextSteps = buildNextSteps({
     locale,
@@ -2157,6 +2343,9 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   return {
     executiveSummary,
+    signalSnapshot,
+    primaryLimitingFactor,
+    positionChangers,
     pathwayComparison,
     pathwayStrengthComparison,
     evidenceReadiness,
