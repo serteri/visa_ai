@@ -1,0 +1,48 @@
+⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from "127.0.0.1".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['127.0.0.1'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+Full check email notifications suppressed due to recent duplicate submission.
+Full check email notifications suppressed due to recent duplicate submission.
+Full check email notifications suppressed due to recent duplicate submission.
+Full check email notifications suppressed due to recent duplicate submission.
+Full check email notifications suppressed due to recent duplicate submission.
+Full check email notifications suppressed due to recent duplicate submission.
+Full check email notifications suppressed due to recent duplicate submission.
+Full check email notifications suppressed due to recent duplicate submission.
+
+<--- Last few GCs --->
+
+[88772:000001CCFA3A3000]  5510915 ms: Scavenge 30083.8 (32330.1) -> 30055.9 (32330.1) MB, pooled: 0 MB, 49.24 / 0.00 ms  (average mu = 0.132, current mu = 0.062) allocation failure; 
+[88772:000001CCFA3A3000]  5534910 ms: Mark-Compact 30121.1 (32352.8) -> 29987.9 (32301.0) MB, pooled: 10 MB, 23826.29 / 103.96 ms  (average mu = 0.101, current mu = 0.068) task; scavenge might not succeed
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF7C9FAAD5F node::OnFatalError+1343
+ 2: 00007FF7CABF32D7 v8::Function::NewInstance+423
+ 3: 00007FF7CA9F3997 v8::base::AddressSpaceReservation::AddressSpaceReservation+322071
+ 4: 00007FF7CA9F76A4 v8::base::AddressSpaceReservation::AddressSpaceReservation+337700
+ 5: 00007FF7CAA0663C v8::internal::StrongRootAllocatorBase::deallocate_impl+16604
+ 6: 00007FF7CAA05E7B v8::internal::StrongRootAllocatorBase::deallocate_impl+14619
+ 7: 00007FF7CBE6E7ED v8::base::UnsignedDivisionByConstant<unsigned __int64>+2791357
+ 8: 00007FF7CA9F1460 v8::base::AddressSpaceReservation::AddressSpaceReservation+312544
+ 9: 00007FF7CA9A1E12 EVP_PKEY_asn1_set_get_priv_key+86258
+10: 00007FF7C9EFD10A node::GetNodeReport+98346
+11: 00007FF7C9EFB8F0 node::GetNodeReport+92176
+12: 00007FF7CAC5ACBB uv_run+1867
+13: 00007FF7CAC5A82F uv_run+703
+14: 00007FF7CA0BD01F node::DecodeWrite+367
+15: 00007FF7C9F38DD2 node::MultiIsolatePlatform::DisposeIsolate+242594
+16: 00007FF7CA004F6C node::Start+1052
+17: 00007FF7CB021B82 AES_cbc_encrypt+2546
+18: 00007FF7CBE77EF4 v8::base::UnsignedDivisionByConstant<unsigned __int64>+2830020
+19: 00007FFA20A6E8D7 BaseThreadInitThunk+23
+20: 00007FFA2194C3FC RtlUserThreadStart+44

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Manrope, Noto_Sans } from "next/font/google";
-import { GlobalDisclaimerFooter } from "@/components/global-disclaimer-footer";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -28,7 +27,6 @@ export default function RootLayout({
     <html className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
-        <GlobalDisclaimerFooter />
       </body>
     </html>
   );

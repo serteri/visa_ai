@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { LanguageProvider } from "@/contexts/language-context";
 import { Header } from "@/components/header";
+import { GlobalDisclaimerFooter } from "@/components/global-disclaimer-footer";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
 
@@ -47,6 +48,7 @@ export default async function LocaleLayout({
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
       <Header locale={locale} showAdmin={showAdmin} />
       {children}
+      <GlobalDisclaimerFooter />
     </LanguageProvider>
   );
 }

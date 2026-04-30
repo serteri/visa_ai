@@ -1,0 +1,84 @@
+
+> visa_ai@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.21.144.1:3000
+- Environments: .env.local, .env
+✓ Ready in 306ms
+
+ GET /en/checker?quick=1 200 in 1014ms (next.js: 785ms, application-code: 228ms)
+ GET /en 200 in 461ms (next.js: 394ms, application-code: 67ms)
+ GET /tr 200 in 79ms (next.js: 17ms, application-code: 62ms)
+ GET /tr 200 in 109ms (next.js: 17ms, application-code: 92ms)
+ GET /en/visas/500 200 in 1964ms (next.js: 395ms, application-code: 1569ms)
+ GET /en/visas/485 200 in 320ms (next.js: 16ms, application-code: 304ms)
+ GET /en/visas/482 200 in 374ms (next.js: 22ms, application-code: 352ms)
+ GET /en/visas/189 200 in 278ms (next.js: 25ms, application-code: 253ms)
+ GET /en/visas/190 200 in 349ms (next.js: 13ms, application-code: 336ms)
+ GET /en/visas/491 200 in 343ms (next.js: 12ms, application-code: 331ms)
+ GET /en/visas/820_801 200 in 461ms (next.js: 16ms, application-code: 445ms)
+ GET /tr/visas/500 200 in 195ms (next.js: 14ms, application-code: 181ms)
+ GET /tr/visas/485 200 in 197ms (next.js: 12ms, application-code: 185ms)
+ GET /tr/visas/482 200 in 262ms (next.js: 17ms, application-code: 245ms)
+ GET /tr/visas/189 200 in 183ms (next.js: 15ms, application-code: 168ms)
+ GET /tr/visas/190 200 in 261ms (next.js: 16ms, application-code: 245ms)
+ GET /tr/visas/491 200 in 269ms (next.js: 21ms, application-code: 248ms)
+ GET /tr/visas/820_801 200 in 452ms (next.js: 14ms, application-code: 438ms)
+ GET /en/checker 200 in 85ms (next.js: 20ms, application-code: 66ms)
+ GET /en/checker?quick=1 200 in 27ms (next.js: 2ms, application-code: 24ms)
+ GET /en/results?goal=Migrate+permanently&hasSponsor=no&inAustralia=no 200 in 694ms (next.js: 432ms, application-code: 262ms)
+ GET /en/results?goal=Migrate+permanently&hasSponsor=no&inAustralia=no 200 in 123ms (next.js: 55ms, application-code: 68ms)
+ GET /tr/checker 200 in 129ms (next.js: 21ms, application-code: 107ms)
+ GET /tr/checker?quick=1 200 in 40ms (next.js: 17ms, application-code: 23ms)
+ GET /en/full-check 200 in 585ms (next.js: 413ms, application-code: 172ms)
+ POST /en/full-check 200 in 3.5s (next.js: 15ms, application-code: 3.4s)
+  └─ ƒ submitFullCheckWaitlist({"status":"idle"}, {}) in 3421ms app/[locale]/full-check/actions.ts
+ GET /tr/full-check 200 in 123ms (next.js: 17ms, application-code: 105ms)
+ POST /tr/full-check 200 in 2.5s (next.js: 20ms, application-code: 2.5s)
+  └─ ƒ submitFullCheckWaitlist({"status":"idle"}, {}) in 2504ms app/[locale]/full-check/actions.ts
+ GET /tr/full-check 200 in 183ms (next.js: 94ms, application-code: 89ms)
+ GET /en/assistant 200 in 547ms (next.js: 428ms, application-code: 119ms)
+ POST /en/assistant 200 in 5.7s (next.js: 21ms, application-code: 5.7s)
+  └─ ƒ runAssistantMessage({"locale":"en","message":"What is the 485 visa?"}) in 5656ms app/[locale]/assistant/actions.ts
+ GET /en/assistant 200 in 168ms (next.js: 85ms, application-code: 83ms)
+ GET /en/assistant 200 in 74ms (next.js: 2ms, application-code: 72ms)
+ GET /en/assistant 200 in 137ms (next.js: 16ms, application-code: 122ms)
+ POST /en/assistant 200 in 6.9s (next.js: 16ms, application-code: 6.9s)
+  └─ ƒ runAssistantMessage({"locale":"en","message":"What is the 485 visa?"}) in 6878ms app/[locale]/assistant/actions.ts
+ GET /en/assistant 200 in 259ms (next.js: 99ms, application-code: 160ms)
+ GET /en/assistant 200 in 46ms (next.js: 3ms, application-code: 43ms)
+ GET /en/assistant 200 in 148ms (next.js: 16ms, application-code: 132ms)
+ POST /en/assistant 200 in 280ms (next.js: 2ms, application-code: 277ms)
+  └─ ƒ runAssistantMessage({"locale":"en","message":"Can I get approved?"}) in 265ms app/[locale]/assistant/actions.ts
+ GET /en/assistant?mode=premium 200 in 91ms (next.js: 15ms, application-code: 76ms)
+ POST /en/assistant?mode=premium 200 in 28ms (next.js: 14ms, application-code: 14ms)
+  └─ ƒ runReadinessPreview({"age":"29","biggestConcern":"Points","currentCountry":"India","...":"7 items not stringified"}) in 3ms app/[locale]/assistant/actions.ts
+ GET /tr/assistant 200 in 67ms (next.js: 12ms, application-code: 54ms)
+ GET /en/admin/dashboard 500 in 3.0s (next.js: 456ms, proxy.ts: 41ms, application-code: 2.5s)
+ GET /en/admin/full-check-waitlist 200 in 13.5s (next.js: 432ms, proxy.ts: 5ms, application-code: 13.1s)
+ GET /en/admin/visas 200 in 6.6s (next.js: 477ms, proxy.ts: 3ms, application-code: 6.2s)
+ GET /en/admin/dashboard 200 in 15.6s (next.js: 18ms, proxy.ts: 4ms, application-code: 15.6s)
+ GET /en/admin/dashboard 200 in 12.6s (next.js: 25ms, proxy.ts: 11ms, application-code: 12.6s)
+ GET /en/admin/dashboard 200 in 776ms (next.js: 89ms, proxy.ts: 22ms, application-code: 664ms)
+ GET /en/admin/dashboard 200 in 548ms (next.js: 7ms, proxy.ts: 30ms, application-code: 511ms)
+ GET /en/admin/dashboard 200 in 648ms (next.js: 17ms, proxy.ts: 18ms, application-code: 613ms)
+ GET /en/admin/dashboard 200 in 646ms (next.js: 82ms, proxy.ts: 19ms, application-code: 545ms)
+ GET /en/admin/dashboard 200 in 648ms (next.js: 38ms, proxy.ts: 18ms, application-code: 592ms)
+ GET /en/admin/dashboard 200 in 648ms (next.js: 58ms, proxy.ts: 18ms, application-code: 572ms)
+ GET /en/admin/dashboard 200 in 453ms (next.js: 29ms, proxy.ts: 4ms, application-code: 421ms)
+ GET /en/admin/dashboard 200 in 446ms (next.js: 15ms, proxy.ts: 159ms, application-code: 272ms)
+ GET /en/admin/dashboard 200 in 190ms (next.js: 64ms, proxy.ts: 6ms, application-code: 120ms)
+ GET /en/admin/dashboard 200 in 199ms (next.js: 9ms, proxy.ts: 13ms, application-code: 177ms)
+ GET /en/admin/dashboard 200 in 734ms (next.js: 82ms, proxy.ts: 26ms, application-code: 626ms)
+ GET /en/admin/dashboard 200 in 527ms (next.js: 5ms, proxy.ts: 11ms, application-code: 511ms)
+ GET /en/admin/dashboard 200 in 561ms (next.js: 14ms, proxy.ts: 16ms, application-code: 531ms)
+ GET /en/admin/dashboard 200 in 561ms (next.js: 61ms, proxy.ts: 16ms, application-code: 484ms)
+ GET /en/admin/dashboard 200 in 562ms (next.js: 84ms, proxy.ts: 16ms, application-code: 461ms)
+ GET /en/admin/dashboard 200 in 564ms (next.js: 38ms, proxy.ts: 16ms, application-code: 509ms)
+ GET /en/admin/dashboard 200 in 470ms (next.js: 20ms, proxy.ts: 3ms, application-code: 447ms)
+ GET /en/admin/dashboard 200 in 394ms (next.js: 11ms, proxy.ts: 42ms, application-code: 341ms)
+ GET /en/admin/dashboard 200 in 322ms (next.js: 13ms, proxy.ts: 67ms, application-code: 243ms)
+ GET /en/admin/dashboard 200 in 323ms (next.js: 44ms, proxy.ts: 67ms, application-code: 212ms)
+[?25h

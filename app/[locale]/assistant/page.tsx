@@ -11,7 +11,7 @@ export default async function AssistantPage({ params, searchParams }: AssistantP
 
   return (
     <AssistantClient
-      locale={locale === "tr" ? "tr" : "en"}
+      locale={locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en"}
       initialMode={mode === "premium" ? "premium" : "simple"}
     />
   );

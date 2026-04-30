@@ -1,0 +1,80 @@
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+Each child in a list should have a unique "key" prop. See https://react.dev/link/warning-keys for more information.
+⨯ Error: Failed query: ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS visa_interest TEXT
+params: 
+    at async ensureFullCheckWaitlistTable (app\[locale]\admin\dashboard\page.tsx:40:3)
+    at async getDashboardData (app\[locale]\admin\dashboard\page.tsx:73:3)
+    at async AdminDashboardPage (app\[locale]\admin\dashboard\page.tsx:113:16)
+  38 |
+  39 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS full_name ...
+> 40 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS visa_inter...
+     |   ^
+  41 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS preferred_...
+  42 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS current_co...
+  43 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS passport_c... {
+  query: 'ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS visa_interest TEXT',
+  params: [],
+  digest: '4169595025',
+  [cause]: Error [NeonDbError]: Error connecting to database: TypeError: fetch failed
+      at async ensureFullCheckWaitlistTable (app\[locale]\admin\dashboard\page.tsx:40:3)
+      at async getDashboardData (app\[locale]\admin\dashboard\page.tsx:73:3)
+      at async AdminDashboardPage (app\[locale]\admin\dashboard\page.tsx:113:16)
+    38 |
+    39 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS full_name ...
+  > 40 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS visa_inter...
+       |   ^
+    41 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS preferred_...
+    42 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS current_co...
+    43 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS passport_c... {
+    severity: undefined,
+    code: undefined,
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: undefined,
+    line: undefined,
+    routine: undefined,
+    sourceError: TypeError: fetch failed
+        at async ensureFullCheckWaitlistTable (app\[locale]\admin\dashboard\page.tsx:40:3)
+        at async getDashboardData (app\[locale]\admin\dashboard\page.tsx:73:3)
+        at async AdminDashboardPage (app\[locale]\admin\dashboard\page.tsx:113:16)
+      38 |
+      39 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS full_name ...
+    > 40 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS visa_inter...
+         |   ^
+      41 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS preferred_...
+      42 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS current_co...
+      43 |   await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS passport_c... {
+      [cause]: [Error]
+    }
+  }
+}
+
+<--- Last few GCs --->
+
+[64888:00000245C6E23000]  5965876 ms: Scavenge 31708.6 (31782.7) -> 31677.3 (31799.7) MB, pooled: 0 MB, 32.96 / 0.00 ms  (average mu = 0.310, current mu = 0.309) allocation failure; 
+[64888:00000245C6E23000]  5990254 ms: Mark-Compact (reduce) 31678.7 (31800.0) -> 31311.3 (31358.1) MB, pooled: 0 MB, 24221.09 / 254.20 ms  (+ 96.1 ms in 19 steps since start of marking, biggest step 6.8 ms, walltime since start of marking 24378 ms) (avera
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF7C9FAAD5F node::OnFatalError+1343
+ 2: 00007FF7CABF32D7 v8::Function::NewInstance+423
+ 3: 00007FF7CA9F3997 v8::base::AddressSpaceReservation::AddressSpaceReservation+322071
+ 4: 00007FF7CA9F76A4 v8::base::AddressSpaceReservation::AddressSpaceReservation+337700
+ 5: 00007FF7CAA0663C v8::internal::StrongRootAllocatorBase::deallocate_impl+16604
+ 6: 00007FF7CAA05E7B v8::internal::StrongRootAllocatorBase::deallocate_impl+14619
+ 7: 00007FF7CBE6E7ED v8::base::UnsignedDivisionByConstant<unsigned __int64>+2791357
+ 8: 00007FF7CA9F1460 v8::base::AddressSpaceReservation::AddressSpaceReservation+312544
+ 9: 00007FF7CAA75139 v8::Unlocker::~Unlocker+9273
+10: 00007FF7CA5EAEB8 v8::String::Utf8Value::~Utf8Value+142680
+11: 00000245FF53733A 

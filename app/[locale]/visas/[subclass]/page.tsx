@@ -895,6 +895,9 @@ type PageProps = {
 
 export default async function VisaDetailsPage({ params }: PageProps) {
   const { locale, subclass } = await params;
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   const result = await getVisaDetails(subclass);
   if (!result) notFound();
@@ -913,37 +916,37 @@ export default async function VisaDetailsPage({ params }: PageProps) {
 
   const sections = [
     {
-      title: "Key requirements",
+      title: tx("\u5173\u952e\u8981\u6c42", "Temel gereksinimler", "Key requirements"),
       content: <StringList items={structured?.key_requirements} />,
     },
     {
-      title: "Documents required",
+      title: tx("\u6240\u9700\u6587\u4ef6", "Gerekli belgeler", "Documents required"),
       content: <StringList items={structured?.documents_required} />,
     },
     {
-      title: "Application steps",
+      title: tx("\u7533\u8bf7\u6b65\u9aa4", "Ba\u015fvuru ad\u0131mlar\u0131", "Application steps"),
       content: <NumberedList items={structured?.application_steps} />,
     },
     {
-      title: "Visa conditions",
+      title: tx("\u7b7e\u8bc1\u6761\u4ef6", "Vize ko\u015fullar\u0131", "Visa conditions"),
       content: <StringList items={structured?.visa_conditions} />,
     },
     {
-      title: "Risk flags",
+      title: tx("\u98ce\u9669\u6807\u8bc6", "Risk bayraklar\u0131", "Risk flags"),
       content: <RiskList items={structured?.risks} />,
     },
     {
-      title: "English language requirements",
+      title: tx("\u82f1\u8bed\u8981\u6c42", "\u0130ngilizce dil gereksinimleri", "English language requirements"),
       content: <EnglishRequirementsSection data={structured?.english_requirements} />,
     },
     {
-      title: "Financial requirements",
+      title: tx("\u8d22\u52a1\u8981\u6c42", "Mali gereksinimler", "Financial requirements"),
       content: <FinancialRequirementsSection data={structured?.financial_requirements} />,
     },
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "eligibility" in structured.raw_json
       ? [
           {
-            title: "Eligibility",
+            title: tx("\u8d44\u683c\u6761\u4ef6", "Uygunluk", "Eligibility"),
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).eligibility}
@@ -955,7 +958,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "occupation_requirements" in structured.raw_json
       ? [
           {
-            title: "Occupation requirements",
+            title: tx("\u804c\u4e1a\u8981\u6c42", "Meslek gereksinimleri", "Occupation requirements"),
             content: <OccupationRequirementsSection data={(structured.raw_json as Record<string, unknown>).occupation_requirements} />,
           },
         ]
@@ -963,7 +966,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "points_test_rules" in structured.raw_json
       ? [
           {
-            title: "Points test rules",
+            title: tx("\u79ef\u5206\u6d4b\u8bd5\u89c4\u5219", "Puan testi kurallar\u0131", "Points test rules"),
             content: <PointsTestRulesSection data={(structured.raw_json as Record<string, unknown>).points_test_rules} />,
           },
         ]
@@ -971,7 +974,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "regional_requirements" in structured.raw_json
       ? [
           {
-            title: "Regional requirements",
+            title: tx("\u5730\u533a\u8981\u6c42", "B\u00f6lgsel gereksinimler", "Regional requirements"),
             content: (
               <RegionalRequirementsSection
                 data={(structured.raw_json as Record<string, unknown>).regional_requirements}
@@ -983,7 +986,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "nomination_or_sponsorship" in structured.raw_json
       ? [
           {
-            title: "Nomination or sponsorship",
+            title: tx("\u63d0\u540d\u6216\u62c5\u4fdd", "Adayl\u0131k veya sponsorluk", "Nomination or sponsorship"),
             content: (
               <NominationOrSponsorshipSection
                 data={(structured.raw_json as Record<string, unknown>).nomination_or_sponsorship}
@@ -995,7 +998,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "relationship_requirements" in structured.raw_json
       ? [
           {
-            title: "Relationship requirements",
+            title: tx("\u5173\u7cfb\u8981\u6c42", "\u0130li\u015fki gereksinimleri", "Relationship requirements"),
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).relationship_requirements}
@@ -1007,7 +1010,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "pathway" in structured.raw_json
       ? [
           {
-            title: "Pathway",
+            title: tx("\u8def\u5f84", "Yol", "Pathway"),
             content: <PathwaySection data={(structured.raw_json as Record<string, unknown>).pathway} />,
           },
         ]
@@ -1015,7 +1018,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "permanent_stage_801" in structured.raw_json
       ? [
           {
-            title: "Permanent stage 801",
+            title: tx("\u6c38\u5c45\u9636\u6bb5 801", "Kal\u0131c\u0131 a\u015fama 801", "Permanent stage 801"),
             content: (
               <StructuredJsonSection
                 data={omitStructuredKeys(
@@ -1030,7 +1033,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "sponsor_requirements" in structured.raw_json
       ? [
           {
-            title: "Sponsor requirements",
+            title: tx("\u62c5\u4fdd\u4eba\u8981\u6c42", "Sponsor gereksinimleri", "Sponsor requirements"),
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).sponsor_requirements}
@@ -1047,7 +1050,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
       ?.sponsor_801_requirements
       ? [
           {
-            title: "Sponsor 801 requirements",
+            title: tx("801 \u62c5\u4fdd\u4eba\u8981\u6c42", "Sponsor 801 gereksinimleri", "Sponsor 801 requirements"),
             content: (
               <StructuredJsonSection
                 data={
@@ -1062,7 +1065,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "family_members" in structured.raw_json
       ? [
           {
-            title: "Family members",
+            title: tx("\u5bb6\u5ead\u6210\u5458", "Aile \u00fcyeleri", "Family members"),
             content: (
               <StructuredJsonSection data={(structured.raw_json as Record<string, unknown>).family_members} />
             ),
@@ -1072,7 +1075,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "domestic_and_family_violence" in structured.raw_json
       ? [
           {
-            title: "Domestic and family violence",
+            title: tx("\u5bb6\u5ead\u66b4\u529b", "Aile i\u00e7i \u015fiddet", "Domestic and family violence"),
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).domestic_and_family_violence}
@@ -1084,7 +1087,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "faq_summary" in structured.raw_json
       ? [
           {
-            title: "FAQ summary",
+            title: tx("\u5e38\u89c1\u95ee\u9898\u6458\u8981", "SSS \u00f6zeti", "FAQ summary"),
             content: <StructuredJsonSection data={(structured.raw_json as Record<string, unknown>).faq_summary} />,
           },
         ]
@@ -1098,11 +1101,11 @@ export default async function VisaDetailsPage({ params }: PageProps) {
         {/* breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground">
           <Link href={`/${locale}`} className="hover:text-foreground">
-            Home
+            {tx("主页", "Ana sayfa", "Home")}
           </Link>
           <span>/</span>
           <Link href={`/${locale}/checker`} className="hover:text-foreground">
-            Visa Checker
+            {tx("签证评估", "Vize Denetleyici", "Visa Checker")}
           </Link>
           <span>/</span>
           <span className="text-foreground">Subclass {visa.subclass}</span>
@@ -1124,15 +1127,15 @@ export default async function VisaDetailsPage({ params }: PageProps) {
         {/* meta grid */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Overview</CardTitle>
+            <CardTitle className="text-base">{tx("概览", "Genel Bakış", "Overview")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              <MetaItem label="Stay period" value={visa.stay_period} />
-              <MetaItem label="Cost" value={visa.cost} />
-              <MetaItem label="Work rights" value={visa.work_rights} />
+              <MetaItem label={tx("停留期限", "Kalış süresi", "Stay period")} value={visa.stay_period} />
+              <MetaItem label={tx("费用", "Ücret", "Cost")} value={visa.cost} />
+              <MetaItem label={tx("工作权利", "Çalışma hakkı", "Work rights")} value={visa.work_rights} />
               <MetaItem
-                label="Last checked"
+                label={tx("最近更新", "Son kontrol", "Last checked")}
                 value={
                   visa.last_checked
                     ? new Date(visa.last_checked).toLocaleDateString("en-AU", {
@@ -1146,7 +1149,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
               {visa.source_url && (
                 <div className="space-y-1 sm:col-span-2">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Official source
+                    {tx("官方来源", "Resmi kaynak", "Official source")}
                   </p>
                   <a
                     href={visa.source_url}
@@ -1179,7 +1182,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
         {snapshots.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Source snapshots</CardTitle>
+              <CardTitle className="text-base">{tx("来源快照", "Kaynak anlık görüntüleri", "Source snapshots")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -1229,9 +1232,11 @@ export default async function VisaDetailsPage({ params }: PageProps) {
           <CardContent className="flex gap-4 p-5">
             <ShieldCheck className="mt-1 size-5 shrink-0 text-primary" />
             <p className="text-sm leading-relaxed text-muted-foreground">
-              This page provides general information only. It does not provide migration advice or
-              legal advice. For personalised advice, speak with a registered migration agent or
-              Australian legal practitioner.
+              {tx(
+                "本页仅提供一般信息，不提供移民建议或法律建议。如需个人化建议，请和注册移民顾问或澳大利亚法律从业者联系。",
+                "Bu sayfa yalnızca genel bilgi sunmaktadır. Göç veya hukuki tavsiye vermez. Kişisel tavsiye için kayıtlı bir göç danışmanı ile görüşün.",
+                "This page provides general information only. It does not provide migration advice or legal advice. For personalised advice, speak with a registered migration agent or Australian legal practitioner."
+              )}
             </p>
           </CardContent>
         </Card>
@@ -1239,13 +1244,13 @@ export default async function VisaDetailsPage({ params }: PageProps) {
         {/* navigation */}
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button asChild variant="outline">
-            <Link href={`/${locale}`}>Home</Link>
+            <Link href={`/${locale}`}>{tx("主页", "Ana sayfa", "Home")}</Link>
           </Button>
           <Button asChild>
-            <Link href={`/${locale}/checker`}>Check your pathway</Link>
+            <Link href={`/${locale}/checker`}>{tx("检查您的路径", "Yolunuzu kontrol edin", "Check your pathway")}</Link>
           </Button>
           <Button asChild variant="secondary">
-            <Link href={`/${locale}/agent-referral`}>Speak with a registered migration agent</Link>
+            <Link href={`/${locale}/agent-referral`}>{tx("和注册移民顾问交流", "Kayıtlı bir göç danışmanıyla konuşun", "Speak with a registered migration agent")}</Link>
           </Button>
         </div>
 

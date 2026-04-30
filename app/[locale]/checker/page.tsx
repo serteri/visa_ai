@@ -202,31 +202,43 @@ export default function CheckerPage() {
 
   const err = showErrors ? stepErrors : {};
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
   const quickCheckVisible = showQuickCheck || searchParams.get("quick") === "1";
   const choiceCopy = {
-    quickTitle: isTr ? "Hızlı Yol Kontrolü" : "Quick Pathway Check",
-    quickLabel: isTr ? "Ücretsiz · 2 dakika" : "Free · 2 minutes",
-    quickDescription: isTr
-      ? "Yalnızca olası yol alanlarını gösteren kısa bir anket."
-      : "A short questionnaire that shows possible pathway areas only.",
-    quickBestFor: isTr ? "hızlı yön bulma" : "quick orientation",
-    quickButton: isTr ? "Hızlı kontrolü başlat" : "Start quick check",
-    fullTitle: isTr ? "Tam Vize Hazırlık Raporu" : "Full Visa Readiness Report",
-    fullLabel: isTr
-      ? "Erken erişim · Erken erişimde ücretsiz"
-      : "Early access · Free during early access",
-    fullDescription: isTr
-      ? "Vize yolu karşılaştırması, kanıt hazırlığı, ilgili olduğunda puan senaryoları, tahmini maliyet yol haritası, geçiş yolları ve PDF indirme içeren yapılandırılmış bir rapor oluşturun."
-      : "Generate a structured report with pathway comparison, evidence readiness, points scenarios where relevant, financial roadmap, progression pathways, and PDF download.",
-    fullBestFor: isTr ? "daha derin hazırlık incelemesi" : "deeper preparation review",
-    fullButton: isTr ? "Hazırlık raporunuzu oluşturun" : "Generate your readiness report",
-    fullTrustNote: isTr
-      ? "Erken erişim döneminde ödeme gerekmez."
-      : "No payment required during early access.",
-    bestFor: isTr ? "En uygun:" : "Best for:",
-    compliance: isTr
-      ? "Bu araç yalnızca genel bilgiler sağlar."
-      : "This tool provides general information only.",
+    quickTitle: tx("Quick Pathway Check", "Hızlı Yol Kontrolü", "快速路径评估"),
+    quickLabel: tx("Free · 2 minutes", "Ücretsiz · 2 dakika", "免费 · 2 分钟"),
+    quickDescription: tx(
+      "A short questionnaire that shows possible pathway areas only.",
+      "Yalnızca olası yol alanlarını gösteren kısa bir anket.",
+      "简短问卷，仅显示可能的签证路径方向。"
+    ),
+    quickBestFor: tx("quick orientation", "hızlı yön bulma", "快速定向"),
+    quickButton: tx("Start quick check", "Hızlı kontrolü başlat", "开始快速评估"),
+    fullTitle: tx("Full Visa Readiness Report", "Tam Vize Hazırlık Raporu", "完整签证准备度报告"),
+    fullLabel: tx(
+      "Early access · Free during early access",
+      "Erken erişim · Erken erişimde ücretsiz",
+      "抢先体验 · 当前免费"
+    ),
+    fullDescription: tx(
+      "Generate a structured report with pathway comparison, evidence readiness, points scenarios where relevant, financial roadmap, progression pathways, and PDF download.",
+      "Vize yolu karşılaştırması, kanıt hazırlığı, ilgili olduğunda puan senaryoları, tahmini maliyet yol haritası, geçiş yolları ve PDF indirme içeren yapılandırılmış bir rapor oluşturun.",
+      "生成包含路径对比、材料准备度、相关加分场景、费用路线图、过渡路径及 PDF 下载的结构化报告。"
+    ),
+    fullBestFor: tx("deeper preparation review", "daha derin hazırlık incelemesi", "深度准备评估"),
+    fullButton: tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告"),
+    fullTrustNote: tx(
+      "No payment required during early access.",
+      "Erken erişim döneminde ödeme gerekmez.",
+      "抢先体验期间无需付费。"
+    ),
+    bestFor: tx("Best for:", "En uygun:", "最适合："),
+    compliance: tx(
+      "This tool provides general information only.",
+      "Bu araç yalnızca genel bilgiler sağlar.",
+      "本工具仅提供一般信息。"
+    ),
   };
 
   return (

@@ -1,0 +1,23 @@
+
+> visa_ai@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.21.144.1:3000
+- Environments: .env.local, .env
+✓ Ready in 389ms
+
+ GET /en/full-check 200 in 1032ms (next.js: 591ms, application-code: 441ms)
+ GET /en/full-check 200 in 159ms (next.js: 27ms, application-code: 132ms)
+ POST /en/full-check 200 in 2.4s (next.js: 25ms, application-code: 2.4s)
+ POST /en/full-check 200 in 956ms (next.js: 16ms, application-code: 940ms)
+ POST /en/full-check 200 in 1131ms (next.js: 70ms, application-code: 1061ms)
+ POST /en/full-check 200 in 1185ms (next.js: 76ms, application-code: 1110ms)
+ GET /en/full-check 200 in 126ms (next.js: 19ms, application-code: 107ms)
+ POST /en/full-check 200 in 981ms (next.js: 13ms, application-code: 968ms)
+ GET /tr/full-check 200 in 117ms (next.js: 14ms, application-code: 103ms)
+ POST /tr/full-check 200 in 970ms (next.js: 17ms, application-code: 953ms)
+ POST /tr/full-check 200 in 3.8s (next.js: 17ms, application-code: 3.8s)
+ POST /tr/full-check 200 in 1045ms (next.js: 13ms, application-code: 1032ms)
+[?25h

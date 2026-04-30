@@ -1,0 +1,39 @@
+
+> visa_ai@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.21.144.1:3000
+- Environments: .env.local, .env
+✓ Ready in 333ms
+
+ GET /en/visas/500 200 in 1425ms (next.js: 531ms, application-code: 893ms)
+ GET /en 200 in 391ms (next.js: 316ms, application-code: 75ms)
+ GET /en/visas/500 200 in 381ms (next.js: 24ms, application-code: 357ms)
+ GET /en/visas/485 200 in 417ms (next.js: 17ms, application-code: 401ms)
+ GET /en/visas/482 200 in 372ms (next.js: 16ms, application-code: 356ms)
+ GET /en/visas/189 200 in 235ms (next.js: 15ms, application-code: 220ms)
+ GET /en/visas/190 200 in 307ms (next.js: 13ms, application-code: 295ms)
+ GET /en/visas/491 200 in 316ms (next.js: 11ms, application-code: 306ms)
+ GET /en/visas/820_801 200 in 458ms (next.js: 16ms, application-code: 442ms)
+ GET /tr/visas/500 200 in 229ms (next.js: 12ms, application-code: 217ms)
+ GET /tr/visas/485 200 in 252ms (next.js: 13ms, application-code: 239ms)
+ GET /tr/visas/482 200 in 268ms (next.js: 14ms, application-code: 255ms)
+ GET /tr/visas/189 200 in 208ms (next.js: 12ms, application-code: 196ms)
+ GET /tr/visas/190 200 in 250ms (next.js: 1875µs, application-code: 249ms)
+ GET /tr/visas/491 200 in 238ms (next.js: 14ms, application-code: 224ms)
+ GET /tr/visas/820_801 200 in 428ms (next.js: 12ms, application-code: 416ms)
+ GET /en/checker 200 in 394ms (next.js: 343ms, application-code: 52ms)
+ GET /en/checker?quick=1 200 in 68ms (next.js: 14ms, application-code: 54ms)
+ GET /en/checker?quick=1 200 in 97ms (next.js: 14ms, application-code: 83ms)
+ GET /en/checker?quick=1 200 in 83ms (next.js: 22ms, application-code: 61ms)
+ GET /en/checker?quick=1 200 in 165ms (next.js: 68ms, application-code: 97ms)
+✓ Compiled in 34.6s
+ GET /en/checker?quick=1 200 in 101ms (next.js: 52ms, application-code: 48ms)
+○ Compiling proxy ...
+ GET /en/checker?quick=1 200 in 182ms (next.js: 61ms, application-code: 121ms)
+ GET /en/checker?quick=1 200 in 78ms (next.js: 1859µs, application-code: 77ms)
+ GET /en/checker?quick=1 200 in 52ms (next.js: 3ms, application-code: 49ms)
+ GET /en/checker?quick=1 200 in 52ms (next.js: 21ms, application-code: 31ms)
+[?25h
