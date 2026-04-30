@@ -3,22 +3,28 @@ import { notoSansRegularBase64 } from "./pdf-font";
 import type { ReadinessReport } from "./types";
 
 const COLORS = {
-  primary: { r: 59, g: 130, b: 246 }, // blue-500
-  text: { r: 24, g: 24, b: 24 }, // black
-  lightText: { r: 107, g: 114, b: 128 }, // gray-500
-  border: { r: 229, g: 231, b: 235 }, // gray-200
-  riskHigh: { r: 220, g: 38, b: 38 }, // red-600
-  riskMedium: { r: 217, g: 119, b: 6 }, // amber-600
-  riskLow: { r: 34, g: 197, b: 94 }, // green-600
+  primary: { r: 22, g: 78, b: 99 },
+  accent: { r: 8, g: 145, b: 178 },
+  text: { r: 24, g: 24, b: 24 },
+  lightText: { r: 107, g: 114, b: 128 },
+  border: { r: 229, g: 231, b: 235 },
+  tableHeader: { r: 243, g: 244, b: 246 },
+  zebra: { r: 249, g: 250, b: 251 },
+  riskHigh: { r: 220, g: 38, b: 38 },
+  riskMedium: { r: 217, g: 119, b: 6 },
+  riskLow: { r: 34, g: 197, b: 94 },
 };
 
 const FONTS = {
   title: 24,
-  heading: 14,
+  heading: 15,
   subheading: 11,
   body: 10,
   small: 8,
 };
+
+const GLOBAL_FOOTER_TEXT =
+  "Disclaimer: This is an automated data analysis report provided for general information only. It is NOT migration advice. Final outcomes depend on the Department of Home Affairs. Consult a MARA agent for legal strategy.";
 
 const PDF_FONT_NAME = "NotoSans";
 const PDF_FONT_FILE = "NotoSans-Regular.ttf";
@@ -181,13 +187,116 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
 
   let yPosition = 20;
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 15;
   const contentWidth = pageWidth - margin * 2;
   const lineHeight = 5;
+  const contentBottom = 267;
+
+  function ensurePageSpace(heightNeeded = 10) {
+    if (yPosition + heightNeeded > contentBottom) {
+      doc.addPage();
+      yPosition = 20;
+    }
+  }
 
   // Helper functions
   function setBaseFont() {
     doc.setFont(PDF_FONT_NAME, "normal");
+  }
+
+  function setBoldFont() {
+    doc.setFont(PDF_FONT_NAME, "normal");
+  }
+
+  function drawSeparator() {
+    ensurePageSpace(6);
+    doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+    doc.setLineWidth(0.35);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 5;
+  }
+
+  function addSectionHeading(symbol: string, heading: string) {
+    drawSeparator();
+    ensurePageSpace(10);
+    setBoldFont();
+    doc.setFontSize(FONTS.heading);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(`${symbol} ${heading}`, margin, yPosition);
+    yPosition += 8;
+  }
+
+  function addGlobalFooters() {
+    const totalPages = doc.getNumberOfPages();
+    const footerWidth = pageWidth - margin * 2;
+
+    for (let page = 1; page <= totalPages; page += 1) {
+      doc.setPage(page);
+      setBaseFont();
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.25);
+      doc.line(margin, pageHeight - 14, pageWidth - margin, pageHeight - 14);
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      const footerLines = doc.splitTextToSize(GLOBAL_FOOTER_TEXT, footerWidth);
+      doc.text(footerLines, margin, pageHeight - 10);
+      doc.text(`${page}/${totalPages}`, pageWidth - margin, pageHeight - 4, { align: "right" });
+    }
+  }
+
+  function addCoverPage() {
+    const reportDate = new Date().toLocaleDateString(locale);
+    const subjectName = userInputSummary.name || "Applicant";
+    const safeName = subjectName.replace(/[^A-Za-z0-9]/g, "").slice(0, 10).toUpperCase() || "CLIENT";
+    const reportId = `LVA-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${safeName}`;
+
+    doc.setFillColor(250, 250, 250);
+    doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.rect(0, 0, pageWidth, 36, "F");
+
+    setBoldFont();
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.text("CONFIDENTIAL READINESS ASSESSMENT", margin, 22);
+
+    setBoldFont();
+    doc.setFontSize(26);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.text(text.title, margin, 68);
+
+    doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+    doc.setLineWidth(0.4);
+    doc.line(margin, 76, pageWidth - margin, 76);
+
+    doc.setFontSize(12);
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    doc.text("Subject", margin, 92);
+    doc.text("Report Date", margin, 104);
+    doc.text("Report ID", margin, 116);
+
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.text(subjectName, margin + 34, 92);
+    doc.text(reportDate, margin + 34, 104);
+    doc.text(reportId, margin + 34, 116);
+
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    doc.setFontSize(10);
+    doc.text(
+      "Prepared as an automated analytical briefing for general information purposes.",
+      margin,
+      pageHeight - 26
+    );
+    doc.text(
+      "Compliance scope: general information, no legal strategy or migration advice.",
+      margin,
+      pageHeight - 20
+    );
+
+    doc.addPage();
+    yPosition = 20;
   }
 
   function addTitle(title: string) {
@@ -199,15 +308,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   }
 
   function addHeading(heading: string) {
-    if (yPosition > 260) {
-      doc.addPage();
-      yPosition = 20;
-    }
-    setBaseFont();
-    doc.setFontSize(FONTS.heading);
-    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.text(heading, margin, yPosition);
-    yPosition += 10;
+    addSectionHeading("[#]", heading);
   }
 
   function addBody(text: string, indent = 0) {
@@ -217,10 +318,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     const x = margin + indent;
     const lines = doc.splitTextToSize(text, contentWidth - indent);
     lines.forEach((line: string) => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
+      ensurePageSpace(lineHeight + 1);
       setBaseFont();
       doc.text(line, x, yPosition);
       yPosition += lineHeight;
@@ -234,10 +332,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     const x = margin + indent;
     const lines = doc.splitTextToSize(text, contentWidth - indent);
     lines.forEach((line: string) => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
+      ensurePageSpace(lineHeight + 1);
       setBaseFont();
       doc.text(line, x, yPosition);
       yPosition += lineHeight;
@@ -246,24 +341,120 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
 
   function addBulletPoints(items: string[]) {
     items.forEach((item) => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
+      ensurePageSpace(lineHeight + 2);
       setBaseFont();
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
       const lines = doc.splitTextToSize(item, contentWidth - 8);
-      doc.text("•", margin + 2, yPosition);
+      doc.text("-", margin + 2, yPosition);
       lines.forEach((line: string, index: number) => {
-        if (yPosition > 270) {
-          doc.addPage();
-          yPosition = 20;
-        }
+        ensurePageSpace(lineHeight + 1);
         setBaseFont();
         doc.text(line, margin + 8, yPosition);
         yPosition += lineHeight;
       });
+    });
+  }
+
+  function drawTable(
+    headers: string[],
+    rows: string[][],
+    colRatios: number[]
+  ) {
+    const tableWidth = contentWidth;
+    const colWidths = colRatios.map((ratio) => tableWidth * ratio);
+    const rowHeight = 7;
+
+    ensurePageSpace(14);
+    doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
+    doc.rect(margin, yPosition, tableWidth, rowHeight, "F");
+    doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+    doc.setLineWidth(0.2);
+    doc.line(margin, yPosition + rowHeight, margin + tableWidth, yPosition + rowHeight);
+
+    let cursorX = margin + 1.5;
+    setBoldFont();
+    doc.setFontSize(FONTS.body);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    headers.forEach((h, i) => {
+      doc.text(h, cursorX, yPosition + 4.7);
+      cursorX += colWidths[i];
+    });
+    yPosition += rowHeight;
+
+    rows.forEach((row, rowIndex) => {
+      ensurePageSpace(rowHeight + 1);
+      if (rowIndex % 2 === 1) {
+        doc.setFillColor(COLORS.zebra.r, COLORS.zebra.g, COLORS.zebra.b);
+        doc.rect(margin, yPosition, tableWidth, rowHeight, "F");
+      }
+
+      let x = margin + 1.5;
+      setBaseFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      row.forEach((cell, i) => {
+        const clipped = cell.length > 44 ? `${cell.slice(0, 41)}...` : cell;
+        doc.text(clipped, x, yPosition + 4.7);
+        x += colWidths[i];
+      });
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.line(margin, yPosition + rowHeight, margin + tableWidth, yPosition + rowHeight);
+      yPosition += rowHeight;
+    });
+    yPosition += 3;
+  }
+
+  function drawGanttTimeline() {
+    if (!report.premiumSections?.strategicGanttChart?.steps?.length) return;
+
+    addSectionHeading("[~]", text.strategicGanttChart);
+    addSmallText(`${text.ganttWindow}: ${report.premiumSections.strategicGanttChart.timelineBand}`, 0);
+    yPosition += 2;
+
+    const phases = [
+      { title: "Phase 1: Preparation", steps: report.premiumSections.strategicGanttChart.steps.slice(0, 1) },
+      { title: "Phase 2: Assessment", steps: report.premiumSections.strategicGanttChart.steps.slice(1, 2) },
+      { title: "Phase 3: EOI and Nomination", steps: report.premiumSections.strategicGanttChart.steps.slice(2, 3) },
+      { title: "Phase 4: Lodgement", steps: report.premiumSections.strategicGanttChart.steps.slice(3, 4) },
+    ].filter((phase) => phase.steps.length > 0);
+
+    phases.forEach((phase) => {
+      ensurePageSpace(16);
+      setBoldFont();
+      doc.setFontSize(FONTS.subheading);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(phase.title, margin, yPosition);
+      yPosition += 6;
+
+      const lineX = margin + 4;
+      const blockX = margin + 10;
+
+      phase.steps.forEach((step) => {
+        ensurePageSpace(16);
+        doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+        doc.setLineWidth(0.5);
+        doc.line(lineX, yPosition - 1.5, lineX, yPosition + 10.5);
+        doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+        doc.rect(lineX - 1.3, yPosition + 2.5, 2.6, 2.6, "F");
+
+        doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(blockX, yPosition, contentWidth - 12, 12, 1.5, 1.5, "FD");
+
+        setBoldFont();
+        doc.setFontSize(FONTS.body);
+        doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+        doc.text(`${text.ganttStep} ${step.step}: ${step.title}`, blockX + 2, yPosition + 4.5);
+
+        setBaseFont();
+        doc.setFontSize(FONTS.small);
+        doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+        doc.text(`${text.ganttWindow}: ${step.window}`, blockX + 2, yPosition + 8.3);
+
+        yPosition += 15;
+      });
+      yPosition += 2;
     });
   }
 
@@ -306,6 +497,9 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     if (status === "typically_required") return "Typically required";
     return "Unclear";
   }
+
+  // Cover page
+  addCoverPage();
 
   // Title
   addTitle(text.title);
@@ -439,12 +633,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   }
 
   if (report.financialRoadmap.length > 0) {
-    addHeading(text.financialRoadmap);
-    report.financialRoadmap.forEach((item) => {
-      addBody(`${item.category}: ${item.amountLabel}`);
-      addSmallText(item.explanation, 4);
-    });
-    yPosition += 3;
+    addSectionHeading("[$]", text.financialRoadmap);
+    drawTable(
+      [locale === "tr" ? "Kategori" : "Category", locale === "tr" ? "Tutar" : "Amount", locale === "tr" ? "Not" : "Note"],
+      report.financialRoadmap.map((item) => [item.category, item.amountLabel, item.explanation]),
+      [0.28, 0.2, 0.52]
+    );
   }
 
   if (report.progressionPathways.length > 0) {
@@ -472,53 +666,42 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   }
 
   if (report.premiumSections) {
-    addHeading(text.premiumSections);
+    addSectionHeading("[*]", text.premiumSections);
 
     addBody(text.invitationTrends);
     addSmallText(
       `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
-      4
+      2
     );
-    report.premiumSections.historicalInvitationTrends.estimates.forEach((item) => {
-      addSmallText(
-        `${item.subclass}: ${item.estimatedPoints} pts | ${item.estimatedWait}`,
-        8
-      );
-    });
-    addSmallText(report.premiumSections.historicalInvitationTrends.note, 4);
-    yPosition += 3;
+    drawTable(
+      [locale === "tr" ? "Subclass" : "Subclass", locale === "tr" ? "Tahmini Puan" : "Estimated Points", locale === "tr" ? "Tahmini Bekleme" : "Estimated Wait"],
+      report.premiumSections.historicalInvitationTrends.estimates.map((item) => [
+        item.subclass,
+        `${item.estimatedPoints}`,
+        item.estimatedWait,
+      ]),
+      [0.2, 0.3, 0.5]
+    );
+    addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
 
     addBody(text.livingCostProjection);
     addSmallText(
       `${report.premiumSections.livingCostProjection.city} - ${report.premiumSections.livingCostProjection.familyProfile} (${report.premiumSections.livingCostProjection.currency})`,
-      4
+      2
     );
-    addSmallText(
-      `${text.monthlyRent}: ${report.premiumSections.livingCostProjection.monthly.rent}`,
-      8
+    drawTable(
+      [text.monthlyRent, text.monthlyGroceries, text.monthlyTransport, text.monthlyTotal],
+      [[
+        `${report.premiumSections.livingCostProjection.monthly.rent}`,
+        `${report.premiumSections.livingCostProjection.monthly.groceries}`,
+        `${report.premiumSections.livingCostProjection.monthly.transport}`,
+        `${report.premiumSections.livingCostProjection.monthly.total}`,
+      ]],
+      [0.25, 0.25, 0.25, 0.25]
     );
-    addSmallText(
-      `${text.monthlyGroceries}: ${report.premiumSections.livingCostProjection.monthly.groceries}`,
-      8
-    );
-    addSmallText(
-      `${text.monthlyTransport}: ${report.premiumSections.livingCostProjection.monthly.transport}`,
-      8
-    );
-    addSmallText(
-      `${text.monthlyTotal}: ${report.premiumSections.livingCostProjection.monthly.total}`,
-      8
-    );
-    addSmallText(report.premiumSections.livingCostProjection.note, 4);
-    yPosition += 3;
+    addSmallText(report.premiumSections.livingCostProjection.note, 2);
 
-    addBody(text.strategicGanttChart);
-    addSmallText(`${text.ganttWindow}: ${report.premiumSections.strategicGanttChart.timelineBand}`, 4);
-    report.premiumSections.strategicGanttChart.steps.forEach((step) => {
-      addSmallText(`${text.ganttStep} ${step.step}: ${step.title} (${step.window})`, 8);
-      addSmallText(step.description, 12);
-    });
-    yPosition += 3;
+    drawGanttTimeline();
   }
 
   // Risk indicators
@@ -564,6 +747,9 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   // Disclaimer
   addHeading(text.disclaimer);
   addSmallText(report.disclaimer, 0);
+
+  // Global footer on every page
+  addGlobalFooters();
 
   // Generate filename
   const timestamp = new Date().toISOString().split("T")[0];
