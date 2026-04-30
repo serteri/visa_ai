@@ -25,6 +25,7 @@ const goldLeadInput: ReadinessInput = {
   preferredCity: "Sydney",
 };
 
+async function run() {
 const readiness = runReadinessEngine(goldLeadInput);
 
 const points = calculateVisaPoints({
@@ -100,7 +101,7 @@ console.log(JSON.stringify({
 }, null, 2));
 
 // Trigger PDF generation
-generateReadinessPDF({
+await generateReadinessPDF({
   report: readiness,
   locale: "en",
   userInputSummary: {
@@ -118,3 +119,9 @@ generateReadinessPDF({
 });
 
 console.log("PDF generation invoked. Check project root for visa-readiness-report-<date>.pdf");
+}
+
+run().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

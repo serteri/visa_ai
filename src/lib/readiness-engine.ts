@@ -3,7 +3,7 @@ import documentRequirementsData from "@/src/data/document-requirements.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateVisaPoints, type AgeRange, type EnglishLevel } from "@/lib/readiness/visa-points-calculator";
-import { localizeText, t3 } from "@/src/lib/readiness/localization";
+import { localizeOccupationWarning, localizeText, t3 } from "@/src/lib/readiness/localization";
 import type {
   DocumentCategory,
   FrictionAnalysisItem,
@@ -27,6 +27,7 @@ type OccupationRecord = {
   anzsco_code: string;
   occupation_name: string;
   authority: string;
+  critical_warning?: string;
 };
 
 type RequirementCategory = {
@@ -352,6 +353,11 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   if (["189", "190", "491"].includes(subclassKey) && occupation?.authority === "ACS" && (input.offshoreExperienceYears ?? 0) < 2) {
     frictionScore = "EXTREME";
     reality.push(t3(locale, "ACS experience deduction risk is high because declared experience is below 2 years.", "Beyan edilen deneyim 2 yilin altinda oldugu icin ACS deneyim kesintisi riski yuksektir.", "因申报经验不足 2 年，ACS 经验扣减风险较高。"));
+  }
+
+  const localizedOccupationWarning = localizeOccupationWarning(locale, occupation?.critical_warning);
+  if (localizedOccupationWarning) {
+    reality.push(localizedOccupationWarning);
   }
 
   if (subclassKey === "820/801") {

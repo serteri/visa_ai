@@ -1,6 +1,6 @@
 import livingCostsData from "@/src/data/living-costs.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
-import { localizeText, localizeWaitWindow } from "@/src/lib/readiness/localization";
+import { localizeText, localizeTrendDescription, localizeWaitWindow } from "@/src/lib/readiness/localization";
 import type { Locale } from "@/lib/readiness/types";
 
 export type FamilyProfile = "Single" | "Couple" | "Family of 4";
@@ -78,7 +78,10 @@ type LivingCostDataset = {
   fallback_profile: FamilyProfile;
 };
 
-const TREND_DATA = visaTrendsData as { occupation_trends: TrendRecord[] };
+const TREND_DATA = visaTrendsData as {
+  methodology_note?: string;
+  occupation_trends: TrendRecord[];
+};
 const LIVING_DATA = livingCostsData as LivingCostDataset;
 
 const SUPPORTED_CITIES = ["Sydney", "Melbourne", "Brisbane", "Adelaide", "Perth"];
@@ -269,6 +272,7 @@ export function generatePremiumSections(input: {
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
   const gantt = buildGanttByTimeline(input.timeline);
+  const methodologyNote = localizeTrendDescription(locale, TREND_DATA.methodology_note);
 
   return {
     historicalInvitationTrends: {
@@ -279,10 +283,13 @@ export function generatePremiumSections(input: {
         estimatedPoints: e.last_invited_point ?? e.estimated_points,
         estimatedWait: localizeWaitWindow(locale, e.estimated_wait),
       })),
-      note: localizeText(
-        locale,
-        "Trend estimates are analytical planning references only and do not guarantee invitation outcomes."
-      ),
+      note: [
+        localizeText(
+          locale,
+          "Trend estimates are analytical planning references only and do not guarantee invitation outcomes."
+        ),
+        methodologyNote,
+      ].filter(Boolean).join(" "),
     },
     livingCostProjection: {
       city,

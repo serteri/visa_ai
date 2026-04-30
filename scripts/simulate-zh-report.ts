@@ -1,7 +1,7 @@
 import { runReadinessEngine } from "@/src/lib/readiness-engine";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 
-function run() {
+async function run() {
   const report = runReadinessEngine({
     locale: "zh-Hans",
     mainGoal: "提升技术移民竞争力并尽快递交",
@@ -22,7 +22,7 @@ function run() {
     regionalWilling: true,
   });
 
-  const pdfBytes = generateReadinessPDF({
+  const pdfBytes = await generateReadinessPDF({
     report,
     locale: "zh-Hans",
     saveToFile: false,
@@ -71,4 +71,7 @@ function run() {
   }
 }
 
-run();
+run().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

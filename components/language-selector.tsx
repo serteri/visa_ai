@@ -38,7 +38,7 @@ export function LanguageSelector({ currentLocale }: LanguageSelectorProps) {
         className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring/60"
       >
         <Globe className="size-4" />
-        <span>{currentLanguage?.localLabel}</span>
+        <span>{currentLanguage ? `${currentLanguage.flag} ${currentLanguage.localLabel}` : currentLocale}</span>
         <ChevronDown className={cn("size-4 transition-transform", isOpen && "rotate-180")} />
       </button>
 
@@ -65,7 +65,7 @@ export function LanguageSelector({ currentLocale }: LanguageSelectorProps) {
                 title={!lang.enabled ? "This language will be available soon" : undefined}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">{lang.localLabel}</span>
+                  <span className="font-medium">{lang.flag} {lang.localLabel}</span>
                   {!lang.enabled && (
                     <span className="text-xs text-muted-foreground">(Coming Soon)</span>
                   )}

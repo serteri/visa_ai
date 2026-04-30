@@ -25,13 +25,17 @@ const FONTS = {
   small: 8,
 };
 
-const GLOBAL_FOOTER_TEXT =
-  "Disclaimer: This is an automated data analysis report provided for general information only. It is NOT migration advice. Final outcomes depend on the Department of Home Affairs. Consult a MARA agent for legal strategy.";
+const GLOBAL_FOOTER_TEXTS = {
+  en: "Disclaimer: This is an automated data analysis report provided for general information only. It is NOT migration advice. Final outcomes depend on the Department of Home Affairs. Consult a MARA agent for legal strategy.",
+  tr: "Uyari: Bu rapor yalnizca genel bilgi amacli otomatik veri analizidir. Gocmenlik danismanligi degildir. Nihai sonuc Department of Home Affairs degerlendirmesine baglidir. Hukuki strateji icin MARA lisansli uzmana danisin.",
+  "zh-Hans": "免责声明：本报告为自动化数据分析，仅供一般信息参考，并非移民法律建议。最终结果取决于澳大利亚内政部评估。法律策略请咨询持牌 MARA 代理。",
+} as const;
 
 const PDF_FONT_NAME = "NotoSans";
 const PDF_FONT_FILE = "NotoSans-Regular.ttf";
 const PDF_CJK_FONT_NAME = "NotoSansSC";
 const PDF_CJK_FONT_FILE = "NotoSansSC-Regular.ttf";
+const PDF_CJK_FONT_PUBLIC_PATH = "/fonts/NotoSansSC-Regular.ttf";
 
 interface PDFGeneratorInput {
   report: ReadinessReport;
@@ -258,10 +262,47 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
   };
 }
 
-export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
+async function toBase64FromArrayBuffer(buffer: ArrayBuffer): Promise<string> {
+  if (typeof window === "undefined") {
+    return Buffer.from(buffer).toString("base64");
+  }
+
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary);
+}
+
+async function loadRuntimeCjkFontBase64(): Promise<string | null> {
+  try {
+    if (typeof window === "undefined") {
+      const { readFile } = await import("node:fs/promises");
+      const path = await import("node:path");
+      const filePath = path.join(process.cwd(), "public", "fonts", "NotoSansSC-Regular.ttf");
+      const fontBuffer = await readFile(filePath);
+      return fontBuffer.toString("base64");
+    }
+
+    const response = await fetch(PDF_CJK_FONT_PUBLIC_PATH);
+    if (!response.ok) return null;
+    const arrayBuffer = await response.arrayBuffer();
+    return await toBase64FromArrayBuffer(arrayBuffer);
+  } catch {
+    return null;
+  }
+}
+
+export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
   const { report, locale, userInputSummary } = input;
   const cjkRequested = locale === "zh-Hans";
-  const cjkFontAvailable = cjkRequested && notoSansSCRegularBase64.length > 0;
+  const runtimeCjkFont = cjkRequested ? await loadRuntimeCjkFontBase64() : null;
+  const embeddedCjkFont = notoSansSCRegularBase64.length > 0 ? notoSansSCRegularBase64 : null;
+  const resolvedCjkFontBase64 = runtimeCjkFont ?? embeddedCjkFont;
+  const cjkFontAvailable = cjkRequested && Boolean(resolvedCjkFontBase64);
   const effectiveLocale = cjkRequested && !cjkFontAvailable ? "en" : locale;
   const text = getLocalizedText(effectiveLocale);
 
@@ -272,8 +313,8 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
   });
   doc.addFileToVFS(PDF_FONT_FILE, notoSansRegularBase64);
   doc.addFont(PDF_FONT_FILE, PDF_FONT_NAME, "normal");
-  if (cjkFontAvailable) {
-    doc.addFileToVFS(PDF_CJK_FONT_FILE, notoSansSCRegularBase64);
+  if (cjkFontAvailable && resolvedCjkFontBase64) {
+    doc.addFileToVFS(PDF_CJK_FONT_FILE, resolvedCjkFontBase64);
     doc.addFont(PDF_CJK_FONT_FILE, PDF_CJK_FONT_NAME, "normal");
   }
   doc.setFont(PDF_FONT_NAME, "normal");
@@ -330,6 +371,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
   function addGlobalFooters() {
     const totalPages = doc.getNumberOfPages();
     const footerWidth = pageWidth - margin * 2;
+    const footerText = GLOBAL_FOOTER_TEXTS[effectiveLocale];
 
     for (let page = 1; page <= totalPages; page += 1) {
       doc.setPage(page);
@@ -339,7 +381,7 @@ export function generateReadinessPDF(input: PDFGeneratorInput): Uint8Array {
       doc.line(margin, pageHeight - 14, pageWidth - margin, pageHeight - 14);
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-      const footerLines = doc.splitTextToSize(GLOBAL_FOOTER_TEXT, footerWidth);
+      const footerLines = doc.splitTextToSize(footerText, footerWidth);
       doc.text(footerLines.map((line: string) => safeText(line)), margin, pageHeight - 10);
       doc.text(`${page}/${totalPages}`, pageWidth - margin, pageHeight - 4, { align: "right" });
     }

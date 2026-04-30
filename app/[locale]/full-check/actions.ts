@@ -555,7 +555,7 @@ export async function unlockPremiumReport(
     console.log(`Simulated PDF email delivery for report ${reportId} to ${email}`);
   } else if (emailEnabled) {
     try {
-      const pdfAttachment = generateReadinessPDF({
+      const pdfAttachment = await generateReadinessPDF({
         report: record.report,
         locale: record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en",
         saveToFile: false,

@@ -31,6 +31,18 @@ const textMap: Record<string, { tr?: string; zh?: string }> = {
     tr: "Yasam maliyeti projeksiyonlari aylik planlama tahminidir; bolge ve yasam tarzina gore degisebilir.",
     zh: "生活成本预测为月度规划估算，可能因区域与生活方式而变化。",
   },
+  "Estimated invitation points and wait windows derived from 2025-2026 trend patterns. For planning context only.": {
+    tr: "Tahmini davet puanlari ve bekleme pencereleri 2025-2026 trendlerinden turetilmistir. Yalnizca planlama baglamindadir.",
+    zh: "预计邀请分数与等待窗口基于 2025-2026 趋势推导，仅供规划参考。",
+  },
+  "ACS deducted experience may reduce claimed skilled years.": {
+    tr: "ACS deneyim kesintisi, beyan edilen nitelikli yil sayisini azaltabilir.",
+    zh: "ACS 经验扣减可能减少可申报的技术年限。",
+  },
+  "VETASSESS may reject roles lacking direct professional scope alignment.": {
+    tr: "VETASSESS, mesleki kapsam ile dogrudan uyumlu olmayan rolleri reddedebilir.",
+    zh: "VETASSESS 可能拒绝与职业范围不直接匹配的岗位。",
+  },
 };
 
 export function localizeText(locale: Locale, text: string): string {
@@ -48,6 +60,16 @@ export function localizeWaitWindow(locale: Locale, value: string): string {
     .replace(/months/gi, "个月")
     .replace(/month/gi, "个月")
     .replace(/\bto\b/gi, "至");
+}
+
+export function localizeOccupationWarning(locale: Locale, warning?: string): string | undefined {
+  if (!warning) return undefined;
+  return localizeText(locale, warning);
+}
+
+export function localizeTrendDescription(locale: Locale, description?: string): string | undefined {
+  if (!description) return undefined;
+  return localizeText(locale, description);
 }
 
 export function frictionBandLabel(locale: Locale, score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME"): string {

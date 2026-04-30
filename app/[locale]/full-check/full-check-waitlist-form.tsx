@@ -157,10 +157,10 @@ export function FullCheckWaitlistForm({
 
   const report = unlockedReport;
 
-  function handleDownloadPDF() {
+  async function handleDownloadPDF() {
     if (!report) return;
 
-    generateReadinessPDF({
+    await generateReadinessPDF({
       report,
       locale: locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en",
       userInputSummary: {
