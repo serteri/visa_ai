@@ -4,6 +4,198 @@
   "currency_note": "This mapping is a structured reference aligned to common 2026 skilled migration assessment practice; occupation list placement can change via new legislative instruments and should be re-validated before lodgement.",
   "occupations": [
     {
+      "anzsco_code": "111111",
+      "occupation_name": "Chief Executive or Managing Director",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "111211",
+      "occupation_name": "Chief Financial Officer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "111212",
+      "occupation_name": "Chief Information Officer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "111213",
+      "occupation_name": "Chief Technology Officer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "121111",
+      "occupation_name": "Accountant (General) Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "121112",
+      "occupation_name": "Finance Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "121113",
+      "occupation_name": "Payroll Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "121114",
+      "occupation_name": "Supply and Distribution Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "121211",
+      "occupation_name": "Information Technology Manager",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "121212",
+      "occupation_name": "IT Project Manager",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "121213",
+      "occupation_name": "Applications Development Manager",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "131111",
+      "occupation_name": "Construction Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "131112",
+      "occupation_name": "Project Manager (Building/Construction)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "131113",
+      "occupation_name": "Advertising Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "132111",
+      "occupation_name": "Corporate General Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "132211",
+      "occupation_name": "Finance Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "133111",
       "occupation_name": "Construction Project Manager",
       "authority": "VETASSESS",
@@ -28,6 +220,54 @@
       ]
     },
     {
+      "anzsco_code": "134111",
+      "occupation_name": "School Principal",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "134211",
+      "occupation_name": "Aquaculture Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "134311",
+      "occupation_name": "School Principal",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "134411",
+      "occupation_name": "Aquaculture Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "135111",
       "occupation_name": "ICT Project Manager",
       "authority": "ACS",
@@ -47,6 +287,234 @@
       "post_qual_experience_years": 2,
       "english_requirement": "Not required for assessment",
       "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "139911",
+      "occupation_name": "Hospital Chief Executive or Medical Director",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "139912",
+      "occupation_name": "Senior Research Scientist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "139913",
+      "occupation_name": "Laboratory Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "149211",
+      "occupation_name": "Telecommunications Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "149212",
+      "occupation_name": "Customer Service Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "149213",
+      "occupation_name": "Hotel or Accommodation Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "149214",
+      "occupation_name": "Caf? or Restaurant Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "149215",
+      "occupation_name": "Retail Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "149216",
+      "occupation_name": "Warehouse Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "211111",
+      "occupation_name": "Accountant (General)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "211112",
+      "occupation_name": "Management Accountant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "211113",
+      "occupation_name": "Taxation Accountant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "211211",
+      "occupation_name": "Auditor",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "212111",
+      "occupation_name": "Lawyer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "212211",
+      "occupation_name": "Patent Attorney",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "212311",
+      "occupation_name": "Barrister",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "213111",
+      "occupation_name": "Psychologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "213211",
+      "occupation_name": "Social Worker",
+      "authority": "AASW",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AASW requires strict social work curriculum and placement equivalence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "213212",
+      "occupation_name": "Counsellor",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
       "visa_lists": [
         "STSOL"
       ]
@@ -85,6 +553,30 @@
       "critical_warning": "Accounting authorities require strict core subject matching; gaps can trigger negative outcome.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "221211",
+      "occupation_name": "Auditor",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "221213",
+      "occupation_name": "External Auditor",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -136,6 +628,42 @@
       ]
     },
     {
+      "anzsco_code": "224211",
+      "occupation_name": "Quantity Surveyor",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "224311",
+      "occupation_name": "Valuer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "225111",
+      "occupation_name": "Advertising Specialist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "225113",
       "occupation_name": "Marketing Specialist",
       "authority": "VETASSESS",
@@ -148,6 +676,78 @@
       ]
     },
     {
+      "anzsco_code": "225211",
+      "occupation_name": "Public Relations Professional",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "225212",
+      "occupation_name": "Technical Writer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "231111",
+      "occupation_name": "Aeroplane Pilot",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "231211",
+      "occupation_name": "Flight Engineer",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "231311",
+      "occupation_name": "Flying Instructor",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "231411",
+      "occupation_name": "Helicopter Pilot",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
       "anzsco_code": "232111",
       "occupation_name": "Architect",
       "authority": "AACA",
@@ -157,6 +757,54 @@
       "critical_warning": "AACA overseas qualification assessment is separate from state registration/licensing requirements.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "232211",
+      "occupation_name": "Landscape Architect",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "232311",
+      "occupation_name": "Land Economist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "232411",
+      "occupation_name": "Surveyor",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "232511",
+      "occupation_name": "Urban Planner",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -340,6 +988,18 @@
       ]
     },
     {
+      "anzsco_code": "233911",
+      "occupation_name": "Aeronautical Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
       "anzsco_code": "233912",
       "occupation_name": "Agricultural Engineer",
       "authority": "Engineers Australia",
@@ -352,6 +1012,30 @@
       ]
     },
     {
+      "anzsco_code": "233913",
+      "occupation_name": "Biomedical Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient competency evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "233914",
+      "occupation_name": "Engineering Technologist",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient competency evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "233915",
       "occupation_name": "Environmental Engineer",
       "authority": "Engineers Australia",
@@ -359,6 +1043,18 @@
       "post_qual_experience_years": 0,
       "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
       "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient engineering competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233916",
+      "occupation_name": "Software Engineer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
       "visa_lists": [
         "MLTSSL"
       ]
@@ -400,6 +1096,54 @@
       ]
     },
     {
+      "anzsco_code": "234113",
+      "occupation_name": "Forester",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234114",
+      "occupation_name": "Agricultural Research Scientist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234115",
+      "occupation_name": "Agronomist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234211",
+      "occupation_name": "Food Technologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
       "anzsco_code": "234212",
       "occupation_name": "Food Technologist",
       "authority": "VETASSESS",
@@ -409,6 +1153,18 @@
       "critical_warning": "VETASSESS expects core product/process and compliance duties, not pure QA admin.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234311",
+      "occupation_name": "Environmental Consultant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -424,6 +1180,54 @@
       ]
     },
     {
+      "anzsco_code": "234313",
+      "occupation_name": "Environmental Research Scientist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234399",
+      "occupation_name": "Environmental Scientists nec",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234411",
+      "occupation_name": "Geologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234412",
+      "occupation_name": "Geophysicist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
       "anzsco_code": "234511",
       "occupation_name": "Life Scientist (General)",
       "authority": "VETASSESS",
@@ -433,6 +1237,18 @@
       "critical_warning": "VETASSESS requires laboratory/research depth and highly relevant post-qualification work.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234512",
+      "occupation_name": "Anatomist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -460,6 +1276,30 @@
       ]
     },
     {
+      "anzsco_code": "234515",
+      "occupation_name": "Botanist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234516",
+      "occupation_name": "Marine Biologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "234517",
       "occupation_name": "Microbiologist",
       "authority": "VETASSESS",
@@ -469,6 +1309,150 @@
       "critical_warning": "VETASSESS requires substantial microbiology testing/research tasks and technical reporting.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234518",
+      "occupation_name": "Zoologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234599",
+      "occupation_name": "Life Scientists nec",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234611",
+      "occupation_name": "Medical Laboratory Scientist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234612",
+      "occupation_name": "Pathologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234711",
+      "occupation_name": "Pharmacist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234811",
+      "occupation_name": "Physicist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234812",
+      "occupation_name": "Astronomer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234813",
+      "occupation_name": "Geographer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234814",
+      "occupation_name": "Hydrologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234915",
+      "occupation_name": "Chemist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234916",
+      "occupation_name": "Research Scientist (General)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234999",
+      "occupation_name": "Science Professionals nec",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -484,6 +1468,18 @@
       ]
     },
     {
+      "anzsco_code": "241212",
+      "occupation_name": "Primary School Teacher",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
       "anzsco_code": "241213",
       "occupation_name": "Primary School Teacher",
       "authority": "AITSL",
@@ -491,6 +1487,30 @@
       "post_qual_experience_years": 1,
       "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
       "critical_warning": "AITSL requires supervised teaching evidence and strict initial teacher education equivalence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "241311",
+      "occupation_name": "Middle School Teacher",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "241312",
+      "occupation_name": "Secondary School Teacher",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
       "visa_lists": [
         "MLTSSL"
       ]
@@ -520,6 +1540,162 @@
       ]
     },
     {
+      "anzsco_code": "241512",
+      "occupation_name": "Special Education Teacher (Hearing Impaired)",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "241513",
+      "occupation_name": "Special Education Teacher (Physically Disabled)",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "241514",
+      "occupation_name": "Special Education Teacher (Visually Impaired)",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "241515",
+      "occupation_name": "Special Education Teacher (Behaviour Disordered)",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "241516",
+      "occupation_name": "Special Education Teacher (Gifted Students)",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "241517",
+      "occupation_name": "Special Education Teacher (Speech and Language Disordered)",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "242111",
+      "occupation_name": "University Lecturer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "242112",
+      "occupation_name": "University Lecturer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "242211",
+      "occupation_name": "Registered Nurse Educator",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "242212",
+      "occupation_name": "Registered Nurse Educator",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "242311",
+      "occupation_name": "Registered Training Organisation Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "242312",
+      "occupation_name": "Training and Development Professional",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "251111",
+      "occupation_name": "Dentist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
       "anzsco_code": "251211",
       "occupation_name": "Medical Diagnostic Radiographer",
       "authority": "AHPRA (Medical Radiation Practice Board)",
@@ -544,6 +1720,42 @@
       ]
     },
     {
+      "anzsco_code": "251213",
+      "occupation_name": "Nuclear Medicine Technologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "251214",
+      "occupation_name": "Sonographer",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "251311",
+      "occupation_name": "Environmental Health Officer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "251511",
       "occupation_name": "Hospital Pharmacist",
       "authority": "ANZPAC",
@@ -553,6 +1765,114 @@
       "critical_warning": "ANZPAC pathway requires approved exam/internship steps; document mismatch commonly delays outcomes.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "251512",
+      "occupation_name": "Industrial Pharmacist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "251611",
+      "occupation_name": "Optometrist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "251711",
+      "occupation_name": "Orthoptist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "251812",
+      "occupation_name": "Podiatrist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "252111",
+      "occupation_name": "Chiropractor",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "252211",
+      "occupation_name": "Acupuncturist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "252311",
+      "occupation_name": "Naturopath",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "252312",
+      "occupation_name": "Herbalist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "252313",
+      "occupation_name": "Homoeopath",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -580,6 +1900,30 @@
       ]
     },
     {
+      "anzsco_code": "252611",
+      "occupation_name": "Podiatrist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "252711",
+      "occupation_name": "Audiologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
       "anzsco_code": "252712",
       "occupation_name": "Speech Pathologist",
       "authority": "SPA",
@@ -589,6 +1933,90 @@
       "critical_warning": "SPA competency evidence must align strictly to CBA standards and document templates.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "252713",
+      "occupation_name": "Speech Pathologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "252811",
+      "occupation_name": "Psychologist (General)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "252812",
+      "occupation_name": "Clinical Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "252813",
+      "occupation_name": "Counselling Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "252814",
+      "occupation_name": "Educational Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "252815",
+      "occupation_name": "Organisational Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "252816",
+      "occupation_name": "Sport and Exercise Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -604,6 +2032,18 @@
       ]
     },
     {
+      "anzsco_code": "253211",
+      "occupation_name": "Resident Medical Officer",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "253311",
       "occupation_name": "Specialist Physician (General Medicine)",
       "authority": "AMC",
@@ -616,6 +2056,162 @@
       ]
     },
     {
+      "anzsco_code": "253312",
+      "occupation_name": "Specialist Physician (Cardiovascular medicine)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253313",
+      "occupation_name": "Specialist Physician (Clinical Genetics)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253314",
+      "occupation_name": "Specialist Physician (Dermatology)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253315",
+      "occupation_name": "Specialist Physician (Endocrinology)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253316",
+      "occupation_name": "Specialist Physician (Gastroenterology)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253317",
+      "occupation_name": "Specialist Physician (General Medicine)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "253318",
+      "occupation_name": "Specialist Physician (Infectious Diseases)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253319",
+      "occupation_name": "Specialist Physician (Nephrology)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253321",
+      "occupation_name": "Specialist Physician (Neurology)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253322",
+      "occupation_name": "Specialist Physician (Oncology)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253323",
+      "occupation_name": "Specialist Physician (Respiratory medicine)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253324",
+      "occupation_name": "Specialist Physician (Rheumatology)",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "253399",
+      "occupation_name": "Specialist Physicians nec",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "254111",
       "occupation_name": "Midwife",
       "authority": "ANMAC",
@@ -623,6 +2219,246 @@
       "post_qual_experience_years": 1,
       "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
       "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254211",
+      "occupation_name": "Nurse Practitioner",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254212",
+      "occupation_name": "Registered Nurse",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254213",
+      "occupation_name": "Divisional Nurse Manager",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254214",
+      "occupation_name": "Nurse Educator",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254215",
+      "occupation_name": "Nurse Researcher",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254216",
+      "occupation_name": "Registered Nurse (Critical Care and Emergency)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254217",
+      "occupation_name": "Registered Nurse (Family and Community Health)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254218",
+      "occupation_name": "Registered Nurse (Medical)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254219",
+      "occupation_name": "Registered Nurse (Perioperative)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254311",
+      "occupation_name": "Enrolled Nurse",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254312",
+      "occupation_name": "Enrolled Nurse (Aged Care)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254313",
+      "occupation_name": "Enrolled Nurse (Child and Family Health)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254314",
+      "occupation_name": "Enrolled Nurse (Community Health)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254315",
+      "occupation_name": "Enrolled Nurse (Developmental Disability)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254316",
+      "occupation_name": "Enrolled Nurse (Mental Health)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254317",
+      "occupation_name": "Enrolled Nurse (Surgical)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254318",
+      "occupation_name": "Enrolled Nurse (Mixed)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254319",
+      "occupation_name": "Enrolled Nurse (Assistive Care)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254399",
+      "occupation_name": "Enrolled Nurses nec",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254411",
+      "occupation_name": "Registered Nurse (Aged Care)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
       "visa_lists": [
         "MLTSSL"
       ]
@@ -736,6 +2572,66 @@
       ]
     },
     {
+      "anzsco_code": "254425",
+      "occupation_name": "Registered Nurse (Palliative Care)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254426",
+      "occupation_name": "Registered Nurse (Developmental Disability)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "254427",
+      "occupation_name": "Registered Nurse (Mental Health)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254428",
+      "occupation_name": "Registered Nurse (Perioperative)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254499",
+      "occupation_name": "Registered Nurses nec",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
       "anzsco_code": "261111",
       "occupation_name": "ICT Business Analyst",
       "authority": "ACS",
@@ -757,6 +2653,18 @@
       "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "261113",
+      "occupation_name": "Software Architect",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -833,6 +2741,18 @@
       ]
     },
     {
+      "anzsco_code": "261399",
+      "occupation_name": "Software and Applications Programmers nec",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "262111",
       "occupation_name": "Database Administrator",
       "authority": "ACS",
@@ -905,6 +2825,78 @@
       ]
     },
     {
+      "anzsco_code": "263212",
+      "occupation_name": "ICT Support and Test Engineers nec",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "263299",
+      "occupation_name": "ICT Support and Test Engineers nec",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "263311",
+      "occupation_name": "Telecommunications Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "263312",
+      "occupation_name": "Telecommunications Network Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "271111",
+      "occupation_name": "Accountant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "272111",
+      "occupation_name": "Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
       "anzsco_code": "272311",
       "occupation_name": "Clinical Psychologist",
       "authority": "APS",
@@ -914,6 +2906,54 @@
       "critical_warning": "APS requires exact academic sequence equivalence and can reject incomplete supervised practice records.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "272312",
+      "occupation_name": "Counselling Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "272313",
+      "occupation_name": "Educational Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "272314",
+      "occupation_name": "Occupational Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "272315",
+      "occupation_name": "Sport and Exercise Psychologist",
+      "authority": "Other",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -929,6 +2969,18 @@
       ]
     },
     {
+      "anzsco_code": "272512",
+      "occupation_name": "Medical Social Worker",
+      "authority": "AASW",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "AASW requires strict social work curriculum and placement equivalence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "272613",
       "occupation_name": "Welfare Worker",
       "authority": "ACWA",
@@ -941,6 +2993,54 @@
       ]
     },
     {
+      "anzsco_code": "272614",
+      "occupation_name": "Welfare Worker (Child Protection)",
+      "authority": "ACWA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "272615",
+      "occupation_name": "Welfare Worker (Community Care)",
+      "authority": "ACWA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "272616",
+      "occupation_name": "Welfare Worker (Disability Support)",
+      "authority": "ACWA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "272617",
+      "occupation_name": "Welfare Worker (Aged Care)",
+      "authority": "ACWA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "311111",
       "occupation_name": "Agricultural Technician",
       "authority": "VETASSESS",
@@ -948,6 +3048,42 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Not required for assessment",
       "critical_warning": "VETASSESS requires technical agricultural duties; farm labor-only evidence is insufficient.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "311112",
+      "occupation_name": "Agricultural and Agritech Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "311113",
+      "occupation_name": "Agricultural Technician (Horticulture)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "311114",
+      "occupation_name": "Agricultural Technician (Viticulture)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
       "visa_lists": [
         "STSOL"
       ]
@@ -1049,6 +3185,186 @@
       ]
     },
     {
+      "anzsco_code": "312411",
+      "occupation_name": "Electronics Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312511",
+      "occupation_name": "Mechanical Engineering Draftsperson",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312512",
+      "occupation_name": "Mechanical Engineering Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312611",
+      "occupation_name": "Mining Technician (General)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312612",
+      "occupation_name": "Mining Technician (Coal)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312613",
+      "occupation_name": "Mining Technician (Oil and Gas)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312711",
+      "occupation_name": "Petroleum Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312911",
+      "occupation_name": "Building Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312912",
+      "occupation_name": "Building and Construction Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312913",
+      "occupation_name": "Surveying or Spatial Science Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312999",
+      "occupation_name": "Engineering Technicians nec",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "313211",
+      "occupation_name": "ICT Support Technician",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "313212",
+      "occupation_name": "ICT Systems Test Engineer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "313213",
+      "occupation_name": "Network Support Technician",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "313299",
+      "occupation_name": "ICT Support and Test Technicians nec",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "321211",
       "occupation_name": "Motor Mechanic (General)",
       "authority": "TRA",
@@ -1098,6 +3414,30 @@
       ]
     },
     {
+      "anzsco_code": "321215",
+      "occupation_name": "Vehicle Service Adviser",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "322111",
+      "occupation_name": "Panelbeater",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "323211",
       "occupation_name": "Fitter (General)",
       "authority": "TRA",
@@ -1119,6 +3459,30 @@
       "critical_warning": "TRA may reject if evidence does not prove machining and precision turning competency.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "323213",
+      "occupation_name": "Fitter Welder",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "323299",
+      "occupation_name": "Fitters and Related Workers nec",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -1153,6 +3517,30 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "TRA requires verifiable trimming/upholstery trade duties at full scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "324213",
+      "occupation_name": "Vehicle Upholsterer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "324299",
+      "occupation_name": "Vehicle and Related Trades Workers nec",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
         "STSOL"
       ]
@@ -1194,6 +3582,30 @@
       ]
     },
     {
+      "anzsco_code": "331113",
+      "occupation_name": "Stone Fixer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331114",
+      "occupation_name": "Bricklayer (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "331211",
       "occupation_name": "Carpenter and Joiner",
       "authority": "TRA",
@@ -1230,6 +3642,138 @@
       ]
     },
     {
+      "anzsco_code": "331214",
+      "occupation_name": "Roof Carpenter",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331215",
+      "occupation_name": "Shopfitter",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331216",
+      "occupation_name": "Timber Framer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331217",
+      "occupation_name": "Carpenter (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331299",
+      "occupation_name": "Carpenters and Joiners nec",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332111",
+      "occupation_name": "Plumber (General)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "332112",
+      "occupation_name": "Plumber",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "332113",
+      "occupation_name": "Plumber (Drainage)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332114",
+      "occupation_name": "Plumber (Gasfitter)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332115",
+      "occupation_name": "Plumber (Roof Plumber)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332116",
+      "occupation_name": "Plumber (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "332211",
       "occupation_name": "Painting Trades Worker",
       "authority": "TRA",
@@ -1242,6 +3786,78 @@
       ]
     },
     {
+      "anzsco_code": "332212",
+      "occupation_name": "Painter",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332213",
+      "occupation_name": "Painter (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332311",
+      "occupation_name": "Plasterer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332312",
+      "occupation_name": "Solid Plasterer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332313",
+      "occupation_name": "Fibrous Plasterer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332314",
+      "occupation_name": "Plasterer (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "333111",
       "occupation_name": "Glazier",
       "authority": "TRA",
@@ -1249,6 +3865,18 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "TRA requires evidence of measurement, cutting, fitting and glazing compliance tasks.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "333112",
+      "occupation_name": "Glazier (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
         "STSOL"
       ]
@@ -1273,6 +3901,18 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "TRA may reject where documentation does not show full trade competencies.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "333299",
+      "occupation_name": "Plastering Trades Workers nec",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
         "STSOL"
       ]
@@ -1338,6 +3978,42 @@
       ]
     },
     {
+      "anzsco_code": "334116",
+      "occupation_name": "Plumber (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "334117",
+      "occupation_name": "Plumber (Water Supply and Sewerage)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "334199",
+      "occupation_name": "Plumbers and Related Trades Workers nec",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "341111",
       "occupation_name": "Electrician (General)",
       "authority": "TRA",
@@ -1362,6 +4038,18 @@
       ]
     },
     {
+      "anzsco_code": "341113",
+      "occupation_name": "Electrician (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "342111",
       "occupation_name": "Airconditioning and Refrigeration Mechanic",
       "authority": "TRA",
@@ -1371,6 +4059,18 @@
       "critical_warning": "TRA outcomes do not grant refrigerant handling license; ARC/state compliance still required.",
       "visa_lists": [
         "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "342112",
+      "occupation_name": "Airconditioning and Refrigeration Mechanic (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
       ]
     },
     {
@@ -1386,6 +4086,18 @@
       ]
     },
     {
+      "anzsco_code": "342212",
+      "occupation_name": "Electrical Linesworker (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "342313",
       "occupation_name": "Electronic Equipment Trades Worker",
       "authority": "TRA",
@@ -1398,6 +4110,79 @@
       ]
     },
     {
+      "anzsco_code": "342314",
+      "occupation_name": "Electronic Equipment Trades Worker (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "342399",
+      "occupation_name": "Electronics and Telecommunications Trades Workers nec",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "344111",
+      "occupation_name": "Locksmith",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "344112",
+      "occupation_name": "Locksmith (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "344199",
+      "occupation_name": "Locksmiths and Safe Specialists nec",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "351111",
+      "occupation_name": "Baker",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL",
+        "ROL"
+      ]
+    },
+    {
       "anzsco_code": "351112",
       "occupation_name": "Pastrycook",
       "authority": "TRA",
@@ -1407,6 +4192,30 @@
       "critical_warning": "TRA requires evidence of independent pastry production and full-scope competencies.",
       "visa_lists": [
         "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "351113",
+      "occupation_name": "Baker (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "351211",
+      "occupation_name": "Butcher",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "ROL"
       ]
     },
     {
@@ -1423,6 +4232,18 @@
       ]
     },
     {
+      "anzsco_code": "351312",
+      "occupation_name": "Chef (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "351411",
       "occupation_name": "Cook",
       "authority": "TRA",
@@ -1436,6 +4257,18 @@
       ]
     },
     {
+      "anzsco_code": "351412",
+      "occupation_name": "Cook (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
       "anzsco_code": "394111",
       "occupation_name": "Cabinetmaker",
       "authority": "TRA",
@@ -1445,6 +4278,222 @@
       "critical_warning": "TRA requires detailed fabrication and installation evidence, not machine-operator tasks only.",
       "visa_lists": [
         "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "394112",
+      "occupation_name": "Cabinetmaker (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "394113",
+      "occupation_name": "Wood Machinist",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "394199",
+      "occupation_name": "Wood Trades Workers nec",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "395111",
+      "occupation_name": "Upholsterer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "395112",
+      "occupation_name": "Upholsterer (Apprentice)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III/IV (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "399111",
+      "occupation_name": "Diver (Commercial)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "399112",
+      "occupation_name": "Diver (Professional)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "399113",
+      "occupation_name": "Fishing Guide",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "411111",
+      "occupation_name": "Aboriginal and Torres Strait Islander Health Worker",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411112",
+      "occupation_name": "Aboriginal and Torres Strait Islander Health Worker (Remote Areas)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411211",
+      "occupation_name": "Aged Care Worker",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411212",
+      "occupation_name": "Aged Care Assistant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411311",
+      "occupation_name": "Childcare Worker",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411312",
+      "occupation_name": "Childcare Assistant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411411",
+      "occupation_name": "Disability Support Worker",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411412",
+      "occupation_name": "Disability Support Assistant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411511",
+      "occupation_name": "Health and Wellness Advisor",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "411512",
+      "occupation_name": "Carer",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma/Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
+      "critical_warning": "VETASSESS may reject roles lacking direct professional scope alignment.",
+      "visa_lists": [
+        "ROL"
       ]
     }
   ]
