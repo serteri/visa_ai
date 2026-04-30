@@ -1,11 +1,16 @@
 import Link from "next/link";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 
-type ComparisonRow = { label: string; quick: string; full: string };
+type ComparisonRow = {
+  label: string;
+  quick: { included: boolean; text: string };
+  full: { included: boolean; text: string };
+};
 type ReportCard = { title: string; description: string };
 const READINESS_REVIEW_SOURCE = ["readiness", "pre" + "view"].join("-");
 
@@ -13,115 +18,171 @@ function getComparisonRows(isTr: boolean): ComparisonRow[] {
   if (isTr) {
     return [
       {
-        label: "Olas? vize yollar?",
-        quick: "Yaln?zca olas? yol alanlar?",
-        full: "Yap?land?r?lm?? yol kar??la?t?rmas?",
+        label: "Olasi vize yollari",
+        quick: { included: true, text: "Yalnizca olasi yol alanlari" },
+        full: { included: true, text: "Yapilandirilmis yol karsilastirmasi" },
       },
-      { label: "Sinyal ?zeti", quick: "Dahil de?il", full: "Dahil" },
-      { label: "Birincil s?n?rlay?c? fakt?r", quick: "Dahil de?il", full: "Dahil" },
-      { label: "Durumunuzu de?i?tirebilecek fakt?rler", quick: "Dahil de?il", full: "Dahil" },
-      { label: "Vize yolu g?? kar??la?t?rmas?", quick: "Dahil de?il", full: "Dahil" },
-      { label: "Risk g?stergeleri", quick: "Dahil de?il", full: "Dahil" },
-      { label: "Kan?t/Bilgi haz?rl?k ?zeti", quick: "Dahil de?il", full: "Dahil" },
-      { label: "Puan senaryo sim?lat?r?", quick: "Dahil de?il", full: "?lgili oldu?unda dahil" },
-      { label: "Tahmini maliyet yol haritas?", quick: "Dahil de?il", full: "Dahil" },
-      { label: "Tipik ge?i? yollar?", quick: "Dahil de?il", full: "?lgili oldu?unda dahil" },
-      { label: "Vize yolu ger?eklik kontrol?", quick: "Dahil de?il", full: "Dahil" },
-      { label: "De?erlendirilebilecek sonraki ad?mlar", quick: "Dahil de?il", full: "Dahil" },
-      { label: "?ndirilebilir PDF", quick: "Dahil de?il", full: "Dahil" },
+      { label: "Sinyal ozeti", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Birincil sinirlayici faktor", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Durumunuzu degistirebilecek faktorler", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Vize yolu guc karsilastirmasi", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Risk gostergeleri", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Kanit/Bilgi hazirlik ozeti", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Puan senaryo simulatoru", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Ilgili oldugunda dahil" } },
+      { label: "Tahmini maliyet yol haritasi", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Tipik gecis yollari", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Ilgili oldugunda dahil" } },
+      { label: "Vize yolu gerceklik kontrolu", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Degerlendirilebilecek sonraki adimlar", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      { label: "Indirilebilir PDF", quick: { included: false, text: "Dahil degil" }, full: { included: true, text: "Dahil" } },
+      {
+        label: "Skill Mapping & Authority",
+        quick: { included: false, text: "Dahil degil" },
+        full: { included: true, text: "Authority bazli kurallar ve post-qualification experience logic" },
+      },
+      {
+        label: "Historical Invitation Trends",
+        quick: { included: false, text: "Dahil degil" },
+        full: { included: true, text: "Guncel invitation point trendleri ve tahmini bekleme sureleri" },
+      },
+      {
+        label: "Regional Advantage Analysis",
+        quick: { included: false, text: "Dahil degil" },
+        full: { included: true, text: "Eyalet bazli regional postcode ve bonus puan eslestirmesi" },
+      },
+      {
+        label: "Document-Level Specificity",
+        quick: { included: false, text: "Dahil degil" },
+        full: { included: true, text: "Audit-ready checklist (pasaport gecerliligi, NAATI vb.)" },
+      },
+      {
+        label: "Living Cost Projection",
+        quick: { included: false, text: "Dahil degil" },
+        full: { included: true, text: "Aile kompozisyonuna gore buyuk AU sehirleri icin yasam maliyeti tahmini" },
+      },
+      {
+        label: "Strategic Gantt Chart",
+        quick: { included: false, text: "Dahil degil" },
+        full: { included: true, text: "Gorsel adim adim yol haritasi zaman cizelgesi" },
+      },
     ];
   }
 
   return [
     {
       label: "Possible pathways",
-      quick: "Possible pathway areas only",
-      full: "Structured pathway comparison",
+      quick: { included: true, text: "Possible pathway areas only" },
+      full: { included: true, text: "Structured pathway comparison" },
     },
-    { label: "Signal snapshot", quick: "Not included", full: "Included" },
-    { label: "Primary limiting factor", quick: "Not included", full: "Included" },
-    { label: "What may change your position", quick: "Not included", full: "Included" },
-    { label: "Pathway strength comparison", quick: "Not included", full: "Included" },
-    { label: "Risk indicators", quick: "Not included", full: "Included" },
-    { label: "Evidence readiness snapshot", quick: "Not included", full: "Included" },
-    { label: "Points booster simulator", quick: "Not included", full: "Included where relevant" },
-    { label: "Financial roadmap", quick: "Not included", full: "Included" },
-    { label: "Bridge to PR / progression pathways", quick: "Not included", full: "Included where relevant" },
-    { label: "Pathway friction / reality check", quick: "Not included", full: "Included" },
-    { label: "Next steps that can be considered", quick: "Not included", full: "Included" },
-    { label: "Downloadable PDF", quick: "Not included", full: "Included" },
+    { label: "Signal snapshot", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "Primary limiting factor", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "What may change your position", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "Pathway strength comparison", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "Risk indicators", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "Evidence readiness snapshot", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "Points booster simulator", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included where relevant" } },
+    { label: "Financial roadmap", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "Bridge to PR / progression pathways", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included where relevant" } },
+    { label: "Pathway friction / reality check", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "Next steps that can be considered", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    { label: "Downloadable PDF", quick: { included: false, text: "Not included" }, full: { included: true, text: "Included" } },
+    {
+      label: "Skill Mapping & Authority",
+      quick: { included: false, text: "Not included" },
+      full: { included: true, text: "Authority-specific rules and post-qualification experience logic" },
+    },
+    {
+      label: "Historical Invitation Trends",
+      quick: { included: false, text: "Not included" },
+      full: { included: true, text: "Recent invitation point trends and estimated waiting times" },
+    },
+    {
+      label: "Regional Advantage Analysis",
+      quick: { included: false, text: "Not included" },
+      full: { included: true, text: "State-specific regional postcode and bonus point mapping" },
+    },
+    {
+      label: "Document-Level Specificity",
+      quick: { included: false, text: "Not included" },
+      full: { included: true, text: "Audit-ready checklist (passport validity, NAATI, etc.)" },
+    },
+    {
+      label: "Living Cost Projection",
+      quick: { included: false, text: "Not included" },
+      full: { included: true, text: "Family-based cost-of-living estimates for major Australian cities" },
+    },
+    {
+      label: "Strategic Gantt Chart",
+      quick: { included: false, text: "Not included" },
+      full: { included: true, text: "Visual step-by-step roadmap timeline" },
+    },
   ];
 }
 function getReportCards(isTr: boolean): ReportCard[] {
   if (isTr) {
     return [
       {
-        title: "Sinyal ?zeti",
-        description: "En g??l? ve ikincil sinyaller tek bak??ta g?sterilir.",
+        title: "Premium Feature: Skill Mapping & Authority",
+        description:
+          "ANZSCO kodu, degerlendirme otoritesi ve post-qualification deneyim kurallari veri-temelli olarak eslestirilir. Bu bolum tavsiye degil, yapilandirilmis uyum analizi sunar.",
       },
       {
-        title: "Birincil s?n?rlay?c? fakt?r",
-        description: "Rapor, ?u anda konumu en ?ok s?n?rlayan tek ana fakt?r? ?ne ??kar?r.",
+        title: "Premium Feature: Historical Invitation Trends",
+        description:
+          "Son invitation round verileri, puan bandi hareketleri ve tahmini bekleme pencereleri analitik olarak ozetlenir. Cikti, karar destegi icin bilgi gorunumu saglar.",
       },
       {
-        title: "Durumunuzu de?i?tirebilecek fakt?rler",
-        description: "Puan, kan?t ve adayl?k gibi sinyali etkileyebilecek alanlar listelenir.",
+        title: "Premium Feature: Regional Advantage Analysis",
+        description:
+          "Eyalet bazli regional postcode kapsam haritasi ve 190/491 bonus puan etkileri birlikte modellenir. Analiz, olasi avantaj alanlarini veri ile gosterir.",
       },
       {
-        title: "Vize yolu g?? kar??la?t?rmas?",
-        description: "Olas? yollar g??, s?rt?nme ve a??klama ile kar??la?t?r?l?r.",
+        title: "Premium Feature: Document-Level Specificity",
+        description:
+          "Pasaport gecerliligi, NAATI/PY durumu, police ve saglik kayitlari gibi alanlar denetime hazir checklist formatinda raporlanir.",
       },
       {
-        title: "Kan?t/Bilgi haz?rl?k ?zeti",
-        description: "Form bilgileri ile tipik kan?t kategorileri birlikte g?sterilir.",
+        title: "Premium Feature: Living Cost Projection",
+        description:
+          "Aile kompozisyonuna gore Sidney, Melbourne ve Brisbane gibi sehirler icin yasam maliyeti projeksiyonu sunulur; bu bir finansal tavsiye degil, veri tahmin modelidir.",
       },
       {
-        title: "Puan senaryo sim?lat?r?",
-        description: "Puan testli yollar i?in matematiksel puan senaryolar? ilgili oldu?unda g?sterilir.",
-      },
-      {
-        title: "Tahmini maliyet yol haritas?",
-        description: "Resmi ?cret ve ???nc? taraf maliyet kategorileri genel bilgi olarak ayr?l?r.",
-      },
-      {
-        title: "Vize yolu ger?eklik kontrol?",
-        description: "Her yol i?in s?rt?nme ve pratik s?n?rlay?c? fakt?rler ?zetlenir.",
+        title: "Premium Feature: Strategic Gantt Chart",
+        description:
+          "Adim-adim surec plani zaman cizelgesi ile gorsellestirilir: belge hazirlik, test, assessment ve lodgement oncesi kilometre taslari tek bakista gorulur.",
       },
     ];
   }
 
   return [
     {
-      title: "Signal snapshot",
-      description: "The strongest and secondary pathway signals are shown at a glance.",
+      title: "Premium Feature: Skill Mapping & Authority",
+      description:
+        "ANZSCO role mapping is cross-checked against authority-specific criteria and post-qualification experience logic. This section is data analysis, not migration advice.",
     },
     {
-      title: "Primary limiting factor",
-      description: "The report highlights the single main factor currently limiting the position.",
+      title: "Premium Feature: Historical Invitation Trends",
+      description:
+        "Recent invitation rounds, point-band movement, and indicative waiting windows are summarized for evidence-led planning context.",
     },
     {
-      title: "What may change your position",
-      description: "Points, evidence, and nomination factors that may affect signals are listed.",
+      title: "Premium Feature: Regional Advantage Analysis",
+      description:
+        "State-level regional postcode eligibility and nomination bonus mapping are modeled to surface potential regional advantage scenarios.",
     },
     {
-      title: "Pathway strength comparison",
-      description: "Possible pathways are compared by strength, friction, and explanation.",
+      title: "Premium Feature: Document-Level Specificity",
+      description:
+        "An audit-ready checklist tracks passport validity windows, NAATI/PY status, health and character evidence, and submission dependencies.",
     },
     {
-      title: "Evidence readiness snapshot",
-      description: "Form details are mapped against typical evidence categories.",
+      title: "Premium Feature: Living Cost Projection",
+      description:
+        "Family-based living cost projections for major Australian cities are presented as analytical estimates for budgeting context.",
     },
     {
-      title: "Points booster simulator",
-      description: "Points-tested pathways show mathematical score scenarios where relevant.",
-    },
-    {
-      title: "Financial roadmap",
-      description: "Official fee and third-party cost categories are separated as general information.",
-    },
-    {
-      title: "Pathway friction / reality check",
-      description: "Practical friction factors are summarized for each pathway.",
+      title: "Premium Feature: Strategic Gantt Chart",
+      description:
+        "A visual step-by-step timeline maps key milestones from preparation through assessment and pre-lodgement readiness.",
     },
   ];
 }
@@ -220,21 +281,21 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                 <ul className="space-y-1 pl-3">
                   {(isTr
                     ? [
-                        "Vize yolu güç karşılaştırması — olası yollar güç ve sürtünme açısından karşılaştırılır",
-                        "Kanıt hazırlık özeti — tipik kanıt kategorileri form bilgileriyle eşleştirilir",
-                        "Tahmini maliyet kategorileri — resmi ücretler ve üçüncü taraf maliyet aralıkları ayrılır",
-                        "Puan senaryo simülatörü — puan testli yollar için matematiksel senaryolar (ilgili olduğunda)",
-                        "Tipik geçiş yolları — Avustralya vize sistemindeki olası ilerleyiş adımları",
-                        "Vize yolu gerçeklik kontrolü — her yol için pratik sürtünme faktörleri",
+                        "Premium Feature - Skill Mapping & Authority: authority-specific rules ve post-qualification deneyim mantigi veri analizi olarak modellenir",
+                        "Premium Feature - Historical Invitation Trends: son invitation trendleri ve tahmini bekleme pencereleri analitik olarak sunulur",
+                        "Premium Feature - Regional Advantage Analysis: eyalet bazli regional postcode ve bonus puan eslesmesi gosterilir",
+                        "Premium Feature - Document-Level Specificity: passport validity, NAATI, police ve health gibi kalemler denetime hazir checklist ile izlenir",
+                        "Premium Feature - Living Cost Projection: aile bazli buyuk AU sehirleri yasam maliyeti projeksiyonu sunulur",
+                        "Premium Feature - Strategic Gantt Chart: adim adim gorsel zaman cizelgesi ile surec kilometre taslari gosterilir",
                         "İndirilebilir PDF",
                       ]
                     : [
-                        "Pathway strength comparison — possible pathways compared by strength and friction",
-                        "Evidence readiness snapshot — typical evidence categories mapped against form details",
-                        "Estimated cost categories — official fees and third-party cost ranges separated",
-                        "Points booster simulator — mathematical scenarios for points-tested pathways (where relevant)",
-                        "Typical progression pathways — possible next steps in the Australian visa system",
-                        "Pathway reality check — practical friction factors summarised for each pathway",
+                        "Premium Feature - Skill Mapping & Authority: authority-specific rules and post-qualification logic are modeled as structured data analysis",
+                        "Premium Feature - Historical Invitation Trends: recent invitation point movement and indicative waiting windows are summarized",
+                        "Premium Feature - Regional Advantage Analysis: state-level regional postcode and nomination bonus mapping",
+                        "Premium Feature - Document-Level Specificity: audit-ready checklist including passport validity, NAATI, police and health evidence",
+                        "Premium Feature - Living Cost Projection: family-based cost-of-living estimates for major Australian cities",
+                        "Premium Feature - Strategic Gantt Chart: visual milestone timeline from preparation to pre-lodgement readiness",
                         "Downloadable PDF",
                       ]
                   ).map((item) => (
@@ -266,10 +327,42 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[680px] border-collapse text-sm">
+            <div className="grid gap-3 md:hidden">
+              {comparisonRows.map((row) => (
+                <div key={row.label} className="rounded-xl border border-border bg-gradient-to-br from-card to-card/70 p-4 shadow-sm">
+                  <p className="text-sm font-semibold text-foreground">{row.label}</p>
+                  <div className="mt-3 grid gap-2">
+                    <div className="flex items-start gap-2 rounded-md border border-border/70 bg-background/70 px-3 py-2">
+                      {row.quick.included ? (
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                      ) : (
+                        <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        <span className="mr-1 font-medium text-foreground">{isTr ? "Hizli" : "Quick"}:</span>
+                        {row.quick.text}
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2">
+                      {row.full.included ? (
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      ) : (
+                        <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        <span className="mr-1 font-medium text-primary">{isTr ? "Full" : "Full"}:</span>
+                        {row.full.text}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full min-w-[760px] border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-border text-left">
+                  <tr className="border-b border-border text-left bg-muted/40">
                     <th className="py-3 pr-4 font-semibold">{isTr ? "Özellik" : "Feature"}</th>
                     <th className="px-4 py-3 font-semibold">
                       {isTr ? "Hızlı Yol Kontrolü" : "Quick Pathway Check"}
@@ -281,10 +374,28 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                 </thead>
                 <tbody>
                   {comparisonRows.map((row) => (
-                    <tr key={row.label} className="border-b border-border/70 last:border-0">
+                    <tr key={row.label} className="border-b border-border/70 align-top transition-colors hover:bg-muted/30 last:border-0">
                       <td className="py-3 pr-4 font-medium">{row.label}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{row.quick}</td>
-                      <td className="px-4 py-3 font-medium">{row.full}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        <div className="flex items-start gap-2">
+                          {row.quick.included ? (
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                          ) : (
+                            <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+                          )}
+                          <span>{row.quick.text}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 font-medium">
+                        <div className="flex items-start gap-2">
+                          {row.full.included ? (
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          ) : (
+                            <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+                          )}
+                          <span>{row.full.text}</span>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -300,8 +411,8 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
             </h2>
             <p className="text-sm text-muted-foreground">
               {isTr
-                ? "Hızlı kontrolün aksine, bu rapor ayrı bölümler halinde pratik bir inceleme olarak düzenlenmiştir."
-                : "Unlike the quick check, this report is organized as a practical review with separate sections."}
+                ? "Bu bolumler, MARA uyumlu cercevede tavsiye uretmeden yapilandirilmis veri analizi sunmak icin tasarlanmistir."
+                : "These sections are designed to present MARA-aligned structured data analysis, not migration advice."}
             </p>
           </div>
 
