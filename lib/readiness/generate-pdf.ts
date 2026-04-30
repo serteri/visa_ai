@@ -74,6 +74,7 @@ function getLocalizedText(locale: "en" | "tr") {
       monthlyGroceries: "Aylık Market",
       monthlyTransport: "Aylık Ulaşım",
       monthlyTotal: "Aylık Toplam",
+      frictionLevel: "Friction Level",
       frictionScore: "Friction Score",
       realityCheck: "Reality Check",
       successSignals: "Success Signals",
@@ -139,6 +140,7 @@ function getLocalizedText(locale: "en" | "tr") {
     monthlyGroceries: "Monthly Groceries",
     monthlyTransport: "Monthly Transport",
     monthlyTotal: "Monthly Total",
+    frictionLevel: "Friction Level",
     frictionScore: "Friction Score",
     realityCheck: "Reality Check",
     successSignals: "Success Signals",
@@ -365,7 +367,8 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
   function drawTable(
     headers: string[],
     rows: string[][],
-    colRatios: number[]
+    colRatios: number[],
+    getCellColor?: (rowIndex: number, colIndex: number, cell: string) => { r: number; g: number; b: number } | null
   ) {
     const tableWidth = contentWidth;
     const colWidths = colRatios.map((ratio) => tableWidth * ratio);
@@ -401,6 +404,12 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
       row.forEach((cell, i) => {
         const clipped = cell.length > 44 ? `${cell.slice(0, 41)}...` : cell;
+        const customColor = getCellColor?.(rowIndex, i, cell);
+        if (customColor) {
+          doc.setTextColor(customColor.r, customColor.g, customColor.b);
+        } else {
+          doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+        }
         doc.text(clipped, x, yPosition + 4.7);
         x += colWidths[i];
       });
@@ -504,11 +513,21 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
     return "Unclear";
   }
 
-  function getFrictionColor(score: "Low" | "Medium" | "High" | "Extreme") {
-    if (score === "Extreme") return { r: 220, g: 38, b: 38 };
-    if (score === "High") return { r: 217, g: 119, b: 6 };
-    if (score === "Medium") return { r: 202, g: 138, b: 4 };
+  function mapFrictionLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
+    return score;
+  }
+
+  function getFrictionColorByLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
+    if (score === "EXTREME") return { r: 220, g: 38, b: 38 };
+    if (score === "HIGH") return { r: 217, g: 119, b: 6 };
+    if (score === "MEDIUM") return { r: 202, g: 138, b: 4 };
     return { r: 22, g: 163, b: 74 };
+  }
+
+  function getFrictionForPathway(subclass: string) {
+    return report.frictionAnalysis.find(
+      (f) => f.pathway === subclass || (subclass === "820_801" && f.pathway === "820/801")
+    );
   }
 
   // Cover page
@@ -571,25 +590,30 @@ export function generateReadinessPDF(input: PDFGeneratorInput): void {
 
   if (report.pathwayComparison.length > 0) {
     addHeading(text.pathwayTable);
-    report.pathwayComparison.forEach((item) => {
-      const friction = report.frictionAnalysis.find((f) => f.pathway === item.subclass || (item.subclass === "820_801" && f.pathway === "820/801"));
-      addBody(`${item.visaName} (${item.subclass})`);
-      addSmallText(`${text.confidence}: ${item.confidenceLevel}`, 4);
-      if (friction) {
-        const c = getFrictionColor(friction.frictionScore);
-        ensurePageSpace(6);
-        setBoldFont();
-        doc.setFontSize(FONTS.body);
-        doc.setTextColor(c.r, c.g, c.b);
-        doc.text(`${text.frictionScore}: ${friction.frictionScore}`, margin + 4, yPosition);
-        yPosition += 5;
-        addSmallText(`${text.realityCheck}: ${friction.realityCheck}`, 4);
-        if (friction.successSignals.length > 0) {
-          addSmallText(`${text.successSignals}:`, 4);
-          friction.successSignals.forEach((signal) => addSmallText(`- ${signal}`, 8));
-        }
+    const pathwayRows = report.pathwayComparison.map((item) => {
+      const friction = getFrictionForPathway(item.subclass);
+      return {
+        visa: `${item.visaName} (${item.subclass})`,
+        confidence: item.confidenceLevel,
+        frictionLevel: friction ? mapFrictionLabel(friction.frictionScore) : "MEDIUM",
+        realityCheck: friction?.realityCheck ?? item.reason,
+      };
+    });
+
+    drawTable(
+      [text.visa, text.confidence, text.frictionLevel],
+      pathwayRows.map((row) => [row.visa, row.confidence, row.frictionLevel]),
+      [0.5, 0.2, 0.3],
+      (rowIndex, colIndex) => {
+        if (colIndex !== 2) return null;
+        const row = pathwayRows[rowIndex];
+        if (!row) return null;
+        return getFrictionColorByLabel(row.frictionLevel as "LOW" | "MEDIUM" | "HIGH" | "EXTREME");
       }
-      addSmallText(item.reason, 4);
+    );
+
+    pathwayRows.forEach((row) => {
+      addSmallText(`${row.visa} - ${text.realityCheck}: ${row.realityCheck}`, 4);
     });
     yPosition += 3;
   }

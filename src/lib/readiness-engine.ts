@@ -14,6 +14,7 @@ type TrendRecord = {
   anzsco_code: string;
   estimates: Array<{
     subclass: "189" | "190" | "491";
+    last_invited_point?: number;
     estimated_points: number;
     estimated_wait: string;
   }>;
@@ -114,71 +115,123 @@ function computeBestKnownScore(input: ReadinessInput, base: ReadinessReport, occ
   return points.scores.subclass190;
 }
 
+function computeUserPointsBySubclass(input: ReadinessInput, base: ReadinessReport, occupationCode?: string): {
+  subclass189: number;
+  subclass190: number;
+  subclass491: number;
+} {
+  const ageRange = parseAgeRange(input.age);
+  const englishLevel = parseEnglishLevel(input.englishLevel);
+
+  if (!ageRange || !englishLevel) {
+    const fallback = base.pointsEstimate?.estimatedPoints ?? 0;
+    return {
+      subclass189: fallback,
+      subclass190: fallback,
+      subclass491: fallback,
+    };
+  }
+
+  const points = calculateVisaPoints({
+    ageRange,
+    englishLevel,
+    qualificationLevel: input.qualificationLevel ?? "Bachelor",
+    offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
+    onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
+    anzscoCode: occupationCode,
+    occupationName: input.occupation,
+    hasNAATI: false,
+    hasProfessionalYear: false,
+    hasRegionalStudy: false,
+    partnerSkilled: false,
+  });
+
+  return points.scores;
+}
+
 function escalate(current: FrictionScore, next: FrictionScore): FrictionScore {
   const rank: Record<FrictionScore, number> = {
-    Low: 1,
-    Medium: 2,
-    High: 3,
-    Extreme: 4,
+    LOW: 1,
+    MEDIUM: 2,
+    HIGH: 3,
+    EXTREME: 4,
   };
   return rank[next] > rank[current] ? next : current;
+}
+
+function getTrendPoint(estimate?: { last_invited_point?: number; estimated_points: number }): number | undefined {
+  if (!estimate) return undefined;
+  return estimate.last_invited_point ?? estimate.estimated_points;
+}
+
+function toPathwayKey(subclass: string): string {
+  return subclass === "820_801" ? "820/801" : subclass;
 }
 
 function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclass: string): FrictionAnalysisItem {
   const occupation = findOccupationRecord(input);
   const trend = findTrendRecord(input, occupation);
-  const score = computeBestKnownScore(input, base, occupation?.anzsco_code);
+  const scores = computeUserPointsBySubclass(input, base, occupation?.anzsco_code);
 
-  let frictionScore: FrictionScore = "Medium";
+  let frictionScore: FrictionScore = "MEDIUM";
   const reality: string[] = [];
   const successSignals: string[] = [];
 
-  const subclassKey = subclass === "820_801" ? "820/801" : subclass;
+  const subclassKey = toPathwayKey(subclass);
+  const userPoints =
+    subclassKey === "189" ? scores.subclass189
+    : subclassKey === "190" ? scores.subclass190
+    : subclassKey === "491" ? scores.subclass491
+    : computeBestKnownScore(input, base, occupation?.anzsco_code);
 
   const estimate = trend?.estimates.find((e) => e.subclass === subclassKey) ?? undefined;
+  const lastInvitedPoint = getTrendPoint(estimate);
+
   if (["189", "190", "491"].includes(subclassKey)) {
-    if (estimate && score <= estimate.estimated_points - 10) {
-      frictionScore = escalate(frictionScore, "High");
-      reality.push(`Current score is at least 10 points below recent ${subclassKey} invitation trend for this occupation.`);
+    if (lastInvitedPoint !== undefined) {
+      const gap = userPoints - lastInvitedPoint;
+      if (gap < -10) {
+        frictionScore = "EXTREME";
+      } else if (gap >= 0) {
+        frictionScore = "LOW";
+      } else if (gap <= -6) {
+        frictionScore = "HIGH";
+      } else {
+        frictionScore = "MEDIUM";
+      }
+
+      if (frictionScore === "EXTREME") {
+        reality.push(`Your current score (${userPoints}) is more than 10 points below the recent ${subclassKey} invitation reference (${lastInvitedPoint}).`);
+      } else if (frictionScore === "LOW") {
+        reality.push(`You are currently at or above the recent ${subclassKey} invitation reference (${lastInvitedPoint}).`);
+      } else if (frictionScore === "HIGH") {
+        reality.push(`You are close but still behind recent ${subclassKey} invitation movement (${userPoints} vs ${lastInvitedPoint}).`);
+      } else {
+        reality.push(`You are within a manageable range of recent ${subclassKey} invitation movement (${userPoints} vs ${lastInvitedPoint}).`);
+      }
+    } else {
+      reality.push(`No recent invitation point benchmark was matched for ${subclassKey}; score pressure is estimated from profile-only indicators.`);
     }
 
-    if (["221111", "261313"].includes(occupation?.anzsco_code ?? "") && score < 90) {
-      frictionScore = "Extreme";
-      reality.push("High-competition occupation segment with elevated invitation score pressure.");
-    }
-
-    if (subclassKey === "491" && input.regionalWilling === true) {
-      frictionScore = frictionScore === "Extreme" ? "High" : "Low";
-      reality.push("Regional willingness improves pathway viability for 491 nomination streams.");
+    if (subclassKey === "189" && ["221111", "261313"].includes(occupation?.anzsco_code ?? "") && userPoints < 90) {
+      frictionScore = userPoints < 85 ? "EXTREME" : escalate(frictionScore, "HIGH");
+      reality.push("This occupation is highly competitive for 189; sub-90 points profiles typically face elevated selection pressure.");
     }
   }
 
-  if (occupation?.authority === "ACS" && (input.offshoreExperienceYears ?? 0) < 2) {
-    frictionScore = "Extreme";
-    reality.push("ACS authority with sub-2-year experience has high deduction and skills assessment risk.");
-  }
-
-  if (
-    (occupation?.authority ?? "").toLowerCase().includes("vetassess group a") &&
-    input.educationRelevance === "non_relevant"
-  ) {
-    frictionScore = "Extreme";
-    reality.push("VETASSESS Group A with non-relevant qualification profile triggers high assessment refusal risk.");
-  }
-
-  if (subclassKey === "500") {
-    frictionScore = frictionScore === "Extreme" ? "Extreme" : "Low";
-    reality.push("Student pathway is generally lower friction but sensitive to GTE/GS evidence quality.");
+  if (["189", "190", "491"].includes(subclassKey) && occupation?.authority === "ACS" && (input.offshoreExperienceYears ?? 0) < 2) {
+    frictionScore = "EXTREME";
+    reality.push("ACS experience deduction risk is high because declared experience is below 2 years.");
   }
 
   if (subclassKey === "820/801") {
-    frictionScore = escalate(frictionScore, "High");
-    reality.push("Relationship evidence burden is document-heavy and consistency-sensitive.");
+    frictionScore = "MEDIUM";
+    reality.push("Relationship evidence preparation is documentation-heavy and consistency-sensitive.");
   }
 
   if (subclassKey === "482") {
-    frictionScore = escalate(frictionScore, "High");
-    reality.push("Employer sponsorship dependency is a major practical bottleneck.");
+    frictionScore = "HIGH";
+    reality.push("Employer sponsorship dependency creates a practical bottleneck even with a valid profile.");
   }
 
   const english = parseEnglishLevel(input.englishLevel);
@@ -193,6 +246,14 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   }
   if (["190", "491"].includes(subclassKey)) {
     successSignals.push("Nomination pathways provide additional score leverage compared with pure independent routes.");
+  }
+
+  if (["189", "190", "491"].includes(subclassKey) && lastInvitedPoint !== undefined && userPoints >= lastInvitedPoint) {
+    successSignals.push("Your points currently meet or exceed the latest invitation reference for this pathway.");
+  }
+
+  if (subclassKey === "820/801" || subclassKey === "482") {
+    successSignals.push("Outcome quality depends strongly on evidence quality, sequence control, and process timing.");
   }
 
   return {

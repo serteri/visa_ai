@@ -178,7 +178,7 @@ export type PositionChanger = {
   explanation: string;
 };
 
-export type FrictionScore = "Low" | "Medium" | "High" | "Extreme";
+export type FrictionScore = "LOW" | "MEDIUM" | "HIGH" | "EXTREME";
 
 export type FrictionAnalysisItem = {
   pathway: string;

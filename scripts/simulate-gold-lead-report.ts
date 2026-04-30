@@ -1,4 +1,4 @@
-import { runReadinessEngine } from "@/lib/readiness/engine";
+import { runReadinessEngine } from "@/src/lib/readiness-engine";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import { calculateVisaPoints } from "@/lib/readiness/visa-points-calculator";
 import { getCostBreakdown } from "@/src/lib/financial-engine";
@@ -11,8 +11,11 @@ const goldLeadInput: ReadinessInput = {
   currentCountry: "Turkey",
   passportCountry: "Turkey",
   age: "30",
-  occupation: "Software Engineer",
+  occupation: "Software Engineer (261313)",
   englishLevel: "superior",
+  qualificationLevel: "Bachelor",
+  offshoreExperienceYears: 6,
+  onshoreExperienceYears: 0,
   englishTestTaken: "yes",
   occupationConfirmed: "yes",
   estimatedBudgetRange: "20k-30k AUD",
@@ -90,6 +93,7 @@ console.log(JSON.stringify({
   visaTarget: "190",
   points,
   financial,
+  frictionAnalysis: readiness.frictionAnalysis,
   premiumSections: readiness.premiumSections,
 }, null, 2));
 

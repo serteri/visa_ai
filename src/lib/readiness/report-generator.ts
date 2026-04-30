@@ -52,6 +52,7 @@ type TrendRecord = {
   anzsco_code: string;
   estimates: Array<{
     subclass: "189" | "190" | "491";
+    last_invited_point?: number;
     estimated_points: number;
     estimated_wait: string;
   }>;
@@ -270,7 +271,7 @@ export function generatePremiumSections(input: {
       anzscoCode: trend.anzsco_code,
       estimates: trend.estimates.map((e) => ({
         subclass: e.subclass,
-        estimatedPoints: e.estimated_points,
+        estimatedPoints: e.last_invited_point ?? e.estimated_points,
         estimatedWait: e.estimated_wait,
       })),
       note: "Trend estimates are analytical planning references only and do not guarantee invitation outcomes.",
