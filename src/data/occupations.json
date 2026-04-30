@@ -1,0 +1,1451 @@
+{
+  "generated_on": "2026-04-30",
+  "jurisdiction": "Australia",
+  "currency_note": "This mapping is a structured reference aligned to common 2026 skilled migration assessment practice; occupation list placement can change via new legislative instruments and should be re-validated before lodgement.",
+  "occupations": [
+    {
+      "anzsco_code": "133111",
+      "occupation_name": "Construction Project Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS counts only highly relevant post-qualification employment.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "133611",
+      "occupation_name": "Supply and Distribution Manager",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS may reject where evidence is warehouse supervision rather than strategic logistics.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "135111",
+      "occupation_name": "ICT Project Manager",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "135112",
+      "occupation_name": "ICT Manager (nec)",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "221111",
+      "occupation_name": "Accountant (General)",
+      "authority": "CPAA/CAANZ/IPA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "Accounting authorities require strict core subject matching; gaps can trigger negative outcome.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "221112",
+      "occupation_name": "Management Accountant",
+      "authority": "CPAA/CAANZ/IPA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "Accounting authorities require strict core subject matching; gaps can trigger negative outcome.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "221113",
+      "occupation_name": "Taxation Accountant",
+      "authority": "CPAA/CAANZ/IPA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "Accounting authorities require strict core subject matching; gaps can trigger negative outcome.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "221214",
+      "occupation_name": "External Auditor",
+      "authority": "CPAA/CAANZ/IPA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "Accounting authorities scrutinize auditing subject coverage and document authenticity.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "223111",
+      "occupation_name": "Human Resource Adviser",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS may discount general admin roles that lack strategic HR advisory duties.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "224111",
+      "occupation_name": "Actuary",
+      "authority": "Institute of Actuaries of Australia",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "Actuary assessments require deep actuarial curriculum equivalence; partial exemptions may fail.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "224113",
+      "occupation_name": "Statistician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires advanced statistical modeling duties, not reporting-only analytics.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "225113",
+      "occupation_name": "Marketing Specialist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires market strategy and analysis evidence at professional level.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "232111",
+      "occupation_name": "Architect",
+      "authority": "AACA",
+      "min_qualification": "AQF Master degree or accredited professional architecture qualification",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "AACA overseas qualification assessment is separate from state registration/licensing requirements.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "232611",
+      "occupation_name": "Urban and Regional Planner",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires direct planning-policy/development-control duty evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "233111",
+      "occupation_name": "Chemical Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233112",
+      "occupation_name": "Materials Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient engineering competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233211",
+      "occupation_name": "Civil Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233212",
+      "occupation_name": "Geotechnical Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233213",
+      "occupation_name": "Quantity Surveyor",
+      "authority": "AIQS",
+      "min_qualification": "AQF Bachelor degree in Quantity Surveying",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "AIQS requires core competency coverage across measurement, contract admin, and cost planning.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233214",
+      "occupation_name": "Structural Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233215",
+      "occupation_name": "Transport Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233311",
+      "occupation_name": "Electrical Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233411",
+      "occupation_name": "Electronics Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233511",
+      "occupation_name": "Industrial Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233512",
+      "occupation_name": "Mechanical Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233513",
+      "occupation_name": "Production or Plant Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "CDR pathway can fail on plagiarism/insufficient competency episode evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233611",
+      "occupation_name": "Mining Engineer (excluding Petroleum)",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient engineering competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233612",
+      "occupation_name": "Petroleum Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient engineering competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233912",
+      "occupation_name": "Agricultural Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient engineering competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233915",
+      "occupation_name": "Environmental Engineer",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient engineering competency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "233999",
+      "occupation_name": "Engineering Professionals nec",
+      "authority": "Engineers Australia",
+      "min_qualification": "AQF Bachelor degree (Engineering)",
+      "post_qual_experience_years": 0,
+      "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
+      "critical_warning": "EA nec assessments are scrutinized heavily for exact occupational fit and competency evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234111",
+      "occupation_name": "Agricultural Consultant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires direct agronomy/advisory evidence; sales-only roles are commonly refused.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234112",
+      "occupation_name": "Agricultural Scientist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires scientific analysis duties and post-qualification relevance.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234212",
+      "occupation_name": "Food Technologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS expects core product/process and compliance duties, not pure QA admin.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234312",
+      "occupation_name": "Environmental Consultant",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires environmental impact/compliance scope; generic HSE roles may fail.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "234511",
+      "occupation_name": "Life Scientist (General)",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires laboratory/research depth and highly relevant post-qualification work.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234513",
+      "occupation_name": "Biochemist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS often refuses roles lacking core biochemical analysis responsibilities.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234514",
+      "occupation_name": "Biotechnologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires clear biotechnology process/research duties and evidence continuity.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "234517",
+      "occupation_name": "Microbiologist",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires substantial microbiology testing/research tasks and technical reporting.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "241111",
+      "occupation_name": "Early Childhood (Pre-primary School) Teacher",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict initial teacher education equivalence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "241213",
+      "occupation_name": "Primary School Teacher",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "AITSL requires supervised teaching evidence and strict initial teacher education equivalence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "241411",
+      "occupation_name": "Secondary School Teacher",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "AITSL requires subject-specialist study mapping and supervised teaching evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "241511",
+      "occupation_name": "Special Needs Teacher",
+      "authority": "AITSL",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "AITSL rejects incomplete practicum evidence and non-equivalent pedagogy units.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "251211",
+      "occupation_name": "Medical Diagnostic Radiographer",
+      "authority": "AHPRA (Medical Radiation Practice Board)",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "Registration-linked assessments require exact clinical training evidence and recency of practice.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "251212",
+      "occupation_name": "Medical Radiation Therapist",
+      "authority": "AHPRA (Medical Radiation Practice Board)",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "Registration-linked assessments require exact clinical training evidence and recency of practice.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "251511",
+      "occupation_name": "Hospital Pharmacist",
+      "authority": "ANZPAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "ANZPAC pathway requires approved exam/internship steps; document mismatch commonly delays outcomes.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "252411",
+      "occupation_name": "Occupational Therapist",
+      "authority": "OTC",
+      "min_qualification": "AQF Bachelor degree or higher in Occupational Therapy",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "OTC outcomes depend on substantial equivalence and supervised practice evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "252511",
+      "occupation_name": "Physiotherapist",
+      "authority": "APC",
+      "min_qualification": "AQF Bachelor degree or higher in Physiotherapy",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "APC pathway may require written and clinical assessment before positive outcome.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "252712",
+      "occupation_name": "Speech Pathologist",
+      "authority": "SPA",
+      "min_qualification": "AQF Bachelor degree or higher in Speech Pathology",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "SPA competency evidence must align strictly to CBA standards and document templates.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "253111",
+      "occupation_name": "General Practitioner",
+      "authority": "AMC",
+      "min_qualification": "Primary medical degree (MBBS/MD equivalent)",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or OET B each component",
+      "critical_warning": "AMC pathway requires primary source verification and exam/pathway compliance.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "253311",
+      "occupation_name": "Specialist Physician (General Medicine)",
+      "authority": "AMC",
+      "min_qualification": "Primary medical degree plus specialist training",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or OET B each component",
+      "critical_warning": "Specialist comparability outcome can impose supervision/upskilling before recognition.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254111",
+      "occupation_name": "Midwife",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254412",
+      "occupation_name": "Registered Nurse (Aged Care)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254413",
+      "occupation_name": "Registered Nurse (Child and Family Health)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254414",
+      "occupation_name": "Registered Nurse (Community Health)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254415",
+      "occupation_name": "Registered Nurse (Critical Care and Emergency)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254418",
+      "occupation_name": "Registered Nurse (Medical)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254421",
+      "occupation_name": "Registered Nurse (Medical Practice)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254422",
+      "occupation_name": "Registered Nurse (Mental Health)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254423",
+      "occupation_name": "Registered Nurse (Perioperative)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "254424",
+      "occupation_name": "Registered Nurse (Surgical)",
+      "authority": "ANMAC",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
+      "critical_warning": "ANMAC full assessment requires AHPRA registration status and correct recency evidence.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "261111",
+      "occupation_name": "ICT Business Analyst",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "261112",
+      "occupation_name": "Systems Analyst",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "261211",
+      "occupation_name": "Multimedia Specialist",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "261212",
+      "occupation_name": "Web Developer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "261311",
+      "occupation_name": "Analyst Programmer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "261312",
+      "occupation_name": "Developer Programmer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "261313",
+      "occupation_name": "Software Engineer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "261314",
+      "occupation_name": "Software Tester",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL",
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "262111",
+      "occupation_name": "Database Administrator",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "262112",
+      "occupation_name": "ICT Security Specialist",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "262113",
+      "occupation_name": "Systems Administrator",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "263111",
+      "occupation_name": "Computer Network and Systems Engineer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "263112",
+      "occupation_name": "Network Administrator",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "263211",
+      "occupation_name": "ICT Quality Assurance Engineer",
+      "authority": "ACS",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 2,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "272311",
+      "occupation_name": "Clinical Psychologist",
+      "authority": "APS",
+      "min_qualification": "AQF Master degree or Doctorate in Psychology",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "APS requires exact academic sequence equivalence and can reject incomplete supervised practice records.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "272511",
+      "occupation_name": "Social Worker",
+      "authority": "AASW",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "IELTS 7 each band or PTE Academic 65 each",
+      "critical_warning": "AASW requires exact social work curriculum and placement standards; related degrees are often refused.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "272613",
+      "occupation_name": "Welfare Worker",
+      "authority": "ACWA",
+      "min_qualification": "AQF Bachelor degree",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "ACWA requires strict welfare qualification mapping and practice relevance evidence.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "311111",
+      "occupation_name": "Agricultural Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires technical agricultural duties; farm labor-only evidence is insufficient.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312112",
+      "occupation_name": "Building Associate",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS may refuse if duties are managerial-only without technical alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312113",
+      "occupation_name": "Building Inspector",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS may refuse if duties are managerial-only without technical alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312114",
+      "occupation_name": "Construction Estimator",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS may refuse if duties are managerial-only without technical alignment.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312116",
+      "occupation_name": "Surveying or Spatial Science Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS can reject generic GIS roles that do not match ANZSCO technician scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312211",
+      "occupation_name": "Civil Engineering Draftsperson",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS may discount experience if CAD output is not civil-infrastructure specific.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312212",
+      "occupation_name": "Civil Engineering Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS may discount experience if tasks are site supervision without technical calculations/testing.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312311",
+      "occupation_name": "Electrical Engineering Draftsperson",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS requires technical drafting outputs and engineering relevance.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "312312",
+      "occupation_name": "Electrical Engineering Technician",
+      "authority": "VETASSESS",
+      "min_qualification": "AQF Diploma",
+      "post_qual_experience_years": 1,
+      "english_requirement": "Not required for assessment",
+      "critical_warning": "VETASSESS may reject if duties are installation-only without technical diagnostics/calibration scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "321211",
+      "occupation_name": "Motor Mechanic (General)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may discount workshop time that is not post-qualification and properly documented.",
+      "visa_lists": [
+        "STSOL",
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "321212",
+      "occupation_name": "Diesel Motor Mechanic",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may discount workshop time that is not post-qualification and properly documented.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "321213",
+      "occupation_name": "Motorcycle Mechanic",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may discount workshop time lacking clear post-qualification trade scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "321214",
+      "occupation_name": "Small Engine Mechanic",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may discount workshop time lacking clear post-qualification trade scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "323211",
+      "occupation_name": "Fitter (General)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may reject if evidence does not prove broad fitting scope (assembly, maintenance, tolerance work).",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "323212",
+      "occupation_name": "Fitter and Turner",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may reject if evidence does not prove machining and precision turning competency.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "324111",
+      "occupation_name": "Panelbeater",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires verifiable collision repair competencies and employment records.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "324211",
+      "occupation_name": "Vehicle Body Builder",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires evidence of full fabrication scope, not partial assembly tasks.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "324212",
+      "occupation_name": "Vehicle Trimmer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires verifiable trimming/upholstery trade duties at full scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "324311",
+      "occupation_name": "Vehicle Painter",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires prep, color matching and refinishing scope evidence; helper roles fail.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331111",
+      "occupation_name": "Bricklayer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may reject applications lacking verifiable full-scope task evidence and wage records.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331112",
+      "occupation_name": "Stonemason",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires full-scope trade evidence with verifiable employment and task records.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331211",
+      "occupation_name": "Carpenter and Joiner",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA often refuses applications where evidence does not cover full carpentry scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331212",
+      "occupation_name": "Carpenter",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA often refuses applications where evidence does not cover full carpentry scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "331213",
+      "occupation_name": "Joiner",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires clear workshop joinery competencies and verifiable employment records.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "332211",
+      "occupation_name": "Painting Trades Worker",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may reject applications lacking verifiable full-scope task evidence and wage records.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "333111",
+      "occupation_name": "Glazier",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires evidence of measurement, cutting, fitting and glazing compliance tasks.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "333211",
+      "occupation_name": "Fibrous Plasterer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may reject where documentation does not show full trade competencies.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "333212",
+      "occupation_name": "Solid Plasterer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may reject where documentation does not show full trade competencies.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "334111",
+      "occupation_name": "Plumber (General)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA outcomes do not grant plumbing license; separate state licensing is mandatory.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "334112",
+      "occupation_name": "Airconditioning and Mechanical Services Plumber",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA outcome does not replace state licensing and regulated work authorizations.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "334113",
+      "occupation_name": "Drainer",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA outcome does not replace state licensing and regulated work authorizations.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "334114",
+      "occupation_name": "Gasfitter",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA outcome does not replace state licensing and regulated work authorizations.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "334115",
+      "occupation_name": "Roof Plumber",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA outcome does not replace state licensing and regulated work authorizations.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "341111",
+      "occupation_name": "Electrician (General)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA outcomes do not grant electrical license; separate state licensing is mandatory.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "341112",
+      "occupation_name": "Electrician (Special Class)",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA outcome does not grant electrical license; separate state licensing is mandatory.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "342111",
+      "occupation_name": "Airconditioning and Refrigeration Mechanic",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA outcomes do not grant refrigerant handling license; ARC/state compliance still required.",
+      "visa_lists": [
+        "MLTSSL"
+      ]
+    },
+    {
+      "anzsco_code": "342211",
+      "occupation_name": "Electrical Linesworker",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires strong evidence of live network construction/maintenance competencies.",
+      "visa_lists": [
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "342313",
+      "occupation_name": "Electronic Equipment Trades Worker",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA may reject where duties are assembly-only and not full diagnostics/repair scope.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "351112",
+      "occupation_name": "Pastrycook",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires evidence of independent pastry production and full-scope competencies.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    },
+    {
+      "anzsco_code": "351311",
+      "occupation_name": "Chef",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate IV or Diploma in Commercial Cookery/Hospitality",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA can refuse where duties align to cook-level only or where menu planning/supervision evidence is weak.",
+      "visa_lists": [
+        "STSOL",
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "351411",
+      "occupation_name": "Cook",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA distinguishes cook vs chef duties; mismatch commonly triggers refusal.",
+      "visa_lists": [
+        "STSOL",
+        "ROL"
+      ]
+    },
+    {
+      "anzsco_code": "394111",
+      "occupation_name": "Cabinetmaker",
+      "authority": "TRA",
+      "min_qualification": "AQF Certificate III (trade)",
+      "post_qual_experience_years": 3,
+      "english_requirement": "Not required for migration skills assessment",
+      "critical_warning": "TRA requires detailed fabrication and installation evidence, not machine-operator tasks only.",
+      "visa_lists": [
+        "STSOL"
+      ]
+    }
+  ]
+}
