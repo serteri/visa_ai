@@ -38,7 +38,15 @@ async function getVisas() {
   return visasWithData;
 }
 
-function ReviewBadge({ status }: { status: string | null | undefined }) {
+function ReviewBadge({
+  status,
+  locale,
+}: {
+  status: string | null | undefined;
+  locale: string;
+}) {
+  const tx = (zh: string, tr: string, en: string) =>
+    locale === "tr" ? tr : locale === "zh-Hans" ? zh : en;
   const variant =
     status === "approved"
       ? "default"
@@ -46,7 +54,14 @@ function ReviewBadge({ status }: { status: string | null | undefined }) {
         ? "secondary"
         : "outline";
 
-  const label = status === "approved" ? "reviewed" : status || "unknown";
+  const label =
+    status === "approved"
+      ? tx("已审核", "İncelendi", "reviewed")
+      : status === "needs_review"
+        ? tx("需要审核", "İnceleme gerekli", "needs review")
+        : status
+          ? status.replace(/_/g, " ")
+          : tx("未知", "Bilinmiyor", "unknown");
 
   return <Badge variant={variant}>{label}</Badge>;
 }
@@ -111,7 +126,7 @@ export default async function AdminVisasPage({ params }: AdminVisasPageProps) {
                         {visa.category} • ID: {visa.id}
                       </p>
                     </div>
-                    <ReviewBadge status={visa.reviewed_status} />
+                    <ReviewBadge status={visa.reviewed_status} locale={locale} />
                   </div>
                 </CardHeader>
 
@@ -141,8 +156,18 @@ export default async function AdminVisasPage({ params }: AdminVisasPageProps) {
                       </p>
                       <p className="text-sm">
                         {visa.reviewed_status === "approved"
-                          ? "reviewed"
-                          : visa.reviewed_status || "needs_review"}
+                          ? locale === "tr"
+                            ? "İncelendi"
+                            : locale === "zh-Hans"
+                              ? "已审核"
+                              : "reviewed"
+                          : visa.reviewed_status === "needs_review"
+                            ? locale === "tr"
+                              ? "İnceleme gerekli"
+                              : locale === "zh-Hans"
+                                ? "需要审核"
+                                : "needs review"
+                            : visa.reviewed_status || (locale === "tr" ? "Bilinmiyor" : locale === "zh-Hans" ? "未知" : "unknown")}
                       </p>
                     </div>
                     <div>

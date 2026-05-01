@@ -904,11 +904,25 @@ const JSON_KEY_TRANSLATIONS: Record<string, { tr: string; zh: string }> = {
   visa_name: { tr: "Vize adı", zh: "签证名称" },
   relationship_requirements: { tr: "İlişki gereksinimleri", zh: "关系要求" },
   sponsor_requirements: { tr: "Sponsor gereksinimleri", zh: "担保人要求" },
+  sponsor_801_requirements: { tr: "Sponsor 801 gereksinimleri", zh: "801 阶段担保人要求" },
   permanent_stage_801: { tr: "Kalıcı aşama 801", zh: "永久阶段 801" },
   domestic_and_family_violence: { tr: "Aile içi şiddet", zh: "家庭暴力" },
   faq_summary: { tr: "SSS özeti", zh: "常见问题摘要" },
   nomination_or_sponsorship: { tr: "Adaylık veya sponsorluk", zh: "提名或担保" },
   regional_requirements: { tr: "Bölgesel gereksinimler", zh: "地区要求" },
+  required_level: { tr: "Gerekli seviye", zh: "要求水平" },
+  sponsor_age: { tr: "Sponsor yaşı", zh: "担保人年龄" },
+  sponsor_risks: { tr: "Sponsor riskleri", zh: "担保人风险" },
+  sponsor_documents: { tr: "Sponsor belgeleri", zh: "担保人文件" },
+  sponsor_obligations: { tr: "Sponsor yükümlülükleri", zh: "担保人义务" },
+  sponsorship_duration: { tr: "Sponsorluk süresi", zh: "担保期限" },
+  can_include_dependent_child: { tr: "Bağımlı çocuk dahil edilebilir", zh: "可包含受抚养子女" },
+  online_application: { tr: "Çevrimiçi başvuru", zh: "在线申请" },
+  progress_updates: { tr: "İlerleme güncellemeleri", zh: "进度更新" },
+  urgent_processing: { tr: "Acil işlem", zh: "紧急处理" },
+  health_exams: { tr: "Sağlık muayeneleri", zh: "体检" },
+  review_rights: { tr: "İnceleme hakları", zh: "复审权利" },
+  permanent_stage_documents: { tr: "Kalıcı aşama belgeleri", zh: "永久阶段文件" },
 };
 
 function translateJsonKey(key: string, locale: string): string {
@@ -1083,8 +1097,12 @@ export default async function VisaDetailsPage({ params }: PageProps) {
         : "outline";
   const reviewedBadgeLabel =
     visa.reviewed_status === "approved"
-      ? "reviewed"
-      : visa.reviewed_status ?? "needs_review";
+      ? tx("已审核", "İncelendi", "reviewed")
+      : visa.reviewed_status === "needs_review"
+        ? tx("需要审核", "İnceleme gerekli", "needs review")
+        : visa.reviewed_status
+          ? visa.reviewed_status.replace(/_/g, " ")
+          : tx("需要审核", "İnceleme gerekli", "needs review");
 
   const sections = [
     {
