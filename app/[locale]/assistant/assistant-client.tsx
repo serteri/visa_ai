@@ -143,7 +143,7 @@ export function AssistantClient({
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
-  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
+  const tx = (zh: string, tr: string, en: string) => (isTr ? tr : isZh ? zh : en);
   const mode = initialMode;
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);

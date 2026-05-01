@@ -897,7 +897,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
   const { locale, subclass } = await params;
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
-  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
+  const tx = (zh: string, tr: string, en: string) => (isTr ? tr : isZh ? zh : en);
 
   const result = await getVisaDetails(subclass);
   if (!result) notFound();
