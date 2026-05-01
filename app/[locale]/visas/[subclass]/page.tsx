@@ -70,6 +70,15 @@ function txLocale(locale: string, zh: string, tr: string, en: string) {
   return en;
 }
 
+function formatDisplayDate(locale: string, value: string | Date) {
+  const languageTag = locale === "tr" ? "tr-TR" : locale === "zh-Hans" ? "zh-CN" : "en-AU";
+  return new Date(value).toLocaleDateString(languageTag, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 // ─── data fetching ────────────────────────────────────────────────────────────
 
 async function getVisaDetails(subclass: string, locale: string) {
@@ -1336,11 +1345,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
                 label={tx("最近更新", "Son kontrol", "Last checked")}
                 value={
                   visa.last_checked
-                    ? new Date(visa.last_checked).toLocaleDateString("en-AU", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })
+                    ? formatDisplayDate(locale, visa.last_checked)
                     : undefined
                 }
               />
@@ -1387,23 +1392,19 @@ export default async function VisaDetailsPage({ params }: PageProps) {
                 {snapshots.map((snap) => {
                   const notes = snap.notes ?? "";
                   const title = /english proficiency/i.test(notes)
-                    ? "English proficiency requirements"
+                    ? tx("英语能力要求", "İngilizce yeterlilik gereksinimleri", "English proficiency requirements")
                     : /core skills stream|main visa/i.test(notes)
-                      ? "Main visa page"
-                      : "PDF snapshot";
+                      ? tx("主签证页面", "Ana vize sayfası", "Main visa page")
+                      : tx("PDF anlık görüntüsü", "PDF anlık görüntüsü", "PDF snapshot");
                   return (
                     <div key={snap.id} className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                       <div className="space-y-0.5">
                         <p className="text-sm font-medium">{title}</p>
                         <p className="text-xs text-muted-foreground">
-                          Captured:{" "}
+                          {tx("抓取时间", "Yakalanma tarihi", "Captured")}:{" "}
                           {snap.captured_at
-                            ? new Date(snap.captured_at).toLocaleDateString("en-AU", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              })
-                            : "Unknown"}
+                            ? formatDisplayDate(locale, snap.captured_at)
+                            : tx("未知", "Bilinmiyor", "Unknown")}
                         </p>
                       </div>
                       {snap.pdf_snapshot_url && (
@@ -1413,7 +1414,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            Open PDF
+                            {tx("打开 PDF", "PDF aç", "Open PDF")}
                           </a>
                         </Button>
                       )}

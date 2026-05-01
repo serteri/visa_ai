@@ -548,12 +548,74 @@ const trStructuredData: LocaleVisaStructuredMap = {
     english_requirements: {
       summary:
         "Skills in Demand 482 için birincil başvuru sahipleri, muafiyet yoksa asgari İngilizce yeterliliğini göstermelidir.",
+      applies_to_streams: ["Core Skills akışı", "Specialist Skills akışı"],
       test_validity: "İngilizce sınavları başvurudan önceki 3 yıl içinde alınmış olmalıdır.",
+      exemptions: [
+        "Kanada pasaportu sahibi olmak",
+        "Yeni Zelanda pasaportu sahibi olmak",
+        "İrlanda Cumhuriyeti pasaportu sahibi olmak",
+        "Birleşik Krallık pasaportu sahibi olmak",
+        "Amerika Birleşik Devletleri pasaportu sahibi olmak",
+        "Derslerin çoğunun İngilizce verildiği en az ortaöğretim düzeyinde bir kurumda en az 5 yıl tam zamanlı eğitim tamamlamış olmak",
+        "Aday gösterilen mesleğin başka bir ülkenin diplomatik veya konsolosluk misyonunda icra edilecek olması",
+        "Aday gösterilen mesleğin Tayvan Yetkilileri Ofisinde icra edilecek olması",
+        "Aday gösterilen mesleğin lisans, kayıt veya üyelik gerektirmesi ve başvuru sahibinin bunu almak için eşit veya daha yüksek İngilizce yeterliliği kanıtlamış olması",
+        "Başvuru sahibinin yurt dışı bir işletmenin çalışanı olması, işletmenin veya ilişkili kuruluşunun kişiyi Avustralya'da çalışmak üzere aday göstermesi ve yıllık en az AUD 96.400 garanti kazanç alacak olması",
+      ],
+      tests_taken_on_or_after_2025_09_13: {
+        single_skill_retake_note:
+          "Sınav tek beceri telafi seçeneği sunuyorsa, o beceriye ait sonuç kabul edilebilir.",
+        CELPIP_General: { listening: 5, reading: 5, writing: 5, speaking: 5 },
+        IELTS_Academic: { listening: 5, reading: 5, writing: 5, speaking: 5 },
+        IELTS_General_Training: { listening: 5, reading: 5, writing: 5, speaking: 5 },
+        LANGUAGECERT_Academic: { listening: 41, reading: 44, writing: 45, speaking: 54 },
+        MET: { listening: 49, reading: 47, writing: 45, speaking: 38 },
+        OET: { listening: 220, reading: 240, writing: 200, speaking: 270 },
+        PTE_Academic: { listening: 33, reading: 36, writing: 29, speaking: 24 },
+        TOEFL_iBT: {
+          listening: 8,
+          reading: 8,
+          writing: 9,
+          speaking: 14,
+          note: "21 Ocak 2026 ve sonrasında alınan sınavlarda kayıt sırasında Taking TOEFL for Australia seçilmelidir.",
+        },
+      },
+      tests_taken_before_2025_09_13: {
+        single_sitting_required: true,
+        single_skill_retake_accepted: false,
+        IELTS: { overall: 5, listening: 5, reading: 5, writing: 5, speaking: 5 },
+        OET: { listening: "B", reading: "B", writing: "B", speaking: "B" },
+        TOEFL_iBT: {
+          overall: 35,
+          listening: 4,
+          reading: 4,
+          writing: 14,
+          speaking: 14,
+          note: "26 Temmuz 2023 ile 4 Mayıs 2024 arasında alınan TOEFL iBT sınavları Avustralya vize amaçları için onaylanmamıştır.",
+        },
+        PTE_Academic: { overall: 36, listening: 36, reading: 36, writing: 36, speaking: 36 },
+        C1_Advanced: {
+          overall: 154,
+          listening: 154,
+          reading: 154,
+          writing: 154,
+          speaking: 154,
+          note: "12 Şubat 2024'ten itibaren yalnızca Cambridge C1 Advanced kağıt tabanlı sınav sonuçları kabul edilir. 12 Şubat 2024 öncesindeki sınavlar geçerlilik süresi içinde halen kabul edilebilir.",
+        },
+      },
       labour_agreement_stream_note:
         "Labour Agreement akışında İngilizce şartları, işveren ile Commonwealth arasındaki anlaşmada belirtilmiş olabilir.",
       online_tests_not_accepted: {
         rule:
           "Sınavın tamamı çevrimiçi/uzaktan gözetimli/evden yapılan İngilizce test kanıtları kabul edilmez.",
+        examples_not_accepted: [
+          "CELPIP Online",
+          "IELTS Online",
+          "LANGUAGECERT Academic Online",
+          "OET@Home",
+          "MET Digital taken at-home",
+          "TOEFL iBT Home Edition",
+        ],
       },
     },
     financial_requirements: {
@@ -563,6 +625,16 @@ const trStructuredData: LocaleVisaStructuredMap = {
         "Başvuru sahibi, Yıllık Piyasa Ücret Oranı'nı ve Core Skills Income Threshold'u karşılayan bir maaş almalıdır.",
         "Kesin gelir eşiği tutarı için resmi nitelikli vize gelir eşiği kaynağına başvurun.",
       ],
+    },
+    raw_json: {
+      family_members: {
+        can_include_family: true,
+        notes: [
+          "Aile üyeleri, başvuru sahibinin şu anda veya daha önce 457 ya da 482 alt sınıfı vizeye sahip olup olmamasına bağlı olarak ikincil başvuru sahibi olarak dahil edilebilir.",
+          "İkincil başvuru sahipleri sağlık ve karakter şartlarını karşılamalıdır.",
+          "Başvuru gönderildikten sonra aile üyeleri eklenemez; ancak uygunsa daha sonra subsequent entrant olarak başvurabilirler.",
+        ],
+      },
     },
   },
   "491": {
@@ -638,9 +710,57 @@ const trStructuredData: LocaleVisaStructuredMap = {
       required_level: "Yeterli İngilizce",
       summary:
         "Davet anında birincil başvuru sahibinin en az Yeterli İngilizceye sahip olması gerekir. 18+ aile üyeleri için Functional English veya ikinci taksit ücreti gerekebilir.",
+      passport_exemptions: [
+        "Kanada",
+        "Yeni Zelanda",
+        "İrlanda Cumhuriyeti",
+        "Büyük Britanya ve Kuzey İrlanda Birleşik Krallığı",
+        "Amerika Birleşik Devletleri",
+      ],
+      tests_taken_on_or_after_2025_08_07: {
+        C1_Advanced: { listening: 163, reading: 163, writing: 170, speaking: 179 },
+        CELPIP_General: { listening: 7, reading: 7, writing: 7, speaking: 7 },
+        IELTS_Academic: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        IELTS_General_Training: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        MET: { listening: 56, reading: 55, writing: 57, speaking: 48 },
+        OET: { listening: 290, reading: 310, writing: 290, speaking: 330 },
+        LANGUAGECERT_Academic: { listening: 57, reading: 60, writing: 64, speaking: 70 },
+        PTE_Academic: { listening: 47, reading: 48, writing: 51, speaking: 54 },
+        TOEFL_iBT: {
+          listening: 16,
+          reading: 16,
+          writing: 19,
+          speaking: 19,
+          note: "Kayıt sırasında Taking TOEFL for Australia seçilmelidir.",
+        },
+      },
+      tests_taken_on_or_before_2025_08_06: {
+        C1_Advanced: { listening: 169, reading: 169, writing: 169, speaking: 169 },
+        IELTS: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        OET: { listening: "B", reading: "B", writing: "B", speaking: "B" },
+        PTE_Academic: { listening: 50, reading: 50, writing: 50, speaking: 50 },
+        TOEFL_iBT: {
+          listening: 12,
+          reading: 13,
+          writing: 21,
+          speaking: 21,
+          note: "26 Temmuz 2023 ile 4 Mayıs 2024 arasında alınan TOEFL iBT sınavları Avustralya vize amaçları için onaylanmamıştır.",
+        },
+      },
       functional_english_for_family_members: {
         summary:
           "18 yaş ve üzeri aile üyeleri Functional English göstermeli veya ikinci taksit ücreti ödemelidir.",
+      },
+      online_tests_not_accepted: {
+        rule: "Sınavın tamamı çevrimiçi/uzaktan gözetimli/evden yapılan İngilizce test kanıtları kabul edilmez.",
+        examples_not_accepted: [
+          "CELPIP Online",
+          "IELTS Online",
+          "LANGUAGECERT Academic Online",
+          "MET Digital taken at-home",
+          "OET@Home",
+          "TOEFL iBT Home Edition",
+        ],
       },
     },
     financial_requirements: {
@@ -652,6 +772,19 @@ const trStructuredData: LocaleVisaStructuredMap = {
       ],
     },
     raw_json: {
+      occupation_requirements: {
+        summary: "Başvuru sahibinin, Skilled Regional subclass 491 vizesi için uygun nitelikli mesleklerin birleşik listesindeki bir mesleğe sahip olması gerekir.",
+        notes: [
+          "Subclass 491, eyalet veya bölge adaylığı ya da uygun akraba sponsorluğu içerebilir.",
+          "Eyalet ve bölge devlet kurumlarının kendi adaylık kriterleri vardır.",
+          "Meslek uygunluğu, ilgili nitelikli meslek listesi ile adaylık veya sponsorluk yoluna göre kontrol edilmelidir.",
+        ],
+      },
+      points_test_rules: {
+        minimum_points_required: 65,
+        summary: "Subclass 491 puan testine tabi bir vizedir. Başvuru sahibinin en az 65 puan alması gerekir ve EOI beyanları, adaylık veya uygun akraba sponsorluğuna göre davet alabilir.",
+        note: "Ayrıntılı puan kategorileri, subclass'a özgü resmi farklar belirlenmedikçe 189/190 için kullanılan nitelikli göç puan tablosunu yeniden kullanmalıdır.",
+      },
       regional_requirements: {
         summary: "Vize sahipleri Avustralya'nın belirlenmiş bölgesel alanlarında yaşamalı, çalışmalı ve eğitim görmelidir.",
         pathway_to_permanent_residence: "Uygun olunması halinde 3 yıl sonra Permanent Residence (Skilled Regional) subclass 191 için başvuru yapılabilir.",
@@ -1563,10 +1696,72 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
     ],
     english_requirements: {
       summary: "482 紧缺技能签证主申请人除豁免外需满足最低英语要求。",
+      applies_to_streams: ["核心技能通道", "专业技能通道"],
       test_validity: "英语考试通常需在申请前3年内取得。",
+      exemptions: [
+        "持加拿大护照",
+        "持新西兰护照",
+        "持爱尔兰共和国护照",
+        "持英国护照",
+        "持美国护照",
+        "在以英语授课为主的至少中学层级机构完成至少5年全日制学习",
+        "提名职业将在另一国家的外交或领事机构履行",
+        "提名职业将在台湾当局驻外机构履行",
+        "提名职业要求执照、注册或会员资格，且申请人已证明具备取得该资格所需的同等或更高英语水平",
+        "申请人为海外企业员工，由该企业或其关联实体提名赴澳工作，且保证年收入至少为 AUD 96,400",
+      ],
+      tests_taken_on_or_after_2025_09_13: {
+        single_skill_retake_note:
+          "如果该考试提供单项重考选项，则该项成绩可能被接受。",
+        CELPIP_General: { listening: 5, reading: 5, writing: 5, speaking: 5 },
+        IELTS_Academic: { listening: 5, reading: 5, writing: 5, speaking: 5 },
+        IELTS_General_Training: { listening: 5, reading: 5, writing: 5, speaking: 5 },
+        LANGUAGECERT_Academic: { listening: 41, reading: 44, writing: 45, speaking: 54 },
+        MET: { listening: 49, reading: 47, writing: 45, speaking: 38 },
+        OET: { listening: 220, reading: 240, writing: 200, speaking: 270 },
+        PTE_Academic: { listening: 33, reading: 36, writing: 29, speaking: 24 },
+        TOEFL_iBT: {
+          listening: 8,
+          reading: 8,
+          writing: 9,
+          speaking: 14,
+          note: "对于 2026 年 1 月 21 日及之后参加的考试，报名时必须选择 Taking TOEFL for Australia。",
+        },
+      },
+      tests_taken_before_2025_09_13: {
+        single_sitting_required: true,
+        single_skill_retake_accepted: false,
+        IELTS: { overall: 5, listening: 5, reading: 5, writing: 5, speaking: 5 },
+        OET: { listening: "B", reading: "B", writing: "B", speaking: "B" },
+        TOEFL_iBT: {
+          overall: 35,
+          listening: 4,
+          reading: 4,
+          writing: 14,
+          speaking: 14,
+          note: "2023 年 7 月 26 日至 2024 年 5 月 4 日期间参加的 TOEFL iBT 不被接受用于澳大利亚签证。",
+        },
+        PTE_Academic: { overall: 36, listening: 36, reading: 36, writing: 36, speaking: 36 },
+        C1_Advanced: {
+          overall: 154,
+          listening: 154,
+          reading: 154,
+          writing: 154,
+          speaking: 154,
+          note: "自 2024 年 2 月 12 日起，仅接受 Cambridge C1 Advanced 纸笔考试成绩。2024 年 2 月 12 日之前的考试在有效期内仍可能被接受。",
+        },
+      },
       labour_agreement_stream_note: "劳工协议通道英语要求可能按雇主与联邦协议执行。",
       online_tests_not_accepted: {
         rule: "不接受全程线上、远程监考或居家完成的英语考试证明。",
+        examples_not_accepted: [
+          "CELPIP Online",
+          "IELTS Online",
+          "LANGUAGECERT Academic Online",
+          "OET@Home",
+          "MET Digital taken at-home",
+          "TOEFL iBT Home Edition",
+        ],
       },
     },
     financial_requirements: {
@@ -1576,6 +1771,16 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
         "申请人的薪资必须达到年度市场薪资率且不低于核心技能收入门槛。",
         "具体收入门槛金额请参考官方签证收入门槛来源。",
       ],
+    },
+    raw_json: {
+      family_members: {
+        can_include_family: true,
+        notes: [
+          "家庭成员能否作为副申请人包含在申请中，取决于申请人当前或过去是否持有 457 或 482 子类签证。",
+          "副申请人必须满足健康和品行要求。",
+          "提交申请后不能再添加家庭成员，但如符合条件，可在之后以 subsequent entrant 方式申请。",
+        ],
+      },
     },
   },
   "491": {
@@ -1650,8 +1855,56 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
     english_requirements: {
       required_level: "合格英语",
       summary: "获邀时主申请人需至少达到合格英语。18岁以上家庭成员需满足功能性英语或支付第二笔费用。",
+      passport_exemptions: [
+        "加拿大",
+        "新西兰",
+        "爱尔兰共和国",
+        "大不列颠及北爱尔兰联合王国",
+        "美利坚合众国",
+      ],
+      tests_taken_on_or_after_2025_08_07: {
+        C1_Advanced: { listening: 163, reading: 163, writing: 170, speaking: 179 },
+        CELPIP_General: { listening: 7, reading: 7, writing: 7, speaking: 7 },
+        IELTS_Academic: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        IELTS_General_Training: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        MET: { listening: 56, reading: 55, writing: 57, speaking: 48 },
+        OET: { listening: 290, reading: 310, writing: 290, speaking: 330 },
+        LANGUAGECERT_Academic: { listening: 57, reading: 60, writing: 64, speaking: 70 },
+        PTE_Academic: { listening: 47, reading: 48, writing: 51, speaking: 54 },
+        TOEFL_iBT: {
+          listening: 16,
+          reading: 16,
+          writing: 19,
+          speaking: 19,
+          note: "报名时必须选择 Taking TOEFL for Australia。",
+        },
+      },
+      tests_taken_on_or_before_2025_08_06: {
+        C1_Advanced: { listening: 169, reading: 169, writing: 169, speaking: 169 },
+        IELTS: { listening: 6, reading: 6, writing: 6, speaking: 6 },
+        OET: { listening: "B", reading: "B", writing: "B", speaking: "B" },
+        PTE_Academic: { listening: 50, reading: 50, writing: 50, speaking: 50 },
+        TOEFL_iBT: {
+          listening: 12,
+          reading: 13,
+          writing: 21,
+          speaking: 21,
+          note: "2023 年 7 月 26 日至 2024 年 5 月 4 日期间参加的 TOEFL iBT 不被接受用于澳大利亚签证。",
+        },
+      },
       functional_english_for_family_members: {
         summary: "18岁及以上家庭成员需证明功能性英语，否则可能需支付第二笔费用。",
+      },
+      online_tests_not_accepted: {
+        rule: "不接受全程线上、远程监考或居家完成的英语考试证明。",
+        examples_not_accepted: [
+          "CELPIP Online",
+          "IELTS Online",
+          "LANGUAGECERT Academic Online",
+          "MET Digital taken at-home",
+          "OET@Home",
+          "TOEFL iBT Home Edition",
+        ],
       },
     },
     financial_requirements: {
@@ -1663,6 +1916,19 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       ],
     },
     raw_json: {
+      occupation_requirements: {
+        summary: "申请人必须拥有适用于 Skilled Regional 491 子类签证的合资格技术职业合并清单中的职业。",
+        notes: [
+          "491 子类可能涉及州或领地提名，或符合条件亲属担保。",
+          "州和领地政府机构各自有不同的提名标准。",
+          "职业资格应根据相关技术职业清单以及提名或担保路径进行核查。",
+        ],
+      },
+      points_test_rules: {
+        minimum_points_required: 65,
+        summary: "491 子类属于打分制签证。申请人必须至少获得 65 分，并可能基于 EOI 声明、提名或符合条件亲属担保获得邀请。",
+        note: "除非识别出该子类的官方特殊差异，否则详细打分类别应复用 189/190 所用的技术移民打分表。",
+      },
       regional_requirements: {
         summary: "签证持有人必须在澳大利亚指定偏远地区生活、工作和学习。",
         pathway_to_permanent_residence: "如符合条件，可在 3 年后申请 191 类永久居留（偏远地区技术）。",
