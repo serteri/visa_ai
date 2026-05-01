@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
+import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { frictionBandLabel } from "@/src/lib/readiness/localization";
 import type { ReadinessReport } from "./types";
@@ -33,10 +34,14 @@ const GLOBAL_FOOTER_TEXTS = {
 
 const PDF_FONT_NAME = "NotoSans";
 const PDF_FONT_FILE = "NotoSans-Regular.ttf";
+const PDF_FONT_BOLD_FILE = "NotoSans-Bold.ttf";
 const PDF_CJK_FONT_NAME = "NotoSansSC";
 const PDF_CJK_FONT_FILE = "NotoSansSC-Regular.ttf";
+const PDF_CJK_FONT_BOLD_FILE = "NotoSansSC-Bold.ttf";
 const PDF_CJK_FONT_PUBLIC_PATH = "/fonts/NotoSansSC-Regular.ttf";
+const PDF_CJK_FONT_BOLD_PUBLIC_PATH = "/fonts/NotoSansSC-Bold.ttf";
 const PDF_CJK_FONT_ASSET_PATH = ["src", "assets", "fonts", "NotoSansSC-Regular.ttf"];
+const PDF_CJK_FONT_BOLD_ASSET_PATH = ["src", "assets", "fonts", "NotoSansSC-Bold.ttf"];
 
 interface PDFGeneratorInput {
   report: ReadinessReport;
@@ -331,13 +336,21 @@ async function loadRuntimeCjkFontBase64(): Promise<string | null> {
   }
 }
 
+async function loadRuntimeCjkBoldFontBase64(): Promise<string | null> {
+  // NotoSansSC-Bold uses CFF outlines (OTF) which jsPDF cannot parse.
+  // CJK bold is achieved through visual techniques instead.
+  return null;
+}
+
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
   const { report, locale, userInputSummary } = input;
   const cjkRequested = locale === "zh-Hans";
   const runtimeCjkFont = cjkRequested ? await loadRuntimeCjkFontBase64() : null;
+  const runtimeCjkBoldFont = cjkRequested ? await loadRuntimeCjkBoldFontBase64() : null;
   const embeddedCjkFont = notoSansSCRegularBase64.length > 0 ? notoSansSCRegularBase64 : null;
   const resolvedCjkFontBase64 = runtimeCjkFont ?? embeddedCjkFont;
   const cjkFontAvailable = cjkRequested && Boolean(resolvedCjkFontBase64);
+  const cjkBoldFontAvailable = cjkRequested && Boolean(runtimeCjkBoldFont);
   const effectiveLocale = cjkRequested && !cjkFontAvailable ? "en" : locale;
   const text = getLocalizedText(effectiveLocale);
 
@@ -346,15 +359,29 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     unit: "mm",
     format: "a4",
   });
+
+  // Register Latin/Latin-Extended regular font
   doc.addFileToVFS(PDF_FONT_FILE, notoSansRegularBase64);
   doc.addFont(PDF_FONT_FILE, PDF_FONT_NAME, "normal");
+
+  // Register Latin bold font
+  doc.addFileToVFS(PDF_FONT_BOLD_FILE, notoSansBoldBase64);
+  doc.addFont(PDF_FONT_BOLD_FILE, PDF_FONT_NAME, "bold");
+
+  // Register CJK fonts
   if (cjkFontAvailable && resolvedCjkFontBase64) {
     doc.addFileToVFS(PDF_CJK_FONT_FILE, resolvedCjkFontBase64);
     doc.addFont(PDF_CJK_FONT_FILE, PDF_CJK_FONT_NAME, "normal");
+    // CJK bold: register same regular font as bold variant so setBoldFont() falls back gracefully
+    doc.addFont(PDF_CJK_FONT_FILE, PDF_CJK_FONT_NAME, "bold");
   }
+  // Note: CJK bold TTF (NotoSansSC-Bold) uses CFF outlines incompatible with jsPDF —
+  // bold styling for CJK is achieved via color/size contrast instead.
+
   doc.setFont(PDF_FONT_NAME, "normal");
 
   const activeFontName = cjkFontAvailable ? PDF_CJK_FONT_NAME : PDF_FONT_NAME;
+  const activeBoldAvailable = cjkRequested ? cjkBoldFontAvailable : true;
 
   function safeText(value: string): string {
     if (!cjkRequested || cjkFontAvailable) return value;
@@ -382,7 +409,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function setBoldFont() {
-    doc.setFont(activeFontName, "normal");
+    if (activeBoldAvailable) {
+      doc.setFont(activeFontName, "bold");
+    } else {
+      doc.setFont(activeFontName, "normal");
+    }
   }
 
   function drawSeparator() {
@@ -393,14 +424,29 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 5;
   }
 
-  function addSectionHeading(symbol: string, heading: string) {
+  function addSectionHeading(_symbol: string, heading: string) {
     drawSeparator();
-    ensurePageSpace(10);
+    ensurePageSpace(13);
+    // Ribbon-style background behind the heading
+    doc.setFillColor(22, 78, 99);
+    doc.roundedRect(margin, yPosition - 5, contentWidth, 10, 1.5, 1.5, "F");
     setBoldFont();
     doc.setFontSize(FONTS.heading);
-    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.text(safeText(`${symbol} ${heading}`), margin, yPosition);
-    yPosition += 8;
+    doc.setTextColor(255, 255, 255);
+    doc.text(safeText(heading), margin + 4, yPosition + 1.5);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    setBaseFont();
+    yPosition += 9;
+  }
+
+  /** Clip text to fit within maxWidthMm using actual rendered width */
+  function clipToWidth(value: string, maxWidthMm: number): string {
+    if (doc.getTextWidth(value) <= maxWidthMm) return value;
+    let clipped = value;
+    while (clipped.length > 1 && doc.getTextWidth(clipped + "…") > maxWidthMm) {
+      clipped = clipped.slice(0, -1);
+    }
+    return clipped + "…";
   }
 
   function addGlobalFooters() {
@@ -428,41 +474,101 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const safeName = subjectName.replace(/[^A-Za-z0-9]/g, "").slice(0, 10).toUpperCase() || "CLIENT";
     const reportId = `LVA-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${safeName}`;
 
-    doc.setFillColor(250, 250, 250);
+    // ── Background ──────────────────────────────────────────────────────────
+    doc.setFillColor(248, 250, 252);
     doc.rect(0, 0, pageWidth, pageHeight, "F");
 
+    // ── Left accent bar (full-height navy stripe) ────────────────────────────
     doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.rect(0, 0, pageWidth, 36, "F");
+    doc.rect(0, 0, 8, pageHeight, "F");
 
+    // ── Top header band ──────────────────────────────────────────────────────
+    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.rect(0, 0, pageWidth, 44, "F");
+
+    // Confidential label in header
     setBoldFont();
-    doc.setFontSize(18);
-    doc.setTextColor(255, 255, 255);
-    doc.text(safeText(text.confidentialAssessment), margin, 22);
+    doc.setFontSize(9);
+    doc.setTextColor(8, 145, 178);           // accent cyan
+    doc.text(safeText(text.confidentialAssessment), 14, 14);
 
-    setBoldFont();
-    doc.setFontSize(26);
-    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-    doc.text(safeText(text.title), margin, 68);
-
-    doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
-    doc.setLineWidth(0.4);
-    doc.line(margin, 76, pageWidth - margin, 76);
-
-    doc.setFontSize(12);
-    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-    doc.text(safeText(text.subject), margin, 92);
-    doc.text(safeText(text.reportDate), margin, 104);
-    doc.text(safeText(text.reportId), margin, 116);
-
-    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-    doc.text(safeText(subjectName), margin + 34, 92);
-    doc.text(reportDate, margin + 34, 104);
-    doc.text(safeText(reportId), margin + 34, 116);
-
-    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    // Product wordmark in header
+    setBaseFont();
     doc.setFontSize(10);
-    const coverLines = doc.splitTextToSize(safeText(text.coverPurpose), contentWidth);
-    doc.text(coverLines, margin, pageHeight - 28);
+    doc.setTextColor(255, 255, 255);
+    const wordmark = "VisaAI Premium";
+    doc.setFontSize(FONTS.body);
+    const ww = doc.getTextWidth(wordmark);
+    doc.text(wordmark, pageWidth - margin - ww, 14);
+
+    // ── Centered title block ─────────────────────────────────────────────────
+    // Title line 1
+    setBoldFont();
+    doc.setFontSize(28);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    const titleText = safeText(text.title);
+    doc.setFontSize(28);
+    const tw = doc.getTextWidth(titleText);
+    const titleX = Math.max(margin, (pageWidth - tw) / 2);
+    doc.text(titleText, titleX, 80);
+
+    // Thin accent underline under title
+    doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.setLineWidth(1.2);
+    doc.line(margin + 4, 85, pageWidth - margin - 4, 85);
+
+    // ── Metadata card ────────────────────────────────────────────────────────
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin + 4, 95, contentWidth - 8, 52, 2, 2, "FD");
+
+    // Accent left bar on card
+    doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.rect(margin + 4, 95, 2.5, 52, "F");
+
+    const labelX = margin + 10;
+    const valueX = margin + 46;
+    const metaRows: Array<[string, string]> = [
+      [text.subject, subjectName],
+      [text.reportDate, reportDate],
+      [text.reportId, reportId],
+    ];
+    if (userInputSummary.occupation) metaRows.push([text.occupationLabel ?? "Occupation", userInputSummary.occupation]);
+    if (userInputSummary.mainGoal) metaRows.push([text.goalLabel ?? "Goal", userInputSummary.mainGoal]);
+
+    metaRows.slice(0, 4).forEach(([label, value], i) => {
+      const ry = 104 + i * 11;
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.text(safeText(label), labelX, ry);
+      setBaseFont();
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(safeText(clipToWidth(value, contentWidth - 50)), valueX, ry);
+    });
+
+    // ── Occupation / goal summary chip ────────────────────────────────────────
+    if (userInputSummary.occupation) {
+      const chipY = 158;
+      doc.setFillColor(236, 254, 255);
+      doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(margin + 4, chipY, contentWidth - 8, 10, 1.5, 1.5, "FD");
+      doc.setFont(PDF_FONT_NAME, "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.text(safeText(userInputSummary.occupation), margin + 8, chipY + 6.5);
+    }
+
+    // ── Bottom disclaimer strip ───────────────────────────────────────────────
+    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.rect(0, pageHeight - 22, pageWidth, 22, "F");
+    doc.setFont(PDF_FONT_NAME, "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(178, 212, 220);
+    const disclaimerLines = doc.splitTextToSize(safeText(text.coverPurpose), pageWidth - margin * 2 - 4);
+    doc.text(disclaimerLines.slice(0, 2), 14, pageHeight - 14);
 
     doc.addPage();
     yPosition = 20;
@@ -477,7 +583,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function addHeading(heading: string) {
-    addSectionHeading("[#]", heading);
+    addSectionHeading("", heading);
   }
 
   function addBody(text: string, indent = 0) {
@@ -533,21 +639,25 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   ) {
     const tableWidth = contentWidth;
     const colWidths = colRatios.map((ratio) => tableWidth * ratio);
-    const rowHeight = 7;
+    const rowHeight = 8;
+    const cellPad = 2.5;
+    const totalRows = rows.length;
 
     ensurePageSpace(14);
+
+    // Header row background
     doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
     doc.rect(margin, yPosition, tableWidth, rowHeight, "F");
     doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
-    doc.setLineWidth(0.2);
+    doc.setLineWidth(0.3);
     doc.line(margin, yPosition + rowHeight, margin + tableWidth, yPosition + rowHeight);
 
-    let cursorX = margin + 1.5;
+    let cursorX = margin + cellPad;
     setBoldFont();
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
     headers.forEach((h, i) => {
-      doc.text(safeText(h), cursorX, yPosition + 4.7);
+      doc.text(safeText(h), cursorX, yPosition + 5.3);
       cursorX += colWidths[i];
     });
     yPosition += rowHeight;
@@ -559,89 +669,141 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         doc.rect(margin, yPosition, tableWidth, rowHeight, "F");
       }
 
-      let x = margin + 1.5;
+      let x = margin + cellPad;
       setBaseFont();
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
       row.forEach((cell, i) => {
-        const clipped = cell.length > 44 ? `${cell.slice(0, 41)}...` : cell;
+        // Clip by rendered pixel width, not character count — CJK chars are wider
+        const maxCellMm = colWidths[i] - 3;
+        const clipped = clipToWidth(cell, maxCellMm);
         const customColor = getCellColor?.(rowIndex, i, cell);
         if (customColor) {
           doc.setTextColor(customColor.r, customColor.g, customColor.b);
         } else {
           doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
         }
-        doc.text(safeText(clipped), x, yPosition + 4.7);
+        doc.text(safeText(clipped), x, yPosition + 5.3);
         x += colWidths[i];
       });
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.15);
       doc.line(margin, yPosition + rowHeight, margin + tableWidth, yPosition + rowHeight);
       yPosition += rowHeight;
     });
+
+    // Outer border + vertical column dividers
+    doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+    doc.setLineWidth(0.3);
+    doc.rect(margin, yPosition - (totalRows + 1) * rowHeight, tableWidth, (totalRows + 1) * rowHeight);
+    doc.setLineWidth(0.15);
+    let vx = margin;
+    for (let ci = 0; ci < colWidths.length - 1; ci++) {
+      vx += colWidths[ci];
+      doc.line(vx, yPosition - (totalRows + 1) * rowHeight, vx, yPosition);
+    }
+
     yPosition += 3;
   }
 
   function drawGanttTimeline() {
     if (!report.premiumSections?.strategicGanttChart?.steps?.length) return;
 
-    addSectionHeading("[~]", text.strategicGanttChart);
-    addSmallText(`${text.ganttWindow}: ${report.premiumSections.strategicGanttChart.timelineBand}`, 0);
-    yPosition += 2;
+    addSectionHeading("", text.strategicGanttChart);
 
-    const phaseTitles =
-      effectiveLocale === "zh-Hans"
-        ? ["第一阶段：准备工作", "第二阶段：职业评估", "第三阶段：意向书与提名", "第四阶段：递交准备"]
-        : ["Phase 1: Preparation", "Phase 2: Assessment", "Phase 3: EOI and Nomination", "Phase 4: Lodgement"];
-    const phases = phaseTitles
-      .map((title, index) => ({
-        title,
-        steps: report.premiumSections.strategicGanttChart.steps.slice(index, index + 1),
-      }))
-      .filter((phase) => phase.steps.length > 0);
+    const steps = report.premiumSections.strategicGanttChart.steps;
+    const timelineBand = report.premiumSections.strategicGanttChart.timelineBand;
 
-    phases.forEach((phase) => {
-      ensurePageSpace(16);
+    // Timeline layout constants
+    const nodeR = 3.5;            // circle radius
+    const spineX = margin + 8;   // vertical spine X
+    const cardX = spineX + 9;    // step card left edge
+    const cardW = contentWidth - 18;
+    const cardH = 20;
+    const stepGap = cardH + 6;   // gap between nodes
+
+    const totalH = steps.length * stepGap + 10;
+    ensurePageSpace(totalH + 16);
+
+    // Timeline band label
+    doc.setFillColor(243, 244, 246);
+    doc.roundedRect(margin, yPosition, contentWidth, 7, 1.2, 1.2, "F");
+    setBaseFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    doc.text(safeText(`${text.ganttWindow}: ${timelineBand}`), margin + 3, yPosition + 4.5);
+    yPosition += 10;
+
+    // Draw the continuous vertical spine first (from top node centre to bottom node centre)
+    const spineTop = yPosition + nodeR;
+    const spineBottom = yPosition + (steps.length - 1) * stepGap + nodeR;
+    doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.setLineWidth(0.8);
+    doc.line(spineX, spineTop, spineX, spineBottom);
+
+    // Draw each step node and card
+    steps.forEach((step, idx) => {
+      const nodeY = yPosition + idx * stepGap;
+      ensurePageSpace(cardH + 4);
+
+      // Node circle (filled)
+      doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setDrawColor(255, 255, 255);
+      doc.setLineWidth(0.5);
+      doc.circle(spineX, nodeY + nodeR, nodeR, "FD");
+
+      // Step number inside circle
       setBoldFont();
-      doc.setFontSize(FONTS.subheading);
+      doc.setFontSize(6);
+      doc.setTextColor(255, 255, 255);
+      const numStr = String(step.step);
+      const numW = doc.getTextWidth(numStr);
+      doc.text(numStr, spineX - numW / 2, nodeY + nodeR + 2, { baseline: "middle" });
+
+      // Horizontal connector from spine to card
+      doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setLineWidth(0.4);
+      doc.line(spineX + nodeR, nodeY + nodeR, cardX - 1, nodeY + nodeR);
+
+      // Step card background
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.25);
+      doc.roundedRect(cardX, nodeY, cardW, cardH, 1.5, 1.5, "FD");
+
+      // Accent left border on card
+      doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.rect(cardX, nodeY, 1.5, cardH, "F");
+
+      // Step title
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.text(safeText(phase.title), margin, yPosition);
-      yPosition += 6;
+      const titleText = safeText(`${text.ganttStep} ${step.step}: ${step.title}`);
+      doc.text(titleText, cardX + 4, nodeY + 6.5);
 
-      const lineX = margin + 4;
-      const blockX = margin + 10;
+      // Window label
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.text(safeText(step.window), cardX + 4, nodeY + 11.5);
 
-      phase.steps.forEach((step) => {
-        ensurePageSpace(16);
-        doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-        doc.setLineWidth(0.5);
-        doc.line(lineX, yPosition - 1.5, lineX, yPosition + 10.5);
-        doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-        doc.rect(lineX - 1.3, yPosition + 2.5, 2.6, 2.6, "F");
-
-        doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
-        doc.setFillColor(255, 255, 255);
-        doc.roundedRect(blockX, yPosition, contentWidth - 12, 12, 1.5, 1.5, "FD");
-
-        setBoldFont();
-        doc.setFontSize(FONTS.body);
-        doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-        doc.text(safeText(`${text.ganttStep} ${step.step}: ${step.title}`), blockX + 2, yPosition + 4.5);
-
-        setBaseFont();
-        doc.setFontSize(FONTS.small);
-        doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-        doc.text(safeText(`${text.ganttWindow}: ${step.window}`), blockX + 2, yPosition + 8.3);
-
-        yPosition += 15;
-      });
-      yPosition += 2;
+      // Description text (wrapped)
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      const descLines = doc.splitTextToSize(safeText(step.description ?? ""), cardW - 8);
+      const descY = nodeY + 16;
+      if (descLines.length > 0) {
+        doc.text(descLines[0], cardX + 4, descY);
+      }
     });
+
+    yPosition += steps.length * stepGap + 6;
   }
 
   function drawAuditChecklistBox() {
     if (!report.documentChecklist?.length) return;
 
-    addSectionHeading("[ ]", text.documentLevelSpecificity);
+    addSectionHeading("", text.documentLevelSpecificity);
 
     report.documentChecklist.forEach((category) => {
       const isCritical = category.category.toUpperCase() === "CRITICAL";
@@ -682,7 +844,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   function drawImmediateActionPlan() {
     if (!report.suggestedNextSteps?.length) return;
 
-    addSectionHeading("[!]", text.yourImmediateActionPlan);
+    addSectionHeading("", text.yourImmediateActionPlan);
     ensurePageSpace(18);
 
     doc.setFillColor(236, 253, 245);
@@ -944,7 +1106,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   if (report.financialRoadmap.length > 0) {
-    addSectionHeading("[$]", text.financialRoadmap);
+    addSectionHeading("", text.financialRoadmap);
     drawTable(
       [effectiveLocale === "tr" ? "Kategori" : text.category, effectiveLocale === "tr" ? "Tutar" : text.amount, effectiveLocale === "tr" ? "Not" : text.note],
       report.financialRoadmap.map((item) => [item.category, item.amountLabel, item.explanation]),
@@ -979,7 +1141,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   if (report.premiumSections) {
-    addSectionHeading("[*]", text.premiumSections);
+    addSectionHeading("", text.premiumSections);
 
     addBody(text.invitationTrends);
     addSmallText(
@@ -1027,7 +1189,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
           : r.level === "medium"
             ? text.mediumRisk
             : text.lowRisk;
-      addBody(`[${levelText}] ${r.title}`);
+      addBody(`${levelText}  ${r.title}`);
       addSmallText(r.explanation, 4);
       yPosition += 2;
     });
