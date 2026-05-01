@@ -9,7 +9,7 @@ import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { localizeVisaStructuredData } from "@/lib/visa/localized-structured-data";
+import { localizeVisaFields, localizeVisaStructuredData } from "@/lib/visa/localized-structured-data";
 
 // ─── local types for JSONB fields ─────────────────────────────────────────────
 
@@ -90,9 +90,10 @@ async function getVisaDetails(subclass: string, locale: string) {
     .from(sourceSnapshots)
     .where(eq(sourceSnapshots.visa_type_id, visaRow.id));
 
+  const localizedVisa = localizeVisaFields(subclass, locale, visaRow);
   const localizedStructured = localizeVisaStructuredData(subclass, locale, structured ?? null);
 
-  return { visa: visaRow, structured: localizedStructured, snapshots };
+  return { visa: localizedVisa, structured: localizedStructured, snapshots };
 }
 
 // ─── render helpers ───────────────────────────────────────────────────────────
@@ -281,8 +282,8 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
                 if (typeof scores !== "object" || scores === null) return null;
                 const s = scores as PerSkillScores;
                 return (
-                  <>
-                    <tr key={test}>
+                  <React.Fragment key={test}>
+                    <tr>
                       <td className="py-2 pr-4 font-medium">{test.replace(/_/g, " ")}</td>
                       <td className="py-2 pr-4 text-muted-foreground">{s.listening ?? "—"}</td>
                       <td className="py-2 pr-4 text-muted-foreground">{s.reading ?? "—"}</td>
@@ -290,20 +291,20 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
                       <td className="py-2 text-muted-foreground">{s.speaking ?? "—"}</td>
                     </tr>
                     {s.note && (
-                      <tr key={`${test}-note`}>
+                      <tr>
                         <td colSpan={5} className="pb-2 pt-0 text-xs text-muted-foreground italic">
                           {s.note}
                         </td>
                       </tr>
                     )}
                     {s.overall !== undefined && (
-                      <tr key={`${test}-overall`}>
+                      <tr>
                         <td className="pb-2 pt-0 text-xs text-muted-foreground" colSpan={5}>
                           Overall: {s.overall}
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </tbody>
