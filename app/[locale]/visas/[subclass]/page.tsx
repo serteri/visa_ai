@@ -9,6 +9,7 @@ import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { localizeVisaStructuredData } from "@/lib/visa/localized-structured-data";
 
 // ─── local types for JSONB fields ─────────────────────────────────────────────
 
@@ -63,7 +64,7 @@ type FinancialRequirements = {
 
 // ─── data fetching ────────────────────────────────────────────────────────────
 
-async function getVisaDetails(subclass: string) {
+async function getVisaDetails(subclass: string, locale: string) {
   const [visaRow] = await db
     .select()
     .from(visaTypes)
@@ -89,7 +90,9 @@ async function getVisaDetails(subclass: string) {
     .from(sourceSnapshots)
     .where(eq(sourceSnapshots.visa_type_id, visaRow.id));
 
-  return { visa: visaRow, structured: structured ?? null, snapshots };
+  const localizedStructured = localizeVisaStructuredData(subclass, locale, structured ?? null);
+
+  return { visa: visaRow, structured: localizedStructured, snapshots };
 }
 
 // ─── render helpers ───────────────────────────────────────────────────────────
@@ -135,6 +138,25 @@ function NumberedList({ items }: { items: unknown }) {
         </li>
       ))}
     </ol>
+  );
+}
+
+function KeyValueTable({ rows }: { rows: Record<string, string> }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <tbody className="divide-y">
+          {Object.entries(rows).map(([key, value]) => (
+            <tr key={key}>
+              <td className="py-2 pr-4 capitalize text-muted-foreground">
+                {key.replace(/_/g, " ")}
+              </td>
+              <td className="py-2 font-medium">{value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -430,36 +452,19 @@ function FinancialRequirementsSection({ data }: { data: unknown }) {
     return <StructuredJsonSection data={data} />;
   }
 
-  const KVTable = ({ rows }: { rows: Record<string, string> }) => (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <tbody className="divide-y">
-          {Object.entries(rows).map(([key, value]) => (
-            <tr key={key}>
-              <td className="py-2 pr-4 capitalize text-muted-foreground">
-                {key.replace(/_/g, " ")}
-              </td>
-              <td className="py-2 font-medium">{value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       {fin.living_costs_12_months && (
         <div className="space-y-2">
           <p className="text-sm font-semibold">Living costs (per 12 months)</p>
-          <KVTable rows={fin.living_costs_12_months} />
+          <KeyValueTable rows={fin.living_costs_12_months} />
         </div>
       )}
 
       {fin.annual_income_option && (
         <div className="space-y-2">
           <p className="text-sm font-semibold">Annual income option</p>
-          <KVTable rows={fin.annual_income_option} />
+          <KeyValueTable rows={fin.annual_income_option} />
         </div>
       )}
 
@@ -473,7 +478,7 @@ function FinancialRequirementsSection({ data }: { data: unknown }) {
       {fin.travel_costs_guidance && (
         <div className="space-y-2">
           <p className="text-sm font-semibold">Travel costs guidance</p>
-          <KVTable rows={fin.travel_costs_guidance} />
+          <KeyValueTable rows={fin.travel_costs_guidance} />
         </div>
       )}
     </div>
@@ -899,7 +904,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
   const isZh = locale === "zh-Hans";
   const tx = (zh: string, tr: string, en: string) => (isTr ? tr : isZh ? zh : en);
 
-  const result = await getVisaDetails(subclass);
+  const result = await getVisaDetails(subclass, locale);
   if (!result) notFound();
 
   const { visa, structured, snapshots } = result;
