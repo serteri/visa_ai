@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -151,12 +151,34 @@ export function FullCheckWaitlistForm({
     submitFullCheckWaitlist,
     initialState
   );
+  const [analysisStepIndex, setAnalysisStepIndex] = useState(0);
   const [unlockedReportState, setUnlockedReportState] = useState<{
     reportId?: string;
     report: ReadinessReport;
     name?: string;
     email?: string;
   } | null>(null);
+
+  const aiAnalysisSteps = [
+    "Scanning 691 occupation codes...",
+    "Analyzing historical invitation trends...",
+    "Applying assessing authority deduction rules...",
+    "Generating strategic readiness report...",
+  ];
+
+  useEffect(() => {
+    if (!isPending) {
+      setAnalysisStepIndex(0);
+      return;
+    }
+
+    setAnalysisStepIndex(0);
+    const intervalId = window.setInterval(() => {
+      setAnalysisStepIndex((prev) => (prev + 1) % aiAnalysisSteps.length);
+    }, 1400);
+
+    return () => window.clearInterval(intervalId);
+  }, [isPending, aiAnalysisSteps.length]);
 
   const activeUnlockedReportState =
     unlockedReportState?.reportId === state.reportId ? unlockedReportState : null;
@@ -238,8 +260,50 @@ export function FullCheckWaitlistForm({
     return "Typically required";
   }
 
+  const fieldClassName =
+    "h-12 rounded-xl border-border/70 bg-background/80 px-4 shadow-sm transition focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+  const selectClassName =
+    "h-12 w-full rounded-xl border border-border/70 bg-background/80 px-4 text-sm shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
   return (
     <div className="space-y-6">
+      {isPending && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-2xl border border-border/70 bg-card/95 p-6 shadow-2xl">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">AI Analysis</p>
+              <h3 className="text-xl font-semibold text-foreground">
+                {isTr ? "Profiliniz işleniyor" : isZh ? "正在处理你的档案" : "Processing your profile"}
+              </h3>
+            </div>
+
+            <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
+                style={{ width: `${((analysisStepIndex + 1) / aiAnalysisSteps.length) * 100}%` }}
+              />
+            </div>
+
+            <div className="mt-4 min-h-7 rounded-lg border border-border/60 bg-background/70 px-3 py-2">
+              <p className="text-sm text-muted-foreground" aria-live="polite">
+                {aiAnalysisSteps[analysisStepIndex]}
+              </p>
+            </div>
+
+            <div className="mt-4 flex gap-1.5">
+              {aiAnalysisSteps.map((step, idx) => (
+                <span
+                  key={step}
+                  className={`h-1.5 flex-1 rounded-full transition-colors ${
+                    idx <= analysisStepIndex ? "bg-primary" : "bg-muted"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <form action={formAction} className="space-y-4" noValidate>
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="preferredLanguage" value={locale} />
@@ -251,6 +315,7 @@ export function FullCheckWaitlistForm({
             id="waitlist-full-name"
             name="fullName"
             autoComplete="name"
+            className={fieldClassName}
             placeholder={txt("Adınız", "Your name", "请输入姓名")}
           />
         </div>
@@ -263,6 +328,7 @@ export function FullCheckWaitlistForm({
             type="email"
             placeholder="you@example.com"
             autoComplete="email"
+            className={fieldClassName}
             required
           />
           <ErrorText message={state.errors?.email} />
@@ -276,7 +342,7 @@ export function FullCheckWaitlistForm({
             id="waitlist-visa-interest"
             name="visaInterest"
             defaultValue={initialValues.visaInterest ?? ""}
-            className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className={selectClassName}
           >
             <option value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
             <option value="500">{txt("Öğrenci Vizesi 500", "Student visa 500", "500 学生签证")}</option>
@@ -296,6 +362,7 @@ export function FullCheckWaitlistForm({
             name="currentCountry"
             defaultValue={initialValues.currentCountry ?? ""}
             autoComplete="country-name"
+            className={fieldClassName}
             placeholder={txt("Avustralya, Türkiye, Hindistan veya başka bir ülke", "Australia, Turkiye, India, or elsewhere", "例如：澳大利亚、中国、土耳其等")}
           />
         </div>
@@ -306,6 +373,7 @@ export function FullCheckWaitlistForm({
             id="waitlist-main-goal"
             name="mainGoal"
             defaultValue={initialValues.mainGoal ?? ""}
+            className="min-h-28 rounded-xl border-border/70 bg-background/80 px-4 py-3 shadow-sm transition focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             placeholder={txt("Raporun hangi konuda yardımcı olmasını istediğinizi belirtin", "Tell us what you want the report to help with", "请说明你希望报告重点解决的问题")}
             rows={3}
             required
@@ -320,6 +388,7 @@ export function FullCheckWaitlistForm({
               id="waitlist-passport-country"
               name="passportCountry"
               required
+              className={fieldClassName}
               placeholder={txt("Ülke adı", "Country name", "国家名称")}
             />
             <ErrorText message={state.errors?.passportCountry} />
@@ -332,6 +401,7 @@ export function FullCheckWaitlistForm({
               name="age"
               type="number"
               required
+              className={fieldClassName}
               placeholder={txt("Örn: 28", "E.g., 28", "例如：28")}
             />
             <ErrorText message={state.errors?.age} />
@@ -343,6 +413,7 @@ export function FullCheckWaitlistForm({
           <Input
             id="waitlist-occupation"
             name="occupation"
+            className={fieldClassName}
             placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
           />
         </div>
@@ -352,6 +423,7 @@ export function FullCheckWaitlistForm({
           <Input
             id="waitlist-english"
             name="englishLevel"
+            className={fieldClassName}
             placeholder={txt("Örn: IELTS 7.0 veya Yüksek", "E.g., IELTS 7.0 or Proficient", "例如：IELTS 7.0 或 Proficient")}
           />
         </div>
@@ -361,6 +433,7 @@ export function FullCheckWaitlistForm({
           <Input
             id="waitlist-sponsor"
             name="sponsorOrFamily"
+            className={fieldClassName}
             placeholder={txt("Örn: İşveren sponsor, Partner veya Aile", "E.g., Employer sponsor, Partner, or Family", "例如：雇主担保、配偶或家庭")}
           />
         </div>
@@ -370,6 +443,7 @@ export function FullCheckWaitlistForm({
           <Input
             id="waitlist-concern"
             name="biggestConcern"
+            className={fieldClassName}
             placeholder={txt("Örn: Belgeler, Puan, Dil testi", "E.g., Documents, Points, English test", "例如：材料、分数、英语考试")}
           />
         </div>
@@ -383,7 +457,7 @@ export function FullCheckWaitlistForm({
               id="waitlist-english-test-taken"
               name="englishTestTaken"
               defaultValue=""
-              className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+              className={selectClassName}
             >
               <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
               <option value="yes">{txt("Evet", "Yes", "是")}</option>
@@ -399,7 +473,7 @@ export function FullCheckWaitlistForm({
               id="waitlist-occupation-confirmed"
               name="occupationConfirmed"
               defaultValue=""
-              className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+              className={selectClassName}
             >
               <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
               <option value="yes">{txt("Evet", "Yes", "是")}</option>
@@ -416,6 +490,7 @@ export function FullCheckWaitlistForm({
             <Input
               id="waitlist-budget-range"
               name="estimatedBudgetRange"
+              className={fieldClassName}
               placeholder={txt("Orn: 10k-20k AUD", "E.g., 10k-20k AUD", "例如：10k-20k AUD")}
             />
           </div>
@@ -428,7 +503,7 @@ export function FullCheckWaitlistForm({
               id="waitlist-timeline"
               name="timeline"
               defaultValue=""
-              className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+              className={selectClassName}
             >
               <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
               <option value="0-6">{txt("0-6 ay", "0-6 months", "0-6 个月")}</option>
@@ -450,7 +525,7 @@ export function FullCheckWaitlistForm({
           </p>
         )}
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" className="h-12 w-full rounded-xl text-base font-semibold" disabled={isPending}>
           {isPending
             ? txt("Oluşturuluyor...", "Generating...", "生成中...")
             : txt("Hazırlık raporunuzu oluşturun", "Generate your readiness report", "生成准备度报告")}

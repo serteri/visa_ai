@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Lock, Mail, Phone, Sparkles } from "lucide-react";
+import { CheckCircle2, Lock, Mail, Phone, ShieldCheck, Sparkles, Zap } from "lucide-react";
 
 import {
   type FullCheckQuickPreview,
@@ -36,6 +36,7 @@ export function PremiumFeatureGate({
   const isZh = locale === "zh-Hans";
   const [showModal, setShowModal] = useState(false);
   const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">("lead_capture");
+  const isFreeBeta = process.env.NEXT_PUBLIC_IS_FREE_BETA === "true";
 
   const [unlockState, unlockAction, unlockPending] = useActionState(
     unlockPremiumReport,
@@ -108,20 +109,63 @@ export function PremiumFeatureGate({
           ))}
         </CardContent>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/70 p-4 backdrop-blur-[2px]">
-          <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-card px-4 py-2 text-sm font-semibold shadow-sm">
-            <Lock className="size-4 text-primary" />
-            <span>{isTr ? "Kilidi aç" : isZh ? "解锁高级内容" : "Unlock premium"}</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-background/70 p-4 backdrop-blur-[3px]">
+          <div className="w-full max-w-md rounded-2xl border border-primary/20 bg-card/95 p-5 shadow-2xl ring-1 ring-primary/15">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <Lock className="size-3.5" />
+              <span>{isTr ? "Premium Access" : isZh ? "高级访问" : "Premium Access"}</span>
+            </div>
+
+            <h3 className="text-xl font-bold tracking-tight">
+              {isTr ? "Unlock Full Report" : isZh ? "解锁完整报告" : "Unlock Full Report"}
+            </h3>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              {isTr
+                ? "Detaylı rapor, stratejik tablo ve PDF teslimini açın."
+                : isZh
+                  ? "解锁完整分析、高级图表与 PDF 交付。"
+                  : "Unlock full analysis, premium sections, and PDF delivery."}
+            </p>
+
+            <div className="mt-4 rounded-xl border border-border/70 bg-background/70 p-3">
+              {isFreeBeta ? (
+                <div className="flex items-center justify-between">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {isTr ? "Beta Access" : isZh ? "Beta Access" : "Beta Access"}
+                  </p>
+                  <p className="text-lg font-bold text-emerald-600">
+                    {isTr ? "Ücretsiz" : isZh ? "Free" : "Free"}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-end justify-between gap-3">
+                  <p className="text-sm text-muted-foreground line-through">$29.00</p>
+                  <p className="text-lg font-bold text-primary">$29.00</p>
+                </div>
+              )}
+            </div>
+
+            <Button size="lg" className="mt-4 h-12 w-full text-base" onClick={() => setShowModal(true)}>
+              <Sparkles className="size-4" />
+              {isTr ? "Unlock Your Full Readiness Report" : isZh ? "解锁完整准备度报告" : "Unlock Your Full Readiness Report"}
+            </Button>
+
+            <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+              <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
+                <ShieldCheck className="size-3.5 text-primary" />
+                <span>{isTr ? "Secure Checkout" : isZh ? "Secure Checkout" : "Secure Checkout"}</span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
+                <Zap className="size-3.5 text-primary" />
+                <span>{isTr ? "Instant PDF Delivery" : isZh ? "Instant PDF Delivery" : "Instant PDF Delivery"}</span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
+                <Lock className="size-3.5 text-primary" />
+                <span>{isTr ? "Data Encrypted" : isZh ? "Data Encrypted" : "Data Encrypted"}</span>
+              </div>
+            </div>
           </div>
-
-          <Button size="lg" className="text-base" onClick={() => setShowModal(true)}>
-            <Sparkles className="size-4" />
-            {isTr ? "Unlock Your Full Readiness Report" : isZh ? "解锁完整准备度报告" : "Unlock Your Full Readiness Report"}
-          </Button>
-
-          <p className="text-sm text-muted-foreground">
-            {isTr ? "$29 Tek rapor ücreti" : isZh ? "$29 单份报告" : "$29 for a Single Report"}
-          </p>
         </div>
       </Card>
 
@@ -144,7 +188,7 @@ export function PremiumFeatureGate({
 
                 <div className="space-y-2">
                   <Label htmlFor="unlock-full-name">{isTr ? "Ad soyad" : isZh ? "姓名" : "Full name"}</Label>
-                  <Input id="unlock-full-name" name="fullName" defaultValue={defaultName ?? ""} />
+                  <Input id="unlock-full-name" name="fullName" defaultValue={defaultName ?? ""} className="h-12 rounded-xl" />
                 </div>
 
                 <div className="space-y-2">
@@ -156,7 +200,7 @@ export function PremiumFeatureGate({
                       name="email"
                       type="email"
                       defaultValue={defaultEmail ?? ""}
-                      className="pl-9"
+                      className="h-12 rounded-xl pl-9"
                       required
                     />
                   </div>
@@ -169,7 +213,7 @@ export function PremiumFeatureGate({
                   <Label htmlFor="unlock-phone">{isTr ? "Telefon" : isZh ? "电话" : "Phone"}</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3.5 size-4 text-muted-foreground" />
-                    <Input id="unlock-phone" name="phone" className="pl-9" />
+                    <Input id="unlock-phone" name="phone" className="h-12 rounded-xl pl-9" />
                   </div>
                 </div>
 
@@ -180,7 +224,7 @@ export function PremiumFeatureGate({
                     name="unlockMethod"
                     value={unlockMethod}
                     onChange={(event) => setUnlockMethod(event.target.value === "payment" ? "payment" : "lead_capture")}
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    className="h-12 w-full rounded-xl border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                   >
                     <option value="lead_capture">{isTr ? "Form ile aç (Lead Capture)" : isZh ? "提交线索表单解锁" : "Unlock with lead capture form"}</option>
                     <option value="payment">{isTr ? "Ödeme ile aç ($29)" : isZh ? "支付解锁（$29）" : "Unlock with payment ($29)"}</option>
@@ -194,14 +238,29 @@ export function PremiumFeatureGate({
                 )}
 
                 <div className="flex gap-2">
-                  <Button type="button" variant="outline" className="flex-1" onClick={() => setShowModal(false)}>
+                  <Button type="button" variant="outline" className="h-12 flex-1 rounded-xl" onClick={() => setShowModal(false)}>
                     {isTr ? "İptal" : isZh ? "取消" : "Cancel"}
                   </Button>
-                  <Button type="submit" className="flex-1" disabled={unlockPending}>
+                  <Button type="submit" className="h-12 flex-1 rounded-xl" disabled={unlockPending}>
                     {unlockPending
                       ? isTr ? "İşleniyor..." : isZh ? "处理中..." : "Processing..."
                       : isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}
                   </Button>
+                </div>
+
+                <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+                  <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
+                    <ShieldCheck className="size-3.5 text-primary" />
+                    <span>Secure Checkout</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
+                    <CheckCircle2 className="size-3.5 text-primary" />
+                    <span>Instant PDF Delivery</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
+                    <Lock className="size-3.5 text-primary" />
+                    <span>Data Encrypted</span>
+                  </div>
                 </div>
               </form>
             </CardContent>

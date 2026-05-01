@@ -293,7 +293,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-3 md:hidden">
+            <div className="grid gap-3 lg:hidden">
               {comparisonRows.map((row) => (
                 <div key={row.label} className="rounded-xl border border-border bg-gradient-to-br from-card to-card/70 p-4 shadow-sm">
                   <p className="text-sm font-semibold text-foreground">{row.label}</p>
@@ -325,7 +325,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
               ))}
             </div>
 
-            <div className="hidden overflow-x-auto md:block">
+            <div className="hidden overflow-x-auto rounded-xl border border-border/70 lg:block">
               <table className="w-full min-w-[760px] border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-border text-left bg-muted/40">
