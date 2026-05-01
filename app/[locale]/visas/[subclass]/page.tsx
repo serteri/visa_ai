@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
@@ -62,6 +62,12 @@ type FinancialRequirements = {
   travel_costs_guidance?: Record<string, string>;
 };
 
+function txLocale(locale: string, zh: string, tr: string, en: string) {
+  if (locale === "tr") return tr;
+  if (locale === "zh-Hans") return zh;
+  return en;
+}
+
 // ─── data fetching ────────────────────────────────────────────────────────────
 
 async function getVisaDetails(subclass: string, locale: string) {
@@ -110,9 +116,15 @@ function MetaItem({ label, value }: { label: string; value: string | null | unde
   );
 }
 
-function StringList({ items }: { items: unknown }) {
+function StringList({ items, locale }: { items: unknown; locale: string }) {
   const arr = Array.isArray(items) ? (items as string[]) : [];
-  if (arr.length === 0) return <p className="text-sm text-muted-foreground">No data available.</p>;
+  if (arr.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        {txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}
+      </p>
+    );
+  }
   return (
     <ul className="space-y-2">
       {arr.map((item, i) => (
@@ -125,9 +137,15 @@ function StringList({ items }: { items: unknown }) {
   );
 }
 
-function NumberedList({ items }: { items: unknown }) {
+function NumberedList({ items, locale }: { items: unknown; locale: string }) {
   const arr = Array.isArray(items) ? (items as string[]) : [];
-  if (arr.length === 0) return <p className="text-sm text-muted-foreground">No data available.</p>;
+  if (arr.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        {txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}
+      </p>
+    );
+  }
   return (
     <ol className="space-y-2">
       {arr.map((item, i) => (
@@ -142,7 +160,27 @@ function NumberedList({ items }: { items: unknown }) {
   );
 }
 
-function KeyValueTable({ rows }: { rows: Record<string, string> }) {
+function KeyValueTable({ rows, locale }: { rows: Record<string, string>; locale: string }) {
+  const keyLabelMap: Record<string, { tr: string; zh: string }> = {
+    student: { tr: "öğrenci", zh: "学生" },
+    partner: { tr: "partner", zh: "配偶" },
+    child: { tr: "çocuk", zh: "子女" },
+    with_family: { tr: "aile ile", zh: "含家庭" },
+    without_family: { tr: "ailesiz", zh: "不含家庭" },
+    outside_australia_general: { tr: "Avustralya dışı genel", zh: "澳大利亚境外一般情况" },
+    applying_in_australia: { tr: "Avustralya içinde başvuru", zh: "在澳境内申请" },
+    east_or_southern_africa: { tr: "Doğu/Güney Afrika", zh: "东非或南非" },
+    west_africa: { tr: "Batı Afrika", zh: "西非" },
+  };
+
+  const toLabel = (key: string) => {
+    const item = keyLabelMap[key];
+    if (!item) return key.replace(/_/g, " ");
+    if (locale === "tr") return item.tr;
+    if (locale === "zh-Hans") return item.zh;
+    return key.replace(/_/g, " ");
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -150,7 +188,7 @@ function KeyValueTable({ rows }: { rows: Record<string, string> }) {
           {Object.entries(rows).map(([key, value]) => (
             <tr key={key}>
               <td className="py-2 pr-4 capitalize text-muted-foreground">
-                {key.replace(/_/g, " ")}
+                {toLabel(key)}
               </td>
               <td className="py-2 font-medium">{value}</td>
             </tr>
@@ -161,9 +199,15 @@ function KeyValueTable({ rows }: { rows: Record<string, string> }) {
   );
 }
 
-function RiskList({ items }: { items: unknown }) {
+function RiskList({ items, locale }: { items: unknown; locale: string }) {
   const arr = Array.isArray(items) ? (items as string[]) : [];
-  if (arr.length === 0) return <p className="text-sm text-muted-foreground">No data available.</p>;
+  if (arr.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        {txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}
+      </p>
+    );
+  }
   return (
     <ul className="space-y-2">
       {arr.map((item, i) => (
@@ -176,9 +220,13 @@ function RiskList({ items }: { items: unknown }) {
   );
 }
 
-function EnglishRequirementsSection({ data }: { data: unknown }) {
+function EnglishRequirementsSection({ data, locale }: { data: unknown; locale: string }) {
   if (!data || typeof data !== "object") {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return (
+      <p className="text-sm text-muted-foreground">
+        {txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}
+      </p>
+    );
   }
 
   const raw = data as Record<string, unknown>;
@@ -196,9 +244,9 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
             <thead>
               <tr className="border-b text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <th className="pb-2 pr-4">Test</th>
-                <th className="pb-2 pr-4">Standard</th>
-                <th className="pb-2 pr-4">ELICOS 10 wks</th>
-                <th className="pb-2">ELICOS 20 wks</th>
+                <th className="pb-2 pr-4">{txLocale(locale, "标准", "Standart", "Standard")}</th>
+                <th className="pb-2 pr-4">{txLocale(locale, "ELICOS 10 hafta", "ELICOS 10 hafta", "ELICOS 10 wks")}</th>
+                <th className="pb-2">{txLocale(locale, "ELICOS 20 hafta", "ELICOS 20 hafta", "ELICOS 20 wks")}</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -220,19 +268,23 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
       <div className="space-y-6">
         {eng.test_taken_on_or_before_2025_08_06 && (
           <div className="space-y-3">
-            <p className="text-sm font-semibold">Tests taken on or before 6 August 2025</p>
+            <p className="text-sm font-semibold">
+              {txLocale(locale, "2025年8月6日及之前参加的考试", "6 Ağustos 2025 ve öncesinde alınan sınavlar", "Tests taken on or before 6 August 2025")}
+            </p>
             {renderElicosTable(eng.test_taken_on_or_before_2025_08_06)}
           </div>
         )}
         {eng.test_taken_on_or_after_2025_08_07 && (
           <div className="space-y-3">
-            <p className="text-sm font-semibold">Tests taken on or after 7 August 2025</p>
+            <p className="text-sm font-semibold">
+              {txLocale(locale, "2025年8月7日及之后参加的考试", "7 Ağustos 2025 ve sonrasında alınan sınavlar", "Tests taken on or after 7 August 2025")}
+            </p>
             {renderElicosTable(eng.test_taken_on_or_after_2025_08_07)}
           </div>
         )}
         {eng.notes && eng.notes.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-semibold">Notes</p>
+            <p className="text-sm font-semibold">{txLocale(locale, "备注", "Notlar", "Notes")}</p>
             <ul className="space-y-1">
               {eng.notes.map((note, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -271,10 +323,10 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
             <thead>
               <tr className="border-b text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <th className="pb-2 pr-4">Test</th>
-                <th className="pb-2 pr-4">Listening</th>
-                <th className="pb-2 pr-4">Reading</th>
-                <th className="pb-2 pr-4">Writing</th>
-                <th className="pb-2">Speaking</th>
+                <th className="pb-2 pr-4">{txLocale(locale, "听力", "Dinleme", "Listening")}</th>
+                <th className="pb-2 pr-4">{txLocale(locale, "阅读", "Okuma", "Reading")}</th>
+                <th className="pb-2 pr-4">{txLocale(locale, "写作", "Yazma", "Writing")}</th>
+                <th className="pb-2">{txLocale(locale, "口语", "Konuşma", "Speaking")}</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -300,7 +352,7 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
                     {s.overall !== undefined && (
                       <tr>
                         <td className="pb-2 pt-0 text-xs text-muted-foreground" colSpan={5}>
-                          Overall: {s.overall}
+                          {txLocale(locale, "总分", "Genel puan", "Overall")}: {s.overall}
                         </td>
                       </tr>
                     )}
@@ -320,13 +372,13 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.test_validity && (
         <p className="text-sm text-muted-foreground">
-          <span className="font-semibold">Test validity: </span>{eng.test_validity}
+          <span className="font-semibold">{txLocale(locale, "考试有效期", "Sınav geçerlilik süresi", "Test validity")}: </span>{eng.test_validity}
         </p>
       )}
 
       {eng.passport_exemptions && eng.passport_exemptions.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Passport exemptions</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "护照豁免", "Pasaport muafiyetleri", "Passport exemptions")}</p>
           <ul className="space-y-1">
             {eng.passport_exemptions.map((ex, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -340,7 +392,7 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.exemptions && eng.exemptions.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Exemptions</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "豁免", "Muafiyetler", "Exemptions")}</p>
           <ul className="space-y-1">
             {eng.exemptions.map((ex, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -354,7 +406,7 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.online_tests_not_accepted && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Online tests not accepted</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "不接受的线上考试", "Kabul edilmeyen online sınavlar", "Online tests not accepted")}</p>
           {eng.online_tests_not_accepted.rule && (
             <p className="text-sm text-muted-foreground">{eng.online_tests_not_accepted.rule}</p>
           )}
@@ -373,7 +425,7 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.tests_taken_on_or_after_2025_09_13 && (
         <div className="space-y-3">
-          <p className="text-sm font-semibold">Tests taken on or after 13 September 2025</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "2025年9月13日及之后参加的考试", "13 Eylül 2025 ve sonrasında alınan sınavlar", "Tests taken on or after 13 September 2025")}</p>
           {renderPerSkillTable(
             eng.tests_taken_on_or_after_2025_09_13 as Record<string, PerSkillScores | string | boolean>,
             (eng.tests_taken_on_or_after_2025_09_13 as Record<string, unknown>).single_skill_retake_note as string | undefined
@@ -383,7 +435,7 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.tests_taken_on_or_after_2025_08_07 && (
         <div className="space-y-3">
-          <p className="text-sm font-semibold">Tests taken on or after 7 August 2025</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "2025年8月7日及之后参加的考试", "7 Ağustos 2025 ve sonrasında alınan sınavlar", "Tests taken on or after 7 August 2025")}</p>
           {renderPerSkillTable(
             eng.tests_taken_on_or_after_2025_08_07 as Record<string, PerSkillScores | string | boolean>,
             (eng.tests_taken_on_or_after_2025_08_07 as Record<string, unknown>).single_skill_retake_note as string | undefined
@@ -393,9 +445,9 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.tests_taken_before_2025_09_13 && (
         <div className="space-y-3">
-          <p className="text-sm font-semibold">Tests taken before 13 September 2025</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "2025年9月13日之前参加的考试", "13 Eylül 2025 öncesinde alınan sınavlar", "Tests taken before 13 September 2025")}</p>
           {!!(eng.tests_taken_before_2025_09_13 as Record<string, unknown>).single_sitting_required && (
-            <p className="text-sm text-muted-foreground italic">Must be taken in a single sitting.</p>
+            <p className="text-sm text-muted-foreground italic">{txLocale(locale, "必须一次性完成考试。", "Tek oturumda alınmış olmalıdır.", "Must be taken in a single sitting.")}</p>
           )}
           {renderPerSkillTable(
             eng.tests_taken_before_2025_09_13 as Record<string, PerSkillScores | string | boolean>
@@ -405,7 +457,7 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.tests_taken_on_or_before_2025_08_06 && (
         <div className="space-y-3">
-          <p className="text-sm font-semibold">Tests taken on or before 6 August 2025</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "2025年8月6日及之前参加的考试", "6 Ağustos 2025 ve öncesinde alınan sınavlar", "Tests taken on or before 6 August 2025")}</p>
           {renderPerSkillTable(
             eng.tests_taken_on_or_before_2025_08_06 as Record<string, PerSkillScores | string | boolean>,
             (eng.tests_taken_on_or_before_2025_08_06 as Record<string, unknown>).single_skill_retake_note as string | undefined
@@ -415,7 +467,7 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.notes && eng.notes.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Notes</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "备注", "Notlar", "Notes")}</p>
           <ul className="space-y-1">
             {eng.notes.map((note, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -429,7 +481,7 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
 
       {eng.labour_agreement_stream_note && (
         <p className="text-sm text-muted-foreground">
-          <span className="font-semibold">Labour Agreement stream: </span>
+          <span className="font-semibold">{txLocale(locale, "劳工协议通道", "Labour Agreement akışı", "Labour Agreement stream")}: </span>
           {eng.labour_agreement_stream_note}
         </p>
       )}
@@ -437,9 +489,13 @@ function EnglishRequirementsSection({ data }: { data: unknown }) {
   );
 }
 
-function FinancialRequirementsSection({ data }: { data: unknown }) {
+function FinancialRequirementsSection({ data, locale }: { data: unknown; locale: string }) {
   if (!data || typeof data !== "object") {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return (
+      <p className="text-sm text-muted-foreground">
+        {txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}
+      </p>
+    );
   }
 
   const fin = data as FinancialRequirements;
@@ -457,29 +513,29 @@ function FinancialRequirementsSection({ data }: { data: unknown }) {
     <div className="grid gap-6 sm:grid-cols-2">
       {fin.living_costs_12_months && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Living costs (per 12 months)</p>
-          <KeyValueTable rows={fin.living_costs_12_months} />
+          <p className="text-sm font-semibold">{txLocale(locale, "生活费用（12个月）", "Yaşam maliyetleri (12 ay)", "Living costs (per 12 months)")}</p>
+          <KeyValueTable rows={fin.living_costs_12_months} locale={locale} />
         </div>
       )}
 
       {fin.annual_income_option && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Annual income option</p>
-          <KeyValueTable rows={fin.annual_income_option} />
+          <p className="text-sm font-semibold">{txLocale(locale, "年收入选项", "Yıllık gelir seçeneği", "Annual income option")}</p>
+          <KeyValueTable rows={fin.annual_income_option} locale={locale} />
         </div>
       )}
 
       {fin.schooling_costs_per_child && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Schooling costs (per child, per year)</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "教育费用（每名子女/每年）", "Okul giderleri (çocuk başına/yıl)", "Schooling costs (per child, per year)")}</p>
           <p className="text-sm text-muted-foreground">{fin.schooling_costs_per_child}</p>
         </div>
       )}
 
       {fin.travel_costs_guidance && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Travel costs guidance</p>
-          <KeyValueTable rows={fin.travel_costs_guidance} />
+          <p className="text-sm font-semibold">{txLocale(locale, "旅行费用参考", "Seyahat maliyeti rehberi", "Travel costs guidance")}</p>
+          <KeyValueTable rows={fin.travel_costs_guidance} locale={locale} />
         </div>
       )}
     </div>
@@ -923,31 +979,31 @@ export default async function VisaDetailsPage({ params }: PageProps) {
   const sections = [
     {
       title: tx("\u5173\u952e\u8981\u6c42", "Temel gereksinimler", "Key requirements"),
-      content: <StringList items={structured?.key_requirements} />,
+      content: <StringList items={structured?.key_requirements} locale={locale} />,
     },
     {
       title: tx("\u6240\u9700\u6587\u4ef6", "Gerekli belgeler", "Documents required"),
-      content: <StringList items={structured?.documents_required} />,
+      content: <StringList items={structured?.documents_required} locale={locale} />,
     },
     {
       title: tx("\u7533\u8bf7\u6b65\u9aa4", "Ba\u015fvuru ad\u0131mlar\u0131", "Application steps"),
-      content: <NumberedList items={structured?.application_steps} />,
+      content: <NumberedList items={structured?.application_steps} locale={locale} />,
     },
     {
       title: tx("\u7b7e\u8bc1\u6761\u4ef6", "Vize ko\u015fullar\u0131", "Visa conditions"),
-      content: <StringList items={structured?.visa_conditions} />,
+      content: <StringList items={structured?.visa_conditions} locale={locale} />,
     },
     {
       title: tx("\u98ce\u9669\u6807\u8bc6", "Risk bayraklar\u0131", "Risk flags"),
-      content: <RiskList items={structured?.risks} />,
+      content: <RiskList items={structured?.risks} locale={locale} />,
     },
     {
       title: tx("\u82f1\u8bed\u8981\u6c42", "\u0130ngilizce dil gereksinimleri", "English language requirements"),
-      content: <EnglishRequirementsSection data={structured?.english_requirements} />,
+      content: <EnglishRequirementsSection data={structured?.english_requirements} locale={locale} />,
     },
     {
       title: tx("\u8d22\u52a1\u8981\u6c42", "Mali gereksinimler", "Financial requirements"),
-      content: <FinancialRequirementsSection data={structured?.financial_requirements} />,
+      content: <FinancialRequirementsSection data={structured?.financial_requirements} locale={locale} />,
     },
     ...(structured?.raw_json && typeof structured.raw_json === "object" && "eligibility" in structured.raw_json
       ? [

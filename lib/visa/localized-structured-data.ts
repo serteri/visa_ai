@@ -4,6 +4,7 @@ type LocalizedStructuredFields = {
   application_steps?: string[];
   visa_conditions?: string[];
   risks?: string[];
+  english_requirements?: Record<string, unknown>;
 };
 
 type LocalizedVisaFields = {
@@ -205,6 +206,13 @@ const trStructuredData: LocaleVisaStructuredMap = {
       "Önceki ret veya iptaller uygunluğu etkileyebilir",
       "Gerçek Öğrenci şartının karşılanmaması ret ile sonuçlanabilir",
     ],
+    english_requirements: {
+      notes: [
+        "Sınavın tamamı çevrimiçi yapılan evden/online İngilizce sınavları kabul edilmez.",
+        "Bazı başvuru sahipleri İngilizce sınav kanıtından muaf olabilir.",
+        "Kanıt gereksinimleri için Belge Kontrol Aracı kullanılmalıdır.",
+      ],
+    },
   },
   "189": {
     key_requirements: [
@@ -377,6 +385,17 @@ const trStructuredData: LocaleVisaStructuredMap = {
       "Son 3 yılda sponsorluk için ödeme yapılması uygunluğu etkileyebilir",
       "İş sona ererse yeni işveren bulunması veya Avustralya'dan ayrılma düzenlemesi gerekebilir",
     ],
+    english_requirements: {
+      summary:
+        "Skills in Demand 482 için birincil başvuru sahipleri, muafiyet yoksa asgari İngilizce yeterliliğini göstermelidir.",
+      test_validity: "İngilizce sınavları başvurudan önceki 3 yıl içinde alınmış olmalıdır.",
+      labour_agreement_stream_note:
+        "Labour Agreement akışında İngilizce şartları, işveren ile Commonwealth arasındaki anlaşmada belirtilmiş olabilir.",
+      online_tests_not_accepted: {
+        rule:
+          "Sınavın tamamı çevrimiçi/uzaktan gözetimli/evden yapılan İngilizce test kanıtları kabul edilmez.",
+      },
+    },
   },
   "491": {
     key_requirements: [
@@ -447,6 +466,15 @@ const trStructuredData: LocaleVisaStructuredMap = {
       "491 sahipleri genelde 3 yıl dolmadan bazı kalıcı vizelere başvuramaz",
       "Eksik veya hatalı bilgi başvuruyu geciktirebilir veya olumsuz etkileyebilir",
     ],
+    english_requirements: {
+      required_level: "Yeterli İngilizce",
+      summary:
+        "Davet anında birincil başvuru sahibinin en az Yeterli İngilizceye sahip olması gerekir. 18+ aile üyeleri için Functional English veya ikinci taksit ücreti gerekebilir.",
+      functional_english_for_family_members: {
+        summary:
+          "18 yaş ve üzeri aile üyeleri Functional English göstermeli veya ikinci taksit ücreti ödemelidir.",
+      },
+    },
   },
   "820_801": {
     key_requirements: [
@@ -524,6 +552,12 @@ const trStructuredData: LocaleVisaStructuredMap = {
       "Başka bir vize verilirse 801 uygunluğu kaybedilebilir",
       "Yanlış/eksik bilgi gecikme, geçersizlik veya ret doğurabilir",
     ],
+    english_requirements: {
+      status: "Kaynak metinde birincil başvuru sahibi için zorunlu değil",
+      notes: [
+        "Sağlanan kaynak metin, birincil 820 başvuru sahibi için resmi İngilizce sınav şartı belirtmemektedir.",
+      ],
+    },
   },
   "485": {
     key_requirements: [
@@ -580,6 +614,18 @@ const trStructuredData: LocaleVisaStructuredMap = {
       "Vize, nitelikli göç yollarına geçiş garantisi vermez",
       "Eksik veya hatalı bilgi başvuruyu geciktirebilir veya olumsuz etkileyebilir",
     ],
+    english_requirements: {
+      summary:
+        "İngilizce gereksinimleri geçerlidir. Asgari eşikler karşılanmalıdır. Uygulanacak sınav türü ve puan, bireysel koşullara ve sınav tarihine bağlıdır.",
+      approximate_standard:
+        "Yaklaşık olarak IELTS 6.5 genel düzeyine denk gelir; sınav türü ve tarihe göre beceri bazlı alt eşikler uygulanır.",
+      online_tests_note:
+        "Evden veya tamamen çevrimiçi sınavlar kabul edilmeyebilir. Güncel kabul edilen formatlar için resmi kaynaklara bakın.",
+      notes: [
+        "Asgari eşikler uygulanır. Net puan gereksinimi seçilen sınav ve sınav tarihine bağlıdır.",
+        "Güncel koşullar için Home Affairs resmi kaynağını kontrol edin.",
+      ],
+    },
   },
 };
 
@@ -640,6 +686,13 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       "既往拒签或签证取消记录可能影响资格",
       "未满足真实学生要求可能导致拒签",
     ],
+    english_requirements: {
+      notes: [
+        "不接受全程在线进行的居家/线上英语考试。",
+        "部分申请人可能可豁免提交英语成绩证明。",
+        "应使用材料清单工具确认需提交的证明。",
+      ],
+    },
   },
   "189": {
     key_requirements: [
@@ -812,6 +865,14 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       "近3年存在为担保付费行为可能影响资格",
       "若工作终止，可能需更换雇主或安排离境",
     ],
+    english_requirements: {
+      summary: "482 紧缺技能签证主申请人除豁免外需满足最低英语要求。",
+      test_validity: "英语考试通常需在申请前3年内取得。",
+      labour_agreement_stream_note: "劳工协议通道英语要求可能按雇主与联邦协议执行。",
+      online_tests_not_accepted: {
+        rule: "不接受全程线上、远程监考或居家完成的英语考试证明。",
+      },
+    },
   },
   "491": {
     key_requirements: [
@@ -882,6 +943,13 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       "通常需持491满3年后方可申请部分永居签证",
       "信息不完整或不准确可能导致延迟或不利结果",
     ],
+    english_requirements: {
+      required_level: "合格英语",
+      summary: "获邀时主申请人需至少达到合格英语。18岁以上家庭成员需满足功能性英语或支付第二笔费用。",
+      functional_english_for_family_members: {
+        summary: "18岁及以上家庭成员需证明功能性英语，否则可能需支付第二笔费用。",
+      },
+    },
   },
   "820_801": {
     key_requirements: [
@@ -959,6 +1027,10 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       "如获批其他签证，可能失去801资格",
       "错误或不完整信息可能导致延迟、无效或拒签",
     ],
+    english_requirements: {
+      status: "来源文本未要求主申请人提供英语考试",
+      notes: ["提供的来源文本未规定 820 主申请人的正式英语考试要求。"],
+    },
   },
   "485": {
     key_requirements: [
@@ -1015,6 +1087,15 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       "该签证不保证进入技术移民路径",
       "信息不完整或不准确可能导致延迟或不利结果",
     ],
+    english_requirements: {
+      summary: "该签证有英语要求，需满足最低门槛，具体考试和分数取决于个人情况及考试日期。",
+      approximate_standard: "大致相当于 IELTS 总分 6.5，且按考试类型与日期适用分项门槛。",
+      online_tests_note: "居家或全在线英语考试可能不被接受，请以官方最新要求为准。",
+      notes: [
+        "最低门槛适用；具体分数取决于所选考试及考试时间。",
+        "请以澳大利亚内政部官网最新要求为准。",
+      ],
+    },
   },
 };
 
@@ -1054,8 +1135,57 @@ export function localizeVisaStructuredData<T extends Record<string, unknown> | n
   const localized = localeMap?.[subclass];
   if (!localized) return structured;
 
-  return {
+  const merged = {
     ...(structured as Record<string, unknown>),
     ...localized,
-  } as T;
+  } as Record<string, unknown>;
+
+  const baseStructured = structured as Record<string, unknown>;
+  if (
+    baseStructured.english_requirements &&
+    typeof baseStructured.english_requirements === "object" &&
+    localized.english_requirements &&
+    typeof localized.english_requirements === "object"
+  ) {
+    merged.english_requirements = {
+      ...(baseStructured.english_requirements as Record<string, unknown>),
+      ...(localized.english_requirements as Record<string, unknown>),
+    };
+
+    const baseOnline = (baseStructured.english_requirements as Record<string, unknown>)
+      .online_tests_not_accepted;
+    const localizedOnline = (localized.english_requirements as Record<string, unknown>)
+      .online_tests_not_accepted;
+
+    if (
+      baseOnline &&
+      typeof baseOnline === "object" &&
+      localizedOnline &&
+      typeof localizedOnline === "object"
+    ) {
+      (merged.english_requirements as Record<string, unknown>).online_tests_not_accepted = {
+        ...(baseOnline as Record<string, unknown>),
+        ...(localizedOnline as Record<string, unknown>),
+      };
+    }
+
+    const baseFunctional = (baseStructured.english_requirements as Record<string, unknown>)
+      .functional_english_for_family_members;
+    const localizedFunctional = (localized.english_requirements as Record<string, unknown>)
+      .functional_english_for_family_members;
+
+    if (
+      baseFunctional &&
+      typeof baseFunctional === "object" &&
+      localizedFunctional &&
+      typeof localizedFunctional === "object"
+    ) {
+      (merged.english_requirements as Record<string, unknown>).functional_english_for_family_members = {
+        ...(baseFunctional as Record<string, unknown>),
+        ...(localizedFunctional as Record<string, unknown>),
+      };
+    }
+  }
+
+  return merged as T;
 }
