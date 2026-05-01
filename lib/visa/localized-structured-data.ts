@@ -331,11 +331,11 @@ const localizedStructuredData: Record<string, LocaleVisaStructuredMap> = {
   "zh-Hans": zhHansStructuredData,
 };
 
-export function localizeVisaStructuredData(
+export function localizeVisaStructuredData<T extends Record<string, unknown> | null>(
   subclass: string,
   locale: string,
-  structured: unknown
-) {
+  structured: T
+): T {
   if (!structured || typeof structured !== "object") return structured;
 
   const localeMap = localizedStructuredData[locale];
@@ -345,5 +345,5 @@ export function localizeVisaStructuredData(
   return {
     ...(structured as Record<string, unknown>),
     ...localized,
-  };
+  } as T;
 }
