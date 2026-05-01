@@ -1,4 +1,4 @@
-import { count, desc, sql } from "drizzle-orm";
+import { count, desc } from "drizzle-orm";
 import Link from "next/link";
 
 import { AdminNav } from "@/app/[locale]/admin/admin-nav";
@@ -8,53 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const KNOWN_SOURCES = ["full_check", "results", "readiness-preview", "homepage", "unknown"];
-
-async function ensureFullCheckWaitlistTable() {
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS full_check_waitlist (
-      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      email TEXT NOT NULL,
-      full_name TEXT,
-      visa_interest TEXT,
-      preferred_language TEXT,
-      current_country TEXT,
-      passport_country TEXT,
-      age TEXT,
-      occupation TEXT,
-      english_level TEXT,
-      english_test_taken TEXT,
-      occupation_confirmed TEXT,
-      estimated_budget_range TEXT,
-      timeline TEXT,
-      sponsor_or_family TEXT,
-      biggest_concern TEXT,
-      main_goal TEXT,
-      lead_score INT,
-      lead_tier TEXT,
-      source TEXT DEFAULT 'full_check',
-      created_at TIMESTAMP DEFAULT NOW()
-    )
-  `);
-
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS full_name TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS visa_interest TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS preferred_language TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS current_country TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS passport_country TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS age TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_level TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_test_taken TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation_confirmed TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS estimated_budget_range TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS timeline TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS biggest_concern TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS main_goal TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS lead_score INT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS lead_tier TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'full_check'`);
-}
 
 function normalizeSource(source: string | null): string {
   if (!source) return "unknown";
@@ -70,8 +23,6 @@ function sourceLabel(source: string): string {
 }
 
 async function getDashboardData() {
-  await ensureFullCheckWaitlistTable();
-
   const [waitlistTotal] = await db.select({ value: count() }).from(fullCheckWaitlist);
   const [referralTotal] = await db.select({ value: count() }).from(agentReferrals);
   const [agentTotal] = await db.select({ value: count() }).from(agents);

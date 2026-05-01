@@ -1,4 +1,4 @@
-import { desc, sql } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
 import { db } from "@/db";
 import { fullCheckWaitlist } from "@/db/schema";
@@ -6,91 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminNav } from "@/app/[locale]/admin/admin-nav";
 
-async function ensureFullCheckWaitlistTable() {
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS full_check_waitlist (
-      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      email TEXT NOT NULL,
-      full_name TEXT,
-      visa_interest TEXT,
-      preferred_language TEXT,
-      current_country TEXT,
-      passport_country TEXT,
-      age TEXT,
-      occupation TEXT,
-      english_level TEXT,
-      sponsor_or_family TEXT,
-      biggest_concern TEXT,
-      main_goal TEXT,
-      source TEXT DEFAULT 'full_check',
-      created_at TIMESTAMP DEFAULT NOW()
-    )
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS full_name TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS visa_interest TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS preferred_language TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS current_country TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS passport_country TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS age TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS occupation TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS english_level TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS biggest_concern TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS main_goal TEXT
-  `);
-
-  await db.execute(sql`
-    ALTER TABLE full_check_waitlist
-    ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'full_check'
-  `);
-}
-
 async function getWaitlistLeads() {
-  await ensureFullCheckWaitlistTable();
-
   return db
     .select()
     .from(fullCheckWaitlist)

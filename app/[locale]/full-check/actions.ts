@@ -1,6 +1,7 @@
 "use server";
 
 import { and, eq, gte, sql } from "drizzle-orm";
+import Stripe from "stripe";
 import { Resend } from "resend";
 
 import { db } from "@/db";
@@ -10,9 +11,9 @@ import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine
 import type { ReadinessReport } from "@/lib/readiness/types";
 import {
   createUserReport,
-  ensureUserReportsTable,
   getUserReportById,
   markUserReportUnlocked,
+  type UnlockMethod,
 } from "@/src/lib/user-reports";
 
 type SupportedLocale = "en" | "tr" | "zh-Hans";
@@ -68,74 +69,13 @@ export type PremiumUnlockState = {
   };
 };
 
-async function ensureFullCheckWaitlistTable() {
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS full_check_waitlist (
-      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      email TEXT NOT NULL,
-      full_name TEXT,
-      visa_interest TEXT,
-      preferred_language TEXT,
-      current_country TEXT,
-      passport_country TEXT,
-      age TEXT,
-      occupation TEXT,
-      english_level TEXT,
-      english_test_taken TEXT,
-      occupation_confirmed TEXT,
-      estimated_budget_range TEXT,
-      timeline TEXT,
-      sponsor_or_family TEXT,
-      biggest_concern TEXT,
-      main_goal TEXT,
-      lead_score INT,
-      lead_tier TEXT,
-      source TEXT DEFAULT 'full_check',
-      created_at TIMESTAMP DEFAULT NOW()
-    )
-  `);
+// ─── Feature flags ────────────────────────────────────────────────────────────
 
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS full_name TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS visa_interest TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS preferred_language TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS current_country TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS passport_country TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS age TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_level TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS english_test_taken TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS occupation_confirmed TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS estimated_budget_range TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS timeline TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS sponsor_or_family TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS biggest_concern TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS main_goal TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS lead_score INT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS lead_tier TEXT`);
-  await db.execute(sql`ALTER TABLE full_check_waitlist ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'full_check'`);
+function isFreeBeta(): boolean {
+  return process.env.NEXT_PUBLIC_IS_FREE_BETA === "true";
 }
 
-async function ensureFullCheckUsageTable() {
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS full_check_usage (
-      id INT PRIMARY KEY DEFAULT 1,
-      free_reports_used INT DEFAULT 0,
-      free_limit INT DEFAULT 500,
-      is_free_active BOOLEAN DEFAULT TRUE,
-      updated_at TIMESTAMP DEFAULT NOW()
-    )
-  `);
-
-  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS free_reports_used INT DEFAULT 0`);
-  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS free_limit INT DEFAULT 500`);
-  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS is_free_active BOOLEAN DEFAULT TRUE`);
-  await db.execute(sql`ALTER TABLE full_check_usage ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW()`);
-  await db.execute(sql`
-    INSERT INTO full_check_usage (id, free_reports_used, free_limit, is_free_active)
-    VALUES (1, 0, 500, TRUE)
-    ON CONFLICT (id) DO NOTHING
-  `);
-}
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -164,6 +104,8 @@ async function hasRecentSubmission(email: string, source: string): Promise<boole
   return rows.length > 0;
 }
 
+// ─── Email senders ────────────────────────────────────────────────────────────
+
 async function sendFullCheckAdminEmail(payload: {
   fullName: string;
   email: string;
@@ -187,12 +129,7 @@ async function sendFullCheckAdminEmail(payload: {
   const notificationEmail =
     process.env.FULL_CHECK_NOTIFICATION_EMAIL || process.env.REFERRAL_NOTIFICATION_EMAIL;
 
-  if (!apiKey || !notificationEmail) {
-    console.error(
-      "Full check admin email skipped: RESEND_API_KEY and notification email are required."
-    );
-    return;
-  }
+  if (!apiKey || !notificationEmail) return;
 
   const resend = new Resend(apiKey);
   const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
@@ -233,11 +170,7 @@ async function sendFullCheckConfirmationEmail(payload: {
   pdfAttachment?: Uint8Array;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
-
-  if (!apiKey) {
-    console.error("Full check confirmation email skipped: RESEND_API_KEY is missing.");
-    return;
-  }
+  if (!apiKey) throw new Error("RESEND_API_KEY is not configured.");
 
   const resend = new Resend(apiKey);
   const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
@@ -249,7 +182,7 @@ async function sendFullCheckConfirmationEmail(payload: {
       ? "Merhaba,"
       : isZh
         ? "您好，"
-      : "Hi,";
+        : "Hi,";
 
   await resend.emails.send({
     from: fromEmail,
@@ -274,13 +207,13 @@ async function sendFullCheckConfirmationEmail(payload: {
             "你的高级 PDF 报告已作为附件发送。",
             "本内容仅供一般信息参考，不构成移民建议。",
           ].join("\n")
-      : [
-          greeting,
-          "",
-          "Your full visa readiness report request has been received.",
-          "Your premium PDF report is attached.",
-          "This is general information only and not migration advice.",
-        ].join("\n"),
+        : [
+            greeting,
+            "",
+            "Your full visa readiness report request has been received.",
+            "Your premium PDF report is attached.",
+            "This is general information only and not migration advice.",
+          ].join("\n"),
     attachments: payload.pdfAttachment
       ? [
           {
@@ -291,6 +224,38 @@ async function sendFullCheckConfirmationEmail(payload: {
       : undefined,
   });
 }
+
+// ─── Stripe checkout (active when IS_FREE_BETA = false) ───────────────────────
+
+async function createStripeCheckoutSession(input: {
+  reportId: string;
+  email: string;
+  locale: SupportedLocale;
+}): Promise<{ url: string }> {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  const priceId = process.env.STRIPE_REPORT_PRICE_ID;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+  if (!secretKey) throw new Error("STRIPE_SECRET_KEY is not configured.");
+  if (!priceId) throw new Error("STRIPE_REPORT_PRICE_ID is not configured.");
+
+  const stripe = new Stripe(secretKey);
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    customer_email: input.email,
+    line_items: [{ price: priceId, quantity: 1 }],
+    mode: "payment",
+    success_url: `${baseUrl}/${input.locale}/full-check?payment=success&reportId=${input.reportId}`,
+    cancel_url: `${baseUrl}/${input.locale}/full-check?payment=cancelled`,
+    metadata: { reportId: input.reportId, email: input.email },
+  });
+
+  if (!session.url) throw new Error("Stripe did not return a checkout URL.");
+  return { url: session.url };
+}
+
+// ─── Shared ───────────────────────────────────────────────────────────────────
 
 function buildQuickPreview(report: ReadinessReport): FullCheckQuickPreview {
   return {
@@ -310,6 +275,8 @@ function normalizeSubmittedLocale(value: string): SupportedLocale {
   if (value === "zh" || value === "zh-Hans") return "zh-Hans";
   return "en";
 }
+
+// ─── Server actions ───────────────────────────────────────────────────────────
 
 export async function submitFullCheckWaitlist(
   _prevState: FullCheckWaitlistState,
@@ -357,13 +324,9 @@ export async function submitFullCheckWaitlist(
         ? "Yapilandirilmis bir rapor icin daha fazla bilgi gereklidir."
         : isZh
           ? "需要更多信息以生成结构化报告。"
-        : "More information required for a structured report.",
+          : "More information required for a structured report.",
     };
   }
-
-  await ensureFullCheckWaitlistTable();
-  await ensureFullCheckUsageTable();
-  await ensureUserReportsTable();
 
   const leadQuality = buildLeadQuality({
     locale: resolvedLocale,
@@ -382,23 +345,40 @@ export async function submitFullCheckWaitlist(
     biggestConcern: biggestConcern || undefined,
   });
 
-  const usageResult = await db.execute(sql`
-    SELECT free_reports_used, free_limit, is_free_active
-    FROM full_check_usage
-    WHERE id = 1
-  `);
+  // ── Atomic usage counter ──────────────────────────────────────────────────
+  // In free beta, always count but never block.
+  // In production, atomically increment only when under limit.
+  if (isFreeBeta()) {
+    await db.execute(sql`
+      UPDATE full_check_usage
+      SET free_reports_used = free_reports_used + 1, updated_at = NOW()
+      WHERE id = 1
+    `);
+  } else {
+    const atomicResult = await db.execute(sql`
+      UPDATE full_check_usage
+      SET free_reports_used = free_reports_used + 1, updated_at = NOW()
+      WHERE id = 1
+        AND is_free_active = TRUE
+        AND free_reports_used < free_limit
+      RETURNING free_reports_used
+    `);
 
-  const usageRow = usageResult.rows[0] as
-    | {
-        free_reports_used: number | null;
-        free_limit: number | null;
-        is_free_active: boolean | null;
-      }
-    | undefined;
+    if (atomicResult.rows.length === 0) {
+      return {
+        status: "error",
+        error: "Free access limit reached",
+        message: isTr
+          ? "Ücretsiz rapor limiti doldu."
+          : isZh
+            ? "免费报告额度已用完。"
+            : "Free access limit reached.",
+        requirePayment: true,
+      };
+    }
+  }
 
-  const freeReportsUsed = Number(usageRow?.free_reports_used ?? 0);
-  const freeLimit = Number(usageRow?.free_limit ?? 500);
-  const isFreeActive = Boolean(usageRow?.is_free_active ?? true);
+  const suppressNotifications = await hasRecentSubmission(email, source);
 
   const generatedReport = runReadinessEngine({
     locale: resolvedLocale,
@@ -417,59 +397,28 @@ export async function submitFullCheckWaitlist(
     biggestConcern: biggestConcern || undefined,
   });
 
-  const submissionResult =
-    !isFreeActive || freeReportsUsed >= freeLimit
-      ? { blocked: true as const, report: generatedReport }
-      : await (async () => {
-          const suppressNotifications = await hasRecentSubmission(email, source);
+  await db.insert(fullCheckWaitlist).values({
+    email,
+    full_name: fullName || null,
+    visa_interest: visaInterest || null,
+    preferred_language: preferredLanguage || null,
+    current_country: currentCountry || null,
+    passport_country: passportCountry,
+    age,
+    occupation: occupation || null,
+    english_level: englishLevel || null,
+    english_test_taken: englishTestTaken || null,
+    occupation_confirmed: occupationConfirmed || null,
+    estimated_budget_range: estimatedBudgetRange || null,
+    timeline: timeline || null,
+    sponsor_or_family: sponsorOrFamily || null,
+    biggest_concern: biggestConcern || null,
+    main_goal: mainGoal,
+    lead_score: leadQuality.leadScore,
+    lead_tier: leadQuality.leadTier,
+    source,
+  });
 
-          await db.insert(fullCheckWaitlist).values({
-            email,
-            full_name: fullName || null,
-            visa_interest: visaInterest || null,
-            preferred_language: preferredLanguage || null,
-            current_country: currentCountry || null,
-            passport_country: passportCountry,
-            age,
-            occupation: occupation || null,
-            english_level: englishLevel || null,
-            english_test_taken: englishTestTaken || null,
-            occupation_confirmed: occupationConfirmed || null,
-            estimated_budget_range: estimatedBudgetRange || null,
-            timeline: timeline || null,
-            sponsor_or_family: sponsorOrFamily || null,
-            biggest_concern: biggestConcern || null,
-            main_goal: mainGoal,
-            lead_score: leadQuality.leadScore,
-            lead_tier: leadQuality.leadTier,
-            source,
-          });
-
-          await db.execute(sql`
-            UPDATE full_check_usage
-            SET
-              free_reports_used = free_reports_used + 1,
-              updated_at = NOW()
-            WHERE id = 1
-          `);
-
-          return {
-            blocked: false as const,
-            report: generatedReport,
-            suppressNotifications,
-          };
-        })();
-
-  if (submissionResult.blocked) {
-    return {
-      status: "error",
-      error: "Free access limit reached",
-      message: "Free access limit reached",
-      requirePayment: true,
-    };
-  }
-
-  const { report } = submissionResult;
   const reportRecord = await createUserReport({
     fullName,
     email,
@@ -478,7 +427,7 @@ export async function submitFullCheckWaitlist(
     locale: resolvedLocale,
     leadScore: leadQuality.leadScore,
     leadTier: leadQuality.leadTier,
-    report,
+    report: generatedReport,
     input: {
       locale: resolvedLocale,
       mainGoal,
@@ -497,14 +446,36 @@ export async function submitFullCheckWaitlist(
     },
   });
 
+  if (!suppressNotifications) {
+    sendFullCheckAdminEmail({
+      fullName,
+      email,
+      visaInterest,
+      preferredLanguage,
+      currentCountry,
+      passportCountry,
+      age,
+      occupation,
+      englishLevel,
+      englishTestTaken,
+      occupationConfirmed,
+      estimatedBudgetRange,
+      timeline,
+      sponsorOrFamily,
+      biggestConcern,
+      mainGoal,
+      source,
+    }).catch((err) => console.error("Admin email failed (non-blocking):", err));
+  }
+
   return {
     status: "success",
     message: isTr
       ? "Hizli sonuclar hazir. Tam rapor icin kilidi acin."
       : isZh
         ? "快速结果已生成。解锁后可查看完整报告。"
-      : "Quick results are ready. Unlock to access the full report.",
-    preview: buildQuickPreview(report),
+        : "Quick results are ready. Unlock to access the full report.",
+    preview: buildQuickPreview(generatedReport),
     reportId: reportRecord.id,
     userInput: {
       name: fullName || undefined,
@@ -530,7 +501,8 @@ export async function unlockPremiumReport(
   const email = String(formData.get("email") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const unlockMethodRaw = String(formData.get("unlockMethod") ?? "lead_capture").trim();
-  const unlockMethod = unlockMethodRaw === "payment" ? "payment" : "lead_capture";
+  const unlockMethod: "payment" | "lead_capture" =
+    unlockMethodRaw === "payment" ? "payment" : "lead_capture";
 
   const errors: Record<string, string> = {};
   if (!reportId) errors.reportId = "Missing report id.";
@@ -538,33 +510,52 @@ export async function unlockPremiumReport(
   if (email && !isValidEmail(email)) errors.email = "Enter a valid email address.";
 
   if (Object.keys(errors).length > 0) {
-    return {
-      status: "error",
-      errors,
-      message: "Please fix the highlighted fields.",
-    };
+    return { status: "error", errors, message: "Please fix the highlighted fields." };
   }
 
-  await ensureUserReportsTable();
   const record = await getUserReportById(reportId);
-
   if (!record) {
-    return {
-      status: "error",
-      message: "Report could not be found.",
-    };
+    return { status: "error", message: "Report could not be found. Please submit the form again." };
   }
 
-  let pdfSent = false;
+  const freeBeta = isFreeBeta();
+
+  // ── Stripe gate (only active when IS_FREE_BETA = false) ───────────────────
+  if (!freeBeta && unlockMethod === "payment") {
+    try {
+      const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
+      const { url } = await createStripeCheckoutSession({ reportId, email, locale });
+      // Return the checkout URL so the client can redirect.
+      // The client reads this via the success_url webhook after payment.
+      return {
+        status: "error",
+        message: `STRIPE_REDIRECT:${url}`,
+      };
+    } catch (err) {
+      console.error("Stripe session creation failed:", err);
+      return {
+        status: "error",
+        message: "Payment processing is temporarily unavailable. Please use the lead capture option.",
+      };
+    }
+  }
+
+  // ── Effective unlock method ───────────────────────────────────────────────
+  const effectiveUnlockMethod: UnlockMethod = freeBeta ? "beta_free" : "lead_capture";
+
+  // ── PDF generation & email delivery ──────────────────────────────────────
   const emailEnabled = isEmailDeliveryEnabled();
   const simulateEmailDelivery = process.env.SIMULATE_EMAIL_DELIVERY === "true";
+  let pdfSent = false;
 
   if (simulateEmailDelivery) {
     pdfSent = true;
-    console.log(`Simulated PDF email delivery for report ${reportId} to ${email}`);
+    console.log(`[simulate] PDF email delivery for report ${reportId} → ${email}`);
   } else if (emailEnabled) {
+    let pdfBytes: Uint8Array;
+
     try {
-      const pdfAttachment = await generateReadinessPDF({
+      pdfBytes = await generateReadinessPDF({
         report: record.report,
         locale: record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en",
         saveToFile: false,
@@ -581,16 +572,28 @@ export async function unlockPremiumReport(
           biggestConcern: record.input.biggestConcern,
         },
       });
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      return {
+        status: "error",
+        message: "PDF generation failed. Please try again.",
+      };
+    }
 
+    try {
       await sendFullCheckConfirmationEmail({
         email,
         fullName,
         locale: record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en",
-        pdfAttachment,
+        pdfAttachment: pdfBytes,
       });
       pdfSent = true;
-    } catch (error) {
-      console.error("Failed to send premium report PDF email", error);
+    } catch (err) {
+      console.error("Email delivery failed:", err);
+      return {
+        status: "error",
+        message: "Report is ready but email delivery failed. Please contact support.",
+      };
     }
   }
 
@@ -598,16 +601,15 @@ export async function unlockPremiumReport(
     reportId,
     email,
     phone: phone || undefined,
-    unlockMethod,
+    unlockMethod: effectiveUnlockMethod,
     pdfSent,
   });
 
   return {
     status: "success",
-    message:
-      unlockMethod === "payment"
-        ? "Payment successful. Full report unlocked and PDF delivery triggered."
-        : "Details received. Full report unlocked and PDF delivery triggered.",
+    message: freeBeta
+      ? "Full report unlocked. PDF sent to your email."
+      : "Details received. Full report unlocked and PDF sent.",
     report: record.report,
     userInput: {
       name: fullName || undefined,

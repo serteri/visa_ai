@@ -13,28 +13,12 @@ export type CreateUserReportInput = {
   input: ReadinessInput;
 };
 
-export async function ensureUserReportsTable(): Promise<void> {
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS user_reports (
-      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      full_name TEXT,
-      email TEXT NOT NULL,
-      phone TEXT,
-      preferred_path TEXT,
-      source TEXT NOT NULL DEFAULT 'full_check',
-      locale TEXT NOT NULL DEFAULT 'en',
-      lead_score INT,
-      lead_tier TEXT,
-      payment_status TEXT NOT NULL DEFAULT 'pending',
-      unlock_method TEXT,
-      is_unlocked BOOLEAN NOT NULL DEFAULT FALSE,
-      pdf_sent BOOLEAN NOT NULL DEFAULT FALSE,
-      report_json JSONB NOT NULL,
-      input_json JSONB NOT NULL,
-      created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-      unlocked_at TIMESTAMP
-    )
-  `);
+export type UnlockMethod = "payment" | "lead_capture" | "beta_free";
+
+function paymentStatusForMethod(method: UnlockMethod): string {
+  if (method === "payment") return "paid";
+  if (method === "beta_free") return "beta_free";
+  return "lead_captured";
 }
 
 export async function createUserReport(input: CreateUserReportInput): Promise<{ id: string }> {
@@ -105,7 +89,7 @@ export async function markUserReportUnlocked(input: {
   reportId: string;
   email: string;
   phone?: string;
-  unlockMethod: "payment" | "lead_capture";
+  unlockMethod: UnlockMethod;
   pdfSent: boolean;
 }): Promise<void> {
   await prisma.$executeRawUnsafe(
@@ -124,7 +108,7 @@ export async function markUserReportUnlocked(input: {
     input.email,
     input.phone ?? null,
     input.unlockMethod,
-    input.unlockMethod === "payment" ? "paid" : "lead_captured",
+    paymentStatusForMethod(input.unlockMethod),
     input.pdfSent,
     input.reportId
   );
