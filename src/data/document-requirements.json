@@ -58,7 +58,7 @@
     }
   ],
   "criticalWarnings": {
-    "occupationUnconfirmed": "Your documentation strategy must first focus on Skills Assessment evidence.",
-    "occupationUnconfirmed_zh": "材料策略应首先聚焦技能评估证据。"
+    "occupationUnconfirmed": "Skills-assessment evidence is the primary data variable when occupation data is missing.",
+    "occupationUnconfirmed_zh": "当职业数据缺失时，技能评估证据是主要数据变量。"
   }
 }

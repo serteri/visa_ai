@@ -31,9 +31,9 @@ const textMap: Record<string, { tr?: string; zh?: string }> = {
   "Phase 2: Assessment": { zh: "第二阶段：职业评估" },
   "Phase 3: EOI and Nomination": { zh: "第三阶段：意向书与提名" },
   "Phase 4: Lodgement": { zh: "第四阶段：递交准备" },
-  "Your documentation strategy must first focus on Skills Assessment evidence.": {
-    tr: "Belge stratejiniz once Skills Assessment kanitlarina odaklanmalidir.",
-    zh: "你的材料策略应首先聚焦技能评估证据。",
+  "Skills-assessment evidence is the primary data variable when occupation data is missing.": {
+    tr: "Meslek verisi eksik oldugunda skills-assessment kaniti birincil veri degiskenidir.",
+    zh: "当职业数据缺失时，技能评估证据是主要数据变量。",
   },
   "months": { tr: "ay", zh: "个月" },
   "Trend estimates are analytical planning references only and do not guarantee invitation outcomes.": {
@@ -58,57 +58,57 @@ const textMap: Record<string, { tr?: string; zh?: string }> = {
     tr: "ACS deneyim kesintisi, beyan edilen nitelikli yil sayisini azaltabilir.",
     zh: "ACS 经验扣减可能减少可申报的技术年限。",
   },
-  "VETASSESS may reject roles lacking direct professional scope alignment.": {
-    tr: "VETASSESS, mesleki kapsam ile dogrudan uyumlu olmayan rolleri reddedebilir.",
-    zh: "VETASSESS 可能拒绝与职业范围不直接匹配的岗位。",
+  "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.": {
+    tr: "VETASSESS degerlendirmeleri dogrudan mesleki kapsam uyumuna duyarlidir; tanimli kapsamdan sapan roller degerlendirme kriterlerini karsilamayabilir.",
+    zh: "VETASSESS 评估对职业范围的直接匹配较为敏感；偏离既定范围的岗位可能无法满足评估标准。",
   },
-  "English Test Preparation + Exam": { zh: "英语备考与考试" },
-  "Skills Assessment Evidence Pack": { zh: "技能评估证据包" },
-  "EOI Submission + State Interest": { zh: "EOI 递交与州提名意向" },
-  "Visa Lodgement Readiness": { zh: "签证递交准备" },
-  "English Uplift Strategy": { zh: "英语提升策略" },
-  "Skills Assessment + Experience Positioning": { zh: "技能评估与经验定位" },
-  "EOI Optimization + Nomination Track": { zh: "EOI 优化与提名路径" },
-  "Visa Application Assembly": { zh: "签证申请材料组装" },
-  "Foundation Phase: English + Documentation": { zh: "基础阶段：英语与材料" },
-  "Skills Assessment + Career Evidence": { zh: "技能评估与职业证据" },
-  "EOI + Invitation Cycle Monitoring": { zh: "EOI 与邀请周期监测" },
-  "Lodgement and Post-Lodgement Controls": { zh: "递交及递交后管理" },
-  "Complete exam booking, target score cycle, and score release planning.": {
-    zh: "完成考试预约、目标分数周期安排和出分时间规划。",
+  "English Test Signal Window": { zh: "英语信号时间窗口" },
+  "Skills Assessment Evidence Window": { zh: "技能评估证据时间窗口" },
+  "EOI and State-Interest Window": { zh: "EOI 与州提名意向窗口" },
+  "Application Readiness Window": { zh: "申请准备时间窗口" },
+  "English Score Development Window": { zh: "英语分数发展窗口" },
+  "Skills Assessment and Experience Window": { zh: "技能评估与经验窗口" },
+  "EOI and Nomination Window": { zh: "EOI 与提名窗口" },
+  "Application Assembly Window": { zh: "申请材料汇总窗口" },
+  "Foundation Window: English and Documentation": { zh: "基础窗口：英语与材料" },
+  "Skills Assessment and Career Evidence Window": { zh: "技能评估与职业证据窗口" },
+  "EOI and Invitation-Cycle Window": { zh: "EOI 与邀请周期窗口" },
+  "Application and Post-Application Window": { zh: "申请及申请后管理窗口" },
+  "This period typically captures exam booking, score-cycle timing, and English-result availability as model inputs.": {
+    zh: "该时间窗口通常捕捉考试预约、分数周期时间节点和英语成绩可用性等模型输入。",
   },
-  "Finalize authority-ready references, duties mapping, and qualification documents.": {
-    zh: "整理符合评估机构要求的推荐信、职责映射和学历文件。",
+  "This period usually concentrates reference structure, duties mapping, and qualification documents into the assessment dataset.": {
+    zh: "该时间窗口通常将推荐信结构、职责映射和学历文件整合进评估数据集。",
   },
-  "Lodge EOI profile and state pathways aligned to score strategy.": {
-    zh: "递交 EOI 档案，并根据分数策略匹配州提名路径。",
+  "This period typically reflects when EOI variables and state-interest signals begin to interact in the comparison model.": {
+    zh: "该时间窗口通常反映 EOI 变量与州提名意向信号在比较模型中开始交互的时期。",
   },
-  "Prepare health, police, and identity pack for rapid post-invitation lodgement.": {
-    zh: "准备体检、无犯罪和身份材料，以便获邀后快速递交。",
+  "This period usually captures health, police, and identity-document completeness as readiness variables.": {
+    zh: "该时间窗口通常将体检、无犯罪证明和身份文件完整性作为准备度变量纳入。",
   },
-  "Schedule multiple attempts if needed to reach competitive score bands.": {
-    zh: "必要时安排多次考试，以达到更具竞争力的分数区间。",
+  "This window often determines whether higher English-score bands enter the points model.": {
+    zh: "该窗口通常决定更高英语分数区间是否进入打分模型。",
   },
-  "Sequence assessment submission with experience evidence optimization.": {
-    zh: "将评估递交与工作经验证据优化按顺序推进。",
+  "This window typically consolidates assessment timing with work-history evidence depth and classification.": {
+    zh: "该窗口通常将评估时间节点与工作经历证据深度和分类整合。",
   },
-  "Refine points profile, monitor invitation rounds, and activate nomination options.": {
-    zh: "优化分数档案，监测邀请轮次，并启动提名选项。",
+  "This window usually captures EOI signal changes, invitation-round movement, and nomination-linked variables.": {
+    zh: "该窗口通常捕捉 EOI 信号变化、邀请轮次动态和提名相关变量。",
   },
-  "Complete final compliance pack for efficient invitation-to-lodgement turnaround.": {
-    zh: "完成最终合规材料包，以提高获邀后递交效率。",
+  "This window generally reflects how quickly the profile can convert into a complete application-ready evidence set.": {
+    zh: "该窗口通常反映档案可以多快转化为完整的申请就绪证据集。",
   },
-  "Build base profile and document controls for a durable migration pipeline.": {
-    zh: "建立基础档案和材料管理机制，为长期移民路径做准备。",
+  "This quarter usually establishes the baseline profile and document-control variables used across later comparisons.": {
+    zh: "该季度通常建立基础档案和材料管控变量，用于后续比较。",
   },
-  "Synchronize qualification proof and role scope evidence with authority rules.": {
-    zh: "按照评估机构规则同步学历证明和岗位范围证据。",
+  "This quarter typically aligns qualification proof and role-scope evidence with assessment-authority criteria.": {
+    zh: "该季度通常将学历证明和岗位范围证据与评估机构标准对齐。",
   },
-  "Track invitation movement and tune strategy to state and federal demand signals.": {
-    zh: "跟踪邀请变化，并根据州和联邦需求信号调整策略。",
+  "This quarter usually captures invitation-cycle movement and state or federal demand signals as comparison inputs.": {
+    zh: "该季度通常将邀请周期动态和州或联邦需求信号作为比较输入。",
   },
-  "Execute submission and maintain readiness for any follow-up requests.": {
-    zh: "完成递交，并保持对后续补件请求的准备状态。",
+  "This quarter typically reflects submission completeness and response-readiness variables after application lodgement.": {
+    zh: "该季度通常反映申请递交后的递交完整性和响应准备度变量。",
   },
 };
 
