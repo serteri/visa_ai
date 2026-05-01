@@ -60,6 +60,8 @@ type FinancialRequirements = {
   annual_income_option?: Record<string, string>;
   schooling_costs_per_child?: string;
   travel_costs_guidance?: Record<string, string>;
+  notes?: string[];
+  status?: string;
 };
 
 function txLocale(locale: string, zh: string, tr: string, en: string) {
@@ -245,8 +247,8 @@ function EnglishRequirementsSection({ data, locale }: { data: unknown; locale: s
               <tr className="border-b text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <th className="pb-2 pr-4">Test</th>
                 <th className="pb-2 pr-4">{txLocale(locale, "标准", "Standart", "Standard")}</th>
-                <th className="pb-2 pr-4">{txLocale(locale, "ELICOS 10 hafta", "ELICOS 10 hafta", "ELICOS 10 wks")}</th>
-                <th className="pb-2">{txLocale(locale, "ELICOS 20 hafta", "ELICOS 20 hafta", "ELICOS 20 wks")}</th>
+                <th className="pb-2 pr-4">{txLocale(locale, "ELICOS 10 周", "ELICOS 10 hafta", "ELICOS 10 wks")}</th>
+                <th className="pb-2">{txLocale(locale, "ELICOS 20 周", "ELICOS 20 hafta", "ELICOS 20 wks")}</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -499,15 +501,6 @@ function FinancialRequirementsSection({ data, locale }: { data: unknown; locale:
   }
 
   const fin = data as FinancialRequirements;
-  const hasKnownFinancialData =
-    fin.living_costs_12_months ||
-    fin.annual_income_option ||
-    fin.schooling_costs_per_child ||
-    fin.travel_costs_guidance;
-
-  if (!hasKnownFinancialData) {
-    return <StructuredJsonSection data={data} />;
-  }
 
   return (
     <div className="grid gap-6 sm:grid-cols-2">
@@ -538,17 +531,40 @@ function FinancialRequirementsSection({ data, locale }: { data: unknown; locale:
           <KeyValueTable rows={fin.travel_costs_guidance} locale={locale} />
         </div>
       )}
+
+      {fin.notes && fin.notes.length > 0 && (
+        <div className="space-y-2 sm:col-span-2">
+          <p className="text-sm font-semibold">{txLocale(locale, "备注", "Notlar", "Notes")}</p>
+          <ul className="space-y-1">
+            {fin.notes.map((note, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-0.5 text-primary">•</span>
+                <span>{note}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {fin.status && (
+        <div className="space-y-2 sm:col-span-2">
+          <p className="text-sm font-semibold">{txLocale(locale, "状态", "Durum", "Status")}</p>
+          <p className="text-sm text-muted-foreground">{fin.status.replace(/_/g, " ")}</p>
+        </div>
+      )}
     </div>
   );
 }
 
 function OccupationRequirementsSection({
   data,
+  locale = "en",
 }: {
   data: unknown;
+  locale?: string;
 }) {
   if (!data || typeof data !== "object") {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
   }
 
   const occ = data as Record<string, unknown>;
@@ -566,7 +582,7 @@ function OccupationRequirementsSection({
       {summary && <p className="text-sm text-muted-foreground">{summary}</p>}
       {note && <p className="text-xs italic text-muted-foreground">{note}</p>}
       {stateSpecificReviewRequired && (
-        <p className="text-xs italic text-muted-foreground">State-specific review required.</p>
+        <p className="text-xs italic text-muted-foreground">{txLocale(locale, "需要州级审核。", "Eyalet bazlı inceleme gereklidir.", "State-specific review required.")}</p>
       )}
       {notes && notes.length > 0 && (
         <ul className="space-y-1">
@@ -580,7 +596,7 @@ function OccupationRequirementsSection({
       )}
       {occupations && occupations.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Listed occupations (sample)</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "职业示例", "Örnek meslekler", "Listed occupations (sample)")}</p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {occupations.map((occ, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -593,7 +609,7 @@ function OccupationRequirementsSection({
       )}
       {statesAndTerritories && statesAndTerritories.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">States and territories</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "州和领地", "Eyalet ve bölgeler", "States and territories")}</p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {statesAndTerritories.map((state, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -610,11 +626,13 @@ function OccupationRequirementsSection({
 
 function PointsTestRulesSection({
   data,
+  locale = "en",
 }: {
   data: unknown;
+  locale?: string;
 }) {
   if (!data || typeof data !== "object") {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
   }
 
   const points = data as Record<string, unknown>;
@@ -655,7 +673,7 @@ function PointsTestRulesSection({
 
       {minPoints !== undefined && (
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-          <p className="text-sm font-semibold">Minimum points required: {minPoints}</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "最低所需分数", "Gereken minimum puan", "Minimum points required")}: {minPoints}</p>
         </div>
       )}
 
@@ -663,56 +681,56 @@ function PointsTestRulesSection({
 
       {Array.isArray(points.age) && points.age.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Age</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "年龄", "Yaş", "Age")}</p>
           {renderPointsTable(points.age)}
         </div>
       )}
 
       {Array.isArray(points.english_language) && points.english_language.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">English language</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "英语水平", "İngilizce seviyesi", "English language")}</p>
           {renderPointsTable(points.english_language)}
         </div>
       )}
 
       {Array.isArray(points.english) && points.english.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">English language</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "英语水平", "İngilizce seviyesi", "English language")}</p>
           {renderPointsTable(points.english)}
         </div>
       )}
 
       {Array.isArray(points.overseas_skilled_employment) && points.overseas_skilled_employment.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Overseas skilled employment</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "海外技术工作经验", "Yurt dışı nitelikli istihdam", "Overseas skilled employment")}</p>
           {renderPointsTable(points.overseas_skilled_employment)}
         </div>
       )}
 
       {Array.isArray(points.australian_skilled_employment) && points.australian_skilled_employment.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Australian skilled employment</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "澳大利亚技术工作经验", "Avustralya nitelikli istihdamı", "Australian skilled employment")}</p>
           {renderPointsTable(points.australian_skilled_employment)}
         </div>
       )}
 
       {Array.isArray(points.education) && points.education.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Education</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "学历", "Eğitim", "Education")}</p>
           {renderPointsTable(points.education)}
         </div>
       )}
 
       {Array.isArray(points.professional_year) && points.professional_year.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Professional year</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "专业年", "Profesyonel yıl", "Professional year")}</p>
           {renderPointsTable(points.professional_year)}
         </div>
       )}
 
       {Array.isArray(points.partner_skills) && points.partner_skills.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Partner skills</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "配偶技能", "Eş becerileri", "Partner skills")}</p>
           {renderPointsTable(points.partner_skills)}
         </div>
       )}
@@ -720,9 +738,9 @@ function PointsTestRulesSection({
   );
 }
 
-function RegionalRequirementsSection({ data }: { data: unknown }) {
+function RegionalRequirementsSection({ data, locale = "en" }: { data: unknown; locale?: string }) {
   if (!data || typeof data !== "object") {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
   }
 
   const regional = data as Record<string, unknown>;
@@ -736,13 +754,13 @@ function RegionalRequirementsSection({ data }: { data: unknown }) {
       {summary && <p className="text-sm text-muted-foreground">{summary}</p>}
       {pathwayToPermanentResidence && (
         <p className="text-sm text-muted-foreground">
-          <span className="font-semibold text-foreground">Pathway to permanent residence: </span>
+          <span className="font-semibold text-foreground">{txLocale(locale, "永久居留路径：", "Kalıcı oturuma geçiş: ", "Pathway to permanent residence: ")}</span>
           {pathwayToPermanentResidence}
         </p>
       )}
       {cannotApplyBefore3Years && cannotApplyBefore3Years.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Cannot apply for certain permanent visas before 3 years</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "3年内不可申请的部分永久签证", "3 yıl içinde başvurulamayacak kalıcı vizeler", "Cannot apply for certain permanent visas before 3 years")}</p>
           <ul className="space-y-1">
             {cannotApplyBefore3Years.map((item, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -757,9 +775,9 @@ function RegionalRequirementsSection({ data }: { data: unknown }) {
   );
 }
 
-function NominationOrSponsorshipSection({ data }: { data: unknown }) {
+function NominationOrSponsorshipSection({ data, locale = "en" }: { data: unknown; locale?: string }) {
   if (!data || typeof data !== "object") {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
   }
 
   const info = data as Record<string, unknown>;
@@ -771,7 +789,7 @@ function NominationOrSponsorshipSection({ data }: { data: unknown }) {
     <div className="space-y-4">
       {options && options.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Options</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "选项", "Seçenekler", "Options")}</p>
           <ul className="space-y-1">
             {options.map((item, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -785,7 +803,7 @@ function NominationOrSponsorshipSection({ data }: { data: unknown }) {
 
       {sponsorRequirements && sponsorRequirements.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Relative sponsor requirements</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "亲属担保要求", "Akraba sponsor şartları", "Relative sponsor requirements")}</p>
           <ul className="space-y-1">
             {sponsorRequirements.map((item, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -799,7 +817,7 @@ function NominationOrSponsorshipSection({ data }: { data: unknown }) {
 
       {eligibleRelatives && eligibleRelatives.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Relative categories</p>
+          <p className="text-sm font-semibold">{txLocale(locale, "符合条件的亲属", "Uygun akrabalar", "Relative categories")}</p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {eligibleRelatives.map((item, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -820,18 +838,104 @@ function formatJsonLabel(key: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function StructuredJsonSection({ data }: { data: unknown }) {
+const JSON_KEY_TRANSLATIONS: Record<string, { tr: string; zh: string }> = {
+  note: { tr: "Not", zh: "备注" },
+  notes: { tr: "Notlar", zh: "备注" },
+  summary: { tr: "Özet", zh: "摘要" },
+  description: { tr: "Açıklama", zh: "说明" },
+  status: { tr: "Durum", zh: "状态" },
+  default: { tr: "Varsayılan", zh: "默认值" },
+  exceptions: { tr: "İstisnalar", zh: "例外情况" },
+  options: { tr: "Seçenekler", zh: "选项" },
+  type: { tr: "Tür", zh: "类型" },
+  subclass: { tr: "Alt sınıf", zh: "子类" },
+  requirement: { tr: "Şart", zh: "要求" },
+  age_limit: { tr: "Yaş sınırı", zh: "年龄限制" },
+  location_requirement: { tr: "Konum şartı", zh: "地点要求" },
+  must_be_in_australia: { tr: "Avustralya'da olması gerekir", zh: "必须在澳大利亚境内" },
+  student_visa_requirement: { tr: "Öğrenci vizesi şartı", zh: "学生签证要求" },
+  police_check_required: { tr: "Polis belgesi gerekli", zh: "需要无犯罪证明" },
+  health_insurance_required: { tr: "Sağlık sigortası gerekli", zh: "需要健康保险" },
+  qualification_requirement: { tr: "Nitelik şartı", zh: "学历要求" },
+  qualification_levels: { tr: "Nitelik seviyeleri", zh: "学历等级" },
+  minimum_age_note: { tr: "Asgari yaş notu", zh: "最低年龄说明" },
+  stage_1: { tr: "1. Aşama", zh: "第一阶段" },
+  stage_2: { tr: "2. Aşama", zh: "第二阶段" },
+  stage_3: { tr: "3. Aşama", zh: "第三阶段" },
+  progression_note: { tr: "İlerleme notu", zh: "进程说明" },
+  permanent_stage_timing_note: { tr: "Kalıcı aşama zamanlama notu", zh: "永久阶段时间说明" },
+  spouse: { tr: "Eş", zh: "配偶" },
+  de_facto: { tr: "Fiili partner", zh: "事实伴侣" },
+  evidence_categories: { tr: "Kanıt kategorileri", zh: "证据类别" },
+  financial: { tr: "Mali", zh: "经济" },
+  household: { tr: "Ev", zh: "家庭" },
+  social: { tr: "Sosyal", zh: "社交" },
+  commitment: { tr: "Taahhüt", zh: "承诺" },
+  usual_minimum_duration: { tr: "Olağan asgari süre", zh: "通常最短期限" },
+  relationship_history_statement_should_cover: { tr: "İlişki geçmişi beyanı kapsamalıdır", zh: "关系历史陈述应涵盖" },
+  sample_occupations: { tr: "Örnek meslekler", zh: "职业示例" },
+  states_and_territories: { tr: "Eyalet ve bölgeler", zh: "州和领地" },
+  state_specific_review_required: { tr: "Eyalet bazlı inceleme gereklidir", zh: "需要州级审核" },
+  minimum_points_required: { tr: "Gereken minimum puan", zh: "最低所需分数" },
+  minimum_points: { tr: "Minimum puan", zh: "最低分数" },
+  pathway_to_permanent_residence: { tr: "Kalıcı oturuma geçiş", zh: "永久居留路径" },
+  cannot_apply_for_certain_permanent_visas_before_3_years: { tr: "3 yıl içinde belirli kalıcı vizelere başvurulamaz", zh: "3年内不可申请部分永久签证" },
+  eligible_relative_sponsor_requirements: { tr: "Uygun akraba sponsor şartları", zh: "符合条件的亲属担保要求" },
+  eligible_relatives: { tr: "Uygun akrabalar", zh: "符合条件的亲属" },
+  who_can_sponsor: { tr: "Kim sponsor olabilir", zh: "谁可以担保" },
+  can_include_family: { tr: "Aile üyeleri dahil edilebilir", zh: "可以包含家庭成员" },
+  rights_and_benefits: { tr: "Haklar ve faydalar", zh: "权利与福利" },
+  relationship_evidence: { tr: "İlişki kanıtı", zh: "关系证明" },
+  sponsor_statutory_declaration_should_cover: { tr: "Sponsor beyanı kapsamalıdır", zh: "担保人法定声明应涵盖" },
+  obligations: { tr: "Yükümlülükler", zh: "义务" },
+  withdrawal_note: { tr: "Geri çekilme notu", zh: "撤回说明" },
+  dependent_child_445_pathway: { tr: "Bağımlı çocuk 445 yolu", zh: "受抚养子女445路径" },
+  cannot_add_after_grant: { tr: "Onaydan sonra eklenemez", zh: "获批后不可添加" },
+  family_members: { tr: "Aile üyeleri", zh: "家庭成员" },
+  processing_time_note: { tr: "İşlem süresi notu", zh: "处理时间说明" },
+  key_requirements: { tr: "Temel gereksinimler", zh: "关键要求" },
+  documents_required: { tr: "Gerekli belgeler", zh: "所需文件" },
+  application_steps: { tr: "Başvuru adımları", zh: "申请步骤" },
+  visa_conditions: { tr: "Vize koşulları", zh: "签证条件" },
+  risks: { tr: "Riskler", zh: "风险" },
+  stage: { tr: "Aşama", zh: "阶段" },
+  stay_period: { tr: "Kalış süresi", zh: "停留期限" },
+  cost: { tr: "Ücret", zh: "费用" },
+  visa_name: { tr: "Vize adı", zh: "签证名称" },
+  relationship_requirements: { tr: "İlişki gereksinimleri", zh: "关系要求" },
+  sponsor_requirements: { tr: "Sponsor gereksinimleri", zh: "担保人要求" },
+  permanent_stage_801: { tr: "Kalıcı aşama 801", zh: "永久阶段 801" },
+  domestic_and_family_violence: { tr: "Aile içi şiddet", zh: "家庭暴力" },
+  faq_summary: { tr: "SSS özeti", zh: "常见问题摘要" },
+  nomination_or_sponsorship: { tr: "Adaylık veya sponsorluk", zh: "提名或担保" },
+  regional_requirements: { tr: "Bölgesel gereksinimler", zh: "地区要求" },
+};
+
+function translateJsonKey(key: string, locale: string): string {
+  const t = JSON_KEY_TRANSLATIONS[key];
+  if (t) {
+    if (locale === "tr") return t.tr;
+    if (locale === "zh-Hans") return t.zh;
+  }
+  return formatJsonLabel(key);
+}
+
+function StructuredJsonSection({ data, locale = "en" }: { data: unknown; locale?: string }) {
   if (data === null || data === undefined) {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
   }
 
-  if (typeof data === "string" || typeof data === "number" || typeof data === "boolean") {
+  if (typeof data === "boolean") {
+    return <p className="text-sm text-muted-foreground">{data ? txLocale(locale, "是", "Evet", "Yes") : txLocale(locale, "否", "Hayır", "No")}</p>;
+  }
+
+  if (typeof data === "string" || typeof data === "number") {
     return <p className="text-sm text-muted-foreground">{String(data)}</p>;
   }
 
   if (Array.isArray(data)) {
     if (data.length === 0) {
-      return <p className="text-sm text-muted-foreground">No data available.</p>;
+      return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
     }
 
     return (
@@ -840,7 +944,7 @@ function StructuredJsonSection({ data }: { data: unknown }) {
           <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
             <span className="mt-0.5 text-primary">•</span>
             <div>
-              <StructuredJsonSection data={item} />
+              <StructuredJsonSection data={item} locale={locale} />
             </div>
           </li>
         ))}
@@ -849,20 +953,20 @@ function StructuredJsonSection({ data }: { data: unknown }) {
   }
 
   if (typeof data !== "object") {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
   }
 
   const entries = Object.entries(data as Record<string, unknown>);
   if (entries.length === 0) {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
   }
 
   return (
     <div className="space-y-4">
       {entries.map(([key, value]) => (
         <div key={key} className="space-y-2">
-          <p className="text-sm font-semibold">{formatJsonLabel(key)}</p>
-          <StructuredJsonSection data={value} />
+          <p className="text-sm font-semibold">{translateJsonKey(key, locale)}</p>
+          <StructuredJsonSection data={value} locale={locale} />
         </div>
       ))}
     </div>
@@ -882,9 +986,9 @@ function omitStructuredKeys(
   );
 }
 
-function PathwaySection({ data }: { data: unknown }) {
+function PathwaySection({ data, locale = "en" }: { data: unknown; locale?: string }) {
   if (!data || typeof data !== "object") {
-    return <p className="text-sm text-muted-foreground">No data available.</p>;
+    return <p className="text-sm text-muted-foreground">{txLocale(locale, "暂无数据。", "Veri mevcut değil.", "No data available.")}</p>;
   }
 
   const pathway = data as Record<string, unknown>;
@@ -906,10 +1010,10 @@ function PathwaySection({ data }: { data: unknown }) {
       <div className="rounded-md border border-border/70 p-3">
         <p className="text-sm font-semibold">{label}</p>
         {subclassStr && (
-          <p className="text-sm text-muted-foreground">Subclass: {subclassStr}</p>
+          <p className="text-sm text-muted-foreground">{txLocale(locale, "子类：", "Alt sınıf: ", "Subclass: ")}{subclassStr}</p>
         )}
         {typeStr && (
-          <p className="text-sm text-muted-foreground">Type: {typeStr}</p>
+          <p className="text-sm text-muted-foreground">{txLocale(locale, "类型：", "Tür: ", "Type: ")}{typeStr}</p>
         )}
         {typeof s.description === "string" && (
           <p className="text-sm text-muted-foreground">{s.description}</p>
@@ -918,10 +1022,16 @@ function PathwaySection({ data }: { data: unknown }) {
     );
   };
 
+  const stageLabels = [
+    txLocale(locale, "第一阶段", "1. Aşama", "Stage 1"),
+    txLocale(locale, "第二阶段", "2. Aşama", "Stage 2"),
+    txLocale(locale, "第三阶段", "3. Aşama", "Stage 3"),
+  ];
+
   const rawStages: Array<{ label: string; stageData: unknown } | null> = [
-    pathway.stage_1 != null ? { label: "Stage 1", stageData: pathway.stage_1 } : null,
-    pathway.stage_2 != null ? { label: "Stage 2", stageData: pathway.stage_2 } : null,
-    pathway.stage_3 != null ? { label: "Stage 3", stageData: pathway.stage_3 } : null,
+    pathway.stage_1 != null ? { label: stageLabels[0], stageData: pathway.stage_1 } : null,
+    pathway.stage_2 != null ? { label: stageLabels[1], stageData: pathway.stage_2 } : null,
+    pathway.stage_3 != null ? { label: stageLabels[2], stageData: pathway.stage_3 } : null,
   ];
   const stageEntries = rawStages.filter(
     (e): e is { label: string; stageData: unknown } => e !== null
@@ -1012,6 +1122,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).eligibility}
+                locale={locale}
               />
             ),
           },
@@ -1021,7 +1132,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
       ? [
           {
             title: tx("\u804c\u4e1a\u8981\u6c42", "Meslek gereksinimleri", "Occupation requirements"),
-            content: <OccupationRequirementsSection data={(structured.raw_json as Record<string, unknown>).occupation_requirements} />,
+            content: <OccupationRequirementsSection data={(structured.raw_json as Record<string, unknown>).occupation_requirements} locale={locale} />,
           },
         ]
       : []),
@@ -1029,7 +1140,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
       ? [
           {
             title: tx("\u79ef\u5206\u6d4b\u8bd5\u89c4\u5219", "Puan testi kurallar\u0131", "Points test rules"),
-            content: <PointsTestRulesSection data={(structured.raw_json as Record<string, unknown>).points_test_rules} />,
+            content: <PointsTestRulesSection data={(structured.raw_json as Record<string, unknown>).points_test_rules} locale={locale} />,
           },
         ]
       : []),
@@ -1040,6 +1151,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             content: (
               <RegionalRequirementsSection
                 data={(structured.raw_json as Record<string, unknown>).regional_requirements}
+                locale={locale}
               />
             ),
           },
@@ -1052,6 +1164,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             content: (
               <NominationOrSponsorshipSection
                 data={(structured.raw_json as Record<string, unknown>).nomination_or_sponsorship}
+                locale={locale}
               />
             ),
           },
@@ -1064,6 +1177,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).relationship_requirements}
+                locale={locale}
               />
             ),
           },
@@ -1073,7 +1187,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
       ? [
           {
             title: tx("\u8def\u5f84", "Yol", "Pathway"),
-            content: <PathwaySection data={(structured.raw_json as Record<string, unknown>).pathway} />,
+            content: <PathwaySection data={(structured.raw_json as Record<string, unknown>).pathway} locale={locale} />,
           },
         ]
       : []),
@@ -1087,6 +1201,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
                   (structured.raw_json as Record<string, unknown>).permanent_stage_801,
                   ["sponsor_801_requirements"]
                 )}
+                locale={locale}
               />
             ),
           },
@@ -1099,6 +1214,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).sponsor_requirements}
+                locale={locale}
               />
             ),
           },
@@ -1119,6 +1235,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
                   (structured.raw_json as { permanent_stage_801?: Record<string, unknown> })
                     .permanent_stage_801?.sponsor_801_requirements
                 }
+              locale={locale}
               />
             ),
           },
@@ -1129,7 +1246,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
           {
             title: tx("\u5bb6\u5ead\u6210\u5458", "Aile \u00fcyeleri", "Family members"),
             content: (
-              <StructuredJsonSection data={(structured.raw_json as Record<string, unknown>).family_members} />
+              <StructuredJsonSection data={(structured.raw_json as Record<string, unknown>).family_members} locale={locale} />
             ),
           },
         ]
@@ -1141,6 +1258,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
             content: (
               <StructuredJsonSection
                 data={(structured.raw_json as Record<string, unknown>).domestic_and_family_violence}
+                locale={locale}
               />
             ),
           },
@@ -1150,7 +1268,7 @@ export default async function VisaDetailsPage({ params }: PageProps) {
       ? [
           {
             title: tx("\u5e38\u89c1\u95ee\u9898\u6458\u8981", "SSS \u00f6zeti", "FAQ summary"),
-            content: <StructuredJsonSection data={(structured.raw_json as Record<string, unknown>).faq_summary} />,
+            content: <StructuredJsonSection data={(structured.raw_json as Record<string, unknown>).faq_summary} locale={locale} />,
           },
         ]
       : []),

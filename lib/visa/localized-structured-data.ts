@@ -5,6 +5,8 @@ type LocalizedStructuredFields = {
   visa_conditions?: string[];
   risks?: string[];
   english_requirements?: Record<string, unknown>;
+  financial_requirements?: Record<string, unknown>;
+  raw_json?: Record<string, unknown>;
 };
 
 type LocalizedVisaFields = {
@@ -213,6 +215,9 @@ const trStructuredData: LocaleVisaStructuredMap = {
         "Kanıt gereksinimleri için Belge Kontrol Aracı kullanılmalıdır.",
       ],
     },
+    financial_requirements: {
+      schooling_costs_per_child: "Çocuk başına yılda en az AUD 13.502",
+    },
   },
   "189": {
     key_requirements: [
@@ -251,6 +256,9 @@ const trStructuredData: LocaleVisaStructuredMap = {
       "Düşük puan davet alınamamasına neden olabilir",
       "Yanlış beyanlar ret ile sonuçlanabilir",
     ],
+    financial_requirements: {
+      status: "Kaynak metinde birincil gereksinim değil",
+    },
   },
   "190": {
     key_requirements: [
@@ -312,6 +320,13 @@ const trStructuredData: LocaleVisaStructuredMap = {
       "Eyalet ve bölge kurumlarının kendi adaylık kriterleri vardır",
       "Eksik veya hatalı bilgi başvuruyu geciktirebilir ya da olumsuz etkileyebilir",
     ],
+    financial_requirements: {
+      status: "Kaynak metinde birincil gereksinim değil",
+      notes: [
+        "Sağlanan kaynak, subclass 190 için özel bir kişisel mali yeterlilik gereksinimi belirtmemektedir.",
+        "Fonksiyonel İngilizce düzeyinin altındaki aile üyeleri için vize ücreti ikinci taksidi uygulanabilir.",
+      ],
+    },
   },
   "482": {
     key_requirements: [
@@ -396,6 +411,14 @@ const trStructuredData: LocaleVisaStructuredMap = {
           "Sınavın tamamı çevrimiçi/uzaktan gözetimli/evden yapılan İngilizce test kanıtları kabul edilmez.",
       },
     },
+    financial_requirements: {
+      status: "Kaynak metinde birincil gereksinim değil",
+      notes: [
+        "Sağlanan kaynak metin, kişisel mali yeterlilik gereksinimi belirtmemektedir.",
+        "Başvuru sahibi, Yıllık Piyasa Ücret Oranı'nı ve Core Skills Income Threshold'u karşılayan bir maaş almalıdır.",
+        "Kesin gelir eşiği tutarı için resmi nitelikli vize gelir eşiği kaynağına başvurun.",
+      ],
+    },
   },
   "491": {
     key_requirements: [
@@ -474,6 +497,14 @@ const trStructuredData: LocaleVisaStructuredMap = {
         summary:
           "18 yaş ve üzeri aile üyeleri Functional English göstermeli veya ikinci taksit ücreti ödemelidir.",
       },
+    },
+    financial_requirements: {
+      status: "Kaynak metinde birincil gereksinim değil",
+      notes: [
+        "Kaynak metin, subclass 491 için özel bir kişisel mali yeterlilik gereksinimi açıklamamaktadır.",
+        "Vize ücretleri ve olası ikinci taksit ücretleri uygulanabilir.",
+        "Fonksiyonel İngilizce'nin altındaki aile üyeleri için ikinci taksit ücreti AUD 4.890'dır.",
+      ],
     },
   },
   "820_801": {
@@ -558,6 +589,31 @@ const trStructuredData: LocaleVisaStructuredMap = {
         "Sağlanan kaynak metin, birincil 820 başvuru sahibi için resmi İngilizce sınav şartı belirtmemektedir.",
       ],
     },
+    financial_requirements: {
+      status: "Kaynak metinde gelir eşiği belirtilmemiş",
+      notes: [
+        "Sağlanan kaynak metin, başvuru sahibi için kişisel bir gelir eşiği belirtmemektedir.",
+        "Başvuru sahibi doğru vize başvuru ücretini ödemelidir.",
+        "Ek maliyetler sağlık muayeneleri, polis belgeleri ve biyometri içerebilir.",
+        "Sponsor, başvuru sahibi ve dahil edilen aile üyelerine mali yardım ve konaklama konusunda destek olmalıdır.",
+      ],
+    },
+    raw_json: {
+      pathway: {
+        summary: "Subclass 820, ülke içi Partner vizesinin geçici aşamasıdır; subclass 801 ise kalıcı aşamasıdır.",
+        stage_1: {
+          subclass: "820",
+          type: "geçici",
+          description: "Kalıcı Partner vizesi işlenirken başvuru sahibinin Avustralya'da geçici olarak yaşamasına olanak tanır.",
+        },
+        stage_2: {
+          subclass: "801",
+          type: "kalıcı",
+          description: "Kalıcı aşama değerlendirmesinin ardından başvuru sahibinin Avustralya'da kalıcı olarak yaşamasına olanak tanır.",
+        },
+        permanent_stage_timing_note: "Kalıcı aşama değerlendirmesi genellikle geçici ve kalıcı Partner vizelerine başvurudan 2 yıl sonra, uygunluk tarihinden itibaren başlar.",
+      },
+    },
   },
   "485": {
     key_requirements: [
@@ -626,6 +682,56 @@ const trStructuredData: LocaleVisaStructuredMap = {
         "Güncel koşullar için Home Affairs resmi kaynağını kontrol edin.",
       ],
     },
+    financial_requirements: {
+      status: "Kaynak metinde gelir eşiği belirtilmemiş",
+      notes: [
+        "Bu vize akışı için belirli bir kişisel gelir eşiği belirtilmemiştir.",
+        "Başvuru sahipleri hükümet başvuru ücretini ödemek zorundadır.",
+        "Vize süresi boyunca kabul edilebilir sağlık sigortası sürdürülmelidir.",
+        "Ek maliyetler sağlık muayeneleri, polis belgeleri ve belge çevirilerini içerebilir.",
+      ],
+    },
+    raw_json: {
+      eligibility: {
+        age_limit: {
+          default: 35,
+          note: "Standart yaş sınırı 35 yaş altıdır. Belirli koşullarda daha yüksek sınırlar uygulanabilir.",
+          exceptions: [
+            "Doktora (PhD) veya araştırma derecesi mezunları bazı koşullarda 50 yaşa kadar uygun olabilir",
+            "Hong Kong veya İngiliz Ulusal (Denizaşırı) pasaport sahipleri için farklı yaş eşikleri uygulanabilir",
+            "Yaş gereksinimleri güncel resmi kaynaklardan doğrulanmalıdır",
+          ],
+        },
+        location_requirement: {
+          must_be_in_australia: true,
+          note: "Başvuru sahibinin başvuru sırasında Avustralya'da bulunması gerekir",
+        },
+        student_visa_requirement: {
+          description: "Başvurudan önceki son 6 ay içinde herhangi bir dönemde Student visa (subclass 500) sahibi olunmuş olması gerekir",
+        },
+        qualification_requirement: {
+          description: "CRICOS kayıtlı bir Avustralya kurumundan lisans veya üzeri bir derece tamamlanmış olması gerekir",
+          qualification_levels: [
+            "Lisans derecesi",
+            "Lisans (onurlar) derecesi",
+            "Yüksek lisans sertifikası",
+            "Yüksek lisans diploması",
+            "Ders tabanlı yüksek lisans",
+            "Araştırma tabanlı yüksek lisans",
+            "Doktora derecesi",
+          ],
+        },
+        police_check_required: true,
+        health_insurance_required: true,
+      },
+      pathway: {
+        summary: "Avustralya vize sistemindeki tipik ilerleme yolları; bireysel koşullara bağlı olarak Öğrenci vizesinden Geçici Mezun vizesine ve ardından nitelikli göç yollarına geçişi içerebilir.",
+        stage_1: "Öğrenci vizesi (500)",
+        stage_2: "Geçici Mezun vizesi (485) — Yükseköğretim Sonrası Çalışma akışı",
+        stage_3: "Nitelikli göç yolları (189/190/491) — bireysel koşullara bağlı olarak uygulanabilir",
+        progression_note: "Bu yalnızca tipik bir ilerleme bağlamını temsil eder. Göç tavsiyesi niteliği taşımaz ve kalıcı oturum yollarına erişim garantisi vermez.",
+      },
+    },
   },
 };
 
@@ -693,6 +799,9 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
         "应使用材料清单工具确认需提交的证明。",
       ],
     },
+    financial_requirements: {
+      schooling_costs_per_child: "每名子女每年至少 AUD 13,502",
+    },
   },
   "189": {
     key_requirements: [
@@ -731,6 +840,9 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       "分数偏低可能无法获邀",
       "不实主张可能导致拒签",
     ],
+    financial_requirements: {
+      status: "来源文本未列为主要要求",
+    },
   },
   "190": {
     key_requirements: [
@@ -792,6 +904,13 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       "各州和领地有各自的提名标准",
       "信息不完整或不准确可能导致审理延迟或不利结果",
     ],
+    financial_requirements: {
+      status: "来源文本未列为主要要求",
+      notes: [
+        "所提供的来源未说明190子类的具体个人财务能力要求。",
+        "英语水平低于功能性英语的家庭成员可能需支付签证费第二笔款项。",
+      ],
+    },
   },
   "482": {
     key_requirements: [
@@ -873,6 +992,14 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
         rule: "不接受全程线上、远程监考或居家完成的英语考试证明。",
       },
     },
+    financial_requirements: {
+      status: "来源文本未列为主要要求",
+      notes: [
+        "所提供的来源文本未说明个人财务能力要求。",
+        "申请人的薪资必须达到年度市场薪资率且不低于核心技能收入门槛。",
+        "具体收入门槛金额请参考官方签证收入门槛来源。",
+      ],
+    },
   },
   "491": {
     key_requirements: [
@@ -949,6 +1076,14 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       functional_english_for_family_members: {
         summary: "18岁及以上家庭成员需证明功能性英语，否则可能需支付第二笔费用。",
       },
+    },
+    financial_requirements: {
+      status: "来源文本未列为主要要求",
+      notes: [
+        "来源文本未说明491子类的具体个人财务能力要求。",
+        "可能需支付签证费及第二笔款项。",
+        "英语水平低于功能性英语的家庭成员需支付第二笔签证费 AUD 4,890。",
+      ],
     },
   },
   "820_801": {
@@ -1031,6 +1166,31 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
       status: "来源文本未要求主申请人提供英语考试",
       notes: ["提供的来源文本未规定 820 主申请人的正式英语考试要求。"],
     },
+    financial_requirements: {
+      status: "来源文本未说明收入门槛",
+      notes: [
+        "所提供的来源文本未说明申请人的个人收入门槛。",
+        "申请人须支付正确的签证申请费。",
+        "额外费用可能包括体检、无犯罪证明及生物信息采集费用。",
+        "担保人须在经济和住宿方面协助申请人及所含家庭成员。",
+      ],
+    },
+    raw_json: {
+      pathway: {
+        summary: "820子类为境内伴侣签证路径的临时阶段，801子类为永久阶段。",
+        stage_1: {
+          subclass: "820",
+          type: "临时",
+          description: "允许申请人在永久伴侣签证審理期间在澳大利亚临时居留。",
+        },
+        stage_2: {
+          subclass: "801",
+          type: "永久",
+          description: "完成永久阶段评估后，允许申请人在澳大利亚永久居留。",
+        },
+        permanent_stage_timing_note: "永久阶段评估一般自资格确认日（通常为提交临时及永久伴侣签证申请2年后）起开始。",
+      },
+    },
   },
   "485": {
     key_requirements: [
@@ -1095,6 +1255,56 @@ const zhHansStructuredData: LocaleVisaStructuredMap = {
         "最低门槛适用；具体分数取决于所选考试及考试时间。",
         "请以澳大利亚内政部官网最新要求为准。",
       ],
+    },
+    financial_requirements: {
+      status: "来源文本未说明收入门槛",
+      notes: [
+        "该签证流未说明具体的个人收入门槛。",
+        "申请人须支付政府申请费。",
+        "签证期间须持续维持可接受的健康保险。",
+        "额外费用可能包括体检、无犯罪证明及文件翻译费用。",
+      ],
+    },
+    raw_json: {
+      eligibility: {
+        age_limit: {
+          default: 35,
+          note: "标准年龄限制为35岁以下。在特定情况下可适用更高年龄上限。",
+          exceptions: [
+            "在某些情况下，博士（PhD）或研究学位毕业生可在偐50岁前申请",
+            "香港或英籍国民（海外）护照持有人可能适用不同的年龄门槛",
+            "年龄要求应以当前官方来源为准进行核实",
+          ],
+        },
+        location_requirement: {
+          must_be_in_australia: true,
+          note: "申请人申请时必须在澳大利亚境内",
+        },
+        student_visa_requirement: {
+          description: "申请前6个月内的任意时间点，需曾持有学生签证（500子类）",
+        },
+        qualification_requirement: {
+          description: "必须已完成 CRICOS 注册澳洲机构的本科及以上学历",
+          qualification_levels: [
+            "本科学位",
+            "本科荣誉学位",
+            "研究生证书",
+            "研究生文冭",
+            "课程型硕士学位",
+            "研究型硕士学位",
+            "博士学位",
+          ],
+        },
+        police_check_required: true,
+        health_insurance_required: true,
+      },
+      pathway: {
+        summary: "澳大利亚签证体系中典型的签证路径可能包括：从学生签证过渡到临时毕业生签证，再根据个人情况进入技术移民路径。",
+        stage_1: "学生签证（500）",
+        stage_2: "临时毕业生签证（485）——毕业后高等教育工作流",
+        stage_3: "技术移民路径（189/190/491）——可能适用于符合条件的申请人",
+        progression_note: "以上仅代表典型路径背景，不构成移民建议，亦不保证可进入永久居留路径。",
+      },
     },
   },
 };
@@ -1185,6 +1395,32 @@ export function localizeVisaStructuredData<T extends Record<string, unknown> | n
         ...(localizedFunctional as Record<string, unknown>),
       };
     }
+  }
+
+  // Deep-merge financial_requirements
+  if (
+    baseStructured.financial_requirements &&
+    typeof baseStructured.financial_requirements === "object" &&
+    localized.financial_requirements &&
+    typeof localized.financial_requirements === "object"
+  ) {
+    merged.financial_requirements = {
+      ...(baseStructured.financial_requirements as Record<string, unknown>),
+      ...(localized.financial_requirements as Record<string, unknown>),
+    };
+  }
+
+  // Deep-merge raw_json (one level - merge individual section keys)
+  if (
+    baseStructured.raw_json &&
+    typeof baseStructured.raw_json === "object" &&
+    localized.raw_json &&
+    typeof localized.raw_json === "object"
+  ) {
+    merged.raw_json = {
+      ...(baseStructured.raw_json as Record<string, unknown>),
+      ...(localized.raw_json as Record<string, unknown>),
+    };
   }
 
   return merged as T;
