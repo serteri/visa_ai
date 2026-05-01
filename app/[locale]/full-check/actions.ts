@@ -7,6 +7,12 @@ import { Resend } from "resend";
 import { db } from "@/db";
 import { fullCheckWaitlist } from "@/db/schema";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
+import {
+  completeFullCheckProgress,
+  failFullCheckProgress,
+  initFullCheckProgress,
+  updateFullCheckProgress,
+} from "@/lib/full-check-progress";
 import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import {
@@ -282,6 +288,11 @@ export async function submitFullCheckWaitlist(
   _prevState: FullCheckWaitlistState,
   formData: FormData
 ): Promise<FullCheckWaitlistState> {
+  const analysisProgressId = String(formData.get("analysisProgressId") ?? "").trim();
+  if (analysisProgressId) {
+    await initFullCheckProgress(analysisProgressId);
+  }
+
   const email = String(formData.get("email") ?? "").trim();
   const fullName = String(formData.get("fullName") ?? "").trim();
   const visaInterest = String(formData.get("visaInterest") ?? "").trim();
@@ -317,6 +328,9 @@ export async function submitFullCheckWaitlist(
   if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : isZh ? "主要目标为必填项。" : "Main goal is required.";
 
   if (Object.keys(errors).length > 0) {
+    if (analysisProgressId) {
+      await failFullCheckProgress(analysisProgressId, "Validation failed");
+    }
     return {
       status: "error",
       errors,
@@ -365,6 +379,9 @@ export async function submitFullCheckWaitlist(
     `);
 
     if (atomicResult.rows.length === 0) {
+      if (analysisProgressId) {
+        await failFullCheckProgress(analysisProgressId, "Free access limit reached");
+      }
       return {
         status: "error",
         error: "Free access limit reached",
@@ -379,6 +396,10 @@ export async function submitFullCheckWaitlist(
   }
 
   const suppressNotifications = await hasRecentSubmission(email, source);
+
+  if (analysisProgressId) {
+    await updateFullCheckProgress(analysisProgressId, "scanning_occupations");
+  }
 
   const generatedReport = runReadinessEngine({
     locale: resolvedLocale,
@@ -396,6 +417,10 @@ export async function submitFullCheckWaitlist(
     preferredPathway: visaInterest || undefined,
     biggestConcern: biggestConcern || undefined,
   });
+
+  if (analysisProgressId) {
+    await updateFullCheckProgress(analysisProgressId, "analyzing_trends");
+  }
 
   await db.insert(fullCheckWaitlist).values({
     email,
@@ -418,6 +443,9 @@ export async function submitFullCheckWaitlist(
     lead_tier: leadQuality.leadTier,
     source,
   });
+  if (analysisProgressId) {
+    await updateFullCheckProgress(analysisProgressId, "applying_deductions");
+  }
 
   const reportRecord = await createUserReport({
     fullName,
@@ -446,6 +474,10 @@ export async function submitFullCheckWaitlist(
     },
   });
 
+  if (analysisProgressId) {
+    await updateFullCheckProgress(analysisProgressId, "generating_report");
+  }
+
   if (!suppressNotifications) {
     sendFullCheckAdminEmail({
       fullName,
@@ -466,6 +498,10 @@ export async function submitFullCheckWaitlist(
       mainGoal,
       source,
     }).catch((err) => console.error("Admin email failed (non-blocking):", err));
+  }
+
+  if (analysisProgressId) {
+    await completeFullCheckProgress(analysisProgressId);
   }
 
   return {

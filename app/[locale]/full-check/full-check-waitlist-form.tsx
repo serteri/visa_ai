@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -152,6 +152,10 @@ export function FullCheckWaitlistForm({
     initialState
   );
   const [analysisStepIndex, setAnalysisStepIndex] = useState(0);
+  const [analysisProgressId, setAnalysisProgressId] = useState(() =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`
+  );
+  const wasPendingRef = useRef(false);
   const [unlockedReportState, setUnlockedReportState] = useState<{
     reportId?: string;
     report: ReadinessReport;
@@ -164,21 +168,54 @@ export function FullCheckWaitlistForm({
     "Analyzing historical invitation trends...",
     "Applying assessing authority deduction rules...",
     "Generating strategic readiness report...",
-  ];
+  ] as const;
+
+  const milestoneToIndex: Record<string, number> = {
+    scanning_occupations: 0,
+    analyzing_trends: 1,
+    applying_deductions: 2,
+    generating_report: 3,
+    completed: 3,
+    error: 0,
+  };
 
   useEffect(() => {
     if (!isPending) {
       setAnalysisStepIndex(0);
+      if (wasPendingRef.current) {
+        setAnalysisProgressId(
+          typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `progress-${Date.now()}`
+        );
+      }
+      wasPendingRef.current = false;
       return;
     }
 
-    setAnalysisStepIndex(0);
-    const intervalId = window.setInterval(() => {
-      setAnalysisStepIndex((prev) => (prev + 1) % aiAnalysisSteps.length);
-    }, 1400);
+    wasPendingRef.current = true;
 
-    return () => window.clearInterval(intervalId);
-  }, [isPending, aiAnalysisSteps.length]);
+    let cancelled = false;
+    const intervalId = window.setInterval(async () => {
+      try {
+        const res = await fetch(`/api/full-check/progress?id=${encodeURIComponent(analysisProgressId)}`, {
+          cache: "no-store",
+        });
+        if (!res.ok || cancelled) return;
+        const data = (await res.json()) as { status?: string; milestone?: string };
+        if (data.status === "ok" && data.milestone && data.milestone in milestoneToIndex) {
+          setAnalysisStepIndex(milestoneToIndex[data.milestone]);
+        }
+      } catch {
+        // Keep current UI state if polling fails transiently.
+      }
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [analysisProgressId, isPending]);
 
   const activeUnlockedReportState =
     unlockedReportState?.reportId === state.reportId ? unlockedReportState : null;
@@ -308,6 +345,7 @@ export function FullCheckWaitlistForm({
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="preferredLanguage" value={locale} />
         <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
+        <input type="hidden" name="analysisProgressId" value={analysisProgressId} />
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-full-name">{txt("Ad soyad", "Full name", "姓名")}</Label>
