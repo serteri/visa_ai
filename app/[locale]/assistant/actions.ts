@@ -97,7 +97,7 @@ export async function runReadinessPreview(
   }
 
   const missingFallback = isZh
-    ? "预览表单未发现明显缺缺，但支持性材料仍需审阅。"
+    ? "预览表单未发现明显缺口，但支持性材料仍需审阅。"
     : isTr
       ? "Ön inceleme formunda büyük bir eksiklik tespit edilmedi, ancak destekleyici kanıtların incelenmesi gerekiyor."
       : "No major gaps were detected in the preview form, but supporting evidence still needs review.";

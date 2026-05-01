@@ -155,9 +155,9 @@ export function AssistantClient({
     {
       role: "assistant",
       text: tx(
-        "I can help you explore visa pathways based on general information.",
+        "我可以帮助您基于一般信息探索签证路径。",
         "Genel bilgiye dayalı vize yollarını keşfetmenize yardımcı olabilirim.",
-        "我可以帮助您基于一般信息探索签证路径。"
+        "I can help you explore visa pathways based on general information."
       ),
     },
   ]);
@@ -186,9 +186,9 @@ export function AssistantClient({
         {
           role: "assistant",
           text: tx(
-            "A response could not be generated right now. I can still help you explore pathways based on general information, and you may consider speaking with a registered migration agent.",
+            "当前无法生成回复。我仍可以帮您基于一般信息探索路径，您也可考虑和注册移民顾问交流。",
             "Şu anda yanıt oluşturulamadı. Genel bilgiye dayalı yolları keşfetmenize yardımcı olabilirim ve kayıtlı bir göç danışmanı ile görüşmeyi değerlendirebilirsiniz.",
-            "当前无法生成回复。我仍可以帮您基于一般信息探索路径，您也可考虑和注册移民顾问交流。"
+            "A response could not be generated right now. I can still help you explore pathways based on general information, and you may consider speaking with a registered migration agent."
           ),
         },
       ]);
@@ -418,9 +418,11 @@ export function AssistantClient({
                   <CardTitle>{tx("AI 准备度预览", "AI Hazırlık İncelemesi", "AI Readiness Review")}</CardTitle>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {isTr
-                    ? "Sınırlı girdilere dayalı olası yollar için hızlı bir ön izleme."
-                    : "Quick preview of possible pathways based on limited input."}
+                  {tx(
+                    "基于有限输入快速预览可能的路径。",
+                    "Sınırlı girdilere dayalı olası yollar için hızlı bir ön izleme.",
+                    "Quick preview of possible pathways based on limited input."
+                  )}
                 </p>
               </CardHeader>
               <CardContent>
@@ -591,7 +593,7 @@ export function AssistantClient({
 
             <p className="text-sm text-muted-foreground">
               {tx(
-                "仕仅提供一般信息，不是移民建议。",
+                "这仅提供一般信息，不构成移民建议。",
                 "Bu yalnızca genel bilgidir ve göç tavsiyesi değildir.",
                 "This is general information only and not migration advice."
               )}

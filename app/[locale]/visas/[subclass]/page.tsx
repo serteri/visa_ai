@@ -70,6 +70,26 @@ function txLocale(locale: string, zh: string, tr: string, en: string) {
   return en;
 }
 
+function localizeReviewedStatus(locale: string, status: string | null | undefined) {
+  const tx = (zh: string, tr: string, en: string) => txLocale(locale, zh, tr, en);
+  switch (status) {
+    case "approved":
+    case "reviewed":
+      return tx("已审核", "İncelendi", "reviewed");
+    case "needs_review":
+      return tx("需要审核", "İnceleme gerekli", "needs review");
+    case "pending":
+      return tx("待处理", "Beklemede", "pending");
+    case "outdated":
+      return tx("已过时", "Güncelliğini yitirmiş", "outdated");
+    case null:
+    case undefined:
+      return tx("需要审核", "İnceleme gerekli", "needs review");
+    default:
+      return status.replace(/_/g, " ");
+  }
+}
+
 function formatDisplayDate(locale: string, value: string | Date) {
   const languageTag = locale === "tr" ? "tr-TR" : locale === "zh-Hans" ? "zh-CN" : "en-AU";
   return new Date(value).toLocaleDateString(languageTag, {
@@ -1099,19 +1119,12 @@ export default async function VisaDetailsPage({ params }: PageProps) {
 
   const { visa, structured, snapshots } = result;
   const reviewedBadgeVariant =
-    visa.reviewed_status === "approved"
+    visa.reviewed_status === "approved" || visa.reviewed_status === "reviewed"
       ? "default"
-      : visa.reviewed_status === "needs_review"
+      : visa.reviewed_status === "needs_review" || visa.reviewed_status === "pending"
         ? "secondary"
         : "outline";
-  const reviewedBadgeLabel =
-    visa.reviewed_status === "approved"
-      ? tx("已审核", "İncelendi", "reviewed")
-      : visa.reviewed_status === "needs_review"
-        ? tx("需要审核", "İnceleme gerekli", "needs review")
-        : visa.reviewed_status
-          ? visa.reviewed_status.replace(/_/g, " ")
-          : tx("需要审核", "İnceleme gerekli", "needs review");
+  const reviewedBadgeLabel = localizeReviewedStatus(locale, visa.reviewed_status);
 
   const sections = [
     {

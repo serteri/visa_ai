@@ -38,6 +38,27 @@ async function getVisas() {
   return visasWithData;
 }
 
+function localizeReviewedStatus(locale: string, status: string | null | undefined) {
+  const tx = (zh: string, tr: string, en: string) =>
+    locale === "tr" ? tr : locale === "zh-Hans" ? zh : en;
+  switch (status) {
+    case "approved":
+    case "reviewed":
+      return tx("已审核", "İncelendi", "reviewed");
+    case "needs_review":
+      return tx("需要审核", "İnceleme gerekli", "needs review");
+    case "pending":
+      return tx("待处理", "Beklemede", "pending");
+    case "outdated":
+      return tx("已过时", "Güncelliğini yitirmiş", "outdated");
+    case null:
+    case undefined:
+      return tx("未知", "Bilinmiyor", "unknown");
+    default:
+      return status.replace(/_/g, " ");
+  }
+}
+
 function ReviewBadge({
   status,
   locale,
@@ -45,25 +66,14 @@ function ReviewBadge({
   status: string | null | undefined;
   locale: string;
 }) {
-  const tx = (zh: string, tr: string, en: string) =>
-    locale === "tr" ? tr : locale === "zh-Hans" ? zh : en;
   const variant =
-    status === "approved"
+    status === "approved" || status === "reviewed"
       ? "default"
-      : status === "needs_review"
+      : status === "needs_review" || status === "pending"
         ? "secondary"
         : "outline";
 
-  const label =
-    status === "approved"
-      ? tx("已审核", "İncelendi", "reviewed")
-      : status === "needs_review"
-        ? tx("需要审核", "İnceleme gerekli", "needs review")
-        : status
-          ? status.replace(/_/g, " ")
-          : tx("未知", "Bilinmiyor", "unknown");
-
-  return <Badge variant={variant}>{label}</Badge>;
+  return <Badge variant={variant}>{localizeReviewedStatus(locale, status)}</Badge>;
 }
 
 function ExpandableJSON({ data }: { data: unknown }) {
@@ -155,19 +165,7 @@ export default async function AdminVisasPage({ params }: AdminVisasPageProps) {
                         Reviewed Status
                       </p>
                       <p className="text-sm">
-                        {visa.reviewed_status === "approved"
-                          ? locale === "tr"
-                            ? "İncelendi"
-                            : locale === "zh-Hans"
-                              ? "已审核"
-                              : "reviewed"
-                          : visa.reviewed_status === "needs_review"
-                            ? locale === "tr"
-                              ? "İnceleme gerekli"
-                              : locale === "zh-Hans"
-                                ? "需要审核"
-                                : "needs review"
-                            : visa.reviewed_status || (locale === "tr" ? "Bilinmiyor" : locale === "zh-Hans" ? "未知" : "unknown")}
+                        {localizeReviewedStatus(locale, visa.reviewed_status)}
                       </p>
                     </div>
                     <div>
