@@ -317,7 +317,7 @@ function getFeedbackTexts(locale: "en" | "tr" | "zh-Hans") {
   }
 
   return {
-    note: "We are in beta. How was your report experience? Write to us:",
+    note: "We are in Beta! How was your report? Help us improve.",
     cta: "Share Feedback",
   };
 }

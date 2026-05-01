@@ -617,9 +617,9 @@ export function FullCheckWaitlistForm({
             <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-foreground/90">
                 {txt(
-                  "Beta surecindeyiz. Raporu nasil buldunuz? Bize yazin.",
-                  "We are in beta. How was your report experience? Write to us.",
-                  "我们正处于 Beta 阶段。你觉得这份报告如何？欢迎写信告诉我们。"
+                  "Beta surecindeyiz. Raporu nasil buldunuz? Gelistirmemize yardimci olun.",
+                  "We are in Beta! How was your report? Help us improve.",
+                  "我们正处于 Beta 阶段。你觉得这份报告如何？欢迎帮助我们持续改进。"
                 )}
               </p>
               <Button asChild className="h-10 rounded-lg px-4">

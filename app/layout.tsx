@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Noto_Sans } from "next/font/google";
-import Script from "next/script";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -24,30 +24,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
 
   return (
     <html className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
       </body>
-      {gaId ? (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-            strategy="afterInteractive"
-          />
-          <Script id="ga4-init" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              window.gtag = gtag;
-              gtag('js', new Date());
-              gtag('config', '${gaId}', { page_path: window.location.pathname });
-            `}
-          </Script>
-        </>
-      ) : null}
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }

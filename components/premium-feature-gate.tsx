@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { CheckCircle2, Lock, Mail, Phone, ShieldCheck, Sparkles, Zap } from "lucide-react";
 
 import {
@@ -38,6 +38,7 @@ export function PremiumFeatureGate({
   const [showModal, setShowModal] = useState(false);
   const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">("lead_capture");
   const isFreeBeta = process.env.NEXT_PUBLIC_IS_FREE_BETA === "true";
+  const trackedUnlockReportIdRef = useRef<string | null>(null);
 
   const [unlockState, unlockAction, unlockPending] = useActionState(
     unlockPremiumReport,
@@ -46,6 +47,15 @@ export function PremiumFeatureGate({
 
   useEffect(() => {
     if (unlockState.status === "success" && unlockState.report) {
+      if (trackedUnlockReportIdRef.current !== reportId) {
+        trackEvent("report_unlocked", {
+          report_id: reportId,
+          locale,
+          source: "unlock_success",
+        });
+        trackedUnlockReportIdRef.current = reportId;
+      }
+
       setShowModal(false);
       onUnlocked({
         report: unlockState.report,
@@ -53,7 +63,7 @@ export function PremiumFeatureGate({
         name: unlockState.userInput?.name,
       });
     }
-  }, [unlockState, onUnlocked]);
+  }, [locale, onUnlocked, reportId, unlockState]);
 
   return (
     <section className="space-y-5">
@@ -150,14 +160,7 @@ export function PremiumFeatureGate({
             <Button
               size="lg"
               className="mt-4 h-12 w-full text-base"
-              onClick={() => {
-                trackEvent("report_unlocked", {
-                  report_id: reportId,
-                  locale,
-                  source: "unlock_cta",
-                });
-                setShowModal(true);
-              }}
+              onClick={() => setShowModal(true)}
             >
               <Sparkles className="size-4" />
               {isTr ? "Unlock Your Full Readiness Report" : isZh ? "解锁完整准备度报告" : "Unlock Your Full Readiness Report"}
