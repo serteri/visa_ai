@@ -3,40 +3,62 @@
   "baseCategories": [
     {
       "category": "Identity",
+      "category_zh": "身份",
       "items": [
         "Passport (6+ months validity)",
         "Birth Certificate (NAATI translated)"
+      ],
+      "items_zh": [
+        "护照（有效期至少 6 个月）",
+        "出生证明（NAATI 认证翻译）"
       ],
       "appliesTo": ["189", "190", "491", "482", "500", "485", "820/801"]
     },
     {
       "category": "English",
+      "category_zh": "英语",
       "items": [
         "Test Results (Less than 2 years old)"
+      ],
+      "items_zh": [
+        "语言成绩（2 年内）"
       ],
       "appliesTo": ["189", "190", "491", "482", "500", "485"]
     },
     {
       "category": "Skills",
+      "category_zh": "技能评估",
       "items": [
         "Degree Certificates",
         "Academic Transcripts",
         "Employment References (aligned with Authority rules)"
       ],
+      "items_zh": [
+        "学历证书",
+        "成绩单",
+        "工作证明（符合评估机构规则）"
+      ],
       "appliesTo": ["189", "190", "491", "482", "485"]
     },
     {
       "category": "Spouse/Family",
+      "category_zh": "配偶/家庭",
       "items": [
         "Marriage Certificate",
         "Evidence of de-facto (if applicable)",
         "Spouse English evidence"
+      ],
+      "items_zh": [
+        "结婚证",
+        "事实婚姻证明（如适用）",
+        "配偶英语证明"
       ],
       "appliesTo": ["189", "190", "491", "482", "500", "485", "820/801"],
       "requiresMarried": true
     }
   ],
   "criticalWarnings": {
-    "occupationUnconfirmed": "Your documentation strategy must first focus on Skills Assessment evidence."
+    "occupationUnconfirmed": "Your documentation strategy must first focus on Skills Assessment evidence.",
+    "occupationUnconfirmed_zh": "材料策略应首先聚焦技能评估证据。"
   }
 }

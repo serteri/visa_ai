@@ -34,7 +34,7 @@ export type ReadinessPreviewResult = {
 export async function runAssistantMessage(
   input: RunAssistantInput
 ): Promise<GroundedAssistantResult> {
-  const locale = input.locale === "tr" ? "tr" : "en";
+  const locale = input.locale === "tr" ? "tr" : input.locale === "zh-Hans" ? "zh-Hans" : "en";
   const message = input.message.trim();
 
   const context = await retrieveVisaContext({ message });

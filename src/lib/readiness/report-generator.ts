@@ -20,7 +20,7 @@ export type InvitationTrendSection = {
 
 export type LivingCostSection = {
   city: string;
-  familyProfile: FamilyProfile;
+  familyProfile: string;
   currency: "AUD";
   monthly: {
     rent: number;
@@ -51,6 +51,7 @@ export type PremiumSections = {
 
 type TrendRecord = {
   occupation_group: string;
+  occupation_group_zh?: string;
   anzsco_code: string;
   estimates: Array<{
     subclass: "189" | "190" | "491";
@@ -62,6 +63,9 @@ type TrendRecord = {
 
 type LivingCostDataset = {
   currency: "AUD";
+  methodology_note_zh?: string;
+  city_labels_zh?: Record<string, string>;
+  family_profile_labels_zh?: Record<FamilyProfile, string>;
   cities: Record<
     string,
     Record<
@@ -80,6 +84,7 @@ type LivingCostDataset = {
 
 const TREND_DATA = visaTrendsData as {
   methodology_note?: string;
+  methodology_note_zh?: string;
   occupation_trends: TrendRecord[];
 };
 const LIVING_DATA = livingCostsData as LivingCostDataset;
@@ -137,13 +142,15 @@ function matchTrendByOccupation(occupation?: string): TrendRecord {
   }
 
   const exact = TREND_DATA.occupation_trends.find(
-    (row) => normalize(row.occupation_group) === query
+    (row) => normalize(row.occupation_group) === query || normalize(row.occupation_group_zh) === query
   );
   if (exact) return exact;
 
-  const partial = TREND_DATA.occupation_trends.find((row) =>
-    normalize(row.occupation_group).includes(query) || query.includes(normalize(row.occupation_group))
-  );
+  const partial = TREND_DATA.occupation_trends.find((row) => {
+    const source = normalize(row.occupation_group);
+    const zh = normalize(row.occupation_group_zh);
+    return source.includes(query) || query.includes(source) || (zh ? zh.includes(query) || query.includes(zh) : false);
+  });
   if (partial) return partial;
 
   const keyword = TREND_DATA.occupation_trends.find((row) => {
@@ -252,6 +259,30 @@ function buildGanttByTimeline(timeline?: string): GanttSection {
   };
 }
 
+function getTrendOccupationGroup(locale: Locale, trend: TrendRecord): string {
+  if (locale === "zh-Hans") {
+    return trend.occupation_group_zh ?? localizeText(locale, trend.occupation_group);
+  }
+  return localizeText(locale, trend.occupation_group);
+}
+
+function getLivingCostMethodologyNote(locale: Locale): string | undefined {
+  if (locale === "zh-Hans") return LIVING_DATA.methodology_note_zh;
+  return undefined;
+}
+
+function getLocalizedCity(locale: Locale, city: string): string {
+  if (locale === "zh-Hans") return LIVING_DATA.city_labels_zh?.[city] ?? city;
+  return city;
+}
+
+function getLocalizedFamilyProfile(locale: Locale, familyProfile: FamilyProfile): string {
+  if (locale === "zh-Hans") {
+    return LIVING_DATA.family_profile_labels_zh?.[familyProfile] ?? localizeText(locale, familyProfile);
+  }
+  return familyProfile;
+}
+
 export function generatePremiumSections(input: {
   locale?: Locale;
   occupation?: string;
@@ -272,11 +303,15 @@ export function generatePremiumSections(input: {
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
   const gantt = buildGanttByTimeline(input.timeline);
-  const methodologyNote = localizeTrendDescription(locale, TREND_DATA.methodology_note);
+  const methodologyNote = localizeTrendDescription(
+    locale,
+    locale === "zh-Hans" ? TREND_DATA.methodology_note_zh ?? TREND_DATA.methodology_note : TREND_DATA.methodology_note
+  );
+  const livingCostMethodologyNote = getLivingCostMethodologyNote(locale);
 
   return {
     historicalInvitationTrends: {
-      matchedOccupationGroup: localizeText(locale, trend.occupation_group),
+      matchedOccupationGroup: getTrendOccupationGroup(locale, trend),
       anzscoCode: trend.anzsco_code,
       estimates: trend.estimates.map((e) => ({
         subclass: e.subclass,
@@ -292,14 +327,17 @@ export function generatePremiumSections(input: {
       ].filter(Boolean).join(" "),
     },
     livingCostProjection: {
-      city,
-      familyProfile,
+      city: getLocalizedCity(locale, city),
+      familyProfile: getLocalizedFamilyProfile(locale, familyProfile),
       currency: LIVING_DATA.currency,
       monthly,
-      note: localizeText(
-        locale,
-        "Living cost projections are indicative monthly planning estimates and may vary by suburb and lifestyle."
-      ),
+      note: [
+        localizeText(
+          locale,
+          "Living cost projections are indicative monthly planning estimates and may vary by suburb and lifestyle."
+        ),
+        livingCostMethodologyNote,
+      ].filter(Boolean).join(" "),
     },
     strategicGanttChart: {
       ...gantt,

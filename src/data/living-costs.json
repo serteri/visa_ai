@@ -2,6 +2,19 @@
   "generated_on": "2026-04-30",
   "currency": "AUD",
   "methodology_note": "Monthly estimates for rent, groceries, and transport by city and household profile. Planning context only.",
+  "methodology_note_zh": "按城市和家庭类型估算月租、食品杂货和交通成本，仅供规划参考。",
+  "city_labels_zh": {
+    "Sydney": "悉尼",
+    "Melbourne": "墨尔本",
+    "Brisbane": "布里斯班",
+    "Adelaide": "阿德莱德",
+    "Perth": "珀斯"
+  },
+  "family_profile_labels_zh": {
+    "Single": "单人",
+    "Couple": "夫妻/伴侣",
+    "Family of 4": "四口之家"
+  },
   "cities": {
     "Sydney": {
       "Single": { "rent": 2700, "groceries": 650, "transport": 220, "total": 3570 },

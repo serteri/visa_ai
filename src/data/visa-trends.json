@@ -2,9 +2,11 @@
   "generated_on": "2026-04-30",
   "jurisdiction": "Australia",
   "methodology_note": "Estimated invitation points and wait windows derived from 2025-2026 trend patterns. For planning context only.",
+  "methodology_note_zh": "预计邀请分数和等待窗口基于 2025-2026 年趋势模式推导，仅供规划参考。",
   "occupation_trends": [
     {
       "occupation_group": "Software Engineer",
+      "occupation_group_zh": "软件工程师",
       "anzsco_code": "261313",
       "estimates": [
         {
@@ -29,6 +31,7 @@
     },
     {
       "occupation_group": "ICT Business Analyst",
+      "occupation_group_zh": "ICT 业务分析师",
       "anzsco_code": "261111",
       "estimates": [
         {
@@ -53,6 +56,7 @@
     },
     {
       "occupation_group": "Developer Programmer",
+      "occupation_group_zh": "开发程序员",
       "anzsco_code": "261312",
       "estimates": [
         {
@@ -77,6 +81,7 @@
     },
     {
       "occupation_group": "Registered Nurse",
+      "occupation_group_zh": "注册护士",
       "anzsco_code": "254499",
       "estimates": [
         {
@@ -101,6 +106,7 @@
     },
     {
       "occupation_group": "Civil Engineer",
+      "occupation_group_zh": "土木工程师",
       "anzsco_code": "233211",
       "estimates": [
         {
@@ -125,6 +131,7 @@
     },
     {
       "occupation_group": "Mechanical Engineer",
+      "occupation_group_zh": "机械工程师",
       "anzsco_code": "233512",
       "estimates": [
         {
@@ -149,6 +156,7 @@
     },
     {
       "occupation_group": "Electrical Engineer",
+      "occupation_group_zh": "电气工程师",
       "anzsco_code": "233311",
       "estimates": [
         {
@@ -173,6 +181,7 @@
     },
     {
       "occupation_group": "Accountant (General)",
+      "occupation_group_zh": "会计师（普通）",
       "anzsco_code": "221111",
       "estimates": [
         {
@@ -197,6 +206,7 @@
     },
     {
       "occupation_group": "Auditor",
+      "occupation_group_zh": "审计师",
       "anzsco_code": "221213",
       "estimates": [
         {
@@ -221,6 +231,7 @@
     },
     {
       "occupation_group": "Teacher (Secondary)",
+      "occupation_group_zh": "中学教师",
       "anzsco_code": "241411",
       "estimates": [
         {
@@ -245,6 +256,7 @@
     },
     {
       "occupation_group": "Early Childhood Teacher",
+      "occupation_group_zh": "幼儿教师",
       "anzsco_code": "241111",
       "estimates": [
         {
@@ -269,6 +281,7 @@
     },
     {
       "occupation_group": "Chef",
+      "occupation_group_zh": "厨师",
       "anzsco_code": "351311",
       "estimates": [
         {
@@ -293,6 +306,7 @@
     },
     {
       "occupation_group": "Motor Mechanic",
+      "occupation_group_zh": "汽车机械师",
       "anzsco_code": "321211",
       "estimates": [
         {
@@ -317,6 +331,7 @@
     },
     {
       "occupation_group": "Plumber",
+      "occupation_group_zh": "水管工",
       "anzsco_code": "334111",
       "estimates": [
         {
@@ -341,6 +356,7 @@
     },
     {
       "occupation_group": "Electrician",
+      "occupation_group_zh": "电工",
       "anzsco_code": "341111",
       "estimates": [
         {
@@ -365,6 +381,7 @@
     },
     {
       "occupation_group": "Construction Project Manager",
+      "occupation_group_zh": "建筑项目经理",
       "anzsco_code": "133111",
       "estimates": [
         {
@@ -389,6 +406,7 @@
     },
     {
       "occupation_group": "Architect",
+      "occupation_group_zh": "建筑师",
       "anzsco_code": "232111",
       "estimates": [
         {
@@ -413,6 +431,7 @@
     },
     {
       "occupation_group": "University Lecturer",
+      "occupation_group_zh": "大学讲师",
       "anzsco_code": "242111",
       "estimates": [
         {
@@ -437,6 +456,7 @@
     },
     {
       "occupation_group": "Medical Laboratory Scientist",
+      "occupation_group_zh": "医学实验室科学家",
       "anzsco_code": "234611",
       "estimates": [
         {
@@ -461,6 +481,7 @@
     },
     {
       "occupation_group": "Social Worker",
+      "occupation_group_zh": "社会工作者",
       "anzsco_code": "272511",
       "estimates": [
         {

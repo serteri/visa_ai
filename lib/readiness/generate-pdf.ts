@@ -36,6 +36,7 @@ const PDF_FONT_FILE = "NotoSans-Regular.ttf";
 const PDF_CJK_FONT_NAME = "NotoSansSC";
 const PDF_CJK_FONT_FILE = "NotoSansSC-Regular.ttf";
 const PDF_CJK_FONT_PUBLIC_PATH = "/fonts/NotoSansSC-Regular.ttf";
+const PDF_CJK_FONT_ASSET_PATH = ["src", "assets", "fonts", "NotoSansSC-Regular.ttf"];
 
 interface PDFGeneratorInput {
   report: ReadinessReport;
@@ -122,6 +123,17 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       englishLevelLabel: "İngilizce seviyesi",
       sponsorFamilyLabel: "Sponsor/aile",
       biggestConcernLabel: "En büyük endişe",
+      confidentialAssessment: "GIZLI HAZIRLIK DEGERLENDIRMESI",
+      subject: "Konu",
+      reportDate: "Rapor Tarihi",
+      reportId: "Rapor ID",
+      coverPurpose: "Genel bilgi amacli otomatik analitik bilgilendirme olarak hazirlanmistir.",
+      coverScope: "Uyum kapsami: genel bilgi; hukuki strateji veya goc tavsiyesi degildir.",
+      category: "Kategori",
+      amount: "Tutar",
+      note: "Not",
+      subclass: "Subclass",
+      estimatedWait: "Tahmini Bekleme",
     };
   }
 
@@ -130,9 +142,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       title: "完整签证准备度报告",
       generatedDate: "生成日期",
       userInfo: "用户信息",
-      signalSnapshot: "信号摘要",
-      strongestSignal: "最强信号",
-      secondarySignals: "次要信号",
+      signalSnapshot: "匹配度概览",
+      strongestSignal: "最高匹配路径",
+      secondarySignals: "其他匹配路径",
       primaryLimitingFactor: "主要限制因素",
       positionChangers: "可能改变你位置的因素",
       pathwayTable: "签证路径结构化对比",
@@ -141,7 +153,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       pointsBoosterSimulator: "加分场景模拟",
       financialRoadmap: "费用路线图",
       progressionPathways: "通往永居的常见过渡路径",
-      pathwayFriction: "路径阻力 / 现实校验",
+      pathwayFriction: "竞争激烈度 / 实际难度评估",
       premiumSections: "高级章节",
       invitationTrends: "历史邀请趋势",
       livingCostProjection: "生活成本预测",
@@ -152,10 +164,10 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       monthlyGroceries: "月度食品",
       monthlyTransport: "月度交通",
       monthlyTotal: "月总计",
-      frictionLevel: "阻力等级",
-      frictionScore: "阻力评分",
-      realityCheck: "现实校验",
-      successSignals: "成功信号",
+      frictionLevel: "竞争激烈度",
+      frictionScore: "竞争激烈度评分",
+      realityCheck: "实际难度评估",
+      successSignals: "有利因素",
       visa: "签证",
       difficulty: "难度",
       requirementType: "要求类型",
@@ -175,7 +187,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       factorsAffectingPathways: "可能影响路径的因素",
       missingInformation: "缺失信息",
       disclaimer: "免责声明",
-      estimatedPoints: "估算分数",
+      estimatedPoints: "初步打分估算",
       relevantVisas: "相关签证",
       highRisk: "高",
       mediumRisk: "中",
@@ -191,6 +203,17 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       englishLevelLabel: "英语水平",
       sponsorFamilyLabel: "担保/家庭",
       biggestConcernLabel: "最大担忧",
+      confidentialAssessment: "保密准备度评估",
+      subject: "对象",
+      reportDate: "报告日期",
+      reportId: "报告编号",
+      coverPurpose: "本报告为自动化分析简报，仅供一般信息参考。",
+      coverScope: "合规范围：一般信息，不构成法律策略或移民建议。",
+      category: "类别",
+      amount: "金额",
+      note: "说明",
+      subclass: "签证类别",
+      estimatedWait: "预计等待时间",
     };
   }
 
@@ -259,6 +282,17 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     englishLevelLabel: "English Level",
     sponsorFamilyLabel: "Sponsor/Family",
     biggestConcernLabel: "Biggest Concern",
+    confidentialAssessment: "CONFIDENTIAL READINESS ASSESSMENT",
+    subject: "Subject",
+    reportDate: "Report Date",
+    reportId: "Report ID",
+    coverPurpose: "Prepared as an automated analytical briefing for general information purposes.",
+    coverScope: "Compliance scope: general information, no legal strategy or migration advice.",
+    category: "Category",
+    amount: "Amount",
+    note: "Note",
+    subclass: "Subclass",
+    estimatedWait: "Estimated Wait",
   };
 }
 
@@ -282,8 +316,9 @@ async function loadRuntimeCjkFontBase64(): Promise<string | null> {
     if (typeof window === "undefined") {
       const { readFile } = await import("node:fs/promises");
       const path = await import("node:path");
-      const filePath = path.join(process.cwd(), "public", "fonts", "NotoSansSC-Regular.ttf");
-      const fontBuffer = await readFile(filePath);
+      const assetPath = path.join(process.cwd(), ...PDF_CJK_FONT_ASSET_PATH);
+      const publicPath = path.join(process.cwd(), "public", "fonts", "NotoSansSC-Regular.ttf");
+      const fontBuffer = await readFile(assetPath).catch(() => readFile(publicPath));
       return fontBuffer.toString("base64");
     }
 
@@ -402,7 +437,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     setBoldFont();
     doc.setFontSize(18);
     doc.setTextColor(255, 255, 255);
-    doc.text(safeText("CONFIDENTIAL READINESS ASSESSMENT"), margin, 22);
+    doc.text(safeText(text.confidentialAssessment), margin, 22);
 
     setBoldFont();
     doc.setFontSize(26);
@@ -415,9 +450,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     doc.setFontSize(12);
     doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-    doc.text("Subject", margin, 92);
-    doc.text("Report Date", margin, 104);
-    doc.text("Report ID", margin, 116);
+    doc.text(safeText(text.subject), margin, 92);
+    doc.text(safeText(text.reportDate), margin, 104);
+    doc.text(safeText(text.reportId), margin, 116);
 
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
     doc.text(safeText(subjectName), margin + 34, 92);
@@ -426,16 +461,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
     doc.setFontSize(10);
-    doc.text(
-      "Prepared as an automated analytical briefing for general information purposes.",
-      margin,
-      pageHeight - 26
-    );
-    doc.text(
-      "Compliance scope: general information, no legal strategy or migration advice.",
-      margin,
-      pageHeight - 20
-    );
+    doc.text(safeText(text.coverPurpose), margin, pageHeight - 26);
+    doc.text(safeText(text.coverScope), margin, pageHeight - 20);
 
     doc.addPage();
     yPosition = 20;
@@ -489,7 +516,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
       const lines = doc.splitTextToSize(safeText(item), contentWidth - 8);
       doc.text("-", margin + 2, yPosition);
-      lines.forEach((line: string, index: number) => {
+      lines.forEach((line: string) => {
         ensurePageSpace(lineHeight + 1);
         setBaseFont();
         doc.text(safeText(line), margin + 8, yPosition);
@@ -561,12 +588,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSmallText(`${text.ganttWindow}: ${report.premiumSections.strategicGanttChart.timelineBand}`, 0);
     yPosition += 2;
 
-    const phases = [
-      { title: "Phase 1: Preparation", steps: report.premiumSections.strategicGanttChart.steps.slice(0, 1) },
-      { title: "Phase 2: Assessment", steps: report.premiumSections.strategicGanttChart.steps.slice(1, 2) },
-      { title: "Phase 3: EOI and Nomination", steps: report.premiumSections.strategicGanttChart.steps.slice(2, 3) },
-      { title: "Phase 4: Lodgement", steps: report.premiumSections.strategicGanttChart.steps.slice(3, 4) },
-    ].filter((phase) => phase.steps.length > 0);
+    const phaseTitles =
+      effectiveLocale === "zh-Hans"
+        ? ["第一阶段：准备工作", "第二阶段：职业评估", "第三阶段：意向书与提名", "第四阶段：递交准备"]
+        : ["Phase 1: Preparation", "Phase 2: Assessment", "Phase 3: EOI and Nomination", "Phase 4: Lodgement"];
+    const phases = phaseTitles
+      .map((title, index) => ({
+        title,
+        steps: report.premiumSections.strategicGanttChart.steps.slice(index, index + 1),
+      }))
+      .filter((phase) => phase.steps.length > 0);
 
     phases.forEach((phase) => {
       ensurePageSpace(16);
@@ -683,7 +714,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       return level === "strong" ? "Daha güçlü sinyal" : level === "moderate" ? "Orta sinyal" : "Sınırlı sinyal";
     }
     if (effectiveLocale === "zh-Hans") {
-      return level === "strong" ? "较强信号" : level === "moderate" ? "中等信号" : "有限信号";
+      return level === "strong" ? "匹配度较高" : level === "moderate" ? "匹配度中等" : "匹配度有限";
     }
     return level === "strong" ? "Stronger signal" : level === "moderate" ? "Moderate signal" : "Limited signal";
   }
@@ -696,6 +727,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       return level === "stronger" ? "较强" : level === "moderate" ? "中等" : "有限";
     }
     return level === "stronger" ? "Stronger" : level === "moderate" ? "Moderate" : "Limited";
+  }
+
+  function formatConfidenceLevel(level: "low" | "medium" | "high") {
+    if (effectiveLocale === "tr") {
+      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
+    }
+    if (effectiveLocale === "zh-Hans") {
+      return level === "high" ? "较高" : level === "medium" ? "中等" : "有限";
+    }
+    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
   }
 
   function formatLoad(level: "low" | "medium" | "high") {
@@ -725,10 +766,6 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (status === "missing") return "Missing";
     if (status === "typically_required") return "Typically required";
     return "Unclear";
-  }
-
-  function mapFrictionLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
-    return score;
   }
 
   function getFrictionColorByLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
@@ -813,7 +850,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       const frictionScore = friction?.frictionScore ?? "MEDIUM";
       return {
         visa: `${item.visaName} (${item.subclass})`,
-        confidence: item.confidenceLevel,
+        confidence: formatConfidenceLevel(item.confidenceLevel),
         frictionScore,
         frictionLabel: frictionBandLabel(effectiveLocale, frictionScore),
         realityCheck: friction?.realityCheck ?? item.reason,
@@ -843,11 +880,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     report.pathwayStrengthComparison.forEach((item) => {
       addBody(`${item.visaName} (${item.subclass})`);
       addSmallText(`${effectiveLocale === "tr" ? "Güç" : effectiveLocale === "zh-Hans" ? "强度" : "Strength"}: ${formatStrength(item.strength)}`, 4);
-      addSmallText(`${effectiveLocale === "tr" ? "Zorluk seviyesi" : effectiveLocale === "zh-Hans" ? "阻力" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
-      addSmallText(`${effectiveLocale === "tr" ? "Gerekli belge düzeyi" : effectiveLocale === "zh-Hans" ? "证据负载" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
+      addSmallText(`${effectiveLocale === "tr" ? "Zorluk seviyesi" : effectiveLocale === "zh-Hans" ? "竞争激烈度" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
+      addSmallText(`${effectiveLocale === "tr" ? "Gerekli belge düzeyi" : effectiveLocale === "zh-Hans" ? "材料准备难度" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
       addSmallText(`${effectiveLocale === "tr" ? "Tipik yol" : effectiveLocale === "zh-Hans" ? "典型路径" : "Typical path"}: ${item.typicalPath}`, 4);
       if (item.signalReasons.length > 0) {
-        addSmallText(effectiveLocale === "tr" ? "Sinyal nedenleri:" : effectiveLocale === "zh-Hans" ? "信号原因：" : "Signal reasons:", 4);
+        addSmallText(effectiveLocale === "tr" ? "Sinyal nedenleri:" : effectiveLocale === "zh-Hans" ? "匹配依据：" : "Signal reasons:", 4);
         item.signalReasons.forEach((r) => addSmallText(`– ${r}`, 8));
       }
       if (item.limitingFactors.length > 0) {
@@ -909,7 +946,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   if (report.financialRoadmap.length > 0) {
     addSectionHeading("[$]", text.financialRoadmap);
     drawTable(
-      [locale === "tr" ? "Kategori" : "Category", locale === "tr" ? "Tutar" : "Amount", locale === "tr" ? "Not" : "Note"],
+      [effectiveLocale === "tr" ? "Kategori" : text.category, effectiveLocale === "tr" ? "Tutar" : text.amount, effectiveLocale === "tr" ? "Not" : text.note],
       report.financialRoadmap.map((item) => [item.category, item.amountLabel, item.explanation]),
       [0.28, 0.2, 0.52]
     );
@@ -918,8 +955,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   if (report.progressionPathways.length > 0) {
     addHeading(text.progressionPathways);
     addSmallText(
-      locale === "tr"
+      effectiveLocale === "tr"
         ? "Avustralya vize sisteminde tipik geçiş yolları şunları içerebilir:"
+        : effectiveLocale === "zh-Hans"
+          ? "澳大利亚签证体系中的典型过渡路径可能包括："
         : "Typical progression pathways in the Australian visa system may include:",
       0
     );
@@ -948,7 +987,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       2
     );
     drawTable(
-      [locale === "tr" ? "Subclass" : "Subclass", locale === "tr" ? "Tahmini Puan" : "Estimated Points", locale === "tr" ? "Tahmini Bekleme" : "Estimated Wait"],
+      [text.subclass, text.estimatedPoints, text.estimatedWait],
       report.premiumSections.historicalInvitationTrends.estimates.map((item) => [
         item.subclass,
         `${item.estimatedPoints}`,
@@ -1000,8 +1039,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   addHeading(text.downloadablePdf);
   addSmallText(
-    locale === "tr"
+    effectiveLocale === "tr"
       ? "Bu dosya, oluşturulan tam vize hazırlık raporunun indirilebilir PDF sürümüdür."
+      : effectiveLocale === "zh-Hans"
+        ? "本文件为已生成完整签证准备度报告的可下载 PDF 版本。"
       : "This file is the downloadable PDF version of the generated full visa readiness report.",
     0
   );

@@ -15,6 +15,8 @@ import {
   markUserReportUnlocked,
 } from "@/src/lib/user-reports";
 
+type SupportedLocale = "en" | "tr" | "zh-Hans";
+
 export type FullCheckQuickPreview = {
   estimatedPoints?: number;
   pathways: Array<{
@@ -303,6 +305,12 @@ function buildQuickPreview(report: ReadinessReport): FullCheckQuickPreview {
   };
 }
 
+function normalizeSubmittedLocale(value: string): SupportedLocale {
+  if (value === "tr") return "tr";
+  if (value === "zh" || value === "zh-Hans") return "zh-Hans";
+  return "en";
+}
+
 export async function submitFullCheckWaitlist(
   _prevState: FullCheckWaitlistState,
   formData: FormData
@@ -310,7 +318,9 @@ export async function submitFullCheckWaitlist(
   const email = String(formData.get("email") ?? "").trim();
   const fullName = String(formData.get("fullName") ?? "").trim();
   const visaInterest = String(formData.get("visaInterest") ?? "").trim();
-  const preferredLanguage = String(formData.get("preferredLanguage") ?? "").trim();
+  const submittedLocale = String(formData.get("locale") ?? formData.get("preferredLanguage") ?? "").trim();
+  const resolvedLocale = normalizeSubmittedLocale(submittedLocale);
+  const preferredLanguage = resolvedLocale;
   const currentCountry = String(formData.get("currentCountry") ?? "").trim();
   const mainGoal = String(formData.get("mainGoal") ?? "").trim();
   const passportCountry = String(formData.get("passportCountry") ?? "").trim();
@@ -325,9 +335,8 @@ export async function submitFullCheckWaitlist(
   const biggestConcern = String(formData.get("biggestConcern") ?? "").trim();
   const source = String(formData.get("source") ?? "").trim() || "full_check";
 
-  const isTr = preferredLanguage === "tr";
-  const isZh = preferredLanguage === "zh-Hans";
-  const resolvedLocale = preferredLanguage === "tr" ? "tr" : preferredLanguage === "zh-Hans" ? "zh-Hans" : "en";
+  const isTr = resolvedLocale === "tr";
+  const isZh = resolvedLocale === "zh-Hans";
   const errors: Record<string, string> = {};
 
   if (!email) errors.email = isTr ? "E-posta adresi gereklidir." : isZh ? "邮箱为必填项。" : "Email is required.";

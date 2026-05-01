@@ -51,12 +51,25 @@ function isPersonalizedIntentQuestion(message: string): boolean {
   );
 }
 
-function addGeneralInfoSentence(answer: string): string {
+function generalInfoSentence(locale?: string): string {
+  if (locale === "zh-Hans") return "本回答仅为一般信息。";
+  if (locale === "tr") return "Bu yalnızca genel bilgidir.";
+  return "This is general information only.";
+}
+
+function personalisedAdviceFallback(locale?: string): string {
+  if (locale === "zh-Hans") return "个性化建议应由注册移民代理处理。";
+  if (locale === "tr") return "Kişiselleştirilmiş tavsiye kayıtlı bir göç danışmanı tarafından ele alınır.";
+  return PERSONALISED_ADVICE_FALLBACK;
+}
+
+function addGeneralInfoSentence(answer: string, locale?: string): string {
   const base = answer.trim();
-  if (/this is general information only\.?$/i.test(base)) {
+  const sentence = generalInfoSentence(locale);
+  if (base.endsWith(sentence) || /this is general information only\.?$/i.test(base)) {
     return base;
   }
-  return `${base} This is general information only.`;
+  return `${base} ${sentence}`;
 }
 
 function responseHasRiskOrDecisionLanguage(answer: string): boolean {
@@ -65,27 +78,29 @@ function responseHasRiskOrDecisionLanguage(answer: string): boolean {
   );
 }
 
-function appendPersonalisedAdviceFallback(answer: string): string {
+function appendPersonalisedAdviceFallback(answer: string, locale?: string): string {
   const base = answer.trim();
-  if (base.includes(PERSONALISED_ADVICE_FALLBACK)) {
+  const fallback = personalisedAdviceFallback(locale);
+  if (base.includes(PERSONALISED_ADVICE_FALLBACK) || base.includes(fallback)) {
     return base;
   }
-  return `${base} ${PERSONALISED_ADVICE_FALLBACK}`;
+  return `${base} ${fallback}`;
 }
 
 function applyAssistantSafetyFooter(input: {
   answer: string;
   message: string;
   appendFallback?: boolean;
+  locale?: string;
 }) {
-  const withGeneralInfo = addGeneralInfoSentence(input.answer);
+  const withGeneralInfo = addGeneralInfoSentence(input.answer, input.locale);
   const shouldAppendFallback =
     input.appendFallback ||
     isPersonalizedIntentQuestion(input.message) ||
     responseHasRiskOrDecisionLanguage(withGeneralInfo);
 
   if (!shouldAppendFallback) return withGeneralInfo;
-  return appendPersonalisedAdviceFallback(withGeneralInfo);
+  return appendPersonalisedAdviceFallback(withGeneralInfo, input.locale);
 }
 
 function sanitizeModelOutput(text: string): string {
@@ -133,6 +148,10 @@ function neutralizeDeterministicLanguage(answer: string): string {
 }
 
 function buildLocaleFallback(locale: string): string {
+  if (locale === "zh-Hans") {
+    return "存储的信息不足以回答这个问题。可考虑咨询注册移民代理或澳大利亚法律执业者。";
+  }
+
   if (locale === "tr") {
     return "Saklanan bilgiler bu soru için yeterli ayrıntı içermiyor. Kayıtlı bir göç danışmanı veya Avustralya hukuk uygulayıcısı desteği ilgili olabilir.";
   }
@@ -167,14 +186,22 @@ function deterministicAnswer(message: string, locale: string, context: Retrieved
   for (const record of context) {
     if (asksEnglish) {
       if (record.english_requirements) {
-        lines.push(`Subclass ${record.subclass} english requirements in stored data: ${JSON.stringify(record.english_requirements)}.`);
+        lines.push(
+          locale === "zh-Hans"
+            ? `${record.subclass} 签证在存储数据中的英语要求：${JSON.stringify(record.english_requirements)}。`
+            : `Subclass ${record.subclass} english requirements in stored data: ${JSON.stringify(record.english_requirements)}.`
+        );
       }
       continue;
     }
 
     if (asksDocuments) {
       if (record.documents_required.length > 0) {
-        lines.push(`Subclass ${record.subclass} documents in stored data: ${record.documents_required.join(", ")}.`);
+        lines.push(
+          locale === "zh-Hans"
+            ? `${record.subclass} 签证在存储数据中的文件要求：${record.documents_required.join(", ")}。`
+            : `Subclass ${record.subclass} documents in stored data: ${record.documents_required.join(", ")}.`
+        );
       }
       continue;
     }
@@ -182,22 +209,34 @@ function deterministicAnswer(message: string, locale: string, context: Retrieved
     if (asksPoints) {
       const minPoints = extractMinPoints(record.points_test_rules);
       if (minPoints) {
-        lines.push(`Subclass ${record.subclass} minimum points in stored data: ${minPoints}.`);
+        lines.push(
+          locale === "zh-Hans"
+            ? `${record.subclass} 签证在存储数据中的最低分数：${minPoints}。`
+            : `Subclass ${record.subclass} minimum points in stored data: ${minPoints}.`
+        );
       } else if (record.points_test_rules) {
-        lines.push(`Subclass ${record.subclass} has points test rules in stored data: ${JSON.stringify(record.points_test_rules)}.`);
+        lines.push(
+          locale === "zh-Hans"
+            ? `${record.subclass} 签证在存储数据中包含打分规则：${JSON.stringify(record.points_test_rules)}。`
+            : `Subclass ${record.subclass} has points test rules in stored data: ${JSON.stringify(record.points_test_rules)}.`
+        );
       }
       continue;
     }
 
     const parts = [
-      record.purpose ? `purpose: ${record.purpose}` : null,
-      record.stay_period ? `stay period: ${record.stay_period}` : null,
-      record.cost ? `cost: ${record.cost}` : null,
-      record.work_rights ? `work rights: ${record.work_rights}` : null,
+      record.purpose ? `${locale === "zh-Hans" ? "用途" : "purpose"}: ${record.purpose}` : null,
+      record.stay_period ? `${locale === "zh-Hans" ? "停留期限" : "stay period"}: ${record.stay_period}` : null,
+      record.cost ? `${locale === "zh-Hans" ? "费用" : "cost"}: ${record.cost}` : null,
+      record.work_rights ? `${locale === "zh-Hans" ? "工作权利" : "work rights"}: ${record.work_rights}` : null,
     ].filter((part): part is string => Boolean(part));
 
     if (parts.length > 0) {
-      lines.push(`Subclass ${record.subclass} (${record.visa_name}) ${parts.join("; ")}.`);
+      lines.push(
+        locale === "zh-Hans"
+          ? `${record.subclass} 签证（${record.visa_name}）${parts.join("；")}。`
+          : `Subclass ${record.subclass} (${record.visa_name}) ${parts.join("; ")}.`
+      );
     }
   }
 
@@ -219,7 +258,7 @@ function uniqueActions(actions: GroundedNextAction[]): GroundedNextAction[] {
   return result;
 }
 
-function buildActions(locale: "en" | "tr", context: RetrievedVisaContext): GroundedNextAction[] {
+function buildActions(locale: "en" | "tr" | "zh-Hans", context: RetrievedVisaContext): GroundedNextAction[] {
   const actions: GroundedNextAction[] = [
     { label: "Speak with registered migration agent", href: `/${locale}/agent-referral` },
   ];
@@ -261,7 +300,7 @@ function buildActions(locale: "en" | "tr", context: RetrievedVisaContext): Groun
   return uniqueActions(actions);
 }
 
-function buildSources(locale: "en" | "tr", context: RetrievedVisaContext): GroundedSourceItem[] {
+function buildSources(locale: "en" | "tr" | "zh-Hans", context: RetrievedVisaContext): GroundedSourceItem[] {
   return context.map((item) => ({
     subclass: item.subclass,
     visaName: item.visa_name,
@@ -271,9 +310,11 @@ function buildSources(locale: "en" | "tr", context: RetrievedVisaContext): Groun
   }));
 }
 
-function withSourceSubclassFooter(answer: string, context: RetrievedVisaContext): string {
+function withSourceSubclassFooter(answer: string, context: RetrievedVisaContext, locale?: string): string {
   if (context.length === 0) return answer;
   const subclasses = Array.from(new Set(context.map((item) => item.subclass))).join(", ");
+  if (locale === "zh-Hans") return `${answer.trim()} 使用的来源签证类别：${subclasses}。`;
+  if (locale === "tr") return `${answer.trim()} Kullanılan kaynak subclass'lar: ${subclasses}.`;
   return `${answer.trim()} Source subclasses used: ${subclasses}.`;
 }
 
@@ -337,17 +378,24 @@ export async function generateGroundedAnswer(input: {
   locale: string;
   context: RetrievedVisaContext;
 }): Promise<GroundedAssistantResult> {
-  const locale = input.locale === "tr" ? "tr" : "en";
+  const locale = input.locale === "tr" ? "tr" : input.locale === "zh-Hans" ? "zh-Hans" : "en";
   const sources = buildSources(locale, input.context);
   const nextActions = buildActions(locale, input.context);
 
   if (isPersonalizedIntentQuestion(input.message)) {
     const safeAnswer = applyAssistantSafetyFooter({
       answer: neutralizeDeterministicLanguage(
-        withSourceSubclassFooter(PERSONALIZED_INTENT_REPLY, input.context)
+        withSourceSubclassFooter(
+          locale === "zh-Hans"
+            ? "我可以提供有关签证路径的一般信息。如需基于个人情况的结构化评估，可以生成准备度报告。"
+            : PERSONALIZED_INTENT_REPLY,
+          input.context,
+          locale
+        )
       ),
       message: input.message,
       appendFallback: false,
+      locale,
     });
     return {
       answer: safeAnswer,
@@ -360,6 +408,7 @@ export async function generateGroundedAnswer(input: {
     const fallback = applyAssistantSafetyFooter({
       answer: buildLocaleFallback(locale),
       message: input.message,
+      locale,
     });
     return {
       answer: fallback,
@@ -374,8 +423,9 @@ export async function generateGroundedAnswer(input: {
   }
 
   const finalAnswer = applyAssistantSafetyFooter({
-    answer: neutralizeDeterministicLanguage(withSourceSubclassFooter(answer, input.context)),
+    answer: neutralizeDeterministicLanguage(withSourceSubclassFooter(answer, input.context, locale)),
     message: input.message,
+    locale,
   });
 
   return {

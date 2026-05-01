@@ -1,22 +1,24 @@
 import { runReadinessEngine } from "@/src/lib/readiness-engine";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
+import { writeFile } from "node:fs/promises";
+import path from "node:path";
 
 async function run() {
   const report = runReadinessEngine({
     locale: "zh-Hans",
     mainGoal: "提升技术移民竞争力并尽快递交",
-    currentCountry: "Australia",
-    passportCountry: "China",
+    currentCountry: "澳大利亚",
+    passportCountry: "中国",
     age: "31",
-    occupation: "Software Engineer (261313)",
-    englishLevel: "Superior",
+    occupation: "软件工程师（261313）",
+    englishLevel: "高级英语",
     englishTestTaken: "yes",
     occupationConfirmed: "yes",
-    estimatedBudgetRange: "15000-25000 AUD",
+    estimatedBudgetRange: "15000-25000 澳元",
     timeline: "0-6",
-    sponsorOrFamily: "married",
+    sponsorOrFamily: "已婚",
     preferredPathway: "190",
-    biggestConcern: "Invitation competitiveness",
+    biggestConcern: "邀请竞争力",
     offshoreExperienceYears: 5,
     onshoreExperienceYears: 1,
     regionalWilling: true,
@@ -30,15 +32,17 @@ async function run() {
       name: "Wei Chen",
       email: "wei.chen@example.com",
       mainGoal: "提升技术移民竞争力并尽快递交",
-      currentCountry: "Australia",
-      passportCountry: "China",
+      currentCountry: "澳大利亚",
+      passportCountry: "中国",
       age: "31",
-      occupation: "Software Engineer (261313)",
-      englishLevel: "Superior",
-      sponsorOrFamily: "married",
-      biggestConcern: "Invitation competitiveness",
+      occupation: "软件工程师（261313）",
+      englishLevel: "高级英语",
+      sponsorOrFamily: "已婚",
+      biggestConcern: "邀请竞争力",
     },
   });
+  const outputPath = path.join(process.cwd(), "wei-chen-zh-full-readiness-report.pdf");
+  await writeFile(outputPath, pdfBytes);
 
   const frictionLabels = report.frictionAnalysis.map((f) => ({
     pathway: f.pathway,
@@ -60,6 +64,7 @@ async function run() {
         nextSteps: report.suggestedNextSteps,
         checklistPreview: report.documentChecklist.slice(0, 2),
         pdfBytes: pdfBytes.byteLength,
+        outputPath,
       },
       null,
       2

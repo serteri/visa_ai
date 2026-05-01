@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -151,17 +151,16 @@ export function FullCheckWaitlistForm({
     submitFullCheckWaitlist,
     initialState
   );
-  const [unlockedReport, setUnlockedReport] = useState<ReadinessReport | null>(null);
-  const [unlockedName, setUnlockedName] = useState<string | undefined>(undefined);
-  const [unlockedEmail, setUnlockedEmail] = useState<string | undefined>(undefined);
+  const [unlockedReportState, setUnlockedReportState] = useState<{
+    reportId?: string;
+    report: ReadinessReport;
+    name?: string;
+    email?: string;
+  } | null>(null);
 
-  useEffect(() => {
-    setUnlockedReport(null);
-    setUnlockedName(undefined);
-    setUnlockedEmail(undefined);
-  }, [state.reportId]);
-
-  const report = unlockedReport;
+  const activeUnlockedReportState =
+    unlockedReportState?.reportId === state.reportId ? unlockedReportState : null;
+  const report = activeUnlockedReportState?.report ?? null;
 
   async function handleDownloadPDF() {
     if (!report) return;
@@ -171,8 +170,8 @@ export function FullCheckWaitlistForm({
       locale: locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en",
       userInputSummary: {
         ...(state.userInput || {}),
-        name: unlockedName ?? state.userInput?.name,
-        email: unlockedEmail ?? state.userInput?.email,
+        name: activeUnlockedReportState?.name ?? state.userInput?.name,
+        email: activeUnlockedReportState?.email ?? state.userInput?.email,
       },
     });
   }
@@ -242,6 +241,7 @@ export function FullCheckWaitlistForm({
   return (
     <div className="space-y-6">
       <form action={formAction} className="space-y-4" noValidate>
+        <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="preferredLanguage" value={locale} />
         <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
 
@@ -465,9 +465,12 @@ export function FullCheckWaitlistForm({
           defaultEmail={state.userInput?.email}
           defaultName={state.userInput?.name}
           onUnlocked={({ report: unlocked, email, name }) => {
-            setUnlockedReport(unlocked);
-            setUnlockedEmail(email);
-            setUnlockedName(name);
+            setUnlockedReportState({
+              reportId: state.reportId,
+              report: unlocked,
+              email,
+              name,
+            });
           }}
         />
       )}

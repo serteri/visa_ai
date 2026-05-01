@@ -202,7 +202,7 @@ export type PremiumInvitationTrendSection = {
 
 export type PremiumLivingCostSection = {
   city: string;
-  familyProfile: "Single" | "Couple" | "Family of 4";
+  familyProfile: string;
   currency: "AUD";
   monthly: {
     rent: number;

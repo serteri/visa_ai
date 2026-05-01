@@ -1103,11 +1103,11 @@ function parseAgeOption(ageStr: string): AgeOption | null {
 
 function parseEnglishOption(raw: string): EnglishOption | null {
   const s = raw.toLowerCase();
-  if (s.includes("superior") || /ielts\s*[89]/.test(s) || /pte\s*7[0-9]/.test(s) || /pte\s*8/.test(s))
+  if (s.includes("superior") || s.includes("高级") || s.includes("优秀") || /ielts\s*[89]/.test(s) || /pte\s*7[0-9]/.test(s) || /pte\s*8/.test(s))
     return "superior";
-  if (s.includes("proficient") || /ielts\s*7/.test(s) || /pte\s*6[0-9]/.test(s))
+  if (s.includes("proficient") || s.includes("熟练") || /ielts\s*7/.test(s) || /pte\s*6[0-9]/.test(s))
     return "proficient";
-  if (s.includes("competent") || /ielts\s*6/.test(s) || /pte\s*5[0-9]/.test(s) || s.includes("functional"))
+  if (s.includes("competent") || s.includes("合格") || /ielts\s*6/.test(s) || /pte\s*5[0-9]/.test(s) || s.includes("functional"))
     return "competent";
   return null;
 }
