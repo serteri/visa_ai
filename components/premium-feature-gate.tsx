@@ -8,6 +8,7 @@ import {
   type PremiumUnlockState,
   unlockPremiumReport,
 } from "@/app/[locale]/full-check/actions";
+import { trackEvent } from "@/lib/analytics";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -146,7 +147,18 @@ export function PremiumFeatureGate({
               )}
             </div>
 
-            <Button size="lg" className="mt-4 h-12 w-full text-base" onClick={() => setShowModal(true)}>
+            <Button
+              size="lg"
+              className="mt-4 h-12 w-full text-base"
+              onClick={() => {
+                trackEvent("report_unlocked", {
+                  report_id: reportId,
+                  locale,
+                  source: "unlock_cta",
+                });
+                setShowModal(true);
+              }}
+            >
               <Sparkles className="size-4" />
               {isTr ? "Unlock Your Full Readiness Report" : isZh ? "解锁完整准备度报告" : "Unlock Your Full Readiness Report"}
             </Button>

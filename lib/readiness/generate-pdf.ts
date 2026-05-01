@@ -301,6 +301,27 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
   };
 }
 
+function getFeedbackTexts(locale: "en" | "tr" | "zh-Hans") {
+  if (locale === "tr") {
+    return {
+      note: "Beta surecindeyiz. Raporu nasil buldunuz? Bize yazin:",
+      cta: "Share Feedback",
+    };
+  }
+
+  if (locale === "zh-Hans") {
+    return {
+      note: "我们正处于 Beta 阶段。你觉得这份报告如何？欢迎写信告诉我们：",
+      cta: "Share Feedback",
+    };
+  }
+
+  return {
+    note: "We are in beta. How was your report experience? Write to us:",
+    cta: "Share Feedback",
+  };
+}
+
 async function toBase64FromArrayBuffer(buffer: ArrayBuffer): Promise<string> {
   if (typeof window === "undefined") {
     return Buffer.from(buffer).toString("base64");
@@ -353,6 +374,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   const cjkBoldFontAvailable = cjkRequested && Boolean(runtimeCjkBoldFont);
   const effectiveLocale = cjkRequested && !cjkFontAvailable ? "en" : locale;
   const text = getLocalizedText(effectiveLocale);
+  const feedbackText = getFeedbackTexts(effectiveLocale);
 
   const doc = new jsPDF({
     orientation: "portrait",
@@ -1220,6 +1242,18 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // Disclaimer
   addHeading(text.disclaimer);
   addSmallText(report.disclaimer, 0);
+
+  // Beta feedback note on final page
+  ensurePageSpace(14);
+  yPosition += 2;
+  addSmallText(feedbackText.note, 0);
+  setBaseFont();
+  doc.setFontSize(FONTS.small);
+  doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+  doc.textWithLink(`${feedbackText.cta}: hello@logivisa.com`, margin, yPosition + 1, {
+    url: "mailto:hello@logivisa.com?subject=Beta%20Feedback%20-%20Visa%20Readiness%20Report",
+  });
+  yPosition += 5;
 
   // Global footer on every page
   addGlobalFooters();

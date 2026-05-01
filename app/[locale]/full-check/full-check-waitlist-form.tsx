@@ -13,6 +13,7 @@ import {
   submitFullCheckWaitlist,
 } from "@/app/[locale]/full-check/actions";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
+import { trackEvent } from "@/lib/analytics";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessReport } from "@/lib/readiness/types";
 
@@ -156,6 +157,7 @@ export function FullCheckWaitlistForm({
     typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`
   );
   const wasPendingRef = useRef(false);
+  const trackedReportIdRef = useRef<string | null>(null);
   const [unlockedReportState, setUnlockedReportState] = useState<{
     reportId?: string;
     report: ReadinessReport;
@@ -216,6 +218,19 @@ export function FullCheckWaitlistForm({
       window.clearInterval(intervalId);
     };
   }, [analysisProgressId, isPending]);
+
+  useEffect(() => {
+    if (state.status !== "success" || !state.reportId) return;
+    if (trackedReportIdRef.current === state.reportId) return;
+
+    trackEvent("report_generated", {
+      report_id: state.reportId,
+      locale,
+      source: "full_check_waitlist",
+    });
+
+    trackedReportIdRef.current = state.reportId;
+  }, [locale, state.reportId, state.status]);
 
   const activeUnlockedReportState =
     unlockedReportState?.reportId === state.reportId ? unlockedReportState : null;
@@ -590,6 +605,31 @@ export function FullCheckWaitlistForm({
 
       {state.status === "success" && report && (
         <section className="space-y-4">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            {txt(
+              "Raporunuzun kilidi acildi. Premium detaylariniz hazir.",
+              "Your report is unlocked. Premium insights are ready.",
+              "你的报告已解锁，高级分析已准备就绪。"
+            )}
+          </div>
+
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-foreground/90">
+                {txt(
+                  "Beta surecindeyiz. Raporu nasil buldunuz? Bize yazin.",
+                  "We are in beta. How was your report experience? Write to us.",
+                  "我们正处于 Beta 阶段。你觉得这份报告如何？欢迎写信告诉我们。"
+                )}
+              </p>
+              <Button asChild className="h-10 rounded-lg px-4">
+                <a href="mailto:hello@logivisa.com?subject=Beta%20Feedback%20-%20Visa%20Readiness%20Report">
+                  {txt("Geri Bildirim Paylas", "Share Feedback", "分享反馈")}
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
+
           <div className="space-y-1">
             <h3 className="text-xl font-bold">
               {txt("完整签证准备度报告", "Tam vize hazırlık raporu", "Full visa readiness report")}
