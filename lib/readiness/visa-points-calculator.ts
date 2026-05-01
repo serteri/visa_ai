@@ -198,41 +198,41 @@ function generateBoosters(
   if (input.englishLevel !== "Superior") {
     const gain = input.englishLevel === "Competent" ? 20 : 10;
     boosters.push({
-      title: "English Language Upgrade",
+      title: "English Score Scenario",
       potentialPoints: gain,
-      description: `Achieve Superior English (PTE 79+) to gain +${gain} points. Current score + ${gain} = ${currentScore + gain}`,
+      description: `If the profile moved to Superior English (PTE 79+ equivalent), the points model would add +${gain} points. Current score + ${gain} = ${currentScore + gain}`,
     });
   }
 
   // NAATI or Professional Year Boost
   if (!input.hasNAATI && !input.hasProfessionalYear) {
     boosters.push({
-      title: "NAATI Credential or Professional Year",
+      title: "NAATI or Professional Year Scenario",
       potentialPoints: 5,
-      description: `Complete NAATI Community Language (CCL) or Professional Year (PY) to add +5 points. Current score + 5 = ${currentScore + 5}`,
+      description: `If a NAATI CCL or Professional Year variable were added, the points model would add +5 points. Current score + 5 = ${currentScore + 5}`,
     });
   }
 
   // State Nomination Bonus (190)
   boosters.push({
-    title: "State Nomination (Subclass 190)",
+    title: "State Nomination Scenario (Subclass 190)",
     potentialPoints: STATE_NOMINATION_BONUS_190,
-    description: `Obtain state sponsorship for subclass 190 to gain +${STATE_NOMINATION_BONUS_190} points (190 total: ${currentScore + STATE_NOMINATION_BONUS_190})`,
+    description: `If a 190 state nomination variable were present, the model would add +${STATE_NOMINATION_BONUS_190} points (190 total: ${currentScore + STATE_NOMINATION_BONUS_190})`,
   });
 
   // Regional Nomination Bonus (491)
   boosters.push({
-    title: "Regional Nomination (Subclass 491)",
+    title: "Regional Nomination Scenario (Subclass 491)",
     potentialPoints: REGIONAL_NOMINATION_BONUS_491,
-    description: `Obtain regional nomination for subclass 491 to gain +${REGIONAL_NOMINATION_BONUS_491} points (491 total: ${currentScore + REGIONAL_NOMINATION_BONUS_491})`,
+    description: `If a 491 regional nomination variable were present, the model would add +${REGIONAL_NOMINATION_BONUS_491} points (491 total: ${currentScore + REGIONAL_NOMINATION_BONUS_491})`,
   });
 
   // Partner Skill Boost
   if (!input.partnerSkilled) {
     boosters.push({
-      title: "Partner Skill Points",
+      title: "Partner Skills Scenario",
       potentialPoints: 10,
-      description: `If your partner is assessed as skilled, gain +10 points. Current score + 10 = ${currentScore + 10}`,
+      description: `If partner-skills points were available, the model would add +10 points. Current score + 10 = ${currentScore + 10}`,
     });
   }
 

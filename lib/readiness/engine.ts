@@ -1267,8 +1267,10 @@ function buildMissingInformation(
 
 function buildDisclaimer(locale: Locale): string {
   return locale === "tr"
-    ? "Bu rapor yalnızca genel bilgi içermektedir. Göç tavsiyesi, hukuki tavsiye veya vize sonucu tahmini sağlamaz. Kişisel durumunuza göre tavsiye için kayıtlı bir göç danışmanı veya Avustralya hukuk uygulayıcısı ile görüşün."
-    : "This report contains general information only. It does not provide migration advice, legal advice, or predict visa outcomes. For advice based on personal circumstances, speak with a registered migration agent or Australian legal practitioner.";
+    ? "Bu rapor otomatik bir veri analizidir ve göcmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin."
+    : locale === "zh-Hans"
+      ? "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。"
+      : "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).";
 }
 
 function buildKeyVisaRequirements(

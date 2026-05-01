@@ -294,32 +294,32 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport, 
 
   if (lowPointsGap) {
     return [
-      t3(locale, "Focus on PTE/IELTS to reach Superior level (79+) as your primary priority.", "Birincil onceliginiz PTE/IELTS sonucunu Superior seviyesine (79+) cikarmak olmali.", "首要任务是将 PTE/IELTS 提升到 Superior（79+）水平。"),
-      t3(locale, "Model a +5 to +15 point pathway immediately (NAATI CCL, state nomination, regional nomination) and set a target subclass sequence.", "Hemen +5 ile +15 puanlik yol senaryosunu modelleyin (NAATI CCL, eyalet adayligi, bolgesel adaylik) ve hedef subclass siralamasi belirleyin.", "立即规划可提升 +5 至 +15 分的路径（NAATI CCL、州担保、偏远地区担保），并确定目标签证顺序。"),
-      t3(locale, "Rebuild EOI positioning only after score uplift so invitation competitiveness improves materially.", "EOI konumlamasini ancak puan artisi sonrasinda guncelleyin; boylece davet rekabetiniz anlamli sekilde artar.", "在分数提升后再重建 EOI 定位，以实质提升获邀竞争力。"),
+      t3(locale, "Data analysis indicates a material gap between the current points profile and recent invitation references, with English score weight acting as a major variable.", "Veri analizi, mevcut puan profili ile yakin donem davet referanslari arasinda belirgin bir fark oldugunu ve Ingilizce puan agirliginin ana degiskenlerden biri oldugunu gostermektedir.", "数据分析显示，当前分数画像与近期邀请参考之间存在明显差距，其中英语分值权重是主要变量之一。"),
+      t3(locale, "Scenario modelling shows that +5 to +15 point changes linked to nomination or language-related variables can materially alter the comparative position.", "Senaryo modellemesi, adaylik veya dil baglantili degiskenlerdeki +5 ile +15 puanlik farklarin karsilastirmali konumu anlamli bicimde degistirebildigini gostermektedir.", "情景建模显示，与提名或语言相关变量有关的 +5 至 +15 分变化，可能明显改变相对位置。"),
+      t3(locale, "Historical invitation movement suggests EOI competitiveness is more sensitive when score uplift variables are not yet reflected in the profile.", "Tarihsel davet hareketleri, puan artisi degiskenleri profile yansimadiginda EOI rekabet baskisinin arttigini gostermektedir.", "历史邀请走势显示，当加分变量尚未反映到档案中时，EOI 竞争压力会更高。"),
     ];
   }
 
   if (lowExperienceGap) {
     return [
-      t3(locale, "Target Professional Year (PY) or NAATI CCL to compensate for missing experience points.", "Eksik deneyim puanlarini telafi etmek icin Professional Year (PY) veya NAATI CCL hedefleyin.", "可通过 Professional Year（PY）或 NAATI CCL 弥补经验分不足。"),
-      t3(locale, "Strengthen employment evidence quality (detailed references, duties mapping, exact dates) to maximize claimable points.", "Talep edilebilir puanlari artirmak icin istihdam kanit kalitesini guclendirin (detayli referans, gorev eslestirme, net tarihler).", "提升工作证明质量（详细推荐信、职责映射、准确日期）以最大化可申报分数。"),
-      t3(locale, "Run a timeline strategy that prioritizes nomination pathways while experience depth is still building.", "Deneyim derinligi olusurken adaylik yollarini onceliklendiren bir zaman plani uygulayin.", "在经验仍在累积阶段，优先推进担保类路径的时间策略。"),
+      t3(locale, "The current experience profile sits below the range commonly associated with stronger points-table outcomes in comparable skilled cases.", "Mevcut deneyim profili, benzer nitelikli vakalarda daha guclu puan tablosu sonuclarina eslik eden araligin altinda kalmaktadir.", "当前经验画像低于同类技术案例中通常对应更强打分结果的区间。"),
+      t3(locale, "Employment-evidence quality remains a major reporting variable because duties mapping, reference depth, and date precision can change claimable-point interpretation.", "Gorev eslestirmesi, referans derinligi ve tarih kesinligi talep edilebilir puan yorumunu degistirebildigi icin istihdam kaniti kalitesi ana raporlama degiskenlerinden biridir.", "由于职责映射、推荐信深度和日期精确度会改变可计分解释，工作证明质量仍是主要报告变量。"),
+      t3(locale, "Comparative pathway modelling suggests nomination-linked pathways may remain more resilient while experience depth is still limited.", "Karsilastirmali yol modellemesi, deneyim derinligi sinirliyken adaylik baglantili yollarin goreli olarak daha dayanikli kalabildigini gostermektedir.", "比较路径建模显示，在经验深度仍有限时，与提名相关的路径可能保持相对更强韧。"),
     ];
   }
 
   if (!occupationConfirmed) {
     return [
-      t3(locale, "Finalize your occupation strategy first and align ANZSCO mapping with your real employment history.", "Once meslek stratejinizi netlestirin ve ANZSCO eslestirmesini gercek is gecmisinizle hizalayin.", "先明确职业策略，并使 ANZSCO 映射与真实工作经历一致。"),
-      t3(locale, "Prioritize Skills Assessment evidence pack quality before any invitation-stage assumptions.", "Davet asamasi varsayimlarindan once Skills Assessment kanit paketinin kalitesini onceliklendirin.", "在任何获邀阶段假设之前，优先提升技能评估材料包质量。"),
-      t3(locale, "Sequence English, assessment, and EOI milestones into one controlled evidence timeline.", "Ingilizce, assessment ve EOI kilometre taslarini tek bir kontrollu kanit takvimine yerlestirin.", "将英语、评估和 EOI 里程碑整合到一个可控的证据时间线中。"),
+      t3(locale, "Occupation alignment remains unresolved, so ANZSCO matching and work-history classification are still driving uncertainty in the dataset.", "Meslek uyumu henuz netlesmedigi icin ANZSCO eslestirmesi ve is gecmisi siniflamasi veri setindeki belirsizligin ana kaynaklari olmaya devam etmektedir.", "职业匹配尚未明确，因此 ANZSCO 匹配和工作经历分类仍是数据集不确定性的主要来源。"),
+      t3(locale, "Skills-assessment evidence quality is a dominant variable because occupation coding and evidence structure affect how the profile is interpreted in comparison models.", "Meslek kodlamasi ve kanit yapisi, profilin karsilastirma modellerinde nasil yorumlandigini etkiledigi icin skills-assessment kanit kalitesi baskin bir degiskendir.", "由于职业编码和证据结构会影响档案在比较模型中的解释方式，技能评估证据质量是主导变量。"),
+      t3(locale, "Sequence uncertainty across English, assessment, and EOI milestones is currently reducing reporting confidence for skilled-pathway comparisons.", "Ingilizce, assessment ve EOI kilometre taslari arasindaki sira belirsizligi, nitelikli yol karsilastirmalari icin raporlama guvenini azaltmaktadir.", "英语、评估与 EOI 里程碑之间的顺序不确定性，当前正在降低技术路径比较的报告置信度。"),
     ];
   }
 
   return [
-    t3(locale, "Maintain score competitiveness through periodic invitation-trend checks and pathway reprioritization.", "Periyodik davet trend kontrolleri ve yol yeniden onceliklendirmesi ile puan rekabetini koruyun.", "通过定期追踪邀请趋势并重排路径优先级，保持分数竞争力。"),
-    t3(locale, "Audit every core document category now to reduce post-invitation lodgement pressure.", "Davet sonrasi basvuru baskisini azaltmak icin tum temel belge kategorilerini simdiden denetleyin.", "立即审计所有核心材料类别，降低获邀后的递交压力。"),
-    t3(locale, "Prepare a submission-ready evidence bundle so you can act quickly when opportunity windows open.", "Firsat penceresi acildiginda hizli hareket etmek icin basvuruya hazir bir kanit dosyasi olusturun.", "准备可直接递交的证据包，以便在机会窗口出现时快速行动。"),
+    t3(locale, "Current signals place the profile within a comparatively workable range, but invitation-trend volatility remains a live variable in competitive pathways.", "Mevcut sinyaller, profili goreli olarak islenebilir bir aralikta konumlandiriyor; ancak davet trendi oynakligi rekabetci yollarda hala aktif bir degiskendir.", "当前信号将档案放在相对可操作的区间内，但在竞争性路径中，邀请趋势波动仍是一个持续变量。"),
+    t3(locale, "Document-category completeness is materially linked to report confidence and to how quickly the profile can be re-evaluated when source conditions change.", "Belge kategorisi tamligi, rapor guveniyle ve kaynak kosullari degistiginde profilin ne kadar hizli yeniden degerlendirilebilecegiyle dogrudan iliskilidir.", "材料类别完整度与报告置信度，以及在源条件变化时重新评估档案的速度有实质关联。"),
+    t3(locale, "Evidence-bundle consistency appears to be the remaining variable separating a baseline-compatible profile from a stronger comparative position.", "Kanit dosyasi tutarliligi, temel olarak uyumlu bir profil ile daha guclu bir karsilastirmali konum arasinda kalan degisken gibi gorunmektedir.", "证据包一致性看起来仍是区分基线兼容档案与更强相对位置的剩余变量。"),
   ];
 }
 
@@ -357,13 +357,13 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
       }
 
       if (frictionScore === "EXTREME") {
-        reality.push(t3(locale, `Your current score (${userPoints}) is more than 10 points below the recent ${subclassKey} invitation reference (${lastInvitedPoint}).`, `${subclassKey} son davet referansina gore puaniniz (${userPoints}), 10 puandan fazla geridedir (${lastInvitedPoint}).`, `你当前分数（${userPoints}）较最近 ${subclassKey} 邀请参考分（${lastInvitedPoint}）低超过 10 分。`));
+        reality.push(t3(locale, `Historical invitation data indicates the current score (${userPoints}) sits more than 10 points below the recent ${subclassKey} reference (${lastInvitedPoint}).`, `${subclassKey} icin tarihsel davet verisi, mevcut puanin (${userPoints}) yakin donem referansinin (${lastInvitedPoint}) 10 puandan fazla altinda oldugunu gostermektedir.`, `历史邀请数据表明，当前分数（${userPoints}）较近期 ${subclassKey} 参考分（${lastInvitedPoint}）低超过 10 分。`));
       } else if (frictionScore === "LOW") {
-        reality.push(t3(locale, `You are currently at or above the recent ${subclassKey} invitation reference (${lastInvitedPoint}).`, `Puaniniz su anda ${subclassKey} son davet referansina esit veya ustundedir (${lastInvitedPoint}).`, `你当前分数已达到或超过最近 ${subclassKey} 邀请参考分（${lastInvitedPoint}）。`));
+        reality.push(t3(locale, `Historical invitation data indicates the current score (${userPoints}) is at or above the recent ${subclassKey} reference (${lastInvitedPoint}).`, `${subclassKey} icin tarihsel davet verisi, mevcut puanin (${userPoints}) yakin donem referansina esit veya ustunde oldugunu gostermektedir (${lastInvitedPoint}).`, `历史邀请数据表明，当前分数（${userPoints}）已达到或超过近期 ${subclassKey} 参考分（${lastInvitedPoint}）。`));
       } else if (frictionScore === "HIGH") {
-        reality.push(t3(locale, `You are close but still behind recent ${subclassKey} invitation movement (${userPoints} vs ${lastInvitedPoint}).`, `${subclassKey} son davet hareketine yakinsiniz ancak hala geridesiniz (${userPoints} vs ${lastInvitedPoint}).`, `你已接近最近 ${subclassKey} 邀请区间，但仍略低（${userPoints} vs ${lastInvitedPoint}）。`));
+        reality.push(t3(locale, `Historical invitation movement shows the current score is close to, but still below, recent ${subclassKey} references (${userPoints} vs ${lastInvitedPoint}).`, `${subclassKey} icin tarihsel davet hareketi, mevcut puanin yakin donem referanslara yakin ancak hala altinda oldugunu gostermektedir (${userPoints} vs ${lastInvitedPoint}).`, `历史邀请走势显示，当前分数已接近近期 ${subclassKey} 参考区间，但仍略低（${userPoints} vs ${lastInvitedPoint}）。`));
       } else {
-        reality.push(t3(locale, `You are within a manageable range of recent ${subclassKey} invitation movement (${userPoints} vs ${lastInvitedPoint}).`, `${subclassKey} son davet hareketine gore yonetilebilir bir araliktasiniz (${userPoints} vs ${lastInvitedPoint}).`, `你与最近 ${subclassKey} 邀请区间差距可控（${userPoints} vs ${lastInvitedPoint}）。`));
+        reality.push(t3(locale, `Historical invitation movement places the current score within a comparatively narrow range of recent ${subclassKey} references (${userPoints} vs ${lastInvitedPoint}).`, `${subclassKey} icin tarihsel davet hareketi, mevcut puani yakin donem referanslara gore goreli olarak dar bir aralikta konumlandirmaktadir (${userPoints} vs ${lastInvitedPoint}).`, `历史邀请走势表明，当前分数与近期 ${subclassKey} 参考分之间的差距相对可控（${userPoints} vs ${lastInvitedPoint}）。`));
       }
     } else {
       reality.push(t3(locale, `No recent invitation point benchmark was matched for ${subclassKey}; score pressure is estimated from profile-only indicators.`, `${subclassKey} icin guncel davet puan referansi eslesmedi; puan baskisi yalnizca profil gostergelerine gore tahmin edildi.`, `${subclassKey} 未匹配到最新邀请分参考；当前竞争压力基于档案指标估算。`));
@@ -371,7 +371,7 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
 
     if (subclassKey === "189" && ["221111", "261313"].includes(occupation?.anzsco_code ?? "") && userPoints < 90) {
       frictionScore = userPoints < 85 ? "EXTREME" : escalate(frictionScore, "HIGH");
-      reality.push(t3(locale, "This occupation is highly competitive for 189; sub-90 points profiles typically face elevated selection pressure.", "Bu meslek 189 icin oldukca rekabetcidir; 90 alti puan profilleri genellikle yuksek secilim baskisi gorur.", "该职业在 189 路径上竞争激烈；90 分以下档案通常面临更高筛选压力。"));
+      reality.push(t3(locale, "Historical 189 patterns for this occupation show stronger selection pressure on profiles below 90 points.", "Bu meslek icin 189 tarihsel desenleri, 90 alti profillerde daha yuksek secilim baskisina isaret etmektedir.", "该职业在 189 路径的历史模式显示，90 分以下档案通常面临更高筛选压力。"));
     }
   }
 
@@ -397,31 +397,31 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
 
   const english = parseEnglishLevel(input.englishLevel);
   if (english === "Superior") {
-    successSignals.push(t3(locale, "Superior English is a strong competitiveness signal.", "Superior seviye Ingilizce rekabet gucunu artiran guclu bir sinyaldir.", "英语能力达到高级水平，可显著提升技术移民路径的竞争力。"));
+    successSignals.push(t3(locale, "The dataset records a high English-score profile, which improves relative positioning in points-tested comparisons.", "Veri seti, yuksek Ingilizce puanli bir profili kaydetmektedir; bu durum puan testli karsilastirmalarda goreli konumu iyilestirir.", "数据集中记录的是高英语分档案，这会改善打分制比较中的相对位置。"));
   }
   if ((input.offshoreExperienceYears ?? 0) >= 5) {
-    successSignals.push(t3(locale, "Sustained offshore experience strengthens profile depth.", "Surdurulebilir yurtdisi deneyimi profil derinligini guclendirir.", "持续的境外经验可增强档案深度。"));
+    successSignals.push(t3(locale, "Sustained offshore experience increases profile depth within the comparison model.", "Surdurulebilir yurtdisi deneyimi, karsilastirma modeli icinde profil derinligini artirir.", "持续的境外经验会提高比较模型中的档案深度。"));
   }
   if (subclassKey === "491" && input.regionalWilling) {
-    successSignals.push(t3(locale, "Regional intent aligns with nomination incentives.", "Bolgesel niyet, adaylik tesvikleriyle uyumludur.", "偏远地区意向与提名激励机制相匹配。"));
+    successSignals.push(t3(locale, "Regional willingness aligns with a core data variable used in 491 nomination comparisons.", "Bolgesel istek, 491 adaylik karsilastirmalarinda kullanilan temel veri degiskenlerinden biriyle uyumludur.", "偏远地区意向与 491 提名比较中使用的核心数据变量之一相匹配。"));
   }
   if (["190", "491"].includes(subclassKey)) {
-    successSignals.push(t3(locale, "Nomination pathways provide additional score leverage compared with pure independent routes.", "Adaylik yollari, bagimsiz yollara gore ek puan avantaji saglar.", "相较纯独立路径，提名路径可提供额外分数杠杆。"));
+    successSignals.push(t3(locale, "Nomination-linked pathways incorporate additional points-table variables compared with independent routes.", "Adaylik baglantili yollar, bagimsiz yollara gore ek puan tablosu degiskenleri icerir.", "与独立路径相比，提名相关路径会纳入额外的打分变量。"));
   }
 
   if (["189", "190", "491"].includes(subclassKey) && lastInvitedPoint !== undefined && userPoints >= lastInvitedPoint) {
-    successSignals.push(t3(locale, "Your points currently meet or exceed the latest invitation reference for this pathway.", "Puaniniz bu yol icin guncel davet referansina esit veya ustundedir.", "你当前分数已达到或超过该路径最近邀请参考分。"));
+    successSignals.push(t3(locale, "The current score meets or exceeds the latest invitation reference observed for this pathway.", "Mevcut puan, bu yol icin gozlenen en guncel davet referansina esit veya ustundedir.", "当前分数已达到或超过该路径观察到的最近邀请参考分。"));
   }
 
   if (subclassKey === "820/801" || subclassKey === "482") {
-    successSignals.push(t3(locale, "Outcome quality depends strongly on evidence quality, sequence control, and process timing.", "Sonuc kalitesi; kanit kalitesi, surec siralamasi ve zamanlamaya guclu bicimde baglidir.", "结果质量高度依赖证据质量、流程顺序控制与时间节点。"));
+    successSignals.push(t3(locale, "Evidence quality, sequence control, and process timing remain dominant variables in this pathway comparison.", "Kanit kalitesi, surec siralamasi ve zamanlama bu yol karsilastirmasinda baskin degiskenler olarak kalmaktadir.", "证据质量、流程顺序控制与时间节点仍是该路径比较中的主导变量。"));
   }
 
   return {
     pathway: subclassKey,
     frictionScore,
     realityCheck: reality.join(" ") || t3(locale, "No major friction trigger detected from available profile data.", "Mevcut profil verilerine gore belirgin bir surtunme tetikleyicisi tespit edilmedi.", "根据现有档案数据，未检测到显著阻力触发因素。"),
-    successSignals: successSignals.length ? successSignals : [t3(locale, "Profile can improve with stronger evidence completeness and timing discipline.", "Profil; kanit butunlugu ve zamanlama disiplini ile daha da guclenebilir.", "通过增强证据完整性与时间管理，档案仍可进一步优化。")],
+    successSignals: successSignals.length ? successSignals : [t3(locale, "Evidence completeness and timing discipline remain material variables in the baseline comparison.", "Kanit butunlugu ve zamanlama disiplini, temel karsilastirmada onemli degiskenler olarak kalmaktadir.", "证据完整性与时间管理仍是基线比较中的重要变量。")],
   };
 }
 
@@ -896,7 +896,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
     riskIndicators: report.riskIndicators.map((risk) => localizeRiskIndicator(risk, estimatedPoints)),
     frictionAnalysis,
     missingInformation: report.missingInformation.map((item) => localizeText("zh-Hans", item)),
-    disclaimer: "本报告仅包含一般信息，不构成移民建议、法律建议，也不预测签证结果。如需基于个人情况的建议，请咨询注册移民代理或澳大利亚法律执业者。",
+    disclaimer: "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。",
   };
 }
 

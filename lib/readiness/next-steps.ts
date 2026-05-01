@@ -18,69 +18,69 @@ export function buildNextSteps(ctx: NextStepsContext): string[] {
   if (ctx.pathways.length > 0 && ctx.pathways[0].subclass !== "general") {
     steps.push(
       isTr
-        ? "Gösterilen olası yollar için resmi vize bilgilerini incelemeyi değerlendirin."
-        : "Review the official visa information for the possible pathways shown."
+        ? "Sistem, gosterilen olasi yollarin resmi kriterleriyle karsilastirilabilir bir veri zemini oldugunu tespit etti."
+        : "The analysis identified a comparable official-data basis for the possible pathways shown."
     );
   }
 
   if (ctx.hasMissingInfo) {
     steps.push(
       isTr
-        ? "Eksik bilgileri tamamlayın — meslek, İngilizce seviyesi ve sponsorluk ayrıntıları değerlendirmeyi destekleyebilir."
-        : "Prepare missing information — occupation, English level, and sponsorship details can support a more complete review."
+        ? "Eksik veri alanlari, ozellikle meslek, Ingilizce seviyesi ve sponsorluk baglami, karsilastirmali sinyal kalitesini sinirlamaktadir."
+        : "Missing data fields, especially occupation, English level, and sponsorship context, are limiting comparative signal quality."
     );
   }
 
   if (ctx.hasSkilledPathway && !ctx.hasOccupation) {
     steps.push(
       isTr
-        ? "Yetenekli yollar için meslek listesi uyumunu araştırmak faydalı bir başlangıç noktası olabilir."
-        : "Reviewing occupation list alignment may be a useful starting point for skilled pathways."
+        ? "Meslek verisi olmadiginda, puan testli yollarda meslek listesi uyumu ve beceri degerlendirmesi sinyalleri olusmamaktadir."
+        : "Without occupation data, occupation-list alignment and skills-assessment signals do not form for points-tested pathways."
     );
   }
 
   if (ctx.hasSkilledPathway && !ctx.hasEnglish) {
     steps.push(
       isTr
-        ? "Yetenekli yollar için İngilizce testi gereksinimleri genellikle göz önünde bulundurulur."
-        : "English test requirements are generally considered for skilled pathways."
+        ? "Ingiltere seviyesi verisi olmadiginda, puan testi ve davet rekabetine iliskin karsilastirma sinyalleri eksik kalir."
+        : "Without English-level data, comparison signals related to points position and invitation competitiveness remain incomplete."
     );
   }
 
   if (ctx.hasSkilledPathway) {
     steps.push(
       isTr
-        ? "Mevcut puan durumunu değerlendirmek için puan hesaplayıcıyı kullanmayı değerlendirin."
-        : "Consider using the points calculator to review the current points position."
+        ? "Puan testli yollarda yas, Ingilizce ve meslek sinyalleri tarihsel davet referanslariyla birlikte okunmaktadir."
+        : "For points-tested pathways, age, English, and occupation signals are being read against historical invitation references."
     );
   }
 
   if (ctx.has482Pathway) {
     steps.push(
       isTr
-        ? "482 vizesi için işveren sponsorluğu bağlamı, değerlendirmeden önce netleştirilmesi gereken önemli bir faktördür."
-        : "Employer sponsorship context is an important factor to clarify before assessing the 482 pathway."
+        ? "482 yolu icin isveren sponsorlugu baglami, rol uyumu ve ucret esikleri ana veri degiskenleri olarak gorunmektedir."
+        : "For the 482 pathway, employer sponsorship context, role alignment, and salary thresholds appear as the main data variables."
     );
   }
 
   if (ctx.hasPartnerPathway) {
     steps.push(
       isTr
-        ? "Partner yolu için ilişki kanıtı kategorilerini gözden geçirmek hazırlık sürecini destekleyebilir."
-        : "Reviewing relationship evidence categories may support preparation for the partner pathway."
+        ? "Partner yolunda iliski kaniti kategorileri ve sponsorluk baglami, karsilastirmali guc degerlendirmesini belirleyen temel veri setleridir."
+        : "For the partner pathway, relationship-evidence categories and sponsorship context are core datasets shaping the comparative strength assessment."
     );
   }
 
   steps.push(
     isTr
-      ? "Yol değerlendirmesi yapmadan önce ilgili belge kategorilerinin hazırlanması genellikle dikkate alınabilir bir ilk adımdır."
-      : "Preparing relevant document categories is generally considered a useful step before a detailed pathway assessment."
+      ? "Belge kategorilerinin tamlik ve tutarlilik duzeyi, rapordaki sinyal gucunu dogrudan etkileyen bir veri kalitesi unsurudur."
+      : "Completeness and consistency across document categories are data-quality variables that directly affect signal strength in the report."
   );
 
   steps.push(
     isTr
-      ? "Kişisel duruma göre değişen tavsiye için kayıtlı bir göç danışmanı ile görüşmeyi değerlendirin."
-      : "Consider speaking with a registered migration agent for advice that depends on individual circumstances."
+      ? "Kisisel strateji, resmi basvuru ve taktik planlama konulari bu raporun kapsami disindadir; bu alanlar icin kayitli bir MARA uzmani gerekir."
+      : "Personal strategy, formal applications, and tactical planning sit outside this report's scope; those areas require a registered MARA professional."
   );
 
   return steps;

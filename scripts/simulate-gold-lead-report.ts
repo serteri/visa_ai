@@ -3,6 +3,8 @@ import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import { calculateVisaPoints } from "@/lib/readiness/visa-points-calculator";
 import { getCostBreakdown } from "@/src/lib/financial-engine";
 import type { ReadinessInput } from "@/lib/readiness/types";
+import { writeFile } from "node:fs/promises";
+import path from "node:path";
 
 const goldLeadInput: ReadinessInput = {
   locale: "en",
@@ -26,7 +28,23 @@ const goldLeadInput: ReadinessInput = {
 };
 
 async function run() {
-const readiness = runReadinessEngine(goldLeadInput);
+const englishInput: ReadinessInput = {
+  ...goldLeadInput,
+  locale: "en",
+};
+
+const turkishInput: ReadinessInput = {
+  ...goldLeadInput,
+  locale: "tr",
+  mainGoal: "Yazilim Muhendisi olarak Skilled Nominated (190) yolu",
+  currentCountry: "Turkiye",
+  passportCountry: "Turkiye",
+  sponsorOrFamily: "Evli, esin Ingilizcesi yeterli ancak skills assessment yok",
+  biggestConcern: "Davet puani rekabeti ve zamanlama",
+};
+
+const readiness = runReadinessEngine(englishInput);
+const readinessTr = runReadinessEngine(turkishInput);
 
 const points = calculateVisaPoints({
   ageRange: "25_32",
@@ -86,24 +104,28 @@ readiness.financialRoadmap = financial.categorizedBreakdown.map((item) => ({
 }));
 
 readiness.disclaimer =
-  "This report is structured data analysis for planning context only and not migration advice. Official fees and invitation dynamics may change by legislative instrument.";
+  "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).";
 
-console.log("=== GOLD LEAD SUMMARY ===");
+readinessTr.disclaimer =
+  "Bu rapor otomatik bir veri analizidir ve gocmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin.";
+
+console.log("=== GOLD LEAD SUMMARY (EN/TR PDF TEST) ===");
 console.log(JSON.stringify({
   candidate: "Ahmet Yilmaz",
   visaTarget: "190",
   points,
   financial,
   documentChecklist: readiness.documentChecklist,
-  actionPlan: readiness.suggestedNextSteps,
+  gapAnalysis: readiness.suggestedNextSteps,
   frictionAnalysis: readiness.frictionAnalysis,
   premiumSections: readiness.premiumSections,
 }, null, 2));
 
-// Trigger PDF generation
-await generateReadinessPDF({
+// Trigger EN PDF generation
+const englishPdf = await generateReadinessPDF({
   report: readiness,
   locale: "en",
+  saveToFile: false,
   userInputSummary: {
     name: "Ahmet Yilmaz",
     email: "ahmet.yilmaz@example.com",
@@ -117,8 +139,29 @@ await generateReadinessPDF({
     biggestConcern: goldLeadInput.biggestConcern,
   },
 });
+await writeFile(path.join(process.cwd(), `visa-readiness-report-${new Date().toISOString().split("T")[0]}.pdf`), englishPdf);
 
-console.log("PDF generation invoked. Check project root for visa-readiness-report-<date>.pdf");
+// Trigger TR PDF generation
+const turkishPdf = await generateReadinessPDF({
+  report: readinessTr,
+  locale: "tr",
+  saveToFile: false,
+  userInputSummary: {
+    name: "Ahmet Yilmaz",
+    email: "ahmet.yilmaz@example.com",
+    mainGoal: turkishInput.mainGoal,
+    currentCountry: turkishInput.currentCountry,
+    passportCountry: turkishInput.passportCountry,
+    age: turkishInput.age,
+    occupation: "Yazilim Muhendisi (261313)",
+    englishLevel: "PTE 79+ (Superior)",
+    sponsorOrFamily: "Evli, esin Ingilizcesi yeterli (skills assessment yok)",
+    biggestConcern: turkishInput.biggestConcern,
+  },
+});
+await writeFile(path.join(process.cwd(), `vize-hazırlık-raporu-${new Date().toISOString().split("T")[0]}.pdf`), turkishPdf);
+
+console.log("PDF generation completed. Check project root for visa-readiness-report-<date>.pdf and vize-hazırlık-raporu-<date>.pdf");
 }
 
 run().catch((error) => {

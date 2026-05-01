@@ -170,27 +170,27 @@ function buildGanttByTimeline(timeline?: string): GanttSection {
       steps: [
         {
           step: 1,
-          title: "English Test Preparation + Exam",
+          title: "English Test Signal Window",
           window: "Weeks 1-6",
-          description: "Complete exam booking, target score cycle, and score release planning.",
+          description: "This period typically captures exam booking, score-cycle timing, and English-result availability as model inputs.",
         },
         {
           step: 2,
-          title: "Skills Assessment Evidence Pack",
+          title: "Skills Assessment Evidence Window",
           window: "Weeks 4-10",
-          description: "Finalize authority-ready references, duties mapping, and qualification documents.",
+          description: "This period usually concentrates reference structure, duties mapping, and qualification documents into the assessment dataset.",
         },
         {
           step: 3,
-          title: "EOI Submission + State Interest",
+          title: "EOI and State-Interest Window",
           window: "Weeks 8-16",
-          description: "Lodge EOI profile and state pathways aligned to score strategy.",
+          description: "This period typically reflects when EOI variables and state-interest signals begin to interact in the comparison model.",
         },
         {
           step: 4,
-          title: "Visa Lodgement Readiness",
+          title: "Application Readiness Window",
           window: "Weeks 16-24",
-          description: "Prepare health, police, and identity pack for rapid post-invitation lodgement.",
+          description: "This period usually captures health, police, and identity-document completeness as readiness variables.",
         },
       ],
     };
@@ -202,27 +202,27 @@ function buildGanttByTimeline(timeline?: string): GanttSection {
       steps: [
         {
           step: 1,
-          title: "English Uplift Strategy",
+          title: "English Score Development Window",
           window: "Months 1-3",
-          description: "Schedule multiple attempts if needed to reach competitive score bands.",
+          description: "This window often determines whether higher English-score bands enter the points model.",
         },
         {
           step: 2,
-          title: "Skills Assessment + Experience Positioning",
+          title: "Skills Assessment and Experience Window",
           window: "Months 2-5",
-          description: "Sequence assessment submission with experience evidence optimization.",
+          description: "This window typically consolidates assessment timing with work-history evidence depth and classification.",
         },
         {
           step: 3,
-          title: "EOI Optimization + Nomination Track",
+          title: "EOI and Nomination Window",
           window: "Months 4-8",
-          description: "Refine points profile, monitor invitation rounds, and activate nomination options.",
+          description: "This window usually captures EOI signal changes, invitation-round movement, and nomination-linked variables.",
         },
         {
           step: 4,
-          title: "Visa Application Assembly",
+          title: "Application Assembly Window",
           window: "Months 8-12",
-          description: "Complete final compliance pack for efficient invitation-to-lodgement turnaround.",
+          description: "This window generally reflects how quickly the profile can convert into a complete application-ready evidence set.",
         },
       ],
     };
@@ -233,27 +233,27 @@ function buildGanttByTimeline(timeline?: string): GanttSection {
     steps: [
       {
         step: 1,
-        title: "Foundation Phase: English + Documentation",
+        title: "Foundation Window: English and Documentation",
         window: "Quarter 1",
-        description: "Build base profile and document controls for a durable migration pipeline.",
+        description: "This quarter usually establishes the baseline profile and document-control variables used across later comparisons.",
       },
       {
         step: 2,
-        title: "Skills Assessment + Career Evidence",
+        title: "Skills Assessment and Career Evidence Window",
         window: "Quarter 2",
-        description: "Synchronize qualification proof and role scope evidence with authority rules.",
+        description: "This quarter typically aligns qualification proof and role-scope evidence with assessment-authority criteria.",
       },
       {
         step: 3,
-        title: "EOI + Invitation Cycle Monitoring",
+        title: "EOI and Invitation-Cycle Window",
         window: "Quarter 3",
-        description: "Track invitation movement and tune strategy to state and federal demand signals.",
+        description: "This quarter usually captures invitation-cycle movement and state or federal demand signals as comparison inputs.",
       },
       {
         step: 4,
-        title: "Lodgement and Post-Lodgement Controls",
+        title: "Application and Post-Application Window",
         window: "Quarter 4",
-        description: "Execute submission and maintain readiness for any follow-up requests.",
+        description: "This quarter typically reflects submission completeness and response-readiness variables after application lodgement.",
       },
     ],
   };

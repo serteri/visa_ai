@@ -26,9 +26,9 @@ const FONTS = {
 };
 
 const GLOBAL_FOOTER_TEXTS = {
-  en: "Disclaimer: This is an automated data analysis report provided for general information only. It is NOT migration advice. Final outcomes depend on the Department of Home Affairs. Consult a MARA agent for legal strategy.",
-  tr: "Uyari: Bu rapor yalnizca genel bilgi amacli otomatik veri analizidir. Gocmenlik danismanligi degildir. Nihai sonuc Department of Home Affairs degerlendirmesine baglidir. Hukuki strateji icin MARA lisansli uzmana danisin.",
-  "zh-Hans": "免责声明：本报告为自动化数据分析，仅供一般信息参考，并非移民法律建议。最终结果取决于澳大利亚内政部评估。法律策略请咨询持牌 MARA 代理。",
+  en: "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).",
+  tr: "Bu rapor otomatik bir veri analizidir ve gocmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin.",
+  "zh-Hans": "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。",
 } as const;
 
 const PDF_FONT_NAME = "NotoSans";
@@ -100,9 +100,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       keyVisaRequirements: "Ana Vize Gereklilikleri",
       executiveSummary: "Yönetici Özeti",
       riskIndicators: "Risk Göstergeleri",
-      suggestedNextSteps: "Önerilen Sonraki Adımlar",
+      suggestedNextSteps: "Eksik Analizi ve Değerlendirmeler",
       documentLevelSpecificity: "Document-Level Specificity",
-      yourImmediateActionPlan: "Your Immediate Action Plan",
+      yourImmediateActionPlan: "Eksik Analizi ve Değerlendirmeler",
       downloadablePdf: "İndirilebilir PDF",
       factorsAffectingPathways: "Yolları Etkileyebilecek Faktörler",
       missingInformation: "Eksik Bilgiler",
@@ -127,8 +127,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       subject: "Konu",
       reportDate: "Rapor Tarihi",
       reportId: "Rapor ID",
-      coverPurpose: "Genel bilgi amacli otomatik analitik bilgilendirme olarak hazirlanmistir.",
-      coverScope: "Uyum kapsami: genel bilgi; hukuki strateji veya goc tavsiyesi degildir.",
+      coverPurpose: "Bu rapor otomatik bir veri analizidir ve gocmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin.",
+      coverScope: "Bu rapor otomatik bir veri analizidir ve gocmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin.",
       category: "Kategori",
       amount: "Tutar",
       note: "Not",
@@ -180,9 +180,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       keyVisaRequirements: "关键签证要求",
       executiveSummary: "执行摘要",
       riskIndicators: "风险指标",
-      suggestedNextSteps: "建议下一步",
+      suggestedNextSteps: "差距分析与考量",
       documentLevelSpecificity: "文件级具体性",
-      yourImmediateActionPlan: "你的立即行动计划",
+      yourImmediateActionPlan: "差距分析与考量",
       downloadablePdf: "可下载 PDF",
       factorsAffectingPathways: "可能影响路径的因素",
       missingInformation: "缺失信息",
@@ -207,8 +207,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       subject: "对象",
       reportDate: "报告日期",
       reportId: "报告编号",
-      coverPurpose: "本报告为自动化分析简报，仅供一般信息参考。",
-      coverScope: "合规范围：一般信息，不构成法律策略或移民建议。",
+      coverPurpose: "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。",
+      coverScope: "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。",
       category: "类别",
       amount: "金额",
       note: "说明",
@@ -259,9 +259,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     keyVisaRequirements: "Key Visa Requirements",
     executiveSummary: "Executive Summary",
     riskIndicators: "Risk Indicators",
-    suggestedNextSteps: "Suggested Next Steps",
+    suggestedNextSteps: "Gap Analysis & Considerations",
     documentLevelSpecificity: "Document-Level Specificity",
-    yourImmediateActionPlan: "Your Immediate Action Plan",
+    yourImmediateActionPlan: "Gap Analysis & Considerations",
     downloadablePdf: "Downloadable PDF",
     factorsAffectingPathways: "Factors that may affect pathways",
     missingInformation: "Missing Information",
@@ -286,8 +286,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     subject: "Subject",
     reportDate: "Report Date",
     reportId: "Report ID",
-    coverPurpose: "Prepared as an automated analytical briefing for general information purposes.",
-    coverScope: "Compliance scope: general information, no legal strategy or migration advice.",
+    coverPurpose: "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).",
+    coverScope: "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).",
     category: "Category",
     amount: "Amount",
     note: "Note",
@@ -461,8 +461,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
     doc.setFontSize(10);
-    doc.text(safeText(text.coverPurpose), margin, pageHeight - 26);
-    doc.text(safeText(text.coverScope), margin, pageHeight - 20);
+    const coverLines = doc.splitTextToSize(safeText(text.coverPurpose), contentWidth);
+    doc.text(coverLines, margin, pageHeight - 28);
 
     doc.addPage();
     yPosition = 20;
@@ -1071,7 +1071,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       : `visa-readiness-report-${timestamp}.pdf`;
   const pdfBytes = new Uint8Array(doc.output("arraybuffer"));
 
-  // Save PDF
+  // Save PDF in browser environments only. Server-side callers can persist returned bytes explicitly.
   if (typeof window !== "undefined" && input.saveToFile !== false) {
     doc.save(filename);
   }
