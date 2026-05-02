@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 import { LanguageProvider } from "@/contexts/language-context";
 import { Header } from "@/components/header";
@@ -43,12 +44,14 @@ export default async function LocaleLayout({
 
   const translations = await getTranslations(locale as Locale);
   const showAdmin = process.env.SHOW_ADMIN === "true";
+  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
 
   return (
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
       <Header locale={locale} showAdmin={showAdmin} />
       {children}
       <GlobalDisclaimerFooter />
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </LanguageProvider>
   );
 }

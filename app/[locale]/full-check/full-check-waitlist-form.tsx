@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { Download } from "lucide-react";
+import { sendGAEvent } from "@next/third-parties/google";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,9 +14,17 @@ import {
   submitFullCheckWaitlist,
 } from "@/app/[locale]/full-check/actions";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
-import { trackEvent } from "@/lib/analytics";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessReport } from "@/lib/readiness/types";
+
+function trackGaEvent(name: string, params?: Record<string, string | number | boolean | null | undefined>) {
+  if (typeof window === "undefined") return;
+  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
+  if (!gaId) return;
+  if (!Array.isArray((window as { dataLayer?: Object[] }).dataLayer)) return;
+
+  sendGAEvent("event", name, params ?? {});
+}
 
 function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
@@ -223,7 +232,7 @@ export function FullCheckWaitlistForm({
     if (state.status !== "success" || !state.reportId) return;
     if (trackedReportIdRef.current === state.reportId) return;
 
-    trackEvent("report_generated", {
+    trackGaEvent("report_generated", {
       report_id: state.reportId,
       locale,
       source: "full_check_waitlist",

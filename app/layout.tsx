@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Manrope, Noto_Sans } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -24,14 +23,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
-
   return (
     <html className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
       </body>
-      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }

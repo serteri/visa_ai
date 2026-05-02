@@ -2,13 +2,13 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { CheckCircle2, Lock, Mail, Phone, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { sendGAEvent } from "@next/third-parties/google";
 
 import {
   type FullCheckQuickPreview,
   type PremiumUnlockState,
   unlockPremiumReport,
 } from "@/app/[locale]/full-check/actions";
-import { trackEvent } from "@/lib/analytics";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const initialUnlockState: PremiumUnlockState = { status: "idle" };
+
+function trackGaEvent(name: string, params?: Record<string, string | number | boolean | null | undefined>) {
+  if (typeof window === "undefined") return;
+  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
+  if (!gaId) return;
+  if (!Array.isArray((window as { dataLayer?: Object[] }).dataLayer)) return;
+
+  sendGAEvent("event", name, params ?? {});
+}
 
 export function PremiumFeatureGate({
   locale,
@@ -48,7 +57,7 @@ export function PremiumFeatureGate({
   useEffect(() => {
     if (unlockState.status === "success" && unlockState.report) {
       if (trackedUnlockReportIdRef.current !== reportId) {
-        trackEvent("report_unlocked", {
+        trackGaEvent("report_unlocked", {
           report_id: reportId,
           locale,
           source: "unlock_success",
