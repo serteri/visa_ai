@@ -200,16 +200,15 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   return (
     <main className="ambient-bg flex-1 py-12">
       <section className="section-shell space-y-6">
-        <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.5fr_1fr] items-start">
-          {/* Glassmorphism Form Container */}
-          <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/60 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
-            <div className="pointer-events-none absolute -mr-16 -mt-16 right-0 top-0 h-48 w-48 rounded-full bg-violet-500/10 blur-[50px]"></div>
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-12 items-start">
+          {/* Form Container */}
+          <div className="lg:col-span-7 bg-white/60 backdrop-blur-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl p-6 sm:p-8">
             
             <div className="mb-6 space-y-3">
               <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                 {tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告")}
               </h2>
-              <div className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${
+              <div className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${
                 isFreeActive
                   ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                   : "border-primary/20 bg-background/80 text-foreground"
@@ -243,7 +242,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           </div>
 
           {/* Sidebar: What you'll get */}
-          <div className="space-y-6">
+          <div className="space-y-6 lg:col-span-5 lg:sticky lg:top-24">
             <div className="rounded-3xl border border-white/60 bg-white/60 p-6 shadow-xl backdrop-blur-md">
               <h3 className="text-lg font-bold text-foreground">
                 {tx("What you'll get", "Ne alacaksınız?", "你将获得")}

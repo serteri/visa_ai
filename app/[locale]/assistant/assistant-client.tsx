@@ -246,52 +246,13 @@ export function AssistantClient({
   const quickPrompts = isZh ? QUICK_PROMPTS_ZH : isTr ? QUICK_PROMPTS_TR : QUICK_PROMPTS_EN;
 
   return (
-    <main className="flex h-[calc(100vh-4rem)] flex-col bg-slate-50 dark:bg-zinc-950">
-      {/* Top Banner / Mode Switcher */}
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white/80 px-4 py-3 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm">
-            <Bot className="size-5" />
-          </div>
-          <div>
-            <h1 className="text-sm font-bold text-slate-900 dark:text-white">
-              {tx("AI 签证助手", "AI Vize Asistanı", "AI Visa Assistant")}
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {tx("受控信息提供", "Kontrollü Bilgi Sağlayıcı", "Controlled Information Provider")}
-            </p>
-          </div>
-        </div>
-        
-        <div className="flex rounded-lg bg-slate-100 p-1 dark:bg-zinc-900">
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className={`h-8 rounded-md px-3 text-xs transition-all ${mode === "simple" ? "bg-white shadow-sm dark:bg-zinc-800" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-          >
-            <Link href={`/${locale}/assistant`}>
-              {tx("聊天", "Sohbet", "Chat")}
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className={`h-8 rounded-md px-3 text-xs transition-all ${mode === "premium" ? "bg-white shadow-sm dark:bg-zinc-800" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-          >
-            <Link href={`/${locale}/assistant?mode=premium`} className="flex items-center gap-1.5">
-              <Sparkles className="size-3.5" />
-              {tx("深度预览", "Derin İnceleme", "Deep Preview")}
-            </Link>
-          </Button>
-        </div>
-      </div>
+    <main className="flex min-h-screen flex-col bg-slate-50 pt-24 pb-32 dark:bg-zinc-950">
+      
 
       {mode === "simple" ? (
         <div className="relative flex flex-1 flex-col overflow-hidden">
           {/* Chat Messages Area */}
-          <div className="flex-1 overflow-y-auto pb-8 pt-8">
+          <div className="flex-1">
             <div className="mx-auto max-w-3xl px-4 space-y-8">
               {messages.map((message, idx) => (
                 <div key={`${message.role}-${idx}`} className={`flex w-full ${message.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -302,7 +263,7 @@ export function AssistantClient({
                     </div>
                   )}
 
-                  <div className={`group relative max-w-[85%] sm:max-w-[75%] rounded-2xl px-5 py-4 shadow-sm transition-all ${
+                  <div className={`group relative max-w-[85%] sm:max-w-[75%] rounded-xl px-4 py-3 shadow-sm border border-slate-100 transition-all ${
                     message.role === "user" 
                       ? "bg-indigo-600 text-white rounded-br-sm" 
                       : "bg-white border border-slate-100 dark:bg-zinc-900 dark:border-zinc-800 text-slate-800 dark:text-slate-200 rounded-bl-sm"
@@ -388,9 +349,10 @@ export function AssistantClient({
             </div>
           </div>
 
+          
           {/* Fixed Input Area */}
-          <div className="bg-gradient-to-t from-slate-50 via-slate-50 to-transparent pb-6 pt-10 dark:from-zinc-950 dark:via-zinc-950">
-            <div className="mx-auto max-w-3xl px-4">
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4 z-10">
+            <div className="mx-auto">
               {messages.length === 1 && (
                 <div className="mb-4 flex flex-wrap justify-center gap-2">
                   {quickPrompts.map((prompt) => (
@@ -399,7 +361,7 @@ export function AssistantClient({
                       type="button"
                       disabled={sending}
                       onClick={() => void submitMessage(prompt)}
-                      className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-white hover:text-indigo-600 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-slate-300 dark:hover:border-indigo-800 dark:hover:bg-zinc-900"
+                      className="rounded-full border border-gray-200 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm backdrop-blur-md transition-all hover:border-indigo-300 hover:bg-white hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-slate-300"
                     >
                       {prompt}
                     </button>
@@ -407,8 +369,9 @@ export function AssistantClient({
                 </div>
               )}
               
-              <form onSubmit={onSubmit} className="relative flex w-full items-end gap-2">
-                <div className="relative flex-1">
+              <form onSubmit={onSubmit} className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur opacity-10 group-focus-within:opacity-20 transition duration-1000 group-focus-within:duration-200"></div>
+                <div className="relative flex items-center gap-2">
                   <Input
                     value={input}
                     onChange={(event) => setInput(event.target.value)}
@@ -419,13 +382,13 @@ export function AssistantClient({
                         "Ask anything about visas..."
                       )
                     }
-                    className="h-14 w-full rounded-2xl border-slate-200 bg-white pl-5 pr-14 text-base shadow-2xl transition-all focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900"
+                    className="h-12 w-full rounded-xl border-gray-200 bg-white/90 pl-5 pr-12 text-sm shadow-xl backdrop-blur-xl transition-all focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900"
                   />
                   <Button 
                     type="submit" 
-                    size="sm" 
+                    size="sm"
                     disabled={sending || !input.trim()}
-                    className="absolute right-2 top-2 h-10 w-10 rounded-xl bg-indigo-600 text-white shadow-md transition-all hover:scale-105 hover:bg-indigo-700 disabled:opacity-50 disabled:hover:scale-100"
+                    className="absolute right-1.5 h-9 w-9 rounded-lg bg-zinc-900 text-white shadow-md transition-all hover:bg-black disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
                   >
                     <Send className="size-4" />
                   </Button>

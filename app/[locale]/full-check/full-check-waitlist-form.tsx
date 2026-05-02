@@ -344,9 +344,9 @@ export function FullCheckWaitlistForm({
   }
 
   const fieldClassName =
-    "h-12 rounded-xl border-input bg-card px-4 shadow-sm transition-all outline-none focus-visible:border-violet-500 focus-visible:ring-4 focus-visible:ring-violet-500/20";
+    "h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
   const selectClassName =
-    "h-12 w-full rounded-xl border border-input bg-card px-4 text-base shadow-sm transition-all outline-none focus-visible:border-violet-500 focus-visible:ring-4 focus-visible:ring-violet-500/20";
+    "h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
 
   return (
     <div className="space-y-6">
@@ -628,7 +628,7 @@ export function FullCheckWaitlistForm({
           </div>
         )}
 
-        <Button type="submit" className="h-12 w-full rounded-xl text-base font-semibold" disabled={isPending}>
+        <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
           {isPending
             ? txt("Oluşturuluyor...", "Generating...", "生成中...")
             : isFreeActive
