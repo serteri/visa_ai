@@ -11,6 +11,7 @@ export type CreateUserReportInput = {
   leadTier?: string;
   report: ReadinessReport;
   input: ReadinessInput;
+  ipAddress?: string;
 };
 
 export type UnlockMethod = "payment" | "lead_capture" | "beta_free";
@@ -34,9 +35,10 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
         lead_tier,
         payment_status,
         report_json,
-        input_json
+        input_json,
+        ip_address
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,'pending',$8::jsonb,$9::jsonb)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,'pending',$8::jsonb,$9::jsonb,$10)
       RETURNING id
     `,
     input.fullName ?? null,
@@ -47,7 +49,8 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
     input.leadScore ?? null,
     input.leadTier ?? null,
     JSON.stringify(input.report),
-    JSON.stringify(input.input)
+    JSON.stringify(input.input),
+    input.ipAddress ?? null
   );
 
   return { id: row[0].id };

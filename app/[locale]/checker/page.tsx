@@ -217,9 +217,9 @@ export default function CheckerPage() {
     quickButton: tx("Start quick check", "Hızlı kontrolü başlat", "开始快速评估"),
     fullTitle: tx("Full Visa Readiness Report", "Tam Vize Hazırlık Raporu", "完整签证准备度报告"),
     fullLabel: tx(
-      "Early access · Free during early access",
-      "Erken erişim · Erken erişimde ücretsiz",
-      "抢先体验 · 当前免费"
+      "🎁 Free for the first 500 users",
+      "🎁 İlk 500 kullanıcıya ücretsiz",
+      "🎁 前500名用户免费"
     ),
     fullDescription: tx(
       "Generate a structured report with pathway comparison, evidence readiness, points scenarios where relevant, financial roadmap, progression pathways, and PDF download.",
@@ -229,9 +229,9 @@ export default function CheckerPage() {
     fullBestFor: tx("deeper preparation review", "daha derin hazırlık incelemesi", "深度准备评估"),
     fullButton: tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告"),
     fullTrustNote: tx(
-      "No payment required during early access.",
-      "Erken erişim döneminde ödeme gerekmez.",
-      "抢先体验期间无需付费。"
+      "$29 Comprehensive Report – FREE during the limited early access period.",
+      "$29 Kapsamlı Rapor – Sınırlı erken erişim döneminde ÜCRETSİZ.",
+      "$29 综合报告 – 限时抢先体验期间免费。"
     ),
     bestFor: tx("Best for:", "En uygun:", "最适合："),
     compliance: tx(

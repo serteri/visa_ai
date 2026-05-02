@@ -9,22 +9,23 @@ datasource db {
 
 model UserReport {
   id             String   @id @default(uuid())
-  fullName       String?
+  fullName       String?  @map("full_name")
   email          String
   phone          String?
-  preferredPath  String?
+  ipAddress      String?  @map("ip_address")
+  preferredPath  String?  @map("preferred_path")
   source         String   @default("full_check")
   locale         String   @default("en")
-  leadScore      Int?
-  leadTier       String?
-  paymentStatus  String   @default("pending")
-  unlockMethod   String?
-  isUnlocked     Boolean  @default(false)
-  pdfSent        Boolean  @default(false)
-  reportJson     Json
-  inputJson      Json
-  createdAt      DateTime @default(now())
-  unlockedAt     DateTime?
+  leadScore      Int?     @map("lead_score")
+  leadTier       String?  @map("lead_tier")
+  paymentStatus  String   @default("pending") @map("payment_status")
+  unlockMethod   String?  @map("unlock_method")
+  isUnlocked     Boolean  @default(false) @map("is_unlocked")
+  pdfSent        Boolean  @default(false) @map("pdf_sent")
+  reportJson     Json     @map("report_json")
+  inputJson      Json     @map("input_json")
+  createdAt      DateTime @default(now()) @map("created_at")
+  unlockedAt     DateTime? @map("unlocked_at")
 
   @@map("user_reports")
 }

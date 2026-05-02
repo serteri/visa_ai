@@ -140,6 +140,8 @@ function LockedSection({ title, isTr, isZh }: { title: string; isTr: boolean; is
 export function FullCheckWaitlistForm({
   locale,
   initialValues = {},
+  isFreeActive = true,
+  remainingSpots = 0,
 }: {
   locale: string;
   initialValues?: {
@@ -148,6 +150,8 @@ export function FullCheckWaitlistForm({
     mainGoal?: string;
     source?: string;
   };
+  isFreeActive?: boolean;
+  remainingSpots?: number;
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -591,10 +595,39 @@ export function FullCheckWaitlistForm({
           </p>
         )}
 
+        {isFreeActive && remainingSpots > 0 && (
+          <div className="rounded-xl border border-amber-300/60 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-3 text-center space-y-1">
+            <p className="text-sm font-bold text-amber-900">
+              {txt(
+                `Ücretsiz rapor için yalnızca ${remainingSpots} kontenjan kaldı!`,
+                `Only ${remainingSpots} spots left for the free report!`,
+                `免费报告仅剩 ${remainingSpots} 个名额！`
+              )}
+            </p>
+            <p className="text-xs text-amber-700">
+              {txt(
+                "Kontenjan dolduğunda rapor $29 olacak.",
+                "Report will be $29 once spots run out.",
+                "名额用完后报告将收费 $29。"
+              )}
+            </p>
+          </div>
+        )}
+
         <Button type="submit" className="h-12 w-full rounded-xl text-base font-semibold" disabled={isPending}>
           {isPending
             ? txt("Oluşturuluyor...", "Generating...", "生成中...")
-            : txt("Hazırlık raporunuzu oluşturun", "Generate your readiness report", "生成准备度报告")}
+            : isFreeActive
+              ? txt(
+                  "Ücretsiz hazırlık raporunuzu oluşturun",
+                  "Generate your FREE readiness report",
+                  "生成免费准备度报告"
+                )
+              : txt(
+                  "Hazırlık raporunuzu oluşturun ($29)",
+                  "Generate your readiness report ($29)",
+                  "生成准备度报告 ($29)"
+                )}
         </Button>
       </form>
 
@@ -605,6 +638,8 @@ export function FullCheckWaitlistForm({
           preview={state.preview}
           defaultEmail={state.userInput?.email}
           defaultName={state.userInput?.name}
+          isFreeActive={isFreeActive}
+          remainingSpots={remainingSpots}
           onUnlocked={({ report: unlocked, email, name }) => {
             setUnlockedReportState({
               reportId: state.reportId,

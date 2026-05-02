@@ -33,6 +33,8 @@ export function PremiumFeatureGate({
   preview,
   defaultEmail,
   defaultName,
+  isFreeActive = true,
+  remainingSpots = 0,
   onUnlocked,
 }: {
   locale: string;
@@ -40,13 +42,16 @@ export function PremiumFeatureGate({
   preview: FullCheckQuickPreview;
   defaultEmail?: string;
   defaultName?: string;
+  isFreeActive?: boolean;
+  remainingSpots?: number;
   onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string }) => void;
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const [showModal, setShowModal] = useState(false);
-  const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">("lead_capture");
-  const isFreeBeta = process.env.NEXT_PUBLIC_IS_FREE_BETA === "true";
+  const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">(
+    isFreeActive ? "lead_capture" : "payment"
+  );
   const trackedUnlockReportIdRef = useRef<string | null>(null);
 
   const [unlockState, unlockAction, unlockPending] = useActionState(
@@ -71,6 +76,15 @@ export function PremiumFeatureGate({
         email: unlockState.userInput?.email,
         name: unlockState.userInput?.name,
       });
+    }
+
+    // Handle Stripe redirect
+    if (
+      unlockState.status === "error" &&
+      unlockState.message?.startsWith("STRIPE_REDIRECT:")
+    ) {
+      const url = unlockState.message.replace("STRIPE_REDIRECT:", "");
+      window.location.href = url;
     }
   }, [locale, onUnlocked, reportId, unlockState]);
 
@@ -149,18 +163,36 @@ export function PremiumFeatureGate({
             </p>
 
             <div className="mt-4 rounded-xl border border-border/70 bg-background/70 p-3">
-              {isFreeBeta ? (
-                <div className="flex items-center justify-between">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    {isTr ? "Beta Access" : isZh ? "Beta Access" : "Beta Access"}
-                  </p>
-                  <p className="text-lg font-bold text-emerald-600">
-                    {isTr ? "Ücretsiz" : isZh ? "Free" : "Free"}
-                  </p>
+              {isFreeActive ? (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      {isTr ? "Exclusive Early Access" : isZh ? "Exclusive Early Access" : "Exclusive Early Access"}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm text-muted-foreground line-through">$29</p>
+                      <p className="text-lg font-bold text-emerald-600">
+                        {isTr ? "Ücretsiz" : isZh ? "Free" : "Free"}
+                      </p>
+                    </div>
+                  </div>
+                  {remainingSpots > 0 && (
+                    <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
+                      <p className="text-xs font-semibold text-amber-800 text-center">
+                        {isTr
+                          ? `🔥 Yalnızca ${remainingSpots} ücretsiz kontenjan kaldı!`
+                          : isZh
+                            ? `🔥 仅剩 ${remainingSpots} 个免费名额！`
+                            : `🔥 Only ${remainingSpots} free spots remaining!`}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex items-end justify-between gap-3">
-                  <p className="text-sm text-muted-foreground line-through">$29.00</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {isTr ? "Premium Report" : isZh ? "Premium Report" : "Premium Report"}
+                  </p>
                   <p className="text-lg font-bold text-primary">$29.00</p>
                 </div>
               )}
@@ -243,19 +275,28 @@ export function PremiumFeatureGate({
 
                 <div className="space-y-2">
                   <Label htmlFor="unlock-method">{isTr ? "Açma yöntemi" : isZh ? "解锁方式" : "Unlock method"}</Label>
-                  <select
-                    id="unlock-method"
-                    name="unlockMethod"
-                    value={unlockMethod}
-                    onChange={(event) => setUnlockMethod(event.target.value === "payment" ? "payment" : "lead_capture")}
-                    className="h-12 w-full rounded-xl border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
-                  >
-                    <option value="lead_capture">{isTr ? "Form ile aç (Lead Capture)" : isZh ? "提交线索表单解锁" : "Unlock with lead capture form"}</option>
-                    <option value="payment">{isTr ? "Ödeme ile aç ($29)" : isZh ? "支付解锁（$29）" : "Unlock with payment ($29)"}</option>
-                  </select>
+                  {isFreeActive ? (
+                    <select
+                      id="unlock-method"
+                      name="unlockMethod"
+                      value={unlockMethod}
+                      onChange={(event) => setUnlockMethod(event.target.value === "payment" ? "payment" : "lead_capture")}
+                      className="h-12 w-full rounded-xl border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                    >
+                      <option value="lead_capture">{isTr ? "Form ile aç (Ücretsiz)" : isZh ? "提交线索表单免费解锁" : "Unlock for FREE (lead capture form)"}</option>
+                      <option value="payment">{isTr ? "Ödeme ile aç ($29)" : isZh ? "支付解锁（$29）" : "Unlock with payment ($29)"}</option>
+                    </select>
+                  ) : (
+                    <>
+                      <input type="hidden" name="unlockMethod" value="payment" />
+                      <div className="h-12 flex items-center rounded-xl border border-primary/30 bg-primary/5 px-3 text-sm font-medium text-primary">
+                        {isTr ? "🔓 Ödeme ile aç ($29)" : isZh ? "🔓 支付解锁 ($29)" : "🔓 Unlock with Payment ($29)"}
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                {unlockState.status === "error" && unlockState.message && (
+                {unlockState.status === "error" && unlockState.message && !unlockState.message.startsWith("STRIPE_REDIRECT:") && (
                   <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
                     {unlockState.message}
                   </p>

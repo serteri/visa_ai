@@ -1,11 +1,13 @@
 "use server";
 
 import { and, eq, gte, sql } from "drizzle-orm";
+import { headers } from "next/headers";
 import Stripe from "stripe";
 import { Resend } from "resend";
 
 import { db } from "@/db";
-import { fullCheckWaitlist } from "@/db/schema";
+import { fullCheckUsage, fullCheckWaitlist } from "@/db/schema";
+import { prisma } from "@/lib/prisma";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import {
   completeFullCheckProgress,
@@ -77,8 +79,36 @@ export type PremiumUnlockState = {
 
 // ─── Feature flags ────────────────────────────────────────────────────────────
 
-function isFreeBeta(): boolean {
-  return process.env.NEXT_PUBLIC_IS_FREE_BETA === "true";
+type FreeBetaStatus = {
+  isFreeActive: boolean;
+  freeReportsUsed: number;
+  freeLimit: number;
+};
+
+async function getFreeBetaStatus(): Promise<FreeBetaStatus> {
+  const rows = await db
+    .select()
+    .from(fullCheckUsage)
+    .where(eq(fullCheckUsage.id, 1))
+    .limit(1);
+
+  const row = rows[0];
+  if (!row) return { isFreeActive: false, freeReportsUsed: 0, freeLimit: 500 };
+
+  const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "500", 10);
+  const used = row.free_reports_used ?? 0;
+  const active = row.is_free_active === true && used < maxFree;
+
+  return { isFreeActive: active, freeReportsUsed: used, freeLimit: maxFree };
+}
+
+async function getClientIp(): Promise<string> {
+  const headersList = await headers();
+  return (
+    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    headersList.get("x-real-ip") ||
+    "unknown"
+  );
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -342,6 +372,49 @@ export async function submitFullCheckWaitlist(
     };
   }
 
+  // ── Anti-Abuse: Email duplicate check ──────────────────────────────────────
+  const existingReport = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
+    `SELECT id FROM user_reports WHERE email = $1 LIMIT 1`,
+    email
+  );
+  if (existingReport.length > 0) {
+    if (analysisProgressId) {
+      await failFullCheckProgress(analysisProgressId, "Duplicate email");
+    }
+    return {
+      status: "error",
+      message: isTr
+        ? "Bu e-posta ile daha önce rapor oluşturulmuş. E-postanızı kontrol edin."
+        : isZh
+          ? "该邮箱已生成过报告，请检查您的邮箱。"
+          : "You have already generated a report. Check your email.",
+    };
+  }
+
+  // ── Anti-Abuse: IP rate limit (1 per 24 hours) ────────────────────────────
+  const clientIp = await getClientIp();
+  if (clientIp !== "unknown") {
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const recentIpReports = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
+      `SELECT id FROM user_reports WHERE ip_address = $1 AND created_at > $2 LIMIT 2`,
+      clientIp,
+      twentyFourHoursAgo
+    );
+    if (recentIpReports.length >= 1) {
+      if (analysisProgressId) {
+        await failFullCheckProgress(analysisProgressId, "IP rate limited");
+      }
+      return {
+        status: "error",
+        message: isTr
+          ? "Bu IP adresinden son 24 saatte rapor oluşturulmuş. Lütfen daha sonra tekrar deneyin."
+          : isZh
+            ? "该IP地址在24小时内已生成报告，请稍后再试。"
+            : "A report has already been generated from this IP address in the last 24 hours. Please try again later.",
+      };
+    }
+  }
+
   const leadQuality = buildLeadQuality({
     locale: resolvedLocale,
     mainGoal,
@@ -359,26 +432,23 @@ export async function submitFullCheckWaitlist(
     biggestConcern: biggestConcern || undefined,
   });
 
+  // ── Dynamic free beta status ──────────────────────────────────────────────
+  const betaStatus = await getFreeBetaStatus();
+
   // ── Atomic usage counter ──────────────────────────────────────────────────
-  // In free beta, always count but never block.
-  // In production, atomically increment only when under limit.
-  if (isFreeBeta()) {
-    await db.execute(sql`
-      UPDATE full_check_usage
-      SET free_reports_used = free_reports_used + 1, updated_at = NOW()
-      WHERE id = 1
-    `);
-  } else {
+  if (betaStatus.isFreeActive) {
+    // Atomically increment only when under limit
     const atomicResult = await db.execute(sql`
       UPDATE full_check_usage
       SET free_reports_used = free_reports_used + 1, updated_at = NOW()
       WHERE id = 1
         AND is_free_active = TRUE
-        AND free_reports_used < free_limit
+        AND free_reports_used < ${betaStatus.freeLimit}
       RETURNING free_reports_used
     `);
 
     if (atomicResult.rows.length === 0) {
+      // Limit just got exhausted between check and update — fall through to payment
       if (analysisProgressId) {
         await failFullCheckProgress(analysisProgressId, "Free access limit reached");
       }
@@ -386,13 +456,28 @@ export async function submitFullCheckWaitlist(
         status: "error",
         error: "Free access limit reached",
         message: isTr
-          ? "Ücretsiz rapor limiti doldu."
+          ? "Ücretsiz rapor limiti doldu. Devam etmek için ödeme yapın."
           : isZh
-            ? "免费报告额度已用完。"
-            : "Free access limit reached.",
+            ? "免费报告额度已用完。请付费继续。"
+            : "Free report limit reached. Please pay to continue.",
         requirePayment: true,
       };
     }
+  } else {
+    // Free beta is exhausted — require payment
+    if (analysisProgressId) {
+      await failFullCheckProgress(analysisProgressId, "Free access limit reached");
+    }
+    return {
+      status: "error",
+      error: "Free access limit reached",
+      message: isTr
+        ? "Ücretsiz rapor limiti doldu. Devam etmek için ödeme yapın."
+        : isZh
+          ? "免费报告额度已用完。请付费继续。"
+          : "Free report limit reached. Please pay to continue.",
+      requirePayment: true,
+    };
   }
 
   const suppressNotifications = await hasRecentSubmission(email, source);
@@ -456,6 +541,7 @@ export async function submitFullCheckWaitlist(
     leadScore: leadQuality.leadScore,
     leadTier: leadQuality.leadTier,
     report: generatedReport,
+    ipAddress: clientIp !== "unknown" ? clientIp : undefined,
     input: {
       locale: resolvedLocale,
       mainGoal,
@@ -554,25 +640,27 @@ export async function unlockPremiumReport(
     return { status: "error", message: "Report could not be found. Please submit the form again." };
   }
 
-  const freeBeta = isFreeBeta();
+  const betaStatus = await getFreeBetaStatus();
+  const freeBeta = betaStatus.isFreeActive;
 
-  // ── Stripe gate (only active when IS_FREE_BETA = false) ───────────────────
-  if (!freeBeta && unlockMethod === "payment") {
-    try {
-      const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
-      const { url } = await createStripeCheckoutSession({ reportId, email, locale });
-      // Return the checkout URL so the client can redirect.
-      // The client reads this via the success_url webhook after payment.
-      return {
-        status: "error",
-        message: `STRIPE_REDIRECT:${url}`,
-      };
-    } catch (err) {
-      console.error("Stripe session creation failed:", err);
-      return {
-        status: "error",
-        message: "Payment processing is temporarily unavailable. Please use the lead capture option.",
-      };
+  // ── Stripe gate ───────────────────────────────────────────────────────────
+  // Active when free limit is exhausted OR user explicitly chooses payment
+  if (!freeBeta || unlockMethod === "payment") {
+    if (unlockMethod === "payment" || !freeBeta) {
+      try {
+        const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
+        const { url } = await createStripeCheckoutSession({ reportId, email, locale });
+        return {
+          status: "error",
+          message: `STRIPE_REDIRECT:${url}`,
+        };
+      } catch (err) {
+        console.error("Stripe session creation failed:", err);
+        return {
+          status: "error",
+          message: "Payment processing is temporarily unavailable. Please try again later.",
+        };
+      }
     }
   }
 

@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { eq } from "drizzle-orm";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { db } from "@/db";
+import { fullCheckUsage } from "@/db/schema";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 
 type ComparisonRow = {
@@ -177,13 +180,34 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const comparisonRows = getComparisonRows(locale);
   const reportCards = getReportCards(locale);
 
+  // ── Fetch remaining free spots from DB ─────────────────────────────────────
+  let remainingSpots = 0;
+  let isFreeActive = false;
+  try {
+    const usageRows = await db
+      .select()
+      .from(fullCheckUsage)
+      .where(eq(fullCheckUsage.id, 1))
+      .limit(1);
+    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "500", 10);
+    const used = usageRows[0]?.free_reports_used ?? 0;
+    remainingSpots = Math.max(0, maxFree - used);
+    isFreeActive = remainingSpots > 0;
+  } catch {
+    // Fail gracefully
+  }
+
   return (
     <main className="ambient-bg flex-1 py-12">
       <section className="section-shell space-y-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr] lg:items-start">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">{tx("Early access", "Erken erişim", "抢先体验")}</Badge>
+              <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-amber-300">
+                {isFreeActive
+                  ? tx("🎁 Free for 500 Users", "🎁 500 Kullanıcıya Ücretsiz", "🎁 前500名用户免费")
+                  : tx("💎 Premium Report", "💎 Premium Rapor", "💎 高级报告")}
+              </Badge>
               <Badge variant="outline">{tx("Structured report", "Yapılandırılmış rapor", "结构化报告")}</Badge>
             </div>
             <h1 className="text-3xl font-bold sm:text-4xl">
@@ -203,13 +227,34 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                 "本报告是基于您提供信息的结构化信息报告。"
               )}
             </p>
-            <p className="max-w-3xl rounded-md border border-primary/20 bg-card px-4 py-3 text-sm text-muted-foreground">
-              {tx(
-                "Early access · No payment required during early access.",
-                "Erken erişim · Erken erişimde ödeme gerekmez.",
-                "抢先体验 · 抢先体验期间无需付费。"
-              )}
-            </p>
+            {isFreeActive ? (
+              <div className="max-w-3xl rounded-xl border border-emerald-300/60 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 space-y-1">
+                <p className="text-sm font-semibold text-emerald-800">
+                  {tx(
+                    "🔥 Exclusive Early Access: $29 Comprehensive Report – FREE for the first 500 users.",
+                    "🔥 Özel Erken Erişim: $29 Kapsamlı Rapor – İlk 500 kullanıcıya ÜCRETSİZ.",
+                    "🔥 独家抢先体验：$29 综合报告 – 前500名用户免费。"
+                  )}
+                </p>
+                <p className="text-xs font-medium text-emerald-700">
+                  {tx(
+                    `Only ${remainingSpots} spots left for the free report.`,
+                    `Ücretsiz rapor için yalnızca ${remainingSpots} kontenjan kaldı.`,
+                    `免费报告仅剩 ${remainingSpots} 个名额。`
+                  )}
+                </p>
+              </div>
+            ) : (
+              <div className="max-w-3xl rounded-xl border border-primary/30 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 space-y-1">
+                <p className="text-sm font-semibold text-foreground">
+                  {tx(
+                    "Free access has ended. Unlock your report for $29.",
+                    "Ücretsiz erişim sona erdi. Raporunuzu $29 ile açın.",
+                    "免费名额已满。解锁报告仅需 $29。"
+                  )}
+                </p>
+              </div>
+            )}
           </div>
 
           <Card className="border-primary/40 bg-primary/5">
@@ -219,12 +264,23 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
-                {tx(
-                  "Early access · No payment required.",
-                  "Erken erişim · Ödeme gerekmez.",
-                  "抢先体验 · 无需付费。"
-                )}
+              <div className={`rounded-md border px-3 py-2 text-sm font-medium ${
+                isFreeActive
+                  ? "border-emerald-300/60 bg-emerald-50/80 text-emerald-800"
+                  : "border-primary/20 bg-background/80 text-foreground"
+              }`}>
+                {isFreeActive
+                  ? tx(
+                      `🔥 Limited Offer: $29 Report — FREE for the first 500 users. Only ${remainingSpots} spots left!`,
+                      `🔥 Sınırlı Teklif: $29 Rapor — İlk 500 kullanıcıya ÜCRETSİZ. Yalnızca ${remainingSpots} kontenjan kaldı!`,
+                      `🔥 限时优惠：$29 报告 — 前500名用户免费。仅剩 ${remainingSpots} 个名额！`
+                    )
+                  : tx(
+                      "Premium Report — $29 per report.",
+                      "Premium Rapor — Rapor başına $29.",
+                      "高级报告 — 每份报告 $29。"
+                    )
+                }
               </div>
               <div className="space-y-1 text-sm text-muted-foreground">
                 <p className="font-medium text-foreground">
@@ -277,7 +333,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                     : `Details from the ${cameFromResults ? "quick check results" : "readiness review"} were added where possible. Fields can be edited before submitting.`}
                 </p>
               )}
-              <FullCheckWaitlistForm locale={locale} initialValues={initialValues} />
+              <FullCheckWaitlistForm locale={locale} initialValues={initialValues} isFreeActive={isFreeActive} remainingSpots={remainingSpots} />
             </CardContent>
           </Card>
         </div>
