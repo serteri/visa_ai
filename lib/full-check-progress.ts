@@ -1,4 +1,5 @@
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
 type AnalysisMilestone =
@@ -15,7 +16,9 @@ type ProgressSnapshot = {
   updatedAt: number;
 };
 
-const progressDir = path.join(process.cwd(), ".next", "cache", "full-check-progress");
+// Use OS temp directory instead of .next/cache — Vercel serverless has a read-only filesystem
+// except for /tmp. os.tmpdir() resolves to /tmp on Linux (Vercel) and the correct temp path on other OS.
+const progressDir = path.join(tmpdir(), "full-check-progress");
 
 const STALE_AFTER_MS = 10 * 60 * 1000;
 
