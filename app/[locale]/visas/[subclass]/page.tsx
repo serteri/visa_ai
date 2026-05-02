@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { eq } from "drizzle-orm";
 import { ShieldCheck } from "lucide-react";
 
@@ -1107,6 +1108,69 @@ function PathwaySection({ data, locale = "en" }: { data: unknown; locale?: strin
 type PageProps = {
   params: Promise<{ locale: string; subclass: string }>;
 };
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale, subclass } = await params;
+  const siteUrl = new URL(BASE_URL);
+
+  try {
+    const result = await getVisaDetails(subclass, locale);
+    const visaName = result?.visa?.visa_name ?? `Visa ${subclass}`;
+    const normalizedSubclass = result?.visa?.subclass ?? subclass;
+    const title = `${visaName} ${normalizedSubclass} Eligibility Check`;
+    const description =
+      locale === "tr"
+        ? `${visaName} ${normalizedSubclass} icin uygunluk, temel gereklilikler ve risk gorunumu.`
+        : locale === "zh-Hans"
+          ? `${visaName} ${normalizedSubclass} 的资格条件、关键要求与风险概览。`
+          : `Eligibility, key requirements, and risk snapshot for ${visaName} ${normalizedSubclass}.`;
+
+    return {
+      metadataBase: siteUrl,
+      title,
+      description,
+      alternates: {
+        canonical: `/${locale}/visas/${subclass}`,
+        languages: {
+          en: `/en/visas/${subclass}`,
+          tr: `/tr/visas/${subclass}`,
+          "zh-Hans": `/zh-Hans/visas/${subclass}`,
+        },
+      },
+      openGraph: {
+        title,
+        description,
+        type: "article",
+        url: `/${locale}/visas/${subclass}`,
+        images: [
+          {
+            url: "/og/default-og.png",
+            width: 1200,
+            height: 630,
+            alt: `${visaName} ${normalizedSubclass}`,
+          },
+        ],
+      },
+    };
+  } catch {
+    const fallbackTitle = `Visa ${subclass} Eligibility Check`;
+    return {
+      metadataBase: siteUrl,
+      title: fallbackTitle,
+      description: "Structured visa eligibility and requirement overview.",
+      alternates: {
+        canonical: `/${locale}/visas/${subclass}`,
+        languages: {
+          en: `/en/visas/${subclass}`,
+          tr: `/tr/visas/${subclass}`,
+          "zh-Hans": `/zh-Hans/visas/${subclass}`,
+        },
+      },
+    };
+  }
+}
 
 export default async function VisaDetailsPage({ params }: PageProps) {
   const { locale, subclass } = await params;

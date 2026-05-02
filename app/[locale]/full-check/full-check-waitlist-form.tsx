@@ -191,20 +191,24 @@ export function FullCheckWaitlistForm({
   };
 
   useEffect(() => {
-    if (!isPending) {
-      setAnalysisStepIndex(0);
-      if (wasPendingRef.current) {
-        setAnalysisProgressId(
-          typeof crypto !== "undefined" && "randomUUID" in crypto
-            ? crypto.randomUUID()
-            : `progress-${Date.now()}`
-        );
-      }
-      wasPendingRef.current = false;
+    if (isPending) {
+      wasPendingRef.current = true;
       return;
     }
 
-    wasPendingRef.current = true;
+    if (!wasPendingRef.current) return;
+
+    wasPendingRef.current = false;
+    setAnalysisStepIndex(0);
+    setAnalysisProgressId(
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `progress-${Date.now()}`
+    );
+  }, [isPending]);
+
+  useEffect(() => {
+    if (!isPending) return;
 
     let cancelled = false;
     const intervalId = window.setInterval(async () => {
