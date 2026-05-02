@@ -36,8 +36,8 @@ export function Header({
   const getReportLabel = isTr ? "Ücretsiz Rapor Al" : isZh ? "获取免费报告" : "Get Free Report";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/70 backdrop-blur-md dark:border-white/10 dark:bg-black/50">
-      <nav className="section-shell flex h-16 items-center justify-between">
+    <header className="fixed left-1/2 top-4 z-50 w-[95%] max-w-6xl -translate-x-1/2 rounded-full border border-white/20 bg-white/70 px-4 py-2 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/70 md:px-6">
+      <nav className="flex h-12 items-center justify-between">
         <Link href={`/${locale}`} className="text-xl font-extrabold tracking-tight text-indigo-900 dark:text-white">
           Logi<span className="text-violet-600">Visa</span>
         </Link>
@@ -127,7 +127,7 @@ export function Header({
 
       {/* Mobile Navigation Panel */}
       {isMobileMenuOpen && (
-        <div className="absolute left-0 top-full w-full border-b border-white/20 bg-white/95 px-6 py-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/95 md:hidden">
+        <div className="absolute left-0 top-[calc(100%+0.5rem)] w-full rounded-3xl border border-white/20 bg-white/95 px-6 py-4 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/95 md:hidden">
           <div className="flex flex-col space-y-4">
             <div className="space-y-1">
               <p className="px-2 text-xs font-semibold uppercase text-slate-400">{visasLabel}</p>

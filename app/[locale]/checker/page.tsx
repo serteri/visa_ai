@@ -131,10 +131,14 @@ function validateStep(
 
 // Shared select class
 const selectCls =
-  "h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
+  "h-14 w-full rounded-xl border border-border bg-card px-4 text-base shadow-sm outline-none transition-all focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-500/20";
 const selectErrorCls =
-  "h-10 w-full rounded-md border border-destructive bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
+  "h-14 w-full rounded-xl border border-destructive bg-card px-4 text-base shadow-sm outline-none transition-all focus-visible:border-destructive focus-visible:ring-4 focus-visible:ring-destructive/20";
 
+const getInputCls = (isErr: boolean) => 
+  `h-14 w-full rounded-xl border bg-card px-4 text-base shadow-sm outline-none transition-all focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-500/20 ${
+    isErr ? "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20" : "border-border"
+  }`;
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
   return <p className="text-xs text-destructive">{msg}</p>;
@@ -337,7 +341,7 @@ export default function CheckerPage() {
                     value={formData.countryOfPassport}
                     onChange={(e) => updateField("countryOfPassport", e.target.value)}
                     placeholder={tx("e.g. India", "Örn. Türkiye", "例如：印度")}
-                    className={err.countryOfPassport ? "border-destructive" : ""}
+                    className={getInputCls(!!err.countryOfPassport)}
                   />
                   <FieldError msg={err.countryOfPassport} />
                 </div>
@@ -351,7 +355,7 @@ export default function CheckerPage() {
                     value={formData.currentCountryOfResidence}
                     onChange={(e) => updateField("currentCountryOfResidence", e.target.value)}
                     placeholder={tx("e.g. UAE", "Örn. BAE", "例如：阿联酋")}
-                    className={err.currentCountryOfResidence ? "border-destructive" : ""}
+                    className={getInputCls(!!err.currentCountryOfResidence)}
                   />
                   <FieldError msg={err.currentCountryOfResidence} />
                 </div>
@@ -368,7 +372,7 @@ export default function CheckerPage() {
                     value={formData.age}
                     onChange={(e) => updateField("age", e.target.value)}
                     placeholder={tx("e.g. 29", "Örn. 29", "例如：29")}
-                    className={err.age ? "border-destructive" : ""}
+                    className={getInputCls(!!err.age)}
                   />
                   <FieldError msg={err.age} />
                 </div>
@@ -428,7 +432,7 @@ export default function CheckerPage() {
                     value={formData.highestQualification}
                     onChange={(e) => updateField("highestQualification", e.target.value)}
                     placeholder={tx("e.g. Bachelor's degree", "Örn. Lisans Derecesi", "例如：学士学位")}
-                    className={err.highestQualification ? "border-destructive" : ""}
+                    className={getInputCls(!!err.highestQualification)}
                   />
                   <FieldError msg={err.highestQualification} />
                 </div>
@@ -442,7 +446,7 @@ export default function CheckerPage() {
                     value={formData.occupation}
                     onChange={(e) => updateField("occupation", e.target.value)}
                     placeholder={tx("e.g. Software Engineer", "Örn. Yazılım Mühendisi", "例如：软件工程师")}
-                    className={err.occupation ? "border-destructive" : ""}
+                    className={getInputCls(!!err.occupation)}
                   />
                   <FieldError msg={err.occupation} />
                 </div>
@@ -458,7 +462,7 @@ export default function CheckerPage() {
                     value={formData.yearsOfWorkExperience}
                     onChange={(e) => updateField("yearsOfWorkExperience", e.target.value)}
                     placeholder={tx("e.g. 5", "Örn. 5", "例如：5")}
-                    className={err.yearsOfWorkExperience ? "border-destructive" : ""}
+                    className={getInputCls(!!err.yearsOfWorkExperience)}
                   />
                   <FieldError msg={err.yearsOfWorkExperience} />
                 </div>
@@ -489,7 +493,7 @@ export default function CheckerPage() {
                         value={formData.englishScoreType}
                         onChange={(e) => updateField("englishScoreType", e.target.value)}
                         placeholder={tx("e.g. IELTS, PTE", "Örn. IELTS, PTE", "例如：IELTS, PTE")}
-                        className={err.englishScoreType ? "border-destructive" : ""}
+                        className={getInputCls(!!err.englishScoreType)}
                       />
                       <FieldError msg={err.englishScoreType} />
                     </div>
@@ -502,7 +506,7 @@ export default function CheckerPage() {
                         value={formData.englishScore}
                         onChange={(e) => updateField("englishScore", e.target.value)}
                         placeholder={tx("e.g. 7.0", "Örn. 7.0", "例如：7.0")}
-                        className={err.englishScore ? "border-destructive" : ""}
+                        className={getInputCls(!!err.englishScore)}
                       />
                       <FieldError msg={err.englishScore} />
                     </div>
@@ -541,7 +545,7 @@ export default function CheckerPage() {
                     value={formData.currentVisaType}
                     onChange={(e) => updateField("currentVisaType", e.target.value)}
                     placeholder={tx("e.g. Student 500", "Örn. Öğrenci 500", "例如：500 学生签证")}
-                    className={err.currentVisaType ? "border-destructive" : ""}
+                    className={getInputCls(!!err.currentVisaType)}
                   />
                   <FieldError msg={err.currentVisaType} />
                 </div>
@@ -629,7 +633,7 @@ export default function CheckerPage() {
                     value={formData.timeline}
                     onChange={(e) => updateField("timeline", e.target.value)}
                     placeholder="e.g. Within 6 months"
-                    className={err.timeline ? "border-destructive" : ""}
+                    className={getInputCls(!!err.timeline)}
                   />
                   <FieldError msg={err.timeline} />
                 </div>
@@ -643,7 +647,7 @@ export default function CheckerPage() {
                     value={formData.budgetRange}
                     onChange={(e) => updateField("budgetRange", e.target.value)}
                     placeholder="e.g. AUD 10,000 - 20,000"
-                    className={err.budgetRange ? "border-destructive" : ""}
+                    className={getInputCls(!!err.budgetRange)}
                   />
                   <FieldError msg={err.budgetRange} />
                 </div>
