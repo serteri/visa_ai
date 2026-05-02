@@ -246,7 +246,7 @@ export function AssistantClient({
   const quickPrompts = isZh ? QUICK_PROMPTS_ZH : isTr ? QUICK_PROMPTS_TR : QUICK_PROMPTS_EN;
 
   return (
-    <main className="flex min-h-screen flex-col bg-slate-50 pt-24 pb-32 dark:bg-zinc-950">
+    <main className="flex min-h-screen flex-col bg-slate-50 pt-32 pb-32 dark:bg-zinc-950">
       
 
       {mode === "simple" ? (

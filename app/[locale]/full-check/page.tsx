@@ -198,7 +198,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   }
 
   return (
-    <main className="ambient-bg flex-1 py-12">
+    <main className="flex-1 bg-slate-50 pt-32 pb-12">
       <section className="section-shell space-y-6">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-12 items-start">
           {/* Form Container */}

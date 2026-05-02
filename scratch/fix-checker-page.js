@@ -1,258 +1,12 @@
-"use client";
+const fs = require('fs');
 
-import { useMemo, useState } from "react";
-import Link from "next/link";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+const fileContent = fs.readFileSync('app/[locale]/checker/page.tsx', 'utf8');
 
-import { ComplianceNotice } from "@/components/sections/compliance-notice";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { activeLocales } from "@/lib/i18n/config";
-import { useTranslation } from "@/contexts/language-context";
-import { Bot } from "lucide-react";
+// I will extract everything BEFORE the return statement
+const beforeReturn = fileContent.substring(0, fileContent.indexOf('return ('));
 
-type CheckerFormData = {
-  countryOfPassport: string;
-  currentCountryOfResidence: string;
-  age: string;
-  preferredLanguage: string;
-  goal: string;
-  highestQualification: string;
-  occupation: string;
-  yearsOfWorkExperience: string;
-  englishTestTaken: string;
-  englishScoreType: string;
-  englishScore: string;
-  currentlyInAustralia: string;
-  currentVisaType: string;
-  hasEmployerSponsor: string;
-  hasPartnerOrFamilyInAustralia: string;
-  hasPassport: string;
-  documentsReady: string;
-  timeline: string;
-  budgetRange: string;
-};
-
-type StepErrors = Partial<Record<keyof CheckerFormData, string>>;
-
-const totalSteps = 5;
-
-const initialData: CheckerFormData = {
-  countryOfPassport: "",
-  currentCountryOfResidence: "",
-  age: "",
-  preferredLanguage: "en",
-  goal: "",
-  highestQualification: "",
-  occupation: "",
-  yearsOfWorkExperience: "",
-  englishTestTaken: "no",
-  englishScoreType: "",
-  englishScore: "",
-  currentlyInAustralia: "",
-  currentVisaType: "",
-  hasEmployerSponsor: "",
-  hasPartnerOrFamilyInAustralia: "",
-  hasPassport: "",
-  documentsReady: "",
-  timeline: "",
-  budgetRange: "",
-};
-
-function validateStep(
-  step: number,
-  data: CheckerFormData,
-  tx: (en: string, tr: string, zh: string) => string
-): StepErrors {
-  const errors: StepErrors = {};
-  const reqMsg = tx("This field is required", "Bu alan zorunludur", "此项必填");
-  const ageMsg = tx("Enter a valid age", "Geçerli bir yaş girin", "请输入有效年龄");
-
-  if (step === 1) {
-    if (!data.countryOfPassport.trim())
-      errors.countryOfPassport = reqMsg;
-    if (!data.currentCountryOfResidence.trim())
-      errors.currentCountryOfResidence = reqMsg;
-    if (!data.age.trim()) {
-      errors.age = reqMsg;
-    } else {
-      const ageNum = Number(data.age);
-      if (!Number.isFinite(ageNum) || ageNum <= 0 || ageNum >= 100)
-        errors.age = ageMsg;
-    }
-  }
-
-  if (step === 2) {
-    if (!data.goal) errors.goal = reqMsg;
-  }
-
-  if (step === 3) {
-    if (!data.highestQualification.trim())
-      errors.highestQualification = reqMsg;
-    if (!data.occupation.trim())
-      errors.occupation = reqMsg;
-    if (!data.yearsOfWorkExperience.trim())
-      errors.yearsOfWorkExperience = reqMsg;
-    if (data.englishTestTaken === "yes") {
-      if (!data.englishScoreType.trim())
-        errors.englishScoreType = reqMsg;
-      if (!data.englishScore.trim())
-        errors.englishScore = reqMsg;
-    }
-  }
-
-  if (step === 4) {
-    if (!data.currentlyInAustralia)
-      errors.currentlyInAustralia = reqMsg;
-    if (data.currentlyInAustralia === "yes" && !data.currentVisaType.trim())
-      errors.currentVisaType = reqMsg;
-    if (!data.hasEmployerSponsor)
-      errors.hasEmployerSponsor = reqMsg;
-    if (!data.hasPartnerOrFamilyInAustralia)
-      errors.hasPartnerOrFamilyInAustralia = reqMsg;
-  }
-
-  if (step === 5) {
-    if (!data.hasPassport)
-      errors.hasPassport = reqMsg;
-    if (!data.documentsReady)
-      errors.documentsReady = reqMsg;
-    if (!data.timeline.trim())
-      errors.timeline = reqMsg;
-    if (!data.budgetRange.trim())
-      errors.budgetRange = reqMsg;
-  }
-
-  return errors;
-}
-
-// Shared select class
-const selectCls =
-  "h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm outline-none transition-all focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
-const selectErrorCls =
-  "h-11 w-full rounded-lg border border-destructive bg-white px-3 text-sm shadow-sm outline-none transition-all focus-visible:border-destructive focus-visible:ring-2 focus-visible:ring-destructive/20";
-
-const getInputCls = (isErr: boolean) => 
-  `h-11 w-full rounded-lg border bg-white px-3 text-sm shadow-sm outline-none transition-all focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20 ${
-    isErr ? "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20" : "border-gray-200"
-  }`;
-function FieldError({ msg }: { msg?: string }) {
-  if (!msg) return null;
-  return <p className="text-xs text-destructive">{msg}</p>;
-}
-
-function Req() {
-  return <span className="ml-0.5 text-destructive">*</span>;
-}
-
-export default function CheckerPage() {
-  const router = useRouter();
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const locale = params.locale as string;
-  const { t } = useTranslation();
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<CheckerFormData>(initialData);
-  const [showErrors, setShowErrors] = useState(false);
-  const [showQuickCheck, setShowQuickCheck] = useState(false);
-
-  const progressValue = useMemo(() => (step / totalSteps) * 100, [step]);
-
-  const isTr = locale === "tr";
-  const isZh = locale === "zh-Hans";
-  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
-
-  const stepErrors = useMemo(() => validateStep(step, formData, tx), [step, formData, tx]);
-  const stepIsValid = Object.keys(stepErrors).length === 0;
-
-  const stepTitles = [
-    t("checker.basicProfile"),
-    t("checker.goal"),
-    t("checker.educationWork"),
-    t("checker.australiaSituation"),
-    t("checker.readiness"),
-  ];
-
-  function updateField<K extends keyof CheckerFormData>(
-    key: K,
-    value: CheckerFormData[K]
-  ) {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function goNext() {
-    if (!stepIsValid) {
-      setShowErrors(true);
-      return;
-    }
-
-    setShowErrors(false);
-
-    if (step < totalSteps) {
-      setStep((prev) => prev + 1);
-      return;
-    }
-
-    const query = new URLSearchParams({ goal: formData.goal });
-    if (formData.hasEmployerSponsor)
-      query.set("hasSponsor", formData.hasEmployerSponsor);
-    if (formData.currentlyInAustralia)
-      query.set("inAustralia", formData.currentlyInAustralia);
-    if (formData.englishScore)
-      query.set("englishScore", formData.englishScore);
-
-    router.push(`/${locale}/results?${query.toString()}`);
-  }
-
-  function goBack() {
-    setShowErrors(false);
-    setStep((prev) => Math.max(1, prev - 1));
-  }
-
-  const err = showErrors ? stepErrors : {};
-  const quickCheckVisible = showQuickCheck || searchParams.get("quick") === "1";
-  const choiceCopy = {
-    quickTitle: tx("Quick Pathway Check", "Hızlı Yol Kontrolü", "快速路径评估"),
-    quickLabel: tx("Free · 2 minutes", "Ücretsiz · 2 dakika", "免费 · 2 分钟"),
-    quickDescription: tx(
-      "A short questionnaire that shows possible pathway areas only.",
-      "Yalnızca olası yol alanlarını gösteren kısa bir anket.",
-      "简短问卷，仅显示可能的签证路径方向。"
-    ),
-    quickBestFor: tx("quick orientation", "hızlı yön bulma", "快速定向"),
-    quickButton: tx("Start quick check", "Hızlı kontrolü başlat", "开始快速评估"),
-    fullTitle: tx("Full Visa Readiness Report", "Tam Vize Hazırlık Raporu", "完整签证准备度报告"),
-    fullLabel: tx(
-      "🎁 Free for the first 500 users",
-      "🎁 İlk 500 kullanıcıya ücretsiz",
-      "🎁 前500名用户免费"
-    ),
-    fullDescription: tx(
-      "Generate a structured report with pathway comparison, evidence readiness, points scenarios where relevant, financial roadmap, progression pathways, and PDF download.",
-      "Vize yolu karşılaştırması, kanıt hazırlığı, ilgili olduğunda puan senaryoları, tahmini maliyet yol haritası, geçiş yolları ve PDF indirme içeren yapılandırılmış bir rapor oluşturun.",
-      "生成包含路径对比、材料准备度、相关加分场景、费用路线图、过渡路径及 PDF 下载的结构化报告。"
-    ),
-    fullBestFor: tx("deeper preparation review", "daha derin hazırlık incelemesi", "深度准备评估"),
-    fullButton: tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告"),
-    fullTrustNote: tx(
-      "$29 Comprehensive Report – FREE during the limited early access period.",
-      "$29 Kapsamlı Rapor – Sınırlı erken erişim döneminde ÜCRETSİZ.",
-      "$29 综合报告 – 限时抢先体验期间免费。"
-    ),
-    bestFor: tx("Best for:", "En uygun:", "最适合："),
-    compliance: tx(
-      "This tool provides general information only.",
-      "Bu araç yalnızca genel bilgiler sağlar.",
-      "本工具仅提供一般信息。"
-    ),
-  };
-
-  return (
-    <main className="flex-1 bg-slate-50 pt-32 pb-12">
+const newReturn = \`  return (
+    <main className="flex-1 bg-slate-50 py-12">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           
@@ -590,7 +344,7 @@ export default function CheckerPage() {
                 <CardContent>
                   <Button asChild variant="outline" className="w-full rounded-xl border-gray-200 text-slate-700 hover:bg-slate-50">
                     <Link
-                      href={`/${locale}/checker?quick=1#quick-pathway-check`}
+                      href={\`/\${locale}/checker?quick=1#quick-pathway-check\`}
                       onClick={() => setShowQuickCheck(true)}
                     >
                       {choiceCopy.quickButton}
@@ -611,7 +365,7 @@ export default function CheckerPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Button asChild className="w-full rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">
-                    <Link href={`/${locale}/full-check`}>{choiceCopy.fullButton}</Link>
+                    <Link href={\`/\${locale}/full-check\`}>{choiceCopy.fullButton}</Link>
                   </Button>
                   <p className="text-center text-[11px] font-medium text-indigo-600/70">{choiceCopy.fullTrustNote}</p>
                 </CardContent>
@@ -623,3 +377,7 @@ export default function CheckerPage() {
     </main>
   );
 }
+\`;
+
+fs.writeFileSync('app/[locale]/checker/page.tsx', beforeReturn + newReturn);
+console.log('Checker page fixed.');

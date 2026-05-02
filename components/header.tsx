@@ -36,7 +36,7 @@ export function Header({
   const getReportLabel = isTr ? "Ücretsiz Rapor Al" : isZh ? "获取免费报告" : "Get Free Report";
 
   return (
-    <header className="fixed left-1/2 top-6 z-50 w-[95%] max-w-4xl -translate-x-1/2 rounded-full border border-gray-200/50 bg-white/50 px-4 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-black/50 md:px-6">
+    <header className="fixed left-1/2 top-8 z-50 w-[95%] max-w-4xl -translate-x-1/2 rounded-full border border-gray-200/50 bg-white/70 px-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/70 md:px-6">
       <nav className="flex h-14 items-center justify-between">
         <Link href={`/${locale}`} className="text-xl font-extrabold tracking-tight text-indigo-900 dark:text-white">
           Logi<span className="text-violet-600">Visa</span>
