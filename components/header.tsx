@@ -1,6 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 
 import { LanguageSelector } from "@/components/language-selector";
+import { Button } from "@/components/ui/button";
 
 const VISA_LINKS = [
   { subclass: "500", en: "Student visa 500", tr: "Öğrenci Vizesi 500", zh: "500 学生签证" },
@@ -19,6 +24,8 @@ export function Header({
   locale: string;
   showAdmin?: boolean;
 }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const checkerLabel = isTr ? "Kontrol" : isZh ? "评估" : "Checker";
@@ -26,20 +33,22 @@ export function Header({
   const fullReportLabel = isTr ? "Tam Rapor" : isZh ? "完整报告" : "Full Report";
   const visasLabel = isTr ? "Vizeler" : isZh ? "签证" : "Visas";
   const adminLabel = "Admin";
+  const getReportLabel = isTr ? "Ücretsiz Rapor Al" : isZh ? "获取免费报告" : "Get Free Report";
 
   return (
-    <header className="relative z-40 border-b border-border/40 bg-white/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/70 backdrop-blur-md dark:border-white/10 dark:bg-black/50">
       <nav className="section-shell flex h-16 items-center justify-between">
-        <Link href={`/${locale}`} className="text-lg font-semibold text-primary">
-          Logivisa
+        <Link href={`/${locale}`} className="text-xl font-extrabold tracking-tight text-indigo-900 dark:text-white">
+          Logi<span className="text-violet-600">Visa</span>
         </Link>
 
-        <div className="flex items-center gap-4">
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex md:items-center md:gap-6">
           {/* Visas dropdown */}
           <div className="group relative">
             <button
               type="button"
-              className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="flex items-center gap-1 text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
             >
               {visasLabel}
               <svg
@@ -52,12 +61,12 @@ export function Header({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-1 min-w-[220px] rounded-md border border-border bg-white py-1 shadow-md opacity-0 transition-all group-hover:visible group-hover:opacity-100">
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[240px] translate-y-2 rounded-xl border border-white/40 bg-white/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/90">
               {VISA_LINKS.map((v) => (
                 <Link
                   key={v.subclass}
                   href={`/${locale}/visas/${v.subclass}`}
-                  className="block px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
                 >
                   {isTr ? v.tr : isZh ? v.zh : v.en}
                 </Link>
@@ -67,33 +76,119 @@ export function Header({
 
           <Link
             href={`/${locale}/checker`}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
           >
             {checkerLabel}
           </Link>
           <Link
             href={`/${locale}/assistant`}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
           >
             {assistantLabel}
           </Link>
           <Link
             href={`/${locale}/full-check`}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
           >
             {fullReportLabel}
           </Link>
           {showAdmin ? (
             <Link
               href={`/${locale}/admin/dashboard`}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
             >
               {adminLabel}
             </Link>
           ) : null}
+          
+          <div className="ml-2 flex items-center gap-4 border-l border-slate-200 pl-6 dark:border-white/10">
+            <LanguageSelector currentLocale={locale} />
+            <Button
+              asChild
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 border-0"
+            >
+              <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <div className="flex items-center gap-4 md:hidden">
           <LanguageSelector currentLocale={locale} />
+          <button
+            type="button"
+            className="text-slate-600 dark:text-slate-300"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Navigation Panel */}
+      {isMobileMenuOpen && (
+        <div className="absolute left-0 top-full w-full border-b border-white/20 bg-white/95 px-6 py-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/95 md:hidden">
+          <div className="flex flex-col space-y-4">
+            <div className="space-y-1">
+              <p className="px-2 text-xs font-semibold uppercase text-slate-400">{visasLabel}</p>
+              {VISA_LINKS.map((v) => (
+                <Link
+                  key={v.subclass}
+                  href={`/${locale}/visas/${v.subclass}`}
+                  className="block rounded-lg px-2 py-2 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {isTr ? v.tr : isZh ? v.zh : v.en}
+                </Link>
+              ))}
+            </div>
+            
+            <div className="h-px w-full bg-slate-100 dark:bg-white/10" />
+            
+            <Link
+              href={`/${locale}/checker`}
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {checkerLabel}
+            </Link>
+            <Link
+              href={`/${locale}/assistant`}
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {assistantLabel}
+            </Link>
+            <Link
+              href={`/${locale}/full-check`}
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {fullReportLabel}
+            </Link>
+            {showAdmin ? (
+              <Link
+                href={`/${locale}/admin/dashboard`}
+                className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {adminLabel}
+              </Link>
+            ) : null}
+            
+            <div className="pt-2">
+              <Button
+                asChild
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
+              >
+                <Link href={`/${locale}/full-check`} onClick={() => setIsMobileMenuOpen(false)}>
+                  {getReportLabel}
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

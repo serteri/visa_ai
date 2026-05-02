@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Send, Bot, Sparkles, FileText, Globe } from "lucide-react";
 import {
   runAssistantMessage,
   runReadinessPreview,
@@ -245,129 +246,110 @@ export function AssistantClient({
   const quickPrompts = isZh ? QUICK_PROMPTS_ZH : isTr ? QUICK_PROMPTS_TR : QUICK_PROMPTS_EN;
 
   return (
-    <main className="ambient-bg flex-1 py-12">
-      <section className="section-shell space-y-6">
-        <div className="space-y-3">
-          <Badge variant="secondary">{tx("受控助手", "Kontrollü Asistan", "Controlled Assistant")}</Badge>
-          <h1 className="text-3xl font-bold sm:text-4xl">
-            {tx("AI 签证助手", "AI Vize Asistanı", "AI Visa Assistant")}
-          </h1>
-          <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-            {tx(
-              "本助手仅提供一般信息，不提供移民或法律建议。",
-              "Bu asistan yalnızca genel bilgi sunar; göç veya hukuki tavsiye vermez.",
-              "This assistant provides general information and does not provide migration or legal advice."
-            )}
-          </p>
+    <main className="flex h-[calc(100vh-4rem)] flex-col bg-slate-50 dark:bg-zinc-950">
+      {/* Top Banner / Mode Switcher */}
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white/80 px-4 py-3 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm">
+            <Bot className="size-5" />
+          </div>
+          <div>
+            <h1 className="text-sm font-bold text-slate-900 dark:text-white">
+              {tx("AI 签证助手", "AI Vize Asistanı", "AI Visa Assistant")}
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {tx("受控信息提供", "Kontrollü Bilgi Sağlayıcı", "Controlled Information Provider")}
+            </p>
+          </div>
         </div>
-
-        <div className="flex flex-col gap-2 rounded-lg border bg-card p-2 sm:flex-row">
+        
+        <div className="flex rounded-lg bg-slate-100 p-1 dark:bg-zinc-900">
           <Button
             asChild
-            variant={mode === "simple" ? "default" : "ghost"}
-            className="justify-center"
+            variant="ghost"
+            size="sm"
+            className={`h-8 rounded-md px-3 text-xs transition-all ${mode === "simple" ? "bg-white shadow-sm dark:bg-zinc-800" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
           >
             <Link href={`/${locale}/assistant`}>
-              {tx("询问 Logivisa", "Logivisa'ya Sor", "Ask Logivisa")}
+              {tx("聊天", "Sohbet", "Chat")}
             </Link>
           </Button>
           <Button
             asChild
-            variant={mode === "premium" ? "default" : "ghost"}
-            className="justify-center"
+            variant="ghost"
+            size="sm"
+            className={`h-8 rounded-md px-3 text-xs transition-all ${mode === "premium" ? "bg-white shadow-sm dark:bg-zinc-800" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
           >
-            <Link href={`/${locale}/assistant?mode=premium`}>
-              {tx("AI 准备度预览", "AI Hazırlık İncelemesi", "AI Readiness Review (Preview)")}
+            <Link href={`/${locale}/assistant?mode=premium`} className="flex items-center gap-1.5">
+              <Sparkles className="size-3.5" />
+              {tx("深度预览", "Derin İnceleme", "Deep Preview")}
             </Link>
           </Button>
         </div>
+      </div>
 
-        {mode === "simple" ? (
-          <>
-            <Card>
-              <CardHeader>
-                <CardTitle>{tx("快速提示", "Hızlı istemler", "Quick prompts")}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-2">
-                {quickPrompts.map((prompt) => (
-                  <Button
-                    key={prompt}
-                    type="button"
-                    variant="outline"
-                    disabled={sending}
-                    onClick={() => void submitMessage(prompt)}
-                  >
-                    {prompt}
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
+      {mode === "simple" ? (
+        <div className="relative flex flex-1 flex-col overflow-hidden">
+          {/* Chat Messages Area */}
+          <div className="flex-1 overflow-y-auto pb-8 pt-8">
+            <div className="mx-auto max-w-3xl px-4 space-y-8">
+              {messages.map((message, idx) => (
+                <div key={`${message.role}-${idx}`} className={`flex w-full ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                  
+                  {message.role === "assistant" && (
+                    <div className="mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md">
+                      <Bot className="size-5" />
+                    </div>
+                  )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle>{tx("消息", "Mesajlar", "Messages")}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="max-h-[460px] space-y-3 overflow-auto pr-1">
-                  {messages.map((message, idx) => (
-                    <div
-                      key={`${message.role}-${idx}`}
-                      className={`rounded-lg border p-3 text-sm ${
-                        message.role === "assistant"
-                          ? "border-primary/20 bg-primary/5"
-                          : "border-border bg-card"
-                      }`}
-                    >
-                      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {message.role === "assistant"
-                          ? tx("助手", "Asistan", "Assistant")
-                          : tx("用户", "Kullanıcı", "User")}
-                      </p>
-                      <p>{message.text}</p>
-
-                      {message.role === "assistant" && message.result && (
-                        <div className="mt-3 space-y-3">
-                          <div className="rounded-md border border-border/70 bg-background/70 p-3 text-sm">
-                            <p className="mb-2 font-semibold">
-                              {tx("已使用来源", "Kullanılan kaynaklar", "Sources used")}
+                  <div className={`group relative max-w-[85%] sm:max-w-[75%] rounded-2xl px-5 py-4 shadow-sm transition-all ${
+                    message.role === "user" 
+                      ? "bg-indigo-600 text-white rounded-br-sm" 
+                      : "bg-white border border-slate-100 dark:bg-zinc-900 dark:border-zinc-800 text-slate-800 dark:text-slate-200 rounded-bl-sm"
+                  }`}>
+                    <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{message.text}</p>
+                    
+                    {message.role === "assistant" && message.result && (
+                      <div className="mt-5 space-y-4 border-t border-slate-100 pt-4 dark:border-zinc-800">
+                        {message.result.sources.length > 0 && (
+                          <div>
+                            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                              {tx("参考资料", "Kaynaklar", "Sources")}
                             </p>
-
-                            {message.result.sources.map((source) => (
-                              <div key={`${source.subclass}-${source.detailUrl}`} className="mb-3 rounded border border-border/60 p-2">
-                                <p className="text-xs font-semibold text-muted-foreground">
-                                  Subclass {source.subclass} - {source.visaName}
-                                </p>
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                  <Button asChild size="sm" variant="outline">
-                                    <Link href={source.detailUrl}>{tx("签证详情", "Vize detayı", "Visa details")}</Link>
-                                  </Button>
-                                  {source.sourceUrl && (
-                                    <Button asChild size="sm" variant="outline">
-                                      <a href={source.sourceUrl} target="_blank" rel="noopener noreferrer">
-                                        {tx("官方来源", "Resmi kaynak", "Official source")}
-                                      </a>
-                                    </Button>
-                                  )}
-                                  {source.pdfUrls.map((pdfUrl, index) => (
-                                    <Button key={`${pdfUrl}-${index}`} asChild size="sm" variant="outline">
-                                      <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                                        PDF {index + 1}
-                                      </a>
-                                    </Button>
-                                  ))}
+                            <div className="flex flex-col gap-2">
+                              {message.result.sources.map((source) => (
+                                <div key={`${source.subclass}-${source.detailUrl}`} className="flex items-start gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+                                  <FileText className="mt-0.5 size-4 shrink-0 text-indigo-500" />
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                      {source.subclass} - {source.visaName}
+                                    </p>
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                                      <Link href={source.detailUrl} className="text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+                                        {tx("详情", "Detay", "Details")}
+                                      </Link>
+                                      {source.sourceUrl && (
+                                        <a href={source.sourceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                                          <Globe className="size-3" />
+                                          {tx("官方", "Resmi", "Official")}
+                                        </a>
+                                      )}
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
+                        )}
 
-                          <div className="flex flex-wrap gap-2">
+                        {message.result.nextActions.length > 0 && (
+                          <div className="flex flex-wrap gap-2 pt-2">
                             {message.result.nextActions.map((action) => {
-                              const latestUserQuestion =
-                                messages
-                                  .slice(0, idx)
-                                  .reverse()
-                                  .find((item): item is Extract<AssistantMessage, { role: "user" }> => item.role === "user")
-                                  ?.text ?? "";
+                              const latestUserQuestion = messages
+                                .slice(0, idx)
+                                .reverse()
+                                .find((item): item is Extract<AssistantMessage, { role: "user" }> => item.role === "user")
+                                ?.text ?? "";
 
                               const href = buildAssistantReferralHref({
                                 locale,
@@ -377,71 +359,111 @@ export function AssistantClient({
                               });
 
                               return (
-                                <Button key={action.href + action.label} asChild size="sm" variant="secondary">
+                                <Button key={action.href + action.label} asChild size="sm" variant="secondary" className="rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50">
                                   <Link href={href}>{action.label}</Link>
                                 </Button>
                               );
                             })}
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {message.role === "user" && (
+                    <div className="ml-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-600 shadow-sm dark:bg-zinc-800 dark:text-slate-300">
+                      <span className="text-sm font-bold uppercase">U</span>
                     </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {/* Disclaimer at bottom of chat */}
+            <div className="mx-auto mt-10 max-w-2xl px-6 text-center text-xs text-slate-400 dark:text-slate-500 pb-4">
+              {tx(
+                "AI 可以犯错。本助手仅提供一般信息，不构成移民或法律建议。",
+                "Yapay zeka hata yapabilir. Bu asistan yalnızca genel bilgi sunar, göç veya hukuki tavsiye değildir.",
+                "AI can make mistakes. This assistant provides general information only, not migration or legal advice."
+              )}
+            </div>
+          </div>
+
+          {/* Fixed Input Area */}
+          <div className="bg-gradient-to-t from-slate-50 via-slate-50 to-transparent pb-6 pt-10 dark:from-zinc-950 dark:via-zinc-950">
+            <div className="mx-auto max-w-3xl px-4">
+              {messages.length === 1 && (
+                <div className="mb-4 flex flex-wrap justify-center gap-2">
+                  {quickPrompts.map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      disabled={sending}
+                      onClick={() => void submitMessage(prompt)}
+                      className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-white hover:text-indigo-600 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-slate-300 dark:hover:border-indigo-800 dark:hover:bg-zinc-900"
+                    >
+                      {prompt}
+                    </button>
                   ))}
                 </div>
-
-                <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row">
+              )}
+              
+              <form onSubmit={onSubmit} className="relative flex w-full items-end gap-2">
+                <div className="relative flex-1">
                   <Input
                     value={input}
                     onChange={(event) => setInput(event.target.value)}
-                    onInput={(event) => setInput(event.currentTarget.value)}
                     placeholder={
                       tx(
-                        "例如：我想了解雇主担保工作签证路径",
-                        "Orn: Sponsorlu çalışma vizesi hakkında bilgi almak istiyorum",
-                        "Example: I want a sponsored work pathway"
+                        "询问任何关于签证的问题...",
+                        "Vizeler hakkında herhangi bir şey sorun...",
+                        "Ask anything about visas..."
                       )
                     }
+                    className="h-14 w-full rounded-2xl border-slate-200 bg-white pl-5 pr-14 text-base shadow-2xl transition-all focus-visible:border-indigo-500 focus-visible:ring-4 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900"
                   />
-                  <Button type="submit" disabled={sending || !input.trim()}>
-                    {sending ? tx("发送中...", "Gönderiliyor...", "Sending...") : tx("发送", "Gönder", "Send")}
+                  <Button 
+                    type="submit" 
+                    size="sm" 
+                    disabled={sending || !input.trim()}
+                    className="absolute right-2 top-2 h-10 w-10 rounded-xl bg-indigo-600 text-white shadow-md transition-all hover:scale-105 hover:bg-indigo-700 disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    <Send className="size-4" />
                   </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </>
-        ) : (
-          <div className="space-y-6">
-            <Card className="border-primary/40 bg-primary/5">
-              <CardHeader className="space-y-2">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant="secondary">{tx("预览", "Ön İnceleme", "Preview")}</Badge>
-                  <CardTitle>{tx("AI 准备度预览", "AI Hazırlık İncelemesi", "AI Readiness Review")}</CardTitle>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {tx(
-                    "基于有限输入快速预览可能的路径。",
-                    "Sınırlı girdilere dayalı olası yollar için hızlı bir ön izleme.",
-                    "Quick preview of possible pathways based on limited input."
-                  )}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={onPreviewSubmit} className="space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
+              </form>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Premium Preview Mode */
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+          <div className="mx-auto max-w-3xl space-y-8">
+            <div className="space-y-2 text-center">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
+                {tx("AI 准备度预览", "AI Hazırlık İncelemesi", "AI Readiness Review")}
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400">
+                {tx(
+                  "基于有限输入快速预览可能的路径。",
+                  "Sınırlı girdilere dayalı olası yollar için hızlı bir ön izleme.",
+                  "Quick preview of possible pathways based on limited input."
+                )}
+              </p>
+            </div>
+
+            <Card className="overflow-hidden border-slate-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
+              <CardContent className="p-6 sm:p-8">
+                <form onSubmit={onPreviewSubmit} className="space-y-6">
+                  <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-2 sm:col-span-2">
                       <Label htmlFor="preview-main-goal">{tx("主要目标", "Ana hedef", "Main goal")}</Label>
                       <Textarea
                         id="preview-main-goal"
                         value={previewForm.mainGoal}
                         onChange={(event) => updatePreviewField("mainGoal", event.target.value)}
-                        placeholder={
-                          tx(
-                            "例：比较配偶和技能移民的可能路径",
-                            "Orn: Partner ve yetenekli yolları karşılaştır",
-                            "Example: compare partner and skilled possible pathways"
-                          )
-                        }
+                        placeholder={tx("例：比较配偶和技能移民的可能路径", "Orn: Partner ve yetenekli yolları karşılaştır", "Example: compare partner and skilled possible pathways")}
                         rows={3}
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                     <div className="space-y-2">
@@ -451,6 +473,7 @@ export function AssistantClient({
                         value={previewForm.currentCountry}
                         onChange={(event) => updatePreviewField("currentCountry", event.target.value)}
                         placeholder="Australia, Turkiye, India..."
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                     <div className="space-y-2">
@@ -460,6 +483,7 @@ export function AssistantClient({
                         value={previewForm.passportCountry}
                         onChange={(event) => updatePreviewField("passportCountry", event.target.value)}
                         placeholder={tx("护照国", "Pasaport ülkesi", "Passport country")}
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                     <div className="space-y-2">
@@ -469,6 +493,7 @@ export function AssistantClient({
                         value={previewForm.age}
                         onChange={(event) => updatePreviewField("age", event.target.value)}
                         placeholder={tx("年龄", "Yaş", "Age")}
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                     <div className="space-y-2">
@@ -478,6 +503,7 @@ export function AssistantClient({
                         value={previewForm.occupation}
                         onChange={(event) => updatePreviewField("occupation", event.target.value)}
                         placeholder={tx("职业或学历背景", "Meslek veya eğitim geçmişiniz", "Occupation or study background")}
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                     <div className="space-y-2">
@@ -487,6 +513,7 @@ export function AssistantClient({
                         value={previewForm.englishLevel}
                         onChange={(event) => updatePreviewField("englishLevel", event.target.value)}
                         placeholder={tx("不确定/能勝任/雅思或PTE成绩...", "Emin değilim, yetkin, IELTS/PTE skoru...", "Not sure, competent, IELTS/PTE score...")}
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                     <div className="space-y-2">
@@ -496,6 +523,7 @@ export function AssistantClient({
                         value={previewForm.sponsorFamily}
                         onChange={(event) => updatePreviewField("sponsorFamily", event.target.value)}
                         placeholder={tx("雇主担保/配偶/家人/无...", "İşveren sponsoru, partner, aile, yok...", "Employer sponsor, partner, family, none...")}
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                     <div className="space-y-2">
@@ -505,6 +533,7 @@ export function AssistantClient({
                         value={previewForm.preferredPathway}
                         onChange={(event) => updatePreviewField("preferredPathway", event.target.value)}
                         placeholder="500, 482, 189, 190, 491, 820/801, not sure"
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                     <div className="space-y-2 sm:col-span-2">
@@ -513,19 +542,14 @@ export function AssistantClient({
                         id="preview-concern"
                         value={previewForm.biggestConcern}
                         onChange={(event) => updatePreviewField("biggestConcern", event.target.value)}
-                        placeholder={
-                          tx(
-                            "例：文件、时间安排、英语成绩、担保、关系证明...",
-                            "Orn: belgeler, zamanlama, İngilizce skoru, sponsor, ilişki kanıtı",
-                            "Example: documents, timing, English score, sponsor, relationship evidence"
-                          )
-                        }
+                        placeholder={tx("例：文件、时间安排、英语成绩、担保、关系证明...", "Orn: belgeler, zamanlama, İngilizce skoru, sponsor, ilişki kanıtı", "Example: documents, timing, English score, sponsor, relationship evidence")}
                         rows={3}
+                        className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>
                   </div>
 
-                  <Button type="submit" disabled={previewSending}>
+                  <Button type="submit" size="lg" disabled={previewSending} className="w-full rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">
                     {previewSending
                       ? tx("生成中...", "Oluşturuluyor...", "Generating...")
                       : tx("生成预览", "Ön inceleme oluştur", "Generate preview review")}
@@ -535,20 +559,8 @@ export function AssistantClient({
             </Card>
 
             {previewResult && (
-              <section className="space-y-4">
-                <div className="space-y-2">
-                  <Badge variant="outline">{tx("有限预览", "Sınırlı ön inceleme", "Limited preview")}</Badge>
-                  <h2 className="text-2xl font-bold">{tx("预览结果", "Ön inceleme sonuçları", "Preview review")}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    {tx(
-                      "基于有限输入快速预览可能的路径。",
-                      "Sınırlı girdilere dayalı olası yollar için hızlı bir ön izleme.",
-                      "Quick preview of possible pathways based on limited input."
-                    )}
-                  </p>
-                </div>
-
-                <div className="grid gap-4 lg:grid-cols-2">
+              <div className="space-y-6">
+                <div className="grid gap-6 lg:grid-cols-2">
                   <PreviewList
                     title={tx("可能的签证路径", "Olası vize yolları", "Possible pathway areas")}
                     items={previewResult.possiblePathwayAreas}
@@ -563,54 +575,24 @@ export function AssistantClient({
                   />
                 </div>
 
-                <Card className="border-primary/40 bg-primary/5">
-                  <CardHeader>
-                    <CardTitle>
-                      {tx(
-                        "进入完整准备度报告？",
-                        "Tam vize hazırlık raporuna geçmek ister misiniz?",
-                        "Move to the full readiness report?"
-                      )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="max-w-2xl text-sm text-muted-foreground">
-                      {tx(
-                        "生成完整准备度报告以获得结构化分析。",
-                        "Yapısal analiz için tam hazırlık raporu oluşturun.",
-                        "Generate a full readiness report for a structured analysis."
-                      )}
-                    </p>
-                    <Button asChild className="shrink-0">
-                      <Link href={fullCheckHref}>
-                        {tx("前往完整报告", "Tam rapora devam et", "Continue to full report")}
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </section>
+                <div className="rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-purple-50 p-8 shadow-sm dark:border-indigo-900/30 dark:from-indigo-950/20 dark:to-purple-950/20 text-center">
+                  <h3 className="mb-4 text-xl font-bold text-indigo-950 dark:text-indigo-200">
+                    {tx("进入完整准备度报告？", "Tam vize hazırlık raporuna geçmek ister misiniz?", "Move to the full readiness report?")}
+                  </h3>
+                  <p className="mb-6 text-indigo-700 dark:text-indigo-400 max-w-2xl mx-auto">
+                    {tx("生成完整准备度报告以获得结构化分析。", "Yapısal analiz için tam hazırlık raporu oluşturun.", "Generate a full readiness report for a structured analysis.")}
+                  </p>
+                  <Button asChild size="lg" className="rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700">
+                    <Link href={fullCheckHref}>
+                      {tx("前往完整报告", "Tam rapora devam et", "Continue to full report")}
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             )}
-
-            <p className="text-sm text-muted-foreground">
-              {tx(
-                "这仅提供一般信息，不构成移民建议。",
-                "Bu yalnızca genel bilgidir ve göç tavsiyesi değildir.",
-                "This is general information only and not migration advice."
-              )}
-            </p>
           </div>
-        )}
-
-        <Card className="border-l-4 border-l-primary">
-          <CardContent className="p-5 text-sm text-muted-foreground">
-            {tx(
-              "本助手仅提供一般信息。不提供移民建议、法律建议或预测签证结果。",
-              "Bu asistan yalnızca genel bilgi sunar. Göç tavsiyesi, hukuki tavsiye veya vize sonucu tahmini sağlamaz.",
-              "This assistant provides general information only. It does not provide migration advice, legal advice, or predict visa outcomes."
-            )}
-          </CardContent>
-        </Card>
-      </section>
+        </div>
+      )}
     </main>
   );
 }

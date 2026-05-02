@@ -113,107 +113,127 @@ export function HomeContent() {
   const { t } = useTranslation();
 
   return (
-    <section className="section-shell space-y-12">
-      {/* Hero Container */}
-      <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/40 p-6 shadow-2xl backdrop-blur-xl md:p-14">
-        {/* Subtle Grid & Mesh Gradient Background */}
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
-        <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[300px] w-[600px] -translate-x-1/2 rounded-full bg-blue-500/10 blur-[80px]"></div>
+    <section className="space-y-24 pb-24">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-20 pb-32">
+        {/* Deep background color and grid */}
+        <div className="absolute inset-0 -z-20 bg-slate-50 dark:bg-zinc-950"></div>
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+        
+        {/* Glow Effects */}
+        <div className="absolute left-1/2 top-0 -z-10 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-indigo-500/20 blur-[120px] dark:bg-indigo-500/10"></div>
+        <div className="absolute right-0 top-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-purple-500/20 blur-[100px] dark:bg-purple-500/10"></div>
 
-        <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-center">
-          <div className="space-y-6">
-            <Badge variant="secondary" className="bg-indigo-50/50 text-indigo-700 hover:bg-indigo-50/80 border-indigo-200/50">
-              {t("hero.trustBadge")}
-            </Badge>
-            
-            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:leading-[1.1]">
-              <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                {t("hero.headline")}
-              </span>
-            </h1>
-            
-            <p className="max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              {t("hero.subheadline")}
-            </p>
-            
-            <div className="space-y-4 pt-2">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg" className="group w-full sm:w-auto bg-violet-600 text-white hover:bg-violet-700 shadow-[0_0_40px_-10px_rgba(124,58,237,0.5)] transition-all hover:shadow-[0_0_60px_-15px_rgba(124,58,237,0.7)] hover:scale-[1.02]">
-                  <Link href={`/${locale}/checker`} className="flex items-center gap-2">
-                    {t("hero.cta")}
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-white/50 backdrop-blur-sm hover:bg-white/80 transition-all">
-                  <Link href={`/${locale}/assistant`}>{t("hero.secondary")}</Link>
-                </Button>
-              </div>
-              <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base">🔒</span> {t("hero.noCreditCard")}
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base">⚡️</span> {t("hero.instantPdf")}
-                </div>
-              </div>
-            </div>
+        <div className="section-shell flex flex-col items-center text-center">
+          <Badge variant="secondary" className="mb-6 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-indigo-200/50 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800">
+            {t("hero.trustBadge")}
+          </Badge>
+          
+          <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-7xl lg:leading-[1.1]">
+            <span className="block">{t("hero.headline").split(" ")[0]} {t("hero.headline").split(" ")[1]}</span>
+            <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+              {t("hero.headline").split(" ").slice(2).join(" ") || "Your Visa Roadmap"}
+            </span>
+          </h1>
+          
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400 sm:text-xl">
+            {t("hero.subheadline")}
+          </p>
+          
+          <div className="mt-10 flex w-full max-w-md flex-col gap-4 sm:flex-row sm:justify-center">
+            <Button asChild size="lg" className="h-14 px-8 text-base bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/50 border-0">
+              <Link href={`/${locale}/full-check`}>
+                {locale === "tr" ? "Hemen Başla" : locale === "zh-Hans" ? "立即开始" : "Get Free Report"}
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-slate-100 dark:bg-zinc-900/50 dark:border-zinc-800 dark:hover:bg-zinc-800">
+              <Link href={`/${locale}/assistant`}>{t("hero.secondary")}</Link>
+            </Button>
           </div>
 
-          <div className="rounded-2xl border border-white/60 bg-white/60 p-6 shadow-xl backdrop-blur-md">
-            <h2 className="mb-5 text-lg font-semibold">{t("hero.headline")}</h2>
-            <div className="space-y-3">
-              {trustIndicatorKeys.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div
-                    key={item.key}
-                    className="flex items-center gap-3 rounded-xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-black/5"
-                  >
-                    <Icon className="size-5 text-violet-600" />
-                    <span className="text-sm font-medium">{t(item.key)}</span>
-                  </div>
-                );
-              })}
+          {/* Trust Signals under CTA */}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400 sm:gap-10">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">✓</span>
+              {t("socialProof.users")}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">🛡️</span>
+              {t("socialProof.mara")}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">📊</span>
+              {t("socialProof.dha")}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof Strip */}
-      <section className="flex flex-wrap items-center justify-center gap-8 border-y border-border/40 bg-muted/20 py-6 text-sm font-medium text-muted-foreground sm:gap-16">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">📊</span> {t("socialProof.dha")}
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-lg">🛡️</span> {t("socialProof.mara")}
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-lg">👥</span> {t("socialProof.users")}
-        </div>
-      </section>
-
-      <section id="supported-pathways" className="space-y-4">
-        <div className="space-y-2">
-          <Badge variant="outline">{t("pathways.badge")}</Badge>
-          <h2 className="text-2xl font-bold">{t("pathways.title")}</h2>
-          <p className="max-w-3xl text-sm text-muted-foreground">
-            {t("pathways.subtitle")}
+      {/* Features Bento Box */}
+      <section className="section-shell">
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            {locale === "tr" ? "Raporda Neler Var?" : locale === "zh-Hans" ? "报告内容" : "What's in the Report?"}
+          </h2>
+          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
+            {locale === "tr" ? "Gerçek verilere dayalı, yapay zeka destekli detaylı analiz." : locale === "zh-Hans" ? "基于真实数据和AI驱动的详细分析。" : "Detailed analysis driven by AI and real data."}
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {supportedPathwayKeys.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Card key={item.title}>
-                <CardContent className="flex gap-3 p-4">
-                  <Icon className="mt-0.5 size-5 shrink-0 text-primary" />
-                  <div className="space-y-1">
-                    <p className="font-semibold">{t(item.title)}</p>
-                    <p className="text-sm text-muted-foreground">{t(item.text)}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {/* Bento Card 1 */}
+          <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
+            <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
+              <span className="text-2xl">✨</span>
+            </div>
+            <h3 className="mb-3 text-xl font-bold text-slate-900 dark:text-white">
+              {locale === "tr" ? "Puan Hesaplayıcı" : locale === "zh-Hans" ? "积分计算器" : "Points Calculator"}
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400">
+              {locale === "tr" 
+                ? "DHA kurallarına göre tahmini puanınızı ve potansiyel ek puan fırsatlarını anında hesaplayın." 
+                : locale === "zh-Hans" 
+                ? "根据DHA规则，即刻计算您的预估分数以及潜在的加分机会。" 
+                : "Instantly calculate your estimated points and potential bonus point opportunities based on DHA rules."}
+            </p>
+            <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-indigo-500/10 blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
+          </div>
+
+          {/* Bento Card 2 */}
+          <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
+            <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+              <span className="text-2xl">🔍</span>
+            </div>
+            <h3 className="mb-3 text-xl font-bold text-slate-900 dark:text-white">
+              {locale === "tr" ? "Gizli Riskler" : locale === "zh-Hans" ? "潜在风险" : "Hidden Risks"}
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400">
+              {locale === "tr" 
+                ? "Profilinizdeki eksik belgeleri ve red riskini artırabilecek zayıf noktaları önceden tespit edin." 
+                : locale === "zh-Hans" 
+                ? "提前发现您档案中缺失的材料以及可能增加拒签风险的弱点。" 
+                : "Identify missing documents and weak spots in your profile that could increase your risk of refusal."}
+            </p>
+            <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-purple-500/10 blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+          </div>
+
+          {/* Bento Card 3 */}
+          <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
+            <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+              <span className="text-2xl">🗺️</span>
+            </div>
+            <h3 className="mb-3 text-xl font-bold text-slate-900 dark:text-white">
+              {locale === "tr" ? "Maliyet Yol Haritası" : locale === "zh-Hans" ? "费用路线图" : "Cost Roadmap"}
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400">
+              {locale === "tr" 
+                ? "Vize ücretleri, danışmanlık masrafları ve diğer tüm süreç maliyetlerini detaylı bir şekilde planlayın." 
+                : locale === "zh-Hans" 
+                ? "详细规划签证费、咨询费以及整个流程中的其他所有成本。" 
+                : "Detailed planning of visa fees, consultation costs, and all other expenses involved in your journey."}
+            </p>
+            <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-emerald-500/10 blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+          </div>
         </div>
       </section>
 
