@@ -178,12 +178,26 @@ export function FullCheckWaitlistForm({
     email?: string;
   } | null>(null);
 
-  const aiAnalysisSteps = [
-    "Scanning 691 occupation codes...",
-    "Analyzing historical invitation trends...",
-    "Applying assessing authority deduction rules...",
-    "Generating strategic readiness report...",
-  ] as const;
+  const aiAnalysisSteps = isTr
+    ? [
+        "691 meslek kodu taranıyor...",
+        "Tarihsel davet trendleri analiz ediliyor...",
+        "Değerlendirme kurumu kesinti kuralları uygulanıyor...",
+        "Stratejik hazırlık raporu oluşturuluyor...",
+      ]
+    : isZh
+    ? [
+        "正在扫描 691 个职业代码...",
+        "正在分析历史邀请趋势...",
+        "正在应用评估机构扣减规则...",
+        "正在生成战略准备度报告...",
+      ]
+    : [
+        "Scanning 691 occupation codes...",
+        "Analyzing historical invitation trends...",
+        "Applying assessing authority deduction rules...",
+        "Generating strategic readiness report...",
+      ];
 
   const milestoneToIndex: Record<string, number> = {
     scanning_occupations: 0,

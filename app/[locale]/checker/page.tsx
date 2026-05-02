@@ -62,64 +62,68 @@ const initialData: CheckerFormData = {
   budgetRange: "",
 };
 
-function validateStep(step: number, data: CheckerFormData): StepErrors {
+function validateStep(
+  step: number,
+  data: CheckerFormData,
+  tx: (en: string, tr: string, zh: string) => string
+): StepErrors {
   const errors: StepErrors = {};
+  const reqMsg = tx("This field is required", "Bu alan zorunludur", "此项必填");
+  const ageMsg = tx("Enter a valid age", "Geçerli bir yaş girin", "请输入有效年龄");
 
   if (step === 1) {
     if (!data.countryOfPassport.trim())
-      errors.countryOfPassport = "This field is required";
+      errors.countryOfPassport = reqMsg;
     if (!data.currentCountryOfResidence.trim())
-      errors.currentCountryOfResidence = "This field is required";
+      errors.currentCountryOfResidence = reqMsg;
     if (!data.age.trim()) {
-      errors.age = "This field is required";
+      errors.age = reqMsg;
     } else {
       const ageNum = Number(data.age);
       if (!Number.isFinite(ageNum) || ageNum <= 0 || ageNum >= 100)
-        errors.age = "Enter a valid age";
+        errors.age = ageMsg;
     }
-    // preferredLanguage always has a default value — no validation needed
   }
 
   if (step === 2) {
-    if (!data.goal) errors.goal = "This field is required";
+    if (!data.goal) errors.goal = reqMsg;
   }
 
   if (step === 3) {
     if (!data.highestQualification.trim())
-      errors.highestQualification = "This field is required";
+      errors.highestQualification = reqMsg;
     if (!data.occupation.trim())
-      errors.occupation = "This field is required";
+      errors.occupation = reqMsg;
     if (!data.yearsOfWorkExperience.trim())
-      errors.yearsOfWorkExperience = "This field is required";
-    // englishTestTaken always has a value (yes/no default)
+      errors.yearsOfWorkExperience = reqMsg;
     if (data.englishTestTaken === "yes") {
       if (!data.englishScoreType.trim())
-        errors.englishScoreType = "This field is required";
+        errors.englishScoreType = reqMsg;
       if (!data.englishScore.trim())
-        errors.englishScore = "This field is required";
+        errors.englishScore = reqMsg;
     }
   }
 
   if (step === 4) {
     if (!data.currentlyInAustralia)
-      errors.currentlyInAustralia = "This field is required";
+      errors.currentlyInAustralia = reqMsg;
     if (data.currentlyInAustralia === "yes" && !data.currentVisaType.trim())
-      errors.currentVisaType = "This field is required";
+      errors.currentVisaType = reqMsg;
     if (!data.hasEmployerSponsor)
-      errors.hasEmployerSponsor = "This field is required";
+      errors.hasEmployerSponsor = reqMsg;
     if (!data.hasPartnerOrFamilyInAustralia)
-      errors.hasPartnerOrFamilyInAustralia = "This field is required";
+      errors.hasPartnerOrFamilyInAustralia = reqMsg;
   }
 
   if (step === 5) {
     if (!data.hasPassport)
-      errors.hasPassport = "This field is required";
+      errors.hasPassport = reqMsg;
     if (!data.documentsReady)
-      errors.documentsReady = "This field is required";
+      errors.documentsReady = reqMsg;
     if (!data.timeline.trim())
-      errors.timeline = "This field is required";
+      errors.timeline = reqMsg;
     if (!data.budgetRange.trim())
-      errors.budgetRange = "This field is required";
+      errors.budgetRange = reqMsg;
   }
 
   return errors;
@@ -153,7 +157,11 @@ export default function CheckerPage() {
 
   const progressValue = useMemo(() => (step / totalSteps) * 100, [step]);
 
-  const stepErrors = useMemo(() => validateStep(step, formData), [step, formData]);
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
+
+  const stepErrors = useMemo(() => validateStep(step, formData, tx), [step, formData, tx]);
   const stepIsValid = Object.keys(stepErrors).length === 0;
 
   const stepTitles = [
@@ -201,9 +209,6 @@ export default function CheckerPage() {
   }
 
   const err = showErrors ? stepErrors : {};
-  const isTr = locale === "tr";
-  const isZh = locale === "zh-Hans";
-  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
   const quickCheckVisible = showQuickCheck || searchParams.get("quick") === "1";
   const choiceCopy = {
     quickTitle: tx("Quick Pathway Check", "Hızlı Yol Kontrolü", "快速路径评估"),
@@ -331,7 +336,7 @@ export default function CheckerPage() {
                     id="countryOfPassport"
                     value={formData.countryOfPassport}
                     onChange={(e) => updateField("countryOfPassport", e.target.value)}
-                    placeholder="e.g. India"
+                    placeholder={tx("e.g. India", "Örn. Türkiye", "例如：印度")}
                     className={err.countryOfPassport ? "border-destructive" : ""}
                   />
                   <FieldError msg={err.countryOfPassport} />
@@ -345,7 +350,7 @@ export default function CheckerPage() {
                     id="currentCountryOfResidence"
                     value={formData.currentCountryOfResidence}
                     onChange={(e) => updateField("currentCountryOfResidence", e.target.value)}
-                    placeholder="e.g. UAE"
+                    placeholder={tx("e.g. UAE", "Örn. BAE", "例如：阿联酋")}
                     className={err.currentCountryOfResidence ? "border-destructive" : ""}
                   />
                   <FieldError msg={err.currentCountryOfResidence} />
@@ -362,7 +367,7 @@ export default function CheckerPage() {
                     max={99}
                     value={formData.age}
                     onChange={(e) => updateField("age", e.target.value)}
-                    placeholder="e.g. 29"
+                    placeholder={tx("e.g. 29", "Örn. 29", "例如：29")}
                     className={err.age ? "border-destructive" : ""}
                   />
                   <FieldError msg={err.age} />
@@ -422,7 +427,7 @@ export default function CheckerPage() {
                     id="highestQualification"
                     value={formData.highestQualification}
                     onChange={(e) => updateField("highestQualification", e.target.value)}
-                    placeholder="e.g. Bachelor's degree"
+                    placeholder={tx("e.g. Bachelor's degree", "Örn. Lisans Derecesi", "例如：学士学位")}
                     className={err.highestQualification ? "border-destructive" : ""}
                   />
                   <FieldError msg={err.highestQualification} />
@@ -436,7 +441,7 @@ export default function CheckerPage() {
                     id="occupation"
                     value={formData.occupation}
                     onChange={(e) => updateField("occupation", e.target.value)}
-                    placeholder="e.g. Software Engineer"
+                    placeholder={tx("e.g. Software Engineer", "Örn. Yazılım Mühendisi", "例如：软件工程师")}
                     className={err.occupation ? "border-destructive" : ""}
                   />
                   <FieldError msg={err.occupation} />
@@ -452,7 +457,7 @@ export default function CheckerPage() {
                     min={0}
                     value={formData.yearsOfWorkExperience}
                     onChange={(e) => updateField("yearsOfWorkExperience", e.target.value)}
-                    placeholder="e.g. 5"
+                    placeholder={tx("e.g. 5", "Örn. 5", "例如：5")}
                     className={err.yearsOfWorkExperience ? "border-destructive" : ""}
                   />
                   <FieldError msg={err.yearsOfWorkExperience} />
@@ -483,7 +488,7 @@ export default function CheckerPage() {
                         id="englishScoreType"
                         value={formData.englishScoreType}
                         onChange={(e) => updateField("englishScoreType", e.target.value)}
-                        placeholder="e.g. IELTS, PTE"
+                        placeholder={tx("e.g. IELTS, PTE", "Örn. IELTS, PTE", "例如：IELTS, PTE")}
                         className={err.englishScoreType ? "border-destructive" : ""}
                       />
                       <FieldError msg={err.englishScoreType} />
@@ -496,7 +501,7 @@ export default function CheckerPage() {
                         id="englishScore"
                         value={formData.englishScore}
                         onChange={(e) => updateField("englishScore", e.target.value)}
-                        placeholder="e.g. 7.0"
+                        placeholder={tx("e.g. 7.0", "Örn. 7.0", "例如：7.0")}
                         className={err.englishScore ? "border-destructive" : ""}
                       />
                       <FieldError msg={err.englishScore} />
@@ -535,7 +540,7 @@ export default function CheckerPage() {
                     id="currentVisaType"
                     value={formData.currentVisaType}
                     onChange={(e) => updateField("currentVisaType", e.target.value)}
-                    placeholder="e.g. Student 500"
+                    placeholder={tx("e.g. Student 500", "Örn. Öğrenci 500", "例如：500 学生签证")}
                     className={err.currentVisaType ? "border-destructive" : ""}
                   />
                   <FieldError msg={err.currentVisaType} />

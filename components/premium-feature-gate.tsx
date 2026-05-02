@@ -130,13 +130,30 @@ export function PremiumFeatureGate({
           <CardTitle>{isTr ? "Premium bölümler" : isZh ? "高级内容模块" : "Premium sections"}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-2 opacity-45 blur-[1.6px]">
-          {[
-            "Strategic Gantt Chart",
-            "Financial Roadmap",
-            "Document-Level Specificity",
-            "Pathway Friction Analysis",
-            "Immediate Action Plan",
-          ].map((title) => (
+          {(isTr
+            ? [
+                "Stratejik Gantt Tablosu",
+                "Mali Yol Haritası",
+                "Belge Düzeyinde Ayrıntı",
+                "Vize Yolu Rekabet Analizi",
+                "Acil Eylem Planı",
+              ]
+            : isZh
+            ? [
+                "战略甘特图",
+                "财务路线图",
+                "文件级具体性",
+                "路径阻力分析",
+                "立即行动计划",
+              ]
+            : [
+                "Strategic Gantt Chart",
+                "Financial Roadmap",
+                "Document-Level Specificity",
+                "Pathway Friction Analysis",
+                "Immediate Action Plan",
+              ]
+          ).map((title) => (
             <div key={title} className="rounded-md border px-3 py-2 text-sm">
               {title}
             </div>
@@ -167,12 +184,12 @@ export function PremiumFeatureGate({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                      {isTr ? "Exclusive Early Access" : isZh ? "Exclusive Early Access" : "Exclusive Early Access"}
+                      {isTr ? "Özel Erken Erişim" : isZh ? "独家抢先体验" : "Exclusive Early Access"}
                     </p>
                     <div className="flex items-center gap-2">
                       <p className="text-sm text-muted-foreground line-through">$29</p>
                       <p className="text-lg font-bold text-emerald-600">
-                        {isTr ? "Ücretsiz" : isZh ? "Free" : "Free"}
+                        {isTr ? "Ücretsiz" : isZh ? "免费" : "Free"}
                       </p>
                     </div>
                   </div>
@@ -191,7 +208,7 @@ export function PremiumFeatureGate({
               ) : (
                 <div className="flex items-end justify-between gap-3">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    {isTr ? "Premium Report" : isZh ? "Premium Report" : "Premium Report"}
+                    {isTr ? "Premium Rapor" : isZh ? "高级报告" : "Premium Report"}
                   </p>
                   <p className="text-lg font-bold text-primary">$29.00</p>
                 </div>
