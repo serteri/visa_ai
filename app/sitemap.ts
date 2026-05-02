@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { activeLocales } from "@/lib/i18n/config";
 import { mockVisaTypes } from "@/lib/mock-visa-data";
+import { buildOccupationSlug, getUniqueOccupations } from "@/lib/occupations/seo";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -34,10 +35,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
+  const occupations = getUniqueOccupations();
+  for (const locale of activeLocales) {
+    for (const occupation of occupations) {
+      routes.add(`/${locale}/occupations/${buildOccupationSlug(occupation)}`);
+    }
+  }
+
   return Array.from(routes).map((path) => ({
     url: toUrl(path),
     lastModified: now,
-    changeFrequency: path.includes("/visas/") ? "weekly" : "daily",
-    priority: path === "/" ? 1 : path.includes("/visas/") ? 0.7 : 0.9,
+    changeFrequency: path.includes("/visas/") || path.includes("/occupations/") ? "weekly" : "daily",
+    priority:
+      path === "/"
+        ? 1
+        : path.includes("/visas/") || path.includes("/occupations/")
+          ? 0.7
+          : 0.9,
   }));
 }
