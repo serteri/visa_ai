@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "Logivisa",
   description:
     "Structured visa pathway analysis and readiness reports for Australia.",
+  verification: {
+    google: "foOddNGs8xqNCNQ74vzcc0AheCIMssYqDONHUOkWgCk",
+  },
 };
 
 export default function RootLayout({
