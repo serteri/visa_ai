@@ -2,24 +2,20 @@
   "nav.home": "Home",
   "nav.checker": "Visa Checker",
   "nav.legal": "Legal",
-
   "hero.headline": "Logivisa",
   "hero.subheadline": "Structured visa pathway analysis and readiness reports for Australia.",
   "hero.cta": "Start pathway check",
   "hero.secondary": "Ask the assistant",
   "hero.trustBadge": "Logivisa",
-
   "trustIndicators.gov": "Based on official Australian government sources",
   "trustIndicators.info": "General information only",
   "trustIndicators.languages": "Multilingual support",
   "trustIndicators.referral": "Agent referral available",
-
   "howItWorks.title": "How it works",
   "howItWorks.step1": "Tell us your study, work, skilled, regional or partner pathway goal",
   "howItWorks.step2": "We compare your answers against structured visa information",
   "howItWorks.step3": "See pathways that may be relevant based on the stored information",
   "howItWorks.step4": "Speak with a registered migration agent if needed",
-
   "pathways.badge": "Current coverage",
   "pathways.title": "Supported pathways",
   "pathways.subtitle": "The platform currently uses structured records for these seven visa pathways. Each summary is general information only and should be reviewed with a registered migration agent for personal circumstances.",
@@ -37,7 +33,6 @@
   "pathways.820801.text": "Onshore partner pathway covering temporary 820 and permanent 801 stages.",
   "pathways.485.title": "485 Temporary Graduate visa",
   "pathways.485.text": "Post-study temporary work pathway for recent graduates in Australia who meet relevant criteria.",
-
   "cta.badge": "Explore",
   "cta.title": "Choose a starting point",
   "cta.checker.title": "Pathway checker",
@@ -55,7 +50,6 @@
   "cta.agent.title": "Agent referral",
   "cta.agent.text": "Request to speak with a registered migration agent.",
   "cta.agent.label": "Request referral",
-
   "premiumCta.badge": "Early access",
   "premiumCta.title": "Need a deeper review?",
   "premiumCta.subtitle": "Early access · No payment required during early access.",
@@ -67,24 +61,18 @@
   "premiumCta.full.label": "Generate your readiness report",
   "premiumCta.full.badge": "Early access · Free during early access",
   "premiumCta.full.trustNote": "No payment required during early access.",
-
   "assistantCta.title": "Ask about a supported pathway",
   "assistantCta.text": "The assistant can summarise stored information for 500, 485, 482, 189, 190, 491 and 820/801. It keeps answers to general information only and points you to source records.",
   "assistantCta.label": "Open assistant",
-
   "languages.title": "Multilingual support",
-
   "compliance.title": "Compliance Notice",
   "compliance.text": "This platform provides general information only. It does not make visa decisions, prepare applications, or replace professional review. For personal circumstances, speak with a registered migration agent or Australian legal practitioner.",
-
   "referral.title": "Need personalised help?",
   "referral.text": "We can help you request contact with a registered migration agent after you review general pathway information.",
   "referral.cta": "Request agent referral",
-
   "footer.disclaimer": "For full legal information, view our",
   "footer.legal": "Read full legal disclaimer",
   "footer.generalInfo": "This is general information only and not migration advice.",
-
   "checker.heading": "Visa Pathway Checker",
   "checker.title": "Check my visa options",
   "checker.subtitle": "This questionnaire provides general information only and helps you explore possible pathways.",
@@ -95,7 +83,6 @@
   "checker.educationWork": "Education and work",
   "checker.australiaSituation": "Australia situation",
   "checker.readiness": "Readiness",
-
   "checker.countryOfPassport": "Country of passport",
   "checker.currentResidence": "Current country of residence",
   "checker.age": "Age",
@@ -108,7 +95,6 @@
   "checker.family": "Partner onshore pathway",
   "checker.visit": "Visit Australia",
   "checker.notSure": "Not sure",
-
   "checker.qualification": "Highest qualification",
   "checker.occupation": "Occupation",
   "checker.experience": "Years of work experience",
@@ -117,22 +103,18 @@
   "checker.englishScore": "English score",
   "checker.yes": "Yes",
   "checker.no": "No",
-
   "checker.inAustralia": "Are you currently in Australia?",
   "checker.currentVisa": "Current visa type (if any)",
   "checker.sponsor": "Do you have an Australian employer sponsor?",
   "checker.familyInAustralia": "Do you have a partner/family member in Australia?",
-
   "checker.passport": "Do you have passport?",
   "checker.documents": "Do you have documents ready?",
   "checker.partially": "Partially",
   "checker.timeline": "Timeline",
   "checker.budget": "Budget range",
-
   "checker.back": "Back",
   "checker.continue": "Continue",
   "checker.viewResults": "See general pathway summary",
-
   "results.heading": "General pathway summary",
   "results.title": "Your mock pathway results",
   "results.subtitle": "Based on your answers, the following pathways may be relevant and could be worth reviewing with a registered migration agent.",
@@ -143,7 +125,6 @@
   "results.nextText": "You may want to gather missing documents and discuss these possible pathways with a registered migration agent before making visa decisions.",
   "results.requestReferral": "Request agent referral",
   "results.editAnswers": "Edit questionnaire answers",
-
   "legal.heading": "Legal and Compliance",
   "legal.title": "Information use and platform boundaries",
   "legal.subtitle": "This platform is designed for general pathway information only. It is not a migration advice or legal advice service.",
@@ -154,5 +135,14 @@
   "legal.whatDoesNot": "What this platform does not do",
   "legal.whatDoesNotText1": "Does not provide migration advice or legal advice.",
   "legal.whatDoesNotText2": "Does not confirm visa outcomes or application results.",
-  "legal.whatDoesNotText3": "Does not replace consultation with a registered migration agent."
+  "legal.whatDoesNotText3": "Does not replace consultation with a registered migration agent.",
+  "hero.noCreditCard": "🔒 No credit card required for Beta",
+  "hero.instantPdf": "⚡️ Instant PDF Delivery",
+  "socialProof.dha": "Based on 2026 DHA Data",
+  "socialProof.mara": "MARA Compliance Checked",
+  "socialProof.users": "500+ Beta Users",
+  "fullCheck.whatYouGet.title": "What you'll get",
+  "fullCheck.whatYouGet.points": "Points Calculation",
+  "fullCheck.whatYouGet.roadmap": "Actionable Roadmap",
+  "fullCheck.whatYouGet.risk": "Hidden Risk Analysis"
 }

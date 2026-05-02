@@ -200,80 +200,25 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   return (
     <main className="ambient-bg flex-1 py-12">
       <section className="section-shell space-y-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr] lg:items-start">
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-amber-300">
-                {isFreeActive
-                  ? tx("🎁 Free for 500 Users", "🎁 500 Kullanıcıya Ücretsiz", "🎁 前500名用户免费")
-                  : tx("💎 Premium Report", "💎 Premium Rapor", "💎 高级报告")}
-              </Badge>
-              <Badge variant="outline">{tx("Structured report", "Yapılandırılmış rapor", "结构化报告")}</Badge>
-            </div>
-            <h1 className="text-3xl font-bold sm:text-4xl">
-              {tx("Full Visa Readiness Report", "Tam Vize Hazırlık Raporu", "完整签证准备度报告")}
-            </h1>
-            <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-              {tx(
-                "Structured readiness report with detailed analysis, risks, documents, and preparation insights.",
-                "Yapılandırılmış hazırlık raporu; detaylı analiz, riskler, belgeler ve hazırlık içgörüleri sunar.",
-                "包含详细分析、风险、文件及准备洞察的结构化准备度报告。"
-              )}
-            </p>
-            <p className="max-w-3xl rounded-md border border-primary/20 bg-card px-4 py-3 text-sm text-muted-foreground">
-              {tx(
-                "This is a structured information report based on the details provided.",
-                "Bu rapor, sağlanan ayrıntılara dayalı yapılandırılmış bilgi raporudur.",
-                "本报告是基于您提供信息的结构化信息报告。"
-              )}
-            </p>
-            {isFreeActive ? (
-              <div className="max-w-3xl rounded-xl border border-emerald-300/60 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 space-y-1">
-                <p className="text-sm font-semibold text-emerald-800">
-                  {tx(
-                    "🔥 Exclusive Early Access: $29 Comprehensive Report – FREE for the first 500 users.",
-                    "🔥 Özel Erken Erişim: $29 Kapsamlı Rapor – İlk 500 kullanıcıya ÜCRETSİZ.",
-                    "🔥 独家抢先体验：$29 综合报告 – 前500名用户免费。"
-                  )}
-                </p>
-                <p className="text-xs font-medium text-emerald-700">
-                  {tx(
-                    `Only ${remainingSpots} spots left for the free report.`,
-                    `Ücretsiz rapor için yalnızca ${remainingSpots} kontenjan kaldı.`,
-                    `免费报告仅剩 ${remainingSpots} 个名额。`
-                  )}
-                </p>
-              </div>
-            ) : (
-              <div className="max-w-3xl rounded-xl border border-primary/30 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 space-y-1">
-                <p className="text-sm font-semibold text-foreground">
-                  {tx(
-                    "Free access has ended. Unlock your report for $29.",
-                    "Ücretsiz erişim sona erdi. Raporunuzu $29 ile açın.",
-                    "免费名额已满。解锁报告仅需 $29。"
-                  )}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <Card className="border-primary/40 bg-primary/5">
-            <CardHeader>
-              <CardTitle>
+        <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.5fr_1fr] items-start">
+          {/* Glassmorphism Form Container */}
+          <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/60 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+            <div className="pointer-events-none absolute -mr-16 -mt-16 right-0 top-0 h-48 w-48 rounded-full bg-violet-500/10 blur-[50px]"></div>
+            
+            <div className="mb-6 space-y-3">
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                 {tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className={`rounded-md border px-3 py-2 text-sm font-medium ${
+              </h2>
+              <div className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${
                 isFreeActive
-                  ? "border-emerald-300/60 bg-emerald-50/80 text-emerald-800"
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                   : "border-primary/20 bg-background/80 text-foreground"
               }`}>
                 {isFreeActive
                   ? tx(
-                      `🔥 Limited Offer: $29 Report — FREE for the first 500 users. Only ${remainingSpots} spots left!`,
-                      `🔥 Sınırlı Teklif: $29 Rapor — İlk 500 kullanıcıya ÜCRETSİZ. Yalnızca ${remainingSpots} kontenjan kaldı!`,
-                      `🔥 限时优惠：$29 报告 — 前500名用户免费。仅剩 ${remainingSpots} 个名额！`
+                      `🔥 Limited Offer: FREE for the first 500 users. Only ${remainingSpots} spots left!`,
+                      `🔥 Sınırlı Teklif: İlk 500 kullanıcıya ÜCRETSİZ. Yalnızca ${remainingSpots} kontenjan kaldı!`,
+                      `🔥 限时优惠：前500名用户免费。仅剩 ${remainingSpots} 个名额！`
                     )
                   : tx(
                       "Premium Report — $29 per report.",
@@ -282,60 +227,86 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                     )
                 }
               </div>
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <p className="font-medium text-foreground">
-                  {tx("What this report covers", "Bu rapor neler içerir?", "本报告涉及内容")}
-                </p>
-                <ul className="space-y-1 pl-3">
-                  {(isZh
-                    ? [
-                        "高级功能 - 技能映射与评估机构：评估机构规则及资历后经验逻辑与 ANZSCO 评估模型交叉验证",
-                        "高级功能 - 历史邀请趋势：近期邀请局分数变动及预计等待窗口汇总",
-                        "高级功能 - 偶远地区优势分析：各州偏远地区邮编资格与提名加分映射",
-                        "高级功能 - 文件级具体性：审计级清单，包含护照有效期、NAATI、警察记录及健康证明材料",
-                        "高级功能 - 生活成本预测：基于家庭构成的澳大利亚主要城市生活成本估算",
-                        "高级功能 - 战略甘特图：可视化分步时间轴，涵盖从准备到递交前准备的关键里程碑",
-                        "可下载 PDF",
-                      ]
-                    : isTr
-                    ? [
-                        "Premium Feature - Skill Mapping & Authority: authority-specific rules ve post-qualification deneyim mantigi veri analizi olarak modellenir",
-                        "Premium Feature - Historical Invitation Trends: son invitation trendleri ve tahmini bekleme pencereleri analitik olarak sunulur",
-                        "Premium Feature - Regional Advantage Analysis: eyalet bazli regional postcode ve bonus puan eslesmesi gosterilir",
-                        "Premium Feature - Document-Level Specificity: passport validity, NAATI, police ve health gibi kalemler denetime hazir checklist ile izlenir",
-                        "Premium Feature - Living Cost Projection: aile bazli buyuk AU sehirleri yasam maliyeti projeksiyonu sunulur",
-                        "Premium Feature - Strategic Gantt Chart: adim adim gorsel zaman cizelgesi ile surec kilometre taslari gosterilir",
-                        "İndirilebilir PDF",
-                      ]
-                    : [
-                        "Premium Feature - Skill Mapping & Authority: authority-specific rules and post-qualification logic are modeled as structured data analysis",
-                        "Premium Feature - Historical Invitation Trends: recent invitation point movement and indicative waiting windows are summarized",
-                        "Premium Feature - Regional Advantage Analysis: state-level regional postcode and nomination bonus mapping",
-                        "Premium Feature - Document-Level Specificity: audit-ready checklist including passport validity, NAATI, police and health evidence",
-                        "Premium Feature - Living Cost Projection: family-based cost-of-living estimates for major Australian cities",
-                        "Premium Feature - Strategic Gantt Chart: visual milestone timeline from preparation to pre-lodgement readiness",
-                        "Downloadable PDF",
-                      ]
-                  ).map((item) => (
-                    <li key={item} className="flex gap-2">
-                      <span className="text-primary shrink-0">–</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              {(cameFromReadinessReview || cameFromResults) && (
-                <p className="rounded-md border border-primary/20 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
-                  {isTr
-                    ? `${cameFromResults ? "Hızlı kontrol sonuçlarından" : "Hazırlık incelemesinden"} gelen bilgiler mümkün olan alanlara eklendi. Göndermeden önce alanları düzenleyebilirsiniz.`
-                    : isZh
-                    ? `${cameFromResults ? "快速评估结果" : "准备度预览"}中的信息已尽可能填充。提交前可编辑各字段。`
-                    : `Details from the ${cameFromResults ? "quick check results" : "readiness review"} were added where possible. Fields can be edited before submitting.`}
-                </p>
-              )}
-              <FullCheckWaitlistForm locale={locale} initialValues={initialValues} isFreeActive={isFreeActive} remainingSpots={remainingSpots} />
-            </CardContent>
-          </Card>
+            </div>
+
+            {(cameFromReadinessReview || cameFromResults) && (
+              <p className="mb-6 rounded-xl border border-indigo-100 bg-indigo-50/50 px-4 py-3 text-sm font-medium text-indigo-900 backdrop-blur-sm">
+                {isTr
+                  ? `${cameFromResults ? "Hızlı kontrol sonuçlarından" : "Hazırlık incelemesinden"} gelen bilgiler eklendi. Göndermeden önce düzenleyebilirsiniz.`
+                  : isZh
+                  ? `${cameFromResults ? "快速评估结果" : "准备度预览"}中的信息已填充。提交前可编辑各字段。`
+                  : `Details from the ${cameFromResults ? "quick check" : "readiness review"} were added. Fields can be edited before submitting.`}
+              </p>
+            )}
+            
+            <FullCheckWaitlistForm locale={locale} initialValues={initialValues} isFreeActive={isFreeActive} remainingSpots={remainingSpots} />
+          </div>
+
+          {/* Sidebar: What you'll get */}
+          <div className="space-y-6">
+            <div className="rounded-3xl border border-white/60 bg-white/60 p-6 shadow-xl backdrop-blur-md">
+              <h3 className="text-lg font-bold text-foreground">
+                {tx("What you'll get", "Ne alacaksınız?", "你将获得")}
+              </h3>
+              <ul className="mt-5 space-y-4">
+                <li className="flex items-center gap-3 rounded-lg bg-white/50 p-3 shadow-sm ring-1 ring-black/5">
+                  <span className="text-xl">✨</span>
+                  <span className="text-sm font-medium text-foreground">{tx("Points Calculation", "Puan Hesaplaması", "积分计算")}</span>
+                </li>
+                <li className="flex items-center gap-3 rounded-lg bg-white/50 p-3 shadow-sm ring-1 ring-black/5">
+                  <span className="text-xl">🗺️</span>
+                  <span className="text-sm font-medium text-foreground">{tx("Actionable Roadmap", "Eylem Planı ve Yol Haritası", "可执行的路线图")}</span>
+                </li>
+                <li className="flex items-center gap-3 rounded-lg bg-white/50 p-3 shadow-sm ring-1 ring-black/5">
+                  <span className="text-xl">🔍</span>
+                  <span className="text-sm font-medium text-foreground">{tx("Hidden Risk Analysis", "Gizli Risk Analizi", "潜在风险分析")}</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-border/50 bg-muted/20 p-5">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {tx("Detailed Coverage", "Detaylı Kapsam", "详细内容")}
+              </p>
+              <ul className="space-y-2 text-xs text-muted-foreground">
+                {(isZh
+                  ? [
+                      "高级功能 - 技能映射与评估机构",
+                      "高级功能 - 历史邀请趋势",
+                      "高级功能 - 偶远地区优势分析",
+                      "高级功能 - 文件级具体性",
+                      "高级功能 - 生活成本预测",
+                      "高级功能 - 战略甘特图",
+                      "可下载 PDF",
+                    ]
+                  : isTr
+                  ? [
+                      "Premium Feature - Skill Mapping & Authority",
+                      "Premium Feature - Historical Invitation Trends",
+                      "Premium Feature - Regional Advantage Analysis",
+                      "Premium Feature - Document-Level Specificity",
+                      "Premium Feature - Living Cost Projection",
+                      "Premium Feature - Strategic Gantt Chart",
+                      "İndirilebilir PDF",
+                    ]
+                  : [
+                      "Premium Feature - Skill Mapping & Authority",
+                      "Premium Feature - Historical Invitation Trends",
+                      "Premium Feature - Regional Advantage Analysis",
+                      "Premium Feature - Document-Level Specificity",
+                      "Premium Feature - Living Cost Projection",
+                      "Premium Feature - Strategic Gantt Chart",
+                      "Downloadable PDF",
+                    ]
+                ).map((item) => (
+                  <li key={item} className="flex gap-2 leading-relaxed">
+                    <span className="shrink-0 text-violet-500">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
 
         <Card>

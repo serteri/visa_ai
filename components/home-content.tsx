@@ -113,42 +113,81 @@ export function HomeContent() {
   const { t } = useTranslation();
 
   return (
-    <section className="section-shell space-y-10">
-      <section className="grid gap-8 rounded-2xl border border-border/60 bg-white/80 p-6 shadow-[0_18px_50px_-24px_rgba(2,6,23,0.35)] backdrop-blur md:grid-cols-[1.1fr_0.9fr] md:p-10">
-        <div className="space-y-5">
-          <Badge variant="secondary">{t("hero.trustBadge")}</Badge>
-          <h1 className="text-3xl font-bold leading-tight text-foreground sm:text-5xl">
-            {t("hero.headline")}
-          </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {t("hero.subheadline")}
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href={`/${locale}/checker`}>{t("hero.cta")}</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-              <Link href={`/${locale}/assistant`}>{t("hero.secondary")}</Link>
-            </Button>
+    <section className="section-shell space-y-12">
+      {/* Hero Container */}
+      <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/40 p-6 shadow-2xl backdrop-blur-xl md:p-14">
+        {/* Subtle Grid & Mesh Gradient Background */}
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+        <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[300px] w-[600px] -translate-x-1/2 rounded-full bg-blue-500/10 blur-[80px]"></div>
+
+        <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+          <div className="space-y-6">
+            <Badge variant="secondary" className="bg-indigo-50/50 text-indigo-700 hover:bg-indigo-50/80 border-indigo-200/50">
+              {t("hero.trustBadge")}
+            </Badge>
+            
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:leading-[1.1]">
+              <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+                {t("hero.headline")}
+              </span>
+            </h1>
+            
+            <p className="max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+              {t("hero.subheadline")}
+            </p>
+            
+            <div className="space-y-4 pt-2">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg" className="group w-full sm:w-auto bg-violet-600 text-white hover:bg-violet-700 shadow-[0_0_40px_-10px_rgba(124,58,237,0.5)] transition-all hover:shadow-[0_0_60px_-15px_rgba(124,58,237,0.7)] hover:scale-[1.02]">
+                  <Link href={`/${locale}/checker`} className="flex items-center gap-2">
+                    {t("hero.cta")}
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-white/50 backdrop-blur-sm hover:bg-white/80 transition-all">
+                  <Link href={`/${locale}/assistant`}>{t("hero.secondary")}</Link>
+                </Button>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base">🔒</span> {t("hero.noCreditCard")}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base">⚡️</span> {t("hero.instantPdf")}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/60 bg-white/60 p-6 shadow-xl backdrop-blur-md">
+            <h2 className="mb-5 text-lg font-semibold">{t("hero.headline")}</h2>
+            <div className="space-y-3">
+              {trustIndicatorKeys.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={item.key}
+                    className="flex items-center gap-3 rounded-xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-black/5"
+                  >
+                    <Icon className="size-5 text-violet-600" />
+                    <span className="text-sm font-medium">{t(item.key)}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
+      </section>
 
-        <div className="grid-veil rounded-xl border border-border/60 bg-[#f8fbff] p-6">
-          <h2 className="mb-4 text-lg font-semibold">{t("hero.headline")}</h2>
-          <div className="space-y-3">
-            {trustIndicatorKeys.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.key}
-                  className="flex items-center gap-3 rounded-lg bg-white/80 px-4 py-3"
-                >
-                  <Icon className="size-4 text-primary" />
-                  <span className="text-sm font-medium">{t(item.key)}</span>
-                </div>
-              );
-            })}
-          </div>
+      {/* Social Proof Strip */}
+      <section className="flex flex-wrap items-center justify-center gap-8 border-y border-border/40 bg-muted/20 py-6 text-sm font-medium text-muted-foreground sm:gap-16">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">📊</span> {t("socialProof.dha")}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-lg">🛡️</span> {t("socialProof.mara")}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-lg">👥</span> {t("socialProof.users")}
         </div>
       </section>
 

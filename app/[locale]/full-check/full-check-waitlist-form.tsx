@@ -344,9 +344,9 @@ export function FullCheckWaitlistForm({
   }
 
   const fieldClassName =
-    "h-12 rounded-xl border-border/70 bg-background/80 px-4 shadow-sm transition focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "h-12 rounded-xl border-input bg-card px-4 shadow-sm transition-all outline-none focus-visible:border-violet-500 focus-visible:ring-4 focus-visible:ring-violet-500/20";
   const selectClassName =
-    "h-12 w-full rounded-xl border border-border/70 bg-background/80 px-4 text-sm shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "h-12 w-full rounded-xl border border-input bg-card px-4 text-base shadow-sm transition-all outline-none focus-visible:border-violet-500 focus-visible:ring-4 focus-visible:ring-violet-500/20";
 
   return (
     <div className="space-y-6">
