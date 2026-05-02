@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Info } from "lucide-react";
 import { useMemo, useReducer, useState } from "react";
 import type { ReactNode } from "react";
 
@@ -63,41 +64,36 @@ const PARTNER = [
   },
 ] as const;
 
+// ─── Tooltip content ───────────────────────────────────────────────────────────
+
+const TIPS = {
+  ausStudy:
+    "Requires completion of a CRICOS-registered course in Australia taking at least 2 academic years (92 weeks) of study.",
+  naati:
+    "Requires passing the official NAATI CCL test. You cannot claim this just by speaking a second language natively.",
+  partner:
+    "To claim 10 points for skills, your partner must be under 45, have Competent English, and pass a skills assessment in an occupation on the same skilled list.",
+  professionalYear:
+    "A structured 12-month professional development program completed in Australia for Accounting, IT, or Engineering graduates.",
+} as const;
+
 // ─── State & reducer ───────────────────────────────────────────────────────────
 
 type StrField =
-  | "subclass"
-  | "age"
-  | "english"
-  | "overseasExp"
-  | "ausExp"
-  | "education"
-  | "partner";
+  | "subclass" | "age" | "english"
+  | "overseasExp" | "ausExp" | "education" | "partner";
 
 type BoolField =
-  | "ausStudy"
-  | "specialistEdu"
-  | "naati"
-  | "regionalStudy"
-  | "professionalYear"
-  | "nomination";
+  | "ausStudy" | "specialistEdu" | "naati"
+  | "regionalStudy" | "professionalYear" | "nomination";
 
 type FormState = Record<StrField, string> & Record<BoolField, boolean | null>;
 
 const INIT: FormState = {
-  subclass: "",
-  age: "",
-  english: "",
-  overseasExp: "",
-  ausExp: "",
-  education: "",
-  partner: "",
-  ausStudy: null,
-  specialistEdu: null,
-  naati: null,
-  regionalStudy: null,
-  professionalYear: null,
-  nomination: null,
+  subclass: "", age: "", english: "",
+  overseasExp: "", ausExp: "", education: "", partner: "",
+  ausStudy: null, specialistEdu: null, naati: null,
+  regionalStudy: null, professionalYear: null, nomination: null,
 };
 
 type Action =
@@ -105,6 +101,10 @@ type Action =
   | { kind: "bool"; field: BoolField; value: boolean };
 
 function reducer(state: FormState, action: Action): FormState {
+  // Subclass change resets nomination so the new question starts fresh
+  if (action.kind === "str" && action.field === "subclass") {
+    return { ...state, subclass: action.value, nomination: null };
+  }
   return { ...state, [action.field]: action.value };
 }
 
@@ -136,7 +136,7 @@ function calculate(form: FormState) {
   const partner = lookup(PARTNER, form.partner);
   const professionalYear = form.professionalYear === true ? 5 : 0;
 
-  // Nomination points depend on the chosen subclass
+  // Nomination points are gated on which subclass was selected
   const nomination =
     form.nomination === true
       ? form.subclass === "190"
@@ -172,7 +172,9 @@ function scoreGradient(n: number): string {
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
-      className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+      className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${
+        open ? "rotate-180" : ""
+      }`}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -183,10 +185,26 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
+/**
+ * Inline callout that expands in the normal document flow —
+ * no absolute positioning so it's safe inside overflow:hidden containers.
+ */
+function InfoCallout({ text }: { text: string }) {
+  return (
+    <div className="flex gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs leading-relaxed text-blue-700">
+      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue-400" />
+      <span>{text}</span>
+    </div>
+  );
+}
+
+// ─── Field components ──────────────────────────────────────────────────────────
+
 function SelectField({
   id,
   label,
   hint,
+  tooltip,
   options,
   value,
   onChange,
@@ -194,18 +212,51 @@ function SelectField({
   id: string;
   label: string;
   hint?: string;
+  tooltip?: string;
   options: readonly { label: string; value: string; points: number }[];
   value: string;
   onChange: (v: string) => void;
 }) {
+  const [tipOpen, setTipOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-semibold text-slate-700">
-        {label}
-        {hint && (
-          <span className="ml-1.5 text-xs font-normal text-slate-400">{hint}</span>
+      {/* Label row */}
+      <div className="flex items-start gap-2">
+        <label
+          htmlFor={id}
+          className="flex-1 text-sm font-semibold leading-snug text-slate-700"
+        >
+          {label}
+          {hint && (
+            <span className="ml-1.5 text-xs font-normal text-slate-400">{hint}</span>
+          )}
+        </label>
+        {tooltip && (
+          <button
+            type="button"
+            onMouseEnter={() => setTipOpen(true)}
+            onMouseLeave={() => setTipOpen(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setTipOpen((o) => !o);
+            }}
+            aria-label="More information"
+            className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors ${
+              tipOpen
+                ? "bg-blue-500 text-white"
+                : "bg-slate-200 text-slate-500 hover:bg-blue-100 hover:text-blue-600"
+            }`}
+          >
+            <Info className="h-2.5 w-2.5" />
+          </button>
         )}
-      </label>
+      </div>
+
+      {/* Inline tooltip callout */}
+      {tooltip && tipOpen && <InfoCallout text={tooltip} />}
+
+      {/* Select */}
       <div className="relative">
         <select
           id={id}
@@ -233,22 +284,53 @@ function SelectField({
 function YesNoField({
   label,
   hint,
+  tooltip,
   value,
   onChange,
 }: {
   label: string;
   hint?: string;
+  tooltip?: string;
   value: boolean | null;
   onChange: (v: boolean) => void;
 }) {
+  const [tipOpen, setTipOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-sm font-semibold text-slate-700">
-        {label}
-        {hint && (
-          <span className="ml-1.5 text-xs font-normal text-slate-400">{hint}</span>
+      {/* Label row */}
+      <div className="flex items-start gap-2">
+        <span className="flex-1 text-sm font-semibold leading-snug text-slate-700">
+          {label}
+          {hint && (
+            <span className="ml-1.5 text-xs font-normal text-slate-400">{hint}</span>
+          )}
+        </span>
+        {tooltip && (
+          <button
+            type="button"
+            onMouseEnter={() => setTipOpen(true)}
+            onMouseLeave={() => setTipOpen(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setTipOpen((o) => !o);
+            }}
+            aria-label="More information"
+            className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors ${
+              tipOpen
+                ? "bg-blue-500 text-white"
+                : "bg-slate-200 text-slate-500 hover:bg-blue-100 hover:text-blue-600"
+            }`}
+          >
+            <Info className="h-2.5 w-2.5" />
+          </button>
         )}
-      </span>
+      </div>
+
+      {/* Inline tooltip callout */}
+      {tooltip && tipOpen && <InfoCallout text={tooltip} />}
+
+      {/* Yes / No buttons */}
       <div className="flex gap-2">
         {([true, false] as const).map((v) => (
           <button
@@ -473,8 +555,8 @@ export function PointsCalculatorClient({ locale }: { locale: string }) {
               />
               {calc.isCapped && (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
-                  <strong>DHA Cap Applied:</strong> Your combined overseas + Australian employment (
-                  {calc.rawOverseas + calc.rawAus} pts) has been capped at{" "}
+                  <strong>DHA Cap Applied:</strong> Your combined overseas + Australian
+                  employment ({calc.rawOverseas + calc.rawAus} pts) has been capped at{" "}
                   <strong>20 pts</strong> per official DHA rules.
                 </div>
               )}
@@ -491,11 +573,12 @@ export function PointsCalculatorClient({ locale }: { locale: string }) {
               />
             </Section>
 
-            {/* Step 7: Australian study */}
+            {/* Step 7: Australian study requirement — has tooltip */}
             <Section step={7} title="Australian Study Requirement">
               <YesNoField
                 label="Have you completed at least 2 years of study in Australia leading to your qualification?"
                 hint="(+5 pts)"
+                tooltip={TIPS.ausStudy}
                 value={form.ausStudy}
                 onChange={bool("ausStudy")}
               />
@@ -511,11 +594,12 @@ export function PointsCalculatorClient({ locale }: { locale: string }) {
               />
             </Section>
 
-            {/* Step 9: NAATI */}
+            {/* Step 9: NAATI — has tooltip */}
             <Section step={9} title="Credentialled Community Language">
               <YesNoField
                 label="Do you hold a Credentialled Community Language (NAATI) credential?"
                 hint="(+5 pts)"
+                tooltip={TIPS.naati}
                 value={form.naati}
                 onChange={bool("naati")}
               />
@@ -531,28 +615,30 @@ export function PointsCalculatorClient({ locale }: { locale: string }) {
               />
             </Section>
 
-            {/* Step 11: Partner skills */}
+            {/* Step 11: Partner skills — has tooltip */}
             <Section step={11} title="Partner Skills">
               <SelectField
                 id="partner"
                 label="What is your partner's situation?"
+                tooltip={TIPS.partner}
                 options={PARTNER}
                 value={form.partner}
                 onChange={str("partner")}
               />
             </Section>
 
-            {/* Step 12: Professional year */}
+            {/* Step 12: Professional year — has tooltip */}
             <Section step={12} title="Professional Year in Australia">
               <YesNoField
                 label="Have you completed a Professional Year in Australia?"
                 hint="(+5 pts)"
+                tooltip={TIPS.professionalYear}
                 value={form.professionalYear}
                 onChange={bool("professionalYear")}
               />
             </Section>
 
-            {/* Step 13: Nomination (conditional — 190 or 491 only) */}
+            {/* Step 13: Nomination — dynamic, only for 190 / 491 */}
             {showNomination && (
               <Section
                 step={13}
