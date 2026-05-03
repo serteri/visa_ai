@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Info } from "lucide-react";
 import { useMemo, useReducer, useState } from "react";
 import type { ReactNode } from "react";
+import type { Occupation } from "@/lib/occupations";
 
 // ─── DHA point tables ──────────────────────────────────────────────────────────
 
@@ -419,7 +420,7 @@ function ScoreRow({
 
 // ─── Main component ────────────────────────────────────────────────────────────
 
-export function PointsCalculatorClient({ locale, hideHeader }: { locale: string; hideHeader?: boolean }) {
+export function PointsCalculatorClient({ locale, hideHeader, occupation }: { locale: string; hideHeader?: boolean; occupation?: Occupation }) {
   const [form, dispatch] = useReducer(reducer, INIT);
 
   function str(field: StrField) {
@@ -753,24 +754,56 @@ export function PointsCalculatorClient({ locale, hideHeader }: { locale: string;
               </div>
             </div>
 
-            {/* Marketing hook */}
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <p className="mb-4 text-sm leading-relaxed text-slate-600">
-                <span className="font-bold text-slate-800">
-                  ⚠️ Points are assessed at the time of invitation.
-                </span>{" "}
-                Hidden occupation limits and competition can{" "}
-                <strong>drastically change</strong> your real outcome.
-              </p>
-              <Link
-                href={`/${locale}/full-check`}
-                className="group block w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3.5 text-center text-sm font-bold text-white shadow-md transition hover:from-blue-500 hover:to-indigo-500 hover:shadow-[0_4px_20px_rgba(99,102,241,0.35)] active:scale-[0.98]"
-              >
-                Unlock Full 7-Page Readiness &amp; Risk Report{" "}
-                <span className="inline-block transition-transform group-hover:translate-x-1">
-                  ➔
-                </span>
-              </Link>
+            {/* Insights & Risks */}
+            {(form.age === "25-32" || (occupation && calc.total < occupation.recentCutoff) || (occupation?.assessingAuthority === "ACS" && (calc.rawOverseas > 0 || calc.rawAus > 0))) && (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
+                <h3 className="mb-4 text-sm font-bold text-red-900 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                  Insights &amp; Risks
+                </h3>
+                <div className="flex flex-col gap-3">
+                  {occupation && calc.total < occupation.recentCutoff && (
+                    <div className="rounded-lg bg-white/60 p-3 text-sm text-red-800 border border-red-100">
+                      ⚠️ <strong>Market Reality:</strong> Puanınız yasal barajı (65) geçiyor ancak son 6 ayda {occupation.title} için davetler {occupation.recentCutoff} puanda kapattı. Şu anki profilinizle bekleme süreniz belirsiz olabilir.
+                    </div>
+                  )}
+                  {form.age === "25-32" && (
+                    <div className="rounded-lg bg-white/60 p-3 text-sm text-amber-800 border border-amber-200">
+                      ⏳ <strong>Age Cliff:</strong> Kritik Uyarı: Yaş puanınız şu an maksimumda (+30). Ancak 33 yaşınıza girdiğiniz gün 5 puan kaybedeceksiniz. Zaman aleyhinize işliyor.
+                    </div>
+                  )}
+                  {occupation?.assessingAuthority === "ACS" && (calc.rawOverseas > 0 || calc.rawAus > 0) && (
+                    <div className="rounded-lg bg-white/60 p-3 text-sm text-red-800 border border-red-100">
+                      📉 <strong>Experience Deduction:</strong> Dikkat: ACS (Australian Computer Society) eğitim açığınızı kapatmak için geçmiş tecrübenizin 2 ila 4 yılını silebilir. Girdiğiniz tecrübe puanı eksik sayılabilir.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Premium Marketing Hook -> The Hook */}
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-[1px] shadow-lg">
+              <div className="relative rounded-[11px] bg-slate-900 p-6 text-center">
+                <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-indigo-500/20 blur-[40px]"></div>
+                <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-blue-500/20 blur-[40px]"></div>
+                
+                <p className="relative z-10 mb-4 text-xs font-semibold uppercase tracking-wider text-indigo-300">
+                  Hangi eyaletler size daha uygun? Eksik puanları nasıl tamamlarsınız?
+                </p>
+                <Link
+                  href={`/${locale}/full-check`}
+                  className="group relative z-10 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 text-sm font-bold text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all hover:from-blue-500 hover:to-indigo-500 hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-[0.98]"
+                >
+                  <span className="relative flex h-3 w-3">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex h-3 w-3 rounded-full bg-white"></span>
+                  </span>
+                  Unlock Your Full Visa Strategy Report
+                  <span className="inline-block transition-transform group-hover:translate-x-1">
+                    ➔
+                  </span>
+                </Link>
+              </div>
             </div>
 
             {/* Trust row */}

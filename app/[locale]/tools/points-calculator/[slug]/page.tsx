@@ -68,7 +68,7 @@ export default async function OccupationPointsCalculatorPage({ params }: PagePro
         </p>
       </div>
       
-      <PointsCalculatorClient locale={locale} hideHeader={true} />
+      <PointsCalculatorClient locale={locale} hideHeader={true} occupation={occupation} />
     </div>
   );
 }
