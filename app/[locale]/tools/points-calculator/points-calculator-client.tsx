@@ -451,6 +451,46 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
   const nominationLabel =
     form.subclass === "190" ? "State / territory nomination" : "Nomination or sponsorship";
 
+  const isTr = locale === "tr";
+  const i18n = {
+    insightsTitle: isTr ? "Analiz & Riskler" : "Insights & Risks",
+    marketReality: (title: string, cutoff: number) => isTr 
+      ? `⚠️ Rekabet Gerçeği: Puanınız yasal barajı (65) geçiyor ancak son 6 ayda ${title} için davetler ${cutoff} puanda kapattı. Şu anki profilinizle bekleme süreniz belirsiz olabilir.`
+      : `⚠️ Market Reality: Your score passes the legal threshold (65), but invitations for ${title} recently closed at ${cutoff} points. Waiting times may be uncertain.`,
+    ageCliff: isTr 
+      ? "⏳ Yaş Uçurumu: Yaş puanınız şu an maksimumda (+30). 33 yaşına girdiğiniz gün 5 puan kaybedeceksiniz. Zaman aleyhinize işliyor." 
+      : "⏳ Age Point Cliff: You are currently at maximum age points (+30). You will lose 5 points the day you turn 33. Time is of the essence.",
+    experienceDeduction: isTr 
+      ? "📉 Tecrübe Kesintisi Riski: ACS gibi değerlendirme kurumları, yetenek denkliği için yurt dışı tecrübenizden 2 ila 4 yıl silebilir." 
+      : "📉 Experience Deduction Risk: Assessing authorities like ACS may deduct 2 to 4 years of your overseas work experience to meet skill requirements.",
+    stateNomination: isTr 
+      ? "🏙️ Eyalet Öncelikleri: Eyalet sponsorluğu (+5 veya +15 puan) seçmek daveti garanti etmez. Eyaletler genellikle kendi bölgelerinde yaşayan (onshore) adaylara öncelik verir." 
+      : "🏙️ State Prioritization: Selecting a state nominated visa (+5 or +15 points) does not guarantee an invite. States heavily prioritize onshore candidates currently living in their region.",
+    maraDisclaimer: isTr 
+      ? "Yasal Uyarı: Bu araç, genel DHA kurallarına dayalı otomatik algoritmik tahminler sunar ve resmi göçmenlik tavsiyesi niteliği taşımaz. Profesyonel ve yasal yönlendirme için lütfen kayıtlı bir MARA acentesine danışın." 
+      : "Disclaimer: This tool provides automated algorithmic estimates based on general DHA guidelines. It does not constitute official migration advice. Please consult a registered MARA agent for legal and professional guidance.",
+    hookSubtitle: isTr 
+      ? "Hangi eyaletler size daha uygun? Eksik puanları nasıl tamamlarsınız?" 
+      : "Which states are suitable for you? How can you make up missing points?",
+    hookCta: isTr 
+      ? "Detaylı Vize Strateji Raporunu Aç" 
+      : "Unlock Your Full Visa Strategy Report"
+  };
+
+  const activeRisks: string[] = [];
+  if (occupation && calc.total < occupation.recentCutoff) {
+    activeRisks.push(i18n.marketReality(occupation.title, occupation.recentCutoff));
+  }
+  if (form.age === "25-32") {
+    activeRisks.push(i18n.ageCliff);
+  }
+  if (occupation?.experienceRisk && (calc.rawOverseas > 0 || calc.rawAus > 0)) {
+    activeRisks.push(i18n.experienceDeduction);
+  }
+  if (showNomination && form.nomination) {
+    activeRisks.push(i18n.stateNomination);
+  }
+
   return (
     <main className={`min-h-screen bg-slate-50 ${hideHeader ? 'pt-8' : 'pt-28'} pb-20`}>
       {/* Ambient blobs */}
@@ -755,28 +795,35 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
             </div>
 
             {/* Insights & Risks */}
-            {(form.age === "25-32" || (occupation && calc.total < occupation.recentCutoff) || (occupation?.assessingAuthority === "ACS" && (calc.rawOverseas > 0 || calc.rawAus > 0))) && (
+            {activeRisks.length > 0 && (
               <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
                 <h3 className="mb-4 text-sm font-bold text-red-900 flex items-center gap-2">
                   <svg className="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                  Insights &amp; Risks
+                  {i18n.insightsTitle}
                 </h3>
-                <div className="flex flex-col gap-3">
-                  {occupation && calc.total < occupation.recentCutoff && (
-                    <div className="rounded-lg bg-white/60 p-3 text-sm text-red-800 border border-red-100">
-                      ⚠️ <strong>Market Reality:</strong> Puanınız yasal barajı (65) geçiyor ancak son 6 ayda {occupation.title} için davetler {occupation.recentCutoff} puanda kapattı. Şu anki profilinizle bekleme süreniz belirsiz olabilir.
-                    </div>
-                  )}
-                  {form.age === "25-32" && (
-                    <div className="rounded-lg bg-white/60 p-3 text-sm text-amber-800 border border-amber-200">
-                      ⏳ <strong>Age Cliff:</strong> Kritik Uyarı: Yaş puanınız şu an maksimumda (+30). Ancak 33 yaşınıza girdiğiniz gün 5 puan kaybedeceksiniz. Zaman aleyhinize işliyor.
-                    </div>
-                  )}
-                  {occupation?.assessingAuthority === "ACS" && (calc.rawOverseas > 0 || calc.rawAus > 0) && (
-                    <div className="rounded-lg bg-white/60 p-3 text-sm text-red-800 border border-red-100">
-                      📉 <strong>Experience Deduction:</strong> Dikkat: ACS (Australian Computer Society) eğitim açığınızı kapatmak için geçmiş tecrübenizin 2 ila 4 yılını silebilir. Girdiğiniz tecrübe puanı eksik sayılabilir.
-                    </div>
-                  )}
+                <div className="flex flex-col gap-2">
+                  {activeRisks.map((risk, idx) => {
+                    const parts = risk.split(": ");
+                    const label = parts[0];
+                    const description = parts.slice(1).join(": ");
+                    const isAge = label.includes("Age") || label.includes("Yaş");
+                    const isState = label.includes("State") || label.includes("Eyalet");
+
+                    let colorClass = "text-red-800 border-red-100 bg-white/60";
+                    if (isAge) colorClass = "text-amber-800 border-amber-200 bg-white/60";
+                    else if (isState) colorClass = "text-blue-800 border-blue-200 bg-white/60";
+
+                    return (
+                      <div key={idx} className={`rounded-lg p-3 text-sm border ${colorClass}`}>
+                        <strong>{label}:</strong> {description}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mt-4 border-t border-red-200/50 pt-4">
+                  <p className="text-xs text-red-900/60 leading-relaxed italic">
+                    {i18n.maraDisclaimer}
+                  </p>
                 </div>
               </div>
             )}
@@ -788,7 +835,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                 <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-blue-500/20 blur-[40px]"></div>
                 
                 <p className="relative z-10 mb-4 text-xs font-semibold uppercase tracking-wider text-indigo-300">
-                  Hangi eyaletler size daha uygun? Eksik puanları nasıl tamamlarsınız?
+                  {i18n.hookSubtitle}
                 </p>
                 <Link
                   href={`/${locale}/full-check`}
@@ -798,7 +845,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
                     <span className="relative inline-flex h-3 w-3 rounded-full bg-white"></span>
                   </span>
-                  Unlock Your Full Visa Strategy Report
+                  {i18n.hookCta}
                   <span className="inline-block transition-transform group-hover:translate-x-1">
                     ➔
                   </span>
