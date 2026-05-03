@@ -9,9 +9,10 @@ import { languages } from "@/lib/languages";
 
 interface LanguageSelectorProps {
   currentLocale: string;
+  compact?: boolean;
 }
 
-export function LanguageSelector({ currentLocale }: LanguageSelectorProps) {
+export function LanguageSelector({ currentLocale, compact = false }: LanguageSelectorProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -31,15 +32,20 @@ export function LanguageSelector({ currentLocale }: LanguageSelectorProps) {
     setIsOpen(false);
   }
 
+  const compactCode = currentLocale.slice(0, 2).toUpperCase();
+
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring/60"
+        className={cn(
+          "flex items-center rounded-md border border-border bg-card transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring/60",
+          compact ? "gap-1.5 px-2.5 py-1.5 text-xs font-medium" : "gap-2 px-3 py-2 text-sm"
+        )}
       >
         <Globe className="size-4" />
-        <span>{currentLanguage ? `${currentLanguage.flag} ${currentLanguage.localLabel}` : currentLocale}</span>
-        <ChevronDown className={cn("size-4 transition-transform", isOpen && "rotate-180")} />
+        <span className={cn(compact && "whitespace-nowrap font-semibold tracking-wide")}>{compact ? compactCode : currentLanguage ? `${currentLanguage.flag} ${currentLanguage.localLabel}` : currentLocale}</span>
+        {!compact && <ChevronDown className={cn("size-4 transition-transform", isOpen && "rotate-180")} />}
       </button>
 
       {isOpen && (

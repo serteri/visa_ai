@@ -37,19 +37,20 @@ export function Header({
   const pointsCalcLabel = isTr ? "Puan Hesapla" : isZh ? "算分器" : "Points Calculator";
 
   return (
-    <header className="fixed left-1/2 top-8 z-50 w-[95%] max-w-4xl -translate-x-1/2 rounded-full border border-gray-200/50 bg-white/70 px-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/70 md:px-6">
-      <nav className="flex h-14 items-center justify-between">
+    <header className="fixed inset-x-0 top-8 z-50">
+      <div className="relative mx-auto w-[95%] max-w-7xl rounded-2xl border border-gray-200/50 bg-white/70 px-8 py-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/70">
+        <nav className="flex items-center justify-between">
         <Link href={`/${locale}`} className="text-xl font-extrabold tracking-tight text-indigo-900 dark:text-white">
           Logi<span className="text-violet-600">Visa</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex md:items-center md:gap-6">
+        <div className="hidden md:flex md:items-center md:gap-6 lg:gap-8">
           {/* Visas dropdown */}
           <div className="group relative">
             <button
               type="button"
-              className="flex items-center gap-1 text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
             >
               {visasLabel}
               <svg
@@ -77,42 +78,42 @@ export function Header({
 
           <Link
             href={`/${locale}/checker`}
-            className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
           >
             {checkerLabel}
           </Link>
           <Link
             href={`/${locale}/assistant`}
-            className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
           >
             {assistantLabel}
           </Link>
           <Link
             href={`/${locale}/tools/points-calculator`}
-            className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-500 dark:text-slate-300 dark:hover:text-white"
+            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-500 dark:text-slate-300 dark:hover:text-white"
           >
             {pointsCalcLabel}
           </Link>
           <Link
             href={`/${locale}/full-check`}
-            className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
           >
             {fullReportLabel}
           </Link>
           {showAdmin ? (
             <Link
               href={`/${locale}/admin/dashboard`}
-              className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
             >
               {adminLabel}
             </Link>
           ) : null}
           
           <div className="ml-2 flex items-center gap-4 border-l border-slate-200 pl-6 dark:border-white/10">
-            <LanguageSelector currentLocale={locale} />
+            <LanguageSelector currentLocale={locale} compact />
             <Button
               asChild
-              className="h-8 rounded-full bg-gradient-to-r from-zinc-800 to-zinc-900 px-4 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900 border-0"
+              className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-4 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
             >
               <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
             </Button>
@@ -203,6 +204,7 @@ export function Header({
           </div>
         </div>
       )}
+      </div>
     </header>
   );
 }
