@@ -9,7 +9,12 @@
       "Bash(npx tsc *)",
       "Bash(npx next *)",
       "Bash(git commit *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(xargs ls *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\" -Recurse -Depth 2)",
+      "Bash(Select-Object -First 50)"
     ]
   }
 }

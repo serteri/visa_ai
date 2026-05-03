@@ -419,7 +419,7 @@ function ScoreRow({
 
 // ─── Main component ────────────────────────────────────────────────────────────
 
-export function PointsCalculatorClient({ locale }: { locale: string }) {
+export function PointsCalculatorClient({ locale, hideHeader }: { locale: string; hideHeader?: boolean }) {
   const [form, dispatch] = useReducer(reducer, INIT);
 
   function str(field: StrField) {
@@ -451,7 +451,7 @@ export function PointsCalculatorClient({ locale }: { locale: string }) {
     form.subclass === "190" ? "State / territory nomination" : "Nomination or sponsorship";
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 pb-20">
+    <main className={`min-h-screen bg-slate-50 ${hideHeader ? 'pt-8' : 'pt-28'} pb-20`}>
       {/* Ambient blobs */}
       <div
         aria-hidden
@@ -463,21 +463,23 @@ export function PointsCalculatorClient({ locale }: { locale: string }) {
 
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Page header */}
-        <div className="mb-10 text-center">
-          <span className="inline-block rounded-full border border-blue-200 bg-blue-50 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-600">
-            Free Tool · Official 2026 DHA Points Table
-          </span>
-          <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            Australia Visa{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Points Test Calculator
+        {!hideHeader && (
+          <div className="mb-10 text-center">
+            <span className="inline-block rounded-full border border-blue-200 bg-blue-50 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-600">
+              Free Tool · Official 2026 DHA Points Table
             </span>
-          </h1>
-          <p className="mx-auto mt-3 max-w-xl text-base text-slate-500">
-            Calculate your skilled migration score for subclass{" "}
-            <strong>189, 190 &amp; 491</strong> using all official DHA factors.
-          </p>
-        </div>
+            <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+              Australia Visa{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Points Test Calculator
+              </span>
+            </h1>
+            <p className="mx-auto mt-3 max-w-xl text-base text-slate-500">
+              Calculate your skilled migration score for subclass{" "}
+              <strong>189, 190 &amp; 491</strong> using all official DHA factors.
+            </p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           {/* ── LEFT: Form ──────────────────────────────────────────────── */}
