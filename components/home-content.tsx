@@ -32,9 +32,9 @@ export function HomeContent() {
           </Badge>
           
           <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-7xl lg:leading-[1.1]">
-            <span className="block">{t("hero.headline").split(" ")[0]} {t("hero.headline").split(" ")[1]}</span>
+            <span className="block">Logi<span className="text-violet-600">Visa</span></span>
             <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
-              {t("hero.headline").split(" ").slice(2).join(" ") || "Your Visa Roadmap"}
+              {locale === "tr" ? "Vize Yol Haritanız" : locale === "zh-Hans" ? "您的签证路线图" : "Your Visa Roadmap"}
             </span>
           </h1>
           
@@ -52,6 +52,21 @@ export function HomeContent() {
               <Link href={`/${locale}/assistant`}>{t("hero.secondary")}</Link>
             </Button>
           </div>
+
+          {/* Secondary micro-tool CTA */}
+          <p className="mt-5 text-sm text-slate-400">
+            <Link
+              href={`/${locale}/tools/points-calculator`}
+              className="inline-flex items-center gap-1 font-medium text-indigo-500 transition-colors hover:text-indigo-700"
+            >
+              {locale === "tr"
+                ? "Ücretsiz Puan Hesaplayıcıyı Dene"
+                : locale === "zh-Hans"
+                  ? "试用免费算分器"
+                  : "Try Free Points Calculator"}{" "}
+              ➔
+            </Link>
+          </p>
 
           {/* Trust Signals under CTA */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400 sm:gap-10">

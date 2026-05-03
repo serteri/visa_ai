@@ -34,6 +34,7 @@ export function Header({
   const visasLabel = isTr ? "Vizeler" : isZh ? "签证" : "Visas";
   const adminLabel = "Admin";
   const getReportLabel = isTr ? "Ücretsiz Rapor Al" : isZh ? "获取免费报告" : "Get Free Report";
+  const pointsCalcLabel = isTr ? "Puan Hesapla" : isZh ? "算分器" : "Points Calculator";
 
   return (
     <header className="fixed left-1/2 top-8 z-50 w-[95%] max-w-4xl -translate-x-1/2 rounded-full border border-gray-200/50 bg-white/70 px-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/70 md:px-6">
@@ -85,6 +86,12 @@ export function Header({
             className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
           >
             {assistantLabel}
+          </Link>
+          <Link
+            href={`/${locale}/tools/points-calculator`}
+            className="text-sm font-medium text-slate-600 transition-colors hover:text-indigo-500 dark:text-slate-300 dark:hover:text-white"
+          >
+            {pointsCalcLabel}
           </Link>
           <Link
             href={`/${locale}/full-check`}
@@ -158,6 +165,13 @@ export function Header({
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {assistantLabel}
+            </Link>
+            <Link
+              href={`/${locale}/tools/points-calculator`}
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {pointsCalcLabel}
             </Link>
             <Link
               href={`/${locale}/full-check`}

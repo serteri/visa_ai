@@ -497,14 +497,15 @@ export function PointsCalculatorClient({ locale }: { locale: string }) {
                     key={value}
                     type="button"
                     onClick={() => dispatch({ kind: "str", field: "subclass", value })}
-                    className={`flex-1 rounded-xl border px-4 py-3 text-center transition ${
+                    className={`flex-1 whitespace-normal rounded-xl border px-3 py-3 text-center text-sm font-semibold leading-snug transition ${
                       form.subclass === value
                         ? "border-blue-500 bg-blue-500 text-white shadow-sm"
                         : "border-gray-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50"
                     }`}
                   >
-                    <span className="block text-lg font-extrabold">{value}</span>
-                    <span className="block text-xs font-normal opacity-80">{sub}</span>
+                    <span className="font-extrabold">{value}</span>
+                    <span className="mx-1 opacity-60">—</span>
+                    <span className="break-words">{sub}</span>
                   </button>
                 ))}
               </div>
