@@ -161,6 +161,19 @@ export type PathwayFriction = {
   explanation: string;
 };
 
+export type RankedPathwayRecommendation =
+  | "🌟 Highly Recommended Pathway"
+  | "⚖️ Alternative Option"
+  | "⚠️ High Risk / Low Probability";
+
+export type RankedPathway = {
+  subclass: "189" | "190" | "491";
+  visaLabel: string;
+  matchPercentage: number;
+  pointsSignal: number;
+  recommendationTag: RankedPathwayRecommendation;
+};
+
 export type SignalSnapshot = {
   strongest: string;
   secondary: string[];
@@ -233,6 +246,7 @@ export type PremiumSections = {
 
 export type ReadinessReport = {
   executiveSummary: string[];
+  rankedPathways?: RankedPathway[];
   signalSnapshot: SignalSnapshot;
   primaryLimitingFactor: PrimaryLimitingFactor;
   positionChangers: PositionChanger[];
