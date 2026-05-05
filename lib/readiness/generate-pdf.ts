@@ -61,6 +61,108 @@ interface PDFGeneratorInput {
   };
 }
 
+type RankedPathway = {
+  subclass: "189" | "190" | "491";
+  visaLabel: string;
+  matchPercentage: number;
+  pointsSignal: number;
+  recommendationTag:
+    | "🌟 Highly Recommended Pathway"
+    | "⚖️ Alternative Option"
+    | "⚠️ High Risk / Low Probability";
+};
+
+function clampPercentage(value: number): number {
+  return Math.max(0, Math.min(98, Math.round(value)));
+}
+
+function parseAgeNumber(age?: string): number | undefined {
+  if (!age) return undefined;
+  const match = age.match(/\d+/);
+  if (!match) return undefined;
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function isLikelyOffshore(currentCountry?: string): boolean {
+  if (!currentCountry) return false;
+  const normalized = currentCountry.trim().toLowerCase();
+  if (!normalized) return false;
+  return !normalized.includes("australia") && !normalized.includes("australya") && normalized !== "au";
+}
+
+function confidenceToBaseScore(level?: "low" | "medium" | "high"): number {
+  if (level === "high") return 74;
+  if (level === "medium") return 61;
+  if (level === "low") return 47;
+  return 55;
+}
+
+function calculateRankedPathways(report: ReadinessReport, userInputSummary: PDFGeneratorInput["userInputSummary"]): RankedPathway[] {
+  const pointsEstimate =
+    report.pointsEstimate?.estimatedPoints ??
+    report.pointsBoosterSimulator?.currentEstimate ??
+    65;
+
+  const getPathwayConfidence = (subclass: "189" | "190" | "491") =>
+    report.pathwayComparison.find((pathway) => pathway.subclass === subclass)?.confidenceLevel;
+
+  const scoreFromSignals = (subclass: "189" | "190" | "491", subclassBias = 0): number => {
+    const confidenceBase = confidenceToBaseScore(getPathwayConfidence(subclass));
+    const pointsDelta = Math.max(-10, Math.min(30, pointsEstimate - 65));
+    return clampPercentage(confidenceBase + pointsDelta + subclassBias);
+  };
+
+  let score189 = scoreFromSignals("189", 0);
+  let score190 = scoreFromSignals("190", 3);
+  let score491 = scoreFromSignals("491", 6);
+
+  const age = parseAgeNumber(userInputSummary.age);
+  if (typeof age === "number" && age > 39) {
+    score189 = Math.min(score189, 15);
+  }
+
+  if (isLikelyOffshore(userInputSummary.currentCountry)) {
+    score190 = clampPercentage(score190 - 15);
+  }
+
+  const pointsSignal491 = pointsEstimate + 15;
+  const baselineCompetitive = Math.max(score189, score190);
+  score491 = clampPercentage(Math.max(score491 + 8, baselineCompetitive * 1.2));
+
+  const raw: Array<Omit<RankedPathway, "recommendationTag">> = [
+    {
+      subclass: "189",
+      visaLabel: "189 Visa",
+      matchPercentage: score189,
+      pointsSignal: pointsEstimate,
+    },
+    {
+      subclass: "190",
+      visaLabel: "190 Visa",
+      matchPercentage: score190,
+      pointsSignal: pointsEstimate,
+    },
+    {
+      subclass: "491",
+      visaLabel: "491 Visa",
+      matchPercentage: score491,
+      pointsSignal: pointsSignal491,
+    },
+  ];
+
+  const sorted = [...raw].sort((a, b) => b.matchPercentage - a.matchPercentage);
+  return sorted.map((item, index) => ({
+    ...item,
+    recommendationTag:
+      index === 0
+        ? "🌟 Highly Recommended Pathway"
+        : index === 1
+          ? "⚖️ Alternative Option"
+          : "⚠️ High Risk / Low Probability",
+  }));
+}
+
 function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
   if (locale === "tr") {
     return {
@@ -139,6 +241,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       note: "Not",
       subclass: "Subclass",
       estimatedWait: "Tahmini Bekleme",
+      visaViabilityRanking: "Vize Sans Siralamasi",
     };
   }
 
@@ -219,6 +322,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       note: "说明",
       subclass: "签证类别",
       estimatedWait: "预计等待时间",
+      visaViabilityRanking: "签证可行性排序",
     };
   }
 
@@ -298,6 +402,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     note: "Note",
     subclass: "Subclass",
     estimatedWait: "Estimated Wait",
+    visaViabilityRanking: "Visa Viability Ranking",
   };
 }
 
@@ -952,6 +1057,57 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return "Unclear";
   }
 
+  function drawVisaViabilityRanking() {
+    const rankedPathways = calculateRankedPathways(report, userInputSummary);
+    if (rankedPathways.length === 0) return;
+
+    addHeading(text.visaViabilityRanking);
+    ensurePageSpace(55);
+
+    rankedPathways.forEach((item, index) => {
+      const rowHeight = 16;
+      ensurePageSpace(rowHeight + 2);
+
+      const topY = yPosition;
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.25);
+      doc.roundedRect(margin, topY, contentWidth, rowHeight, 1.2, 1.2, "FD");
+
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(safeText(`${item.visaLabel} - ${item.matchPercentage}% Match`), margin + 2.5, topY + 5.2);
+
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.text(safeText(`${item.recommendationTag}  (Points Signal: ${item.pointsSignal})`), margin + 2.5, topY + 9.6);
+
+      const barX = margin + 2.5;
+      const barY = topY + 11;
+      const barW = contentWidth - 5;
+      const barH = 3.2;
+
+      doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
+      doc.roundedRect(barX, barY, barW, barH, 0.6, 0.6, "F");
+
+      const fillW = (barW * item.matchPercentage) / 100;
+      const barColor =
+        index === 0
+          ? COLORS.riskLow
+          : index === 1
+            ? COLORS.riskMedium
+            : COLORS.riskHigh;
+      doc.setFillColor(barColor.r, barColor.g, barColor.b);
+      doc.roundedRect(barX, barY, fillW, barH, 0.6, 0.6, "F");
+
+      yPosition += rowHeight + 2;
+    });
+
+    yPosition += 1;
+  }
+
   function getFrictionColorByLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
     if (score === "EXTREME") return { r: 220, g: 38, b: 38 };
     if (score === "HIGH") return { r: 217, g: 119, b: 6 };
@@ -995,6 +1151,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addBulletPoints(report.executiveSummary);
     yPosition += 3;
   }
+
+  drawVisaViabilityRanking();
 
   addHeading(text.signalSnapshot);
   addBody(`${text.strongestSignal}: ${report.signalSnapshot.strongest}`);
