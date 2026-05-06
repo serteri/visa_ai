@@ -31,7 +31,7 @@ export default async function AdminLeadAccessPage({ params, searchParams }: Admi
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">Admin</p>
           <h1 className="text-3xl font-bold">Lead Management Access</h1>
           <p className="text-sm text-muted-foreground">
-            Lead verisine ulasmak icin admin sifresi gerekir.
+            Admin password is required to access lead records.
           </p>
         </div>
 
@@ -42,22 +42,22 @@ export default async function AdminLeadAccessPage({ params, searchParams }: Admi
           <CardContent className="space-y-4">
             {query.auth === "invalid" && (
               <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                Yanlis sifre.
+                Invalid password.
               </p>
             )}
             {query.auth === "signed-out" && (
               <p className="rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
-                Oturum kapatildi.
+                You have been logged out.
               </p>
             )}
             <form action={loginAdmin} className="space-y-3">
               <input type="hidden" name="locale" value={locale} />
               <div className="space-y-2">
                 <Label htmlFor="admin-password">Password</Label>
-                <Input id="admin-password" name="password" type="password" required />
+                <Input id="admin-password" name="password" type="password" placeholder="Password" required />
               </div>
               <Button type="submit" className="w-full">
-                Enter Admin
+                Access Dashboard
               </Button>
             </form>
           </CardContent>
