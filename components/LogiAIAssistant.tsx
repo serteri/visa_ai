@@ -18,6 +18,10 @@ type RankedPathwayLike = {
   matchPercentage?: number;
 };
 
+type StateTrackerLike = {
+  topRecommendedStates?: Array<{ code?: string; status?: string }>;
+};
+
 type LogiAIAssistantProps = {
   locale: string;
   reportData: Record<string, unknown>;
@@ -64,11 +68,13 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
       (typeof userObj.occupation === "string" && userObj.occupation.trim()) ||
       (typeof reportData.occupation === "string" && reportData.occupation.trim()) ||
       "my occupation";
+    const tracker = (reportData.stateNominationTracker as StateTrackerLike | undefined)?.topRecommendedStates;
+    const topState = tracker?.[0]?.code ?? "SA";
 
     return [
       `Why is my ${lowestVisa} chance so low?`,
       "What are my exact first steps to boost my points?",
-      `Explain the State Nomination context for ${occupation}.`,
+      `Why does ${topState} look stronger for ${occupation}?`,
     ];
   }, [reportData]);
 

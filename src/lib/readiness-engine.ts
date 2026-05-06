@@ -3,6 +3,7 @@ import documentRequirementsData from "@/src/data/document-requirements.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateRankedPathways } from "@/lib/readiness/ranked-pathways";
+import { calculateStateNominationTracker } from "@/lib/readiness/state-nomination";
 import { calculateVisaPoints, type AgeRange, type EnglishLevel } from "@/lib/readiness/visa-points-calculator";
 import { localizeOccupationWarning, localizeText, t3 } from "@/src/lib/readiness/localization";
 import type {
@@ -910,6 +911,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
       age: input.age,
       currentCountry: input.currentCountry,
     }),
+    stateNominationTracker: calculateStateNominationTracker(input),
     documentChecklist: buildPremiumDocumentChecklist(input, base),
     suggestedNextSteps: buildImmediateActionPlan(input, base, occupation?.anzsco_code),
     frictionAnalysis: buildFrictionAnalysis(input, base),

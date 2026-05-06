@@ -15,6 +15,7 @@ import {
 } from "./actions";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
+import { StateHeatmap } from "@/components/StateHeatmap";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessReport } from "@/lib/readiness/types";
 
@@ -284,6 +285,7 @@ export function FullCheckWaitlistForm({
         primaryLimitingFactor: report.primaryLimitingFactor,
         rankedPathways: report.rankedPathways,
         pathwayComparison: report.pathwayComparison,
+        stateNominationTracker: report.stateNominationTracker,
         executiveSummary: report.executiveSummary,
         suggestedNextSteps: report.suggestedNextSteps,
         riskIndicators: report.riskIndicators,
@@ -789,6 +791,10 @@ export function FullCheckWaitlistForm({
                   })}
                 </CardContent>
               </Card>
+            )}
+
+            {report.stateNominationTracker && report.stateNominationTracker.states.length > 0 && (
+              <StateHeatmap locale={locale} tracker={report.stateNominationTracker} />
             )}
 
             <Card className="border-primary/40 bg-primary/5">

@@ -141,6 +141,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       subclass: "Subclass",
       estimatedWait: "Tahmini Bekleme",
       visaViabilityRanking: "Vize Sans Siralamasi",
+      topRecommendedStates: "En Guclu 2 Eyalet",
+      stateNominationTracker: "Eyalet Nomination Tracker",
     };
   }
 
@@ -222,6 +224,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       subclass: "签证类别",
       estimatedWait: "预计等待时间",
       visaViabilityRanking: "签证可行性排序",
+      topRecommendedStates: "前 2 个推荐州",
+      stateNominationTracker: "州担保追踪图",
     };
   }
 
@@ -302,6 +306,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     subclass: "Subclass",
     estimatedWait: "Estimated Wait",
     visaViabilityRanking: "Visa Viability Ranking",
+    topRecommendedStates: "Top 2 Recommended States",
+    stateNominationTracker: "State Nomination Tracker",
   };
 }
 
@@ -1012,6 +1018,52 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 1;
   }
 
+  function drawTopRecommendedStates() {
+    const topStates = report.stateNominationTracker?.topRecommendedStates ?? [];
+    if (topStates.length === 0) return;
+
+    addHeading(text.topRecommendedStates);
+    ensurePageSpace(32);
+
+    topStates.forEach((state, index) => {
+      const rowHeight = 14;
+      ensurePageSpace(rowHeight + 2);
+
+      const topY = yPosition;
+      const color =
+        state.matchLevel === "high"
+          ? COLORS.riskLow
+          : state.matchLevel === "medium"
+            ? COLORS.riskMedium
+            : COLORS.riskHigh;
+
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.25);
+      doc.roundedRect(margin, topY, contentWidth, rowHeight, 1.2, 1.2, "FD");
+
+      doc.setFillColor(color.r, color.g, color.b);
+      doc.circle(margin + 4, topY + 5, 1.5, "F");
+
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(safeText(`${index + 1}. ${state.code} - ${state.name} (${state.status})`), margin + 7.5, topY + 5.3);
+
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.text(safeText(state.summary), margin + 7.5, topY + 9.5, { maxWidth: contentWidth - 10 });
+
+      yPosition += rowHeight + 2;
+    });
+
+    if (report.stateNominationTracker?.note) {
+      addSmallText(report.stateNominationTracker.note, 4);
+      yPosition += 2;
+    }
+  }
+
   function getFrictionColorByLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
     if (score === "EXTREME") return { r: 220, g: 38, b: 38 };
     if (score === "HIGH") return { r: 217, g: 119, b: 6 };
@@ -1057,6 +1109,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   drawVisaViabilityRanking();
+  drawTopRecommendedStates();
 
   addHeading(text.signalSnapshot);
   addBody(`${text.strongestSignal}: ${report.signalSnapshot.strongest}`);

@@ -1,0 +1,92 @@
+{
+  "states": [
+    {
+      "code": "NSW",
+      "name": "New South Wales",
+      "status": "High Demand",
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumExperienceYears": 3,
+      "regionalFocus": false,
+      "priorityKeywords": ["engineer", "developer", "software", "ict", "nurse", "teacher", "construction", "accountant"],
+      "specialConditions": ["Competitive invitation environment", "Occupation ceilings can move during the program year"]
+    },
+    {
+      "code": "VIC",
+      "name": "Victoria",
+      "status": "Onshore Only",
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "open",
+      "minimumExperienceYears": 2,
+      "regionalFocus": false,
+      "priorityKeywords": ["engineer", "digital", "health", "teacher", "research", "construction"],
+      "specialConditions": ["Strong preference for applicants already contributing in Victoria"]
+    },
+    {
+      "code": "WA",
+      "name": "Western Australia",
+      "status": "Open for Offshore",
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumExperienceYears": 1,
+      "regionalFocus": true,
+      "priorityKeywords": ["engineer", "mining", "construction", "teacher", "health", "chef", "trade"],
+      "specialConditions": ["Regional flexibility strengthens the nomination case"]
+    },
+    {
+      "code": "SA",
+      "name": "South Australia",
+      "status": "High Demand",
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumExperienceYears": 3,
+      "regionalFocus": true,
+      "priorityKeywords": ["engineer", "health", "teacher", "trade", "construction", "agriculture", "ict"],
+      "specialConditions": ["Offshore pathways usually need stronger work experience evidence"]
+    },
+    {
+      "code": "QLD",
+      "name": "Queensland",
+      "status": "Closed",
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "closed",
+      "minimumExperienceYears": 0,
+      "regionalFocus": false,
+      "priorityKeywords": ["health", "teacher", "engineer", "tourism"],
+      "specialConditions": ["Program settings can reopen, but current intake is treated as closed"]
+    },
+    {
+      "code": "NT",
+      "name": "Northern Territory",
+      "status": "Open for Offshore",
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumExperienceYears": 2,
+      "regionalFocus": true,
+      "priorityKeywords": ["health", "teacher", "trade", "construction", "community", "hospitality"],
+      "specialConditions": ["Commitment to living in the territory is typically expected"]
+    },
+    {
+      "code": "TAS",
+      "name": "Tasmania",
+      "status": "Onshore Only",
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "open",
+      "minimumExperienceYears": 1,
+      "regionalFocus": true,
+      "priorityKeywords": ["health", "trade", "teacher", "hospitality", "engineering"],
+      "specialConditions": ["Tasmanian ties or local activity normally improve eligibility"]
+    },
+    {
+      "code": "ACT",
+      "name": "Australian Capital Territory",
+      "status": "High Demand",
+      "offshoreAvailability": "limited",
+      "onshoreAvailability": "open",
+      "minimumExperienceYears": 3,
+      "regionalFocus": false,
+      "priorityKeywords": ["ict", "cyber", "engineer", "health", "teacher", "public sector"],
+      "specialConditions": ["Matrix-style ranking favours strong employment and Canberra ties"]
+    }
+  ]
+}

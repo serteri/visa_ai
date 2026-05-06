@@ -174,6 +174,32 @@ export type RankedPathway = {
   recommendationTag: RankedPathwayRecommendation;
 };
 
+export type StateNominationStatus =
+  | "Open for Offshore"
+  | "High Demand"
+  | "Closed"
+  | "Onshore Only";
+
+export type StateMatchLevel = "high" | "medium" | "low";
+
+export type StateNominationCode = "NSW" | "VIC" | "WA" | "SA" | "QLD" | "NT" | "TAS" | "ACT";
+
+export type StateNominationState = {
+  code: StateNominationCode;
+  name: string;
+  status: StateNominationStatus;
+  matchLevel: StateMatchLevel;
+  score: number;
+  summary: string;
+  requirements: string[];
+};
+
+export type StateNominationTracker = {
+  states: StateNominationState[];
+  topRecommendedStates: StateNominationState[];
+  note: string;
+};
+
 export type SignalSnapshot = {
   strongest: string;
   secondary: string[];
@@ -247,6 +273,7 @@ export type PremiumSections = {
 export type ReadinessReport = {
   executiveSummary: string[];
   rankedPathways?: RankedPathway[];
+  stateNominationTracker?: StateNominationTracker;
   signalSnapshot: SignalSnapshot;
   primaryLimitingFactor: PrimaryLimitingFactor;
   positionChangers: PositionChanger[];

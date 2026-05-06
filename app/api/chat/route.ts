@@ -46,6 +46,7 @@ function buildReportContext(reportData?: Record<string, unknown>): string {
     pointsEstimate: reportData.pointsEstimate,
     primaryLimitingFactor: reportData.primaryLimitingFactor,
     rankedPathways: ranked,
+    stateNominationTracker: reportData.stateNominationTracker,
     pathwayComparison: pathways,
     executiveSummary: reportData.executiveSummary,
     suggestedNextSteps: reportData.suggestedNextSteps,
