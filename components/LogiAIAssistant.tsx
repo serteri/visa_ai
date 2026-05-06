@@ -181,9 +181,9 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
               </CardTitle>
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 onClick={() => setIsOpen(false)}
-                className="h-8 w-8 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                className="h-8 w-8 px-0 text-zinc-300 hover:bg-zinc-800 hover:text-white"
               >
                 <X className="size-4" />
               </Button>
