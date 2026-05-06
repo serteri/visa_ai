@@ -119,8 +119,20 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </Card>
         )}
 
-        <DocumentAnalyzer leadData={leadData} />
-        <AnzscoMatcher targetOccupation={lead.occupation} />
+        <Card>
+          <CardHeader>
+            <CardTitle>AI Assessment Workspace</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Use Document Intelligence and ANZSCO Duty Matcher together for a cleaner, enterprise-grade lead assessment flow.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 xl:grid-cols-2">
+              <DocumentAnalyzer leadData={leadData} />
+              <AnzscoMatcher targetOccupation={lead.occupation} />
+            </div>
+          </CardContent>
+        </Card>
       </section>
     </main>
   );
