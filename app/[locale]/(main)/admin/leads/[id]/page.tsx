@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
+import { AnzscoMatcher } from "@/components/AnzscoMatcher";
 import { DocumentAnalyzer } from "@/components/DocumentAnalyzer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -119,6 +120,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         )}
 
         <DocumentAnalyzer leadData={leadData} />
+        <AnzscoMatcher targetOccupation={lead.occupation} />
       </section>
     </main>
   );
