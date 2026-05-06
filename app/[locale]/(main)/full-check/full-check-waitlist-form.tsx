@@ -18,7 +18,7 @@ import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { ActionChecklist } from "@/components/ActionChecklist";
 import { StateHeatmap } from "@/components/StateHeatmap";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
-import type { ReadinessReport } from "@/lib/readiness/types";
+import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
 
 function trackGaEvent(name: string, params?: Record<string, string | number | boolean | null | undefined>) {
   if (typeof window === "undefined") return;
@@ -269,7 +269,7 @@ export function FullCheckWaitlistForm({
   const activeUnlockedReportState =
     unlockedReportState?.reportId === state.reportId ? unlockedReportState : null;
   const report = activeUnlockedReportState?.report ?? null;
-  const assistantReportData = report
+  const assistantReportData: AssistantReportData | null = report
     ? {
         user: {
           name: activeUnlockedReportState?.name ?? state.userInput?.name,
@@ -287,6 +287,7 @@ export function FullCheckWaitlistForm({
         rankedPathways: report.rankedPathways,
         pathwayComparison: report.pathwayComparison,
         stateNominationTracker: report.stateNominationTracker,
+        lodgementReadyChecklist: report.lodgementReadyChecklist,
         executiveSummary: report.executiveSummary,
         suggestedNextSteps: report.suggestedNextSteps,
         riskIndicators: report.riskIndicators,
@@ -731,7 +732,7 @@ export function FullCheckWaitlistForm({
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-5 pb-24 sm:pb-28">
             {report.executiveSummary.length > 0 && (
               <Card>
                 <CardHeader>
@@ -799,7 +800,9 @@ export function FullCheckWaitlistForm({
             )}
 
             {report.lodgementReadyChecklist && report.lodgementReadyChecklist.items.length > 0 && (
-              <ActionChecklist locale={locale} checklist={report.lodgementReadyChecklist} />
+              <div className="pt-1">
+                <ActionChecklist locale={locale} checklist={report.lodgementReadyChecklist} />
+              </div>
             )}
 
             <Card className="border-primary/40 bg-primary/5">

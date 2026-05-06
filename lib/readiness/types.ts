@@ -214,6 +214,26 @@ export type LodgementReadyChecklist = {
   note: string;
 };
 
+export type AssistantReportData = {
+  user: {
+    name?: string;
+    email?: string;
+    currentCountry?: string;
+    age?: string;
+    occupation?: string;
+  };
+  targetVisa?: string;
+  pointsEstimate?: number;
+  primaryLimitingFactor: PrimaryLimitingFactor;
+  rankedPathways?: RankedPathway[];
+  stateNominationTracker?: StateNominationTracker;
+  lodgementReadyChecklist?: LodgementReadyChecklist;
+  pathwayComparison: PathwayComparison[];
+  executiveSummary: string[];
+  suggestedNextSteps: string[];
+  riskIndicators: RiskIndicator[];
+};
+
 export type SignalSnapshot = {
   strongest: string;
   secondary: string[];

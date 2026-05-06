@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { db } from "@/db";
 import { leads } from "@/db/schema";
 import { getAdminPassword, isAdminAuthenticated } from "@/lib/admin-auth";
+import { redirect } from "next/navigation";
 
 async function getLeads() {
   return db.select().from(leads).orderBy(desc(leads.system_score), desc(leads.created_at));
@@ -34,58 +35,7 @@ export default async function AdminLeadsPage({ params, searchParams }: AdminLead
   const configured = Boolean(getAdminPassword());
 
   if (!authenticated) {
-    return (
-      <main className="ambient-bg flex-1 py-12">
-        <section className="section-shell max-w-xl space-y-6">
-          <div className="space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-wide text-primary">Admin</p>
-            <h1 className="text-3xl font-bold">Lead Management</h1>
-            <p className="text-sm text-muted-foreground">
-              Full Check leads ekranina erismek icin admin sifresi gerekir.
-            </p>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Admin Access</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {!configured && (
-                <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  `ADMIN_DASHBOARD_PASSWORD` env degeri tanimli degil.
-                </p>
-              )}
-              {query.auth === "invalid" && (
-                <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  Yanlis sifre.
-                </p>
-              )}
-              {query.auth === "signed-out" && (
-                <p className="rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm text-muted-foreground">
-                  Oturum kapatildi.
-                </p>
-              )}
-              {query.auth === "setup" && (
-                <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-                  Admin sifresi ortama eklenmeden erisim acilmayacak.
-                </p>
-              )}
-
-              <form action={loginAdmin} className="space-y-3">
-                <input type="hidden" name="locale" value={locale} />
-                <div className="space-y-2">
-                  <Label htmlFor="admin-password">Password</Label>
-                  <Input id="admin-password" name="password" type="password" required />
-                </div>
-                <Button type="submit" className="w-full" disabled={!configured}>
-                  Enter Admin
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </section>
-      </main>
-    );
+    redirect(`/${locale}/admin/leads/access${query.auth ? `?auth=${query.auth}` : ""}`);
   }
 
   const records = await getLeads();

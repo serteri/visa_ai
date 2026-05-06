@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Bot, Send, Sparkles, MessageSquare, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import type { AssistantReportData } from "@/lib/readiness/types";
 
 type AssistantMessage = {
   id: string;
@@ -18,14 +19,20 @@ type RankedPathwayLike = {
   matchPercentage?: number;
 };
 
-type StateTrackerLike = {
-  topRecommendedStates?: Array<{ code?: string; status?: string }>;
-};
-
 type LogiAIAssistantProps = {
   locale: string;
-  reportData: Record<string, unknown>;
+  reportData: AssistantReportData;
 };
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="h-2 w-2 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.2s]" />
+      <span className="h-2 w-2 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.1s]" />
+      <span className="h-2 w-2 animate-bounce rounded-full bg-zinc-400" />
+    </div>
+  );
+}
 
 function uid() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -37,8 +44,10 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
   const isZh = locale === "zh-Hans";
   const t = (tr: string, en: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
+  const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<AssistantMessage[]>([
     {
@@ -54,6 +63,18 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 640px)");
+    const syncMobileState = () => {
+      setIsMobile(media.matches);
+      setIsOpen((current) => (media.matches ? false : current));
+    };
+
+    syncMobileState();
+    media.addEventListener("change", syncMobileState);
+    return () => media.removeEventListener("change", syncMobileState);
+  }, []);
+
   const suggestedPrompts = useMemo(() => {
     const ranked = Array.isArray(reportData.rankedPathways)
       ? (reportData.rankedPathways as RankedPathwayLike[])
@@ -63,12 +84,8 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
     )[0];
     const lowestVisa = lowest?.subclass ?? "189";
 
-    const userObj = (reportData.user as Record<string, unknown>) ?? {};
-    const occupation =
-      (typeof userObj.occupation === "string" && userObj.occupation.trim()) ||
-      (typeof reportData.occupation === "string" && reportData.occupation.trim()) ||
-      "my occupation";
-    const tracker = (reportData.stateNominationTracker as StateTrackerLike | undefined)?.topRecommendedStates;
+    const occupation = reportData.user.occupation?.trim() || "my occupation";
+    const tracker = reportData.stateNominationTracker?.topRecommendedStates;
     const topState = tracker?.[0]?.code ?? "SA";
 
     return [
@@ -96,21 +113,26 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
     setMessages([...nextMessages, { id: assistantId, role: "assistant", content: "" }]);
     setInput("");
     setIsSending(true);
+    setChatError(null);
     scrollToBottom();
 
     try {
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), 25000);
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           locale,
           reportData,
           messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
         }),
       });
+      window.clearTimeout(timeoutId);
 
       if (!response.ok || !response.body) {
-        throw new Error("Chat request failed.");
+        throw new Error("API response failed.");
       }
 
       const reader = response.body.getReader();
@@ -129,6 +151,7 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
       }
 
       if (!assembled.trim()) {
+        setChatError(t("API yaniti bos dondu.", "API response failed.", "API 响应失败。"));
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantId
@@ -144,7 +167,14 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
           )
         );
       }
-    } catch {
+    } catch (error) {
+      setChatError(
+        t(
+          "API response failed. Lütfen daha sonra tekrar deneyin.",
+          "API response failed. Please try again shortly.",
+          "API response failed. 请稍后重试。"
+        )
+      );
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId
@@ -165,18 +195,29 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
     }
   }
 
+  const containerClassName = isMobile
+    ? "fixed inset-x-3 bottom-3 z-50 w-auto max-w-none"
+    : "fixed bottom-4 right-4 z-50 w-[min(96vw,420px)]";
+
+  const panelClassName = isMobile
+    ? "border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl max-h-[70vh] overflow-hidden"
+    : "border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl";
+
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-[min(96vw,420px)]">
+    <div className={containerClassName}>
       {!isOpen ? (
         <Button
           onClick={() => setIsOpen(true)}
-          className="h-11 w-full justify-center gap-2 rounded-full bg-black text-white hover:bg-zinc-800"
+          className={isMobile
+            ? "h-12 w-12 rounded-full bg-black p-0 text-white shadow-xl hover:bg-zinc-800"
+            : "h-11 w-full justify-center gap-2 rounded-full bg-black text-white hover:bg-zinc-800"}
+          aria-label="Open Logi AI Assistant"
         >
           <MessageSquare className="size-4" />
-          Logi AI Assistant
+          {!isMobile && "Logi AI Assistant"}
         </Button>
       ) : (
-        <Card className="border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl">
+        <Card className={panelClassName}>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -204,6 +245,12 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
           </CardHeader>
 
           <CardContent className="space-y-3">
+            {chatError && (
+              <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-200">
+                {chatError}
+              </div>
+            )}
+
             <div className="flex flex-wrap gap-2">
               {suggestedPrompts.map((prompt) => (
                 <button
@@ -221,7 +268,7 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
 
             <div
               ref={scrollRef}
-              className="max-h-[360px] min-h-[220px] space-y-2 overflow-y-auto rounded-lg border border-zinc-800 bg-black/30 p-3"
+              className={`${isMobile ? "max-h-[38vh] min-h-[180px]" : "max-h-[360px] min-h-[220px]"} space-y-2 overflow-y-auto rounded-lg border border-zinc-800 bg-black/30 p-3`}
             >
               {messages.map((message) => (
                 <div
@@ -232,7 +279,7 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
                       : "mr-auto bg-zinc-800 text-zinc-100"
                   }`}
                 >
-                  {message.content || (isSending && message.role === "assistant" ? "..." : "")}
+                  {message.content || (isSending && message.role === "assistant" ? <TypingIndicator /> : "")}
                 </div>
               ))}
             </div>

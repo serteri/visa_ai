@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import type { AssistantReportData } from "@/lib/readiness/types";
+
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
@@ -7,7 +9,7 @@ type ChatMessage = {
 
 type ChatRequestBody = {
   messages?: ChatMessage[];
-  reportData?: Record<string, unknown>;
+  reportData?: AssistantReportData;
   locale?: string;
 };
 
@@ -17,7 +19,7 @@ const SYSTEM_PROMPT =
 const MARA_REMINDER =
   "Please consult a registered MARA agent for official lodgements and personalized legal migration advice.";
 
-function buildReportContext(reportData?: Record<string, unknown>): string {
+function buildReportContext(reportData?: AssistantReportData): string {
   if (!reportData) return "No report data provided.";
 
   const ranked = Array.isArray(reportData.rankedPathways)
@@ -47,6 +49,7 @@ function buildReportContext(reportData?: Record<string, unknown>): string {
     primaryLimitingFactor: reportData.primaryLimitingFactor,
     rankedPathways: ranked,
     stateNominationTracker: reportData.stateNominationTracker,
+    lodgementReadyChecklist: reportData.lodgementReadyChecklist,
     pathwayComparison: pathways,
     executiveSummary: reportData.executiveSummary,
     suggestedNextSteps: reportData.suggestedNextSteps,

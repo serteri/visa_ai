@@ -18,7 +18,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const { locale, id } = await params;
 
   if (!(await isAdminAuthenticated())) {
-    redirect(`/${locale}/admin/leads?auth=invalid`);
+    redirect(`/${locale}/admin/leads/access?auth=invalid`);
   }
 
   const record = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
