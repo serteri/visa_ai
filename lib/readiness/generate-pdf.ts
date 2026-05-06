@@ -1139,13 +1139,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addHeading(text.lodgementReadyChecklist);
 
     checklist.forEach((item) => {
-      ensurePageSpace(14);
+      const detailLines = doc.splitTextToSize(safeText(item.detail), contentWidth - 34);
+      const boxHeight = Math.max(16, 10 + detailLines.length * 4.4);
+      ensurePageSpace(boxHeight + 4);
       const topY = yPosition;
 
       doc.setFillColor(255, 255, 255);
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
       doc.setLineWidth(0.25);
-      doc.roundedRect(margin, topY, contentWidth, 12, 1.2, 1.2, "FD");
+      doc.roundedRect(margin, topY, contentWidth, boxHeight, 1.8, 1.8, "FD");
 
       const color =
         item.priority === "urgent"
@@ -1154,20 +1156,48 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
             ? COLORS.riskMedium
             : COLORS.riskLow;
 
+      const priorityLabel =
+        item.priority === "urgent"
+          ? effectiveLocale === "tr"
+            ? "URGENT"
+            : effectiveLocale === "zh-Hans"
+              ? "紧急"
+              : "URGENT"
+          : item.priority === "important"
+            ? effectiveLocale === "tr"
+              ? "IMPORTANT"
+              : effectiveLocale === "zh-Hans"
+                ? "重要"
+                : "IMPORTANT"
+            : effectiveLocale === "tr"
+              ? "READY"
+              : effectiveLocale === "zh-Hans"
+                ? "建议"
+                : "READY";
+
+      doc.setDrawColor(156, 163, 175);
+      doc.setLineWidth(0.35);
+      doc.roundedRect(margin + 3, topY + 3.2, 4.2, 4.2, 0.6, 0.6, "S");
+
       doc.setFillColor(color.r, color.g, color.b);
-      doc.circle(margin + 4, topY + 4.5, 1.5, "F");
+      doc.roundedRect(margin + 10, topY + 2.8, 17, 5.2, 1.2, 1.2, "F");
+
+      setBoldFont();
+      doc.setFontSize(7);
+      doc.setTextColor(255, 255, 255);
+      doc.text(safeText(priorityLabel), margin + 12, topY + 6.3);
 
       setBoldFont();
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.text(safeText(item.title), margin + 8, topY + 5);
+      doc.text(safeText(item.title), margin + 30, topY + 6.5);
 
       setBaseFont();
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-      doc.text(safeText(item.detail), margin + 8, topY + 9.2, { maxWidth: contentWidth - 12 });
+      doc.text(detailLines, margin + 30, topY + 11.2);
 
-      yPosition += 15;
+      yPosition += boxHeight + 3;
     });
 
     if (report.lodgementReadyChecklist?.note) {
