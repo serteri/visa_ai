@@ -41,15 +41,42 @@ const MAP_REGIONS: Record<
     labelY: number;
   }
 > = {
-  WA: { path: "M20 42 L20 145 L112 145 L112 42 Z", labelX: 66, labelY: 96 },
-  NT: { path: "M116 42 L184 42 L184 96 L116 96 Z", labelX: 150, labelY: 73 },
-  SA: { path: "M116 100 L184 100 L184 145 L116 145 Z", labelX: 150, labelY: 124 },
-  QLD: { path: "M188 42 L272 42 L272 118 L220 118 L220 96 L188 96 Z", labelX: 232, labelY: 78 },
-  NSW: { path: "M188 122 L252 122 L252 170 L206 170 L188 148 Z", labelX: 222, labelY: 146 },
-  VIC: { path: "M190 172 L236 172 L228 198 L198 198 Z", labelX: 214, labelY: 187 },
-  ACT: { path: "M232 144 L241 144 L241 153 L232 153 Z", labelX: 236.5, labelY: 149.5 },
-  TAS: { path: "M214 212 L232 212 L228 232 L210 232 Z", labelX: 221, labelY: 223 },
+  WA: {
+    path: "M28 34 L86 30 L109 41 L110 61 L120 89 L118 141 L95 171 L66 182 L48 197 L27 193 L18 165 L16 84 L21 55 Z",
+    labelX: 70,
+    labelY: 108,
+  },
+  NT: {
+    path: "M120 42 L183 42 L188 54 L185 96 L167 101 L121 99 L116 84 L116 54 Z",
+    labelX: 151,
+    labelY: 73,
+  },
+  SA: {
+    path: "M111 101 L169 101 L182 110 L184 146 L169 162 L133 163 L118 151 L111 128 Z",
+    labelX: 148,
+    labelY: 132,
+  },
+  QLD: {
+    path: "M188 40 L236 35 L259 48 L270 68 L272 106 L260 133 L236 149 L203 146 L188 126 L188 94 L196 80 L188 58 Z",
+    labelX: 231,
+    labelY: 90,
+  },
+  NSW: {
+    path: "M186 125 L202 121 L236 123 L252 138 L251 170 L235 183 L208 184 L194 168 L188 147 Z",
+    labelX: 221,
+    labelY: 151,
+  },
+  VIC: {
+    path: "M189 173 L206 170 L234 172 L242 185 L233 198 L208 203 L192 196 L186 184 Z",
+    labelX: 214,
+    labelY: 186,
+  },
+  ACT: { path: "M233 144 C236 141 241 141 243 145 C244 149 241 153 236 153 C232 152 231 148 233 144 Z", labelX: 237, labelY: 148 },
+  TAS: { path: "M217 213 L228 209 L238 217 L234 232 L220 235 L212 225 Z", labelX: 225, labelY: 223 },
 };
+
+const MAINLAND_OUTLINE =
+  "M25 34 L88 29 L113 41 L122 41 L185 41 L189 40 L238 35 L261 49 L272 68 L273 107 L260 135 L252 171 L242 186 L235 199 L208 203 L190 197 L181 161 L132 163 L118 151 L95 171 L66 183 L48 198 L26 194 L17 165 L16 84 L21 55 Z";
 
 function getTextTone(level: "high" | "medium" | "low") {
   if (level === "high") return "fill-emerald-950";
@@ -100,11 +127,25 @@ export function StateHeatmap({ locale, tracker }: StateHeatmapProps) {
             </div>
 
             <svg viewBox="0 0 290 245" className="w-full">
+              <defs>
+                <filter id="map-shadow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feDropShadow dx="0" dy="8" stdDeviation="8" floodColor="rgba(15,23,42,0.12)" />
+                </filter>
+              </defs>
+
+              <rect x="0" y="0" width="290" height="245" rx="18" fill="rgba(191,219,254,0.15)" />
+              <path
+                d={MAINLAND_OUTLINE}
+                fill="rgba(255,255,255,0.78)"
+                stroke="rgba(148,163,184,0.35)"
+                strokeWidth="2.2"
+                filter="url(#map-shadow)"
+              />
+
               {tracker.states.map((state) => {
                 const region = MAP_REGIONS[state.code];
                 if (!region) return null;
 
-                const tone = getMatchTone(state.matchLevel);
                 const fillColor =
                   state.matchLevel === "high"
                     ? "rgba(16,185,129,0.78)"
@@ -114,7 +155,7 @@ export function StateHeatmap({ locale, tracker }: StateHeatmapProps) {
 
                 return (
                   <g key={state.code}>
-                    <path d={region.path} fill={fillColor} stroke="rgba(15,23,42,0.25)" strokeWidth="2" />
+                    <path d={region.path} fill={fillColor} stroke="rgba(15,23,42,0.28)" strokeWidth="1.8" />
                     <text
                       x={region.labelX}
                       y={region.labelY}
@@ -136,6 +177,8 @@ export function StateHeatmap({ locale, tracker }: StateHeatmapProps) {
                   </g>
                 );
               })}
+
+              <path d="M183 205 C191 210 202 212 214 212" fill="none" stroke="rgba(15,23,42,0.18)" strokeWidth="1.4" strokeDasharray="3 4" />
             </svg>
           </div>
 
