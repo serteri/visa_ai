@@ -200,6 +200,20 @@ export type StateNominationTracker = {
   note: string;
 };
 
+export type ChecklistPriority = "urgent" | "important" | "recommended";
+
+export type ChecklistItem = {
+  id: string;
+  priority: ChecklistPriority;
+  title: string;
+  detail: string;
+};
+
+export type LodgementReadyChecklist = {
+  items: ChecklistItem[];
+  note: string;
+};
+
 export type SignalSnapshot = {
   strongest: string;
   secondary: string[];
@@ -274,6 +288,7 @@ export type ReadinessReport = {
   executiveSummary: string[];
   rankedPathways?: RankedPathway[];
   stateNominationTracker?: StateNominationTracker;
+  lodgementReadyChecklist?: LodgementReadyChecklist;
   signalSnapshot: SignalSnapshot;
   primaryLimitingFactor: PrimaryLimitingFactor;
   positionChangers: PositionChanger[];

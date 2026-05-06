@@ -15,6 +15,7 @@ import {
 } from "./actions";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
+import { ActionChecklist } from "@/components/ActionChecklist";
 import { StateHeatmap } from "@/components/StateHeatmap";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessReport } from "@/lib/readiness/types";
@@ -795,6 +796,10 @@ export function FullCheckWaitlistForm({
 
             {report.stateNominationTracker && report.stateNominationTracker.states.length > 0 && (
               <StateHeatmap locale={locale} tracker={report.stateNominationTracker} />
+            )}
+
+            {report.lodgementReadyChecklist && report.lodgementReadyChecklist.items.length > 0 && (
+              <ActionChecklist locale={locale} checklist={report.lodgementReadyChecklist} />
             )}
 
             <Card className="border-primary/40 bg-primary/5">

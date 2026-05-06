@@ -1,6 +1,7 @@
 import occupationsData from "@/src/data/occupations.json";
 import documentRequirementsData from "@/src/data/document-requirements.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
+import { generateChecklist } from "@/lib/generateChecklist";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateRankedPathways } from "@/lib/readiness/ranked-pathways";
 import { calculateStateNominationTracker } from "@/lib/readiness/state-nomination";
@@ -905,13 +906,19 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const base = runBaseReadinessEngine(input);
   const occupation = findOccupationRecord(input);
+  const stateNominationTracker = calculateStateNominationTracker(input);
   const report = {
     ...base,
     rankedPathways: calculateRankedPathways(base, {
       age: input.age,
       currentCountry: input.currentCountry,
     }),
-    stateNominationTracker: calculateStateNominationTracker(input),
+    stateNominationTracker,
+    lodgementReadyChecklist: generateChecklist({
+      input,
+      stateNominationTracker,
+      occupationAuthority: occupation?.authority,
+    }),
     documentChecklist: buildPremiumDocumentChecklist(input, base),
     suggestedNextSteps: buildImmediateActionPlan(input, base, occupation?.anzsco_code),
     frictionAnalysis: buildFrictionAnalysis(input, base),

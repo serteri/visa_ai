@@ -143,6 +143,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       visaViabilityRanking: "Vize Sans Siralamasi",
       topRecommendedStates: "En Guclu 2 Eyalet",
       stateNominationTracker: "Eyalet Nomination Tracker",
+      lodgementReadyChecklist: "Lodgement-Ready Checklist",
       stateCode: "Eyalet",
       stateStatus: "Durum",
       stateMatch: "Uyum",
@@ -229,6 +230,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       visaViabilityRanking: "签证可行性排序",
       topRecommendedStates: "前 2 个推荐州",
       stateNominationTracker: "州担保追踪图",
+      lodgementReadyChecklist: "递交准备行动清单",
       stateCode: "州",
       stateStatus: "状态",
       stateMatch: "匹配",
@@ -314,6 +316,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     visaViabilityRanking: "Visa Viability Ranking",
     topRecommendedStates: "Top 2 Recommended States",
     stateNominationTracker: "State Nomination Tracker",
+    lodgementReadyChecklist: "Lodgement-Ready Checklist",
     stateCode: "State",
     stateStatus: "Status",
     stateMatch: "Match",
@@ -1129,6 +1132,50 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 3;
   }
 
+  function drawLodgementReadyChecklist() {
+    const checklist = report.lodgementReadyChecklist?.items ?? [];
+    if (checklist.length === 0) return;
+
+    addHeading(text.lodgementReadyChecklist);
+
+    checklist.forEach((item) => {
+      ensurePageSpace(14);
+      const topY = yPosition;
+
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.25);
+      doc.roundedRect(margin, topY, contentWidth, 12, 1.2, 1.2, "FD");
+
+      const color =
+        item.priority === "urgent"
+          ? COLORS.riskHigh
+          : item.priority === "important"
+            ? COLORS.riskMedium
+            : COLORS.riskLow;
+
+      doc.setFillColor(color.r, color.g, color.b);
+      doc.circle(margin + 4, topY + 4.5, 1.5, "F");
+
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(safeText(item.title), margin + 8, topY + 5);
+
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.text(safeText(item.detail), margin + 8, topY + 9.2, { maxWidth: contentWidth - 12 });
+
+      yPosition += 15;
+    });
+
+    if (report.lodgementReadyChecklist?.note) {
+      addSmallText(report.lodgementReadyChecklist.note, 4);
+      yPosition += 2;
+    }
+  }
+
   function getFrictionColorByLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
     if (score === "EXTREME") return { r: 220, g: 38, b: 38 };
     if (score === "HIGH") return { r: 217, g: 119, b: 6 };
@@ -1176,6 +1223,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   drawVisaViabilityRanking();
   drawTopRecommendedStates();
   drawStateNominationTable();
+  drawLodgementReadyChecklist();
 
   addHeading(text.signalSnapshot);
   addBody(`${text.strongestSignal}: ${report.signalSnapshot.strongest}`);
