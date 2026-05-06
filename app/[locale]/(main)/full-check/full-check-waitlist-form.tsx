@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   type FullCheckWaitlistState,
   submitFullCheckWaitlist,
-} from "@/app/[locale]/(main)/full-check/actions";
+} from "./actions";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
