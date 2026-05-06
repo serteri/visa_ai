@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
+import { DocumentAnalyzer } from "@/components/DocumentAnalyzer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/db";
@@ -24,6 +25,16 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const record = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
   const lead = record[0];
   if (!lead) notFound();
+
+  const leadData = {
+    fullName: lead.full_name ?? undefined,
+    email: lead.email,
+    occupation: lead.occupation ?? undefined,
+    englishLevel: lead.english_level ?? lead.english_test_taken ?? undefined,
+    age: lead.age ?? undefined,
+    currentCountry: lead.current_country ?? undefined,
+    targetVisa: lead.selected_visa ?? undefined,
+  };
 
   const report = lead.report_id ? await getUserReportById(lead.report_id) : null;
 
@@ -106,6 +117,8 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             </CardContent>
           </Card>
         )}
+
+        <DocumentAnalyzer leadData={leadData} />
       </section>
     </main>
   );
