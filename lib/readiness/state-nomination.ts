@@ -14,8 +14,15 @@ type StateDatasetRow = {
   status: StateNominationStatus;
   offshoreAvailability: "open" | "limited" | "closed";
   onshoreAvailability: "open" | "priority" | "closed";
+  minimumPoints: number;
+  minimumEnglish: "competent" | "proficient" | "superior";
   minimumExperienceYears: number;
   regionalFocus: boolean;
+  preferredVisaTypes: Array<"190" | "491">;
+  requiresStateResidence: boolean;
+  requiresRecentEmployment: boolean;
+  offshoreQuotaPressure: "low" | "medium" | "high" | "closed";
+  programWindow: string;
   priorityKeywords: string[];
   specialConditions: string[];
 };
@@ -34,6 +41,44 @@ function isOffshore(currentCountry?: string): boolean {
 
 function maxExperienceYears(input: ReadinessInput): number {
   return Math.max(input.offshoreExperienceYears ?? 0, input.onshoreExperienceYears ?? 0);
+}
+
+function parsePointsEstimate(mainGoal?: string): number | undefined {
+  if (!mainGoal) return undefined;
+  const match = mainGoal.match(/\b(6[5-9]|[7-9]\d|1\d\d)\b/);
+  if (!match) return undefined;
+  const value = Number(match[1]);
+  return Number.isFinite(value) ? value : undefined;
+}
+
+function englishBand(level?: string): 0 | 1 | 2 {
+  const normalized = normalize(level);
+  if (!normalized) return 0;
+  if (
+    normalized.includes("superior") ||
+    normalized.includes("ielts 8") ||
+    normalized.includes("pte 79") ||
+    normalized.includes("8.0")
+  ) {
+    return 2;
+  }
+
+  if (
+    normalized.includes("proficient") ||
+    normalized.includes("ielts 7") ||
+    normalized.includes("pte 65") ||
+    normalized.includes("7.0")
+  ) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function requiredEnglishBand(level: StateDatasetRow["minimumEnglish"]): 0 | 1 | 2 {
+  if (level === "superior") return 2;
+  if (level === "proficient") return 1;
+  return 0;
 }
 
 function occupationMatches(row: StateDatasetRow, occupation?: string): boolean {
@@ -56,8 +101,22 @@ function buildSummary(args: {
   occupationIsPriority: boolean;
   experienceGap: boolean;
   regionalGap: boolean;
+  pointsGap: boolean;
+  englishGap: boolean;
+  residenceGap: boolean;
 }): string {
-  const { locale, row, matchLevel, offshore, occupationIsPriority, experienceGap, regionalGap } = args;
+  const {
+    locale,
+    row,
+    matchLevel,
+    offshore,
+    occupationIsPriority,
+    experienceGap,
+    regionalGap,
+    pointsGap,
+    englishGap,
+    residenceGap,
+  } = args;
 
   if (row.status === "Closed") {
     return t(
@@ -86,12 +145,12 @@ function buildSummary(args: {
     );
   }
 
-  if (experienceGap || regionalGap) {
+  if (experienceGap || regionalGap || pointsGap || englishGap || residenceGap) {
     return t(
       locale,
-      `${row.name} remains possible, but it looks conditional on extra work experience or regional flexibility.`,
-      `${row.name} halen mumkun gorunuyor, ancak ek is tecrubesi veya regional esneklik gerektirebilir.`,
-      `${row.name} 仍有可能，但更依赖额外工作经验或偏远地区灵活性。`
+      `${row.name} remains possible, but it looks conditional on profile gaps such as points, English, state ties, or work experience.`,
+      `${row.name} halen mumkun gorunuyor, ancak puan, Ingilizce, eyalet baglantisi veya deneyim gibi profil bosluklarina bagli.`,
+      `${row.name} 仍有可能，但更依赖分数、英语、州联系或工作经验等条件缺口。`
     );
   }
 
@@ -116,8 +175,21 @@ function buildRequirements(args: {
   occupationIsPriority: boolean;
   experienceYears: number;
   regionalWilling: boolean;
+  pointsEstimate?: number;
+  englishScore: 0 | 1 | 2;
+  residenceGap: boolean;
 }): string[] {
-  const { locale, row, offshore, occupationIsPriority, experienceYears, regionalWilling } = args;
+  const {
+    locale,
+    row,
+    offshore,
+    occupationIsPriority,
+    experienceYears,
+    regionalWilling,
+    pointsEstimate,
+    englishScore,
+    residenceGap,
+  } = args;
   const requirements: string[] = [];
 
   if (row.status === "Onshore Only") {
@@ -133,6 +205,28 @@ function buildRequirements(args: {
         `Target at least ${row.minimumExperienceYears} years of relevant experience.`,
         `En az ${row.minimumExperienceYears} yil ilgili deneyim hedefleyin.`,
         `建议至少具备 ${row.minimumExperienceYears} 年相关经验。`
+      )
+    );
+  }
+
+  if ((pointsEstimate ?? 0) > 0 && (pointsEstimate ?? 0) < row.minimumPoints) {
+    requirements.push(
+      t(
+        locale,
+        `Profile looks safer from about ${row.minimumPoints}+ points in this state.`,
+        `Bu eyalette profil genellikle ${row.minimumPoints}+ puan civarinda daha guvenli gorunur.`,
+        `在该州通常约 ${row.minimumPoints}+ 分会更稳。`
+      )
+    );
+  }
+
+  if (englishScore < requiredEnglishBand(row.minimumEnglish)) {
+    requirements.push(
+      t(
+        locale,
+        `English signal should ideally reach ${row.minimumEnglish} level.`,
+        `Ingilizce sinyalinin ideal olarak ${row.minimumEnglish} seviyesine ulasmasi gerekir.`,
+        `英语信号最好达到 ${row.minimumEnglish} 水平。`
       )
     );
   }
@@ -170,6 +264,17 @@ function buildRequirements(args: {
     );
   }
 
+  if (residenceGap) {
+    requirements.push(
+      t(
+        locale,
+        "Local residence or strong in-state ties would materially improve the nomination case.",
+        "Yerel ikamet veya guclu eyalet baglari nomination ihtimalini belirgin sekilde artirir.",
+        "本地居住或较强州联系会明显增强提名机会。"
+      )
+    );
+  }
+
   row.specialConditions.forEach((condition) => {
     requirements.push(
       t(locale, condition, condition, condition)
@@ -183,11 +288,16 @@ export function calculateStateNominationTracker(input: ReadinessInput): StateNom
   const offshore = isOffshore(input.currentCountry);
   const experienceYears = maxExperienceYears(input);
   const regionalWilling = Boolean(input.regionalWilling);
+  const pointsEstimate = parsePointsEstimate(input.mainGoal);
+  const englishScore = englishBand(input.englishLevel);
 
   const states = STATE_ROWS.map((row): StateNominationState => {
     const occupationIsPriority = occupationMatches(row, input.occupation);
     const experienceGap = row.minimumExperienceYears > experienceYears;
     const regionalGap = row.regionalFocus && !regionalWilling;
+    const pointsGap = typeof pointsEstimate === "number" ? pointsEstimate < row.minimumPoints : false;
+    const englishGap = englishScore < requiredEnglishBand(row.minimumEnglish);
+    const residenceGap = row.requiresStateResidence && offshore;
 
     let score = 55;
 
@@ -202,10 +312,17 @@ export function calculateStateNominationTracker(input: ReadinessInput): StateNom
     }
 
     if (row.offshoreAvailability === "limited" && offshore) score -= 12;
+    if (row.offshoreQuotaPressure === "high") score -= 6;
+    if (row.offshoreQuotaPressure === "closed") score -= 18;
     if (occupationIsPriority) score += 8;
     else score -= 8;
     if (experienceGap) score -= 16;
     if (regionalGap) score -= 14;
+    if (pointsGap) score -= 14;
+    if (englishGap) score -= 10;
+    if (residenceGap) score -= 14;
+    if (row.requiresRecentEmployment && offshore) score -= 8;
+    if (row.preferredVisaTypes.includes("491") && regionalWilling) score += 6;
 
     score = Math.max(0, Math.min(95, score));
 
@@ -225,6 +342,9 @@ export function calculateStateNominationTracker(input: ReadinessInput): StateNom
         occupationIsPriority,
         experienceGap,
         regionalGap,
+        pointsGap,
+        englishGap,
+        residenceGap,
       }),
       requirements: buildRequirements({
         locale: input.locale,
@@ -233,6 +353,9 @@ export function calculateStateNominationTracker(input: ReadinessInput): StateNom
         occupationIsPriority,
         experienceYears,
         regionalWilling,
+        pointsEstimate,
+        englishScore,
+        residenceGap,
       }),
     };
   }).sort((a, b) => b.score - a.score);

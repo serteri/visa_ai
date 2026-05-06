@@ -143,6 +143,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       visaViabilityRanking: "Vize Sans Siralamasi",
       topRecommendedStates: "En Guclu 2 Eyalet",
       stateNominationTracker: "Eyalet Nomination Tracker",
+      stateCode: "Eyalet",
+      stateStatus: "Durum",
+      stateMatch: "Uyum",
     };
   }
 
@@ -226,6 +229,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       visaViabilityRanking: "签证可行性排序",
       topRecommendedStates: "前 2 个推荐州",
       stateNominationTracker: "州担保追踪图",
+      stateCode: "州",
+      stateStatus: "状态",
+      stateMatch: "匹配",
     };
   }
 
@@ -308,6 +314,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     visaViabilityRanking: "Visa Viability Ranking",
     topRecommendedStates: "Top 2 Recommended States",
     stateNominationTracker: "State Nomination Tracker",
+    stateCode: "State",
+    stateStatus: "Status",
+    stateMatch: "Match",
   };
 }
 
@@ -1064,6 +1073,62 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
   }
 
+  function drawStateNominationTable() {
+    const states = report.stateNominationTracker?.states ?? [];
+    if (states.length === 0) return;
+
+    addHeading(text.stateNominationTracker);
+    ensurePageSpace(62);
+
+    const col1 = margin;
+    const col2 = margin + 28;
+    const col3 = margin + 108;
+    const col4 = margin + 150;
+    const rowHeight = 8;
+
+    doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
+    doc.roundedRect(margin, yPosition, contentWidth, rowHeight, 1, 1, "F");
+    setBoldFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.text(safeText(text.stateCode), col1 + 2, yPosition + 5.2);
+    doc.text(safeText(text.stateStatus), col2 + 2, yPosition + 5.2);
+    doc.text(safeText(text.stateMatch), col3 + 2, yPosition + 5.2);
+    doc.text(safeText(text.note), col4 + 2, yPosition + 5.2);
+    yPosition += rowHeight;
+
+    setBaseFont();
+    doc.setFontSize(FONTS.small);
+
+    states.forEach((state, index) => {
+      ensurePageSpace(rowHeight + 2);
+
+      if (index % 2 === 0) {
+        doc.setFillColor(COLORS.zebra.r, COLORS.zebra.g, COLORS.zebra.b);
+        doc.rect(margin, yPosition, contentWidth, rowHeight, "F");
+      }
+
+      const color =
+        state.matchLevel === "high"
+          ? COLORS.riskLow
+          : state.matchLevel === "medium"
+            ? COLORS.riskMedium
+            : COLORS.riskHigh;
+
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(safeText(state.code), col1 + 2, yPosition + 5.2);
+      doc.text(safeText(state.status), col2 + 2, yPosition + 5.2, { maxWidth: 76 });
+      doc.setTextColor(color.r, color.g, color.b);
+      doc.text(safeText(`${state.score}%`), col3 + 2, yPosition + 5.2);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      const note = state.requirements[0] ?? state.summary;
+      doc.text(safeText(note), col4 + 2, yPosition + 5.2, { maxWidth: contentWidth - (col4 - margin) - 4 });
+      yPosition += rowHeight;
+    });
+
+    yPosition += 3;
+  }
+
   function getFrictionColorByLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
     if (score === "EXTREME") return { r: 220, g: 38, b: 38 };
     if (score === "HIGH") return { r: 217, g: 119, b: 6 };
@@ -1110,6 +1175,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   drawVisaViabilityRanking();
   drawTopRecommendedStates();
+  drawStateNominationTable();
 
   addHeading(text.signalSnapshot);
   addBody(`${text.strongestSignal}: ${report.signalSnapshot.strongest}`);
