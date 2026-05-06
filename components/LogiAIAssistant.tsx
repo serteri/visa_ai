@@ -6,6 +6,7 @@ import { Bot, Send, Sparkles, MessageSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { defaultLocale, isValidLocale } from "@/lib/i18n/config";
 import type { AssistantReportData } from "@/lib/readiness/types";
 
 type AssistantMessage = {
@@ -24,6 +25,13 @@ type LogiAIAssistantProps = {
   reportData: AssistantReportData;
 };
 
+type SupportedAssistantLocale = "en" | "tr" | "zh-Hans";
+
+function normalizeAssistantLocale(locale: string): SupportedAssistantLocale {
+  if (isValidLocale(locale)) return locale;
+  return defaultLocale;
+}
+
 function TypingIndicator() {
   return (
     <div className="flex items-center gap-1.5">
@@ -40,8 +48,9 @@ function uid() {
 }
 
 export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
-  const isTr = locale === "tr";
-  const isZh = locale === "zh-Hans";
+  const resolvedLocale = normalizeAssistantLocale(locale);
+  const isTr = resolvedLocale === "tr";
+  const isZh = resolvedLocale === "zh-Hans";
   const t = (tr: string, en: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   const [isMobile, setIsMobile] = useState(false);
@@ -85,15 +94,28 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
     const lowestVisa = lowest?.subclass ?? "189";
 
     const occupation = reportData.user.occupation?.trim() || "my occupation";
-    const tracker = reportData.stateNominationTracker?.topRecommendedStates;
-    const topState = tracker?.[0]?.code ?? "SA";
+    const occupationLabel = occupation === "my occupation"
+      ? t("mesleğim", "my occupation", "我的职业")
+      : occupation;
 
     return [
-      `Why is my ${lowestVisa} chance so low?`,
-      "What are my exact first steps to boost my points?",
-      `Why does ${topState} look stronger for ${occupation}?`,
+      t(
+        `${lowestVisa} vizem için şansım neden düşük?`,
+        `Why is my ${lowestVisa} chance low?`,
+        `为什么我的 ${lowestVisa} 签证机会很低？`
+      ),
+      t(
+        "Puanımı artırmak için ilk adımlarım neler olmalı?",
+        "What are my exact first steps?",
+        "提高分数的具体第一步是什么？"
+      ),
+      t(
+        `${occupationLabel} için Eyalet Sponsorluğu durumunu açıkla.`,
+        `Explain State Nomination for ${occupationLabel}.`,
+        `请解释 ${occupationLabel} 的州担保情况。`
+      ),
     ];
-  }, [reportData]);
+  }, [reportData, t]);
 
   function scrollToBottom() {
     requestAnimationFrame(() => {
