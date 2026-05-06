@@ -88,6 +88,34 @@ export const fullCheckWaitlist = pgTable("full_check_waitlist", {
   created_at: timestamp("created_at").defaultNow(),
 });
 
+export const leads = pgTable("leads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  source: text("source").default("full_check"),
+  full_name: text("full_name"),
+  email: text("email").notNull(),
+  preferred_language: text("preferred_language"),
+  current_country: text("current_country"),
+  passport_country: text("passport_country"),
+  age: text("age"),
+  occupation: text("occupation"),
+  english_level: text("english_level"),
+  english_test_taken: text("english_test_taken"),
+  occupation_confirmed: text("occupation_confirmed"),
+  estimated_budget_range: text("estimated_budget_range"),
+  timeline: text("timeline"),
+  sponsor_or_family: text("sponsor_or_family"),
+  biggest_concern: text("biggest_concern"),
+  main_goal: text("main_goal"),
+  selected_visa: text("selected_visa"),
+  system_score: integer("system_score"),
+  lead_score: integer("lead_score"),
+  lead_tier: text("lead_tier"),
+  report_id: uuid("report_id"),
+  report_locale: text("report_locale"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
 export const fullCheckUsage = pgTable("full_check_usage", {
   id: integer("id").primaryKey().default(1),
   free_reports_used: integer("free_reports_used").default(0),

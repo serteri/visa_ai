@@ -8,6 +8,13 @@
       "when": 1777036101195,
       "tag": "0000_natural_korg",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778100000000,
+      "tag": "0001_leads_micro_crm",
+      "breakpoints": true
     }
   ]
 }

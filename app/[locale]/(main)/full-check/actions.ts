@@ -6,7 +6,7 @@ import Stripe from "stripe";
 import { Resend } from "resend";
 
 import { db } from "@/db";
-import { fullCheckUsage, fullCheckWaitlist } from "@/db/schema";
+import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import {
@@ -558,6 +558,34 @@ export async function submitFullCheckWaitlist(
       preferredPathway: visaInterest || undefined,
       biggestConcern: biggestConcern || undefined,
     },
+  });
+
+  await db.insert(leads).values({
+    source,
+    full_name: fullName || null,
+    email,
+    preferred_language: preferredLanguage || null,
+    current_country: currentCountry || null,
+    passport_country: passportCountry,
+    age,
+    occupation: occupation || null,
+    english_level: englishLevel || null,
+    english_test_taken: englishTestTaken || null,
+    occupation_confirmed: occupationConfirmed || null,
+    estimated_budget_range: estimatedBudgetRange || null,
+    timeline: timeline || null,
+    sponsor_or_family: sponsorOrFamily || null,
+    biggest_concern: biggestConcern || null,
+    main_goal: mainGoal,
+    selected_visa:
+      ((generatedReport.rankedPathways?.[0]?.subclass ??
+        generatedReport.pathwayComparison[0]?.subclass ??
+        visaInterest) || null),
+    system_score: generatedReport.rankedPathways?.[0]?.matchPercentage ?? null,
+    lead_score: leadQuality.leadScore,
+    lead_tier: leadQuality.leadTier,
+    report_id: reportRecord.id,
+    report_locale: resolvedLocale,
   });
 
   if (analysisProgressId) {
