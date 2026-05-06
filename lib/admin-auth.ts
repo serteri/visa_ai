@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const ADMIN_SESSION_COOKIE = "logivisa_admin_session";
 
@@ -51,6 +52,11 @@ export async function setAdminSession(): Promise<void> {
 export async function clearAdminSession(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(ADMIN_SESSION_COOKIE);
+}
+
+export async function logoutAdmin(): Promise<never> {
+  await clearAdminSession();
+  redirect("/");
 }
 
 export function isValidAdminPassword(candidate: string): boolean {

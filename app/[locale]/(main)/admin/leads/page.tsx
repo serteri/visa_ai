@@ -2,7 +2,6 @@ import { desc } from "drizzle-orm";
 import Link from "next/link";
 
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
-import { loginAdmin, logoutAdmin } from "@/app/[locale]/(main)/admin/leads/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,15 +40,9 @@ export default async function AdminLeadsPage({ params, searchParams }: AdminLead
   const records = await getLeads();
 
   return (
-    <main className="ambient-bg flex-1 py-12">
-      <section className="section-shell space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <AdminNav locale={locale} />
-          <form action={logoutAdmin}>
-            <input type="hidden" name="locale" value={locale} />
-            <Button type="submit" variant="outline">Sign out</Button>
-          </form>
-        </div>
+    <main className="ambient-bg flex-1 py-10">
+      <section className="section-shell space-y-6 pt-8">
+        <AdminNav locale={locale} />
 
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">Admin</p>

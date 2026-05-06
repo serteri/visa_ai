@@ -41,8 +41,8 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const report = lead.report_id ? await getUserReportById(lead.report_id) : null;
 
   return (
-    <main className="ambient-bg flex-1 py-12">
-      <section className="section-shell space-y-6">
+    <main className="ambient-bg flex-1 py-10">
+      <section className="section-shell space-y-6 pt-8">
         <AdminNav locale={locale} />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
