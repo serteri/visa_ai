@@ -14,6 +14,7 @@ import {
   submitFullCheckWaitlist,
 } from "@/app/[locale]/(main)/full-check/actions";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
+import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessReport } from "@/lib/readiness/types";
 
@@ -266,6 +267,28 @@ export function FullCheckWaitlistForm({
   const activeUnlockedReportState =
     unlockedReportState?.reportId === state.reportId ? unlockedReportState : null;
   const report = activeUnlockedReportState?.report ?? null;
+  const assistantReportData = report
+    ? {
+        user: {
+          name: activeUnlockedReportState?.name ?? state.userInput?.name,
+          email: activeUnlockedReportState?.email ?? state.userInput?.email,
+          currentCountry: state.userInput?.currentCountry,
+          age: state.userInput?.age,
+          occupation: state.userInput?.occupation,
+        },
+        targetVisa:
+          report.rankedPathways?.[0]?.subclass ??
+          report.pathwayComparison[0]?.subclass ??
+          undefined,
+        pointsEstimate: report.pointsEstimate?.estimatedPoints,
+        primaryLimitingFactor: report.primaryLimitingFactor,
+        rankedPathways: report.rankedPathways,
+        pathwayComparison: report.pathwayComparison,
+        executiveSummary: report.executiveSummary,
+        suggestedNextSteps: report.suggestedNextSteps,
+        riskIndicators: report.riskIndicators,
+      }
+    : null;
 
   async function handleDownloadPDF() {
     if (!report) return;
@@ -1134,6 +1157,10 @@ export function FullCheckWaitlistForm({
             </CardContent>
           </Card>
         </section>
+      )}
+
+      {state.status === "success" && assistantReportData && (
+        <LogiAIAssistant locale={locale} reportData={assistantReportData} />
       )}
     </div>
   );
