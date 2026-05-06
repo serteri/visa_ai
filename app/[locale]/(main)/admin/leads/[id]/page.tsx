@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
 import { AnzscoMatcher } from "@/components/AnzscoMatcher";
+import { AnzscoMatcherErrorBoundary } from "@/components/AnzscoMatcherErrorBoundary";
 import { DocumentAnalyzer } from "@/components/DocumentAnalyzer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,6 +97,20 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </Card>
         </div>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>AI ANZSCO Duty Matcher</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Enterprise CV and duty matching against ANZSCO expectations for the lead occupation.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <AnzscoMatcherErrorBoundary>
+              <AnzscoMatcher targetOccupation={lead.occupation} />
+            </AnzscoMatcherErrorBoundary>
+          </CardContent>
+        </Card>
+
         {report && (
           <Card>
             <CardHeader>
@@ -121,16 +136,13 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>AI Assessment Workspace</CardTitle>
+            <CardTitle>Document Intelligence</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Use Document Intelligence and ANZSCO Duty Matcher together for a cleaner, enterprise-grade lead assessment flow.
+              Analyze uploaded documents to extract additional readiness signals for this lead.
             </p>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-6 xl:grid-cols-2">
-              <DocumentAnalyzer leadData={leadData} />
-              <AnzscoMatcher targetOccupation={lead.occupation} />
-            </div>
+            <DocumentAnalyzer leadData={leadData} />
           </CardContent>
         </Card>
       </section>

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { PDFParse } from "pdf-parse";
 
 type AnzscoMatchResult = {
   matchPercentage: number;
@@ -9,7 +8,7 @@ type AnzscoMatchResult = {
 };
 
 const SYSTEM_PROMPT_TEMPLATE =
-  "You are an expert Australian Migration Assessor. Compare the provided candidate CV against the official ANZSCO requirements for the role of '{targetOccupation}'. Return a strict JSON response containing: 1. matchPercentage (number 0-100), 2. matchedDuties (array of strings), 3. missingDuties (array of strings, crucial for assessment), 4. recommendedKeywords (array of keywords to add to the CV for better alignment).";
+  "You are an expert Australian Migration Assessor. Compare the provided candidate CV text against the official ANZSCO requirements for the role of '{targetOccupation}'. Return a strict JSON response containing: 1. matchPercentage (number 0-100), 2. matchedDuties (array of strings), 3. missingDuties (array of strings, crucial for assessment), 4. recommendedKeywords (array of keywords to add to the CV for better alignment).";
 
 export const runtime = "nodejs";
 
@@ -49,28 +48,6 @@ function parseAssistantJson(raw: string): AnzscoMatchResult | null {
   const parsed = safeJsonParse<Partial<AnzscoMatchResult> | null>(cleaned, null);
   if (!parsed || typeof parsed !== "object") return null;
   return sanitizeResult(parsed);
-}
-
-async function extractCvTextFromFile(file: File): Promise<string> {
-  const mime = file.type || "application/octet-stream";
-  const bytes = await file.arrayBuffer();
-
-  if (mime === "application/pdf") {
-    const parser = new PDFParse({ data: Buffer.from(bytes) });
-    const pdf = await parser.getText();
-    await parser.destroy();
-    return pdf.text?.trim() || "";
-  }
-
-  if (mime.startsWith("text/")) {
-    return await file.text();
-  }
-
-  if (file.name.toLowerCase().endsWith(".txt")) {
-    return await file.text();
-  }
-
-  throw new Error("Unsupported CV file type. Use PDF or plain text.");
 }
 
 async function callOpenAi(args: {
@@ -134,30 +111,19 @@ async function callOpenAi(args: {
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
+    const body = (await request.json()) as {
+      cvText?: string;
+      targetOccupation?: string;
+    };
 
-    const targetOccupationRaw = formData.get("targetOccupation");
-    const targetOccupation = typeof targetOccupationRaw === "string" ? targetOccupationRaw.trim() : "";
+    const targetOccupation = String(body?.targetOccupation ?? "").trim();
     if (!targetOccupation) {
       return NextResponse.json({ error: "targetOccupation is required." }, { status: 400 });
     }
 
-    const cvTextRaw = formData.get("cvText");
-    const typedCvText = typeof cvTextRaw === "string" ? cvTextRaw.trim() : "";
-
-    const fileEntry = formData.get("file");
-    let cvText = typedCvText;
-
-    if (!cvText && fileEntry instanceof File && fileEntry.size > 0) {
-      const maxBytes = 10 * 1024 * 1024;
-      if (fileEntry.size > maxBytes) {
-        return NextResponse.json({ error: "File is too large. Max 10MB." }, { status: 400 });
-      }
-      cvText = (await extractCvTextFromFile(fileEntry)).trim();
-    }
-
+    const cvText = String(body?.cvText ?? "").trim();
     if (!cvText) {
-      return NextResponse.json({ error: "Provide CV text or upload a PDF/TXT CV file." }, { status: 400 });
+      return NextResponse.json({ error: "cvText is required." }, { status: 400 });
     }
 
     const result = await callOpenAi({

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Loader2, UploadCloud } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,14 +32,12 @@ function percentageTrack(score: number): string {
 }
 
 export function AnzscoMatcher({ targetOccupation }: AnzscoMatcherProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [cvText, setCvText] = useState("");
-  const [isDragOver, setIsDragOver] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<MatchResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const hasInput = selectedFile || cvText.trim().length > 0;
+  const hasInput = cvText.trim().length > 0;
   const canSubmit = !!targetOccupation && !!hasInput && !isLoading;
 
   const score = Math.max(0, Math.min(100, result?.matchPercentage ?? 0));
@@ -51,7 +49,6 @@ export function AnzscoMatcher({ targetOccupation }: AnzscoMatcherProps) {
   );
 
   function clearAll() {
-    setSelectedFile(null);
     setCvText("");
     setResult(null);
     setError(null);
@@ -65,14 +62,15 @@ export function AnzscoMatcher({ targetOccupation }: AnzscoMatcherProps) {
       setError(null);
       setResult(null);
 
-      const formData = new FormData();
-      formData.append("targetOccupation", targetOccupation);
-      if (cvText.trim()) formData.append("cvText", cvText.trim());
-      if (selectedFile) formData.append("file", selectedFile);
-
       const response = await fetch("/api/anzsco-match", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          targetOccupation,
+          cvText: cvText.trim(),
+        }),
       });
 
       const payload = (await response.json()) as MatchResult | { error?: string };
@@ -111,58 +109,17 @@ export function AnzscoMatcher({ targetOccupation }: AnzscoMatcherProps) {
       </CardHeader>
 
       <CardContent className="space-y-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-          <label
-            className={[
-              "flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-6 text-center transition",
-              isDragOver
-                ? "border-primary bg-primary/10"
-                : "border-slate-300 bg-white hover:border-primary/60 hover:bg-primary/5",
-            ].join(" ")}
-            onDragOver={(event) => {
-              event.preventDefault();
-              setIsDragOver(true);
-            }}
-            onDragLeave={() => setIsDragOver(false)}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDragOver(false);
-              const dropped = event.dataTransfer.files?.[0] ?? null;
-              setSelectedFile(dropped);
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-slate-900">Candidate CV Text</p>
+          <Textarea
+            value={cvText}
+            onChange={(event) => {
+              setCvText(event.target.value);
               setError(null);
             }}
-          >
-            <input
-              type="file"
-              className="sr-only"
-              accept="application/pdf,text/plain,.txt"
-              onChange={(event) => {
-                setSelectedFile(event.target.files?.[0] ?? null);
-                setError(null);
-              }}
-            />
-            <UploadCloud className="mb-3 h-8 w-8 text-primary" />
-            <p className="text-sm font-semibold text-slate-900">Upload CV (PDF/TXT)</p>
-            <p className="mt-1 text-xs text-slate-500">Drag and drop or click to browse</p>
-            {selectedFile && (
-              <p className="mt-3 rounded-full border bg-slate-100 px-3 py-1 text-xs text-slate-600">
-                Selected: {selectedFile.name}
-              </p>
-            )}
-          </label>
-
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-slate-900">Or Paste CV Text</p>
-            <Textarea
-              value={cvText}
-              onChange={(event) => {
-                setCvText(event.target.value);
-                setError(null);
-              }}
-              placeholder="Paste the candidate CV summary, role descriptions, project scope, and key responsibilities..."
-              className="min-h-44 border-slate-300 bg-white"
-            />
-          </div>
+            placeholder="Paste the full CV text, including role summaries, duties, projects, and measurable outcomes..."
+            className="min-h-56 border-slate-300 bg-white"
+          />
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -173,10 +130,10 @@ export function AnzscoMatcher({ targetOccupation }: AnzscoMatcherProps) {
                 Analyzing...
               </span>
             ) : (
-              "Run ANZSCO Match"
+              "Analyze CV"
             )}
           </Button>
-          {(selectedFile || cvText) && !isLoading && (
+          {cvText && !isLoading && (
             <Button type="button" variant="outline" onClick={clearAll}>
               Clear Inputs
             </Button>
@@ -186,7 +143,7 @@ export function AnzscoMatcher({ targetOccupation }: AnzscoMatcherProps) {
         {isLoading && (
           <div className="rounded-xl border border-primary/25 bg-primary/5 p-4">
             <p className="text-sm font-medium text-primary">
-              Analyzing CV against Australian Government standards...
+              Scanning CV against official ANZSCO standards...
             </p>
             <div className="mt-3 h-1.5 overflow-hidden rounded bg-primary/20">
               <div className="h-full w-1/3 animate-[pulse_1s_ease-in-out_infinite] bg-primary" />
