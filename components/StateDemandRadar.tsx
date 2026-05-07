@@ -4,25 +4,51 @@ import { Lock, Radar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { StateNominationState } from "@/lib/readiness/types";
+import sponsorshipData from "@/src/data/state-sponsorship.json";
 
 type StateDemandRadarProps = {
   locale: string;
   occupationName: string;
   occupationId: string;
-  states: StateNominationState[];
+};
+
+type StateStatus = "High Demand" | "Open" | "Onshore Only" | "Regional Opportunity" | "Closed";
+
+type StateRecord = {
+  code: "NSW" | "VIC" | "QLD" | "WA" | "SA" | "TAS" | "ACT" | "NT";
+  name: string;
+  status: StateStatus;
+};
+
+type OccupationStateRecord = {
+  anzscoCode: string;
+  occupationName: string;
+  states: StateRecord[];
+};
+
+type SponsorshipDataset = {
+  updatedAt: string;
+  occupations: OccupationStateRecord[];
 };
 
 const tx = (locale: string, zh: string, tr: string, en: string) =>
   locale === "tr" ? tr : locale === "zh-Hans" ? zh : en;
 
-function getStatusStyle(status: StateNominationState["status"]) {
+function getStatusStyle(status: StateStatus) {
   if (status === "High Demand") {
     return "border-emerald-200 bg-emerald-50 text-emerald-800";
   }
 
-  if (status === "Onshore Only") {
+  if (status === "Open") {
     return "border-amber-200 bg-amber-50 text-amber-800";
+  }
+
+  if (status === "Onshore Only") {
+    return "border-orange-200 bg-orange-50 text-orange-800";
+  }
+
+  if (status === "Regional Opportunity") {
+    return "border-sky-200 bg-sky-50 text-sky-800";
   }
 
   if (status === "Closed") {
@@ -32,10 +58,89 @@ function getStatusStyle(status: StateNominationState["status"]) {
   return "border-cyan-200 bg-cyan-50 text-cyan-800";
 }
 
-export function StateDemandRadar({ locale, occupationName, occupationId, states }: StateDemandRadarProps) {
-  const visibleStates = states.slice(0, 3);
-  const hiddenStates = states.slice(3);
+function getStatusLabel(locale: string, status: StateStatus): string {
+  if (locale === "tr") {
+    if (status === "High Demand") return "Yuksek Talep";
+    if (status === "Open") return "Acik";
+    if (status === "Onshore Only") return "Sadece Onshore";
+    if (status === "Regional Opportunity") return "Regional Firsat";
+    return "Kapali";
+  }
+
+  if (locale === "zh-Hans") {
+    if (status === "High Demand") return "高需求";
+    if (status === "Open") return "开放";
+    if (status === "Onshore Only") return "仅限境内";
+    if (status === "Regional Opportunity") return "偏远机会";
+    return "关闭";
+  }
+
+  return status;
+}
+
+function extractAnzscoCode(occupationId: string): string {
+  const code = occupationId.match(/^(\d{6})/)?.[1];
+  return code ?? occupationId;
+}
+
+function sortByPriority(states: StateRecord[]): StateRecord[] {
+  const rank: Record<StateStatus, number> = {
+    "High Demand": 5,
+    Open: 4,
+    "Regional Opportunity": 3,
+    "Onshore Only": 2,
+    Closed: 1,
+  };
+
+  return [...states].sort((a, b) => {
+    const scoreDiff = rank[b.status] - rank[a.status];
+    if (scoreDiff !== 0) return scoreDiff;
+    return a.code.localeCompare(b.code);
+  });
+}
+
+export function StateDemandRadar({ locale, occupationName, occupationId }: StateDemandRadarProps) {
+  const dataset = sponsorshipData as SponsorshipDataset;
+  const anzscoCode = extractAnzscoCode(occupationId);
+  const occupationEntry = dataset.occupations.find((item) => item.anzscoCode === anzscoCode);
   const fullCheckHref = `/en/full-check?occupation=${encodeURIComponent(occupationId)}`;
+
+  if (!occupationEntry) {
+    return (
+      <Card className="border-cyan-300/90 bg-gradient-to-br from-white via-cyan-50/50 to-emerald-50/50 shadow-2xl shadow-cyan-900/10">
+        <CardHeader>
+          <CardTitle className="text-xl font-extrabold text-slate-900 sm:text-2xl">
+            {tx(
+              locale,
+              `${occupationName} 的州担保需求雷达`,
+              `${occupationName} icin Eyalet Sponsorluk Radari`,
+              `State Sponsorship Radar for ${occupationName}`
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-slate-600">
+            {tx(
+              locale,
+              "该职业的实时数据正在更新中。请运行完整 AI 检查以获取实时状态。",
+              "Bu meslek icin canli veri su anda guncelleniyor. Gercek zamanli durum icin tam AI kontrolu calistirin.",
+              "Live data is currently being updated for this occupation. Run a full AI check for real-time status."
+            )}
+          </p>
+          <Button asChild size="lg" className="h-12 rounded-xl bg-cyan-600 px-7 text-base font-bold hover:bg-cyan-500">
+            <Link href={fullCheckHref}>Check Your Full State Matching Report</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const sortedStates = sortByPriority(occupationEntry.states);
+  const preferredVisible = sortedStates.filter((item) => item.status === "High Demand" || item.status === "Open");
+  const visibleStates = preferredVisible.length >= 3
+    ? preferredVisible.slice(0, 3)
+    : [...preferredVisible, ...sortedStates.filter((item) => !preferredVisible.some((v) => v.code === item.code))].slice(0, 3);
+  const hiddenStates = sortedStates.filter((item) => !visibleStates.some((v) => v.code === item.code));
 
   return (
     <Card className="border-cyan-300/90 bg-gradient-to-br from-white via-cyan-50/50 to-emerald-50/50 shadow-2xl shadow-cyan-900/10">
@@ -68,10 +173,17 @@ export function StateDemandRadar({ locale, occupationName, occupationId, states 
             <div key={state.code} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm font-extrabold text-slate-900">{state.code}</p>
-                <Badge className={`border ${getStatusStyle(state.status)}`}>{state.status}</Badge>
+                <Badge className={`border ${getStatusStyle(state.status)}`}>{getStatusLabel(locale, state.status)}</Badge>
               </div>
               <p className="mt-1 text-xs text-slate-600">{state.name}</p>
-              <p className="mt-3 text-xs text-slate-500">{state.summary}</p>
+              <p className="mt-3 text-xs text-slate-500">
+                {tx(
+                  locale,
+                  `${state.name} 信号显示当前状态为 ${getStatusLabel(locale, state.status)}。`,
+                  `${state.name} sinyali su an ${getStatusLabel(locale, state.status)} durumunu gosteriyor.`,
+                  `${state.name} currently shows a ${getStatusLabel(locale, state.status)} signal.`
+                )}
+              </p>
             </div>
           ))}
         </div>
@@ -84,7 +196,7 @@ export function StateDemandRadar({ locale, occupationName, occupationId, states 
                   <div key={state.code} className="rounded-xl border border-slate-200 bg-white p-4">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-extrabold text-slate-900">{state.code}</p>
-                      <Badge className={`border ${getStatusStyle(state.status)}`}>{state.status}</Badge>
+                      <Badge className={`border ${getStatusStyle(state.status)}`}>{getStatusLabel(locale, state.status)}</Badge>
                     </div>
                     <p className="mt-2 text-xs text-slate-600">{state.name}</p>
                   </div>
@@ -107,9 +219,9 @@ export function StateDemandRadar({ locale, occupationName, occupationId, states 
                   <Link href={fullCheckHref}>
                     {tx(
                       locale,
-                      "查看完整州匹配报告",
-                      "Tam Eyalet Eslesme Raporunu Goster",
-                      "Check Your Full State Matching Report"
+                      "解锁完整州矩阵并检查资格",
+                      "Tam Eyalet Matrisini Ac ve Uygunlugu Kontrol Et",
+                      "Unlock Full State Matrix & Check Eligibility"
                     )}
                   </Link>
                 </Button>

@@ -1,0 +1,47 @@
+{
+  "updatedAt": "2026-05-08",
+  "occupations": [
+    {
+      "anzscoCode": "261313",
+      "occupationName": "Software Engineer",
+      "states": [
+        { "code": "NSW", "name": "New South Wales", "status": "High Demand" },
+        { "code": "VIC", "name": "Victoria", "status": "Onshore Only" },
+        { "code": "QLD", "name": "Queensland", "status": "Closed" },
+        { "code": "WA", "name": "Western Australia", "status": "High Demand" },
+        { "code": "SA", "name": "South Australia", "status": "Regional Opportunity" },
+        { "code": "TAS", "name": "Tasmania", "status": "Open" },
+        { "code": "ACT", "name": "Australian Capital Territory", "status": "Onshore Only" },
+        { "code": "NT", "name": "Northern Territory", "status": "Regional Opportunity" }
+      ]
+    },
+    {
+      "anzscoCode": "321211",
+      "occupationName": "Motor Mechanic",
+      "states": [
+        { "code": "NSW", "name": "New South Wales", "status": "Onshore Only" },
+        { "code": "VIC", "name": "Victoria", "status": "Open" },
+        { "code": "QLD", "name": "Queensland", "status": "Closed" },
+        { "code": "WA", "name": "Western Australia", "status": "High Demand" },
+        { "code": "SA", "name": "South Australia", "status": "Regional Opportunity" },
+        { "code": "TAS", "name": "Tasmania", "status": "Open" },
+        { "code": "ACT", "name": "Australian Capital Territory", "status": "Closed" },
+        { "code": "NT", "name": "Northern Territory", "status": "High Demand" }
+      ]
+    },
+    {
+      "anzscoCode": "254412",
+      "occupationName": "Registered Nurse",
+      "states": [
+        { "code": "NSW", "name": "New South Wales", "status": "High Demand" },
+        { "code": "VIC", "name": "Victoria", "status": "High Demand" },
+        { "code": "QLD", "name": "Queensland", "status": "Open" },
+        { "code": "WA", "name": "Western Australia", "status": "High Demand" },
+        { "code": "SA", "name": "South Australia", "status": "Open" },
+        { "code": "TAS", "name": "Tasmania", "status": "Regional Opportunity" },
+        { "code": "ACT", "name": "Australian Capital Territory", "status": "Onshore Only" },
+        { "code": "NT", "name": "Northern Territory", "status": "Regional Opportunity" }
+      ]
+    }
+  ]
+}
