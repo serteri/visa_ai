@@ -1,4 +1,4 @@
-import { submitFullCheckWaitlist, unlockPremiumReport } from "@/app/[locale]/full-check/actions";
+import { submitFullCheckWaitlist, unlockPremiumReport } from "@/app/[locale]/(main)/full-check/actions";
 
 async function run() {
   process.env.SIMULATE_EMAIL_DELIVERY = "true";
