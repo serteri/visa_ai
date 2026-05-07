@@ -150,6 +150,7 @@ export function FullCheckWaitlistForm({
   initialValues?: {
     visaInterest?: string;
     currentCountry?: string;
+    occupation?: string;
     mainGoal?: string;
     source?: string;
   };
@@ -524,6 +525,7 @@ export function FullCheckWaitlistForm({
           <Input
             id="waitlist-occupation"
             name="occupation"
+            defaultValue={initialValues.occupation ?? ""}
             className={fieldClassName}
             placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
           />
