@@ -6,6 +6,7 @@ import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MiniCvTeaser } from "@/components/MiniCvTeaser";
 import { isValidLocale } from "@/lib/i18n/config";
 import { deriveSubclasses, findOccupationById, parseOccupationCodeFromId } from "@/lib/occupations/seo";
 
@@ -179,6 +180,20 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
             </span>
           </div>
         </header>
+
+        <Card className="border-cyan-300/90 bg-gradient-to-br from-white via-cyan-50/70 to-emerald-50/70 shadow-2xl shadow-cyan-900/10">
+          <CardHeader>
+            <CardTitle className="text-xl font-extrabold text-slate-900">
+              AI Duty Match Teaser
+            </CardTitle>
+            <p className="text-sm text-slate-600">
+              Try a fast preview and unlock your full duty analysis with occupation-specific PR readiness context.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <MiniCvTeaser occupationId={id} />
+          </CardContent>
+        </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
