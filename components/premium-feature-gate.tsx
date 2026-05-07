@@ -8,7 +8,7 @@ import {
   type FullCheckQuickPreview,
   type PremiumUnlockState,
   unlockPremiumReport,
-} from "@/app/[locale]/full-check/actions";
+} from "@/app/[locale]/(main)/full-check/actions";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
