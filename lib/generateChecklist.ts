@@ -90,15 +90,15 @@ export function generateChecklist(args: {
       priority: "urgent",
       title: t(
         input.locale,
-        "URGENT: Book PTE/IELTS Academic Exam",
-        "ACIL: PTE/IELTS Academic Sinavini Rezerve Et",
-        "紧急：预约 PTE/IELTS Academic 考试"
+        "English test readiness signal",
+        "Ingilizce sinav hazirlik sinyali",
+        "英语考试准备信号"
       ),
       detail: t(
         input.locale,
-        "Your English test signal is missing or below a strong migration target, so exam booking should be treated as the first execution step.",
-        "Ingilizce test sinyaliniz eksik veya guclu migration hedefinin altinda gorunuyor; bu nedenle ilk uygulama adimi sinav rezervasyonu olmali.",
-        "你的英语考试信号缺失或低于较强移民目标，因此应把考试预约视为第一执行步骤。"
+        "PTE/IELTS booking is typically a foundational step when English test data is missing or currently below stronger migration target bands.",
+        "Ingilizce test verisi eksik oldugunda veya daha guclu migration hedef bantlarinin altinda kaldiginda, PTE/IELTS rezervasyonu genellikle temel bir hazirlik adimi olarak degerlendirilir.",
+        "当英语考试数据缺失或低于较强目标区间时，PTE/IELTS 预约通常被视为基础准备步骤。"
       ),
     });
   }
@@ -110,15 +110,15 @@ export function generateChecklist(args: {
       priority: "important",
       title: t(
         input.locale,
-        `Initiate Skills Assessment with ${authorityLabel(authority, input.locale)}`,
-        `${authorityLabel(authority, input.locale)} ile Skills Assessment baslat`,
-        `向 ${authorityLabel(authority, input.locale)} 发起技能评估`
+        `Skills assessment pathway alignment with ${authorityLabel(authority, input.locale)}`,
+        `${authorityLabel(authority, input.locale)} ile skills assessment yol uyumu`,
+        `${authorityLabel(authority, input.locale)} 的技能评估路径对齐`
       ),
       detail: t(
         input.locale,
-        "Skills assessment timing can control points claims, nomination readiness, and your ability to move from planning to a lodgement-capable profile.",
-        "Skills assessment zamanlamasi puan iddialarinizi, nomination hazirligini ve planlamadan lodgement hazir profiline gecisinizi belirleyebilir.",
-        "技能评估时间点会影响加分主张、州担保准备度，以及你从规划阶段进入可递交状态的速度。"
+        "Skills assessment timing can influence points claims, nomination readiness, and progression from planning context to a lodgement-capable profile.",
+        "Skills assessment zamanlamasi; puan iddialari, nomination hazirligi ve planlama baglamindan lodgement hazir profile gecis uzerinde etkili olabilir.",
+        "技能评估时间点可能影响加分主张、州担保准备度，以及从规划阶段过渡到可递交状态的节奏。"
       ),
     });
   }
@@ -130,15 +130,15 @@ export function generateChecklist(args: {
       priority: "recommended",
       title: t(
         input.locale,
-        `Prepare EOI for ${topState.name}`,
-        `${topState.name} icin EOI hazirla`,
-        `为 ${topState.name} 准备 EOI`
+        `${topState.name} pathway EOI alignment considerations`,
+        `${topState.name} yolu icin EOI uyum degerlendirmeleri`,
+        `${topState.name} 路径的 EOI 对齐考量`
       ),
       detail: t(
         input.locale,
-        `${topState.name} is currently your strongest state nomination signal, so your EOI settings and evidence pack should be aligned to that pathway first.`,
-        `${topState.name} su anda en guclu state nomination sinyaliniz oldugu icin EOI ayarlari ve belge paketi once bu yola gore hizalanmali.`,
-        `${topState.name} 当前是你最强的州担保信号，因此 EOI 设置和材料包应优先对齐这一路径。`
+        `${topState.name} is currently indicated as the strongest state nomination signal; EOI settings and evidence packaging are typically reviewed against that pathway's criteria.`,
+        `${topState.name} su anda en guclu state nomination sinyali olarak gorunmektedir; EOI ayarlari ve belge paketleri genellikle bu yolun kriterleriyle uyumlu olacak sekilde gozden gecirilir.`,
+        `${topState.name} 当前显示为较强的州担保信号；EOI 设置与材料包通常会按该路径标准进行对齐审视。`
       ),
     });
   }
@@ -147,9 +147,9 @@ export function generateChecklist(args: {
     items,
     note: t(
       input.locale,
-      "This checklist is execution-focused and should be updated whenever your points, English result, or state pathway changes.",
-      "Bu liste uygulama odaklidir; puaniniz, Ingilizce sonucunuz veya state yolu degistikce guncellenmelidir.",
-      "这份清单以执行为导向；当你的分数、英语结果或州路径变化时，应同步更新。"
+      "This checklist is an educational planning reference and can be refreshed whenever points, English results, or state pathway context changes.",
+      "Bu kontrol listesi egitim amacli planlama referansidir; puan, Ingilizce sonucu veya state yolu baglami degistikce guncellenebilir.",
+      "此清单为教育性质的规划参考；当分数、英语结果或州路径背景变化时可同步更新。"
     ),
   };
 }

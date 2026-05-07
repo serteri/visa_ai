@@ -161,6 +161,8 @@ export function FullCheckWaitlistForm({
   const isZh = locale === "zh-Hans";
   const txt = (trText: string, enText: string, zhText: string) =>
     isTr ? trText : isZh ? zhText : enText;
+  const rpt = (zhText: string, trText: string, enText: string) =>
+    isZh ? zhText : isTr ? trText : enText;
   const initialState: FullCheckWaitlistState = {
     status: "idle",
   };
@@ -723,10 +725,10 @@ export function FullCheckWaitlistForm({
 
           <div className="space-y-1">
             <h3 className="text-xl font-bold">
-              {txt("完整签证准备度报告", "Tam vize hazırlık raporu", "Full visa readiness report")}
+              {rpt("完整签证准备度报告", "Tam vize hazırlık raporu", "Full visa readiness report")}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {txt(
+              {rpt(
                 "本报告基于结构化信息和个人情况。和注册移民顾问面谈可提供进一步评估。",
                 "Bu rapor yapısal bilgiye ve kişisel duruma bağlıdır. Kayıtlı bir göç danışmanı ile yapılan görüşme ek inceleme sağlar.",
                 "This report is based on structured information and personal circumstances. A consultation with a registered migration agent provides additional review."
@@ -739,7 +741,7 @@ export function FullCheckWaitlistForm({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {txt("执行摘要", "Yönetici Özeti", "Executive Summary")}
+                    {rpt("执行摘要", "Yönetici Özeti", "Executive Summary")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -759,7 +761,7 @@ export function FullCheckWaitlistForm({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {txt("签证可行性排序", "Vize Sans Siralamasi", "Visa Viability Ranking")}
+                    {rpt("签证可行性排序", "Vize Sans Siralamasi", "Visa Viability Ranking")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -810,31 +812,31 @@ export function FullCheckWaitlistForm({
             <Card className="border-primary/40 bg-primary/5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {txt("信号摘要", "Sinyal Özeti", "Signal Snapshot")}
+                  {rpt("信号摘要", "Sinyal Özeti", "Signal Snapshot")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div className="rounded-md border border-primary/20 bg-background/80 p-3">
                     <p className="text-xs font-semibold uppercase text-muted-foreground">
-                      {txt("最强信号", "En güçlü sinyal", "Strongest signal")}
+                      {rpt("最强信号", "En güçlü sinyal", "Strongest signal")}
                     </p>
                     <p className="mt-1 font-medium">{report.signalSnapshot.strongest}</p>
                   </div>
                   <div className="rounded-md border border-primary/20 bg-background/80 p-3 sm:col-span-2">
                     <p className="text-xs font-semibold uppercase text-muted-foreground">
-                      {txt("次要信号", "İkincil sinyaller", "Secondary signals")}
+                      {rpt("次要信号", "İkincil sinyaller", "Secondary signals")}
                     </p>
                     <p className="mt-1 font-medium">
                       {report.signalSnapshot.secondary.length > 0
                         ? report.signalSnapshot.secondary.join(", ")
-                        : txt("无明确次要信号", "Belirgin ikincil sinyal yok", "No clear secondary signal")}
+                        : rpt("无明确次要信号", "Belirgin ikincil sinyal yok", "No clear secondary signal")}
                     </p>
                   </div>
                 </div>
                 <p className="text-muted-foreground">
                   <span className="font-medium text-foreground">
-                    {txt("信心：", "Güven:", "Confidence:")}{" "}
+                    {rpt("信心：", "Güven:", "Confidence:")} {" "}
                     {getSignalConfidenceLabel(report.signalSnapshot.confidenceLabel)}
                   </span>{" "}
                   — {report.signalSnapshot.confidenceExplanation}
@@ -845,7 +847,7 @@ export function FullCheckWaitlistForm({
             <Card className="border-amber-300 bg-amber-50">
               <CardHeader>
                 <CardTitle className="text-base text-amber-950">
-                  {txt("主要限制因素", "Birincil Sınırlayıcı Faktör", "Primary Limiting Factor")}
+                  {rpt("主要限制因素", "Birincil Sınırlayıcı Faktör", "Primary Limiting Factor")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-amber-900">
@@ -858,7 +860,7 @@ export function FullCheckWaitlistForm({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {txt("可能影响您位置的因素", "Durumunuzu Değiştirebilecek Faktörler", "What May Change Your Position")}
+                    {rpt("可能影响您位置的因素", "Durumunuzu Değiştirebilecek Faktörler", "What May Change Your Position")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -881,10 +883,10 @@ export function FullCheckWaitlistForm({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {txt("路径强度对比", "Vize Yolu Karşılaştırması", "Pathway Strength Comparison")}
+                    {rpt("路径强度对比", "Vize Yolu Karşılaştırması", "Pathway Strength Comparison")}
                   </CardTitle>
                   <p className="text-xs text-muted-foreground">
-                    {txt(
+                    {rpt(
                       "信号强度、阻力等级及材料准备状态均基于提供的信息评估。",
                       "Her yolun sinyal güü, zorluk seviyesi ve belge durumu sağlanan bilgilere göre değerlendirilmiştir.",
                       "Signal strength, friction level, and evidence status for each pathway based on provided information."
@@ -905,17 +907,17 @@ export function FullCheckWaitlistForm({
                             {getStrengthLabel(item.strength)}
                           </span>
                           <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">
-                            {txt("阻力：", "Zorluk seviyesi:", "Friction:")} {getDifficultyLabel(item.friction)}
+                            {rpt("阻力：", "Zorluk seviyesi:", "Friction:")} {getDifficultyLabel(item.friction)}
                           </span>
                           <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">
-                            {txt("材料量：", "Gerekli belge düzeyi:", "Evidence load:")} {getEvidenceLoadLabel(item.evidenceLoad)}
+                            {rpt("材料量：", "Gerekli belge düzeyi:", "Evidence load:")} {getEvidenceLoadLabel(item.evidenceLoad)}
                           </span>
                         </div>
                       </div>
                       {/* Signal reasons and limiting factors */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <p className="font-medium text-xs mb-1">{txt("信号原因", "Sinyal nedenleri", "Signal reasons")}</p>
+                          <p className="font-medium text-xs mb-1">{rpt("信号原因", "Sinyal nedenleri", "Signal reasons")}</p>
                           <ul className="space-y-0.5">
                             {item.signalReasons.map((reason) => (
                               <li key={reason} className="flex gap-1.5 text-muted-foreground text-xs">
@@ -926,7 +928,7 @@ export function FullCheckWaitlistForm({
                           </ul>
                         </div>
                         <div>
-                          <p className="font-medium text-xs mb-1">{txt("限制因素", "Sınırlayıcı faktörler", "Limiting factors")}</p>
+                          <p className="font-medium text-xs mb-1">{rpt("限制因素", "Sınırlayıcı faktörler", "Limiting factors")}</p>
                           <ul className="space-y-0.5">
                             {item.limitingFactors.map((factor) => (
                               <li key={factor} className="flex gap-1.5 text-muted-foreground text-xs">
@@ -939,7 +941,7 @@ export function FullCheckWaitlistForm({
                       </div>
                       {/* Evidence status chips */}
                       <div>
-                        <p className="font-medium text-xs mb-1.5">{txt("材料状态", "Kanıt durumu", "Evidence status")}</p>
+                        <p className="font-medium text-xs mb-1.5">{rpt("材料状态", "Kanıt durumu", "Evidence status")}</p>
                         <div className="flex flex-wrap gap-1.5">
                           {item.evidenceStatus.map((ev) => (
                             <span
@@ -960,7 +962,7 @@ export function FullCheckWaitlistForm({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {txt("置信度说明", "Güven Açıklaması", "Confidence Explanation")}
+                  {rpt("置信度说明", "Güven Açıklaması", "Confidence Explanation")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -974,7 +976,7 @@ export function FullCheckWaitlistForm({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {txt("材料准备度摘要", "Kanıt/Bilgi Hazırlık Özeti", "Evidence Readiness Snapshot")}
+                  {rpt("材料准备度摘要", "Kanıt/Bilgi Hazırlık Özeti", "Evidence Readiness Snapshot")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -984,12 +986,12 @@ export function FullCheckWaitlistForm({
                       <p className="font-medium">{item.category}</p>
                       <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
                         {item.status === "provided"
-                          ? txt("已提供", "Sağlandı", "Provided")
+                          ? rpt("已提供", "Sağlandı", "Provided")
                           : item.status === "missing"
-                            ? txt("缺少", "Eksik", "Missing")
+                            ? rpt("缺少", "Eksik", "Missing")
                             : item.status === "typically_required"
-                              ? txt("通常需要", "Tipik olarak gerekir", "Typically required")
-                              : txt("不明确", "Net değil", "Unclear")}
+                              ? rpt("通常需要", "Tipik olarak gerekir", "Typically required")
+                              : rpt("不明确", "Net değil", "Unclear")}
                       </span>
                     </div>
                     <p className="mt-2 text-muted-foreground">{item.explanation}</p>
@@ -1003,17 +1005,17 @@ export function FullCheckWaitlistForm({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {txt("加分场景模拟", "Puan Senaryo Simülätörü", "Points Booster Simulator")}
+                  {rpt("加分场景模拟", "Puan Senaryo Simülätörü", "Points Booster Simulator")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {report.pointsBoosterSimulator.currentEstimate !== undefined && (
                   <p className="font-semibold">
-                      {txt("当前数学估算：", "Mevcut matematiksel tahmin:", "Current mathematical estimate:")} {report.pointsBoosterSimulator.currentEstimate}
+                      {rpt("当前数学估算：", "Mevcut matematiksel tahmin:", "Current mathematical estimate:")} {report.pointsBoosterSimulator.currentEstimate}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
-                    {txt(
+                    {rpt(
                       "此场景仅反映数学分数变化，不代表资格或结果。",
                       "Bu senaryolar yalnızca matematiksel puan değişimini gösterir; uygunluk veya sonuç anlamına gelmez.",
                       "This scenario reflects a mathematical change only and does not represent eligibility or outcome."
@@ -1042,7 +1044,7 @@ export function FullCheckWaitlistForm({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {txt("费用路线图", "Tahmini Maliyet Yol Haritası", "Financial Roadmap")}
+                  {rpt("费用路线图", "Tahmini Maliyet Yol Haritası", "Financial Roadmap")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -1063,12 +1065,12 @@ export function FullCheckWaitlistForm({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {txt("通往永居路径", "Tipik Geçiş Yolları", "Bridge to PR / Typical Progression Pathways")}
+                  {rpt("通往永居路径", "Tipik Geçiş Yolları", "Bridge to PR / Typical Progression Pathways")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  {txt(
+                  {rpt(
                     "澳大利亚签证体系的典型过渡路径可能包含以下选项。",
                     "Avustralya vize sistemindeki tipik geçiş yolları aşağıdaki seçenekleri içerebilir.",
                     "Typical progression pathways in the Australian visa system may include the following options."
@@ -1091,7 +1093,7 @@ export function FullCheckWaitlistForm({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {txt("路径阻力 / 现实校验", "Vize Yolu Gerçeklik Kontrolü", "Pathway Friction / Reality Check")}
+                  {rpt("路径阻力 / 现实校验", "Vize Yolu Gerçeklik Kontrolü", "Pathway Friction / Reality Check")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -1107,20 +1109,20 @@ export function FullCheckWaitlistForm({
           )}
 
           <ReportSection
-            title={txt("风险指标", "Risk göstergeleri", "Risk indicators")}
+            title={rpt("风险指标", "Risk göstergeleri", "Risk indicators")}
             items={report.riskIndicators.map(
               (r) => `[${isZh ? (r.level === "high" ? "高" : r.level === "medium" ? "中" : "低") : isTr ? (r.level === "high" ? "Yüksek" : r.level === "medium" ? "Orta" : "Düşük") : (r.level === "high" ? "High" : r.level === "medium" ? "Medium" : "Low")}] ${r.title}: ${r.explanation}`
             )}
           />
 
           <ReportSection
-            title={txt("建议下一步", "Önerilen sonraki adımlar", "Suggested next steps")}
+            title={rpt("建议下一步", "Önerilen sonraki adımlar", "Suggested next steps")}
             items={report.suggestedNextSteps}
           />
 
           {report.missingInformation.length > 0 && (
             <ReportSection
-              title={txt("缺少信息", "Eksik bilgiler", "Missing information")}
+              title={rpt("缺少信息", "Eksik bilgiler", "Missing information")}
               items={report.missingInformation}
             />
           )}
@@ -1128,7 +1130,7 @@ export function FullCheckWaitlistForm({
           <Card className="bg-amber-50 border-amber-200">
             <CardHeader>
               <CardTitle className="text-sm text-amber-900">
-                {txt("免责声明", "Uyarı", "Disclaimer")}
+                {rpt("免责声明", "Uyarı", "Disclaimer")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -1139,12 +1141,12 @@ export function FullCheckWaitlistForm({
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                  {txt("可下载 PDF", "İndirilebilir PDF", "Downloadable PDF")}
+                  {rpt("可下载 PDF", "İndirilebilir PDF", "Downloadable PDF")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-primary">
-                {txt(
+                {rpt(
                   "高级 PDF 报告（25+ 页深度分析）",
                   "Premium PDF Report (25+ Sayfalik Derin Analiz)",
                   "Premium PDF Report (25+ Pages of Deep Analysis)"
@@ -1152,9 +1154,9 @@ export function FullCheckWaitlistForm({
               </div>
 
               <div className="rounded-md border border-border bg-card/60 px-3 py-3">
-                <p className="text-sm font-medium">{txt("样本报告预览", "Sample Report önizlemesi", "Sample Report preview")}</p>
+                <p className="text-sm font-medium">{rpt("样本报告预览", "Sample Report önizlemesi", "Sample Report preview")}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {txt(
+                  {rpt(
                     "内容示例：战略甘特图、阻力分析、费用路线图、审计清单和行动计划。",
                     "İçerik örneği: stratejik gantt, sürtünme analizi, maliyet yol haritası, audit checklist ve aksiyon planı.",
                     "Preview includes: strategic gantt, friction analysis, financial roadmap, audit checklist, and action plan."
@@ -1163,12 +1165,12 @@ export function FullCheckWaitlistForm({
               </div>
 
               <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
-                {txt("$29 Tek rapor üreti", "$29 Tek rapor üreti", "$29 for a Single Report")}
+                {rpt("$29 单次报告", "$29 Tek rapor üreti", "$29 for a Single Report")}
               </div>
 
               <Button onClick={handleDownloadPDF} variant="default" className="flex gap-2">
                 <Download className="size-4" />
-                {txt("PDF indir", "PDF indir", "Download PDF")}
+                {rpt("下载 PDF", "PDF indir", "Download PDF")}
               </Button>
             </CardContent>
           </Card>
