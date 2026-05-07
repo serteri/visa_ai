@@ -7,7 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MiniCvTeaser } from "@/components/MiniCvTeaser";
+import { StateDemandRadar } from "@/components/StateDemandRadar";
 import { isValidLocale } from "@/lib/i18n/config";
+import { calculateStateNominationTracker } from "@/lib/readiness/state-nomination";
+import type { Locale } from "@/lib/readiness/types";
 import { deriveSubclasses, findOccupationById, parseOccupationCodeFromId } from "@/lib/occupations/seo";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -18,6 +21,12 @@ const tx = (locale: string, zh: string, tr: string, en: string) =>
 type PageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
+
+function resolveReadinessLocale(locale: string): Locale {
+  if (locale === "tr") return "tr";
+  if (locale === "zh-Hans") return "zh-Hans";
+  return "en";
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, id } = await params;
@@ -127,6 +136,16 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
 
   const subclasses = deriveSubclasses(occupation);
   const fullCheckHref = `/en/full-check?occupation=${encodeURIComponent(occupation.anzsco_code)}`;
+  const stateNominationTracker = calculateStateNominationTracker({
+    locale: resolveReadinessLocale(locale),
+    occupation: `${occupation.occupation_name} (${occupation.anzsco_code})`,
+    mainGoal: "Skilled migration pathways 189 190 491",
+    currentCountry: "Australia",
+    englishLevel: "Proficient",
+    regionalWilling: true,
+    onshoreExperienceYears: 3,
+    offshoreExperienceYears: 3,
+  });
 
   return (
     <main className="ambient-bg relative flex-1 overflow-hidden py-12 sm:py-16">
@@ -194,6 +213,13 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
             <MiniCvTeaser occupationId={id} />
           </CardContent>
         </Card>
+
+        <StateDemandRadar
+          locale={locale}
+          occupationName={occupation.occupation_name}
+          occupationId={id}
+          states={stateNominationTracker.states}
+        />
 
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
