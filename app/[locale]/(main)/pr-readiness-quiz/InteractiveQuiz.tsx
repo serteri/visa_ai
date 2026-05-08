@@ -4,118 +4,38 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Loader2, Sparkles } from "lucide-react";
 
-const QUESTIONS = [
-  {
-    id: 1,
-    category: "Age & Timing",
-    question: "How old are you right now?",
-    hint: "Age is worth up to 30 points — the single largest category in Australia's points test.",
-    options: [
-      { key: "A", label: "18–24 years old", value: "a" },
-      { key: "B", label: "25–32 years old", value: "b" },
-      { key: "C", label: "33–39 years old", value: "c" },
-      { key: "D", label: "40–44 years old", value: "d" },
-    ],
-  },
-  {
-    id: 2,
-    category: "English Level",
-    question: "What is your current English proficiency?",
-    hint: "Upgrading from Competent to Superior English alone can add 20 points to your PR application.",
-    options: [
-      { key: "A", label: "Still improving — below IELTS 7.0", value: "a" },
-      { key: "B", label: "IELTS 7.0+ in all bands (Proficient, +10 pts)", value: "b" },
-      { key: "C", label: "IELTS 8.0+ in all bands (Superior, +20 pts)", value: "c" },
-      { key: "D", label: "Native English speaker", value: "d" },
-    ],
-  },
-  {
-    id: 3,
-    category: "Occupation Eligibility",
-    question: "Is your occupation on Australia's skilled occupation list?",
-    hint: "Only MLTSSL or STSOL occupations are eligible for General Skilled Migration pathways.",
-    options: [
-      { key: "A", label: "I've never heard of the MLTSSL list", value: "a" },
-      { key: "B", label: "I think so, but haven't confirmed with an assessing body", value: "b" },
-      { key: "C", label: "Yes — I have a positive skills assessment", value: "c" },
-      { key: "D", label: "My occupation is only on a state-specific list", value: "d" },
-    ],
-  },
-  {
-    id: 4,
-    category: "Regional Openness",
-    question: "How open are you to living in regional Australia?",
-    hint: "A 491 regional nomination adds 15 bonus points — often the difference between waiting years and getting invited now.",
-    options: [
-      { key: "A", label: "Not a chance — Sydney or Melbourne only", value: "a" },
-      { key: "B", label: "Maybe, if it genuinely speeds up my PR", value: "b" },
-      { key: "C", label: "Genuinely open to it for 2–3 years", value: "c" },
-      { key: "D", label: "I'm already living in or near a regional area", value: "d" },
-    ],
-  },
-  {
-    id: 5,
-    category: "Partner Status",
-    question: "What is your partner's migration situation?",
-    hint: "A partner with a valid skills assessment and Competent English adds 5 bonus points to your profile.",
-    options: [
-      { key: "A", label: "I'm applying as a single applicant", value: "a" },
-      { key: "B", label: "My partner hasn't completed a skills assessment", value: "b" },
-      { key: "C", label: "My partner has a skills assessment & Competent English", value: "c" },
-      { key: "D", label: "This doesn't apply to my situation", value: "d" },
-    ],
-  },
-  {
-    id: 6,
-    category: "Work Experience",
-    question: "How many total years of skilled work experience do you have?",
-    hint: "8+ years overseas earns 15 points. 5+ years of Australian skilled work earns 20 points.",
-    options: [
-      { key: "A", label: "Less than 1 year", value: "a" },
-      { key: "B", label: "1–3 years", value: "b" },
-      { key: "C", label: "3–8 years", value: "c" },
-      { key: "D", label: "8+ years", value: "d" },
-    ],
-  },
-  {
-    id: 7,
-    category: "Pathway Strategy",
-    question: "Have you researched state or territory nomination?",
-    hint: "190 nomination adds 5 points. 491 regional nomination adds 15. Most applicants skip this critical research.",
-    options: [
-      { key: "A", label: "Not at all — I haven't looked into it", value: "a" },
-      { key: "B", label: "I've heard of it but don't know my options", value: "b" },
-      { key: "C", label: "I've researched 1–2 states that match my profile", value: "c" },
-      { key: "D", label: "I've already applied or received a state nomination", value: "d" },
-    ],
-  },
-  {
-    id: 8,
-    category: "Your Biggest Fear",
-    question: "What worries you most about your PR journey?",
-    hint: "Your answer calibrates the single biggest risk factor LogiVisa AI will flag in your result.",
-    options: [
-      { key: "A", label: "I don't know if I actually have enough points", value: "a" },
-      { key: "B", label: "My occupation might not be eligible for PR", value: "b" },
-      { key: "C", label: "The process feels too slow and too expensive", value: "c" },
-      { key: "D", label: "I'm scared of picking the wrong visa and wasting time", value: "d" },
-    ],
-  },
-];
+import { useTranslation } from "@/contexts/language-context";
 
 type QuizStep = "quiz" | "loading" | "result";
 
 export function InteractiveQuiz({ locale: _locale }: { locale: string }) {
+  const { t } = useTranslation();
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [fading, setFading] = useState(false);
   const [quizStep, setQuizStep] = useState<QuizStep>("quiz");
 
+  const QUESTIONS = Array.from({ length: 8 }, (_, i) => {
+    const n = i + 1;
+    return {
+      id: n,
+      category: t(`quiz.q${n}.category`),
+      question: t(`quiz.q${n}.text`),
+      hint: t(`quiz.q${n}.hint`),
+      options: [
+        { key: "A", label: t(`quiz.q${n}.a`), value: "a" },
+        { key: "B", label: t(`quiz.q${n}.b`), value: "b" },
+        { key: "C", label: t(`quiz.q${n}.c`), value: "c" },
+        { key: "D", label: t(`quiz.q${n}.d`), value: "d" },
+      ],
+    };
+  });
+
   useEffect(() => {
     if (quizStep === "loading") {
-      const t = setTimeout(() => setQuizStep("result"), 2300);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => setQuizStep("result"), 2300);
+      return () => clearTimeout(timer);
     }
   }, [quizStep]);
 
@@ -145,7 +65,7 @@ export function InteractiveQuiz({ locale: _locale }: { locale: string }) {
 
   return (
     <main className="relative min-h-screen bg-slate-950 pb-20 pt-24 sm:pt-28">
-      {/* Thin progress bar pinned above everything */}
+      {/* Thin progress bar above everything */}
       <div className="fixed inset-x-0 top-0 z-[60] h-[3px] bg-slate-800">
         <div
           className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-500 ease-out"
@@ -154,7 +74,7 @@ export function InteractiveQuiz({ locale: _locale }: { locale: string }) {
       </div>
 
       <div className="mx-auto max-w-xl px-4 sm:px-6">
-        {/* Category + counter */}
+        {/* Category badge + step counter */}
         <div className="mb-8 flex items-center justify-between">
           <span className="rounded-full border border-cyan-800/60 bg-cyan-900/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-400">
             {question.category}
@@ -166,7 +86,7 @@ export function InteractiveQuiz({ locale: _locale }: { locale: string }) {
           </span>
         </div>
 
-        {/* Fading content block */}
+        {/* Fading content wrapper */}
         <div className={`transition-opacity duration-200 ${fading ? "opacity-0" : "opacity-100"}`}>
           <h1 className="text-2xl font-bold leading-snug tracking-tight text-white sm:text-3xl">
             {question.question}
@@ -206,29 +126,27 @@ export function InteractiveQuiz({ locale: _locale }: { locale: string }) {
           </div>
         </div>
 
-        <p className="mt-10 text-center text-xs text-slate-700">
-          Click an answer to advance automatically
-        </p>
+        <p className="mt-10 text-center text-xs text-slate-700">{t("quiz.progress.hint")}</p>
       </div>
     </main>
   );
 }
 
 function LoadingView() {
+  const { t } = useTranslation();
   const [dots, setDots] = useState("");
 
   useEffect(() => {
-    const t = setInterval(
+    const timer = setInterval(
       () => setDots((d) => (d.length >= 3 ? "" : d + ".")),
       400,
     );
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-4">
       <div className="flex flex-col items-center gap-6 text-center">
-        {/* Spinner */}
         <div className="relative h-16 w-16">
           <div className="absolute inset-0 rounded-full border-2 border-slate-800" />
           <Loader2 className="h-16 w-16 animate-spin text-cyan-400" />
@@ -236,14 +154,12 @@ function LoadingView() {
 
         <div>
           <p className="text-lg font-semibold text-white sm:text-xl">
-            LogiVisa AI is analyzing your 8 data points{dots}
+            {t("quiz.loading.title")}
+            {dots}
           </p>
-          <p className="mt-2 text-sm text-slate-500">
-            Cross-referencing your profile against current invitation rounds
-          </p>
+          <p className="mt-2 text-sm text-slate-500">{t("quiz.loading.subtitle")}</p>
         </div>
 
-        {/* Animated pips */}
         <div className="flex gap-2">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
@@ -259,6 +175,14 @@ function LoadingView() {
 }
 
 function ResultView() {
+  const { t } = useTranslation();
+
+  const stats = [
+    { value: "8", label: t("quiz.result.stat1Label") },
+    { value: "12", label: t("quiz.result.stat2Label") },
+    { value: "3", label: t("quiz.result.stat3Label") },
+  ];
+
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-950 px-4 py-16">
       {/* Ambient glow */}
@@ -279,35 +203,28 @@ function ResultView() {
             {/* Badge */}
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-cyan-400">
               <Sparkles className="h-3.5 w-3.5" />
-              Analysis Complete
+              {t("quiz.result.badge")}
             </div>
 
-            {/* Headline */}
+            {/* Headline — split into three parts for gradient highlight */}
             <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-[1.75rem]">
-              You have{" "}
+              {t("quiz.result.headlinePart1")}
               <span className="bg-gradient-to-r from-cyan-400 to-cyan-200 bg-clip-text text-transparent">
-                hidden PR potential
+                {t("quiz.result.headlinePart2")}
               </span>
-              , but your current strategy might be risking your chances.
+              {t("quiz.result.headlinePart3")}
             </h1>
 
             {/* Body */}
             <p className="mt-4 text-sm leading-relaxed text-slate-400 sm:text-base">
-              Based on your 8 answers, LogiVisa AI has identified gaps in your pathway strategy
-              that most applicants never discover until it&apos;s too late. Your full report reveals
-              your exact points score, your most likely invitation timeline, and the one move that
-              could dramatically accelerate your PR.
+              {t("quiz.result.body")}
             </p>
 
             <div className="my-6 h-px w-full bg-white/[0.08]" />
 
             {/* Stats */}
             <div className="mb-6 grid grid-cols-3 gap-3 text-center">
-              {[
-                { label: "Data Points", value: "8" },
-                { label: "Pathways Checked", value: "12" },
-                { label: "Risk Factors Found", value: "3" },
-              ].map((stat) => (
+              {stats.map((stat) => (
                 <div
                   key={stat.label}
                   className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-3"
@@ -325,21 +242,21 @@ function ResultView() {
               href="/en/full-check"
               className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-cyan-500 px-5 py-4 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition-all duration-200 hover:scale-[1.02] hover:bg-cyan-400 hover:shadow-cyan-400/30 sm:text-base"
             >
-              <span>Unlock Your Full AI Readiness Report &amp; Exact Points (Free)</span>
+              <span>{t("quiz.result.cta")}</span>
               <ArrowRight className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
 
-            <p className="mt-4 text-center text-xs text-slate-600">
-              No credit card &middot; No sign-up required &middot; 2-minute report
+            <p className="mt-4 text-center text-xs text-slate-600">{t("quiz.result.trust")}</p>
+
+            {/* MARA disclaimer */}
+            <p className="mt-3 text-center text-[11px] leading-relaxed text-slate-700">
+              {t("quiz.result.disclaimer")}
             </p>
           </div>
         </div>
 
         {/* Share nudge */}
-        <p className="mt-6 text-center text-sm text-slate-600">
-          Know someone on the PR journey?{" "}
-          <span className="font-semibold text-slate-400">Share this quiz with them.</span>
-        </p>
+        <p className="mt-6 text-center text-sm text-slate-600">{t("quiz.result.share")}</p>
       </div>
     </main>
   );
