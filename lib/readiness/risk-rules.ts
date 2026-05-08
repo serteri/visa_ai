@@ -131,8 +131,8 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
         ? "Puan tahmini eşiğin altında"
         : "Points-table position below minimum threshold",
       explanation: isTr
-        ? `Mevcut veri setine gore kismi puan tahmini ${ctx.estimatedPoints}. Tarihsel davet referanslari ve minimum esikler daha yuksek rekabet baskisina isaret edebilir.`
-        : `Based on the current dataset, the partial points estimate is ${ctx.estimatedPoints}. Historical invitation references and minimum thresholds may indicate higher competitive pressure.`
+        ? `Mevcut veri setine gore tahmini temel puan ${ctx.estimatedPoints}. Tarihsel davet referanslari ve minimum esikler daha yuksek rekabet baskisina isaret edebilir.`
+        : `Based on the current dataset, estimated base points are ${ctx.estimatedPoints}. Historical invitation references and minimum thresholds may indicate higher competitive pressure.`
     });
   }
 

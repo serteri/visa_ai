@@ -96,8 +96,8 @@ export function generateChecklist(args: {
       ),
       detail: t(
         input.locale,
-        "PTE/IELTS booking is typically a foundational step when English test data is missing or currently below stronger migration target bands.",
-        "Ingilizce test verisi eksik oldugunda veya daha guclu migration hedef bantlarinin altinda kaldiginda, PTE/IELTS rezervasyonu genellikle temel bir hazirlik adimi olarak degerlendirilir.",
+        "English exam readiness is typically one of the first evidence areas considered when English test data is missing or currently below stronger migration target bands.",
+        "Ingilizce test verisi eksik oldugunda veya daha guclu goc hedef bantlarinin altinda kaldiginda, Ingilizce sinav hazirligi genellikle ilk kanit alanlarindan biri olarak degerlendirilir.",
         "当英语考试数据缺失或低于较强目标区间时，PTE/IELTS 预约通常被视为基础准备步骤。"
       ),
     });
@@ -111,13 +111,13 @@ export function generateChecklist(args: {
       title: t(
         input.locale,
         `Skills assessment pathway alignment with ${authorityLabel(authority, input.locale)}`,
-        `${authorityLabel(authority, input.locale)} ile skills assessment yol uyumu`,
+        `${authorityLabel(authority, input.locale)} ile beceri degerlendirmesi yol uyumu`,
         `${authorityLabel(authority, input.locale)} 的技能评估路径对齐`
       ),
       detail: t(
         input.locale,
         "Skills assessment timing can influence points claims, nomination readiness, and progression from planning context to a lodgement-capable profile.",
-        "Skills assessment zamanlamasi; puan iddialari, nomination hazirligi ve planlama baglamindan lodgement hazir profile gecis uzerinde etkili olabilir.",
+        "Beceri degerlendirmesi zamanlamasi; puan iddialari, adaylik hazirligi ve planlama baglamindan basvuruya hazir profile gecis uzerinde etkili olabilir.",
         "技能评估时间点可能影响加分主张、州担保准备度，以及从规划阶段过渡到可递交状态的节奏。"
       ),
     });
@@ -137,7 +137,7 @@ export function generateChecklist(args: {
       detail: t(
         input.locale,
         `${topState.name} is currently indicated as the strongest state nomination signal; EOI settings and evidence packaging are typically reviewed against that pathway's criteria.`,
-        `${topState.name} su anda en guclu state nomination sinyali olarak gorunmektedir; EOI ayarlari ve belge paketleri genellikle bu yolun kriterleriyle uyumlu olacak sekilde gozden gecirilir.`,
+        `${topState.name} su anda en guclu eyalet adayligi sinyali olarak gorunmektedir; EOI ayarlari ve belge paketleri genellikle bu yolun kriterleriyle uyumlu olup olmadigi acisindan incelenir.`,
         `${topState.name} 当前显示为较强的州担保信号；EOI 设置与材料包通常会按该路径标准进行对齐审视。`
       ),
     });
@@ -148,7 +148,7 @@ export function generateChecklist(args: {
     note: t(
       input.locale,
       "This checklist is an educational planning reference and can be refreshed whenever points, English results, or state pathway context changes.",
-      "Bu kontrol listesi egitim amacli planlama referansidir; puan, Ingilizce sonucu veya state yolu baglami degistikce guncellenebilir.",
+      "Bu kontrol listesi egitim amacli planlama referansidir; puan, Ingilizce sonucu veya eyalet yolu baglami degistikce guncellenebilir.",
       "此清单为教育性质的规划参考；当分数、英语结果或州路径背景变化时可同步更新。"
     ),
   };

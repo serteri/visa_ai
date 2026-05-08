@@ -365,8 +365,8 @@ function getPathwaySpecificRisks(
     if (estimatedPoints !== undefined && estimatedPoints < 65) {
       risks.push(
         isTr
-          ? "Mevcut kısmi puan görünümü, tipik minimum eşiğin altında kalmaktadır."
-          : "The current partial points picture sits below the typical minimum threshold."
+          ? "Mevcut tahmini temel puan, tipik minimum eşiğin altında kalmaktadır."
+          : "The estimated base points sit below the commonly referenced minimum threshold."
       );
     }
   }
@@ -550,11 +550,11 @@ function getConfidenceExplanation(
     const pointsText =
       estimatedPoints === undefined
         ? isTr
-          ? "kısmi puan görünümü yok"
-          : "no partial points picture"
+          ? "tahmini temel puan hesaplanamıyor"
+          : "estimated base points cannot be calculated"
         : isTr
-          ? `kısmi puan görünümü ${estimatedPoints}`
-          : `partial points picture is ${estimatedPoints}`;
+          ? `tahmini temel puan ${estimatedPoints}`
+          : `estimated base points are ${estimatedPoints}`;
     return isTr
       ? `Güven seviyesi; yaş/İngilizce/meslek girdileri, ${pointsText} ve veri tamamlanma düzeyi (%${dataCompletenessPercentage}) ile göstergesel olarak hesaplanmıştır.`
       : `Confidence is estimated indicatively from age/English/occupation inputs, ${pointsText}, and available detail (${dataCompletenessPercentage}%).`;
@@ -940,12 +940,15 @@ function buildPrimaryGap(params: {
 }): string {
   const { locale, pathways, dataCompleteness, missingInformation, riskIndicators, pointsEstimate } = params;
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
 
   const hasSkilled = pathways.some((p) => ["189", "190", "491"].includes(p.subclass));
   if (hasSkilled && pointsEstimate?.estimatedPoints !== undefined && pointsEstimate.estimatedPoints < 65) {
     return isTr
-      ? "Birincil boşluk: Mevcut kısmi puan görünümü puan testli yollar için sınırlayıcı kalıyor."
-      : "Internal signal: The current partial points picture remains a limiting factor for points-tested pathways.";
+      ? "Birincil boşluk: Mevcut tahmini temel puan, puan testli yollar için sınırlayıcı kalıyor."
+      : isZh
+        ? "主要差距：当前加分信号仍会限制打分制路径的相对竞争力。"
+        : "Current points context remains a limiting factor for points-tested pathways.";
   }
 
   const priorityMissing = [
@@ -964,25 +967,33 @@ function buildPrimaryGap(params: {
   if (majorMissing) {
     return isTr
       ? `Birincil boşluk: ${majorMissing} alanı netleşmeden karşılaştırmalı değerlendirme sınırlı kalır.`
-      : `Internal signal: Comparative assessment remains limited until ${majorMissing} is clarified.`;
+      : isZh
+        ? `主要差距：在 ${majorMissing} 信息更清晰前，比较评估仍会受到限制。`
+        : `Primary gap: Comparative assessment remains limited until ${majorMissing} is clarified.`;
   }
 
   const highRisk = riskIndicators.find((risk) => risk.level === "high");
   if (highRisk) {
     return isTr
       ? `Birincil boşluk: "${highRisk.title}" başlığındaki risk etkisi baskın görünüyor.`
-      : `Internal signal: The risk signal in "${highRisk.title}" appears to be the dominant limiter.`;
+      : isZh
+        ? `主要差距：“${highRisk.title}” 所示风险目前是主要限制因素。`
+        : `Primary gap: The risk signal in "${highRisk.title}" appears to be the dominant limiter.`;
   }
 
   if (dataCompleteness.percentage < 60) {
     return isTr
       ? `Birincil boşluk: Veri tamamlanma düzeyi (%${dataCompleteness.percentage}) karar-destek sinyallerini sınırlıyor.`
-      : `Internal signal: Available detail (${dataCompleteness.percentage}%) is limiting the decision-support signal strength.`;
+      : isZh
+        ? `主要差距：当前信息完整度（${dataCompleteness.percentage}%）限制了决策参考信号强度。`
+        : `Primary gap: Available detail (${dataCompleteness.percentage}%) is limiting the decision-support signal strength.`;
   }
 
   return isTr
     ? "Birincil boşluk: Karşılaştırmalı tabloyu güçlendirecek ek kişisel bağlam ihtiyacı."
-    : "Internal signal: Additional personal context is needed to strengthen the comparison table.";
+    : isZh
+      ? "主要差距：需要更多个人背景信息，以增强路径比较表的参考价值。"
+      : "Primary gap: Additional personal context is needed to strengthen the comparison table.";
 }
 
 function buildFactorsAffectingPathways(
@@ -1292,6 +1303,7 @@ function buildExecutiveSummary(
   estimatedPoints?: number
 ): string[] {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   const skilledVisible = pathways.some((pathway) => ["189", "190", "491"].includes(pathway.subclass));
   const pathwayNames = pathways
     .filter((pathway) => pathway.subclass !== "general")
@@ -1304,9 +1316,21 @@ function buildExecutiveSummary(
         ? `Bu rapor ${pathwayNames} yollarını aynı çerçevede karşılaştırır; çalışma, mezuniyet, iş sponsorluğu ve nitelikli göç sinyalleri birlikte ele alınır.`
         : "Bu rapor, verilen bilgilerle görünen yol sinyallerini aynı çerçevede karşılaştırır.",
       skilledVisible && estimatedPoints !== undefined
-        ? `Kısmi puan görünümü ${estimatedPoints}; bu matematiksel sinyal puan testli yolların göreli konumunu etkileyebilir.`
+        ? `Tahmini temel puan ${estimatedPoints}; bu matematiksel gösterge puan testli yolların göreli konumunu etkileyebilir.`
         : "Puan bağlamı sınırlı olduğunda puan testli yolların göreli konumu daha temkinli okunur.",
       "Beceri değerlendirmesi, adaylık bağlamı, sponsor bilgisi ve belge hazırlığı gibi ayrıntılar yol gücü karşılaştırmasını değiştirebilir.",
+    ];
+  }
+
+  if (isZh) {
+    return [
+      pathwayNames
+        ? `本报告在同一视图中比较 ${pathwayNames} 路径，并综合学习、毕业生、雇主担保与技术移民信号。`
+        : "本报告根据已提供信息比较当前可见的签证路径信号。",
+      skilledVisible && estimatedPoints !== undefined
+        ? `当前加分信号为 ${estimatedPoints}；该数学信号可能影响打分制路径的相对位置。`
+        : "加分背景有限时，打分制路径的相对位置需要更谨慎解读。",
+      "职业评估、州担保背景、担保信息与材料准备度等细节，可能明显改变路径强度比较。",
     ];
   }
 
@@ -1315,7 +1339,7 @@ function buildExecutiveSummary(
       ? `This report compares ${pathwayNames} in one view, bringing study, graduate, employer-sponsored, and skilled pathway signals together.`
       : "This report compares visible pathway signals from the details provided.",
     skilledVisible && estimatedPoints !== undefined
-      ? `The partial points signal is ${estimatedPoints}; this mathematical signal may affect the relative position of points-tested pathways.`
+      ? `Estimated base points are ${estimatedPoints}; this mathematical indicator may affect the relative position of points-tested pathways.`
       : "Limited points context may affect the relative position of points-tested pathways.",
     "Skills assessment, nomination context, sponsorship details, and evidence preparation can materially change the pathway strength comparison.",
   ];
@@ -1966,6 +1990,7 @@ function buildConfidenceExplanation(
   estimatedPoints?: number
 ): string {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   const hasEnglish = Boolean(input.englishLevel);
   const hasOccupation = Boolean(input.occupation);
   const hasPassport = Boolean(input.passportCountry);
@@ -1978,18 +2003,24 @@ function buildConfidenceExplanation(
   if (missingCore <= 1) {
     return isTr
       ? "Güven düzeyi sınırlıdır çünkü meslek ve İngilizce gibi temel bilgiler eksiktir. Bu rapor yalnızca genel bilgidir ve kişisel koşullara bağlıdır."
-      : "Confidence is limited because key inputs such as occupation and English level are missing. This report is general information only and depends on individual circumstances.";
+      : isZh
+        ? "由于职业和英语水平等核心信息缺失，置信度有限。本报告仅为一般信息，仍取决于个人具体情况。"
+        : "Confidence is limited because key inputs such as occupation and English level are missing. This report is general information only and depends on individual circumstances.";
   }
 
   if (missingCore >= 3 && skillsClear) {
     return isTr
-      ? `Güven düzeyi daha güçlüdür çünkü yaş (${input.age}), İngilizce seviyesi, meslek (${input.occupation}) ve pasaport ülkesi (${input.passportCountry}) sağlanmıştır; bazı yol-özel kanıtlar hâlâ ayrıca incelenir${estimatedPoints !== undefined ? ` (kısmi puan sinyali: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
-      : `Confidence is stronger because age (${input.age}), English level, occupation (${input.occupation}), and passport country (${input.passportCountry}) are provided, while some pathway-specific evidence still needs separate review${estimatedPoints !== undefined ? ` (partial points signal: ${estimatedPoints})` : ""}. This is general information only.`;
+      ? `Güven düzeyi daha güçlüdür çünkü yaş (${input.age}), İngilizce seviyesi, meslek (${input.occupation}) ve pasaport ülkesi (${input.passportCountry}) sağlanmıştır; bazı yol-özel kanıtlar hâlâ ayrıca incelenir${estimatedPoints !== undefined ? ` (tahmini temel puan: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
+      : isZh
+        ? `由于已提供年龄（${input.age}）、英语水平、职业（${input.occupation}）和护照国家（${input.passportCountry}），置信度较强；部分路径特定证据仍需单独复核${estimatedPoints !== undefined ? `（当前加分信号：${estimatedPoints}）` : ""}。本内容仅为一般信息。`
+        : `Confidence is stronger because age (${input.age}), English level, occupation (${input.occupation}), and passport country (${input.passportCountry}) are provided, while some pathway-specific evidence still needs separate review${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. This is general information only.`;
   }
 
   return isTr
     ? "Güven düzeyi orta seviyededir çünkü İngilizce ve meslek bilgileri sağlanmıştır; ancak beceri değerlendirmesi ve puan bağlamı net değildir."
-    : `Confidence is moderate because English and occupation details are available, but skills assessment and full points context remain unclear${estimatedPoints !== undefined ? ` (partial points signal: ${estimatedPoints})` : ""}. ${hasSponsor ? "Sponsorship context is provided." : "Sponsorship context appears limited."} This is general information only and depends on individual circumstances.`;
+    : isZh
+      ? `由于已提供英语和职业信息，置信度为中等；但职业评估和完整加分背景仍不明确${estimatedPoints !== undefined ? `（当前加分信号：${estimatedPoints}）` : ""}。${hasSponsor ? "已提供担保背景。" : "担保背景看起来有限。"}本内容仅为一般信息，仍取决于个人具体情况。`
+      : `Confidence is moderate because English and occupation details are available, but skills assessment and full points context remain unclear${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. ${hasSponsor ? "Sponsorship context is provided." : "Sponsorship context appears limited."} This is general information only and depends on individual circumstances.`;
 }
 
 // ─── Main engine ──────────────────────────────────────────────────────────────
@@ -2044,11 +2075,11 @@ function buildPrimaryLimitingFactor(
   if (estimatedPoints !== undefined && estimatedPoints < 65) {
     return {
       label: isTr
-        ? "Puan sinyali yaygın eşiklerin altında"
-        : "Points signal below commonly referenced thresholds",
+        ? "Tahmini temel puan yaygın eşiklerin altında"
+        : "Estimated base points below commonly referenced thresholds",
       explanation: isTr
-        ? `Kısmi matematiksel puan sinyali ${estimatedPoints}. Puan testli yollar için bu sinyal, yol gücünü sınırlayabilir ve bireysel koşullara bağlıdır.`
-        : `The partial mathematical points signal is ${estimatedPoints}. For points-tested pathways, this signal may limit pathway strength and depends on individual circumstances.`,
+        ? `Tahmini temel puan ${estimatedPoints}. Puan testli yollar için bu gösterge, yol gücünü sınırlayabilir ve bireysel koşullara bağlıdır.`
+        : `The estimated base points are ${estimatedPoints}. For points-tested pathways, this indicator may limit pathway strength and depends on individual circumstances.`,
     };
   }
 
@@ -2108,8 +2139,8 @@ function buildPositionChangers(
     items.push({
       label: isTr ? "İngilizce test kategorisi" : "English test category",
       explanation: isTr
-        ? "Daha yüksek İngilizce seviyesi puan sinyalini değiştirebilir."
-        : "A higher English test category may change the points signal.",
+        ? "Daha yüksek İngilizce seviyesi tahmini temel puanı değiştirebilir."
+        : "A higher English test category may change the estimated base points.",
     });
   }
 

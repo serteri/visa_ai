@@ -373,6 +373,19 @@ export function FullCheckWaitlistForm({
     return "Typically required";
   }
 
+  function getViabilityBadge(index: number) {
+    if (index === 0) return rpt("高潜力", "Yuksek potansiyel", "High potential");
+    if (index === 1) return rpt("有条件", "Kosullu", "Conditional");
+    return rpt("高风险", "Yuksek risk", "High risk");
+  }
+
+  function getRankedVisaLabel(subclass: string) {
+    if (subclass === "189") return rpt("189 独立技术移民", "189 Yetenekli Bagimsiz", "189 Skilled Independent");
+    if (subclass === "190") return rpt("190 州担保技术移民", "190 Eyalet Adaylikli", "190 Skilled Nominated");
+    if (subclass === "491") return rpt("491 偏远地区技术移民", "491 Bolgesel Nitelikli", "491 Skilled Work Regional");
+    return subclass;
+  }
+
   const fieldClassName =
     "h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
   const selectClassName =
@@ -777,14 +790,14 @@ export function FullCheckWaitlistForm({
                       <div key={item.subclass} className="rounded-md border border-border/70 p-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <p className="text-sm font-semibold text-foreground">
-                            {item.visaLabel} - {item.matchPercentage}% Match
+                            {getRankedVisaLabel(item.subclass)} - {item.matchPercentage}% {rpt("匹配", "Uyum", "Match")}
                           </p>
                           <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-                            {item.recommendationTag}
+                            {getViabilityBadge(index)}
                           </span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          Points Signal: {item.pointsSignal}
+                          {rpt("估算基础分", "Tahmini temel puan", "Estimated base points")}: {item.pointsSignal}
                         </p>
                         <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-muted">
                           <div

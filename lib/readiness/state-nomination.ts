@@ -366,7 +366,7 @@ export function calculateStateNominationTracker(input: ReadinessInput): StateNom
     note: t(
       input.locale,
       "State nomination settings change frequently. Treat this as a directional eligibility heatmap, not a formal invitation guarantee.",
-      "Eyalet nomination kosullari sik degisir. Bunu resmi davet garantisi degil, yonlendirici bir uygunluk isi haritasi olarak degerlendirin.",
+      "Eyalet adayligi kosullari sik degisir. Bunu resmi davet garantisi degil, yonlendirici bir uygunluk isi haritasi olarak degerlendirin.",
       "州担保设置经常变化。请将其视为方向性资格热力图，而不是正式邀请保证。"
     ),
   };

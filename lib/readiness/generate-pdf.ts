@@ -145,7 +145,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       stateStatus: "Durum",
       stateMatch: "Uyum",
       match: "Uyum",
-      pointsSignal: "Puan Sinyali",
+      pointsSignal: "Tahmini Temel Puan",
       stateRadar: "Eyalet Sinyal Radarı",
       stateRadarSubtitle: "Eyalet adaylığı sinyalleri, profil uyum skoruna göre görselleştirilmiştir.",
       noClearSecondarySignal: "Belirgin ikincil sinyal yok",
@@ -156,6 +156,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       highlyRecommendedPathway: "Guclu Onerilen Yol",
       alternativeOption: "Alternatif Secenek",
       highRiskLowProbability: "Yuksek Risk / Dusuk Olasilik",
+      highPotentialBadge: "YUKSEK POTANSIYEL",
+      conditionalBadge: "KOSULLU",
+      highRiskBadge: "YUKSEK RISK",
     };
   }
 
@@ -252,6 +255,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       highlyRecommendedPathway: "强烈推荐路径",
       alternativeOption: "替代选项",
       highRiskLowProbability: "高风险 / 低概率",
+      highPotentialBadge: "高潜力",
+      conditionalBadge: "有条件",
+      highRiskBadge: "高风险",
     };
   }
 
@@ -336,7 +342,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     stateStatus: "Status",
     stateMatch: "Match",
     match: "Match",
-    pointsSignal: "Points Signal",
+    pointsSignal: "Estimated Base Points",
     stateRadar: "State Signal Radar",
     stateRadarSubtitle: "State nomination signals visualized by profile match score.",
     noClearSecondarySignal: "No clear secondary signal",
@@ -347,6 +353,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     highlyRecommendedPathway: "Highly Recommended Pathway",
     alternativeOption: "Alternative Option",
     highRiskLowProbability: "High Risk / Low Probability",
+    highPotentialBadge: "HIGH POTENTIAL",
+    conditionalBadge: "CONDITIONAL",
+    highRiskBadge: "HIGH RISK",
   };
 }
 
@@ -1079,6 +1088,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return COLORS.riskHigh;
   }
 
+  function viabilityBadge(matchPercentage: number) {
+    if (matchPercentage > 60) {
+      return { label: text.highPotentialBadge, color: COLORS.riskLow };
+    }
+    if (matchPercentage >= 40) {
+      return { label: text.conditionalBadge, color: COLORS.riskMedium };
+    }
+    return { label: text.highRiskBadge, color: COLORS.riskHigh };
+  }
+
   function drawVisaViabilityRanking() {
     const rankedPathways =
       report.rankedPathways ??
@@ -1096,6 +1115,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       ensurePageSpace(rowHeight + 2);
 
       const topY = yPosition;
+      const badge = viabilityBadge(item.matchPercentage);
       doc.setFillColor(255, 255, 255);
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
       doc.setLineWidth(0.25);
@@ -1105,6 +1125,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
       doc.text(safeText(`${item.visaLabel} - ${item.matchPercentage}% ${text.match}`), margin + 2.5, topY + 5.2);
+
+      const badgeWidth = Math.min(45, Math.max(24, doc.getTextWidth(safeText(badge.label)) + 7));
+      doc.setFillColor(badge.color.r, badge.color.g, badge.color.b);
+      doc.roundedRect(margin + contentWidth - badgeWidth - 2.5, topY + 2.4, badgeWidth, 5.6, 1.4, 1.4, "F");
+      doc.setFontSize(6.8);
+      doc.setTextColor(255, 255, 255);
+      doc.text(safeText(badge.label), margin + contentWidth - badgeWidth + 1, topY + 6.2);
 
       setBaseFont();
       doc.setFontSize(FONTS.small);
