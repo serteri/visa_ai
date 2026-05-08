@@ -159,6 +159,14 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       highPotentialBadge: "YUKSEK POTANSIYEL",
       conditionalBadge: "KOSULLU",
       highRiskBadge: "YUKSEK RISK",
+      coverTitle: "LogiVisa Premium Hazirlik Degerlendirmesi",
+      coverSubtitle: "AI destekli goc stratejisi ve uygunluk raporu",
+      preparedFor: "Hazirlanan Kisi",
+      advisoryIntro: "Bu rapor, profil bilgilerinizi olasi vize yollari, eyalet sinyalleri ve kanit hazirligi acisindan yapilandirilmis sekilde inceler.",
+      stateTrackerIntro: "Asagidaki matris, profilinizi mevcut eyalet/bolge talep sinyalleri ve kanit uyumu acisindan degerlendirir.",
+      pathwayTableIntro: "Asagidaki karsilastirma, olasi vize yollarini guven, rekabet ve pratik uygunluk sinyalleriyle birlikte gosterir.",
+      riskBoxIntro: "Bu gostergeler kesin sonuc degil, daha dikkatli incelenmesi gerekebilecek alanlardir.",
+      nextStepBoxIntro: "Asagidaki noktalar, basvuru hazirligi dusunulurken dikkate alinabilecek egitimsel onceliklerdir.",
     };
   }
 
@@ -258,6 +266,14 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       highPotentialBadge: "高潜力",
       conditionalBadge: "有条件",
       highRiskBadge: "高风险",
+      coverTitle: "\u004c\u006f\u0067\u0069\u0056\u0069\u0073\u0061 \u9ad8\u7ea7\u51c6\u5907\u5ea6\u8bc4\u4f30",
+      coverSubtitle: "\u0041\u0049 \u9a71\u52a8\u7684\u79fb\u6c11\u7b56\u7565\u4e0e\u53ef\u884c\u6027\u62a5\u544a",
+      preparedFor: "\u4e3a\u4ee5\u4e0b\u7533\u8bf7\u4eba\u51c6\u5907",
+      advisoryIntro: "\u672c\u62a5\u544a\u4ee5\u7ed3\u6784\u5316\u65b9\u5f0f\u5206\u6790\u4f60\u7684\u7b7e\u8bc1\u8def\u5f84\u3001\u5dde\u62c5\u4fdd\u4fe1\u53f7\u548c\u6750\u6599\u51c6\u5907\u5ea6\u3002",
+      stateTrackerIntro: "\u4e0b\u8868\u6839\u636e\u5f53\u524d\u5dde/\u5730\u533a\u9700\u6c42\u4fe1\u53f7\u548c\u6750\u6599\u5339\u914d\u5ea6\u8bc4\u4f30\u4f60\u7684\u6863\u6848\u3002",
+      pathwayTableIntro: "\u4e0b\u8868\u5c06\u53ef\u80fd\u7684\u7b7e\u8bc1\u8def\u5f84\u4e0e\u7f6e\u4fe1\u5ea6\u3001\u7ade\u4e89\u5f3a\u5ea6\u548c\u5b9e\u9645\u5339\u914d\u4fe1\u53f7\u5bf9\u7167\u3002",
+      riskBoxIntro: "\u8fd9\u4e9b\u6307\u6807\u4e0d\u662f\u7ed3\u8bba\uff0c\u800c\u662f\u53ef\u80fd\u9700\u8981\u8fdb\u4e00\u6b65\u5ba1\u9605\u7684\u533a\u57df\u3002",
+      nextStepBoxIntro: "\u4ee5\u4e0b\u5185\u5bb9\u662f\u8003\u8651\u7533\u8bf7\u51c6\u5907\u65f6\u53ef\u53c2\u8003\u7684\u6559\u80b2\u6027\u4f18\u5148\u9879\u3002",
     };
   }
 
@@ -356,6 +372,14 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     highPotentialBadge: "HIGH POTENTIAL",
     conditionalBadge: "CONDITIONAL",
     highRiskBadge: "HIGH RISK",
+    coverTitle: "LogiVisa Premium Readiness Assessment",
+    coverSubtitle: "AI-Powered Migration Strategy & Viability Report",
+    preparedFor: "Prepared for",
+    advisoryIntro: "This report reviews your profile through visa viability, state nomination signals, and evidence readiness in a structured advisory format.",
+    stateTrackerIntro: "The following matrix analyzes your profile against current state and territory demand signals, nomination posture, and evidence fit.",
+    pathwayTableIntro: "The following comparison places each possible pathway beside its confidence, friction, and practical readiness signals.",
+    riskBoxIntro: "These indicators are not determinations; they highlight areas that may need closer review before relying on a pathway.",
+    nextStepBoxIntro: "The following items are educational priorities to consider while assessing application readiness.",
   };
 }
 
@@ -560,23 +584,28 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     // ── Left accent bar (full-height navy stripe) ────────────────────────────
     doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.rect(0, 0, 8, pageHeight, "F");
+    doc.rect(0, 0, pageWidth, 58, "F");
 
     // ── Top header band ──────────────────────────────────────────────────────
     doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.rect(0, 0, pageWidth, 44, "F");
+    doc.setFillColor(12, 116, 139);
+    doc.rect(0, 58, pageWidth, 4, "F");
+    doc.setFillColor(226, 232, 240);
+    doc.rect(0, pageHeight - 38, pageWidth, 38, "F");
+    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.rect(0, pageHeight - 38, 10, 38, "F");
 
     // Confidential label in header
     setBoldFont();
     doc.setFontSize(9);
-    doc.setTextColor(8, 145, 178);           // accent cyan
+    doc.setTextColor(125, 211, 252);
     doc.text(safeText(text.confidentialAssessment), 14, 14);
 
     // Product wordmark in header
     setBaseFont();
     doc.setFontSize(10);
     doc.setTextColor(255, 255, 255);
-    const wordmark = "VisaAI Premium";
+    const wordmark = "LogiVisa";
     doc.setFontSize(FONTS.body);
     const ww = doc.getTextWidth(wordmark);
     doc.text(wordmark, pageWidth - margin - ww, 14);
@@ -586,51 +615,60 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     setBoldFont();
     doc.setFontSize(28);
     doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    const titleText = safeText(text.title);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.35);
+    doc.roundedRect(margin, 82, contentWidth, 108, 3, 3, "FD");
+    doc.setFillColor(236, 254, 255);
+    doc.roundedRect(margin + 6, 88, contentWidth - 12, 18, 2, 2, "F");
+
+    const titleText = safeText(text.coverTitle);
     doc.setFontSize(28);
-    const tw = doc.getTextWidth(titleText);
-    const titleX = Math.max(margin, (pageWidth - tw) / 2);
-    doc.text(titleText, titleX, 80);
+    doc.text(doc.splitTextToSize(titleText, contentWidth - 24), margin + 12, 122);
 
     // Thin accent underline under title
     doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
     doc.setLineWidth(1.2);
-    doc.line(margin + 4, 85, pageWidth - margin - 4, 85);
+    doc.line(margin + 12, 151, margin + 78, 151);
+
+    setBaseFont();
+    doc.setFontSize(12);
+    doc.setTextColor(51, 65, 85);
+    doc.text(doc.splitTextToSize(safeText(text.coverSubtitle), contentWidth - 24), margin + 12, 140);
 
     // ── Metadata card ────────────────────────────────────────────────────────
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
     doc.setLineWidth(0.3);
-    doc.roundedRect(margin + 4, 95, contentWidth - 8, 52, 2, 2, "FD");
+    doc.roundedRect(margin + 12, 160, contentWidth - 24, 42, 2, 2, "FD");
 
     // Accent left bar on card
     doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-    doc.rect(margin + 4, 95, 2.5, 52, "F");
+    doc.rect(margin + 12, 160, 2.5, 42, "F");
 
-    const labelX = margin + 10;
-    const valueX = margin + 46;
+    const labelX = margin + 19;
+    const valueX = margin + 62;
     const metaRows: Array<[string, string]> = [
-      [text.subject, subjectName],
+      [text.preparedFor, subjectName],
       [text.reportDate, reportDate],
       [text.reportId, reportId],
     ];
     if (userInputSummary.occupation) metaRows.push([text.occupationLabel ?? "Occupation", userInputSummary.occupation]);
-    if (userInputSummary.mainGoal) metaRows.push([text.goalLabel ?? "Goal", userInputSummary.mainGoal]);
 
     metaRows.slice(0, 4).forEach(([label, value], i) => {
-      const ry = 104 + i * 11;
+      const ry = 171 + i * 8.8;
       setBoldFont();
       doc.setFontSize(9);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
       doc.text(safeText(label), labelX, ry);
       setBaseFont();
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-      doc.text(safeText(clipToWidth(value, contentWidth - 50)), valueX, ry);
+      doc.text(safeText(clipToWidth(value, contentWidth - 76)), valueX, ry);
     });
 
     // ── Occupation / goal summary chip ────────────────────────────────────────
     if (userInputSummary.occupation) {
-      const chipY = 158;
+      const chipY = 212;
       doc.setFillColor(236, 254, 255);
       doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
       doc.setLineWidth(0.3);
@@ -640,6 +678,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
       doc.text(safeText(userInputSummary.occupation), margin + 8, chipY + 6.5);
     }
+
+    setBaseFont();
+    doc.setFontSize(9.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text(doc.splitTextToSize(safeText(text.advisoryIntro), contentWidth - 18), margin + 8, 238);
 
     doc.addPage();
     yPosition = 20;
@@ -776,6 +819,132 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition = topY + boxHeight + 5;
   }
 
+  function addReportOverview() {
+    const rawLeftRows: Array<[string, string | undefined]> = [
+      [text.generatedDate, new Date().toLocaleDateString(locale)],
+      [text.nameLabel, userInputSummary.name],
+      [text.occupationLabel, userInputSummary.occupation],
+      [text.ageLabel, userInputSummary.age],
+      [text.currentCountryLabel, userInputSummary.currentCountry],
+      [text.englishLevelLabel, userInputSummary.englishLevel],
+      [text.goalLabel, userInputSummary.mainGoal],
+    ];
+    const leftRows = rawLeftRows.filter((row): row is [string, string] => Boolean(row[1]));
+
+    const colGap = 8;
+    const leftW = 68;
+    const rightW = contentWidth - leftW - colGap;
+    const summaryLines = report.executiveSummary.flatMap((item) => doc.splitTextToSize(safeText(item), rightW - 12));
+    const leftHeight = Math.max(54, 16 + leftRows.length * 8);
+    const rightHeight = Math.max(54, 18 + summaryLines.length * 4.3);
+    const boxHeight = Math.max(leftHeight, rightHeight);
+    ensurePageSpace(boxHeight + 18);
+
+    setBoldFont();
+    doc.setFontSize(17);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(text.title), margin, yPosition);
+    yPosition += 8;
+    addSmallText(text.advisoryIntro, 0);
+    yPosition += 3;
+
+    const cardY = yPosition;
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin, cardY, leftW, boxHeight, 2, 2, "FD");
+    doc.roundedRect(margin + leftW + colGap, cardY, rightW, boxHeight, 2, 2, "FD");
+
+    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.roundedRect(margin, cardY, leftW, 10, 2, 2, "F");
+    doc.roundedRect(margin + leftW + colGap, cardY, rightW, 10, 2, 2, "F");
+
+    setBoldFont();
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    doc.text(safeText(text.userInfo), margin + 4, cardY + 6.5);
+    doc.text(safeText(text.executiveSummary), margin + leftW + colGap + 4, cardY + 6.5);
+
+    let rowY = cardY + 17;
+    leftRows.forEach(([label, value]) => {
+      setBoldFont();
+      doc.setFontSize(7.6);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.text(safeText(label), margin + 4, rowY);
+      setBaseFont();
+      doc.setFontSize(8.2);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(safeText(clipToWidth(String(value), leftW - 31)), margin + 30, rowY);
+      rowY += 8;
+    });
+
+    let summaryY = cardY + 17;
+    report.executiveSummary.slice(0, 5).forEach((item) => {
+      const lines = doc.splitTextToSize(safeText(item), rightW - 14);
+      doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.circle(margin + leftW + colGap + 5, summaryY - 1.4, 0.9, "F");
+      setBaseFont();
+      doc.setFontSize(8.2);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(lines, margin + leftW + colGap + 9, summaryY, { lineHeightFactor: 1.18 });
+      summaryY += lines.length * 4.3 + 3;
+    });
+
+    yPosition = cardY + boxHeight + 8;
+  }
+
+  function drawAlertCollection(
+    title: string,
+    intro: string,
+    items: Array<{ label: string; body: string; level?: "high" | "medium" | "low" }>,
+    tone: "risk" | "success"
+  ) {
+    if (items.length === 0) return;
+    addHeading(title);
+    addSmallText(intro, 0);
+    yPosition += 2;
+
+    items.forEach((item) => {
+      const accent =
+        tone === "success"
+          ? COLORS.riskLow
+          : item.level === "high"
+            ? COLORS.riskHigh
+            : item.level === "medium"
+              ? COLORS.riskMedium
+              : COLORS.riskLow;
+      const fill =
+        tone === "success"
+          ? { r: 236, g: 253, b: 245 }
+          : item.level === "high"
+            ? { r: 254, g: 242, b: 242 }
+            : item.level === "medium"
+              ? { r: 255, g: 251, b: 235 }
+              : { r: 240, g: 253, b: 244 };
+      const bodyLines = doc.splitTextToSize(safeText(item.body), contentWidth - 18);
+      const boxHeight = Math.max(18, 12 + bodyLines.length * 4.4);
+      ensurePageSpace(boxHeight + 4);
+
+      doc.setFillColor(fill.r, fill.g, fill.b);
+      doc.setDrawColor(accent.r, accent.g, accent.b);
+      doc.setLineWidth(0.25);
+      doc.roundedRect(margin, yPosition, contentWidth, boxHeight, 2, 2, "FD");
+      doc.setFillColor(accent.r, accent.g, accent.b);
+      doc.rect(margin, yPosition, 2.5, boxHeight, "F");
+
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(accent.r, accent.g, accent.b);
+      doc.text(safeText(item.label), margin + 7, yPosition + 7);
+
+      setBaseFont();
+      doc.setFontSize(8.5);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(bodyLines, margin + 7, yPosition + 13, { lineHeightFactor: 1.18 });
+      yPosition += boxHeight + 4;
+    });
+  }
+
   function drawTable(
     headers: string[],
     rows: string[][],
@@ -784,71 +953,76 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   ) {
     const tableWidth = contentWidth;
     const colWidths = colRatios.map((ratio) => tableWidth * ratio);
-    const rowHeight = 8;
-    const cellPad = 2.5;
-    const totalRows = rows.length;
+    const headerHeight = 10;
+    const cellPadX = 3;
+    const cellPadY = 3;
+    const bodyLineHeight = 4.6;
 
-    ensurePageSpace(14);
+    const drawHeader = () => {
+      ensurePageSpace(headerHeight + 6);
+      doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.roundedRect(margin, yPosition, tableWidth, headerHeight, 1.2, 1.2, "F");
 
-    // Header row background
-    doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
-    doc.rect(margin, yPosition, tableWidth, rowHeight, "F");
-    doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
-    doc.setLineWidth(0.3);
-    doc.line(margin, yPosition + rowHeight, margin + tableWidth, yPosition + rowHeight);
+      let cursorX = margin;
+      setBoldFont();
+      doc.setFontSize(8.5);
+      doc.setTextColor(255, 255, 255);
+      headers.forEach((h, i) => {
+        const wrappedHeader = doc.splitTextToSize(safeText(h), colWidths[i] - cellPadX * 2);
+        doc.text(wrappedHeader.slice(0, 2), cursorX + cellPadX, yPosition + 6, {
+          maxWidth: colWidths[i] - cellPadX * 2,
+          lineHeightFactor: 1.1,
+        });
+        cursorX += colWidths[i];
+      });
+      yPosition += headerHeight;
+    };
 
-    let cursorX = margin + cellPad;
-    setBoldFont();
-    doc.setFontSize(FONTS.body);
-    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-    headers.forEach((h, i) => {
-      doc.text(safeText(h), cursorX, yPosition + 5.3);
-      cursorX += colWidths[i];
-    });
-    yPosition += rowHeight;
+    drawHeader();
 
     rows.forEach((row, rowIndex) => {
-      ensurePageSpace(rowHeight + 1);
-      if (rowIndex % 2 === 1) {
-        doc.setFillColor(COLORS.zebra.r, COLORS.zebra.g, COLORS.zebra.b);
-        doc.rect(margin, yPosition, tableWidth, rowHeight, "F");
+      setBaseFont();
+      doc.setFontSize(8.5);
+      const wrappedCells = row.map((cell, i) =>
+        doc.splitTextToSize(safeText(cell || text.noData), Math.max(14, colWidths[i] - cellPadX * 2))
+      );
+      const maxLines = Math.max(...wrappedCells.map((lines) => lines.length));
+      const rowHeight = Math.max(12, cellPadY * 2 + maxLines * bodyLineHeight);
+
+      if (yPosition + rowHeight > contentBottom) {
+        doc.addPage();
+        yPosition = margin;
+        drawHeader();
       }
 
-      let x = margin + cellPad;
-      setBaseFont();
-      doc.setFontSize(FONTS.body);
-      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      const fill = rowIndex % 2 === 0 ? { r: 255, g: 255, b: 255 } : COLORS.zebra;
+      doc.setFillColor(fill.r, fill.g, fill.b);
+      doc.rect(margin, yPosition, tableWidth, rowHeight, "F");
+
+      let x = margin;
       row.forEach((cell, i) => {
-        // Clip by rendered pixel width, not character count — CJK chars are wider
-        const maxCellMm = colWidths[i] - 3;
-        const clipped = clipToWidth(cell, maxCellMm);
         const customColor = getCellColor?.(rowIndex, i, cell);
-        if (customColor) {
-          doc.setTextColor(customColor.r, customColor.g, customColor.b);
-        } else {
-          doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-        }
-        doc.text(safeText(clipped), x, yPosition + 5.3);
+        const color = customColor ?? COLORS.text;
+        if (customColor) setBoldFont(); else setBaseFont();
+        doc.setFontSize(8.5);
+        doc.setTextColor(color.r, color.g, color.b);
+        doc.text(wrappedCells[i], x + cellPadX, yPosition + cellPadY + 3.2, {
+          maxWidth: colWidths[i] - cellPadX * 2,
+          lineHeightFactor: 1.18,
+        });
+        doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+        doc.setLineWidth(0.15);
+        if (i > 0) doc.line(x, yPosition, x, yPosition + rowHeight);
         x += colWidths[i];
       });
+
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
-      doc.setLineWidth(0.15);
-      doc.line(margin, yPosition + rowHeight, margin + tableWidth, yPosition + rowHeight);
+      doc.setLineWidth(0.2);
+      doc.rect(margin, yPosition, tableWidth, rowHeight);
       yPosition += rowHeight;
     });
 
-    // Outer border + vertical column dividers
-    doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
-    doc.setLineWidth(0.3);
-    doc.rect(margin, yPosition - (totalRows + 1) * rowHeight, tableWidth, (totalRows + 1) * rowHeight);
-    doc.setLineWidth(0.15);
-    let vx = margin;
-    for (let ci = 0; ci < colWidths.length - 1; ci++) {
-      vx += colWidths[ci];
-      doc.line(vx, yPosition - (totalRows + 1) * rowHeight, vx, yPosition);
-    }
-
-    yPosition += 3;
+    yPosition += 4;
   }
 
   function drawGanttTimeline() {
@@ -989,25 +1163,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   function drawImmediateActionPlan() {
     if (!report.suggestedNextSteps?.length) return;
 
-    addSectionHeading("", text.yourImmediateActionPlan);
-    ensurePageSpace(18);
-
-    doc.setFillColor(236, 253, 245);
-    doc.setDrawColor(16, 185, 129);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(margin, yPosition, contentWidth, 12, 1.2, 1.2, "FD");
-
-    setBoldFont();
-    doc.setFontSize(12);
-    doc.setTextColor(6, 95, 70);
-    doc.text(safeText(text.yourImmediateActionPlan), margin + 3, yPosition + 7.5);
-    yPosition += 15;
-
-    report.suggestedNextSteps.forEach((step, idx) => {
-      addBody(`${idx + 1}. ${step}`, 2);
-      yPosition += 1;
-    });
-    yPosition += 2;
+    drawAlertCollection(
+      text.yourImmediateActionPlan,
+      text.nextStepBoxIntro,
+      report.suggestedNextSteps.map((step, idx) => ({
+        label: `${idx + 1}. ${text.important}`,
+        body: step,
+      })),
+      "success"
+    );
   }
 
   function formatDifficulty(level: "low" | "medium" | "high") {
@@ -1211,24 +1375,26 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const states = report.stateNominationTracker?.states ?? [];
     if (states.length === 0) return;
 
+    ensurePageSpace(142);
     addHeading(text.stateRadar);
-    ensurePageSpace(86);
 
     const topY = yPosition;
-    const boxHeight = 78;
-    doc.setFillColor(248, 250, 252);
+    const boxHeight = 124;
+    doc.setFillColor(255, 255, 255);
     doc.setDrawColor(203, 213, 225);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(margin, topY, contentWidth, boxHeight, 2, 2, "FD");
+    doc.setLineWidth(0.35);
+    doc.roundedRect(margin, topY, contentWidth, boxHeight, 2.5, 2.5, "FD");
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(margin + 4, topY + 4, contentWidth - 8, 14, 2, 2, "F");
 
     setBaseFont();
     doc.setFontSize(FONTS.small);
     doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-    doc.text(doc.splitTextToSize(safeText(text.stateRadarSubtitle), contentWidth - 8), margin + 4, topY + 7);
+    doc.text(doc.splitTextToSize(safeText(text.stateRadarSubtitle), contentWidth - 16), margin + 8, topY + 12);
 
-    const centerX = margin + 50;
-    const centerY = topY + 42;
-    const radius = 24;
+    const centerX = margin + contentWidth / 2;
+    const centerY = topY + 58;
+    const radius = 34;
     const ringColor = { r: 203, g: 213, b: 225 };
     doc.setDrawColor(ringColor.r, ringColor.g, ringColor.b);
     doc.setLineWidth(0.25);
@@ -1249,7 +1415,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.line(centerX, centerY, outerX, outerY);
 
       setBoldFont();
-      doc.setFontSize(6.5);
+      doc.setFontSize(7.2);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
       doc.text(safeText(state.code), outerX, outerY, { align: outerX < centerX ? "right" : "left" });
 
@@ -1258,42 +1424,42 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     if (points.length > 1) {
       doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-      doc.setLineWidth(0.8);
+      doc.setLineWidth(1);
       points.forEach((point, index) => {
         const next = points[(index + 1) % points.length];
         doc.line(point.x, point.y, next.x, next.y);
       });
       points.forEach((point) => {
         doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-        doc.circle(point.x, point.y, 1.4, "F");
+        doc.circle(point.x, point.y, 1.7, "F");
       });
     }
 
-    const listX = margin + 88;
-    let listY = topY + 18;
-    states.slice(0, 8).forEach((state) => {
+    const chipTop = topY + 98;
+    const chipWidth = (contentWidth - 18) / 4;
+    states.slice(0, 8).forEach((state, index) => {
       const color = stateMatchColor(state.matchLevel);
-      const barW = 58;
-      const barH = 4;
+      const col = index % 4;
+      const row = Math.floor(index / 4);
+      const x = margin + 6 + col * (chipWidth + 2);
+      const y = chipTop + row * 10;
 
-      setBoldFont();
-      doc.setFontSize(7.5);
-      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.text(safeText(`${state.code} ${state.score}%`), listX, listY);
-
-      doc.setFillColor(226, 232, 240);
-      doc.roundedRect(listX + 28, listY - 3.2, barW, barH, 0.8, 0.8, "F");
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(x, y, chipWidth, 7.5, 1.2, 1.2, "FD");
       doc.setFillColor(color.r, color.g, color.b);
-      doc.roundedRect(listX + 28, listY - 3.2, (barW * state.score) / 100, barH, 0.8, 0.8, "F");
-
-      setBaseFont();
+      doc.roundedRect(x + 2, y + 2.1, 13, 3.3, 0.8, 0.8, "F");
+      setBoldFont();
       doc.setFontSize(6.5);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(safeText(state.code), x + 18, y + 5.2);
+      setBaseFont();
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-      doc.text(safeText(clipToWidth(state.status, contentWidth - 122)), listX + 90, listY);
-      listY += 6.7;
+      doc.text(safeText(String(state.score) + '%'), x + chipWidth - 4, y + 5.2, { align: "right" });
     });
 
-    yPosition = topY + boxHeight + 5;
+    yPosition = topY + boxHeight + 6;
   }
 
   function drawStateNominationTable() {
@@ -1301,50 +1467,32 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (states.length === 0) return;
 
     addHeading(text.stateNominationTracker);
-    ensurePageSpace(62);
+    addSmallText(text.stateTrackerIntro, 0);
+    yPosition += 2;
 
-    const col1 = margin;
-    const col2 = margin + 28;
-    const col3 = margin + 108;
-    const col4 = margin + 150;
-    const rowHeight = 8;
-
-    doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
-    doc.roundedRect(margin, yPosition, contentWidth, rowHeight, 1, 1, "F");
-    setBoldFont();
-    doc.setFontSize(FONTS.small);
-    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-    doc.text(safeText(text.stateCode), col1 + 2, yPosition + 5.2);
-    doc.text(safeText(text.stateStatus), col2 + 2, yPosition + 5.2);
-    doc.text(safeText(text.stateMatch), col3 + 2, yPosition + 5.2);
-    doc.text(safeText(text.note), col4 + 2, yPosition + 5.2);
-    yPosition += rowHeight;
-
-    setBaseFont();
-    doc.setFontSize(FONTS.small);
-
-    states.forEach((state, index) => {
-      ensurePageSpace(rowHeight + 2);
-
-      if (index % 2 === 0) {
-        doc.setFillColor(COLORS.zebra.r, COLORS.zebra.g, COLORS.zebra.b);
-        doc.rect(margin, yPosition, contentWidth, rowHeight, "F");
+    drawTable(
+      [text.stateCode, text.stateStatus, text.stateMatch, text.note],
+      states.map((state) => {
+        const note = state.requirements.slice(0, 2).join('; ') || state.summary;
+        return [
+          state.name ? state.code + ' ' + state.name : state.code,
+          state.status,
+          String(state.score) + '%',
+          note,
+        ];
+      }),
+      [0.15, 0.27, 0.13, 0.45],
+      (rowIndex, colIndex) => {
+        if (colIndex !== 2) return null;
+        const state = states[rowIndex];
+        return state ? stateMatchColor(state.matchLevel) : null;
       }
+    );
 
-      const color = stateMatchColor(state.matchLevel);
-
-      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-      doc.text(safeText(state.code), col1 + 2, yPosition + 5.2);
-      doc.text(safeText(state.status), col2 + 2, yPosition + 5.2, { maxWidth: 76 });
-      doc.setTextColor(color.r, color.g, color.b);
-      doc.text(safeText(`${state.score}%`), col3 + 2, yPosition + 5.2);
-      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-      const note = state.requirements[0] ?? state.summary;
-      doc.text(safeText(note), col4 + 2, yPosition + 5.2, { maxWidth: contentWidth - (col4 - margin) - 4 });
-      yPosition += rowHeight;
-    });
-
-    yPosition += 3;
+    if (report.stateNominationTracker?.note) {
+      addSmallText(report.stateNominationTracker.note, 2);
+      yPosition += 2;
+    }
   }
 
   function drawLodgementReadyChecklist() {
@@ -1425,31 +1573,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // Cover page
   addCoverPage();
 
-  // Title
-  addTitle(text.title);
-
-  // Generated date and user summary
-  addSmallText(`${text.generatedDate}: ${new Date().toLocaleDateString(locale)}`);
-  yPosition += 5;
-
-  if (Object.values(userInputSummary).some((v) => v)) {
-    addHeading(text.userInfo);
-    if (userInputSummary.name) addBody(`${text.nameLabel}: ${userInputSummary.name}`);
-    if (userInputSummary.email) addBody(`${text.emailLabel}: ${userInputSummary.email}`);
-    if (userInputSummary.mainGoal) addBody(`${text.goalLabel}: ${userInputSummary.mainGoal}`);
-    if (userInputSummary.currentCountry) addBody(`${text.currentCountryLabel}: ${userInputSummary.currentCountry}`);
-    if (userInputSummary.passportCountry) addBody(`${text.passportCountryLabel}: ${userInputSummary.passportCountry}`);
-    if (userInputSummary.age) addBody(`${text.ageLabel}: ${userInputSummary.age}`);
-    if (userInputSummary.occupation) addBody(`${text.occupationLabel}: ${userInputSummary.occupation}`);
-    if (userInputSummary.englishLevel) addBody(`${text.englishLevelLabel}: ${userInputSummary.englishLevel}`);
-    if (userInputSummary.sponsorOrFamily) addBody(`${text.sponsorFamilyLabel}: ${userInputSummary.sponsorOrFamily}`);
-    if (userInputSummary.biggestConcern) addBody(`${text.biggestConcernLabel}: ${userInputSummary.biggestConcern}`);
-    yPosition += 5;
-  }
-
-  if (report.executiveSummary.length > 0) {
-    addPremiumBulletContainer(text.executiveSummary, report.executiveSummary);
-  }
+  addReportOverview();
 
   drawVisaViabilityRanking();
   drawStateRadar();
@@ -1489,6 +1613,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.pathwayComparison.length > 0) {
     addHeading(text.pathwayTable);
+    addSmallText(text.pathwayTableIntro, 0);
+    yPosition += 2;
     const pathwayRows = report.pathwayComparison.map((item) => {
       const friction = getFrictionForPathway(item.subclass);
       const frictionScore = friction?.frictionScore ?? "MEDIUM";
@@ -1663,19 +1789,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   // Risk indicators
   if (report.riskIndicators.length > 0) {
-    addHeading(text.riskIndicators);
-    report.riskIndicators.forEach((r) => {
-      const levelText =
-        r.level === "high"
-          ? text.highRisk
-          : r.level === "medium"
-            ? text.mediumRisk
-            : text.lowRisk;
-      addBody(`${levelText}  ${r.title}`);
-      addSmallText(r.explanation, 4);
-      yPosition += 2;
-    });
-    yPosition += 3;
+    drawAlertCollection(
+      text.riskIndicators,
+      text.riskBoxIntro,
+      report.riskIndicators.map((r) => ({
+        label: `${r.level === "high" ? text.highRisk : r.level === "medium" ? text.mediumRisk : text.lowRisk} - ${r.title}`,
+        body: r.explanation,
+        level: r.level,
+      })),
+      "risk"
+    );
   }
 
   drawAuditChecklistBox();
