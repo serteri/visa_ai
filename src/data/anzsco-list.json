@@ -1,0 +1,937 @@
+[
+  {
+    "code": "261313",
+    "title": "Software Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Designs, develops, modifies, documents, tests, implements and supports software applications and systems.",
+      "Analyses user needs and software requirements to determine feasibility and system design.",
+      "Writes and maintains program code that meets system requirements and technical specifications.",
+      "Tests, debugs, diagnoses and corrects errors in software applications."
+    ]
+  },
+  {
+    "code": "261312",
+    "title": "Developer Programmer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Interprets specifications and technical designs for software development tasks.",
+      "Builds, tests and maintains application code using programming languages and frameworks.",
+      "Prepares technical documentation for program logic, data flows and user requirements.",
+      "Identifies and resolves defects in software modules and integrated systems."
+    ]
+  },
+  {
+    "code": "261311",
+    "title": "Analyst Programmer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Analyses business requirements and translates them into software system specifications.",
+      "Designs, develops and maintains software applications and database-driven systems.",
+      "Tests program functionality and investigates production issues or defects.",
+      "Works with stakeholders to refine system workflows, reports and integration points."
+    ]
+  },
+  {
+    "code": "261111",
+    "title": "ICT Business Analyst",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Identifies and evaluates business processes, procedures and work practices.",
+      "Gathers and documents business requirements for ICT system changes.",
+      "Models data, workflows and functional specifications for solution design.",
+      "Supports testing, implementation and change management for ICT projects."
+    ]
+  },
+  {
+    "code": "261112",
+    "title": "Systems Analyst",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Evaluates existing ICT systems and recommends improvements to meet business needs.",
+      "Prepares system specifications, data models and process diagrams.",
+      "Coordinates system design, testing and implementation activities.",
+      "Analyses system performance and supports issue resolution across applications."
+    ]
+  },
+  {
+    "code": "262111",
+    "title": "Database Administrator",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Administers database management systems, access controls and backup procedures.",
+      "Monitors database performance, capacity and availability.",
+      "Develops database structures, queries and maintenance processes.",
+      "Troubleshoots database errors and supports data security requirements."
+    ]
+  },
+  {
+    "code": "262112",
+    "title": "ICT Security Specialist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Assesses ICT security risks, vulnerabilities and control requirements.",
+      "Implements security policies, monitoring tools and incident response procedures.",
+      "Investigates security events and recommends remediation actions.",
+      "Maintains documentation for access controls, compliance and security architecture."
+    ]
+  },
+  {
+    "code": "263111",
+    "title": "Computer Network and Systems Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Designs, configures and maintains computer networks and communication systems.",
+      "Monitors network performance, reliability and security controls.",
+      "Troubleshoots hardware, software and connectivity issues across infrastructure.",
+      "Prepares technical documentation for network architecture and operational procedures."
+    ]
+  },
+  {
+    "code": "263112",
+    "title": "Network Administrator",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Installs, configures and maintains network hardware, software and user access.",
+      "Monitors system performance, backups and network availability.",
+      "Diagnoses connectivity faults and coordinates repairs or upgrades.",
+      "Maintains operational records, security settings and support documentation."
+    ]
+  },
+  {
+    "code": "263113",
+    "title": "Network Analyst",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Analyses network traffic, capacity and performance requirements.",
+      "Recommends improvements to network configuration, resilience and security.",
+      "Tests network changes and documents technical findings.",
+      "Supports implementation of communications systems and monitoring processes."
+    ]
+  },
+  {
+    "code": "263211",
+    "title": "ICT Quality Assurance Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Develops test strategies, plans and cases for ICT systems and software releases.",
+      "Executes functional, regression and integration testing activities.",
+      "Records defects, analyses quality trends and reports release readiness.",
+      "Improves quality processes, automation coverage and testing documentation."
+    ]
+  },
+  {
+    "code": "263212",
+    "title": "ICT Support Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Provides technical support for ICT systems, infrastructure and applications.",
+      "Investigates incidents, service requests and recurring operational issues.",
+      "Configures hardware, software and user access according to support procedures.",
+      "Maintains knowledge base articles, support records and escalation notes."
+    ]
+  },
+  {
+    "code": "224999",
+    "title": "Information and Organisation Professionals nec",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Analyses organisational information, systems, records or knowledge processes.",
+      "Develops reports, procedures and recommendations to improve business operations.",
+      "Coordinates information management, data quality or organisational improvement activities.",
+      "Supports stakeholders with research, documentation and process implementation."
+    ]
+  },
+  {
+    "code": "233211",
+    "title": "Civil Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans, designs and supervises construction of civil engineering projects.",
+      "Prepares specifications, drawings, cost estimates and project schedules.",
+      "Analyses soil, materials, drainage and structural requirements.",
+      "Inspects works to ensure compliance with design, safety and regulatory standards."
+    ]
+  },
+  {
+    "code": "233212",
+    "title": "Geotechnical Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Investigates soil, rock and groundwater conditions for engineering projects.",
+      "Analyses geotechnical risks affecting foundations, slopes and earthworks.",
+      "Prepares technical reports, designs and recommendations for construction teams.",
+      "Monitors site conditions and advises on ground improvement or remediation measures."
+    ]
+  },
+  {
+    "code": "233214",
+    "title": "Structural Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Designs structural systems for buildings, bridges and other infrastructure.",
+      "Calculates loads, stresses and material performance requirements.",
+      "Reviews drawings, specifications and construction methods for structural integrity.",
+      "Inspects structural works and advises on defects, repairs or modifications."
+    ]
+  },
+  {
+    "code": "233311",
+    "title": "Electrical Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Designs electrical systems, equipment, circuits and power distribution networks.",
+      "Prepares specifications, drawings, calculations and technical reports.",
+      "Tests electrical installations and investigates performance or safety issues.",
+      "Oversees installation, maintenance and commissioning of electrical equipment."
+    ]
+  },
+  {
+    "code": "233411",
+    "title": "Electronics Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Designs electronic circuits, devices, control systems and communications equipment.",
+      "Develops prototypes, technical specifications and test procedures.",
+      "Investigates faults and recommends improvements to electronic systems.",
+      "Supervises installation, operation and maintenance of electronic equipment."
+    ]
+  },
+  {
+    "code": "233512",
+    "title": "Mechanical Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and designs mechanical equipment, machines, components and systems.",
+      "Develops specifications for manufacture, installation, operation and maintenance.",
+      "Investigates failures and recommends modifications to improve performance.",
+      "Oversees installation, testing, inspection and maintenance of mechanical plant."
+    ]
+  },
+  {
+    "code": "233513",
+    "title": "Production or Plant Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and manages manufacturing processes, plant layout and production methods.",
+      "Analyses plant performance, efficiency, safety and quality outcomes.",
+      "Develops specifications for equipment, workflow and process improvements.",
+      "Coordinates maintenance, commissioning and continuous improvement activities."
+    ]
+  },
+  {
+    "code": "233914",
+    "title": "Engineering Technologist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Applies engineering technologies to design, testing and operational problems.",
+      "Prepares technical reports, models, specifications and implementation plans.",
+      "Evaluates equipment, processes and systems for performance improvements.",
+      "Supports engineers with research, product development and project delivery."
+    ]
+  },
+  {
+    "code": "233915",
+    "title": "Environmental Engineer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Assesses environmental impacts of engineering projects and industrial activities.",
+      "Designs systems for pollution control, waste treatment and resource management.",
+      "Prepares environmental reports, monitoring plans and compliance documentation.",
+      "Advises on sustainability, remediation and regulatory requirements."
+    ]
+  },
+  {
+    "code": "312211",
+    "title": "Civil Engineering Draftsperson",
+    "skillLevel": "Skill Level 2",
+    "duties": [
+      "Prepares detailed drawings and plans for civil engineering works.",
+      "Interprets survey data, specifications and engineering instructions.",
+      "Uses CAD software to produce construction documentation and design revisions.",
+      "Assists engineers with quantities, records and technical project information."
+    ]
+  },
+  {
+    "code": "312212",
+    "title": "Civil Engineering Technician",
+    "skillLevel": "Skill Level 2",
+    "duties": [
+      "Conducts tests and collects data for civil engineering projects.",
+      "Assists with site inspections, measurements and quality control activities.",
+      "Prepares technical records, calculations and reports for engineers.",
+      "Supports construction supervision and project administration tasks."
+    ]
+  },
+  {
+    "code": "254412",
+    "title": "Registered Nurse",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Assesses, plans, implements and evaluates nursing care for patients.",
+      "Administers medication and treatments while monitoring patient responses.",
+      "Coordinates care with doctors, allied health professionals and support networks.",
+      "Provides health education and supports patient safety and recovery planning."
+    ]
+  },
+  {
+    "code": "254415",
+    "title": "Registered Nurse (Critical Care and Emergency)",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Provides specialised nursing care for critically ill or emergency patients.",
+      "Monitors vital signs, life support systems and acute clinical changes.",
+      "Administers urgent treatments and supports emergency response procedures.",
+      "Documents care plans and coordinates with medical teams in high-pressure settings."
+    ]
+  },
+  {
+    "code": "254418",
+    "title": "Registered Nurse (Medical)",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Provides nursing care for patients with medical conditions and ongoing health needs.",
+      "Monitors symptoms, medications, test results and patient progress.",
+      "Supports treatment plans, discharge planning and patient education.",
+      "Maintains clinical records and coordinates care with multidisciplinary teams."
+    ]
+  },
+  {
+    "code": "254422",
+    "title": "Registered Nurse (Mental Health)",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Provides nursing care for people experiencing mental health conditions.",
+      "Assesses mental state, risk factors, medication responses and support needs.",
+      "Implements therapeutic interventions and recovery-oriented care plans.",
+      "Coordinates with psychiatrists, families and community support services."
+    ]
+  },
+  {
+    "code": "254423",
+    "title": "Registered Nurse (Perioperative)",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Provides nursing care before, during and after surgical procedures.",
+      "Prepares operating rooms, instruments and patient documentation.",
+      "Assists surgical teams while monitoring patient safety and sterile practice.",
+      "Supports post-operative recovery, pain management and clinical handover."
+    ]
+  },
+  {
+    "code": "252411",
+    "title": "Occupational Therapist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Assesses functional capacity, daily living skills and environmental barriers.",
+      "Develops therapy plans to improve independence, participation and safety.",
+      "Recommends adaptive equipment, home modifications and rehabilitation strategies.",
+      "Documents progress and coordinates care with families and healthcare teams."
+    ]
+  },
+  {
+    "code": "252511",
+    "title": "Physiotherapist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Assesses physical conditions affecting movement, pain and function.",
+      "Develops treatment programs using exercise, manual therapy and education.",
+      "Monitors rehabilitation progress and adjusts therapy plans.",
+      "Advises patients on injury prevention, mobility and ongoing self-management."
+    ]
+  },
+  {
+    "code": "252712",
+    "title": "Speech Pathologist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Assesses communication, swallowing, speech and language disorders.",
+      "Develops therapy plans and intervention strategies for clients.",
+      "Provides treatment, education and communication support to families or carers.",
+      "Maintains clinical records and collaborates with health and education professionals."
+    ]
+  },
+  {
+    "code": "251211",
+    "title": "Medical Diagnostic Radiographer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Operates imaging equipment to produce diagnostic radiographic images.",
+      "Positions patients and applies radiation safety procedures.",
+      "Reviews image quality and records clinical imaging information.",
+      "Works with radiologists and healthcare teams to support diagnosis."
+    ]
+  },
+  {
+    "code": "251214",
+    "title": "Sonographer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Performs ultrasound examinations using specialised imaging equipment.",
+      "Selects imaging techniques based on clinical referrals and patient needs.",
+      "Analyses image quality and documents sonographic findings for review.",
+      "Maintains patient safety, privacy and equipment quality procedures."
+    ]
+  },
+  {
+    "code": "251411",
+    "title": "Optometrist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Examines eyes to assess vision, eye health and visual disorders.",
+      "Prescribes corrective lenses, vision therapy or referrals for medical care.",
+      "Uses diagnostic equipment to detect eye disease or visual abnormalities.",
+      "Advises patients on eye health, lens use and preventive care."
+    ]
+  },
+  {
+    "code": "252312",
+    "title": "Dentist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Examines teeth, gums and oral tissues to diagnose dental conditions.",
+      "Provides preventive, restorative and surgical dental treatments.",
+      "Interprets diagnostic images and develops oral health treatment plans.",
+      "Educates patients on oral hygiene, prevention and ongoing dental care."
+    ]
+  },
+  {
+    "code": "253111",
+    "title": "General Practitioner",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Diagnoses and treats acute and chronic medical conditions in primary care.",
+      "Orders investigations, prescribes treatments and manages referrals.",
+      "Provides preventive health advice, screening and continuity of care.",
+      "Maintains medical records and coordinates with specialists or allied health providers."
+    ]
+  },
+  {
+    "code": "253999",
+    "title": "Medical Practitioners nec",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Diagnoses, treats and manages patient health conditions within a medical specialty.",
+      "Orders tests, interprets results and develops treatment plans.",
+      "Consults with healthcare teams and provides specialist medical advice.",
+      "Maintains clinical records and supports patient safety and continuity of care."
+    ]
+  },
+  {
+    "code": "272511",
+    "title": "Social Worker",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Assesses client needs, risks, strengths and social support requirements.",
+      "Develops intervention plans and connects clients with services or resources.",
+      "Advocates for clients in health, welfare, housing or legal settings.",
+      "Maintains case notes and collaborates with multidisciplinary support teams."
+    ]
+  },
+  {
+    "code": "272311",
+    "title": "Clinical Psychologist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Assesses, diagnoses and treats mental health and behavioural conditions.",
+      "Provides psychological therapy using evidence-based intervention approaches.",
+      "Conducts psychometric assessments and prepares clinical reports.",
+      "Collaborates with medical, education and community support professionals."
+    ]
+  },
+  {
+    "code": "241111",
+    "title": "Early Childhood (Pre-primary School) Teacher",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and delivers learning programs for young children before primary school.",
+      "Observes children's development, behaviour and learning progress.",
+      "Creates safe, inclusive and stimulating learning environments.",
+      "Communicates with families and maintains education records."
+    ]
+  },
+  {
+    "code": "241213",
+    "title": "Primary School Teacher",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans, prepares and delivers lessons across primary curriculum areas.",
+      "Assesses student learning and provides feedback on progress.",
+      "Manages classroom behaviour and supports student wellbeing.",
+      "Communicates with parents, carers and school staff about student needs."
+    ]
+  },
+  {
+    "code": "241411",
+    "title": "Secondary School Teacher",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and teaches subject-specific lessons for secondary students.",
+      "Assesses assignments, examinations and classroom performance.",
+      "Supports student learning, behaviour management and pastoral care.",
+      "Prepares teaching materials and participates in school reporting processes."
+    ]
+  },
+  {
+    "code": "241511",
+    "title": "Special Needs Teacher",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and delivers learning programs for students with additional needs.",
+      "Adapts curriculum, teaching methods and assessment strategies.",
+      "Works with families, therapists and support staff to implement learning plans.",
+      "Monitors student progress and maintains individual education documentation."
+    ]
+  },
+  {
+    "code": "221111",
+    "title": "Accountant (General)",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Prepares financial statements, budgets, tax returns and accounting reports.",
+      "Reviews income, expenditure, assets, liabilities and financial commitments.",
+      "Advises on accounting systems, tax obligations and financial controls.",
+      "Maintains records and supports compliance with reporting requirements."
+    ]
+  },
+  {
+    "code": "221112",
+    "title": "Management Accountant",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Prepares management reports, budgets, forecasts and cost analyses.",
+      "Analyses business performance and financial trends for decision-making.",
+      "Develops internal controls, pricing models and financial planning processes.",
+      "Advises managers on profitability, efficiency and resource allocation."
+    ]
+  },
+  {
+    "code": "221113",
+    "title": "Taxation Accountant",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Prepares tax returns, statements and compliance documentation.",
+      "Advises clients or organisations on tax obligations and planning issues.",
+      "Reviews financial records to identify taxable income, deductions and liabilities.",
+      "Liaises with tax authorities and supports audits or dispute processes."
+    ]
+  },
+  {
+    "code": "221213",
+    "title": "External Auditor",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Examines financial records, controls and reporting processes.",
+      "Plans audit procedures and tests transactions for accuracy and compliance.",
+      "Identifies audit findings, risks and control weaknesses.",
+      "Prepares audit reports and communicates recommendations to stakeholders."
+    ]
+  },
+  {
+    "code": "132111",
+    "title": "Corporate Services Manager",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and directs administrative, corporate support and shared service functions.",
+      "Develops policies, budgets and operational procedures for business services.",
+      "Coordinates resources, reporting and compliance across organisational units.",
+      "Advises senior management on service delivery and organisational efficiency."
+    ]
+  },
+  {
+    "code": "132211",
+    "title": "Finance Manager",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans, organises and controls financial operations and reporting.",
+      "Develops budgets, forecasts, financial policies and risk controls.",
+      "Analyses financial performance and advises on business strategy.",
+      "Oversees accounting teams, audits, compliance and cash flow management."
+    ]
+  },
+  {
+    "code": "133111",
+    "title": "Construction Project Manager",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans, directs and coordinates construction projects from initiation to completion.",
+      "Manages project budgets, schedules, contracts and site resources.",
+      "Coordinates contractors, consultants, approvals and safety requirements.",
+      "Monitors progress, quality and compliance with project specifications."
+    ]
+  },
+  {
+    "code": "133211",
+    "title": "Engineering Manager",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and directs engineering operations, projects and technical teams.",
+      "Develops engineering policies, budgets, schedules and quality systems.",
+      "Reviews designs, technical standards and project delivery risks.",
+      "Coordinates engineering resources and reports to senior management."
+    ]
+  },
+  {
+    "code": "135112",
+    "title": "ICT Project Manager",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans, manages and delivers ICT projects within scope, time and budget.",
+      "Coordinates project teams, vendors, stakeholders and governance activities.",
+      "Tracks risks, issues, resources and implementation milestones.",
+      "Prepares project documentation, reports and change management plans."
+    ]
+  },
+  {
+    "code": "141111",
+    "title": "Cafe or Restaurant Manager",
+    "skillLevel": "Skill Level 2",
+    "duties": [
+      "Plans and manages daily operations of cafes, restaurants or dining venues.",
+      "Coordinates staff rosters, service standards, suppliers and stock control.",
+      "Monitors budgets, sales, customer service and food safety requirements.",
+      "Handles customer feedback and ensures venue compliance with regulations."
+    ]
+  },
+  {
+    "code": "351311",
+    "title": "Chef",
+    "skillLevel": "Skill Level 2",
+    "duties": [
+      "Plans menus, estimates food and labour costs and orders food supplies.",
+      "Prepares, seasons and cooks food according to recipes and quality standards.",
+      "Supervises kitchen staff and coordinates food preparation and service timing.",
+      "Monitors hygiene, storage, presentation and kitchen safety standards."
+    ]
+  },
+  {
+    "code": "351411",
+    "title": "Cook",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Prepares and cooks meals, dishes and food items according to menus.",
+      "Checks food quality, presentation and portion standards.",
+      "Maintains kitchen cleanliness, food storage and hygiene procedures.",
+      "Assists with stock control, preparation schedules and kitchen workflow."
+    ]
+  },
+  {
+    "code": "321211",
+    "title": "Motor Mechanic",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Detects and diagnoses mechanical and electrical faults in vehicles.",
+      "Dismantles, repairs and replaces engine, transmission and suspension components.",
+      "Uses diagnostic equipment, tools and test procedures to confirm faults.",
+      "Tests and adjusts repaired vehicles for performance and roadworthiness."
+    ]
+  },
+  {
+    "code": "322311",
+    "title": "Metal Fabricator",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Marks out, cuts, shapes and joins metal sections and components.",
+      "Reads drawings, specifications and measurements for fabrication work.",
+      "Uses welding, forming and cutting equipment to assemble metal structures.",
+      "Inspects finished work for accuracy, strength and quality requirements."
+    ]
+  },
+  {
+    "code": "322313",
+    "title": "Welder",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Joins metal parts using welding processes and equipment.",
+      "Reads drawings and prepares materials for welding tasks.",
+      "Selects welding methods, settings and consumables for job requirements.",
+      "Inspects welded joints and repairs defects to meet quality standards."
+    ]
+  },
+  {
+    "code": "331111",
+    "title": "Bricklayer",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Lays bricks, blocks and stone to construct walls, foundations and structures.",
+      "Reads plans, sets out work areas and prepares mortar or materials.",
+      "Cuts and shapes masonry units to fit design requirements.",
+      "Checks levels, alignment and structural quality during construction."
+    ]
+  },
+  {
+    "code": "331212",
+    "title": "Carpenter",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Constructs, installs and repairs structures and fixtures made of timber or similar materials.",
+      "Reads plans, measures materials and sets out building components.",
+      "Cuts, shapes and assembles framing, flooring, doors and fittings.",
+      "Checks workmanship for accuracy, safety and building code requirements."
+    ]
+  },
+  {
+    "code": "334111",
+    "title": "Plumber",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Installs, repairs and maintains water, gas, drainage and sanitary systems.",
+      "Reads plans and determines layout of pipes, fixtures and fittings.",
+      "Tests plumbing systems for leaks, pressure and compliance.",
+      "Diagnoses faults and replaces or repairs defective plumbing components."
+    ]
+  },
+  {
+    "code": "341111",
+    "title": "Electrician (General)",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Installs, tests, connects and maintains electrical wiring and equipment.",
+      "Reads electrical plans, diagrams and technical specifications.",
+      "Diagnoses faults and repairs electrical systems and components.",
+      "Ensures work complies with safety standards and electrical regulations."
+    ]
+  },
+  {
+    "code": "342111",
+    "title": "Airconditioning and Refrigeration Mechanic",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Installs, maintains and repairs airconditioning and refrigeration systems.",
+      "Diagnoses electrical, mechanical and refrigerant faults.",
+      "Tests system performance, pressures, controls and safety devices.",
+      "Carries out servicing, component replacement and compliance documentation."
+    ]
+  },
+  {
+    "code": "394111",
+    "title": "Cabinetmaker",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Fabricates, assembles and installs cabinets, furniture and fitted interiors.",
+      "Reads drawings and measures materials for cutting and assembly.",
+      "Uses woodworking machines, hand tools and finishing techniques.",
+      "Checks fit, finish and quality of completed cabinetry."
+    ]
+  },
+  {
+    "code": "399512",
+    "title": "Camera Operator (Film, Television or Video)",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Operates cameras and related equipment for film, television or video production.",
+      "Frames shots, adjusts focus, exposure and movement according to production needs.",
+      "Works with directors and production teams to capture required visual material.",
+      "Maintains camera equipment and supports lighting or recording setup."
+    ]
+  },
+  {
+    "code": "411411",
+    "title": "Enrolled Nurse",
+    "skillLevel": "Skill Level 2",
+    "duties": [
+      "Provides nursing care under the direction and supervision of registered nurses.",
+      "Monitors patient condition, records observations and reports changes.",
+      "Assists with medication, personal care and clinical procedures within scope.",
+      "Supports care planning, patient comfort and health education activities."
+    ]
+  },
+  {
+    "code": "411711",
+    "title": "Community Worker",
+    "skillLevel": "Skill Level 2",
+    "duties": [
+      "Supports individuals and groups to access community services and resources.",
+      "Assesses client needs and assists with support plans or referrals.",
+      "Facilitates programs, advocacy and community development activities.",
+      "Maintains case notes and works with service providers or agencies."
+    ]
+  },
+  {
+    "code": "421111",
+    "title": "Child Care Worker",
+    "skillLevel": "Skill Level 4",
+    "duties": [
+      "Provides care and supervision for children in education or care settings.",
+      "Supports children's routines, play, learning and social development.",
+      "Maintains safe, clean and inclusive environments for children.",
+      "Communicates with families and records observations or incidents."
+    ]
+  },
+  {
+    "code": "451612",
+    "title": "Travel Consultant",
+    "skillLevel": "Skill Level 4",
+    "duties": [
+      "Advises clients on travel options, itineraries, fares and booking conditions.",
+      "Arranges transport, accommodation, tours, insurance and travel documentation.",
+      "Processes bookings, payments and itinerary changes.",
+      "Provides destination, visa and travel information to customers."
+    ]
+  },
+  {
+    "code": "511112",
+    "title": "Program or Project Administrator",
+    "skillLevel": "Skill Level 2",
+    "duties": [
+      "Coordinates project documentation, schedules, budgets and reporting activities.",
+      "Supports project managers with procurement, records and stakeholder communication.",
+      "Tracks milestones, risks, actions and administrative requirements.",
+      "Maintains project files and assists with governance or compliance processes."
+    ]
+  },
+  {
+    "code": "599915",
+    "title": "Clinical Coder",
+    "skillLevel": "Skill Level 2",
+    "duties": [
+      "Reviews clinical records and assigns standardised diagnosis and procedure codes.",
+      "Ensures coding accuracy according to classification standards and guidelines.",
+      "Queries clinicians to clarify documentation where required.",
+      "Supports health data reporting, audit and quality improvement activities."
+    ]
+  },
+  {
+    "code": "612112",
+    "title": "Property Manager",
+    "skillLevel": "Skill Level 3",
+    "duties": [
+      "Manages rental properties, leases, inspections and tenant communication.",
+      "Coordinates maintenance, rent collection and property condition reporting.",
+      "Advises owners on tenancy obligations, market conditions and property performance.",
+      "Maintains records and supports compliance with tenancy legislation."
+    ]
+  },
+  {
+    "code": "139914",
+    "title": "Quality Assurance Manager",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and manages quality systems, audits and continuous improvement programs.",
+      "Develops standards, procedures and reporting frameworks for quality assurance.",
+      "Investigates non-conformance issues and coordinates corrective actions.",
+      "Advises management on compliance, certification and process performance."
+    ]
+  },
+  {
+    "code": "234111",
+    "title": "Agricultural Consultant",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Advises on agricultural production, land use, crop, livestock and business practices.",
+      "Analyses farm operations, soil, water, climate and market factors.",
+      "Prepares reports and recommendations to improve productivity and sustainability.",
+      "Supports implementation of farm management and compliance strategies."
+    ]
+  },
+  {
+    "code": "234112",
+    "title": "Agricultural Scientist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Conducts research into crops, livestock, soil, pests and agricultural systems.",
+      "Collects and analyses scientific data to improve production or sustainability.",
+      "Develops trials, reports and technical recommendations.",
+      "Advises industry, government or producers on agricultural science findings."
+    ]
+  },
+  {
+    "code": "234611",
+    "title": "Medical Laboratory Scientist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Performs laboratory tests on biological specimens to support diagnosis and treatment.",
+      "Operates analytical equipment and validates test results.",
+      "Maintains quality control, safety and laboratory documentation procedures.",
+      "Communicates abnormal findings and supports clinical interpretation workflows."
+    ]
+  },
+  {
+    "code": "234711",
+    "title": "Veterinarian",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Diagnoses, treats and prevents disease and injury in animals.",
+      "Performs examinations, surgery, vaccinations and diagnostic procedures.",
+      "Advises animal owners on health, nutrition, welfare and disease prevention.",
+      "Maintains clinical records and complies with animal health regulations."
+    ]
+  },
+  {
+    "code": "271311",
+    "title": "Solicitor",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Provides legal advice, prepares documents and represents clients in legal matters.",
+      "Researches legislation, case law and legal precedents.",
+      "Drafts contracts, correspondence, pleadings and settlement documentation.",
+      "Negotiates with parties and supports dispute resolution or court processes."
+    ]
+  },
+  {
+    "code": "232111",
+    "title": "Architect",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Designs buildings and spaces according to client, regulatory and site requirements.",
+      "Prepares drawings, specifications, models and design documentation.",
+      "Coordinates consultants, approvals and construction administration activities.",
+      "Advises on materials, sustainability, cost and design feasibility."
+    ]
+  },
+  {
+    "code": "232112",
+    "title": "Landscape Architect",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Plans and designs outdoor spaces, landscapes and environmental settings.",
+      "Prepares concept designs, planting plans, specifications and documentation.",
+      "Assesses site conditions, ecology, drainage and user requirements.",
+      "Coordinates with clients, planners, engineers and construction teams."
+    ]
+  },
+  {
+    "code": "232411",
+    "title": "Graphic Designer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Creates visual concepts, layouts and designs for print, digital and brand materials.",
+      "Prepares artwork, typography, imagery and production-ready files.",
+      "Interprets briefs and develops design solutions for communication objectives.",
+      "Collaborates with clients, marketers and production suppliers."
+    ]
+  },
+  {
+    "code": "225113",
+    "title": "Marketing Specialist",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Researches markets, customer behaviour, competitors and campaign performance.",
+      "Develops marketing strategies, content plans and promotional activities.",
+      "Coordinates campaigns across digital, print, events or partner channels.",
+      "Analyses results and recommends improvements to marketing effectiveness."
+    ]
+  },
+  {
+    "code": "224711",
+    "title": "Management Consultant",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Analyses organisational problems, processes and management practices.",
+      "Develops recommendations to improve efficiency, performance or structure.",
+      "Prepares reports, business cases, implementation plans and stakeholder presentations.",
+      "Supports change management, process redesign and project delivery."
+    ]
+  },
+  {
+    "code": "222211",
+    "title": "Financial Market Dealer",
+    "skillLevel": "Skill Level 1",
+    "duties": [
+      "Buys and sells financial products on behalf of clients or organisations.",
+      "Analyses market conditions, pricing, risk and investment opportunities.",
+      "Executes transactions according to trading strategies and compliance rules.",
+      "Maintains records and reports on portfolio or market performance."
+    ]
+  }
+]

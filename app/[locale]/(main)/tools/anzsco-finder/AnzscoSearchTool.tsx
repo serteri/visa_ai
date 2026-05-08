@@ -7,6 +7,7 @@ import { ArrowRight, BadgeCheck, BriefcaseBusiness, Search } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import anzscoList from "@/src/data/anzsco-list.json";
 
 type Occupation = {
   code: string;
@@ -15,91 +16,34 @@ type Occupation = {
   duties: string[];
 };
 
-const OCCUPATIONS: Occupation[] = [
-  {
-    code: "261313",
-    title: "Software Engineer",
-    skillLevel: "Skill Level 1",
-    duties: [
-      "Designs, develops, modifies, documents, tests, implements, installs and supports software applications and systems.",
-      "Analyses user needs and software requirements to determine feasibility and system design.",
-      "Writes and maintains program code that meets system requirements and technical specifications.",
-      "Tests, debugs, diagnoses and corrects errors in applications programming language.",
-    ],
-  },
-  {
-    code: "254412",
-    title: "Registered Nurse",
-    skillLevel: "Skill Level 1",
-    duties: [
-      "Assesses, plans, implements and evaluates nursing care for patients according to clinical needs.",
-      "Administers medication and treatments, monitors patient responses and records clinical observations.",
-      "Coordinates care with doctors, allied health professionals and patient support networks.",
-      "Provides health education and supports patient safety, recovery and ongoing care planning.",
-    ],
-  },
-  {
-    code: "321211",
-    title: "Motor Mechanic",
-    skillLevel: "Skill Level 3",
-    duties: [
-      "Detects and diagnoses mechanical and electrical faults in engines and vehicle systems.",
-      "Dismantles and removes engine assemblies, transmissions, steering mechanisms and other components.",
-      "Repairs, replaces and reassembles worn or defective parts using workshop tools and diagnostic equipment.",
-      "Tests and adjusts mechanical parts after repair to ensure proper performance and roadworthiness.",
-    ],
-  },
-  {
-    code: "351311",
-    title: "Chef",
-    skillLevel: "Skill Level 2",
-    duties: [
-      "Plans menus, estimates food and labour costs and orders food supplies for kitchen operations.",
-      "Prepares, seasons and cooks food according to recipes, dietary requirements and quality standards.",
-      "Supervises kitchen staff and coordinates timing of food preparation and service.",
-      "Monitors hygiene, storage, presentation and kitchen safety standards.",
-    ],
-  },
-  {
-    code: "233512",
-    title: "Mechanical Engineer",
-    skillLevel: "Skill Level 1",
-    duties: [
-      "Plans and designs mechanical equipment, machines, components and systems.",
-      "Develops specifications for manufacture, installation, operation and maintenance of mechanical systems.",
-      "Investigates failures and recommends modifications to improve performance and reliability.",
-      "Oversees installation, testing, inspection and maintenance of mechanical plant and equipment.",
-    ],
-  },
-  {
-    code: "221111",
-    title: "Accountant",
-    skillLevel: "Skill Level 1",
-    duties: [
-      "Prepares financial statements, tax returns, budgets and accounting reports.",
-      "Reviews operating costs, income, expenditure and financial commitments.",
-      "Audits accounts and advises on financial risk, compliance and business structures.",
-      "Maintains accounting systems and supports accurate record keeping for organisations.",
-    ],
-  },
-];
+const OCCUPATIONS = anzscoList satisfies Occupation[];
+const POPULAR_CODES = ["261313", "254412", "233211", "233512", "221111", "351311", "321211", "241213"];
 
 export function AnzscoSearchTool() {
   const [query, setQuery] = useState("");
   const [selectedCode, setSelectedCode] = useState<string | null>("261313");
 
+  const popularOccupations = useMemo(
+    () =>
+      POPULAR_CODES.map((code) => OCCUPATIONS.find((occupation) => occupation.code === code)).filter(
+        (occupation): occupation is Occupation => Boolean(occupation)
+      ),
+    []
+  );
+
   const matches = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return OCCUPATIONS;
+    if (!normalizedQuery) return popularOccupations;
 
     return OCCUPATIONS.filter((occupation) => {
       return (
         occupation.title.toLowerCase().includes(normalizedQuery) ||
-        occupation.code.includes(normalizedQuery) ||
-        occupation.duties.some((duty) => duty.toLowerCase().includes(normalizedQuery))
+        occupation.code.toLowerCase().includes(normalizedQuery)
       );
     });
-  }, [query]);
+  }, [popularOccupations, query]);
+
+  const hasSearch = query.trim().length > 0;
 
   const selectedOccupation =
     matches.find((occupation) => occupation.code === selectedCode) ?? matches[0] ?? null;
@@ -120,6 +64,12 @@ export function AnzscoSearchTool() {
 
         <div className="mt-6 grid gap-5 lg:grid-cols-[0.9fr_1.5fr]">
           <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-bold uppercase tracking-wide text-slate-500">
+                {hasSearch ? `${matches.length} matching occupations` : "Popular Searches"}
+              </p>
+              <p className="text-xs font-semibold text-slate-400">{OCCUPATIONS.length} occupations indexed</p>
+            </div>
             {matches.length > 0 ? (
               matches.map((occupation) => {
                 const isSelected = selectedOccupation?.code === occupation.code;
@@ -147,8 +97,11 @@ export function AnzscoSearchTool() {
                 );
               })
             ) : (
-              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-                No mock occupations match this search yet.
+              <div className="rounded-2xl border border-dashed border-cyan-200 bg-gradient-to-br from-slate-50 to-cyan-50 p-6 shadow-inner">
+                <p className="text-base font-bold text-slate-950">No occupations found.</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Please try a different keyword or ANZSCO code.
+                </p>
               </div>
             )}
           </div>
