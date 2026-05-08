@@ -26,6 +26,21 @@ function formatDate(date: string) {
   });
 }
 
+function renderInline(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.startsWith("**") && part.endsWith("**") ? (
+          <strong key={i}>{part.slice(2, -2)}</strong>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
 function ArticleBlock({ block }: { block: string }) {
   if (block.startsWith("## ")) {
     return (
@@ -35,7 +50,18 @@ function ArticleBlock({ block }: { block: string }) {
     );
   }
 
-  return <p className="mt-5 text-lg leading-8 text-slate-700">{block}</p>;
+  const lines = block.split("\n");
+  if (lines.every((line) => line.startsWith("- "))) {
+    return (
+      <ul className="mt-5 list-disc space-y-2 pl-6 text-lg leading-8 text-slate-700">
+        {lines.map((line, i) => (
+          <li key={i}>{renderInline(line.slice(2))}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  return <p className="mt-5 text-lg leading-8 text-slate-700">{renderInline(block)}</p>;
 }
 
 export async function generateStaticParams() {
