@@ -112,7 +112,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       downloadablePdf: "İndirilebilir PDF",
       factorsAffectingPathways: "Yolları Etkileyebilecek Faktörler",
       missingInformation: "Eksik Bilgiler",
-      disclaimer: "Uyarı / İçtihadı",
       estimatedPoints: "Tahmini Puan",
       relevantVisas: "İlgili Vizeler",
       highRisk: "Yüksek",
@@ -133,8 +132,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       subject: "Konu",
       reportDate: "Rapor Tarihi",
       reportId: "Rapor ID",
-      coverPurpose: "Bu rapor otomatik bir veri analizidir ve gocmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin.",
-      coverScope: "Bu rapor otomatik bir veri analizidir ve gocmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin.",
       category: "Kategori",
       amount: "Tutar",
       note: "Not",
@@ -147,6 +144,18 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       stateCode: "Eyalet",
       stateStatus: "Durum",
       stateMatch: "Uyum",
+      match: "Uyum",
+      pointsSignal: "Puan Sinyali",
+      stateRadar: "Eyalet Sinyal Radarı",
+      stateRadarSubtitle: "Eyalet adaylığı sinyalleri, profil uyum skoruna göre görselleştirilmiştir.",
+      noClearSecondarySignal: "Belirgin ikincil sinyal yok",
+      downloadablePdfDescription: "Bu dosya, oluşturulan tam vize hazırlık raporunun indirilebilir PDF sürümüdür.",
+      urgent: "ACIL",
+      important: "ONEMLI",
+      ready: "HAZIR",
+      highlyRecommendedPathway: "Guclu Onerilen Yol",
+      alternativeOption: "Alternatif Secenek",
+      highRiskLowProbability: "Yuksek Risk / Dusuk Olasilik",
     };
   }
 
@@ -199,7 +208,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       downloadablePdf: "可下载 PDF",
       factorsAffectingPathways: "可能影响路径的因素",
       missingInformation: "缺失信息",
-      disclaimer: "免责声明",
       estimatedPoints: "初步打分估算",
       relevantVisas: "相关签证",
       highRisk: "高",
@@ -220,8 +228,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       subject: "对象",
       reportDate: "报告日期",
       reportId: "报告编号",
-      coverPurpose: "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。",
-      coverScope: "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。",
       category: "类别",
       amount: "金额",
       note: "说明",
@@ -234,6 +240,18 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       stateCode: "州",
       stateStatus: "状态",
       stateMatch: "匹配",
+      match: "匹配",
+      pointsSignal: "分数信号",
+      stateRadar: "州担保信号雷达",
+      stateRadarSubtitle: "州担保信号根据档案匹配分数进行可视化。",
+      noClearSecondarySignal: "暂无明显次要信号",
+      downloadablePdfDescription: "本文件为已生成完整签证准备度报告的可下载 PDF 版本。",
+      urgent: "紧急",
+      important: "重要",
+      ready: "建议",
+      highlyRecommendedPathway: "强烈推荐路径",
+      alternativeOption: "替代选项",
+      highRiskLowProbability: "高风险 / 低概率",
     };
   }
 
@@ -285,7 +303,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     downloadablePdf: "Downloadable PDF",
     factorsAffectingPathways: "Factors that may affect pathways",
     missingInformation: "Missing Information",
-    disclaimer: "Disclaimer",
     estimatedPoints: "Estimated Points",
     relevantVisas: "Relevant Visas",
     highRisk: "High",
@@ -306,8 +323,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     subject: "Subject",
     reportDate: "Report Date",
     reportId: "Report ID",
-    coverPurpose: "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).",
-    coverScope: "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).",
     category: "Category",
     amount: "Amount",
     note: "Note",
@@ -320,6 +335,18 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     stateCode: "State",
     stateStatus: "Status",
     stateMatch: "Match",
+    match: "Match",
+    pointsSignal: "Points Signal",
+    stateRadar: "State Signal Radar",
+    stateRadarSubtitle: "State nomination signals visualized by profile match score.",
+    noClearSecondarySignal: "No clear secondary signal",
+    downloadablePdfDescription: "This file is the downloadable PDF version of the generated full visa readiness report.",
+    urgent: "URGENT",
+    important: "IMPORTANT",
+    ready: "READY",
+    highlyRecommendedPathway: "Highly Recommended Pathway",
+    alternativeOption: "Alternative Option",
+    highRiskLowProbability: "High Risk / Low Probability",
   };
 }
 
@@ -605,15 +632,6 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.text(safeText(userInputSummary.occupation), margin + 8, chipY + 6.5);
     }
 
-    // ── Bottom disclaimer strip ───────────────────────────────────────────────
-    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.rect(0, pageHeight - 22, pageWidth, 22, "F");
-    doc.setFont(PDF_FONT_NAME, "normal");
-    doc.setFontSize(7.5);
-    doc.setTextColor(178, 212, 220);
-    const disclaimerLines = doc.splitTextToSize(safeText(text.coverPurpose), pageWidth - margin * 2 - 4);
-    doc.text(disclaimerLines.slice(0, 2), 14, pageHeight - 14);
-
     doc.addPage();
     yPosition = 20;
   }
@@ -673,6 +691,80 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         yPosition += lineHeight;
       });
     });
+  }
+
+  function addPremiumBulletContainer(title: string, items: string[], accent = COLORS.accent) {
+    if (items.length === 0) return;
+
+    const lineGroups = items.map((item) => doc.splitTextToSize(safeText(item), contentWidth - 18));
+    const boxHeight = Math.max(24, 13 + lineGroups.reduce((sum, lines) => sum + lines.length * 4.4 + 2, 0));
+    ensurePageSpace(boxHeight + 8);
+
+    const topY = yPosition;
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin, topY, contentWidth, boxHeight, 2, 2, "FD");
+    doc.setFillColor(accent.r, accent.g, accent.b);
+    doc.rect(margin, topY, 2.8, boxHeight, "F");
+
+    setBoldFont();
+    doc.setFontSize(FONTS.subheading);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(title), margin + 7, topY + 7.5);
+
+    let cursorY = topY + 14;
+    lineGroups.forEach((lines) => {
+      doc.setFillColor(accent.r, accent.g, accent.b);
+      doc.circle(margin + 8, cursorY - 1.3, 1, "F");
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(lines, margin + 12, cursorY);
+      cursorY += lines.length * 4.4 + 2;
+    });
+
+    yPosition = topY + boxHeight + 5;
+  }
+
+  function addPremiumKeyValueContainer(title: string, rows: Array<[string, string]>, accent = COLORS.accent) {
+    if (rows.length === 0) return;
+
+    const preparedRows = rows.map(([label, value]) => ({
+      label,
+      lines: doc.splitTextToSize(safeText(value), contentWidth - 58),
+    }));
+    const boxHeight = Math.max(24, 13 + preparedRows.reduce((sum, row) => sum + Math.max(7, row.lines.length * 4.5 + 2), 0));
+    ensurePageSpace(boxHeight + 8);
+
+    const topY = yPosition;
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin, topY, contentWidth, boxHeight, 2, 2, "FD");
+    doc.setFillColor(236, 254, 255);
+    doc.roundedRect(margin + 3, topY + 3, contentWidth - 6, 8, 1.3, 1.3, "F");
+
+    setBoldFont();
+    doc.setFontSize(FONTS.subheading);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(title), margin + 7, topY + 8.5);
+
+    let cursorY = topY + 17;
+    preparedRows.forEach((row) => {
+      setBoldFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(accent.r, accent.g, accent.b);
+      doc.text(safeText(row.label), margin + 7, cursorY);
+
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(row.lines, margin + 55, cursorY);
+      cursorY += Math.max(7, row.lines.length * 4.5 + 2);
+    });
+
+    yPosition = topY + boxHeight + 5;
   }
 
   function drawTable(
@@ -974,6 +1066,19 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return "Unclear";
   }
 
+  function formatRecommendationTag(tag: string) {
+    if (tag.includes("Highly")) return text.highlyRecommendedPathway;
+    if (tag.includes("Alternative")) return text.alternativeOption;
+    if (tag.includes("High Risk")) return text.highRiskLowProbability;
+    return safeText(tag.replace(/[^\x00-\x7F]/g, "").trim());
+  }
+
+  function stateMatchColor(matchLevel: "high" | "medium" | "low") {
+    if (matchLevel === "high") return COLORS.riskLow;
+    if (matchLevel === "medium") return COLORS.riskMedium;
+    return COLORS.riskHigh;
+  }
+
   function drawVisaViabilityRanking() {
     const rankedPathways =
       report.rankedPathways ??
@@ -999,12 +1104,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       setBoldFont();
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.text(safeText(`${item.visaLabel} - ${item.matchPercentage}% Match`), margin + 2.5, topY + 5.2);
+      doc.text(safeText(`${item.visaLabel} - ${item.matchPercentage}% ${text.match}`), margin + 2.5, topY + 5.2);
 
       setBaseFont();
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-      doc.text(safeText(`${item.recommendationTag}  (Points Signal: ${item.pointsSignal})`), margin + 2.5, topY + 9.6);
+      doc.text(
+        safeText(`${formatRecommendationTag(item.recommendationTag)}  (${text.pointsSignal}: ${item.pointsSignal})`),
+        margin + 2.5,
+        topY + 9.6
+      );
 
       const barX = margin + 2.5;
       const barY = topY + 11;
@@ -1042,12 +1151,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       ensurePageSpace(rowHeight + 2);
 
       const topY = yPosition;
-      const color =
-        state.matchLevel === "high"
-          ? COLORS.riskLow
-          : state.matchLevel === "medium"
-            ? COLORS.riskMedium
-            : COLORS.riskHigh;
+      const color = stateMatchColor(state.matchLevel);
 
       doc.setFillColor(255, 255, 255);
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
@@ -1074,6 +1178,95 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       addSmallText(report.stateNominationTracker.note, 4);
       yPosition += 2;
     }
+  }
+
+  function drawStateRadar() {
+    const states = report.stateNominationTracker?.states ?? [];
+    if (states.length === 0) return;
+
+    addHeading(text.stateRadar);
+    ensurePageSpace(86);
+
+    const topY = yPosition;
+    const boxHeight = 78;
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin, topY, contentWidth, boxHeight, 2, 2, "FD");
+
+    setBaseFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    doc.text(doc.splitTextToSize(safeText(text.stateRadarSubtitle), contentWidth - 8), margin + 4, topY + 7);
+
+    const centerX = margin + 50;
+    const centerY = topY + 42;
+    const radius = 24;
+    const ringColor = { r: 203, g: 213, b: 225 };
+    doc.setDrawColor(ringColor.r, ringColor.g, ringColor.b);
+    doc.setLineWidth(0.25);
+    [0.33, 0.66, 1].forEach((scale) => {
+      doc.circle(centerX, centerY, radius * scale, "S");
+    });
+
+    const radarStates = states.slice(0, 8);
+    const points = radarStates.map((state, index) => {
+      const angle = -Math.PI / 2 + (index / radarStates.length) * Math.PI * 2;
+      const scoreRadius = radius * Math.max(0.05, Math.min(1, state.score / 100));
+      const outerX = centerX + Math.cos(angle) * radius;
+      const outerY = centerY + Math.sin(angle) * radius;
+      const pointX = centerX + Math.cos(angle) * scoreRadius;
+      const pointY = centerY + Math.sin(angle) * scoreRadius;
+
+      doc.setDrawColor(ringColor.r, ringColor.g, ringColor.b);
+      doc.line(centerX, centerY, outerX, outerY);
+
+      setBoldFont();
+      doc.setFontSize(6.5);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(safeText(state.code), outerX, outerY, { align: outerX < centerX ? "right" : "left" });
+
+      return { x: pointX, y: pointY };
+    });
+
+    if (points.length > 1) {
+      doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setLineWidth(0.8);
+      points.forEach((point, index) => {
+        const next = points[(index + 1) % points.length];
+        doc.line(point.x, point.y, next.x, next.y);
+      });
+      points.forEach((point) => {
+        doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+        doc.circle(point.x, point.y, 1.4, "F");
+      });
+    }
+
+    const listX = margin + 88;
+    let listY = topY + 18;
+    states.slice(0, 8).forEach((state) => {
+      const color = stateMatchColor(state.matchLevel);
+      const barW = 58;
+      const barH = 4;
+
+      setBoldFont();
+      doc.setFontSize(7.5);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(safeText(`${state.code} ${state.score}%`), listX, listY);
+
+      doc.setFillColor(226, 232, 240);
+      doc.roundedRect(listX + 28, listY - 3.2, barW, barH, 0.8, 0.8, "F");
+      doc.setFillColor(color.r, color.g, color.b);
+      doc.roundedRect(listX + 28, listY - 3.2, (barW * state.score) / 100, barH, 0.8, 0.8, "F");
+
+      setBaseFont();
+      doc.setFontSize(6.5);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.text(safeText(clipToWidth(state.status, contentWidth - 122)), listX + 90, listY);
+      listY += 6.7;
+    });
+
+    yPosition = topY + boxHeight + 5;
   }
 
   function drawStateNominationTable() {
@@ -1111,12 +1304,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         doc.rect(margin, yPosition, contentWidth, rowHeight, "F");
       }
 
-      const color =
-        state.matchLevel === "high"
-          ? COLORS.riskLow
-          : state.matchLevel === "medium"
-            ? COLORS.riskMedium
-            : COLORS.riskHigh;
+      const color = stateMatchColor(state.matchLevel);
 
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
       doc.text(safeText(state.code), col1 + 2, yPosition + 5.2);
@@ -1158,22 +1346,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
       const priorityLabel =
         item.priority === "urgent"
-          ? effectiveLocale === "tr"
-            ? "URGENT"
-            : effectiveLocale === "zh-Hans"
-              ? "紧急"
-              : "URGENT"
+          ? text.urgent
           : item.priority === "important"
-            ? effectiveLocale === "tr"
-              ? "IMPORTANT"
-              : effectiveLocale === "zh-Hans"
-                ? "重要"
-                : "IMPORTANT"
-            : effectiveLocale === "tr"
-              ? "READY"
-              : effectiveLocale === "zh-Hans"
-                ? "建议"
-                : "READY";
+            ? text.important
+            : text.ready;
 
       doc.setDrawColor(156, 163, 175);
       doc.setLineWidth(0.35);
@@ -1245,37 +1421,35 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   if (report.executiveSummary.length > 0) {
-    addHeading(text.executiveSummary);
-    addBulletPoints(report.executiveSummary);
-    yPosition += 3;
+    addPremiumBulletContainer(text.executiveSummary, report.executiveSummary);
   }
 
   drawVisaViabilityRanking();
+  drawStateRadar();
   drawTopRecommendedStates();
   drawStateNominationTable();
   drawLodgementReadyChecklist();
 
-  addHeading(text.signalSnapshot);
-  addBody(`${text.strongestSignal}: ${report.signalSnapshot.strongest}`);
-  addBody(
-    `${text.secondarySignals}: ${
+  addPremiumKeyValueContainer(text.signalSnapshot, [
+    [text.strongestSignal, report.signalSnapshot.strongest],
+    [
+      text.secondarySignals,
       report.signalSnapshot.secondary.length > 0
         ? report.signalSnapshot.secondary.join(", ")
-        : effectiveLocale === "tr"
-          ? "Belirgin ikincil sinyal yok"
-          : effectiveLocale === "zh-Hans"
-            ? "暂无明显次要信号"
-            : "No clear secondary signal"
-    }`
-  );
-  addBody(`${text.confidence}: ${formatSignalConfidence(report.signalSnapshot.confidenceLabel)}`);
-  addSmallText(report.signalSnapshot.confidenceExplanation, 4);
-  yPosition += 3;
+        : text.noClearSecondarySignal,
+    ],
+    [text.confidence, formatSignalConfidence(report.signalSnapshot.confidenceLabel)],
+    [text.confidenceExplanation, report.signalSnapshot.confidenceExplanation],
+  ]);
 
-  addHeading(text.primaryLimitingFactor);
-  addBody(report.primaryLimitingFactor.label);
-  addSmallText(report.primaryLimitingFactor.explanation, 4);
-  yPosition += 3;
+  addPremiumKeyValueContainer(
+    text.primaryLimitingFactor,
+    [
+      [text.primaryLimitingFactor, report.primaryLimitingFactor.label],
+      [text.realityCheck, report.primaryLimitingFactor.explanation],
+    ],
+    COLORS.riskMedium
+  );
 
   if (report.positionChangers.length > 0) {
     addHeading(text.positionChangers);
@@ -1481,14 +1655,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   drawImmediateActionPlan();
 
   addHeading(text.downloadablePdf);
-  addSmallText(
-    effectiveLocale === "tr"
-      ? "Bu dosya, oluşturulan tam vize hazırlık raporunun indirilebilir PDF sürümüdür."
-      : effectiveLocale === "zh-Hans"
-        ? "本文件为已生成完整签证准备度报告的可下载 PDF 版本。"
-      : "This file is the downloadable PDF version of the generated full visa readiness report.",
-    0
-  );
+  addSmallText(text.downloadablePdfDescription, 0);
   yPosition += 3;
 
   // Missing information
@@ -1497,10 +1664,6 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addBulletPoints(report.missingInformation);
     yPosition += 3;
   }
-
-  // Disclaimer
-  addHeading(text.disclaimer);
-  addSmallText(report.disclaimer, 0);
 
   // Beta feedback note on final page
   ensurePageSpace(14);
