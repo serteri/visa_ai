@@ -89,7 +89,7 @@ export default async function GuideArticlePage({ params }: PageProps) {
   const secondHalf = blocks.slice(midpoint);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white pt-28 sm:pt-32">
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <Link
           href={`/${locale}/guides`}
