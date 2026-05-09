@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/db";
 import { fullCheckUsage } from "@/db/schema";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
+import { ShareLogivisaCard } from "@/components/share-logivisa-card";
 
 type ComparisonRow = {
   label: string;
@@ -455,6 +456,8 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
             </div>
           </CardContent>
         </Card>
+
+        <ShareLogivisaCard />
 
         <p className="text-sm text-muted-foreground">
           {tx(

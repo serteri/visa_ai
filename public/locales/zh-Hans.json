@@ -220,5 +220,15 @@
   "quiz.meta.title": "澳大利亚PR准备度测验 — 2分钟发现您的隐藏PR积分",
   "quiz.meta.description": "参加我们的8题AI测验，找出您的澳大利亚PR准备度评分，挖掘隐藏积分，了解2026年最有可能获得邀请的签证途径。",
   "quiz.meta.ogTitle": "您真的准备好申请澳大利亚PR了吗？参加2分钟测验",
-  "quiz.meta.ogDescription": "8道题。即时AI分析。发现您的隐藏PR积分和最适合您档案的签证途径。"
+  "quiz.meta.ogDescription": "8道题。即时AI分析。发现您的隐藏PR积分和最适合您档案的签证途径。",
+
+  "share.heading": "认识正在为澳大利亚PR策略苦恼的人吗？",
+  "share.subtext": "帮助他们发现隐藏的积分。与他们分享LogiVisa。",
+  "share.button": "复制链接",
+  "share.buttonCopied": "已复制！",
+
+  "pdf.viral.footerCredit": "由 LogiVisa AI 生成 • logivisa.com",
+  "pdf.viral.ctaTitle": "想查看自己的PR积分吗？",
+  "pdf.viral.ctaSubtitle": "使用LogiVisa AI，60秒内免费计算您的签证机会和确切积分。",
+  "pdf.viral.ctaLink": "访问 www.logivisa.com"
 }

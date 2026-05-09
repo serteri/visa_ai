@@ -227,5 +227,15 @@
   "quiz.meta.title": "Avustralya PR Hazırlık Testi — Gizli PR Puanınızı 2 Dakikada Keşfedin",
   "quiz.meta.description": "8 soruluk AI testimizi yaparak Avustralya PR hazırlık puanınızı bulun, gizli puanları ortaya çıkarın ve 2026'da davet almanıza en uygun vize yolunu görün.",
   "quiz.meta.ogTitle": "Avustralya PR'a Gerçekten Hazır mısınız? 2 Dakikalık Testi Yapın",
-  "quiz.meta.ogDescription": "8 soru. Anında AI analizi. Gizli PR puanlarınızı ve profilinize en uygun vize yolunu keşfedin."
+  "quiz.meta.ogDescription": "8 soru. Anında AI analizi. Gizli PR puanlarınızı ve profilinize en uygun vize yolunu keşfedin.",
+
+  "share.heading": "Avustralya PR stratejisiyle boğuşan birini tanıyor musunuz?",
+  "share.subtext": "Gizli puanlarını keşfetmelerine yardımcı olun. LogiVisa'yı onlarla paylaşın.",
+  "share.button": "Bağlantıyı Kopyala",
+  "share.buttonCopied": "Kopyalandı!",
+
+  "pdf.viral.footerCredit": "LogiVisa AI tarafindan olusturuldu • logivisa.com",
+  "pdf.viral.ctaTitle": "Kendi PR puanlarinizi bulmak ister misiniz?",
+  "pdf.viral.ctaSubtitle": "LogiVisa AI ile 60 saniyede ucretsiz olarak vize sansinizi ve kesin puanlarinizi hesaplayin.",
+  "pdf.viral.ctaLink": "logivisa.com'u ziyaret edin"
 }
