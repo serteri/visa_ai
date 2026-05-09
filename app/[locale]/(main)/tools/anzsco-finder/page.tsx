@@ -36,30 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function AnzscoFinderPage() {
-  return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="relative overflow-hidden border-b border-slate-200 bg-slate-950">
-        <div className="absolute inset-x-0 top-0 h-1 bg-cyan-500" />
-        <div className="mx-auto flex min-h-[380px] max-w-6xl flex-col justify-center px-4 py-20 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <div className="mb-6 inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
-              Free migration research tool
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-              ANZSCO Code & Duty Finder
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
-              Search the official Australian occupation database to find your code, skill level,
-              and required daily tasks.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <div className="-mt-12">
-        <AnzscoSearchTool />
-      </div>
-    </main>
-  );
+export default async function AnzscoFinderPage({ params }: PageProps) {
+  const { locale } = await params;
+  return <AnzscoSearchTool locale={locale} />;
 }
