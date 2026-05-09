@@ -246,17 +246,17 @@ function ResultView() {
               <ArrowRight className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
 
-            <p className="mt-4 text-center text-xs text-slate-600">{t("quiz.result.trust")}</p>
+            <p className="mt-4 text-center text-xs text-slate-400">{t("quiz.result.trust")}</p>
 
             {/* MARA disclaimer */}
-            <p className="mt-3 text-center text-[11px] leading-relaxed text-slate-700">
+            <p className="mt-3 text-center text-[11px] leading-relaxed text-slate-400">
               {t("quiz.result.disclaimer")}
             </p>
           </div>
         </div>
 
         {/* Share nudge */}
-        <p className="mt-6 text-center text-sm text-slate-600">{t("quiz.result.share")}</p>
+        <p className="mt-6 text-center text-sm text-slate-300">{t("quiz.result.share")}</p>
       </div>
     </main>
   );
