@@ -261,6 +261,135 @@ async function sendFullCheckConfirmationEmail(payload: {
   });
 }
 
+async function sendReportReadyEmail(payload: {
+  email: string;
+  fullName: string;
+  reportLink: string;
+  locale: SupportedLocale;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  const resend = new Resend(apiKey);
+  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
+  const isTr = payload.locale === "tr";
+  const isZh = payload.locale === "zh-Hans";
+
+  const greeting = payload.fullName
+    ? `${isTr ? "Merhaba" : isZh ? "您好" : "Hi"} ${payload.fullName},`
+    : isTr ? "Merhaba," : isZh ? "您好，" : "Hi,";
+
+  const subject = isTr
+    ? "LogiVisa AI Hazırlık Raporunuz Hazır 🇦🇺"
+    : isZh
+      ? "您的 LogiVisa AI 准备度报告已生成 🇦🇺"
+      : "Your LogiVisa AI Readiness Report is Ready 🇦🇺";
+
+  const headline = isTr
+    ? "Hazırlık Raporunuz<br>Hazır 🇦🇺"
+    : isZh
+      ? "您的准备度报告<br>已生成 🇦🇺"
+      : "Your Readiness Report<br>is Ready 🇦🇺";
+
+  const intro = isTr
+    ? "Avustralya PR yol haritası analiziniz tamamlandı. Profilinizi nitelikli göç yolları, puan uygunluğu ve temel risk faktörleri açısından değerlendirdik."
+    : isZh
+      ? "您的澳大利亚PR路径分析已完成。我们已从技术移民路径、积分资格和关键风险因素等方面评估了您的档案。"
+      : "Your AI-generated Australian PR pathway analysis is complete. We've assessed your profile across skilled migration pathways, points eligibility, and key risk factors.";
+
+  const includesLabel = isTr ? "Raporunuz içeriyor" : isZh ? "您的报告包含" : "Your report includes";
+  const items = isTr
+    ? ["Puan tahmini ve senaryo analizi", "Sıralanmış vize yolu karşılaştırması", "Birincil sınırlayıcı faktör", "Anlık eylem planı"]
+    : isZh
+      ? ["积分估算与情景分析", "签证路径排名比较", "主要限制因素", "即时行动计划"]
+      : ["Points estimation & scenario analysis", "Ranked visa pathway comparison", "Primary limiting factor", "Immediate action plan"];
+
+  const ctaLabel = isTr ? "Tam Raporumu Görüntüle →" : isZh ? "查看完整报告 →" : "View My Full Report →";
+  const orCopy = isTr ? "Veya bu bağlantıyı kopyalayın:" : isZh ? "或复制此链接：" : "Or copy this link:";
+  const footerText = isTr
+    ? "LogiVisa otomatik bir analiz aracıdır ve göçmenlik tavsiyesi sağlamaz. Hukuki danışmanlık için kayıtlı bir MARA acentesiyle görüşün. Bu rapor yalnızca genel bilgi amaçlıdır."
+    : isZh
+      ? "LogiVisa是一款自动分析工具，不提供移民建议。如需法律建议，请咨询注册MARA顾问。本报告仅供一般信息参考。"
+      : "LogiVisa is an automated analysis tool and does not provide migration advice. For legal advice, consult a registered MARA agent. This report is for general information purposes only.";
+
+  const html = `<!DOCTYPE html>
+<html lang="${payload.locale}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#020617;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#020617;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background-color:#0f172a;border-radius:16px;overflow:hidden;border:1px solid #1e293b;">
+
+          <!-- Accent bar -->
+          <tr><td style="height:4px;background:linear-gradient(90deg,#06b6d4,#0284c7);"></td></tr>
+
+          <!-- Brand header -->
+          <tr>
+            <td style="padding:36px 40px 20px;">
+              <p style="margin:0;font-size:22px;font-weight:800;color:#06b6d4;letter-spacing:-0.5px;">LogiVisa</p>
+              <p style="margin:3px 0 0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#475569;">AI-Powered Australian Migration Intelligence</p>
+            </td>
+          </tr>
+
+          <!-- Main content -->
+          <tr>
+            <td style="padding:0 40px 36px;">
+              <h1 style="margin:0 0 20px;font-size:30px;font-weight:800;color:#f1f5f9;line-height:1.25;">${headline}</h1>
+              <p style="margin:0 0 12px;font-size:16px;color:#94a3b8;line-height:1.3;">${greeting}</p>
+              <p style="margin:0;font-size:15px;color:#94a3b8;line-height:1.7;">${intro}</p>
+
+              <!-- Report contents card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0 0;background-color:#1e293b;border-radius:12px;border:1px solid #334155;">
+                <tr>
+                  <td style="padding:24px 28px;">
+                    <p style="margin:0 0 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#06b6d4;">${includesLabel}</p>
+                    ${items.map((item) => `<p style="margin:0 0 10px;font-size:14px;color:#cbd5e1;line-height:1.5;">✓ &nbsp;${item}</p>`).join("")}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0 0;">
+                <tr>
+                  <td align="center">
+                    <a href="${payload.reportLink}" style="display:inline-block;background:linear-gradient(135deg,#06b6d4,#0284c7);color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;padding:16px 44px;border-radius:12px;letter-spacing:0.2px;">${ctaLabel}</a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Fallback link -->
+              <p style="margin:20px 0 0;font-size:12px;color:#475569;text-align:center;">${orCopy}<br><a href="${payload.reportLink}" style="color:#06b6d4;word-break:break-all;">${payload.reportLink}</a></p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px;background-color:#020617;border-top:1px solid #1e293b;">
+              <p style="margin:0;font-size:11px;color:#475569;line-height:1.7;text-align:center;">${footerText}</p>
+              <p style="margin:12px 0 0;font-size:11px;color:#334155;text-align:center;">© 2026 LogiVisa &nbsp;·&nbsp; <a href="https://logivisa.com" style="color:#475569;text-decoration:none;">logivisa.com</a></p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  await resend.emails.send({
+    from: fromEmail,
+    to: [payload.email],
+    subject,
+    html,
+  });
+}
+
 // ─── Stripe checkout (active when IS_FREE_BETA = false) ───────────────────────
 
 async function createStripeCheckoutSession(input: {
@@ -613,6 +742,15 @@ export async function submitFullCheckWaitlist(
       source,
     }).catch((err) => console.error("Admin email failed (non-blocking):", err));
   }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "https://logivisa.com";
+  const reportLink = `${baseUrl}/${resolvedLocale}/full-check/result?reportId=${reportRecord.id}`;
+  sendReportReadyEmail({
+    email,
+    fullName,
+    reportLink,
+    locale: resolvedLocale,
+  }).catch((err) => console.error("Customer report email failed (non-blocking):", err));
 
   if (analysisProgressId) {
     await completeFullCheckProgress(analysisProgressId);
