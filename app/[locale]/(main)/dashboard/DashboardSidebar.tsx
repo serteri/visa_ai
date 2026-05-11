@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   Calculator,
@@ -11,8 +12,8 @@ import {
   MapPin,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
 
 type NavItem = {
   label: string;
@@ -90,8 +91,15 @@ export function DashboardSidebar({ locale }: { locale: string }) {
             My Dashboard
           </p>
           <NavLinks />
-          <div className="mt-auto flex items-center gap-3 px-3 pt-4 border-t border-slate-100">
-            <UserButton />
+          <div className="mt-auto px-3 pt-4 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: `/${locale}` })}
+              className="flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-rose-500 transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Sign out
+            </button>
           </div>
         </div>
       </aside>
@@ -100,7 +108,14 @@ export function DashboardSidebar({ locale }: { locale: string }) {
       <div className="flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3 md:hidden">
         <span className="text-sm font-semibold text-slate-700">Dashboard</span>
         <div className="flex items-center gap-3">
-          <UserButton />
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: `/${locale}` })}
+            className="text-slate-400 hover:text-rose-500 transition-colors"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}

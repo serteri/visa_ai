@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { FileText, Download, ArrowRight } from "lucide-react";
@@ -19,13 +19,13 @@ const LANG_LABELS: Record<string, string> = {
 
 export default async function ReportsDashboardPage({ params }: PageProps) {
   const { locale } = await params;
-  const { userId } = await auth();
-  if (!userId) return null;
+  const session = await auth();
+  if (!session?.user?.id) return null;
 
   const reports = await db
     .select()
     .from(savedReports)
-    .where(eq(savedReports.clerk_user_id, userId))
+    .where(eq(savedReports.user_id, session.user.id))
     .orderBy(desc(savedReports.created_at));
 
   return (

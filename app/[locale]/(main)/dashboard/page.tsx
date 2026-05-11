@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { Calculator, ClipboardList, FileText, MapPin, ArrowRight } from "lucide-react";
@@ -19,34 +19,34 @@ function readinessColor(level: string | null) {
 
 export default async function DashboardPage({ params }: PageProps) {
   const { locale } = await params;
-  const { userId } = await auth();
-  if (!userId) return null;
+  const session = await auth();
+  if (!session?.user?.id) return null;
 
-  const user = await currentUser();
-  const firstName = user?.firstName ?? "there";
+  const userId = session.user.id;
+  const firstName = session.user.name?.split(" ")[0] ?? "there";
 
   const [calcs, quizzes, reports, tracking] = await Promise.all([
     db
       .select()
       .from(savedCalculations)
-      .where(eq(savedCalculations.clerk_user_id, userId))
+      .where(eq(savedCalculations.user_id, userId))
       .orderBy(desc(savedCalculations.created_at))
       .limit(1),
     db
       .select()
       .from(savedQuizResults)
-      .where(eq(savedQuizResults.clerk_user_id, userId))
+      .where(eq(savedQuizResults.user_id, userId))
       .orderBy(desc(savedQuizResults.created_at))
       .limit(1),
     db
       .select()
       .from(savedReports)
-      .where(eq(savedReports.clerk_user_id, userId))
+      .where(eq(savedReports.user_id, userId))
       .orderBy(desc(savedReports.created_at)),
     db
       .select()
       .from(visaTracking)
-      .where(eq(visaTracking.clerk_user_id, userId))
+      .where(eq(visaTracking.user_id, userId))
       .orderBy(desc(visaTracking.created_at)),
   ]);
 

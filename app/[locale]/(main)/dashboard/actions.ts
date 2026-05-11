@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -14,9 +14,9 @@ import {
 } from "@/db/schema";
 
 async function requireUserId(): Promise<string> {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-  return userId;
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  return session.user.id;
 }
 
 // ─── User profile ──────────────────────────────────────────────────────────────
@@ -29,13 +29,13 @@ export async function upsertUserProfile(data: {
   await db
     .insert(userProfiles)
     .values({
-      clerk_user_id: userId,
+      user_id: userId,
       email: data.email,
       name: data.name ?? null,
       updated_at: new Date(),
     })
     .onConflictDoUpdate({
-      target: userProfiles.clerk_user_id,
+      target: userProfiles.user_id,
       set: {
         email: data.email,
         name: data.name ?? null,
@@ -57,7 +57,7 @@ export async function saveCalculation(data: CalculationData): Promise<{ id: stri
   const [row] = await db
     .insert(savedCalculations)
     .values({
-      clerk_user_id: userId,
+      user_id: userId,
       visa_subclass: data.visaSubclass ?? null,
       total_points: data.totalPoints,
       breakdown: data.breakdown,
@@ -74,7 +74,7 @@ export async function deleteCalculation(id: string): Promise<void> {
     .where(
       and(
         eq(savedCalculations.id, id),
-        eq(savedCalculations.clerk_user_id, userId)
+        eq(savedCalculations.user_id, userId)
       )
     );
   revalidatePath("/dashboard/points");
@@ -94,7 +94,7 @@ export async function saveQuizResult(data: QuizResultData): Promise<{ id: string
   const [row] = await db
     .insert(savedQuizResults)
     .values({
-      clerk_user_id: userId,
+      user_id: userId,
       score: data.score,
       readiness_level: data.readinessLevel,
       answers: data.answers,
@@ -112,7 +112,7 @@ export async function deleteQuizResult(id: string): Promise<void> {
     .where(
       and(
         eq(savedQuizResults.id, id),
-        eq(savedQuizResults.clerk_user_id, userId)
+        eq(savedQuizResults.user_id, userId)
       )
     );
   revalidatePath("/dashboard/quiz");
@@ -132,7 +132,7 @@ export async function saveReport(data: ReportData): Promise<{ id: string }> {
   const [row] = await db
     .insert(savedReports)
     .values({
-      clerk_user_id: userId,
+      user_id: userId,
       report_type: data.reportType ?? "full_check",
       report_url: data.reportUrl ?? null,
       report_data: data.reportData ?? null,
@@ -157,7 +157,7 @@ export type VisaTrackingData = {
 export async function addVisaTracking(data: VisaTrackingData): Promise<void> {
   const userId = await requireUserId();
   await db.insert(visaTracking).values({
-    clerk_user_id: userId,
+    user_id: userId,
     visa_subclass: data.visaSubclass,
     status: data.status ?? "planning",
     notes: data.notes ?? null,
@@ -182,7 +182,7 @@ export async function updateVisaTracking(
     .where(
       and(
         eq(visaTracking.id, id),
-        eq(visaTracking.clerk_user_id, userId)
+        eq(visaTracking.user_id, userId)
       )
     );
   revalidatePath("/dashboard/visa-tracker");
@@ -195,7 +195,7 @@ export async function deleteVisaTracking(id: string): Promise<void> {
     .where(
       and(
         eq(visaTracking.id, id),
-        eq(visaTracking.clerk_user_id, userId)
+        eq(visaTracking.user_id, userId)
       )
     );
   revalidatePath("/dashboard/visa-tracker");

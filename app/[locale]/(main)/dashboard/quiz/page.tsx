@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { ClipboardList, RotateCcw, Trash2 } from "lucide-react";
@@ -20,13 +20,13 @@ function readinessBadge(level: string | null) {
 
 export default async function QuizDashboardPage({ params }: PageProps) {
   const { locale } = await params;
-  const { userId } = await auth();
-  if (!userId) return null;
+  const session = await auth();
+  if (!session?.user?.id) return null;
 
   const results = await db
     .select()
     .from(savedQuizResults)
-    .where(eq(savedQuizResults.clerk_user_id, userId))
+    .where(eq(savedQuizResults.user_id, session.user.id))
     .orderBy(desc(savedQuizResults.created_at));
 
   const latest = results[0];

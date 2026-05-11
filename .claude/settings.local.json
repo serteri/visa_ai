@@ -30,7 +30,13 @@
       "Bash(node -e \"const c = require\\('./node_modules/@clerk/nextjs/dist/esm/index.js'\\); console.log\\(Object.keys\\(c\\).filter\\(k => /sign|user|auth|button/i.test\\(k\\)\\).join\\('\\\\n'\\)\\)\")",
       "Bash(node -e \"const pkg = require\\('./node_modules/@clerk/nextjs'\\); console.log\\(Object.keys\\(pkg\\).filter\\(k => /sign|user|auth|button/i.test\\(k\\)\\).join\\('\\\\n'\\)\\)\")",
       "Bash(node -e \"const keys = Object.keys\\(require\\('@clerk/nextjs'\\)\\); console.log\\(keys.join\\('\\\\n'\\)\\);\")",
-      "Bash(node -e \"const {Show, useAuth} = require\\('@clerk/nextjs'\\); console.log\\(Show.toString\\(\\).slice\\(0,200\\)\\)\")"
+      "Bash(node -e \"const {Show, useAuth} = require\\('@clerk/nextjs'\\); console.log\\(Show.toString\\(\\).slice\\(0,200\\)\\)\")",
+      "Bash(npm uninstall *)",
+      "Bash(node -e \"require\\('next-auth'\\)\")",
+      "Bash(node -e \"const p = require\\('./node_modules/next-auth/package.json'\\); console.log\\(p.version\\)\")",
+      "Bash(New-Item *)",
+      "Bash(git rm *)",
+      "Bash(npx tsx *)"
     ]
   }
 }

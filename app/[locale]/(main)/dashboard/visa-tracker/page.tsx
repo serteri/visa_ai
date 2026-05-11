@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import { desc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -9,13 +9,13 @@ type PageProps = { params: Promise<{ locale: string }> };
 
 export default async function VisaTrackerPage({ params }: PageProps) {
   await params;
-  const { userId } = await auth();
-  if (!userId) return null;
+  const session = await auth();
+  if (!session?.user?.id) return null;
 
   const items = await db
     .select()
     .from(visaTracking)
-    .where(eq(visaTracking.clerk_user_id, userId))
+    .where(eq(visaTracking.user_id, session.user.id))
     .orderBy(desc(visaTracking.created_at));
 
   return (

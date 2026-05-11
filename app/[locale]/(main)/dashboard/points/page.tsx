@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { Calculator, Plus, Trash2 } from "lucide-react";
@@ -21,13 +21,13 @@ function scoreColor(pts: number) {
 
 export default async function PointsDashboardPage({ params }: PageProps) {
   const { locale } = await params;
-  const { userId } = await auth();
-  if (!userId) return null;
+  const session = await auth();
+  if (!session?.user?.id) return null;
 
   const calcs = await db
     .select()
     .from(savedCalculations)
-    .where(eq(savedCalculations.clerk_user_id, userId))
+    .where(eq(savedCalculations.user_id, session.user.id))
     .orderBy(desc(savedCalculations.created_at));
 
   return (

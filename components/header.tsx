@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { Show, UserButton } from "@clerk/nextjs";
+import { useSession, signOut } from "next-auth/react";
 
 import { LanguageSelector } from "@/components/language-selector";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,8 @@ export function Header({
   showAdmin?: boolean;
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session } = useSession();
+  const isSignedIn = !!session?.user;
 
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -116,36 +118,56 @@ export function Header({
               {adminLabel}
             </Link>
           ) : null}
-          
+
           <div className="ml-2 flex items-center gap-3 border-l border-slate-200 pl-6 dark:border-white/10">
             <LanguageSelector currentLocale={locale} compact />
 
-            <Show when="signed-out">
-              <Button
-                asChild
-                variant="ghost"
-                className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-indigo-600"
-              >
-                <Link href={`/${locale}/sign-in`}>Sign In</Link>
-              </Button>
-              <Button
-                asChild
-                className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-4 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
-              >
-                <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
-              </Button>
-            </Show>
-
-            <Show when="signed-in">
-              <Button
-                asChild
-                variant="ghost"
-                className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-indigo-600"
-              >
-                <Link href={`/${locale}/dashboard`}>Dashboard</Link>
-              </Button>
-              <UserButton />
-            </Show>
+            {!isSignedIn ? (
+              <>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-indigo-600"
+                >
+                  <Link href={`/${locale}/sign-in`}>Sign In</Link>
+                </Button>
+                <Button
+                  asChild
+                  className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-4 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
+                >
+                  <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-indigo-600"
+                >
+                  <Link href={`/${locale}/dashboard`}>Dashboard</Link>
+                </Button>
+                {session.user?.image ? (
+                  <button
+                    type="button"
+                    onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                    className="h-8 w-8 overflow-hidden rounded-full ring-2 ring-slate-200 hover:ring-indigo-400 transition-all"
+                    title="Sign out"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={session.user.image} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-rose-500"
+                    onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                  >
+                    Sign out
+                  </Button>
+                )}
+              </>
+            )}
           </div>
         </div>
 
@@ -179,9 +201,9 @@ export function Header({
                 </Link>
               ))}
             </div>
-            
+
             <div className="h-px w-full bg-slate-100 dark:bg-white/10" />
-            
+
             <Link
               href={`/${locale}/checker`}
               className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
@@ -226,26 +248,26 @@ export function Header({
                 {adminLabel}
               </Link>
             ) : null}
-            
+
             <div className="pt-2 space-y-2">
-              <Show when="signed-out">
-                <Button
-                  asChild
-                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
-                >
-                  <Link href={`/${locale}/full-check`} onClick={() => setIsMobileMenuOpen(false)}>
-                    {getReportLabel}
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href={`/${locale}/sign-in`} onClick={() => setIsMobileMenuOpen(false)}>
-                    Sign In
-                  </Link>
-                </Button>
-              </Show>
-              <Show when="signed-in">
-                <div className="flex items-center gap-3 px-2">
-                  <UserButton />
+              {!isSignedIn ? (
+                <>
+                  <Button
+                    asChild
+                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
+                  >
+                    <Link href={`/${locale}/full-check`} onClick={() => setIsMobileMenuOpen(false)}>
+                      {getReportLabel}
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full">
+                    <Link href={`/${locale}/sign-in`} onClick={() => setIsMobileMenuOpen(false)}>
+                      Sign In
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <div className="flex items-center justify-between px-2">
                   <Link
                     href={`/${locale}/dashboard`}
                     className="text-sm font-medium text-slate-700 hover:text-indigo-600"
@@ -253,8 +275,18 @@ export function Header({
                   >
                     Dashboard
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      signOut({ callbackUrl: `/${locale}` });
+                    }}
+                    className="text-xs font-medium text-slate-400 hover:text-rose-500 transition-colors"
+                  >
+                    Sign out
+                  </button>
                 </div>
-              </Show>
+              )}
             </div>
           </div>
         </div>

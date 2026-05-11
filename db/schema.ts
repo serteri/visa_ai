@@ -1,5 +1,6 @@
-import { pgTable, text, timestamp, uuid, jsonb, date, boolean, integer, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, jsonb, date, boolean, integer, index, primaryKey } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import type { AdapterAccountType } from "next-auth/adapters";
 
 export const visaTypes = pgTable("visa_types", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -166,67 +167,111 @@ export const sourceSnapshotsRelations = relations(
   })
 );
 
-// ─── User dashboard tables (linked to Clerk userId) ───────────────────────────
+// ─── NextAuth standard tables ─────────────────────────────────────────────────
+
+export const users = pgTable("users", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  name: text("name"),
+  email: text("email").unique(),
+  emailVerified: timestamp("email_verified", { mode: "date" }),
+  image: text("image"),
+});
+
+export const accounts = pgTable(
+  "accounts",
+  {
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccountType>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("provider_account_id").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (t) => [primaryKey({ columns: [t.provider, t.providerAccountId] })]
+);
+
+export const sessions = pgTable("sessions", {
+  sessionToken: text("session_token").primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+});
+
+export const verificationTokens = pgTable(
+  "verification_tokens",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.identifier, t.token] })]
+);
+
+// ─── User dashboard tables ────────────────────────────────────────────────────
 
 export const userProfiles = pgTable(
   "user_profiles",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clerk_user_id: text("clerk_user_id").notNull().unique(),
+    user_id: text("clerk_user_id").notNull().unique(),
     email: text("email").notNull(),
     name: text("name"),
     created_at: timestamp("created_at").defaultNow(),
     updated_at: timestamp("updated_at").defaultNow(),
   },
-  (t) => [index("user_profiles_clerk_user_id_idx").on(t.clerk_user_id)]
+  (t) => [index("user_profiles_clerk_user_id_idx").on(t.user_id)]
 );
 
 export const savedCalculations = pgTable(
   "saved_calculations",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clerk_user_id: text("clerk_user_id").notNull(),
+    user_id: text("clerk_user_id").notNull(),
     visa_subclass: text("visa_subclass"),
     total_points: integer("total_points").notNull(),
     breakdown: jsonb("breakdown"),
     created_at: timestamp("created_at").defaultNow(),
   },
-  (t) => [index("saved_calculations_clerk_user_id_idx").on(t.clerk_user_id)]
+  (t) => [index("saved_calculations_clerk_user_id_idx").on(t.user_id)]
 );
 
 export const savedQuizResults = pgTable(
   "saved_quiz_results",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clerk_user_id: text("clerk_user_id").notNull(),
+    user_id: text("clerk_user_id").notNull(),
     score: integer("score"),
     readiness_level: text("readiness_level"),
     answers: jsonb("answers"),
     recommendations: jsonb("recommendations"),
     created_at: timestamp("created_at").defaultNow(),
   },
-  (t) => [index("saved_quiz_results_clerk_user_id_idx").on(t.clerk_user_id)]
+  (t) => [index("saved_quiz_results_clerk_user_id_idx").on(t.user_id)]
 );
 
 export const savedReports = pgTable(
   "saved_reports",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clerk_user_id: text("clerk_user_id").notNull(),
+    user_id: text("clerk_user_id").notNull(),
     report_type: text("report_type").notNull().default("full_check"),
     report_url: text("report_url"),
     report_data: jsonb("report_data"),
     language: text("language").default("en"),
     created_at: timestamp("created_at").defaultNow(),
   },
-  (t) => [index("saved_reports_clerk_user_id_idx").on(t.clerk_user_id)]
+  (t) => [index("saved_reports_clerk_user_id_idx").on(t.user_id)]
 );
 
 export const visaTracking = pgTable(
   "visa_tracking",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clerk_user_id: text("clerk_user_id").notNull(),
+    user_id: text("clerk_user_id").notNull(),
     visa_subclass: text("visa_subclass").notNull(),
     status: text("status").notNull().default("planning"),
     notes: text("notes"),
@@ -234,5 +279,5 @@ export const visaTracking = pgTable(
     created_at: timestamp("created_at").defaultNow(),
     updated_at: timestamp("updated_at").defaultNow(),
   },
-  (t) => [index("visa_tracking_clerk_user_id_idx").on(t.clerk_user_id)]
+  (t) => [index("visa_tracking_clerk_user_id_idx").on(t.user_id)]
 );

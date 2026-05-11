@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Loader2, Sparkles } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 
 import { useTranslation } from "@/contexts/language-context";
 import { saveQuizResult } from "@/app/[locale]/(main)/dashboard/actions";
@@ -19,7 +19,8 @@ function computeReadiness(answers: string[]): { score: number; level: string } {
 
 export function InteractiveQuiz({ locale: _locale }: { locale: string }) {
   const { t } = useTranslation();
-  const { isSignedIn } = useUser();
+  const { data: session } = useSession();
+  const isSignedIn = !!session?.user;
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);

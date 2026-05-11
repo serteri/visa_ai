@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Info, Save, Check } from "lucide-react";
 import { useMemo, useReducer, useState, useTransition } from "react";
 import type { ReactNode } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 import type { Occupation } from "@/lib/occupations";
 import { useTranslation } from "@/contexts/language-context";
 import { saveCalculation } from "@/app/[locale]/(main)/dashboard/actions";
@@ -383,7 +383,8 @@ function ScoreRow({
 
 export function PointsCalculatorClient({ locale, hideHeader, occupation }: { locale: string; hideHeader?: boolean; occupation?: Occupation }) {
   const { t } = useTranslation();
-  const { isSignedIn } = useUser();
+  const { data: session } = useSession();
+  const isSignedIn = !!session?.user;
   const [form, dispatch] = useReducer(reducer, INIT);
   const [isSaved, setIsSaved] = useState(false);
   const [, startSave] = useTransition();

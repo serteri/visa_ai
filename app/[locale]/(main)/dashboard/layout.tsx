@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 import { DashboardSidebar } from "./DashboardSidebar";
@@ -10,9 +10,9 @@ type Props = {
 
 export default async function DashboardLayout({ children, params }: Props) {
   const { locale } = await params;
-  const { userId } = await auth();
+  const session = await auth();
 
-  if (!userId) {
+  if (!session?.user) {
     redirect(`/${locale}/sign-in`);
   }
 
