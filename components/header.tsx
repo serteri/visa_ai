@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { Show, UserButton } from "@clerk/nextjs";
 
 import { LanguageSelector } from "@/components/language-selector";
 import { Button } from "@/components/ui/button";
@@ -116,14 +117,35 @@ export function Header({
             </Link>
           ) : null}
           
-          <div className="ml-2 flex items-center gap-4 border-l border-slate-200 pl-6 dark:border-white/10">
+          <div className="ml-2 flex items-center gap-3 border-l border-slate-200 pl-6 dark:border-white/10">
             <LanguageSelector currentLocale={locale} compact />
-            <Button
-              asChild
-              className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-4 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
-            >
-              <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
-            </Button>
+
+            <Show when="signed-out">
+              <Button
+                asChild
+                variant="ghost"
+                className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-indigo-600"
+              >
+                <Link href={`/${locale}/sign-in`}>Sign In</Link>
+              </Button>
+              <Button
+                asChild
+                className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-4 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
+              >
+                <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
+              </Button>
+            </Show>
+
+            <Show when="signed-in">
+              <Button
+                asChild
+                variant="ghost"
+                className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-indigo-600"
+              >
+                <Link href={`/${locale}/dashboard`}>Dashboard</Link>
+              </Button>
+              <UserButton />
+            </Show>
           </div>
         </div>
 
@@ -205,15 +227,34 @@ export function Header({
               </Link>
             ) : null}
             
-            <div className="pt-2">
-              <Button
-                asChild
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
-              >
-                <Link href={`/${locale}/full-check`} onClick={() => setIsMobileMenuOpen(false)}>
-                  {getReportLabel}
-                </Link>
-              </Button>
+            <div className="pt-2 space-y-2">
+              <Show when="signed-out">
+                <Button
+                  asChild
+                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
+                >
+                  <Link href={`/${locale}/full-check`} onClick={() => setIsMobileMenuOpen(false)}>
+                    {getReportLabel}
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href={`/${locale}/sign-in`} onClick={() => setIsMobileMenuOpen(false)}>
+                    Sign In
+                  </Link>
+                </Button>
+              </Show>
+              <Show when="signed-in">
+                <div className="flex items-center gap-3 px-2">
+                  <UserButton />
+                  <Link
+                    href={`/${locale}/dashboard`}
+                    className="text-sm font-medium text-slate-700 hover:text-indigo-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                </div>
+              </Show>
             </div>
           </div>
         </div>

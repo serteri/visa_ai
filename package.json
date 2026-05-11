@@ -15,6 +15,7 @@
     "prisma:push": "prisma db push"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.3.3",
     "@neondatabase/serverless": "^1.1.0",
     "@next/third-parties": "^16.2.4",
     "@prisma/client": "^6.17.1",

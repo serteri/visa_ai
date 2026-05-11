@@ -14,7 +14,23 @@
       "Bash(Select-Object Name, PSIsContainer)",
       "Bash(xargs ls *)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\" -Recurse -Depth 2)",
-      "Bash(Select-Object -First 50)"
+      "Bash(Select-Object -First 50)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\" -Recurse -Directory | Where-Object { $_.FullName -notmatch \"node_modules\" -and \\($_.Name -eq \"i18n\" -or $_.Name -eq \"locales\" -or $_.Name -eq \"messages\" -or $_.Name -eq \"translations\"\\) } | Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\" -Recurse -Filter \"*generate*\" -Name)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Select-String -Path \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\\\\lib\\\\readiness\\\\generate-pdf.ts\" -Pattern \"getFeedbackTexts|GLOBAL_FOOTER\")",
+      "Bash(Select-Object LineNumber, Line)",
+      "Bash(Get-ChildItem *)",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('lucide-react:', p.dependencies['lucide-react']\\)\")",
+      "Bash(xargs git *)",
+      "Bash(npm show *)",
+      "Bash(npm ls *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@clerk/nextjs/package.json'\\).version\\)\")",
+      "Bash(npx drizzle-kit *)",
+      "Bash(node -e \"const c = require\\('./node_modules/@clerk/nextjs/dist/esm/index.js'\\); console.log\\(Object.keys\\(c\\).filter\\(k => /sign|user|auth|button/i.test\\(k\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const pkg = require\\('./node_modules/@clerk/nextjs'\\); console.log\\(Object.keys\\(pkg\\).filter\\(k => /sign|user|auth|button/i.test\\(k\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const keys = Object.keys\\(require\\('@clerk/nextjs'\\)\\); console.log\\(keys.join\\('\\\\n'\\)\\);\")",
+      "Bash(node -e \"const {Show, useAuth} = require\\('@clerk/nextjs'\\); console.log\\(Show.toString\\(\\).slice\\(0,200\\)\\)\")"
     ]
   }
 }

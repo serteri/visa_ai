@@ -3,18 +3,41 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 import { useTranslation } from "@/contexts/language-context";
+import { saveQuizResult } from "@/app/[locale]/(main)/dashboard/actions";
 
 type QuizStep = "quiz" | "loading" | "result";
 
+function computeReadiness(answers: string[]): { score: number; level: string } {
+  const positive = answers.filter((a) => a === "a" || a === "b").length;
+  const score = Math.round((positive / Math.max(answers.length, 1)) * 100);
+  const level = score >= 65 ? "high" : score >= 40 ? "medium" : "low";
+  return { score, level };
+}
+
 export function InteractiveQuiz({ locale: _locale }: { locale: string }) {
   const { t } = useTranslation();
+  const { isSignedIn } = useUser();
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [fading, setFading] = useState(false);
   const [quizStep, setQuizStep] = useState<QuizStep>("quiz");
+
+  useEffect(() => {
+    if (quizStep === "result" && isSignedIn && answers.length > 0) {
+      const { score, level } = computeReadiness(answers);
+      saveQuizResult({
+        score,
+        readinessLevel: level,
+        answers,
+        recommendations: [],
+      }).catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizStep]);
 
   const QUESTIONS = Array.from({ length: 8 }, (_, i) => {
     const n = i + 1;

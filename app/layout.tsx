@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Noto_Sans } from "next/font/google";
 import Script from "next/script";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -28,6 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider>
     <html className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
@@ -57,5 +59,6 @@ export default function RootLayout({
         </noscript>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

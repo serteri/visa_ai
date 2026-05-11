@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Info } from "lucide-react";
-import { useMemo, useReducer, useState } from "react";
+import { Info, Save, Check } from "lucide-react";
+import { useMemo, useReducer, useState, useTransition } from "react";
 import type { ReactNode } from "react";
+import { useUser } from "@clerk/nextjs";
 import type { Occupation } from "@/lib/occupations";
 import { useTranslation } from "@/contexts/language-context";
+import { saveCalculation } from "@/app/[locale]/(main)/dashboard/actions";
 
 // ─── DHA point tables (values + points only — labels come from translations) ──
 
@@ -381,7 +383,10 @@ function ScoreRow({
 
 export function PointsCalculatorClient({ locale, hideHeader, occupation }: { locale: string; hideHeader?: boolean; occupation?: Occupation }) {
   const { t } = useTranslation();
+  const { isSignedIn } = useUser();
   const [form, dispatch] = useReducer(reducer, INIT);
+  const [isSaved, setIsSaved] = useState(false);
+  const [, startSave] = useTransition();
 
   function str(field: StrField) {
     return (value: string) => dispatch({ kind: "str", field, value });
@@ -766,6 +771,35 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                   </span>
                 </div>
               </div>
+
+              {/* Save to Dashboard */}
+              {hasAny && isSignedIn && (
+                <button
+                  type="button"
+                  disabled={isSaved}
+                  onClick={() => {
+                    setIsSaved(true);
+                    startSave(async () => {
+                      await saveCalculation({
+                        visaSubclass: form.subclass || undefined,
+                        totalPoints: calc.total,
+                        breakdown: calc as unknown as Record<string, unknown>,
+                      });
+                    });
+                  }}
+                  className={`mt-3 flex w-full items-center justify-center gap-2 rounded-lg border py-2 text-xs font-semibold transition ${
+                    isSaved
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                      : "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                  }`}
+                >
+                  {isSaved ? (
+                    <><Check className="h-3.5 w-3.5" /> Saved to Dashboard</>
+                  ) : (
+                    <><Save className="h-3.5 w-3.5" /> Save to Dashboard</>
+                  )}
+                </button>
+              )}
             </div>
 
             {/* Insights & Risks */}
