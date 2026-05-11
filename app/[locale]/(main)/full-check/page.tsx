@@ -217,9 +217,9 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
               }`}>
                 {isFreeActive
                   ? tx(
-                      `🔥 Limited Offer: FREE for the first 500 users. Only ${remainingSpots} spots left!`,
-                      `🔥 Sınırlı Teklif: İlk 500 kullanıcıya ÜCRETSİZ. Yalnızca ${remainingSpots} kontenjan kaldı!`,
-                      `🔥 限时优惠：前500名用户免费。仅剩 ${remainingSpots} 个名额！`
+                      `🔥 Limited Offer: FREE for the first 50 users. Only ${remainingSpots} spots left!`,
+                      `🔥 Sınırlı Teklif: İlk 50 kullanıcıya ÜCRETSİZ. Yalnızca ${remainingSpots} kontenjan kaldı!`,
+                      `🔥 限时优惠：前50名用户免费。仅剩 ${remainingSpots} 个名额！`
                     )
                   : tx(
                       "Premium Report — $29 per report.",
