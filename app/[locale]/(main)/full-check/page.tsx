@@ -191,7 +191,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
       .from(fullCheckUsage)
       .where(eq(fullCheckUsage.id, 1))
       .limit(1);
-    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "500", 10);
+    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
     const used = usageRows[0]?.free_reports_used ?? 0;
     remainingSpots = Math.max(0, maxFree - used);
     isFreeActive = remainingSpots > 0;

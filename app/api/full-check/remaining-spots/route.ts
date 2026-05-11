@@ -12,7 +12,7 @@ export async function GET() {
       .where(eq(fullCheckUsage.id, 1))
       .limit(1);
 
-    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "500", 10);
+    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
     const used = rows[0]?.free_reports_used ?? 0;
     const remaining = Math.max(0, maxFree - used);
 
@@ -24,7 +24,7 @@ export async function GET() {
   } catch (err) {
     console.error("Failed to fetch remaining spots:", err);
     return Response.json(
-      { remaining: 0, total: 500, isFreeActive: false },
+      { remaining: 0, total: 50, isFreeActive: false },
       { status: 500 }
     );
   }

@@ -93,9 +93,9 @@ async function getFreeBetaStatus(): Promise<FreeBetaStatus> {
     .limit(1);
 
   const row = rows[0];
-  if (!row) return { isFreeActive: false, freeReportsUsed: 0, freeLimit: 500 };
+  if (!row) return { isFreeActive: false, freeReportsUsed: 0, freeLimit: 50 };
 
-  const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "500", 10);
+  const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
   const used = row.free_reports_used ?? 0;
   const active = row.is_free_active === true && used < maxFree;
 
