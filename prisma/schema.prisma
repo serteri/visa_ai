@@ -151,3 +151,20 @@ model PointsAlert {
 
   @@map("points_alerts")
 }
+
+model EoiRound {
+  id           String   @id @default(uuid())
+  roundDate    DateTime @map("round_date")
+  visaSubclass String   @map("visa_subclass")
+  visaName     String   @map("visa_name")
+  lowestPoints Int      @map("lowest_points")
+  invitations  Int
+  poolSize     Int?     @map("pool_size")
+  notes        String?
+  isEstimated  Boolean  @default(false) @map("is_estimated")
+  source       String   @default("scraper")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([roundDate, visaSubclass])
+  @@map("eoi_rounds")
+}

@@ -1,11 +1,13 @@
 import { count, desc } from "drizzle-orm";
 import Link from "next/link";
+import { revalidatePath } from "next/cache";
 
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
 import { db } from "@/db";
 import { agentReferrals, agents, fullCheckWaitlist, visaTypes } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { prisma } from "@/lib/prisma";
 
 const KNOWN_SOURCES = ["full_check", "results", "readiness-preview", "homepage", "unknown"];
 
@@ -39,6 +41,15 @@ async function getDashboardData() {
   }));
 
   const highIntentLeads = waitlistLeads.filter((lead) => lead.lead_tier === "High intent");
+  let latestEoiRound: { createdAt: Date } | null = null;
+  try {
+    latestEoiRound = await prisma.eoiRound.findFirst({
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    });
+  } catch (error) {
+    console.error("Failed to load latest EOI scrape timestamp", error);
+  }
 
   return {
     waitlistTotal: waitlistTotal?.value ?? 0,
@@ -49,7 +60,17 @@ async function getDashboardData() {
     sourceCounts,
     recentLeads: waitlistLeads.slice(0, 10),
     highIntentLeads: highIntentLeads.slice(0, 10),
+    latestEoiScrapedAt: latestEoiRound?.createdAt ?? null,
   };
+}
+
+function formatMinutesAgo(timestamp: Date | null): string {
+  if (!timestamp) return "never";
+  const diffMs = Date.now() - timestamp.getTime();
+  const minutes = Math.max(1, Math.floor(diffMs / 60000));
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours} hour${hours === 1 ? "" : "s"} ago`;
 }
 
 type DashboardPageProps = {
@@ -62,6 +83,35 @@ export default async function AdminDashboardPage({ params, searchParams }: Dashb
   const query = await searchParams;
   const intentFilter = query.intent === "high" ? "high" : "all";
   const data = await getDashboardData();
+
+  async function refreshEoiRounds() {
+    "use server";
+
+    const secret = process.env.CRON_SECRET;
+    if (!secret) {
+      console.error("CRON_SECRET is missing. Cannot trigger EOI scraper.");
+      return;
+    }
+
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+    try {
+      await fetch(`${baseUrl}/api/cron/scrape-eoi`, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${secret}`,
+        },
+        cache: "no-store",
+      });
+    } catch (error) {
+      console.error("Failed to trigger manual EOI refresh", error);
+    }
+
+    revalidatePath(`/${locale}/admin/dashboard`);
+    revalidatePath(`/${locale}/tools/invitation-rounds`);
+  }
 
   const metricCards = [
     { label: "Total full-check waitlist leads", value: data.waitlistTotal },
@@ -84,6 +134,19 @@ export default async function AdminDashboardPage({ params, searchParams }: Dashb
           <p className="text-sm text-muted-foreground">
             Basic funnel visibility for full-check interest and referral operations.
           </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <form action={refreshEoiRounds}>
+              <button
+                type="submit"
+                className="rounded-md border border-primary px-3 py-1.5 text-sm font-medium text-primary transition hover:bg-primary/10"
+              >
+                Refresh Data
+              </button>
+            </form>
+            <p className="text-xs text-muted-foreground">
+              Last scraped: {formatMinutesAgo(data.latestEoiScrapedAt)}
+            </p>
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

@@ -21,8 +21,9 @@ type Round = {
   visaName: string;
   invitations: number;
   lowestPoints: number;
-  poolSize: number;
-  notes: string;
+  poolSize: number | null;
+  notes: string | null;
+  isEstimated?: boolean;
 };
 
 const SUBCLASS_COLOR: Record<string, string> = {
@@ -368,7 +369,7 @@ export function InvitationRoundsClient({ rounds }: { rounds: Round[] }) {
                         {r.invitations.toLocaleString()}
                       </td>
                       <td className="px-4 py-3 text-right text-slate-500">
-                        {r.poolSize.toLocaleString()}
+                        {typeof r.poolSize === "number" ? r.poolSize.toLocaleString() : "-"}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-400">
                         {r.notes || "—"}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ArrowRight, BadgeCheck, BriefcaseBusiness, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,34 @@ type Occupation = {
 };
 
 const OCCUPATIONS = anzscoList satisfies Occupation[];
-const POPULAR_CODES = ["261313", "254412", "233211", "233512", "221111", "351311", "321211", "241213"];
+const POPULAR_CODES = [
+  "261313", // Software Engineer (ICT)
+  "233211", // Civil Engineer (Engineering)
+  "254412", // Registered Nurse (Health)
+  "221111", // Accountant (Finance)
+  "241213", // Secondary School Teacher (Education)
+  "321211", // Electrician (Trades)
+  "351311", // Chef (Hospitality)
+  "232111", // Architect (Architecture)
+  "252411", // Psychologist (Health)
+  "133111", // Construction Manager (Management)
+  "234112", // Chemist (Science)
+  "271311", // Solicitor (Legal)
+];
 
 export function AnzscoSearchTool({ locale }: { locale: string }) {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [selectedCode, setSelectedCode] = useState<string | null>("261313");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  // Debounce search input 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const popularOccupations = useMemo(
     () =>
@@ -34,12 +56,12 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
   );
 
   const matches = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = debouncedQuery.trim().toLowerCase();
     if (!q) return popularOccupations;
     return OCCUPATIONS.filter(
       (o) => o.title.toLowerCase().includes(q) || o.code.toLowerCase().includes(q)
     );
-  }, [popularOccupations, query]);
+  }, [popularOccupations, debouncedQuery]);
 
   const hasSearch = query.trim().length > 0;
   const selectedOccupation =

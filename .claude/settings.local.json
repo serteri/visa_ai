@@ -36,7 +36,13 @@
       "Bash(node -e \"const p = require\\('./node_modules/next-auth/package.json'\\); console.log\\(p.version\\)\")",
       "Bash(New-Item *)",
       "Bash(git rm *)",
-      "Bash(npx tsx *)"
+      "Bash(npx tsx *)",
+      "Bash(node -e \"require\\('@auth/prisma-adapter'\\); console.log\\('ok'\\)\")",
+      "Bash(node -e \"require\\('bcryptjs'\\); console.log\\('ok'\\)\")",
+      "Bash(npx prisma *)",
+      "Bash(git status *)",
+      "Bash(python -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(len\\(data\\), 'occupations'\\); print\\([d['code'] for d in data[:5]]\\)\")",
+      "Bash(python -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(d['code'], d['title']\\) for d in data]\")"
     ]
   }
 }

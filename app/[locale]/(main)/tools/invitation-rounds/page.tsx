@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InvitationRoundsClient } from "./InvitationRoundsClient";
 import eoiRounds from "@/src/data/eoi-rounds.json";
+import { prisma } from "@/lib/prisma";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -37,6 +38,52 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function InvitationRoundsPage({ params }: PageProps) {
   await params;
 
+  let dbRounds: Awaited<ReturnType<typeof prisma.eoiRound.findMany>> = [];
+  try {
+    dbRounds = await prisma.eoiRound.findMany({
+      orderBy: [{ roundDate: "desc" }, { visaSubclass: "asc" }],
+    });
+  } catch (error) {
+    console.error("Failed to load EOI rounds from database, using fallback JSON", error);
+  }
+
+  const rounds =
+    dbRounds.length > 0
+      ? dbRounds.map((round) => ({
+          id: round.id,
+          date: round.roundDate.toISOString().slice(0, 10),
+          visaSubclass: round.visaSubclass,
+          visaName: round.visaName,
+          invitations: round.invitations,
+          lowestPoints: round.lowestPoints,
+          poolSize: round.poolSize,
+          notes: round.notes,
+          isEstimated: round.isEstimated,
+        }))
+      : eoiRounds.rounds.map((round) => ({
+          ...round,
+          poolSize: round.poolSize ?? null,
+          notes: round.notes ?? null,
+          isEstimated: true,
+        }));
+
+  const latestScraped =
+    dbRounds.length > 0
+      ? dbRounds
+          .map((r) => r.createdAt)
+          .sort((a, b) => b.getTime() - a.getTime())[0]
+      : null;
+
+  const lastScrapedLabel = latestScraped
+    ? latestScraped.toLocaleString("en-AU", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : `${eoiRounds.lastUpdated} (seed data)`;
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 pt-28">
       {/* Header */}
@@ -45,17 +92,19 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
           <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
             SkillSelect Data
           </span>
-          <span className="text-xs text-slate-400">Last updated {eoiRounds.lastUpdated}</span>
+          <span className="text-xs text-slate-400">Last scraped {lastScrapedLabel}</span>
         </div>
         <h1 className="text-3xl font-bold text-slate-900">Invitation Round Tracker</h1>
         <p className="mt-2 max-w-2xl text-base text-slate-500">
           Historical points cutoffs and invitation volumes for Australian skilled migration
-          (subclasses 189, 190 &amp; 491). Data is indicative — verify with the Department of
-          Home Affairs.
+          (subclasses 189, 190 &amp; 491).
+        </p>
+        <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Data sourced from Department of Home Affairs. Updated automatically twice monthly.
         </p>
       </div>
 
-      <InvitationRoundsClient rounds={eoiRounds.rounds} />
+      <InvitationRoundsClient rounds={rounds} />
     </div>
   );
 }
