@@ -1,10 +1,8 @@
 import { auth } from "@/auth";
 import Link from "next/link";
-import { desc, eq } from "drizzle-orm";
 import { FileText, Download, ArrowRight } from "lucide-react";
 
-import { db } from "@/db";
-import { savedReports } from "@/db/schema";
+import { prisma } from "@/lib/prisma";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,25 +20,21 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const reports = await db
-    .select()
-    .from(savedReports)
-    .where(eq(savedReports.user_id, session.user.id))
-    .orderBy(desc(savedReports.created_at));
+  const reports = await prisma.savedReport.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Readiness Reports</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Your Full Check PDF reports.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">Your Full Check PDF reports.</p>
         </div>
         <Button asChild>
           <Link href={`/${locale}/full-check`} className="flex items-center gap-2">
-            <ArrowRight className="h-4 w-4" />
-            New Report
+            <ArrowRight className="h-4 w-4" />New Report
           </Link>
         </Button>
       </div>
@@ -51,13 +45,9 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
             <FileText className="h-10 w-10 text-slate-300" />
             <div>
               <p className="font-semibold text-slate-700">No reports yet</p>
-              <p className="mt-1 text-sm text-slate-400">
-                Complete a Full Check and your PDF report will appear here.
-              </p>
+              <p className="mt-1 text-sm text-slate-400">Complete a Full Check and your PDF report will appear here.</p>
             </div>
-            <Button asChild>
-              <Link href={`/${locale}/full-check`}>Start Full Check</Link>
-            </Button>
+            <Button asChild><Link href={`/${locale}/full-check`}>Start Full Check</Link></Button>
           </CardContent>
         </Card>
       ) : (
@@ -71,35 +61,22 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
                   </div>
                   <div>
                     <p className="font-semibold text-slate-900 capitalize">
-                      {report.report_type.replace(/_/g, " ")} Report
+                      {report.reportType.replace(/_/g, " ")} Report
                     </p>
                     <div className="mt-1 flex items-center gap-2">
                       <Badge variant="outline" className="text-xs">
-                        {LANG_LABELS[report.language ?? "en"] ?? report.language ?? "EN"}
+                        {LANG_LABELS[report.language] ?? report.language}
                       </Badge>
                       <span className="text-xs text-slate-400">
-                        {report.created_at
-                          ? new Date(report.created_at).toLocaleDateString("en-AU", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : "—"}
+                        {report.createdAt.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
                       </span>
                     </div>
                   </div>
                 </div>
-
-                {report.report_url && (
+                {report.reportUrl && (
                   <Button asChild variant="outline" size="sm">
-                    <a
-                      href={report.report_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2"
-                    >
-                      <Download className="h-4 w-4" />
-                      Download PDF
+                    <a href={report.reportUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                      <Download className="h-4 w-4" />Download PDF
                     </a>
                   </Button>
                 )}

@@ -1,10 +1,8 @@
 import { auth } from "@/auth";
 import Link from "next/link";
-import { desc, eq } from "drizzle-orm";
 import { Calculator, ClipboardList, FileText, MapPin, ArrowRight } from "lucide-react";
 
-import { db } from "@/db";
-import { savedCalculations, savedQuizResults, savedReports, visaTracking } from "@/db/schema";
+import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,28 +24,24 @@ export default async function DashboardPage({ params }: PageProps) {
   const firstName = session.user.name?.split(" ")[0] ?? "there";
 
   const [calcs, quizzes, reports, tracking] = await Promise.all([
-    db
-      .select()
-      .from(savedCalculations)
-      .where(eq(savedCalculations.user_id, userId))
-      .orderBy(desc(savedCalculations.created_at))
-      .limit(1),
-    db
-      .select()
-      .from(savedQuizResults)
-      .where(eq(savedQuizResults.user_id, userId))
-      .orderBy(desc(savedQuizResults.created_at))
-      .limit(1),
-    db
-      .select()
-      .from(savedReports)
-      .where(eq(savedReports.user_id, userId))
-      .orderBy(desc(savedReports.created_at)),
-    db
-      .select()
-      .from(visaTracking)
-      .where(eq(visaTracking.user_id, userId))
-      .orderBy(desc(visaTracking.created_at)),
+    prisma.savedCalculation.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 1,
+    }),
+    prisma.savedQuizResult.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 1,
+    }),
+    prisma.savedReport.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.visaTracking.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
 
   const latestCalc = calcs[0];
@@ -57,15 +51,15 @@ export default async function DashboardPage({ params }: PageProps) {
   const summaryCards = [
     {
       label: "Latest Points Score",
-      value: latestCalc ? `${latestCalc.total_points} pts` : "—",
-      sub: latestCalc?.visa_subclass ? `Subclass ${latestCalc.visa_subclass}` : "No calculation yet",
+      value: latestCalc ? `${latestCalc.totalPoints} pts` : "—",
+      sub: latestCalc?.visaSubclass ? `Subclass ${latestCalc.visaSubclass}` : "No calculation yet",
       icon: <Calculator className="h-5 w-5 text-indigo-500" />,
       href: `/${locale}/dashboard/points`,
     },
     {
       label: "Latest Quiz Score",
       value: latestQuiz ? `${latestQuiz.score ?? 0}%` : "—",
-      sub: latestQuiz?.readiness_level ?? "Not taken yet",
+      sub: latestQuiz?.readinessLevel ?? "Not taken yet",
       icon: <ClipboardList className="h-5 w-5 text-violet-500" />,
       href: `/${locale}/dashboard/quiz`,
     },
@@ -86,34 +80,18 @@ export default async function DashboardPage({ params }: PageProps) {
   ];
 
   const quickActions = [
-    {
-      label: "Calculate Points",
-      href: `/${locale}/tools/points-calculator`,
-      color: "bg-indigo-600 hover:bg-indigo-700",
-    },
-    {
-      label: "Take PR Quiz",
-      href: `/${locale}/pr-readiness-quiz`,
-      color: "bg-violet-600 hover:bg-violet-700",
-    },
-    {
-      label: "Full Check Report",
-      href: `/${locale}/full-check`,
-      color: "bg-cyan-600 hover:bg-cyan-700",
-    },
+    { label: "Calculate Points", href: `/${locale}/tools/points-calculator`, color: "bg-indigo-600 hover:bg-indigo-700" },
+    { label: "Take PR Quiz", href: `/${locale}/pr-readiness-quiz`, color: "bg-violet-600 hover:bg-violet-700" },
+    { label: "Full Check Report", href: `/${locale}/full-check`, color: "bg-cyan-600 hover:bg-cyan-700" },
   ];
 
   return (
     <div className="space-y-8">
-      {/* Welcome */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Welcome back, {firstName} 👋</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Here's a summary of your visa preparation progress.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">Here's a summary of your visa preparation progress.</p>
       </div>
 
-      {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {summaryCards.map((card) => (
           <Link key={card.label} href={card.href}>
@@ -131,44 +109,33 @@ export default async function DashboardPage({ params }: PageProps) {
         ))}
       </div>
 
-      {/* Quick actions */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Quick Actions</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle className="text-base">Quick Actions</CardTitle></CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           {quickActions.map((a) => (
             <Button key={a.label} asChild className={`${a.color} text-white`}>
               <Link href={a.href} className="flex items-center gap-2">
-                {a.label}
-                <ArrowRight className="h-3.5 w-3.5" />
+                {a.label}<ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </Button>
           ))}
         </CardContent>
       </Card>
 
-      {/* Recent activity */}
       {(latestCalc || latestQuiz || tracking.length > 0) && (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Recent Activity</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-base">Recent Activity</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {latestCalc && (
               <div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm">
                 <div className="flex items-center gap-3">
                   <Calculator className="h-4 w-4 text-indigo-400" />
                   <span className="text-slate-700">
-                    Points calculation — {latestCalc.total_points} pts
-                    {latestCalc.visa_subclass && ` (Subclass ${latestCalc.visa_subclass})`}
+                    Points calculation — {latestCalc.totalPoints} pts
+                    {latestCalc.visaSubclass && ` (Subclass ${latestCalc.visaSubclass})`}
                   </span>
                 </div>
-                <span className="text-xs text-slate-400">
-                  {latestCalc.created_at
-                    ? new Date(latestCalc.created_at).toLocaleDateString()
-                    : "—"}
-                </span>
+                <span className="text-xs text-slate-400">{latestCalc.createdAt.toLocaleDateString()}</span>
               </div>
             )}
             {latestQuiz && (
@@ -176,37 +143,21 @@ export default async function DashboardPage({ params }: PageProps) {
                 <div className="flex items-center gap-3">
                   <ClipboardList className="h-4 w-4 text-violet-400" />
                   <span className="text-slate-700">PR Readiness Quiz</span>
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${readinessColor(latestQuiz.readiness_level)}`}
-                  >
-                    {latestQuiz.readiness_level ?? "—"}
+                  <Badge variant="outline" className={`text-xs ${readinessColor(latestQuiz.readinessLevel)}`}>
+                    {latestQuiz.readinessLevel ?? "—"}
                   </Badge>
                 </div>
-                <span className="text-xs text-slate-400">
-                  {latestQuiz.created_at
-                    ? new Date(latestQuiz.created_at).toLocaleDateString()
-                    : "—"}
-                </span>
+                <span className="text-xs text-slate-400">{latestQuiz.createdAt.toLocaleDateString()}</span>
               </div>
             )}
             {tracking.slice(0, 3).map((t) => (
-              <div
-                key={t.id}
-                className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm"
-              >
+              <div key={t.id} className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm">
                 <div className="flex items-center gap-3">
                   <MapPin className="h-4 w-4 text-emerald-400" />
-                  <span className="text-slate-700">Subclass {t.visa_subclass}</span>
-                  <Badge variant="outline" className="text-xs capitalize">
-                    {t.status}
-                  </Badge>
+                  <span className="text-slate-700">Subclass {t.visaSubclass}</span>
+                  <Badge variant="outline" className="text-xs capitalize">{t.status}</Badge>
                 </div>
-                <span className="text-xs text-slate-400">
-                  {t.created_at
-                    ? new Date(t.created_at).toLocaleDateString()
-                    : "—"}
-                </span>
+                <span className="text-xs text-slate-400">{t.createdAt.toLocaleDateString()}</span>
               </div>
             ))}
           </CardContent>

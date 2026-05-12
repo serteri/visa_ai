@@ -1,11 +1,9 @@
 import { auth } from "@/auth";
 import Link from "next/link";
-import { desc, eq } from "drizzle-orm";
 import { Calculator, Plus, Trash2 } from "lucide-react";
 
-import { db } from "@/db";
-import { savedCalculations } from "@/db/schema";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { prisma } from "@/lib/prisma";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { deleteCalculation } from "../actions";
@@ -24,25 +22,21 @@ export default async function PointsDashboardPage({ params }: PageProps) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const calcs = await db
-    .select()
-    .from(savedCalculations)
-    .where(eq(savedCalculations.user_id, session.user.id))
-    .orderBy(desc(savedCalculations.created_at));
+  const calcs = await prisma.savedCalculation.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Points Calculations</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Your saved DHA points test results.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">Your saved DHA points test results.</p>
         </div>
         <Button asChild>
           <Link href={`/${locale}/tools/points-calculator`} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            New Calculation
+            <Plus className="h-4 w-4" />New Calculation
           </Link>
         </Button>
       </div>
@@ -53,9 +47,7 @@ export default async function PointsDashboardPage({ params }: PageProps) {
             <Calculator className="h-10 w-10 text-slate-300" />
             <div>
               <p className="font-semibold text-slate-700">No saved calculations yet</p>
-              <p className="mt-1 text-sm text-slate-400">
-                Run the points calculator and save your result to track it here.
-              </p>
+              <p className="mt-1 text-sm text-slate-400">Run the points calculator and save your result to track it here.</p>
             </div>
             <Button asChild variant="outline">
               <Link href={`/${locale}/tools/points-calculator`}>Calculate Now</Link>
@@ -71,28 +63,16 @@ export default async function PointsDashboardPage({ params }: PageProps) {
                 <CardContent className="p-5">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div
-                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border text-xl font-bold ${scoreColor(calc.total_points)}`}
-                      >
-                        {calc.total_points}
+                      <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border text-xl font-bold ${scoreColor(calc.totalPoints)}`}>
+                        {calc.totalPoints}
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-900">
-                          {calc.total_points} points
-                        </p>
-                        {calc.visa_subclass && (
-                          <Badge variant="outline" className="mt-1 text-xs">
-                            Subclass {calc.visa_subclass}
-                          </Badge>
+                        <p className="font-semibold text-slate-900">{calc.totalPoints} points</p>
+                        {calc.visaSubclass && (
+                          <Badge variant="outline" className="mt-1 text-xs">Subclass {calc.visaSubclass}</Badge>
                         )}
                         <p className="mt-1 text-xs text-slate-400">
-                          {calc.created_at
-                            ? new Date(calc.created_at).toLocaleDateString("en-AU", {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              })
-                            : "—"}
+                          {calc.createdAt.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
                         </p>
                       </div>
                     </div>
@@ -104,26 +84,15 @@ export default async function PointsDashboardPage({ params }: PageProps) {
                           .slice(0, 6)
                           .map(([k, v]) => (
                             <span key={k} className="whitespace-nowrap">
-                              <span className="font-medium capitalize text-slate-700">
-                                {k.replace(/([A-Z])/g, " $1").trim()}
-                              </span>
+                              <span className="font-medium capitalize text-slate-700">{k.replace(/([A-Z])/g, " $1").trim()}</span>
                               {" "}+{String(v)}
                             </span>
                           ))}
                       </div>
                     )}
 
-                    <form
-                      action={async () => {
-                        "use server";
-                        await deleteCalculation(calc.id);
-                      }}
-                    >
-                      <button
-                        type="submit"
-                        className="rounded-lg border border-slate-200 p-2 text-slate-400 transition-colors hover:border-rose-200 hover:text-rose-500"
-                        aria-label="Delete calculation"
-                      >
+                    <form action={async () => { "use server"; await deleteCalculation(calc.id); }}>
+                      <button type="submit" className="rounded-lg border border-slate-200 p-2 text-slate-400 transition-colors hover:border-rose-200 hover:text-rose-500" aria-label="Delete">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </form>

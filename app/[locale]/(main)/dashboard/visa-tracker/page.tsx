@@ -1,8 +1,6 @@
 import { auth } from "@/auth";
-import { desc, eq } from "drizzle-orm";
 
-import { db } from "@/db";
-import { visaTracking } from "@/db/schema";
+import { prisma } from "@/lib/prisma";
 import { VisaTrackerClient } from "./VisaTrackerClient";
 
 type PageProps = { params: Promise<{ locale: string }> };
@@ -12,11 +10,20 @@ export default async function VisaTrackerPage({ params }: PageProps) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const items = await db
-    .select()
-    .from(visaTracking)
-    .where(eq(visaTracking.user_id, session.user.id))
-    .orderBy(desc(visaTracking.created_at));
+  const items = await prisma.visaTracking.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+  });
+
+  // Serialize for client component (Date → string)
+  const serialized = items.map((item) => ({
+    id: item.id,
+    visaSubclass: item.visaSubclass,
+    status: item.status,
+    notes: item.notes,
+    targetDate: item.targetDate?.toISOString().split("T")[0] ?? null,
+    createdAt: item.createdAt.toISOString(),
+  }));
 
   return (
     <div className="space-y-6">
@@ -27,7 +34,7 @@ export default async function VisaTrackerPage({ params }: PageProps) {
         </p>
       </div>
 
-      <VisaTrackerClient items={items} />
+      <VisaTrackerClient items={serialized} />
     </div>
   );
 }

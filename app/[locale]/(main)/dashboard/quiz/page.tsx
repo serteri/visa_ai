@@ -1,10 +1,8 @@
 import { auth } from "@/auth";
 import Link from "next/link";
-import { desc, eq } from "drizzle-orm";
 import { ClipboardList, RotateCcw, Trash2 } from "lucide-react";
 
-import { db } from "@/db";
-import { savedQuizResults } from "@/db/schema";
+import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +21,10 @@ export default async function QuizDashboardPage({ params }: PageProps) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const results = await db
-    .select()
-    .from(savedQuizResults)
-    .where(eq(savedQuizResults.user_id, session.user.id))
-    .orderBy(desc(savedQuizResults.created_at));
+  const results = await prisma.savedQuizResult.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+  });
 
   const latest = results[0];
   const latestRecs = (latest?.recommendations as string[] | null) ?? [];
@@ -37,33 +34,25 @@ export default async function QuizDashboardPage({ params }: PageProps) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">PR Readiness Quiz</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Your saved quiz results and recommendations.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">Your saved quiz results and recommendations.</p>
         </div>
         <Button asChild variant="outline">
           <Link href={`/${locale}/pr-readiness-quiz`} className="flex items-center gap-2">
-            <RotateCcw className="h-4 w-4" />
-            Retake Quiz
+            <RotateCcw className="h-4 w-4" />Retake Quiz
           </Link>
         </Button>
       </div>
 
-      {/* Latest recommendations */}
       {latest && latestRecs.length > 0 && (
         <Card className="border-violet-100 bg-violet-50/50">
           <CardHeader>
-            <CardTitle className="text-sm text-violet-800">
-              Top recommendations from your latest result
-            </CardTitle>
+            <CardTitle className="text-sm text-violet-800">Top recommendations from your latest result</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
               {latestRecs.slice(0, 3).map((rec, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-violet-700">
-                  <span className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-violet-200 text-center text-[10px] font-bold leading-4 text-violet-700">
-                    {i + 1}
-                  </span>
+                  <span className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-violet-200 text-center text-[10px] font-bold leading-4 text-violet-700">{i + 1}</span>
                   {rec}
                 </li>
               ))}
@@ -78,13 +67,9 @@ export default async function QuizDashboardPage({ params }: PageProps) {
             <ClipboardList className="h-10 w-10 text-slate-300" />
             <div>
               <p className="font-semibold text-slate-700">No quiz results yet</p>
-              <p className="mt-1 text-sm text-slate-400">
-                Take the PR readiness quiz and your result will be saved here.
-              </p>
+              <p className="mt-1 text-sm text-slate-400">Take the PR readiness quiz and your result will be saved here.</p>
             </div>
-            <Button asChild>
-              <Link href={`/${locale}/pr-readiness-quiz`}>Take the Quiz</Link>
-            </Button>
+            <Button asChild><Link href={`/${locale}/pr-readiness-quiz`}>Take the Quiz</Link></Button>
           </CardContent>
         </Card>
       ) : (
@@ -98,42 +83,19 @@ export default async function QuizDashboardPage({ params }: PageProps) {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-slate-900">
-                        Quiz result {results.length - idx}
-                      </p>
-                      {idx === 0 && (
-                        <Badge className="bg-violet-100 text-violet-700 text-xs">Latest</Badge>
-                      )}
+                      <p className="font-semibold text-slate-900">Quiz result {results.length - idx}</p>
+                      {idx === 0 && <Badge className="bg-violet-100 text-violet-700 text-xs">Latest</Badge>}
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={`mt-1 text-xs capitalize ${readinessBadge(result.readiness_level)}`}
-                    >
-                      {result.readiness_level ?? "unknown"}
+                    <Badge variant="outline" className={`mt-1 text-xs capitalize ${readinessBadge(result.readinessLevel)}`}>
+                      {result.readinessLevel ?? "unknown"}
                     </Badge>
                     <p className="mt-1 text-xs text-slate-400">
-                      {result.created_at
-                        ? new Date(result.created_at).toLocaleDateString("en-AU", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })
-                        : "—"}
+                      {result.createdAt.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
                     </p>
                   </div>
                 </div>
-
-                <form
-                  action={async () => {
-                    "use server";
-                    await deleteQuizResult(result.id);
-                  }}
-                >
-                  <button
-                    type="submit"
-                    className="rounded-lg border border-slate-200 p-2 text-slate-400 transition-colors hover:border-rose-200 hover:text-rose-500"
-                    aria-label="Delete result"
-                  >
+                <form action={async () => { "use server"; await deleteQuizResult(result.id); }}>
+                  <button type="submit" className="rounded-lg border border-slate-200 p-2 text-slate-400 transition-colors hover:border-rose-200 hover:text-rose-500" aria-label="Delete">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </form>
