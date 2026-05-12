@@ -139,3 +139,15 @@ model VisaTracking {
 
   @@map("visa_tracking")
 }
+
+model PointsAlert {
+  id            String    @id @default(uuid())
+  email         String
+  targetPoints  Int       @map("target_points")
+  visaSubclass  String    @map("visa_subclass")
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  lastTriggered DateTime? @map("last_triggered")
+
+  @@map("points_alerts")
+}
