@@ -119,6 +119,12 @@ export function Header({
               <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
                 ANZSCO Finder
               </Link>
+              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
+              </Link>
+              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
+              </Link>
             </div>
           </div>
           <Link
@@ -254,6 +260,12 @@ export function Header({
               </Link>
               <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
                 ANZSCO Finder
+              </Link>
+              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+                {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
+              </Link>
+              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+                {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
               </Link>
             </div>
             <Link
