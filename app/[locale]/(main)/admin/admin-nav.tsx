@@ -14,6 +14,7 @@ const ADMIN_LINKS = [
   { href: "referrals", label: "Referrals" },
   { href: "agents", label: "Agents" },
   { href: "full-check-waitlist", label: "Full Check Waitlist" },
+  { href: "eoi-rounds", label: "EOI Rounds" },
 ];
 
 export function AdminNav({ locale }: { locale: string }) {
