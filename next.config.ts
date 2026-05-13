@@ -8,12 +8,6 @@ const nextConfig: NextConfig = {
         destination: "/en",
         permanent: true,
       },
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "logivisa.com" }],
-        destination: "https://www.logivisa.com/:path*",
-        permanent: true,
-      },
     ];
   },
 };

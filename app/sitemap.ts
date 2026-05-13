@@ -4,7 +4,7 @@ import { activeLocales } from "@/lib/i18n/config";
 import { mockVisaTypes } from "@/lib/mock-visa-data";
 import { buildOccupationSlug, getUniqueOccupations } from "@/lib/occupations/seo";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = "https://www.logivisa.com";
 
 function toUrl(path: string) {
   return `${BASE_URL}${path}`;

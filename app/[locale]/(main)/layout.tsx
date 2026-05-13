@@ -48,9 +48,9 @@ export async function generateMetadata({
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        en: "/en",
-        tr: "/tr",
-        "zh-Hans": "/zh-Hans",
+        en: "https://www.logivisa.com/en",
+        tr: "https://www.logivisa.com/tr",
+        "zh-Hans": "https://www.logivisa.com/zh-Hans",
       },
     },
     openGraph: {
