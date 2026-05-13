@@ -2,18 +2,36 @@
   {
     "subclass": "189",
     "name": "Skilled Independent visa",
+    "name_tr": "Bağımsız Yetenekli Vize",
+    "name_zh": "独立技术签证",
     "nameKey": "visa189",
     "type": "Permanent",
     "processingTime": "12-24 months",
     "fee": 4640,
     "minPoints": 65,
     "description": "For skilled workers who are not sponsored by an employer, state or family member.",
+    "description_tr": "İşveren, eyalet veya aile tarafından desteklenmeyen yetenekli çalışanlar için.",
+    "description_zh": "适用于未获雇主、州或家庭担保的技术工人。",
     "requirements": [
       "Occupation on skilled occupation list",
       "Positive skills assessment",
       "Under 45 years of age",
       "Competent English",
       "Minimum 65 points"
+    ],
+    "requirements_tr": [
+      "Meslek yetenekli meslek listesinde olmalı",
+      "Pozitif beceri değerlendirmesi",
+      "45 yaş altı",
+      "Yetkin İngilizce",
+      "Minimum 65 puan"
+    ],
+    "requirements_zh": [
+      "职业须在技术职业清单上",
+      "技能评估通过",
+      "45岁以下",
+      "英语能力要求",
+      "最低65分"
     ],
     "steps": [
       "Check your occupation is on MLTSSL",
@@ -23,17 +41,37 @@
       "Wait for invitation",
       "Lodge visa application within 60 days"
     ],
+    "steps_tr": [
+      "Mesleğinizin MLTSSL'de olduğunu kontrol edin",
+      "Beceri değerlendirmesi yaptırın",
+      "Puanınızı hesaplayın",
+      "SkillSelect üzerinden EOI gönderin",
+      "Davet bekleyin",
+      "60 gün içinde vize başvurusu yapın"
+    ],
+    "steps_zh": [
+      "确认职业在MLTSSL清单上",
+      "进行技能评估",
+      "计算积分",
+      "通过SkillSelect提交EOI",
+      "等待邀请",
+      "60天内提交签证申请"
+    ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189"
   },
   {
     "subclass": "190",
     "name": "Skilled Nominated visa",
+    "name_tr": "Eyalet Adaylı Vize",
+    "name_zh": "州提名技术签证",
     "nameKey": "visa190",
     "type": "Permanent",
     "processingTime": "6-12 months",
     "fee": 4640,
     "minPoints": 65,
     "description": "For skilled workers nominated by a state or territory government.",
+    "description_tr": "Eyalet veya bölge hükümeti tarafından aday gösterilen yetenekli çalışanlar için.",
+    "description_zh": "适用于获得州或地区政府提名的技术工人。",
     "requirements": [
       "Occupation on MLTSSL or STSOL",
       "State or territory nomination (adds 5 points)",
@@ -41,6 +79,22 @@
       "Under 45 years of age",
       "Competent English",
       "Minimum 65 points"
+    ],
+    "requirements_tr": [
+      "Meslek MLTSSL veya STSOL listesinde olmalı",
+      "Eyalet veya bölge adaylığı (5 puan ekler)",
+      "Pozitif beceri değerlendirmesi",
+      "45 yaş altı",
+      "Yetkin İngilizce",
+      "Minimum 65 puan"
+    ],
+    "requirements_zh": [
+      "职业须在MLTSSL或STSOL清单上",
+      "州或地区提名（加5分）",
+      "技能评估通过",
+      "45岁以下",
+      "英语能力要求",
+      "最低65分"
     ],
     "steps": [
       "Check occupation eligibility",
@@ -50,17 +104,37 @@
       "Receive invitation",
       "Lodge visa application"
     ],
+    "steps_tr": [
+      "Meslek uygunluğunu kontrol edin",
+      "Beceri değerlendirmesi yaptırın",
+      "SkillSelect üzerinden EOI gönderin",
+      "Eyalet adaylığı için başvurun",
+      "Davet alın",
+      "Vize başvurusu yapın"
+    ],
+    "steps_zh": [
+      "确认职业资格",
+      "进行技能评估",
+      "通过SkillSelect提交EOI",
+      "申请州提名",
+      "收到邀请",
+      "提交签证申请"
+    ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190"
   },
   {
     "subclass": "491",
     "name": "Skilled Work Regional visa",
+    "name_tr": "Bölgesel Çalışma Vizesi",
+    "name_zh": "地区工作签证",
     "nameKey": "visa491",
     "type": "Provisional (5 years)",
     "processingTime": "6-12 months",
     "fee": 4640,
     "minPoints": 65,
     "description": "For skilled workers nominated by a state or sponsored by family to live and work in regional Australia.",
+    "description_tr": "Avustralya'nın bölgesel alanlarında yaşamak ve çalışmak isteyen yetenekli çalışanlar için.",
+    "description_zh": "适用于希望在澳大利亚偏远地区生活和工作的技术工人。",
     "requirements": [
       "Occupation on MLTSSL, STSOL or ROL",
       "State nomination or family sponsorship (adds 15 points)",
@@ -69,6 +143,24 @@
       "Competent English",
       "Minimum 65 points",
       "Must live and work in regional Australia"
+    ],
+    "requirements_tr": [
+      "Meslek MLTSSL, STSOL veya ROL listesinde olmalı",
+      "Eyalet adaylığı veya aile sponsorluğu (15 puan ekler)",
+      "Pozitif beceri değerlendirmesi",
+      "45 yaş altı",
+      "Yetkin İngilizce",
+      "Minimum 65 puan",
+      "Avustralya'nın bölgesel alanlarında yaşanmalı ve çalışılmalı"
+    ],
+    "requirements_zh": [
+      "职业须在MLTSSL、STSOL或ROL清单上",
+      "州提名或家庭担保（加15分）",
+      "技能评估通过",
+      "45岁以下",
+      "英语能力要求",
+      "最低65分",
+      "必须在澳大利亚偏远地区生活和工作"
     ],
     "steps": [
       "Check occupation eligibility",
@@ -79,23 +171,59 @@
       "Lodge visa application",
       "Live in regional area for 3 years to apply for PR (191 visa)"
     ],
+    "steps_tr": [
+      "Meslek uygunluğunu kontrol edin",
+      "Beceri değerlendirmesi yaptırın",
+      "EOI gönderin",
+      "Eyalet adaylığı veya aile sponsorluğu için başvurun",
+      "Davet alın",
+      "Vize başvurusu yapın",
+      "PR (191 vizesi) için 3 yıl bölgesel alanda yaşayın"
+    ],
+    "steps_zh": [
+      "确认职业资格",
+      "进行技能评估",
+      "提交EOI",
+      "申请州提名或家庭担保",
+      "收到邀请",
+      "提交签证申请",
+      "在偏远地区生活3年后可申请191永居签证"
+    ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491"
   },
   {
     "subclass": "482",
     "name": "Skills in Demand visa",
+    "name_tr": "Talep Üzerine Beceri Vizesi",
+    "name_zh": "技能需求签证",
     "nameKey": "visa482",
     "type": "Temporary (1-4 years)",
     "processingTime": "1-3 months",
     "fee": 3035,
     "minPoints": null,
     "description": "Employer sponsored visa for skilled workers. Replaced the TSS 482 visa.",
+    "description_tr": "Yetenekli çalışanlar için işveren destekli geçici vize.",
+    "description_zh": "雇主担保的技术工人临时签证。",
     "requirements": [
       "Employer sponsorship required",
       "Occupation on relevant list",
       "Skills and qualifications assessment",
       "2 years relevant work experience",
       "English language requirement"
+    ],
+    "requirements_tr": [
+      "İşveren sponsorluğu gerekli",
+      "Meslek ilgili listede olmalı",
+      "Beceri ve nitelik değerlendirmesi",
+      "2 yıl ilgili iş deneyimi",
+      "İngilizce şartı"
+    ],
+    "requirements_zh": [
+      "需要雇主担保",
+      "职业须在相关清单上",
+      "技能和资格评估",
+      "2年相关工作经验",
+      "英语要求"
     ],
     "steps": [
       "Find an approved sponsor employer",
@@ -104,23 +232,55 @@
       "Lodge visa application",
       "Health and character checks"
     ],
+    "steps_tr": [
+      "Onaylı bir sponsor işveren bulun",
+      "İşveren sponsor başvurusu yapar",
+      "İşveren pozisyonunuzu aday gösterir",
+      "Vize başvurusu yapın",
+      "Sağlık ve karakter kontrollerini tamamlayın"
+    ],
+    "steps_zh": [
+      "找到获批担保雇主",
+      "雇主提交担保申请",
+      "雇主提名你的职位",
+      "提交签证申请",
+      "完成健康和品格审查"
+    ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482"
   },
   {
     "subclass": "485",
     "name": "Temporary Graduate visa",
+    "name_tr": "Geçici Mezun Vizesi",
+    "name_zh": "临时毕业生签证",
     "nameKey": "visa485",
     "type": "Temporary (2-6 years)",
     "processingTime": "4-6 months",
     "fee": 1730,
     "minPoints": null,
     "description": "Allows international graduates to live and work in Australia after completing studies.",
+    "description_tr": "Avustralya'da eğitimini tamamlayan uluslararası mezunlar için.",
+    "description_zh": "适用于在澳大利亚完成学业的国际毕业生。",
     "requirements": [
       "Recent Australian graduate",
       "Under 50 years of age",
       "English language requirement",
       "Student visa holder for at least 2 years",
       "Health insurance (OSHC)"
+    ],
+    "requirements_tr": [
+      "Yeni mezun olmuş Avustralya öğrencisi",
+      "50 yaş altı",
+      "İngilizce şartı",
+      "En az 2 yıl öğrenci vizesi sahibi olmak",
+      "Sağlık sigortası (OSHC)"
+    ],
+    "requirements_zh": [
+      "近期澳大利亚毕业生",
+      "50岁以下",
+      "英语要求",
+      "持有至少2年的学生签证",
+      "健康保险（OSHC）"
     ],
     "steps": [
       "Complete Australian degree",
@@ -129,17 +289,35 @@
       "English test results",
       "Health examination"
     ],
+    "steps_tr": [
+      "Avustralya derecenizi tamamlayın",
+      "Mezuniyetten sonraki 6 ay içinde başvurun",
+      "Akademik transkriptleri sağlayın",
+      "İngilizce sınav sonuçlarını verin",
+      "Sağlık muayenesini tamamlayın"
+    ],
+    "steps_zh": [
+      "完成澳大利亚学位",
+      "在毕业后6个月内申请",
+      "提供成绩单",
+      "提供英语考试成绩",
+      "完成体检"
+    ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485"
   },
   {
     "subclass": "500",
     "name": "Student visa",
+    "name_tr": "Öğrenci Vizesi",
+    "name_zh": "学生签证",
     "nameKey": "visa500",
     "type": "Temporary (course duration)",
     "processingTime": "1-4 months",
     "fee": 1600,
     "minPoints": null,
     "description": "For international students to study full-time in Australia.",
+    "description_tr": "Avustralya'da tam zamanlı eğitim almak isteyen uluslararası öğrenciler için.",
+    "description_zh": "适用于希望在澳大利亚全日制学习的国际学生。",
     "requirements": [
       "Enrolled in registered course (CRICOS)",
       "Genuine Temporary Entrant (GTE)",
@@ -147,6 +325,22 @@
       "Financial capacity",
       "Health insurance (OSHC)",
       "Health and character checks"
+    ],
+    "requirements_tr": [
+      "Kayıtlı bir kursa kayıtlı olun (CRICOS)",
+      "Gerçek Geçici Giriş (GTE)",
+      "İngilizce şartı",
+      "Mali yeterlilik",
+      "Sağlık sigortası (OSHC)",
+      "Sağlık ve karakter kontrolleri"
+    ],
+    "requirements_zh": [
+      "已注册课程（CRICOS）",
+      "真实临时入境者（GTE）",
+      "英语要求",
+      "经济能力",
+      "健康保险（OSHC）",
+      "健康和品格审查"
     ],
     "steps": [
       "Get offer from registered institution",
@@ -156,22 +350,54 @@
       "Provide biometrics if required",
       "Wait for decision"
     ],
+    "steps_tr": [
+      "Kayıtlı kurumdan teklif alın",
+      "Eğitim ücretini ödeyin ve CoE alın",
+      "GTE beyanı hazırlayın",
+      "Vize başvurusu yapın",
+      "Gerekirse biyometri verin",
+      "Karar bekleyin"
+    ],
+    "steps_zh": [
+      "获得注册机构录取通知",
+      "支付学费并获取CoE",
+      "准备GTE声明",
+      "提交签证申请",
+      "如需则提供生物识别信息",
+      "等待结果"
+    ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500"
   },
   {
     "subclass": "820_801",
     "name": "Partner visa",
+    "name_tr": "Partner Vizesi",
+    "name_zh": "配偶签证",
     "nameKey": "visa820_801",
     "type": "Temporary then Permanent",
     "processingTime": "24-48 months",
     "fee": 8850,
     "minPoints": null,
     "description": "For partners or spouses of Australian citizens or permanent residents.",
+    "description_tr": "Avustralyalı vatandaş veya daimi oturma iznine sahip kişilerin partnerleri için.",
+    "description_zh": "适用于澳大利亚公民或永久居民的配偶或伴侣。",
     "requirements": [
       "In genuine relationship with Australian citizen or PR",
       "Sponsor must be 18+",
       "Health and character checks",
       "Financial sponsor requirement"
+    ],
+    "requirements_tr": [
+      "Avustralya vatandaşı veya PR ile gerçek ilişki",
+      "Sponsor 18+ olmalı",
+      "Sağlık ve karakter kontrolleri",
+      "Mali sponsor şartı"
+    ],
+    "requirements_zh": [
+      "与澳大利亚公民或永久居民存在真实关系",
+      "担保人必须年满18岁",
+      "健康和品格审查",
+      "财务担保要求"
     ],
     "steps": [
       "Gather relationship evidence",
@@ -180,6 +406,22 @@
       "Wait for bridging visa",
       "820 granted (temporary stage)",
       "After 2+ years: 801 (permanent) granted"
+    ],
+    "steps_tr": [
+      "İlişki kanıtlarını toplayın",
+      "Sponsor sponsorluk başvurusu yapar",
+      "820 (geçici) başvurusu yapın",
+      "Bridging vize bekleyin",
+      "820 onayı (geçici aşama)",
+      "2+ yıl sonra: 801 (kalıcı) onayı"
+    ],
+    "steps_zh": [
+      "收集关系证据",
+      "担保人提交担保申请",
+      "提交820（临时）申请",
+      "等待过桥签证",
+      "获批820（临时阶段）",
+      "2年以上后获批801（永久）"
     ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801"
   }
