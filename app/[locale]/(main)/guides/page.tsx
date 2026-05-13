@@ -97,7 +97,7 @@ export default async function GuidesIndexPage({ params }: PageProps) {
                 <CardContent className="flex h-full flex-col p-6">
                   <div className="flex items-center justify-between gap-4">
                     <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-cyan-800">
-                      {guide.category}
+                      {locale === "tr" ? (guide as Record<string, string>).category_tr ?? guide.category : locale === "zh-Hans" ? (guide as Record<string, string>).category_zh ?? guide.category : guide.category}
                     </span>
                     <time className="text-sm font-medium text-slate-500" dateTime={guide.date}>
                       {new Date(guide.date).toLocaleDateString("en-AU", {
@@ -109,9 +109,9 @@ export default async function GuidesIndexPage({ params }: PageProps) {
                   </div>
 
                   <h2 className="mt-6 text-2xl font-bold leading-8 tracking-tight text-slate-950">
-                    {guide.title}
+                    {locale === "tr" ? (guide as Record<string, string>).title_tr ?? guide.title : locale === "zh-Hans" ? (guide as Record<string, string>).title_zh ?? guide.title : guide.title}
                   </h2>
-                  <p className="mt-4 flex-1 text-base leading-7 text-slate-600">{guide.excerpt}</p>
+                  <p className="mt-4 flex-1 text-base leading-7 text-slate-600">{locale === "tr" ? (guide as Record<string, string>).excerpt_tr ?? guide.excerpt : locale === "zh-Hans" ? (guide as Record<string, string>).excerpt_zh ?? guide.excerpt : guide.excerpt}</p>
 
                   <div className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-cyan-800">
                     {tx("Read guide", "Rehberi oku", "阅读指南")}

@@ -302,8 +302,8 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
               <div className="grid gap-4 md:grid-cols-2">
                 {(["listening", "reading", "writing", "speaking"] as const).map((skill) => (
                   <div key={skill}>
-                    <label className="mb-2 block text-sm font-semibold capitalize text-slate-700 dark:text-slate-200">
-                      {skill}
+                    <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      {t(`ep.${skill}`, skill)}
                     </label>
                     <input
                       type="number"
@@ -328,8 +328,8 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
               <div className="grid gap-4 md:grid-cols-2">
                 {(["listening", "reading", "writing", "speaking"] as const).map((skill) => (
                   <div key={skill}>
-                    <label className="mb-2 block text-sm font-semibold capitalize text-slate-700 dark:text-slate-200">
-                      {skill}
+                    <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      {t(`ep.${skill}`, skill)}
                     </label>
                     <input
                       type="number"
@@ -353,7 +353,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    Listening (0-30)
+                    {t("ep.toeflListening")}
                   </label>
                   <input
                     type="number"
@@ -371,7 +371,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    Reading (0-30)
+                    {t("ep.toeflReading")}
                   </label>
                   <input
                     type="number"
@@ -389,7 +389,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    Writing (0-30)
+                    {t("ep.toeflWriting")}
                   </label>
                   <input
                     type="number"
@@ -407,7 +407,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    Speaking (0-30)
+                    {t("ep.toeflSpeaking")}
                   </label>
                   <input
                     type="number"

@@ -46,15 +46,15 @@ function getCompetitionColor(level: string): string {
   }
 }
 
-function competitionLabel(level: string): string {
+function competitionLabel(level: string, t: (key: string, fallback?: string) => string): string {
   const map: Record<string, string> = {
-    "low": "Low 🟢",
-    "low-medium": "Low-Medium 🟡",
-    "medium": "Medium 🟡",
-    "medium-low": "Medium-Low 🟡",
-    "high": "High 🔴",
-    "very-high": "Very High 🔴",
-    "not-available": "N/A",
+    "low": t("sn.competition.low", "Low"),
+    "low-medium": t("sn.competition.lowMedium", "Low-Medium"),
+    "medium": t("sn.competition.medium", "Medium"),
+    "medium-low": t("sn.competition.mediumLow", "Medium-Low"),
+    "high": t("sn.competition.high", "High"),
+    "very-high": t("sn.competition.veryHigh", "Very High"),
+    "not-available": t("sn.competition.na", "N/A"),
   };
   return map[level] || level;
 }
@@ -347,7 +347,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                         <div className={`rounded-lg p-2 ${getCompetitionColor(state.competitionLevel)}`}>
                           <p className="text-xs font-medium">{t("sn.competition", "Competition")}</p>
                           <p className="text-sm font-semibold">
-                            {competitionLabel(state.competitionLevel).split(" ")[0]}
+                            {competitionLabel(state.competitionLevel, t)}
                           </p>
                         </div>
                       </div>
@@ -442,7 +442,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span className={`rounded px-2 py-1 text-xs font-semibold ${getCompetitionColor(state.competitionLevel)}`}>
-                          {competitionLabel(state.competitionLevel).split(" ")[0]}
+                            {competitionLabel(state.competitionLevel, t)}
                         </span>
                       </td>
                     </tr>

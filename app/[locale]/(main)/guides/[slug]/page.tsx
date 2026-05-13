@@ -80,10 +80,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const g = guide as Record<string, string>;
+  const localTitle = locale === "tr" ? g.title_tr ?? guide.title : locale === "zh-Hans" ? g.title_zh ?? guide.title : guide.title;
+  const localExcerpt = locale === "tr" ? g.excerpt_tr ?? guide.excerpt : locale === "zh-Hans" ? g.excerpt_zh ?? guide.excerpt : guide.excerpt;
   return {
     metadataBase: siteUrl,
-    title: `${guide.title} | LogiVisa Hub`,
-    description: guide.excerpt,
+    title: `${localTitle} | LogiVisa Hub`,
+    description: localExcerpt,
     alternates: {
       canonical: `/${locale}/guides/${guide.slug}`,
       languages: {
@@ -93,8 +96,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     },
     openGraph: {
-      title: `${guide.title} | LogiVisa Hub`,
-      description: guide.excerpt,
+      title: `${localTitle} | LogiVisa Hub`,
+      description: localExcerpt,
       type: "article",
       url: `/${locale}/guides/${guide.slug}`,
       publishedTime: guide.date,
@@ -106,10 +109,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function GuideArticlePage({ params }: PageProps) {
   const { locale, slug } = await params;
   const guide = findGuide(slug);
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   if (!guide) notFound();
 
   const blocks = guide.content.split("\n\n").filter(Boolean);
+    const g = guide as Record<string, string>;
+    const localTitle = isTr ? g.title_tr ?? guide.title : isZh ? g.title_zh ?? guide.title : guide.title;
+    const localExcerpt = isTr ? g.excerpt_tr ?? guide.excerpt : isZh ? g.excerpt_zh ?? guide.excerpt : guide.excerpt;
+    const localCategory = isTr ? g.category_tr ?? guide.category : isZh ? g.category_zh ?? guide.category : guide.category;
   const midpoint = Math.max(2, Math.floor(blocks.length / 2));
   const firstHalf = blocks.slice(0, midpoint);
   const secondHalf = blocks.slice(midpoint);
@@ -122,22 +132,22 @@ export default async function GuideArticlePage({ params }: PageProps) {
           className="inline-flex items-center gap-2 text-sm font-bold text-cyan-800 transition-colors hover:text-cyan-950"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to guides
+          {tx("Back to guides", "Rehberlere dön", "返回指南")}
         </Link>
 
         <header className="mt-10 border-b border-slate-200 pb-10">
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-cyan-800">
-              {guide.category}
+              {localCategory}
             </span>
             <time className="text-sm font-medium text-slate-500" dateTime={guide.date}>
               {formatDate(guide.date)}
             </time>
           </div>
           <h1 className="mt-6 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-            {guide.title}
+            {localTitle}
           </h1>
-          <p className="mt-6 text-xl leading-8 text-slate-600">{guide.excerpt}</p>
+          <p className="mt-6 text-xl leading-8 text-slate-600">{localExcerpt}</p>
         </header>
 
         <div className="mt-10">

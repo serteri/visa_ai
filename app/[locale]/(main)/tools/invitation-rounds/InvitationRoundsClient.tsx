@@ -79,6 +79,7 @@ function SummaryCard({
   latest: Round | undefined;
   previous: Round | undefined;
 }) {
+  const { t } = useTranslation();
   const hasLatestPoints = typeof latest?.lowestPoints === "number";
   const hasPreviousPoints = typeof previous?.lowestPoints === "number";
 
@@ -103,7 +104,7 @@ function SummaryCard({
           <span
             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${SUBCLASS_BG[subclass]}`}
           >
-            Subclass {subclass}
+            {t("ir.subclassLabel")} {subclass}
           </span>
           <p className="mt-1.5 text-xs text-slate-500">{visaName}</p>
         </div>
@@ -113,7 +114,7 @@ function SummaryCard({
         <>
           <p className="mt-3 text-3xl font-bold text-slate-900">
             {formatPoints(latest.lowestPoints)}
-            <span className="ml-1 text-base font-normal text-slate-500">pts</span>
+            <span className="ml-1 text-base font-normal text-slate-500">{t("ir.pts")}</span>
           </p>
           <p className="mt-0.5 text-xs text-slate-400">{formatDate(latest.date)}</p>
           {delta !== 0 && (
@@ -123,12 +124,12 @@ function SummaryCard({
               }`}
             >
               {delta > 0 ? "+" : ""}
-              {delta} vs previous round
+              {delta} {t("ir.vsPreviousRound")}
             </p>
           )}
         </>
       ) : (
-        <p className="mt-3 text-sm text-slate-400">No data</p>
+        <p className="mt-3 text-sm text-slate-400">{t("ir.noData")}</p>
       )}
     </div>
   );
