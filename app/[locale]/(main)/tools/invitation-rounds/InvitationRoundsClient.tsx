@@ -113,7 +113,7 @@ function SummaryCard({
       {latest ? (
         <>
           <p className="mt-3 text-3xl font-bold text-slate-900">
-            {formatPoints(latest.lowestPoints)}
+            {typeof latest.lowestPoints === "number" ? latest.lowestPoints : t("ir.varied", "Varied")}
             <span className="ml-1 text-base font-normal text-slate-500">{t("ir.pts")}</span>
           </p>
           <p className="mt-0.5 text-xs text-slate-400">{formatDate(latest.date)}</p>

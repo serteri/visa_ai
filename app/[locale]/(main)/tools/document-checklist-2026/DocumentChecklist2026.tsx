@@ -20,15 +20,15 @@ import { useTranslation } from "@/contexts/language-context";
 
 type CheckItem = {
   id: string;
-  label: string;
-  note?: string;
+  labelKey: string;
+  noteKey?: string;
 };
 
 type Section = {
   id: string;
   icon: React.ReactNode;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   color: string;
   items: CheckItem[];
 };
@@ -37,94 +37,79 @@ const SECTIONS: Section[] = [
   {
     id: "skills-assessment",
     icon: <FileText className="h-5 w-5" />,
-    title: "Skills Assessment Evidence",
-    subtitle: "Required by your assessing authority (ACS, VETASSESS, Engineers Australia, etc.)",
+    titleKey: "dc.section.skillsAssessmentTitle",
+    subtitleKey: "dc.section.skillsAssessmentSubtitle",
     color: "cyan",
     items: [
-      { id: "sa-1", label: "Academic transcripts (certified copies of all degrees/diplomas)" },
-      { id: "sa-2", label: "Degree certificates or graduation letters" },
-      { id: "sa-3", label: "Detailed employment reference letters (on company letterhead, signed)" },
-      { id: "sa-4", label: "Payslips or salary evidence for each role claimed" },
-      { id: "sa-5", label: "Tax records or employment contracts to corroborate dates" },
-      { id: "sa-6", label: "Professional registration or licence certificates (if applicable)" },
-      { id: "sa-7", label: "Certified English translations of all non-English documents" },
+      { id: "sa-1", labelKey: "dc.checklist.sa1" },
+      { id: "sa-2", labelKey: "dc.checklist.sa2" },
+      { id: "sa-3", labelKey: "dc.checklist.sa3" },
+      { id: "sa-4", labelKey: "dc.checklist.sa4" },
+      { id: "sa-5", labelKey: "dc.checklist.sa5" },
+      { id: "sa-6", labelKey: "dc.checklist.sa6" },
+      { id: "sa-7", labelKey: "dc.checklist.sa7" },
       {
         id: "sa-8",
-        label: "NAATI-certified translation for Mandarin / Turkish documents",
-        note: "NAATI certification is required for documents submitted to Australian government bodies.",
+        labelKey: "dc.checklist.sa8",
+        noteKey: "dc.checklist.sa8note",
       },
-      { id: "sa-9", label: "Passport copies (bio page) for identity verification" },
-      { id: "sa-10", label: "Statutory declaration if gaps in employment exist" },
+      { id: "sa-9", labelKey: "dc.checklist.sa9" },
+      { id: "sa-10", labelKey: "dc.checklist.sa10" },
     ],
   },
   {
     id: "employment",
     icon: <Briefcase className="h-5 w-5" />,
-    title: "Employment Evidence",
-    subtitle: "To support skilled work experience points claims and sponsor checks",
+    titleKey: "dc.section.employmentTitle",
+    subtitleKey: "dc.section.employmentSubtitle",
     color: "violet",
     items: [
-      { id: "em-1", label: "Reference letter from each employer (dates, duties, job title, hours per week)" },
-      { id: "em-2", label: "Separation certificate or resignation letter (if employment has ended)" },
-      { id: "em-3", label: "Organisation chart showing your position (for senior roles)" },
-      { id: "em-4", label: "Payslips — at least 3 consecutive months per role" },
-      { id: "em-5", label: "Bank statements matching payslip deposits (last 6 months)" },
-      { id: "em-6", label: "Employment contract or offer letter specifying ANZSCO-aligned duties" },
+      { id: "em-1", labelKey: "dc.checklist.em1" },
+      { id: "em-2", labelKey: "dc.checklist.em2" },
+      { id: "em-3", labelKey: "dc.checklist.em3" },
+      { id: "em-4", labelKey: "dc.checklist.em4" },
+      { id: "em-5", labelKey: "dc.checklist.em5" },
+      { id: "em-6", labelKey: "dc.checklist.em6" },
       {
         id: "em-7",
-        label: "ABN registration or business registration certificate (if self-employed)",
-        note: "Self-employment evidence requirements differ per assessing body — check your authority's guidelines.",
+        labelKey: "dc.checklist.em7",
+        noteKey: "dc.checklist.em7note",
       },
-      { id: "em-8", label: "LinkedIn profile printout (supplementary, not a substitute)" },
-      { id: "em-9", label: "Overseas work: apostille or authentication by competent authority" },
+      { id: "em-8", labelKey: "dc.checklist.em8" },
+      { id: "em-9", labelKey: "dc.checklist.em9" },
     ],
   },
   {
     id: "points-claims",
     icon: <BarChart2 className="h-5 w-5" />,
-    title: "Points Test Claims",
-    subtitle: "Documents needed to substantiate each points factor in your EOI",
+    titleKey: "dc.section.pointsClaimsTitle",
+    subtitleKey: "dc.section.pointsClaimsSubtitle",
     color: "emerald",
     items: [
-      { id: "pt-1", label: "English test results — IELTS, PTE, TOEFL or OET (within 3 years)" },
+      { id: "pt-1", labelKey: "dc.checklist.pt1" },
       {
         id: "pt-2",
-        label: "Superior English (8+ on all IELTS bands) — official test report form",
-        note: "Competent English (6+) vs. Proficient (7+) vs. Superior (8+) carry different point values.",
+        labelKey: "dc.checklist.pt2",
+        noteKey: "dc.checklist.pt2note",
       },
-      { id: "pt-3", label: "Age: valid passport showing date of birth" },
-      { id: "pt-4", label: "Australian study: completion letter + transcript from CRICOS-registered provider" },
-      { id: "pt-5", label: "Specialist education (doctorate): official award letter" },
-      { id: "pt-6", label: "Australian work experience: ATO income statements or myGov records" },
-      { id: "pt-7", label: "Overseas work experience: same evidence as Skills Assessment section" },
-      { id: "pt-8", label: "State / territory nomination letter (subclass 190 or 491)" },
-      { id: "pt-9", label: "Partner skills: partner's positive skills assessment + English evidence" },
-      { id: "pt-10", label: "Community language: NAATI accreditation certificate (if claiming +5 pts)" },
+      { id: "pt-3", labelKey: "dc.checklist.pt3" },
+      { id: "pt-4", labelKey: "dc.checklist.pt4" },
+      { id: "pt-5", labelKey: "dc.checklist.pt5" },
+      { id: "pt-6", labelKey: "dc.checklist.pt6" },
+      { id: "pt-7", labelKey: "dc.checklist.pt7" },
+      { id: "pt-8", labelKey: "dc.checklist.pt8" },
+      { id: "pt-9", labelKey: "dc.checklist.pt9" },
+      { id: "pt-10", labelKey: "dc.checklist.pt10" },
     ],
   },
 ];
 
 const FAQ_ITEMS = [
-  {
-    q: "Can I apply for a Subclass 600 Tourist Visa while waiting for my skilled visa?",
-    a: "Yes, but be cautious. Holding a tourist visa does not affect your EOI or skills assessment. However, if you intend to stay in Australia long-term, the Department may view frequent tourist visa applications as inconsistent with a genuine temporary stay. Apply with clear travel purpose documentation.",
-  },
-  {
-    q: "Does a skills assessment automatically mean I'll be invited?",
-    a: "No. A positive skills assessment makes you eligible to submit an Expression of Interest (EOI), but invitation depends on your points score relative to others in the pool. Many occupations require 90–100+ points for a realistic chance.",
-  },
-  {
-    q: "How long are skills assessments valid?",
-    a: "Most assessing authorities issue assessments valid for 3 years. ACS assessments expire after 3 years from the date of issue. Check your specific authority's rules.",
-  },
-  {
-    q: "What if my documents are in a language other than English?",
-    a: "All documents must be accompanied by an English translation by a NAATI-certified translator. Self-translations are not accepted. Allow 2–4 weeks for NAATI translation turnaround.",
-  },
-  {
-    q: "Do I need all these documents before lodging an EOI?",
-    a: "No. You submit an EOI based on your claimed information. Documents are only verified after you receive an invitation and lodge the actual visa application. However, you must have evidence available before claiming points.",
-  },
+  { q: "dc.faq.q1", a: "dc.faq.a1" },
+  { q: "dc.faq.q2", a: "dc.faq.a2" },
+  { q: "dc.faq.q3", a: "dc.faq.a3" },
+  { q: "dc.faq.q4", a: "dc.faq.a4" },
+  { q: "dc.faq.q5", a: "dc.faq.a5" },
 ];
 
 function colorClasses(color: string) {
@@ -160,10 +145,11 @@ function colorClasses(color: string) {
   }
 }
 
-function ChecklistSection({ section, checked, onToggle }: {
+function ChecklistSection({ section, checked, onToggle, t }: {
   section: Section;
   checked: Set<string>;
   onToggle: (id: string) => void;
+  t: (key: string) => string;
 }) {
   const [open, setOpen] = useState(true);
   const done = section.items.filter((i) => checked.has(i.id)).length;
@@ -179,12 +165,12 @@ function ChecklistSection({ section, checked, onToggle }: {
         <span className={`flex-shrink-0 rounded-xl p-2.5 ${c.iconBg}`}>{section.icon}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-white text-base">{section.title}</span>
+            <span className="font-semibold text-white text-base">{t(section.titleKey)}</span>
             <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${c.badge}`}>
               {done}/{section.items.length}
             </span>
           </div>
-          <p className="text-slate-400 text-sm mt-0.5 hidden sm:block">{section.subtitle}</p>
+          <p className="text-slate-400 text-sm mt-0.5 hidden sm:block">{t(section.subtitleKey)}</p>
           <div className="mt-2 h-1.5 rounded-full bg-slate-800 w-full">
             <div
               className={`h-full rounded-full transition-all duration-500 ${c.progress}`}
@@ -220,12 +206,12 @@ function ChecklistSection({ section, checked, onToggle }: {
                         isDone ? "line-through text-slate-500" : "text-slate-200"
                       }`}
                     >
-                      {item.label}
+                      {t(item.labelKey)}
                     </span>
-                    {item.note && (
+                    {item.noteKey && (
                       <p className="text-xs text-slate-500 mt-1 flex gap-1.5 items-start">
                         <AlertTriangle className="h-3 w-3 flex-shrink-0 mt-0.5 text-amber-500" />
-                        {item.note}
+                        {t(item.noteKey)}
                       </p>
                     )}
                   </div>
@@ -239,7 +225,7 @@ function ChecklistSection({ section, checked, onToggle }: {
   );
 }
 
-function FaqItem({ q, a }: { q: string; a: string }) {
+function FaqItem({ q, a, t }: { q: string; a: string; t: (key: string) => string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border border-slate-700/50 rounded-xl overflow-hidden">
@@ -247,7 +233,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
         onClick={() => setOpen((v) => !v)}
       >
-        <span className="text-sm font-medium text-slate-200">{q}</span>
+        <span className="text-sm font-medium text-slate-200">{t(q)}</span>
         {open ? (
           <ChevronUp className="h-4 w-4 flex-shrink-0 text-slate-500" />
         ) : (
@@ -256,7 +242,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       </button>
       {open && (
         <div className="px-5 pb-4">
-          <p className="text-sm text-slate-400 leading-relaxed">{a}</p>
+          <p className="text-sm text-slate-400 leading-relaxed">{t(a)}</p>
         </div>
       )}
     </div>
@@ -338,6 +324,7 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
               section={section}
               checked={checked}
               onToggle={toggle}
+              t={t}
             />
           ))}
         </div>
@@ -361,7 +348,7 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
           <h2 className="text-xl font-bold text-white mb-4">{t("dc.faqTitle", "Frequently Asked Questions")}</h2>
           <div className="space-y-2">
             {FAQ_ITEMS.map((item) => (
-              <FaqItem key={item.q} q={item.q} a={item.a} />
+              <FaqItem key={item.q} q={item.q} a={item.a} t={t} />
             ))}
           </div>
         </div>

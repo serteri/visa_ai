@@ -63,29 +63,14 @@ const DOT_MAP: Record<string, string> = {
 };
 
 const FAQ_ITEMS = [
-  {
-    q: "What is a skills assessment?",
-    a: "A skills assessment is an evaluation of your qualifications and work experience by a designated assessing authority. It confirms your skills are comparable to Australian standards for your nominated occupation, and is required for most skilled migration visa applications.",
-  },
-  {
-    q: "How long does a skills assessment take?",
-    a: "Processing times vary by assessing body and the complexity of your case. Most assessments take 4–16 weeks. ACS and accounting bodies are typically faster (4–8 weeks), while Engineers Australia and AHPRA can take 3–6 months.",
-  },
-  {
-    q: "How much does a skills assessment cost?",
-    a: "Fees range from around AUD 290 to AUD 870 depending on the assessing authority. Some bodies charge additional fees for priority processing or if extra documentation is required. Check the official website for the most current fee schedule.",
-  },
-  {
-    q: "Can I appeal a negative skills assessment?",
-    a: "Yes. Most assessing bodies offer a formal review or appeal process if your assessment is unsuccessful. You can usually submit additional evidence or request a reassessment. The fee and process varies — refer to the specific body's website for details.",
-  },
-  {
-    q: "Do I need a skills assessment for all visas?",
-    a: "Skills assessments are required for most points-tested visas (subclass 189, 190, 491) and some employer-sponsored visas. They are generally not required for student visas, visitor visas, or partner visas. Always verify with the Department of Home Affairs or a registered migration agent.",
-  },
+  { q: "sa.faq.q1", a: "sa.faq.a1" },
+  { q: "sa.faq.q2", a: "sa.faq.a2" },
+  { q: "sa.faq.q3", a: "sa.faq.a3" },
+  { q: "sa.faq.q4", a: "sa.faq.a4" },
+  { q: "sa.faq.q5", a: "sa.faq.a5" },
 ];
 
-function FaqItem({ q, a }: { q: string; a: string }) {
+function FaqItem({ q, a, t }: { q: string; a: string; t: (key: string) => string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-slate-100 last:border-0">
@@ -94,14 +79,14 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between gap-4 py-4 text-left"
       >
-        <span className="text-sm font-semibold text-slate-800">{q}</span>
+        <span className="text-sm font-semibold text-slate-800">{t(q)}</span>
         {open ? (
           <ChevronUp className="h-4 w-4 shrink-0 text-slate-400" />
         ) : (
           <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
         )}
       </button>
-      {open && <p className="pb-4 text-sm leading-relaxed text-slate-500">{a}</p>}
+      {open && <p className="pb-4 text-sm leading-relaxed text-slate-500">{t(a)}</p>}
     </div>
   );
 }
@@ -464,7 +449,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
             <h2 className="text-lg font-bold text-slate-900">{t("sa.faqTitle", "Frequently Asked Questions")}</h2>
           </div>
           {FAQ_ITEMS.map((item) => (
-            <FaqItem key={item.q} q={item.q} a={item.a} />
+            <FaqItem key={item.q} q={item.q} a={item.a} t={t} />
           ))}
         </div>
 

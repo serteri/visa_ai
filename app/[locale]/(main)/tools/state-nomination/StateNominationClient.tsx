@@ -60,26 +60,10 @@ function competitionLabel(level: string, t: (key: string, fallback?: string) => 
 }
 
 const FAQ_ITEMS = [
-  {
-    question: "What is state nomination (190 & 491)?",
-    answer:
-      "State nomination is when an Australian state sponsors you for skilled migration. The 190 Skilled Nominated visa adds 5 bonus points, while 491 Skilled Work Regional adds 15 points but requires living in designated regional areas for 3 years.",
-  },
-  {
-    question: "How much does 190 nomination add to my points?",
-    answer:
-      "A 190 Skilled Nominated visa sponsorship adds exactly 5 additional points to your total score. This is the key advantage of state sponsorship for skilled migration.",
-  },
-  {
-    question: "How much does 491 nomination add?",
-    answer:
-      "The 491 Skilled Work Regional visa adds 15 points plus 10 location bonus points (5 + 5 year) if you meet the regional living requirements for 3+ years. However, it requires a 3-year commitment to designated regional areas.",
-  },
-  {
-    question: "Which state is easiest to get nominated?",
-    answer:
-      "Northern Territory and Tasmania typically have the lowest competition and fastest processing times. However, the 'easiest' state depends on your occupation, points, and location preferences. Use this tool to check which states actively sponsor your occupation.",
-  },
+  { q: "sn.faq.q1", a: "sn.faq.a1" },
+  { q: "sn.faq.q2", a: "sn.faq.a2" },
+  { q: "sn.faq.q3", a: "sn.faq.a3" },
+  { q: "sn.faq.q4", a: "sn.faq.a4" },
 ];
 
 export function StateNominationClient({ locale }: { locale: string }) {
@@ -470,7 +454,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
               >
                 <div className="flex items-center justify-between p-4">
                   <h3 className="font-semibold text-slate-900 dark:text-white">
-                    {item.question}
+                    {t(item.q)}
                   </h3>
                   <ChevronDown
                     className={`h-5 w-5 transition-transform ${
@@ -480,7 +464,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                 </div>
                 {openFaqIndex === index && (
                   <div className="border-t border-slate-200 px-4 py-3 dark:border-slate-700">
-                    <p className="text-slate-600 dark:text-slate-300">{item.answer}</p>
+                    <p className="text-slate-600 dark:text-slate-300">{t(item.a)}</p>
                   </div>
                 )}
               </Card>

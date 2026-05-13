@@ -53,8 +53,8 @@ export function Header({
           Logi<span className="text-violet-600">Visa</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex md:items-center md:gap-6 lg:gap-8">
+        {/* Desktop Navigation - Hidden on lg and below */}
+        <div className="hidden lg:flex lg:items-center lg:gap-8">
           {/* Visas dropdown */}
           <div className="group relative">
             <button
@@ -85,18 +85,6 @@ export function Header({
             </div>
           </div>
 
-          <Link
-            href={`/${locale}/checker`}
-            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
-          >
-            {checkerLabel}
-          </Link>
-          <Link
-            href={`/${locale}/assistant`}
-            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
-          >
-            {assistantLabel}
-          </Link>
           {/* Tools dropdown */}
           <div className="group relative">
             <button
@@ -135,18 +123,14 @@ export function Header({
               </Link>
             </div>
           </div>
+
           <Link
             href={`/${locale}/guides`}
             className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
           >
             {guidesLabel}
           </Link>
-          <Link
-            href={`/${locale}/full-check`}
-            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
-          >
-            {fullReportLabel}
-          </Link>
+
           {showAdmin ? (
             <Link
               href={`/${locale}/admin/dashboard`}
@@ -156,7 +140,7 @@ export function Header({
             </Link>
           ) : null}
 
-          <div className="ml-2 flex items-center gap-3 border-l border-slate-200 pl-6 dark:border-white/10">
+          <div className="ml-2 flex items-center gap-2 border-l border-slate-200 pl-6 dark:border-white/10">
             <LanguageSelector currentLocale={locale} compact />
 
             {!isSignedIn ? (
@@ -208,8 +192,105 @@ export function Header({
           </div>
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <div className="flex items-center gap-4 md:hidden">
+        {/* Medium Screen Navigation (md to lg) - Show essential items only */}
+        <div className="hidden md:flex lg:hidden md:items-center md:gap-2">
+          {/* Visas dropdown */}
+          <div className="group relative">
+            <button
+              type="button"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            >
+              {visasLabel}
+              <svg
+                className="h-3.5 w-3.5 transition-transform group-hover:rotate-180"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[240px] translate-y-2 rounded-xl border border-white/40 bg-white/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/90">
+              {VISA_LINKS.map((v) => (
+                <Link
+                  key={v.subclass}
+                  href={`/${locale}/visas/${v.subclass}`}
+                  className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                >
+                  {isTr ? v.tr : isZh ? v.zh : v.en}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Tools dropdown */}
+          <div className="group relative">
+            <button
+              type="button"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            >
+              {toolsLabel}
+              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-white/40 bg-white/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/90">
+              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {pointsCalcLabel}
+              </Link>
+              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {englishPointsLabel}
+              </Link>
+              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {invRoundsLabel}
+              </Link>
+              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {skillsAssessLabel}
+              </Link>
+              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                ANZSCO Finder
+              </Link>
+              <Link href={`/${locale}/tools/state-nomination`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {stateNominationLabel}
+              </Link>
+              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
+              </Link>
+              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+                {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
+              </Link>
+            </div>
+          </div>
+
+          <Link
+            href={`/${locale}/guides`}
+            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+          >
+            {guidesLabel}
+          </Link>
+
+          <Button
+            asChild
+            className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-3 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
+          >
+            <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
+          </Button>
+
+          <div className="ml-2 flex items-center gap-2 border-l border-slate-200 pl-2 dark:border-white/10">
+            <LanguageSelector currentLocale={locale} compact />
+            <button
+              type="button"
+              className="text-slate-600 dark:text-slate-300"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Toggle (sm and below) */}
+        <div className="flex md:hidden items-center gap-2">
           <LanguageSelector currentLocale={locale} />
           <button
             type="button"
