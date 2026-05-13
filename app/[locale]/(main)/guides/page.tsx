@@ -91,27 +91,37 @@ export default async function GuidesIndexPage({ params }: PageProps) {
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-6 md:grid-cols-2">
-          {guides.map((guide) => (
+          {guides.map((guide) => {
+            const g = guide as Record<string, unknown>;
+            const localCategory = locale === "tr" ? (g.category_tr as string | undefined) ?? guide.category : locale === "zh-Hans" ? (g.category_zh as string | undefined) ?? guide.category : guide.category;
+            const localTitle = locale === "tr" ? (g.title_tr as string | undefined) ?? guide.title : locale === "zh-Hans" ? (g.title_zh as string | undefined) ?? guide.title : guide.title;
+            const localExcerpt = locale === "tr" ? (g.excerpt_tr as string | undefined) ?? guide.excerpt : locale === "zh-Hans" ? (g.excerpt_zh as string | undefined) ?? guide.excerpt : guide.excerpt;
+            const readTime = (g.readTime as number | undefined) ?? 7;
+
+            return (
             <Link key={guide.slug} href={`/${locale}/guides/${guide.slug}`} className="group">
               <Card className="h-full overflow-hidden rounded-2xl border-slate-200 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-cyan-200 hover:shadow-[0_28px_80px_-50px_rgba(8,145,178,0.6)]">
                 <CardContent className="flex h-full flex-col p-6">
                   <div className="flex items-center justify-between gap-4">
                     <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-cyan-800">
-                      {locale === "tr" ? (guide as Record<string, string>).category_tr ?? guide.category : locale === "zh-Hans" ? (guide as Record<string, string>).category_zh ?? guide.category : guide.category}
+                      {localCategory}
                     </span>
-                    <time className="text-sm font-medium text-slate-500" dateTime={guide.date}>
+                    <div className="text-right">
+                    <time className="block text-sm font-medium text-slate-500" dateTime={guide.date}>
                       {new Date(guide.date).toLocaleDateString("en-AU", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
                     </time>
+                    <span className="text-xs text-slate-500">{readTime} {tx("min read", "dk okuma", "分钟阅读")}</span>
+                    </div>
                   </div>
 
                   <h2 className="mt-6 text-2xl font-bold leading-8 tracking-tight text-slate-950">
-                    {locale === "tr" ? (guide as Record<string, string>).title_tr ?? guide.title : locale === "zh-Hans" ? (guide as Record<string, string>).title_zh ?? guide.title : guide.title}
+                    {localTitle}
                   </h2>
-                  <p className="mt-4 flex-1 text-base leading-7 text-slate-600">{locale === "tr" ? (guide as Record<string, string>).excerpt_tr ?? guide.excerpt : locale === "zh-Hans" ? (guide as Record<string, string>).excerpt_zh ?? guide.excerpt : guide.excerpt}</p>
+                  <p className="mt-4 flex-1 text-base leading-7 text-slate-600">{localExcerpt}</p>
 
                   <div className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-cyan-800">
                     {tx("Read guide", "Rehberi oku", "阅读指南")}
@@ -120,7 +130,7 @@ export default async function GuidesIndexPage({ params }: PageProps) {
                 </CardContent>
               </Card>
             </Link>
-          ))}
+          );})}
         </div>
       </section>
     </main>
