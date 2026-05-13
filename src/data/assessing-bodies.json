@@ -3,7 +3,7 @@
     "ACS": {
       "name": "Australian Computer Society",
       "shortName": "ACS",
-      "website": "https://www.acs.org.au/msa/acs-skills-assessment.html",
+        "website": "https://www.acs.org.au/msa",
       "fee": "AUD 530",
       "processingTime": "4–6 weeks",
       "description": "Assesses ICT professionals for skilled migration visa applications.",
@@ -21,7 +21,7 @@
     "ANMAC": {
       "name": "Australian Nursing and Midwifery Accreditation Council",
       "shortName": "ANMAC",
-      "website": "https://anmac.org.au/skills-assessment",
+        "website": "https://www.anmac.org.au",
       "fee": "AUD 765",
       "processingTime": "8–12 weeks",
       "description": "Assesses nursing and midwifery qualifications for Australian migration.",
@@ -48,7 +48,7 @@
     "CPAA": {
       "name": "CPA Australia",
       "shortName": "CPA Australia",
-      "website": "https://www.cpaaustralia.com.au/about-cpa-australia/migration-skills-assessment",
+        "website": "https://www.cpaaustralia.com.au",
       "fee": "AUD 540",
       "processingTime": "4–8 weeks",
       "description": "Assesses accounting and finance professionals for Australian skilled migration.",
@@ -66,7 +66,7 @@
     "IPA": {
       "name": "Institute of Public Accountants",
       "shortName": "IPA",
-      "website": "https://www.publicaccountants.org.au/skills-assessment",
+        "website": "https://www.ipaa.org.au",
       "fee": "AUD 400",
       "processingTime": "4–6 weeks",
       "description": "Assesses public accountants for Australian skilled migration.",
@@ -84,7 +84,7 @@
     "ACWA": {
       "name": "Australian Community Workers Association",
       "shortName": "ACWA",
-      "website": "https://www.acwa.org.au/skills-assessment",
+        "website": "https://www.acwa.org.au",
       "fee": "AUD 500",
       "processingTime": "8–12 weeks",
       "description": "Assesses community and social workers for Australian migration.",
