@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, TrendingUp, BookOpen, ArrowRight } from "lucide-react";
+import { useTranslation } from "@/contexts/language-context";
 
 type TestType = "ielts" | "pte" | "toefl" | "oet";
 type OetGrade = "A" | "B" | "C+" | "";
@@ -124,6 +125,7 @@ const TIPS = [
 ];
 
 export function EnglishPointsClient({ locale }: { locale: string }) {
+  const { t } = useTranslation();
   const [testType, setTestType] = useState<TestType>("ielts");
   const [ieltsTScores, setIeltsScores] = useState<IeltsScores>({
     listening: 6.0,
@@ -243,12 +245,12 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
 
   const levelLabel =
     currentLevel === "superior"
-      ? ENGLISH_LEVELS.superior.label
+      ? t("ep.superiorEnglish", ENGLISH_LEVELS.superior.label)
       : currentLevel === "proficient"
-        ? ENGLISH_LEVELS.proficient.label
+        ? t("ep.proficientEnglish", ENGLISH_LEVELS.proficient.label)
         : currentLevel === "competent"
-          ? ENGLISH_LEVELS.competent.label
-          : "Does Not Meet Minimum";
+          ? t("ep.competentEnglish", ENGLISH_LEVELS.competent.label)
+          : t("ep.doesNotMeetMinimum", "Does Not Meet Minimum");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-4 py-8 dark:from-slate-950 dark:to-slate-900">
@@ -256,10 +258,10 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
         {/* Header */}
         <div className="space-y-3 text-center">
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white">
-            English Test Points Calculator
+            {t("ep.title", "English Test Points Calculator")}
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-300">
-            See how many points your English test score is worth
+            {t("ep.subtitle", "See how many points your English test score is worth")}
           </p>
         </div>
 
@@ -293,7 +295,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
         {/* Score Inputs */}
         <Card>
           <CardHeader>
-            <CardTitle>Enter Your Scores</CardTitle>
+            <CardTitle>{t("ep.enterScores", "Enter Your Scores")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {testType === "ielts" && (
@@ -441,7 +443,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
                       }
                       className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                     >
-                      <option value="">Select grade</option>
+                      <option value="">{t("ep.selectGrade", "Select grade")}</option>
                       <option value="A">A (Mastery)</option>
                       <option value="B">B (Proficiency)</option>
                       <option value="C+">C+ (Competence)</option>
@@ -456,11 +458,11 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
         {/* Results */}
         <Card className={`bg-gradient-to-r ${levelColor} text-white`}>
           <CardContent className="pt-6 text-center">
-            <p className="text-sm font-semibold opacity-90">Your English Level</p>
+            <p className="text-sm font-semibold opacity-90">{t("ep.yourEnglishLevel", "Your English Level")}</p>
             <h2 className="text-4xl font-bold">{levelLabel}</h2>
             <div className="mt-4 flex items-center justify-center gap-3">
               <TrendingUp className="h-6 w-6" />
-              <span className="text-3xl font-bold">+{points} points</span>
+              <span className="text-3xl font-bold">+{points} {t("ep.points", "points")}</span>
             </div>
           </CardContent>
         </Card>
@@ -468,17 +470,17 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
         {/* Requirements Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Points Breakdown by Level</CardTitle>
+            <CardTitle>{t("ep.pointsBreakdown", "Points Breakdown by Level")}</CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b-2 border-slate-200 dark:border-slate-700">
-                  <th className="px-4 py-3 text-left font-semibold">Level</th>
+                  <th className="px-4 py-3 text-left font-semibold">{t("ep.level", "Level")}</th>
                   <th className="px-4 py-3 text-left font-semibold">
                     {testType === "ielts" ? "IELTS" : testType === "pte" ? "PTE" : "TOEFL"}
                   </th>
-                  <th className="px-4 py-3 text-center font-semibold">Points</th>
+                  <th className="px-4 py-3 text-center font-semibold">{t("ep.points", "Points")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -520,7 +522,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
               <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
               <div>
                 <p className="font-semibold text-amber-900 dark:text-amber-200">
-                  How much do you need to improve?
+                  {t("ep.improvementTitle", "How much do you need to improve?")}
                 </p>
                 <p className="mt-1 text-sm text-amber-800 dark:text-amber-300">
                   {improvementNeeded}
@@ -535,7 +537,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="h-5 w-5" />
-              Tips for Improving Your Score
+              {t("ep.tipsTitle", "Tips for Improving Your Score")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -556,14 +558,14 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
         <Card className="border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 dark:border-indigo-800 dark:from-indigo-900/20 dark:to-purple-900/20">
           <CardContent className="space-y-4 pt-6 text-center">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-              See how English affects your total points score
+              {t("ep.ctaTitle", "See how English affects your total points score")}
             </h3>
             <p className="text-slate-600 dark:text-slate-300">
-              Factor in your age, education, and work experience to get your complete visa points score.
+              {t("ep.ctaText", "Factor in your age, education, and work experience to get your complete visa points score.")}
             </p>
             <Link href={`/${locale}/tools/points-calculator`}>
               <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
-                Go to Full Points Calculator
+                {t("ep.ctaButton", "Go to Full Points Calculator")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>

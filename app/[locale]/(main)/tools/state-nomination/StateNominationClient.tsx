@@ -6,6 +6,7 @@ import { Search, ChevronDown, CheckCircle, AlertCircle, XCircle, ArrowRight } fr
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/contexts/language-context";
 
 import statesData from "@/src/data/states.json";
 import anzscoData from "@/src/data/anzsco-list.json";
@@ -82,6 +83,7 @@ const FAQ_ITEMS = [
 ];
 
 export function StateNominationClient({ locale }: { locale: string }) {
+  const { t } = useTranslation();
   const [selectedOccupationCode, setSelectedOccupationCode] = useState<string>("");
   const [occupationSearch, setOccupationSearch] = useState<string>("");
   const [points, setPoints] = useState<number>(70);
@@ -144,13 +146,13 @@ export function StateNominationClient({ locale }: { locale: string }) {
         {/* Header */}
         <div className="space-y-3 text-center">
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white">
-            State Nomination Finder
+            {t("sn.title", "State Nomination Finder")}
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-300">
-            Find which Australian states will nominate you for 190 or 491 visa
+            {t("sn.subtitle", "Find which Australian states will nominate you for 190 or 491 visa")}
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Nomination data: DoHA — 1 Jul 2025 to 30 Apr 2026
+            {t("sn.sourceNote", "Nomination data: DoHA — 1 Jul 2025 to 30 Apr 2026")}
           </p>
         </div>
 
@@ -162,7 +164,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                 {/* Occupation Search */}
                 <div className="relative md:col-span-2">
                   <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    Occupation (ANZSCO code or name)
+                    {t("sn.occupationLabel", "Occupation (ANZSCO code or name)")}
                   </label>
                   <div className="relative">
                     <Search className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
@@ -175,7 +177,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                       }}
                       onFocus={() => setShowOccupationDropdown(true)}
                       onBlur={() => setTimeout(() => setShowOccupationDropdown(false), 200)}
-                      placeholder="e.g. 261313 or Software Engineer"
+                      placeholder={t("sn.occupationPlaceholder", "e.g. 261313 or Software Engineer")}
                       className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                     />
                     {showOccupationDropdown && filteredOccupations.length > 0 && (
@@ -216,7 +218,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                   </div>
                   {selectedOccupationCode && (
                     <p className="mt-2 text-xs text-green-600">
-                      ✓ Selected: {selectedOccupationCode}
+                      {t("sn.selectedPrefix", "✓ Selected:")} {selectedOccupationCode}
                     </p>
                   )}
                 </div>
@@ -224,7 +226,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                 {/* Points Input */}
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    Your Points Score
+                    {t("sn.pointsLabel", "Your Points Score")}
                   </label>
                   <input
                     type="number"
@@ -235,15 +237,15 @@ export function StateNominationClient({ locale }: { locale: string }) {
                     className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                   />
                   <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                    Range: 65–130 points
+                    {t("sn.pointsRange", "Range: 65–130 points")}
                   </p>
                 </div>
               </div>
 
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 {selectedOccupationCode
-                  ? `Showing states for ${selectedOccupationCode} with ${points} points`
-                  : "Enter your occupation and points score to see matching states"}
+                  ? t("sn.searchSummaryWithSelection", `Showing states for ${selectedOccupationCode} with ${points} points`)
+                  : t("sn.searchSummaryNoSelection", "Enter your occupation and points score to see matching states")}
               </p>
             </div>
           </CardContent>
@@ -253,7 +255,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
         {hasSearch && (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Matching States ({categorizedStates.length})
+              {t("sn.matchingStates", "Matching States")} ({categorizedStates.length})
             </h2>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -276,11 +278,11 @@ export function StateNominationClient({ locale }: { locale: string }) {
                         </div>
                         {isOpen ? (
                           <Badge className="bg-green-100 text-green-800">
-                            <CheckCircle className="mr-1 h-3 w-3" /> Open
+                            <CheckCircle className="mr-1 h-3 w-3" /> {t("sn.open", "Open")}
                           </Badge>
                         ) : (
                           <Badge className="bg-red-100 text-red-800">
-                            <XCircle className="mr-1 h-3 w-3" /> Closed
+                            <XCircle className="mr-1 h-3 w-3" /> {t("sn.closed", "Closed")}
                           </Badge>
                         )}
                       </div>
@@ -304,24 +306,25 @@ export function StateNominationClient({ locale }: { locale: string }) {
 
                       <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/60">
                         <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                          {state.nominationsThisYear.visa190.toLocaleString()} nominations this year (190)
+                          {state.nominationsThisYear.visa190.toLocaleString()}
+                          {t("sn.nomination190Suffix", " nominations this year (190)")}
                         </p>
                         <p className="mt-1 text-sm font-medium text-slate-700 dark:text-slate-200">
-                          {state.nominationsThisYear.visa491.toLocaleString()} nominations this year (491)
+                          {state.nominationsThisYear.visa491.toLocaleString()}{t("sn.nomination491Suffix", " nominations this year (491)")}
                         </p>
                       </div>
 
                       {/* Points Requirement */}
                       <div>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Min Points Required
+                          {t("sn.minPointsRequired", "Min Points Required")}
                         </p>
                         <div className="mt-1 flex items-center gap-2">
                           <span className="text-lg font-bold text-slate-900 dark:text-white">
                             {state.minimumPointsGeneral}
                           </span>
                           <span className="text-sm text-slate-600 dark:text-slate-400">
-                            Your: {points}
+                            {t("sn.yourPointsPrefix", "Your:")} {points}
                           </span>
                           {pointsSufficient ? (
                             <CheckCircle className="h-5 w-5 text-green-600" />
@@ -335,14 +338,14 @@ export function StateNominationClient({ locale }: { locale: string }) {
                       <div className="grid grid-cols-2 gap-3">
                         <div className="rounded-lg bg-slate-50 p-2 dark:bg-slate-800">
                           <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
-                            Processing Time
+                            {t("sn.processingTime", "Processing Time")}
                           </p>
                           <p className="text-sm font-semibold text-slate-900 dark:text-white">
                             {state.processingTimeWeeks}w
                           </p>
                         </div>
                         <div className={`rounded-lg p-2 ${getCompetitionColor(state.competitionLevel)}`}>
-                          <p className="text-xs font-medium">Competition</p>
+                          <p className="text-xs font-medium">{t("sn.competition", "Competition")}</p>
                           <p className="text-sm font-semibold">
                             {competitionLabel(state.competitionLevel).split(" ")[0]}
                           </p>
@@ -360,11 +363,11 @@ export function StateNominationClient({ locale }: { locale: string }) {
                         >
                           {hasOccupationMatch ? (
                             <p className="text-sm font-semibold text-green-700 dark:text-green-400">
-                              ✓ Your occupation is in demand here
+                              {t("sn.inDemand", "✓ Your occupation is in demand here")}
                             </p>
                           ) : (
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                              Check official website for your occupation
+                              {t("sn.checkOfficialOccupation", "Check official website for your occupation")}
                             </p>
                           )}
                         </div>
@@ -377,7 +380,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                         rel="noopener noreferrer"
                         className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
                       >
-                        Visit State Website
+                        {t("sn.visitStateWebsite", "Visit State Website")}
                         <ArrowRight className="h-4 w-4" />
                       </a>
                     </CardContent>
@@ -392,18 +395,18 @@ export function StateNominationClient({ locale }: { locale: string }) {
         {hasSearch && (
           <Card>
             <CardHeader>
-              <CardTitle>State Comparison Table</CardTitle>
+              <CardTitle>{t("sn.comparisonTable", "State Comparison Table")}</CardTitle>
             </CardHeader>
             <CardContent className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-700">
-                    <th className="px-4 py-3 text-left font-semibold">State</th>
-                    <th className="px-4 py-3 text-left font-semibold">Status</th>
-                    <th className="px-4 py-3 text-center font-semibold">Min Points</th>
-                    <th className="px-4 py-3 text-center font-semibold">Visas</th>
-                    <th className="px-4 py-3 text-center font-semibold">Processing</th>
-                    <th className="px-4 py-3 text-center font-semibold">Competition</th>
+                    <th className="px-4 py-3 text-left font-semibold">{t("sn.state", "State")}</th>
+                    <th className="px-4 py-3 text-left font-semibold">{t("sn.status", "Status")}</th>
+                    <th className="px-4 py-3 text-center font-semibold">{t("sn.minPoints", "Min Points")}</th>
+                    <th className="px-4 py-3 text-center font-semibold">{t("sn.visas", "Visas")}</th>
+                    <th className="px-4 py-3 text-center font-semibold">{t("sn.processing", "Processing")}</th>
+                    <th className="px-4 py-3 text-center font-semibold">{t("sn.competition", "Competition")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -421,9 +424,9 @@ export function StateNominationClient({ locale }: { locale: string }) {
                       </td>
                       <td className="px-4 py-3">
                         {state.offshoreAvailability === "open" ? (
-                          <Badge className="bg-green-100 text-green-800">Open</Badge>
+                          <Badge className="bg-green-100 text-green-800">{t("sn.open", "Open")}</Badge>
                         ) : (
-                          <Badge className="bg-red-100 text-red-800">Closed</Badge>
+                          <Badge className="bg-red-100 text-red-800">{t("sn.closed", "Closed")}</Badge>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -453,7 +456,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
         {/* FAQ Section */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Frequently Asked Questions
+            {t("sn.faqTitle", "Frequently Asked Questions")}
           </h2>
 
           <div className="space-y-2">
@@ -489,14 +492,14 @@ export function StateNominationClient({ locale }: { locale: string }) {
         <Card className="border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 dark:border-indigo-800 dark:from-indigo-900/20 dark:to-purple-900/20">
           <CardContent className="space-y-4 pt-6 text-center">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-              Want a complete assessment of your nomination chances?
+              {t("sn.ctaTitle", "Want a complete assessment of your nomination chances?")}
             </h3>
             <p className="text-slate-600 dark:text-slate-300">
-              Get a detailed visa readiness report analyzing your points, state options, and next steps.
+              {t("sn.ctaText", "Get a detailed visa readiness report analyzing your points, state options, and next steps.")}
             </p>
             <Link href={`/${locale}/full-check`}>
               <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
-                Get Full Readiness Report
+                {t("sn.ctaButton", "Get Full Readiness Report")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>

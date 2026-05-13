@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import anzscoList from "@/src/data/anzsco-list.json";
 import assessingData from "@/src/data/assessing-bodies.json";
+import { useTranslation } from "@/contexts/language-context";
 
 type Occupation = { code: string; title: string; skillLevel: string; duties: string[] };
 type AssessingBody = {
@@ -112,6 +113,7 @@ for (const bodyKey of Object.values(occupationMapping)) {
 }
 
 export function SkillsAssessmentClient({ locale }: { locale: string }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selected, setSelected] = useState<Occupation | null>(null);
@@ -172,14 +174,13 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
         <div className="mx-auto flex min-h-[340px] max-w-5xl flex-col justify-center px-4 pt-28 pb-16 sm:px-6">
           <div className="max-w-2xl">
             <div className="mb-5 inline-flex rounded-full border border-indigo-300/30 bg-indigo-300/10 px-4 py-1.5 text-sm font-semibold text-indigo-200">
-              Skills Assessment Finder
+              {t("sa.badge", "Skills Assessment Finder")}
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Which assessing body do you need?
+              {t("sa.title", "Which assessing body do you need?")}
             </h1>
             <p className="mt-4 text-lg text-slate-300">
-              Enter your occupation or ANZSCO code to instantly find the right assessing
-              authority for your Australian skilled migration application.
+              {t("sa.subtitle", "Enter your occupation or ANZSCO code to instantly find the right assessing authority for your Australian skilled migration application.")}
             </p>
           </div>
         </div>
@@ -201,7 +202,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                   if (!e.target.value) setSelected(null);
                 }}
                 onFocus={() => query && setDropdownOpen(true)}
-                placeholder="Enter occupation title or ANZSCO code…"
+                placeholder={t("sa.searchPlaceholder", "Enter occupation title or ANZSCO code…")}
                 className="h-16 w-full rounded-xl border border-slate-200 bg-slate-50 pl-14 pr-5 text-lg text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
               />
               {/* Dropdown */}
@@ -275,7 +276,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                        Assessing Body
+                        {t("sa.assessingBody", "Assessing Body")}
                       </p>
                       <p className="mt-1 text-2xl font-bold text-slate-900">
                         {selectedBody.name}
@@ -289,7 +290,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                     <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
                       <DollarSign className="h-5 w-5 shrink-0 text-emerald-600" />
                       <div>
-                        <p className="text-xs font-medium text-slate-400">Assessment Fee</p>
+                        <p className="text-xs font-medium text-slate-400">{t("sa.assessmentFee", "Assessment Fee")}</p>
                         <p className="mt-0.5 text-base font-bold text-slate-800">
                           {selectedBody.fee}
                         </p>
@@ -298,7 +299,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                     <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
                       <Clock className="h-5 w-5 shrink-0 text-indigo-600" />
                       <div>
-                        <p className="text-xs font-medium text-slate-400">Processing Time</p>
+                        <p className="text-xs font-medium text-slate-400">{t("sa.processingTime", "Processing Time")}</p>
                         <p className="mt-0.5 text-base font-bold text-slate-800">
                           {selectedBody.processingTime}
                         </p>
@@ -308,11 +309,9 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
 
                   {/* Info box */}
                   <div className="mt-5 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3">
-                    <p className="text-xs font-semibold text-indigo-700">What is a skills assessment?</p>
+                    <p className="text-xs font-semibold text-indigo-700">{t("sa.whatIsTitle", "What is a skills assessment?")}</p>
                     <p className="mt-1 text-xs leading-relaxed text-indigo-600">
-                      A skills assessment verifies that your overseas qualifications and work experience
-                      meet Australian standards for your nominated occupation. It is required before
-                      lodging most skilled migration visa applications.
+                      {t("sa.whatIsText", "A skills assessment verifies that your overseas qualifications and work experience meet Australian standards for your nominated occupation. It is required before lodging most skilled migration visa applications.")}
                     </p>
                   </div>
 
@@ -324,14 +323,14 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
                     >
-                      Visit Official Website
+                      {t("sa.visitOfficialWebsite", "Visit Official Website")}
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                     <Link
                       href={`/${locale}/full-check`}
                       className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                     >
-                      Get free consultation
+                      {t("sa.getFreeConsultation", "Get free consultation")}
                       <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </div>
@@ -340,29 +339,27 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                 {/* ANZSCO finder nudge */}
                 <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
                   <p className="text-sm font-semibold text-slate-700">
-                    Not sure about your ANZSCO code?
+                    {t("sa.anzscoNudgeTitle", "Not sure about your ANZSCO code?")}
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500">
-                    Use our ANZSCO Finder tool to identify your correct occupation code.
+                    {t("sa.anzscoNudgeText", "Use our ANZSCO Finder tool to identify your correct occupation code.")}
                   </p>
                   <Link
                     href={`/${locale}/tools/anzsco-finder`}
                     className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:underline"
                   >
-                    Open ANZSCO Finder <ArrowRight className="h-3 w-3" />
+                    {t("sa.openAnzscoFinder", "Open ANZSCO Finder")} <ArrowRight className="h-3 w-3" />
                   </Link>
                 </div>
               </>
             ) : (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
                 <p className="font-semibold text-amber-800">
-                  No assessing body mapped for{" "}
+                  {t("sa.noMappingPrefix", "No assessing body mapped for")} {" "}
                   <span className="font-bold">{selected.title}</span> ({selected.code})
                 </p>
                 <p className="mt-1 text-sm text-amber-700">
-                  This occupation may be assessed by VETASSESS or may not require a skills
-                  assessment for all visa types. Check with the Department of Home Affairs or a
-                  registered migration agent.
+                  {t("sa.noMappingText", "This occupation may be assessed by VETASSESS or may not require a skills assessment for all visa types. Check with the Department of Home Affairs or a registered migration agent.")}
                 </p>
                 <a
                   href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/eligible-skilled-occupations"
@@ -370,7 +367,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                   rel="noopener noreferrer"
                   className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-700 hover:underline"
                 >
-                  View DHA occupation list <ExternalLink className="h-3.5 w-3.5" />
+                  {t("sa.viewDhaList", "View DHA occupation list")} <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
             )}
@@ -380,14 +377,14 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
         {/* All assessing bodies grid */}
         <div>
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="text-lg font-bold text-slate-900">All Assessing Bodies</h2>
+            <h2 className="text-lg font-bold text-slate-900">{t("sa.allBodies", "All Assessing Bodies")}</h2>
             {bodyFilter && (
               <button
                 type="button"
                 onClick={() => setBodyFilter(null)}
                 className="text-xs font-semibold text-indigo-600 hover:underline"
               >
-                Clear filter
+                {t("sa.clearFilter", "Clear filter")}
               </button>
             )}
           </div>
@@ -418,7 +415,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-2">
-                    <span className="text-xs text-slate-400">{count} occupations</span>
+                    <span className="text-xs text-slate-400">{count} {t("sa.occupations", "occupations")}</span>
                     <a
                       href={body.website}
                       target="_blank"
@@ -426,7 +423,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                       onClick={(e) => e.stopPropagation()}
                       className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:underline"
                     >
-                      Website <ExternalLink className="h-3 w-3" />
+                      {t("sa.website", "Website")} <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </button>
@@ -438,7 +435,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
           {bodyFilter && filteredOccupations.length > 0 && (
             <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Occupations assessed by {assessingBodies[bodyFilter]?.shortName}
+                {t("sa.occupationsAssessedBy", "Occupations assessed by")} {assessingBodies[bodyFilter]?.shortName}
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {filteredOccupations.map((occ) => (
@@ -464,7 +461,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-4 flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-indigo-600" />
-            <h2 className="text-lg font-bold text-slate-900">Frequently Asked Questions</h2>
+            <h2 className="text-lg font-bold text-slate-900">{t("sa.faqTitle", "Frequently Asked Questions")}</h2>
           </div>
           {FAQ_ITEMS.map((item) => (
             <FaqItem key={item.q} q={item.q} a={item.a} />
@@ -473,16 +470,15 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
 
         {/* Bottom CTA */}
         <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
-          <h3 className="text-base font-bold text-slate-900">Need help with your application?</h3>
+          <h3 className="text-base font-bold text-slate-900">{t("sa.bottomCtaTitle", "Need help with your application?")}</h3>
           <p className="mt-1 text-sm text-slate-500">
-            Our free full-check report covers your visa pathway, skills assessment requirements,
-            points score and next steps — tailored to your profile.
+            {t("sa.bottomCtaText", "Our free full-check report covers your visa pathway, skills assessment requirements, points score and next steps — tailored to your profile.")}
           </p>
           <Link
             href={`/${locale}/full-check`}
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
           >
-            Get a free consultation <ArrowRight className="h-4 w-4" />
+            {t("sa.bottomCtaButton", "Get a free consultation")} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/contexts/language-context";
 
 type CheckItem = {
   id: string;
@@ -263,6 +264,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 export function DocumentChecklist2026({ locale }: { locale: string }) {
+  const { t } = useTranslation();
   const [checked, setChecked] = useState<Set<string>>(new Set());
 
   function toggle(id: string) {
@@ -287,26 +289,25 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
         <div className="max-w-2xl mx-auto">
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-full mb-6">
             <ShieldCheck className="h-3.5 w-3.5" />
-            Free · Updated for 2026
+            {t("dc.badge", "Free · Updated for 2026")}
           </span>
           <h1 className="text-3xl sm:text-5xl font-bold text-white leading-tight mb-4">
-            Australian PR{" "}
+            {t("dc.titlePrefix", "Australian PR")}{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">
-              Document Checklist
+              {t("dc.titleHighlight", "Document Checklist")}
             </span>{" "}
             2026
           </h1>
           <p className="text-slate-400 text-base sm:text-lg max-w-xl mx-auto">
-            Everything you need to gather before lodging a skilled migration visa.
-            Tick off items as you collect them — your progress is saved automatically.
+            {t("dc.subtitle", "Everything you need to gather before lodging a skilled migration visa. Tick off items as you collect them — your progress is saved automatically.")}
           </p>
 
           {/* Overall progress */}
           <div className="mt-8 bg-slate-900 border border-slate-700/50 rounded-2xl p-5 text-left max-w-md mx-auto">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-slate-300">Overall Progress</span>
+              <span className="text-sm font-medium text-slate-300">{t("dc.overallProgress", "Overall Progress")}</span>
               <span className="text-sm font-bold text-white">
-                {totalDone}/{totalItems} items
+                {totalDone}/{totalItems} {t("dc.items", "items")}
               </span>
             </div>
             <div className="h-3 rounded-full bg-slate-800">
@@ -317,12 +318,12 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
             </div>
             <p className="text-xs text-slate-500 mt-2">
               {overallPct < 30
-                ? "Just getting started — keep going!"
+                ? t("dc.progressStart", "Just getting started — keep going!")
                 : overallPct < 70
-                ? "Good progress — you're building momentum."
+                ? t("dc.progressMid", "Good progress — you're building momentum.")
                 : overallPct < 100
-                ? "Almost there! Nearly document-ready."
-                : "Checklist complete — you're document-ready!"}
+                ? t("dc.progressAlmost", "Almost there! Nearly document-ready.")
+                : t("dc.progressDone", "Checklist complete — you're document-ready!")}
             </p>
           </div>
         </div>
@@ -349,17 +350,15 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-amber-300 mb-1">Subclass 600 Visitors</p>
+                <p className="text-sm font-semibold text-amber-300 mb-1">{t("dc.subclass600Title", "Subclass 600 Visitors")}</p>
                 <p className="text-sm text-amber-200/70">
-                  If you are currently in Australia on a Subclass 600 Tourist Visa, you may still
-                  gather documents and undergo skills assessment — but you cannot lodge most skilled
-                  visa applications onshore on a tourist visa. Plan your pathway carefully.
+                  {t("dc.subclass600Text", "If you are currently in Australia on a Subclass 600 Tourist Visa, you may still gather documents and undergo skills assessment — but you cannot lodge most skilled visa applications onshore on a tourist visa. Plan your pathway carefully.")}
                 </p>
               </div>
             </div>
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-4">Frequently Asked Questions</h2>
+          <h2 className="text-xl font-bold text-white mb-4">{t("dc.faqTitle", "Frequently Asked Questions")}</h2>
           <div className="space-y-2">
             {FAQ_ITEMS.map((item) => (
               <FaqItem key={item.q} q={item.q} a={item.a} />
@@ -378,28 +377,27 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
             </div>
 
             <p className="text-xs font-semibold uppercase tracking-widest text-cyan-400 mb-3">
-              Next Step
+              {t("dc.nextStep", "Next Step")}
             </p>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-              Know exactly where{" "}
+              {t("dc.ctaTitlePrefix", "Know exactly where")}{" "}
               <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">
-                your profile stands
+                {t("dc.ctaTitleHighlight", "your profile stands")}
               </span>
             </h2>
             <p className="text-slate-400 text-sm sm:text-base mb-7 max-w-sm mx-auto">
-              Documents are just one piece. Take the free PR Readiness Quiz to find out your
-              estimated points score, strongest visa pathways, and hidden risks — in under 3 minutes.
+              {t("dc.ctaText", "Documents are just one piece. Take the free PR Readiness Quiz to find out your estimated points score, strongest visa pathways, and hidden risks — in under 3 minutes.")}
             </p>
             <Button
               asChild
               className="bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-white font-semibold px-8 py-3 rounded-xl text-base shadow-lg shadow-cyan-500/20 transition-all"
             >
               <Link href={quizLink} className="flex items-center gap-2">
-                Take the Free PR Quiz
+                {t("dc.ctaButton", "Take the Free PR Quiz")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <p className="text-xs text-slate-500 mt-4">Free · No signup required · 3 minutes</p>
+            <p className="text-xs text-slate-500 mt-4">{t("dc.ctaCaption", "Free · No signup required · 3 minutes")}</p>
           </div>
         </div>
       </section>
@@ -407,9 +405,7 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
       {/* MARA disclaimer */}
       <footer className="px-4 pb-10 text-center">
         <p className="text-xs text-slate-600 max-w-xl mx-auto">
-          This checklist is for general informational purposes only and does not constitute
-          immigration advice. Requirements vary by visa subclass and assessing authority.
-          Consult a registered MARA agent for advice specific to your circumstances.
+          {t("dc.disclaimer", "This checklist is for general informational purposes only and does not constitute immigration advice. Requirements vary by visa subclass and assessing authority. Consult a registered MARA agent for advice specific to your circumstances.")}
         </p>
       </footer>
     </main>

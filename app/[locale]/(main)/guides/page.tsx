@@ -14,12 +14,25 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const siteUrl = new URL(BASE_URL);
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
+
+  const title = tx(
+    "Visa Guides & PR Pathway Insights | LogiVisa Hub",
+    "Vize Rehberleri ve PR Yol Haritası İçgörüleri | LogiVisa Hub",
+    "签证指南与PR路径洞察 | LogiVisa Hub"
+  );
+  const description = tx(
+    "Read practical Australian visa guides, PR points strategies, state nomination explainers, and skilled migration pathway insights.",
+    "Pratik Avustralya vize rehberlerini, PR puan stratejilerini, eyalet adaylık açıklamalarını ve nitelikli göç yol haritası içgörülerini okuyun.",
+    "阅读实用的澳洲签证指南、PR加分策略、州担保解读和技术移民路径洞察。"
+  );
 
   return {
     metadataBase: siteUrl,
-    title: "Visa Guides & PR Pathway Insights | LogiVisa Hub",
-    description:
-      "Read practical Australian visa guides, PR points strategies, state nomination explainers, and skilled migration pathway insights.",
+    title,
+    description,
     alternates: {
       canonical: `/${locale}/guides`,
       languages: {
@@ -29,9 +42,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     },
     openGraph: {
-      title: "Visa Guides & PR Pathway Insights | LogiVisa Hub",
-      description:
+      title,
+      description: tx(
         "Expert insights, visa strategies, and PR pathways for Australian skilled migration planning.",
+        "Avustralya nitelikli göç planlaması için uzman içgörüleri, vize stratejileri ve PR yolları.",
+        "为澳洲技术移民规划提供专家洞察、签证策略和PR路径。"
+      ),
       type: "website",
       url: `/${locale}/guides`,
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
@@ -41,6 +57,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function GuidesIndexPage({ params }: PageProps) {
   const { locale } = await params;
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   return (
     <main className="min-h-screen bg-slate-50 pt-28 sm:pt-32">
@@ -50,14 +69,21 @@ export default async function GuidesIndexPage({ params }: PageProps) {
           <div className="max-w-3xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
               <BookOpen className="h-4 w-4" />
-              LogiVisa Hub
+              {tx("LogiVisa Hub", "LogiVisa Merkezi", "LogiVisa 知识中心")}
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-              Expert insights, visa strategies, and PR pathways.
+              {tx(
+                "Expert insights, visa strategies, and PR pathways.",
+                "Uzman içgörüleri, vize stratejileri ve PR yolları.",
+                "专家洞察、签证策略与PR路径。"
+              )}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              Practical guides for skilled migration applicants researching Australian PR points,
-              state nomination, occupation fit, and pathway strategy.
+              {tx(
+                "Practical guides for skilled migration applicants researching Australian PR points, state nomination, occupation fit, and pathway strategy.",
+                "Avustralya PR puanları, eyalet adaylığı, meslek uyumu ve yol stratejisini araştıran nitelikli göç adayları için pratik rehberler.",
+                "面向研究澳洲PR分数、州担保、职业匹配和路径策略的技术移民申请人的实用指南。"
+              )}
             </p>
           </div>
         </div>
@@ -88,7 +114,7 @@ export default async function GuidesIndexPage({ params }: PageProps) {
                   <p className="mt-4 flex-1 text-base leading-7 text-slate-600">{guide.excerpt}</p>
 
                   <div className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-cyan-800">
-                    Read guide
+                    {tx("Read guide", "Rehberi oku", "阅读指南")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 </CardContent>

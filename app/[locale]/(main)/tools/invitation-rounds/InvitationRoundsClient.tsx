@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { TrendingUp, TrendingDown, Minus, Bell, Loader2, CheckCircle } from "lucide-react";
 import { savePointsAlert } from "./actions";
+import { useTranslation } from "@/contexts/language-context";
 
 type Round = {
   id: string;
@@ -168,6 +169,7 @@ export function InvitationRoundsClient({
   rounds: Round[];
   occupationPoints: OccupationCutoff[];
 }) {
+  const { t } = useTranslation();
   const [subclassFilter, setSubclassFilter] = useState<"all" | "189" | "190" | "491">("all");
   const [yearFilter, setYearFilter] = useState<"all" | "2023" | "2024" | "2025">("all");
   const [page, setPage] = useState(1);
@@ -255,8 +257,7 @@ export function InvitationRoundsClient({
   return (
     <div className="space-y-8">
       <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
-        ℹ️ Subclass 190 and 491 (State Nominated) are NOT included in these rounds — states
-        nominate independently throughout the month.
+        {t("ir.infoBanner", "ℹ️ Subclass 190 and 491 (State Nominated) are NOT included in these rounds — states nominate independently throughout the month.")}
       </div>
 
       {/* Summary cards */}
@@ -280,7 +281,7 @@ export function InvitationRoundsClient({
                   : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              {sc === "all" ? "All Subclasses" : `Subclass ${sc}`}
+              {sc === "all" ? t("ir.allSubclasses", "All Subclasses") : `${t("ir.subclass", "Subclass")} ${sc}`}
             </button>
           ))}
         </div>
@@ -296,7 +297,7 @@ export function InvitationRoundsClient({
                   : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              {yr === "all" ? "All Years" : yr}
+              {yr === "all" ? t("ir.allYears", "All Years") : yr}
             </button>
           ))}
         </div>
@@ -304,10 +305,10 @@ export function InvitationRoundsClient({
 
       {/* Chart */}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-sm font-semibold text-slate-800">Points Cutoff Trend</h2>
+        <h2 className="mb-4 text-sm font-semibold text-slate-800">{t("ir.pointsCutoffTrend", "Points Cutoff Trend")}</h2>
         {chartData.length === 0 ? (
           <div className="flex h-48 items-center justify-center text-sm text-slate-400">
-            No data for the selected filters
+            {t("ir.noDataSelectedFilters", "No data for the selected filters")}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -357,14 +358,14 @@ export function InvitationRoundsClient({
       {/* Table */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-slate-100 px-5 py-4">
-          <h2 className="text-sm font-semibold text-slate-800">Invitation Rounds</h2>
+          <h2 className="text-sm font-semibold text-slate-800">{t("ir.invitationRounds", "Invitation Rounds")}</h2>
           <p className="mt-0.5 text-xs text-slate-400">
-            {sortedFiltered.length} rounds — showing {shown.length}
+            {sortedFiltered.length} {t("ir.rounds", "rounds")} — {t("ir.showing", "showing")} {shown.length}
           </p>
         </div>
         {sortedFiltered.length === 0 ? (
           <div className="py-12 text-center text-sm text-slate-400">
-            No rounds match the selected filters
+            {t("ir.noRoundsMatch", "No rounds match the selected filters")}
           </div>
         ) : (
           <>
@@ -372,12 +373,12 @@ export function InvitationRoundsClient({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase text-slate-400">
-                    <th className="px-4 py-3 text-left">Date</th>
-                    <th className="px-4 py-3 text-left">Visa</th>
-                    <th className="px-4 py-3 text-right">Lowest Points</th>
-                    <th className="px-4 py-3 text-right">Invitations</th>
-                    <th className="px-4 py-3 text-right">Pool Size</th>
-                    <th className="px-4 py-3 text-left">Notes</th>
+                    <th className="px-4 py-3 text-left">{t("ir.date", "Date")}</th>
+                    <th className="px-4 py-3 text-left">{t("ir.visa", "Visa")}</th>
+                    <th className="px-4 py-3 text-right">{t("ir.lowestPoints", "Lowest Points")}</th>
+                    <th className="px-4 py-3 text-right">{t("ir.invitations", "Invitations")}</th>
+                    <th className="px-4 py-3 text-right">{t("ir.poolSize", "Pool Size")}</th>
+                    <th className="px-4 py-3 text-left">{t("ir.notes", "Notes")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -399,7 +400,7 @@ export function InvitationRoundsClient({
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right font-semibold text-slate-800">
-                        {typeof r.lowestPoints === "number" ? r.lowestPoints : "Varies"}
+                        {typeof r.lowestPoints === "number" ? r.lowestPoints : t("ir.varies", "Varies")}
                       </td>
                       <td className="px-4 py-3 text-right text-slate-600">
                         {r.invitations.toLocaleString()}
@@ -422,7 +423,7 @@ export function InvitationRoundsClient({
                   onClick={() => setPage((p) => p + 1)}
                   className="rounded-lg border border-slate-200 bg-white px-5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
                 >
-                  Load more
+                  {t("ir.loadMore", "Load more")}
                 </button>
               </div>
             )}
@@ -433,16 +434,16 @@ export function InvitationRoundsClient({
       {/* Occupation cutoff table */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-slate-100 px-5 py-4">
-          <h2 className="text-sm font-semibold text-slate-800">Points by Occupation</h2>
+          <h2 className="text-sm font-semibold text-slate-800">{t("ir.pointsByOccupation", "Points by Occupation")}</h2>
           <p className="mt-0.5 text-xs text-slate-400">
-            Source: DoHA — Round of 13 November 2025
+            {t("ir.sourceDohaRound", "Source: DoHA — Round of 13 November 2025")}
           </p>
           <div className="mt-3">
             <input
               type="text"
               value={occupationSearch}
               onChange={(e) => setOccupationSearch(e.target.value)}
-              placeholder="Search occupation name"
+              placeholder={t("ir.searchOccupationName", "Search occupation name")}
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             />
           </div>
@@ -452,9 +453,9 @@ export function InvitationRoundsClient({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase text-slate-400">
-                <th className="px-4 py-3 text-left">Occupation</th>
-                <th className="px-4 py-3 text-right">Subclass 189 Min Points</th>
-                <th className="px-4 py-3 text-right">Subclass 491 Min Points</th>
+                <th className="px-4 py-3 text-left">{t("ir.occupation", "Occupation")}</th>
+                <th className="px-4 py-3 text-right">{t("ir.subclass189MinPoints", "Subclass 189 Min Points")}</th>
+                <th className="px-4 py-3 text-right">{t("ir.subclass491MinPoints", "Subclass 491 Min Points")}</th>
               </tr>
             </thead>
             <tbody>
@@ -484,9 +485,9 @@ export function InvitationRoundsClient({
             <Bell className="h-5 w-5 text-indigo-600" />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-semibold text-slate-900">Get notified when points drop</h2>
+            <h2 className="text-base font-semibold text-slate-900">{t("ir.notifyTitle", "Get notified when points drop")}</h2>
             <p className="mt-0.5 text-sm text-slate-500">
-              We'll email you as soon as the cutoff falls to your target or below.
+              {t("ir.notifySubtitle", "We'll email you as soon as the cutoff falls to your target or below.")}
             </p>
           </div>
         </div>
@@ -499,7 +500,7 @@ export function InvitationRoundsClient({
         ) : (
           <form onSubmit={handleAlert} className="mt-5 grid gap-3 sm:grid-cols-4">
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-slate-600">Email</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600">{t("ir.email", "Email")}</label>
               <input
                 type="email"
                 required
@@ -510,7 +511,7 @@ export function InvitationRoundsClient({
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Target Points</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600">{t("ir.targetPoints", "Target Points")}</label>
               <input
                 type="number"
                 required
@@ -523,15 +524,15 @@ export function InvitationRoundsClient({
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Visa Subclass</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600">{t("ir.visaSubclass", "Visa Subclass")}</label>
               <select
                 value={alertSubclass}
                 onChange={(e) => setAlertSubclass(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
               >
-                <option value="189">Subclass 189</option>
-                <option value="190">Subclass 190</option>
-                <option value="491">Subclass 491</option>
+                <option value="189">{t("ir.subclass", "Subclass")} 189</option>
+                <option value="190">{t("ir.subclass", "Subclass")} 190</option>
+                <option value="491">{t("ir.subclass", "Subclass")} 491</option>
               </select>
             </div>
             {alertError && (
@@ -548,7 +549,7 @@ export function InvitationRoundsClient({
                 className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
               >
                 {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                Set Alert
+                {t("ir.setAlert", "Set Alert")}
               </button>
             </div>
           </form>
