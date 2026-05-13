@@ -35,6 +35,10 @@ export default function RootLayout({
     <html className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
       <head>
         <link rel="canonical" href="https://www.logivisa.com/en" />
+        <link rel="alternate" hrefLang="en" href="https://www.logivisa.com/en" />
+        <link rel="alternate" hrefLang="tr" href="https://www.logivisa.com/tr" />
+        <link rel="alternate" hrefLang="zh-Hans" href="https://www.logivisa.com/zh-Hans" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.logivisa.com/en" />
       </head>
       <body className="min-h-full flex flex-col">
         <SessionProviderWrapper>

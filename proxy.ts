@@ -1,5 +1,25 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { match } from "@formatjs/intl-localematcher";
+import Negotiator from "negotiator";
 import { auth } from "@/auth";
+
+const LOCALES = ["en", "tr", "zh-Hans"] as const;
+const DEFAULT_LOCALE = "en";
+
+function getLocale(request: NextRequest): string {
+  const negotiatorHeaders: Record<string, string> = {};
+  request.headers.forEach((value, key) => {
+    negotiatorHeaders[key] = value;
+  });
+
+  try {
+    const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
+    return match(languages, LOCALES, DEFAULT_LOCALE);
+  } catch {
+    return DEFAULT_LOCALE;
+  }
+}
 
 function isRootAdminPath(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/");
@@ -15,6 +35,11 @@ function isDashboardPath(pathname: string): boolean {
 
 export const proxy = auth((req) => {
   const { pathname, searchParams } = req.nextUrl;
+
+  if (pathname === "/") {
+    const locale = getLocale(req);
+    return NextResponse.redirect(new URL(`/${locale}`, req.url));
+  }
 
   if (isRootAdminPath(pathname)) {
     const targetPath = pathname === "/admin" ? "/en/admin/dashboard" : `/en${pathname}`;
