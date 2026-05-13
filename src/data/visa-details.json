@@ -1,0 +1,186 @@
+[
+  {
+    "subclass": "189",
+    "name": "Skilled Independent visa",
+    "nameKey": "visa189",
+    "type": "Permanent",
+    "processingTime": "12-24 months",
+    "fee": 4640,
+    "minPoints": 65,
+    "description": "For skilled workers who are not sponsored by an employer, state or family member.",
+    "requirements": [
+      "Occupation on skilled occupation list",
+      "Positive skills assessment",
+      "Under 45 years of age",
+      "Competent English",
+      "Minimum 65 points"
+    ],
+    "steps": [
+      "Check your occupation is on MLTSSL",
+      "Get a skills assessment",
+      "Calculate your points score",
+      "Submit EOI through SkillSelect",
+      "Wait for invitation",
+      "Lodge visa application within 60 days"
+    ],
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189"
+  },
+  {
+    "subclass": "190",
+    "name": "Skilled Nominated visa",
+    "nameKey": "visa190",
+    "type": "Permanent",
+    "processingTime": "6-12 months",
+    "fee": 4640,
+    "minPoints": 65,
+    "description": "For skilled workers nominated by a state or territory government.",
+    "requirements": [
+      "Occupation on MLTSSL or STSOL",
+      "State or territory nomination (adds 5 points)",
+      "Positive skills assessment",
+      "Under 45 years of age",
+      "Competent English",
+      "Minimum 65 points"
+    ],
+    "steps": [
+      "Check occupation eligibility",
+      "Get skills assessment",
+      "Submit EOI through SkillSelect",
+      "Apply for state nomination",
+      "Receive invitation",
+      "Lodge visa application"
+    ],
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190"
+  },
+  {
+    "subclass": "491",
+    "name": "Skilled Work Regional visa",
+    "nameKey": "visa491",
+    "type": "Provisional (5 years)",
+    "processingTime": "6-12 months",
+    "fee": 4640,
+    "minPoints": 65,
+    "description": "For skilled workers nominated by a state or sponsored by family to live and work in regional Australia.",
+    "requirements": [
+      "Occupation on MLTSSL, STSOL or ROL",
+      "State nomination or family sponsorship (adds 15 points)",
+      "Positive skills assessment",
+      "Under 45 years of age",
+      "Competent English",
+      "Minimum 65 points",
+      "Must live and work in regional Australia"
+    ],
+    "steps": [
+      "Check occupation eligibility",
+      "Get skills assessment",
+      "Submit EOI",
+      "Apply for state nomination or family sponsorship",
+      "Receive invitation",
+      "Lodge visa application",
+      "Live in regional area for 3 years to apply for PR (191 visa)"
+    ],
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491"
+  },
+  {
+    "subclass": "482",
+    "name": "Skills in Demand visa",
+    "nameKey": "visa482",
+    "type": "Temporary (1-4 years)",
+    "processingTime": "1-3 months",
+    "fee": 3035,
+    "minPoints": null,
+    "description": "Employer sponsored visa for skilled workers. Replaced the TSS 482 visa.",
+    "requirements": [
+      "Employer sponsorship required",
+      "Occupation on relevant list",
+      "Skills and qualifications assessment",
+      "2 years relevant work experience",
+      "English language requirement"
+    ],
+    "steps": [
+      "Find an approved sponsor employer",
+      "Employer submits sponsorship application",
+      "Employer nominates your position",
+      "Lodge visa application",
+      "Health and character checks"
+    ],
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482"
+  },
+  {
+    "subclass": "485",
+    "name": "Temporary Graduate visa",
+    "nameKey": "visa485",
+    "type": "Temporary (2-6 years)",
+    "processingTime": "4-6 months",
+    "fee": 1730,
+    "minPoints": null,
+    "description": "Allows international graduates to live and work in Australia after completing studies.",
+    "requirements": [
+      "Recent Australian graduate",
+      "Under 50 years of age",
+      "English language requirement",
+      "Student visa holder for at least 2 years",
+      "Health insurance (OSHC)"
+    ],
+    "steps": [
+      "Complete Australian degree",
+      "Apply within 6 months of graduation",
+      "Provide academic transcripts",
+      "English test results",
+      "Health examination"
+    ],
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485"
+  },
+  {
+    "subclass": "500",
+    "name": "Student visa",
+    "nameKey": "visa500",
+    "type": "Temporary (course duration)",
+    "processingTime": "1-4 months",
+    "fee": 1600,
+    "minPoints": null,
+    "description": "For international students to study full-time in Australia.",
+    "requirements": [
+      "Enrolled in registered course (CRICOS)",
+      "Genuine Temporary Entrant (GTE)",
+      "English language requirement",
+      "Financial capacity",
+      "Health insurance (OSHC)",
+      "Health and character checks"
+    ],
+    "steps": [
+      "Get offer from registered institution",
+      "Pay tuition and get CoE",
+      "Prepare GTE statement",
+      "Lodge visa application",
+      "Provide biometrics if required",
+      "Wait for decision"
+    ],
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500"
+  },
+  {
+    "subclass": "820_801",
+    "name": "Partner visa",
+    "nameKey": "visa820_801",
+    "type": "Temporary then Permanent",
+    "processingTime": "24-48 months",
+    "fee": 8850,
+    "minPoints": null,
+    "description": "For partners or spouses of Australian citizens or permanent residents.",
+    "requirements": [
+      "In genuine relationship with Australian citizen or PR",
+      "Sponsor must be 18+",
+      "Health and character checks",
+      "Financial sponsor requirement"
+    ],
+    "steps": [
+      "Gather relationship evidence",
+      "Sponsor lodges sponsorship",
+      "Lodge 820 (temporary) application",
+      "Wait for bridging visa",
+      "820 granted (temporary stage)",
+      "After 2+ years: 801 (permanent) granted"
+    ],
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801"
+  }
+]
