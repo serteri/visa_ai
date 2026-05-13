@@ -36,6 +36,7 @@ export async function generateMetadata({
   const description = getLocaleDescription(locale);
   const canonicalPath = `/${locale}`;
   const siteUrl = new URL(BASE_URL);
+  const canonicalUrl = `https://www.logivisa.com/${locale}`;
 
   return {
     metadataBase: siteUrl,
@@ -45,7 +46,7 @@ export async function generateMetadata({
     },
     description,
     alternates: {
-      canonical: canonicalPath,
+      canonical: canonicalUrl,
       languages: {
         en: "/en",
         tr: "/tr",
@@ -108,6 +109,7 @@ export default async function LocaleLayout({
 
   return (
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
+      <link rel="canonical" href={`https://www.logivisa.com/${locale}`} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}

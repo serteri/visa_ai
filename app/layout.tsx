@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "Logivisa",
   description:
     "Structured visa pathway analysis and readiness reports for Australia.",
+  alternates: {
+    canonical: "https://www.logivisa.com/en",
+  },
   verification: {
     google: "foOddNGs8xqNCNQ74vzcc0AheCIMssYqDONHUOkWgCk",
   },
@@ -30,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
+      <head>
+        <link rel="canonical" href="https://www.logivisa.com/en" />
+      </head>
       <body className="min-h-full flex flex-col">
         <SessionProviderWrapper>
           {children}
