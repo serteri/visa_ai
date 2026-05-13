@@ -1,0 +1,391 @@
+{
+  "updatedAt": "2026-05-13",
+  "states": [
+    {
+      "code": "NSW",
+      "name": "New South Wales",
+      "abbreviation": "NSW",
+      "capital": "Sydney",
+      "region": "mainland",
+      "icon": "🌉",
+      "color": "#0066CC",
+      "description": "Australia's largest state with strong demand across diverse occupations",
+      "population": "8.2M",
+      "majorCities": ["Sydney", "Newcastle", "Wollongong"],
+      "status": "High Demand",
+      "visaTypes": [
+        {
+          "code": "190",
+          "name": "Skilled Nominated Visa",
+          "status": "Open",
+          "minimumPoints": 85,
+          "targetOccupations": 150
+        }
+      ],
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumPointsGeneral": 85,
+      "minimumEnglish": "proficient",
+      "minimumExperienceYears": 3,
+      "regionalFocus": false,
+      "requiresStateResidence": false,
+      "requiresRecentEmployment": false,
+      "offshoreQuotaPressure": "high",
+      "competitionLevel": "very-high",
+      "processingTimeWeeks": 8,
+      "approvalRate": 92,
+      "priorityOccupations": [
+        { "code": "261313", "name": "Software Engineer" },
+        { "code": "254412", "name": "Registered Nurse" },
+        { "code": "233211", "name": "Civil Engineer" },
+        { "code": "221111", "name": "Accountant" },
+        { "code": "232111", "name": "Architect" }
+      ],
+      "economicProfile": "Finance hub, tech sector growth, healthcare demand, construction",
+      "studentsInState": true,
+      "workersInState": true,
+      "nearbyRegions": ["ACT", "VIC"]
+    },
+    {
+      "code": "VIC",
+      "name": "Victoria",
+      "abbreviation": "VIC",
+      "capital": "Melbourne",
+      "region": "mainland",
+      "icon": "🎭",
+      "color": "#003DA5",
+      "description": "Second-largest state with focus on onshore migration and diverse industries",
+      "population": "6.6M",
+      "majorCities": ["Melbourne", "Geelong", "Ballarat"],
+      "status": "Onshore Priority",
+      "visaTypes": [
+        {
+          "code": "190",
+          "name": "Skilled Nominated Visa",
+          "status": "Onshore Only",
+          "minimumPoints": 80,
+          "targetOccupations": 120
+        }
+      ],
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "open",
+      "minimumPointsGeneral": 80,
+      "minimumEnglish": "proficient",
+      "minimumExperienceYears": 2,
+      "regionalFocus": false,
+      "requiresStateResidence": true,
+      "requiresRecentEmployment": true,
+      "offshoreQuotaPressure": "low",
+      "competitionLevel": "high",
+      "processingTimeWeeks": 6,
+      "approvalRate": 88,
+      "priorityOccupations": [
+        { "code": "261313", "name": "Software Engineer" },
+        { "code": "254412", "name": "Registered Nurse" },
+        { "code": "233211", "name": "Civil Engineer" },
+        { "code": "132111", "name": "Project Manager" },
+        { "code": "234112", "name": "Electrical Engineer" }
+      ],
+      "economicProfile": "Manufacturing, healthcare, creative industries, professional services",
+      "studentsInState": true,
+      "workersInState": true,
+      "nearbyRegions": ["NSW", "SA"]
+    },
+    {
+      "code": "WA",
+      "name": "Western Australia",
+      "abbreviation": "WA",
+      "capital": "Perth",
+      "region": "mainland",
+      "icon": "⛰️",
+      "color": "#FFD100",
+      "description": "Mining and resource-rich state with competitive nomination pathway",
+      "population": "2.7M",
+      "majorCities": ["Perth", "Mandurah", "Bunbury"],
+      "status": "Open for Offshore",
+      "visaTypes": [
+        {
+          "code": "190",
+          "name": "Skilled Nominated Visa",
+          "status": "Open",
+          "minimumPoints": 70,
+          "targetOccupations": 160
+        },
+        {
+          "code": "491",
+          "name": "Skilled Work Regional",
+          "status": "Open",
+          "minimumPoints": 65,
+          "targetOccupations": 80
+        }
+      ],
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumPointsGeneral": 70,
+      "minimumEnglish": "competent",
+      "minimumExperienceYears": 1,
+      "regionalFocus": true,
+      "requiresStateResidence": false,
+      "requiresRecentEmployment": false,
+      "offshoreQuotaPressure": "medium",
+      "competitionLevel": "medium",
+      "processingTimeWeeks": 7,
+      "approvalRate": 85,
+      "priorityOccupations": [
+        { "code": "261313", "name": "Software Engineer" },
+        { "code": "341111", "name": "Mechanical Engineering Technician" },
+        { "code": "233211", "name": "Civil Engineer" },
+        { "code": "321211", "name": "Motor Mechanic" },
+        { "code": "411711", "name": "Mining and Energy Operator" }
+      ],
+      "economicProfile": "Mining, energy, agriculture, construction, manufacturing",
+      "studentsInState": true,
+      "workersInState": true,
+      "nearbyRegions": ["SA", "NT"]
+    },
+    {
+      "code": "SA",
+      "name": "South Australia",
+      "abbreviation": "SA",
+      "capital": "Adelaide",
+      "region": "mainland",
+      "icon": "🌾",
+      "color": "#1B4620",
+      "description": "Regional-friendly state with competitive nomination rates and diverse sectors",
+      "population": "1.8M",
+      "majorCities": ["Adelaide", "Mount Gambier", "Whyalla"],
+      "status": "High Demand",
+      "visaTypes": [
+        {
+          "code": "190",
+          "name": "Skilled Nominated Visa",
+          "status": "Open",
+          "minimumPoints": 75,
+          "targetOccupations": 140
+        },
+        {
+          "code": "491",
+          "name": "Skilled Work Regional",
+          "status": "Open",
+          "minimumPoints": 70,
+          "targetOccupations": 100
+        }
+      ],
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumPointsGeneral": 75,
+      "minimumEnglish": "proficient",
+      "minimumExperienceYears": 3,
+      "regionalFocus": true,
+      "requiresStateResidence": false,
+      "requiresRecentEmployment": false,
+      "offshoreQuotaPressure": "medium",
+      "competitionLevel": "medium-low",
+      "processingTimeWeeks": 6,
+      "approvalRate": 87,
+      "priorityOccupations": [
+        { "code": "261313", "name": "Software Engineer" },
+        { "code": "254412", "name": "Registered Nurse" },
+        { "code": "233211", "name": "Civil Engineer" },
+        { "code": "233112", "name": "Structural Engineer" },
+        { "code": "321211", "name": "Motor Mechanic" }
+      ],
+      "economicProfile": "Healthcare, education, manufacturing, agriculture, technology",
+      "studentsInState": true,
+      "workersInState": true,
+      "nearbyRegions": ["WA", "VIC"]
+    },
+    {
+      "code": "QLD",
+      "name": "Queensland",
+      "abbreviation": "QLD",
+      "capital": "Brisbane",
+      "region": "mainland",
+      "icon": "☀️",
+      "color": "#C8102E",
+      "description": "Largest regional state with currently closed nomination program",
+      "population": "5.3M",
+      "majorCities": ["Brisbane", "Gold Coast", "Townsville"],
+      "status": "Currently Closed",
+      "visaTypes": [
+        {
+          "code": "190",
+          "name": "Skilled Nominated Visa",
+          "status": "Closed",
+          "minimumPoints": 80,
+          "targetOccupations": 0
+        }
+      ],
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "closed",
+      "minimumPointsGeneral": 80,
+      "minimumEnglish": "proficient",
+      "minimumExperienceYears": 0,
+      "regionalFocus": false,
+      "requiresStateResidence": false,
+      "requiresRecentEmployment": false,
+      "offshoreQuotaPressure": "closed",
+      "competitionLevel": "not-available",
+      "processingTimeWeeks": 0,
+      "approvalRate": 0,
+      "priorityOccupations": [
+        { "code": "254412", "name": "Registered Nurse" },
+        { "code": "241213", "name": "Secondary School Teacher" },
+        { "code": "233211", "name": "Civil Engineer" }
+      ],
+      "economicProfile": "Tourism, agriculture, healthcare, education, construction",
+      "studentsInState": true,
+      "workersInState": true,
+      "nearbyRegions": ["NSW", "NT"]
+    },
+    {
+      "code": "TAS",
+      "name": "Tasmania",
+      "abbreviation": "TAS",
+      "capital": "Hobart",
+      "region": "island",
+      "icon": "🏔️",
+      "color": "#00843D",
+      "description": "Island state with selective occupation focus and regional benefits",
+      "population": "0.54M",
+      "majorCities": ["Hobart", "Launceston"],
+      "status": "Open - Selective",
+      "visaTypes": [
+        {
+          "code": "190",
+          "name": "Skilled Nominated Visa",
+          "status": "Open",
+          "minimumPoints": 75,
+          "targetOccupations": 50
+        },
+        {
+          "code": "491",
+          "name": "Skilled Work Regional",
+          "status": "Open",
+          "minimumPoints": 70,
+          "targetOccupations": 40
+        }
+      ],
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumPointsGeneral": 75,
+      "minimumEnglish": "proficient",
+      "minimumExperienceYears": 2,
+      "regionalFocus": true,
+      "requiresStateResidence": false,
+      "requiresRecentEmployment": false,
+      "offshoreQuotaPressure": "low",
+      "competitionLevel": "low",
+      "processingTimeWeeks": 8,
+      "approvalRate": 90,
+      "priorityOccupations": [
+        { "code": "261313", "name": "Software Engineer" },
+        { "code": "254412", "name": "Registered Nurse" },
+        { "code": "241213", "name": "Secondary School Teacher" },
+        { "code": "311213", "name": "Chef" },
+        { "code": "233211", "name": "Civil Engineer" }
+      ],
+      "economicProfile": "Healthcare, education, tourism, agriculture, renewable energy",
+      "studentsInState": true,
+      "workersInState": false,
+      "nearbyRegions": ["Victoria"]
+    },
+    {
+      "code": "ACT",
+      "name": "Australian Capital Territory",
+      "abbreviation": "ACT",
+      "capital": "Canberra",
+      "region": "territory",
+      "icon": "🏛️",
+      "color": "#003DA5",
+      "description": "Compact territory with government and professional services focus",
+      "population": "0.46M",
+      "majorCities": ["Canberra"],
+      "status": "Onshore Priority",
+      "visaTypes": [
+        {
+          "code": "190",
+          "name": "Skilled Nominated Visa",
+          "status": "Onshore Only",
+          "minimumPoints": 85,
+          "targetOccupations": 60
+        }
+      ],
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "open",
+      "minimumPointsGeneral": 85,
+      "minimumEnglish": "proficient",
+      "minimumExperienceYears": 2,
+      "regionalFocus": false,
+      "requiresStateResidence": true,
+      "requiresRecentEmployment": true,
+      "offshoreQuotaPressure": "low",
+      "competitionLevel": "medium",
+      "processingTimeWeeks": 7,
+      "approvalRate": 89,
+      "priorityOccupations": [
+        { "code": "261313", "name": "Software Engineer" },
+        { "code": "132111", "name": "Project Manager" },
+        { "code": "221111", "name": "Accountant" },
+        { "code": "234112", "name": "Electrical Engineer" },
+        { "code": "233211", "name": "Civil Engineer" }
+      ],
+      "economicProfile": "Government, defence, technology, professional services, research",
+      "studentsInState": true,
+      "workersInState": true,
+      "nearbyRegions": ["NSW"]
+    },
+    {
+      "code": "NT",
+      "name": "Northern Territory",
+      "abbreviation": "NT",
+      "capital": "Darwin",
+      "region": "territory",
+      "icon": "🐊",
+      "color": "#E51937",
+      "description": "Large remote territory with diverse nomination opportunities",
+      "population": "0.23M",
+      "majorCities": ["Darwin", "Alice Springs", "Palmerston"],
+      "status": "Open for Offshore",
+      "visaTypes": [
+        {
+          "code": "190",
+          "name": "Skilled Nominated Visa",
+          "status": "Open",
+          "minimumPoints": 70,
+          "targetOccupations": 140
+        },
+        {
+          "code": "491",
+          "name": "Skilled Work Regional",
+          "status": "Open",
+          "minimumPoints": 65,
+          "targetOccupations": 110
+        }
+      ],
+      "offshoreAvailability": "open",
+      "onshoreAvailability": "open",
+      "minimumPointsGeneral": 70,
+      "minimumEnglish": "competent",
+      "minimumExperienceYears": 1,
+      "regionalFocus": true,
+      "requiresStateResidence": false,
+      "requiresRecentEmployment": false,
+      "offshoreQuotaPressure": "low",
+      "competitionLevel": "low-medium",
+      "processingTimeWeeks": 7,
+      "approvalRate": 86,
+      "priorityOccupations": [
+        { "code": "261313", "name": "Software Engineer" },
+        { "code": "321211", "name": "Motor Mechanic" },
+        { "code": "254412", "name": "Registered Nurse" },
+        { "code": "233211", "name": "Civil Engineer" },
+        { "code": "351311", "name": "Chef" }
+      ],
+      "economicProfile": "Mining, energy, defence, tourism, agriculture, healthcare",
+      "studentsInState": true,
+      "workersInState": true,
+      "nearbyRegions": ["WA", "QLD"]
+    }
+  ]
+}
