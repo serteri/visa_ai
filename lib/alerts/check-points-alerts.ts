@@ -60,7 +60,7 @@ export async function checkAndSendAlerts(): Promise<AlertCheckResult> {
 
   for (const alert of alerts) {
     const latest = latestBySubclass.get(alert.visaSubclass);
-    if (!latest) {
+    if (!latest || latest.lowestPoints === null) {
       skipped += 1;
       continue;
     }

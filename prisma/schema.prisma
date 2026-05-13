@@ -157,7 +157,7 @@ model EoiRound {
   roundDate    DateTime @map("round_date")
   visaSubclass String   @map("visa_subclass")
   visaName     String   @map("visa_name")
-  lowestPoints Int      @map("lowest_points")
+  lowestPoints Int?     @map("lowest_points")
   invitations  Int
   poolSize     Int?     @map("pool_size")
   notes        String?

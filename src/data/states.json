@@ -13,6 +13,7 @@
       "population": "8.2M",
       "majorCities": ["Sydney", "Newcastle", "Wollongong"],
       "status": "High Demand",
+      "nominationsThisYear": { "visa190": 1894, "visa491": 1049 },
       "visaTypes": [
         {
           "code": "190",
@@ -58,6 +59,7 @@
       "population": "6.6M",
       "majorCities": ["Melbourne", "Geelong", "Ballarat"],
       "status": "Onshore Priority",
+      "nominationsThisYear": { "visa190": 2237, "visa491": 656 },
       "visaTypes": [
         {
           "code": "190",
@@ -103,6 +105,7 @@
       "population": "2.7M",
       "majorCities": ["Perth", "Mandurah", "Bunbury"],
       "status": "Open for Offshore",
+      "nominationsThisYear": { "visa190": 1443, "visa491": 1067 },
       "visaTypes": [
         {
           "code": "190",
@@ -155,6 +158,7 @@
       "population": "1.8M",
       "majorCities": ["Adelaide", "Mount Gambier", "Whyalla"],
       "status": "High Demand",
+      "nominationsThisYear": { "visa190": 911, "visa491": 594 },
       "visaTypes": [
         {
           "code": "190",
@@ -207,6 +211,7 @@
       "population": "5.3M",
       "majorCities": ["Brisbane", "Gold Coast", "Townsville"],
       "status": "Currently Closed",
+      "nominationsThisYear": { "visa190": 1254, "visa491": 630 },
       "visaTypes": [
         {
           "code": "190",
@@ -250,6 +255,7 @@
       "population": "0.54M",
       "majorCities": ["Hobart", "Launceston"],
       "status": "Open - Selective",
+      "nominationsThisYear": { "visa190": 988, "visa491": 367 },
       "visaTypes": [
         {
           "code": "190",
@@ -302,6 +308,7 @@
       "population": "0.46M",
       "majorCities": ["Canberra"],
       "status": "Onshore Priority",
+      "nominationsThisYear": { "visa190": 604, "visa491": 653 },
       "visaTypes": [
         {
           "code": "190",
@@ -347,6 +354,7 @@
       "population": "0.23M",
       "majorCities": ["Darwin", "Alice Springs", "Palmerston"],
       "status": "Open for Offshore",
+      "nominationsThisYear": { "visa190": 741, "visa491": 438 },
       "visaTypes": [
         {
           "code": "190",

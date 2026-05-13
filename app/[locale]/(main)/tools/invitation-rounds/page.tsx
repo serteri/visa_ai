@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InvitationRoundsClient } from "./InvitationRoundsClient";
 import eoiRounds from "@/src/data/eoi-rounds.json";
+import occupationPointsCutoff from "@/src/data/occupation-points-cutoff.json";
 import { prisma } from "@/lib/prisma";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -59,12 +60,14 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
           poolSize: round.poolSize,
           notes: round.notes,
           isEstimated: round.isEstimated,
+          source: round.source,
         }))
       : eoiRounds.rounds.map((round) => ({
           ...round,
           poolSize: round.poolSize ?? null,
           notes: round.notes ?? null,
-          isEstimated: true,
+          isEstimated: round.isEstimated ?? false,
+          source: round.source ?? "DoHA Official",
         }));
 
   const latestScraped =
@@ -97,14 +100,14 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
         <h1 className="text-3xl font-bold text-slate-900">Invitation Round Tracker</h1>
         <p className="mt-2 max-w-2xl text-base text-slate-500">
           Historical points cutoffs and invitation volumes for Australian skilled migration
-          (subclasses 189, 190 &amp; 491).
+          (subclasses 189 and 491 Family Sponsored).
         </p>
         <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Data sourced from Department of Home Affairs. Updated automatically twice monthly.
+          Data sourced from official DoHA SkillSelect invitation rounds page. Last verified: November 2025.
         </p>
       </div>
 
-      <InvitationRoundsClient rounds={rounds} />
+      <InvitationRoundsClient rounds={rounds} occupationPoints={occupationPointsCutoff} />
     </div>
   );
 }

@@ -149,6 +149,9 @@ export function StateNominationClient({ locale }: { locale: string }) {
           <p className="text-lg text-slate-600 dark:text-slate-300">
             Find which Australian states will nominate you for 190 or 491 visa
           </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Nomination data: DoHA — 1 Jul 2025 to 30 Apr 2026
+          </p>
         </div>
 
         {/* Input Section */}
@@ -297,6 +300,15 @@ export function StateNominationClient({ locale }: { locale: string }) {
                             </Badge>
                           );
                         })}
+                      </div>
+
+                      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/60">
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                          {state.nominationsThisYear.visa190.toLocaleString()} nominations this year (190)
+                        </p>
+                        <p className="mt-1 text-sm font-medium text-slate-700 dark:text-slate-200">
+                          {state.nominationsThisYear.visa491.toLocaleString()} nominations this year (491)
+                        </p>
                       </div>
 
                       {/* Points Requirement */}

@@ -20,10 +20,17 @@ type Round = {
   visaSubclass: string;
   visaName: string;
   invitations: number;
-  lowestPoints: number;
+  lowestPoints: number | null;
   poolSize: number | null;
   notes: string | null;
   isEstimated?: boolean;
+  source?: string;
+};
+
+type OccupationCutoff = {
+  occupation: string;
+  subclass189: number | null;
+  subclass491: number | null;
 };
 
 const SUBCLASS_COLOR: Record<string, string> = {
@@ -48,6 +55,10 @@ function formatDate(dateStr: string) {
   });
 }
 
+function formatPoints(points: number | null): string {
+  return typeof points === "number" ? `${points}` : "Varies";
+}
+
 function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
   if (trend === "up")
     return <TrendingUp className="h-4 w-4 text-rose-500" />;
@@ -67,17 +78,22 @@ function SummaryCard({
   latest: Round | undefined;
   previous: Round | undefined;
 }) {
+  const hasLatestPoints = typeof latest?.lowestPoints === "number";
+  const hasPreviousPoints = typeof previous?.lowestPoints === "number";
+
   const trend: "up" | "down" | "flat" =
-    !latest || !previous
+    !hasLatestPoints || !hasPreviousPoints
       ? "flat"
-      : latest.lowestPoints > previous.lowestPoints
+      : (latest?.lowestPoints ?? 0) > (previous?.lowestPoints ?? 0)
       ? "up"
-      : latest.lowestPoints < previous.lowestPoints
+      : (latest?.lowestPoints ?? 0) < (previous?.lowestPoints ?? 0)
       ? "down"
       : "flat";
 
   const delta =
-    latest && previous ? latest.lowestPoints - previous.lowestPoints : 0;
+    hasLatestPoints && hasPreviousPoints
+      ? (latest?.lowestPoints ?? 0) - (previous?.lowestPoints ?? 0)
+      : 0;
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -95,7 +111,7 @@ function SummaryCard({
       {latest ? (
         <>
           <p className="mt-3 text-3xl font-bold text-slate-900">
-            {latest.lowestPoints}
+            {formatPoints(latest.lowestPoints)}
             <span className="ml-1 text-base font-normal text-slate-500">pts</span>
           </p>
           <p className="mt-0.5 text-xs text-slate-400">{formatDate(latest.date)}</p>
@@ -145,10 +161,17 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
   );
 }
 
-export function InvitationRoundsClient({ rounds }: { rounds: Round[] }) {
+export function InvitationRoundsClient({
+  rounds,
+  occupationPoints,
+}: {
+  rounds: Round[];
+  occupationPoints: OccupationCutoff[];
+}) {
   const [subclassFilter, setSubclassFilter] = useState<"all" | "189" | "190" | "491">("all");
   const [yearFilter, setYearFilter] = useState<"all" | "2023" | "2024" | "2025">("all");
   const [page, setPage] = useState(1);
+  const [occupationSearch, setOccupationSearch] = useState("");
 
   // Alert form
   const [alertEmail, setAlertEmail] = useState("");
@@ -186,11 +209,19 @@ export function InvitationRoundsClient({ rounds }: { rounds: Round[] }) {
       filtered
         .filter((r) => r.date === date)
         .forEach((r) => {
-          entry[r.visaSubclass] = r.lowestPoints;
+          if (typeof r.lowestPoints === "number") {
+            entry[r.visaSubclass] = r.lowestPoints;
+          }
         });
       return entry;
     });
   }, [filtered]);
+
+  const filteredOccupationPoints = useMemo(() => {
+    const search = occupationSearch.trim().toLowerCase();
+    if (!search) return occupationPoints;
+    return occupationPoints.filter((row) => row.occupation.toLowerCase().includes(search));
+  }, [occupationPoints, occupationSearch]);
 
   const activeSubclasses = useMemo(() => {
     if (subclassFilter !== "all") return [subclassFilter];
@@ -223,6 +254,11 @@ export function InvitationRoundsClient({ rounds }: { rounds: Round[] }) {
 
   return (
     <div className="space-y-8">
+      <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+        ℹ️ Subclass 190 and 491 (State Nominated) are NOT included in these rounds — states
+        nominate independently throughout the month.
+      </div>
+
       {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-3">
         <SummaryCard subclass="189" visaName="Skilled Independent" latest={latest189} previous={prev189} />
@@ -363,7 +399,7 @@ export function InvitationRoundsClient({ rounds }: { rounds: Round[] }) {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right font-semibold text-slate-800">
-                        {r.lowestPoints}
+                        {typeof r.lowestPoints === "number" ? r.lowestPoints : "Varies"}
                       </td>
                       <td className="px-4 py-3 text-right text-slate-600">
                         {r.invitations.toLocaleString()}
@@ -392,6 +428,53 @@ export function InvitationRoundsClient({ rounds }: { rounds: Round[] }) {
             )}
           </>
         )}
+      </div>
+
+      {/* Occupation cutoff table */}
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div className="border-b border-slate-100 px-5 py-4">
+          <h2 className="text-sm font-semibold text-slate-800">Points by Occupation</h2>
+          <p className="mt-0.5 text-xs text-slate-400">
+            Source: DoHA — Round of 13 November 2025
+          </p>
+          <div className="mt-3">
+            <input
+              type="text"
+              value={occupationSearch}
+              onChange={(e) => setOccupationSearch(e.target.value)}
+              placeholder="Search occupation name"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+            />
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase text-slate-400">
+                <th className="px-4 py-3 text-left">Occupation</th>
+                <th className="px-4 py-3 text-right">Subclass 189 Min Points</th>
+                <th className="px-4 py-3 text-right">Subclass 491 Min Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredOccupationPoints.map((row, i) => (
+                <tr
+                  key={row.occupation}
+                  className={`border-b border-slate-50 ${i % 2 === 1 ? "bg-white" : "bg-slate-50/30"}`}
+                >
+                  <td className="px-4 py-3 text-slate-700">{row.occupation}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-slate-800">
+                    {row.subclass189 ?? "—"}
+                  </td>
+                  <td className="px-4 py-3 text-right font-semibold text-slate-800">
+                    {row.subclass491 ?? "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Alert section */}

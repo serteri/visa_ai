@@ -14,7 +14,7 @@ type EoiRound = {
   roundDate: Date;
   visaSubclass: string;
   visaName: string;
-  lowestPoints: number;
+  lowestPoints: number | null;
   invitations: number;
   poolSize: number | null;
   notes: string | null;
@@ -281,7 +281,7 @@ export function EoiRoundsClient({
                     <tr key={round.id} className="border-b border-border/50 hover:bg-muted/30">
                       <td className="px-4 py-3">{formatDate(round.roundDate)}</td>
                       <td className="px-4 py-3 font-medium">{round.visaSubclass}</td>
-                      <td className="px-4 py-3 text-right font-semibold">{round.lowestPoints}</td>
+                      <td className="px-4 py-3 text-right font-semibold">{round.lowestPoints ?? "Varies"}</td>
                       <td className="px-4 py-3 text-right">{round.invitations.toLocaleString()}</td>
                       <td className="px-4 py-3 text-right text-muted-foreground">
                         {round.poolSize?.toLocaleString() ?? "—"}
