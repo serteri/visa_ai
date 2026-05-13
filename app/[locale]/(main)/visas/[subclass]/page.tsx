@@ -7,6 +7,8 @@ import { ShieldCheck } from "lucide-react";
 
 import { db } from "@/db";
 import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
+import { mockVisaTypes } from "@/lib/mock-visa-data";
+import visaFees from "@/src/data/visa-fees.json";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -103,35 +105,112 @@ function formatDisplayDate(locale: string, value: string | Date) {
 // ─── data fetching ────────────────────────────────────────────────────────────
 
 async function getVisaDetails(subclass: string, locale: string) {
-  const [visaRow] = await db
-    .select()
-    .from(visaTypes)
-    .where(eq(visaTypes.subclass, subclass))
-    .limit(1);
+  const normalizedSubclass = normalizeSubclass(subclass);
 
-  if (!visaRow) return null;
+  try {
+    const [visaRow] = await db
+      .select()
+      .from(visaTypes)
+      .where(eq(visaTypes.subclass, normalizedSubclass))
+      .limit(1);
 
-  const [structured] = await db
-    .select()
-    .from(visaStructuredData)
-    .where(eq(visaStructuredData.visa_type_id, visaRow.id))
-    .limit(1);
+    if (!visaRow) {
+      const fallbackVisa = getFallbackVisa(normalizedSubclass);
+      if (!fallbackVisa) return null;
 
-  const snapshots = await db
-    .select({
-      id: sourceSnapshots.id,
-      pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
-      source_url: sourceSnapshots.source_url,
-      captured_at: sourceSnapshots.captured_at,
-      notes: sourceSnapshots.notes,
-    })
-    .from(sourceSnapshots)
-    .where(eq(sourceSnapshots.visa_type_id, visaRow.id));
+      const localizedFallback = localizeVisaFields(normalizedSubclass, locale, fallbackVisa);
+      return { visa: localizedFallback, structured: null, snapshots: [] };
+    }
 
-  const localizedVisa = localizeVisaFields(subclass, locale, visaRow);
-  const localizedStructured = localizeVisaStructuredData(subclass, locale, structured ?? null);
+    const [structured] = await db
+      .select()
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, visaRow.id))
+      .limit(1);
 
-  return { visa: localizedVisa, structured: localizedStructured, snapshots };
+    const snapshots = await db
+      .select({
+        id: sourceSnapshots.id,
+        pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+        source_url: sourceSnapshots.source_url,
+        captured_at: sourceSnapshots.captured_at,
+        notes: sourceSnapshots.notes,
+      })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, visaRow.id));
+
+    const localizedVisa = localizeVisaFields(normalizedSubclass, locale, visaRow);
+    const localizedStructured = localizeVisaStructuredData(normalizedSubclass, locale, structured ?? null);
+
+    return { visa: localizedVisa, structured: localizedStructured, snapshots };
+  } catch (error) {
+    console.error("Failed to load visa details from DB, using local fallback", {
+      subclass: normalizedSubclass,
+      error,
+    });
+
+    const fallbackVisa = getFallbackVisa(normalizedSubclass);
+    if (!fallbackVisa) return null;
+
+    const localizedFallback = localizeVisaFields(normalizedSubclass, locale, fallbackVisa);
+    return { visa: localizedFallback, structured: null, snapshots: [] };
+  }
+}
+
+function normalizeSubclass(raw: string): string {
+  const value = raw.trim();
+  if (value === "820/801" || value === "820-801") return "820_801";
+  return value;
+}
+
+function getFallbackVisa(subclass: string) {
+  const fromMock = mockVisaTypes.find((visa) => visa.subclass === subclass);
+  if (fromMock) {
+    return {
+      id: fromMock.id,
+      subclass: fromMock.subclass,
+      visa_name: fromMock.visa_name,
+      category: fromMock.category,
+      purpose: fromMock.overview,
+      stay_period: fromMock.stay_period,
+      cost: fromMock.cost,
+      work_rights: fromMock.work_rights,
+      source_url: fromMock.source_url,
+      last_checked: fromMock.last_checked,
+      reviewed_status: fromMock.reviewed_status,
+    };
+  }
+
+  const feeEntry = visaFees.visas[subclass as keyof typeof visaFees.visas];
+  if (!feeEntry) return null;
+
+  const sourceMap: Record<string, string> = {
+    "190": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190",
+    "491": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491",
+    "485": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485",
+    "820_801": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801",
+  };
+
+  const categoryMap: Record<string, string> = {
+    "190": "Skilled",
+    "491": "Regional",
+    "485": "Skilled",
+    "820_801": "Partner",
+  };
+
+  return {
+    id: `fallback-${subclass}`,
+    subclass,
+    visa_name: feeEntry.label,
+    category: categoryMap[subclass] ?? "Skilled",
+    purpose: "Official visa details are currently being synchronized. See official source link below.",
+    stay_period: "Varies by stream and applicant profile",
+    cost: `From AUD ${feeEntry.vac.main.toLocaleString()}`,
+    work_rights: "Subject to visa conditions",
+    source_url: sourceMap[subclass] ?? "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing",
+    last_checked: visaFees.generated_on,
+    reviewed_status: "pending",
+  };
 }
 
 // ─── render helpers ───────────────────────────────────────────────────────────
@@ -1113,43 +1192,44 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, subclass } = await params;
+  const normalizedSubclass = normalizeSubclass(subclass);
   const siteUrl = new URL(BASE_URL);
 
   try {
-    const result = await getVisaDetails(subclass, locale);
-    const visaName = result?.visa?.visa_name ?? `Visa ${subclass}`;
-    const normalizedSubclass = result?.visa?.subclass ?? subclass;
-    const title = `${visaName} ${normalizedSubclass} Eligibility Check`;
+    const result = await getVisaDetails(normalizedSubclass, locale);
+    const visaName = result?.visa?.visa_name ?? `Visa ${normalizedSubclass}`;
+    const resolvedSubclass = result?.visa?.subclass ?? normalizedSubclass;
+    const title = `${visaName} ${resolvedSubclass} Eligibility Check`;
     const description =
       locale === "tr"
         ? `${visaName} ${normalizedSubclass} icin uygunluk, temel gereklilikler ve risk gorunumu.`
         : locale === "zh-Hans"
           ? `${visaName} ${normalizedSubclass} 的资格条件、关键要求与风险概览。`
-          : `Eligibility, key requirements, and risk snapshot for ${visaName} ${normalizedSubclass}.`;
+          : `Eligibility, key requirements, and risk snapshot for ${visaName} ${resolvedSubclass}.`;
 
     return {
       metadataBase: siteUrl,
       title,
       description,
       alternates: {
-        canonical: `/${locale}/visas/${subclass}`,
+        canonical: `/${locale}/visas/${normalizedSubclass}`,
         languages: {
-          en: `/en/visas/${subclass}`,
-          tr: `/tr/visas/${subclass}`,
-          "zh-Hans": `/zh-Hans/visas/${subclass}`,
+          en: `/en/visas/${normalizedSubclass}`,
+          tr: `/tr/visas/${normalizedSubclass}`,
+          "zh-Hans": `/zh-Hans/visas/${normalizedSubclass}`,
         },
       },
       openGraph: {
         title,
         description,
         type: "article",
-        url: `/${locale}/visas/${subclass}`,
+        url: `/${locale}/visas/${normalizedSubclass}`,
         images: [
           {
             url: "/og/default-og.png",
             width: 1200,
             height: 630,
-            alt: `${visaName} ${normalizedSubclass}`,
+            alt: `${visaName} ${resolvedSubclass}`,
           },
         ],
       },
@@ -1161,11 +1241,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: fallbackTitle,
       description: "Structured visa eligibility and requirement overview.",
       alternates: {
-        canonical: `/${locale}/visas/${subclass}`,
+        canonical: `/${locale}/visas/${normalizedSubclass}`,
         languages: {
-          en: `/en/visas/${subclass}`,
-          tr: `/tr/visas/${subclass}`,
-          "zh-Hans": `/zh-Hans/visas/${subclass}`,
+          en: `/en/visas/${normalizedSubclass}`,
+          tr: `/tr/visas/${normalizedSubclass}`,
+          "zh-Hans": `/zh-Hans/visas/${normalizedSubclass}`,
         },
       },
     };
@@ -1174,11 +1254,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function VisaDetailsPage({ params }: PageProps) {
   const { locale, subclass } = await params;
+  const normalizedSubclass = normalizeSubclass(subclass);
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const tx = (zh: string, tr: string, en: string) => (isTr ? tr : isZh ? zh : en);
 
-  const result = await getVisaDetails(subclass, locale);
+  const result = await getVisaDetails(normalizedSubclass, locale);
   if (!result) notFound();
 
   const { visa, structured, snapshots } = result;
