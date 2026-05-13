@@ -43,6 +43,7 @@ export function Header({
   const invRoundsLabel = isTr ? "Davet Turları" : isZh ? "邀请轮次" : "Invitation Rounds";
   const skillsAssessLabel = isTr ? "Beceri Değerlendirme" : isZh ? "技能评估" : "Skills Assessment";
   const stateNominationLabel = isTr ? "Eyalet Nominasyonu" : isZh ? "州担保" : "State Nomination";
+  const visaComparisonLabel = isTr ? "189-190-491 Karsilastirma" : isZh ? "189-190-491 对比" : "189 vs 190 vs 491";
   const toolsLabel = isTr ? "Araçlar" : isZh ? "工具" : "Tools";
 
   return (
@@ -82,6 +83,12 @@ export function Header({
                   {isTr ? v.tr : isZh ? v.zh : v.en}
                 </Link>
               ))}
+              <Link
+                href={`/${locale}/tools/visa-comparison`}
+                className="block rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                {visaComparisonLabel}
+              </Link>
             </div>
           </div>
 
@@ -221,6 +228,12 @@ export function Header({
                   {isTr ? v.tr : isZh ? v.zh : v.en}
                 </Link>
               ))}
+              <Link
+                href={`/${locale}/tools/visa-comparison`}
+                className="block rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                {visaComparisonLabel}
+              </Link>
             </div>
           </div>
 
@@ -318,6 +331,13 @@ export function Header({
                   {isTr ? v.tr : isZh ? v.zh : v.en}
                 </Link>
               ))}
+              <Link
+                href={`/${locale}/tools/visa-comparison`}
+                className="block rounded-lg px-2 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {visaComparisonLabel}
+              </Link>
             </div>
 
             <div className="h-px w-full bg-slate-100 dark:bg-white/10" />
