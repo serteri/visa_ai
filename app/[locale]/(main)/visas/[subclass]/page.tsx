@@ -22,6 +22,7 @@ type VisaDetail = {
   nameKey: string;
   type: string;
   processingTime: string;
+  processingTimeUnit: string;
   fee: number;
   minPoints: number | null;
   description: string;
@@ -173,6 +174,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const visitDohaLabel = t(translations, "visas.visitDoHA", "Visit DoHA website");
   const backToVisasLabel = t(translations, "visas.backToVisas", "Back to visas");
   const processingTimeLabel = t(translations, "visas.processingTime", "Processing Time");
+  const processingTimeUnit = t(translations, `timeUnits.${visa.processingTimeUnit}`, visa.processingTimeUnit);
   const visaFeeLabel = t(translations, "visas.visaFee", "Visa Fee");
   const minPointsLabel = t(translations, "visas.minPoints", "Minimum Points");
   const notRequiredLabel = t(translations, "visas.notRequired", "Not required");
@@ -234,7 +236,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                     <Clock3 className="h-4 w-4 text-cyan-600" />
                     {processingTimeLabel}
                   </div>
-                  <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{visa.processingTime}</p>
+                  <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{visa.processingTime} {processingTimeUnit}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
@@ -276,7 +278,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {processingTimeLabel}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{visa.processingTime}</p>
+                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{visa.processingTime} {processingTimeUnit}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">

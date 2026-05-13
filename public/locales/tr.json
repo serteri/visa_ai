@@ -501,5 +501,11 @@
     "visa485desc": "Avustralya'da eğitimini tamamlayan uluslararası mezunlar için.",
     "visa500desc": "Avustralya'da tam zamanlı eğitim almak isteyen uluslararası öğrenciler için.",
     "visa820_801desc": "Avustralyalı vatandaş veya daimi oturma iznine sahip kişilerin partnerleri için."
+  },
+  "timeUnits": {
+    "months": "ay",
+    "years": "yıl",
+    "weeks": "hafta",
+    "days": "gün"
   }
 }

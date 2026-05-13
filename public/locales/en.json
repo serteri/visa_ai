@@ -494,5 +494,11 @@
     "visa485desc": "Allows international graduates to live and work in Australia after completing studies.",
     "visa500desc": "For international students to study full-time in Australia.",
     "visa820_801desc": "For partners or spouses of Australian citizens or permanent residents."
+  },
+  "timeUnits": {
+    "months": "months",
+    "years": "years",
+    "weeks": "weeks",
+    "days": "days"
   }
 }
