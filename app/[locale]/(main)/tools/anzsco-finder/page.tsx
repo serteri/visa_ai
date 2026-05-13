@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { AnzscoSearchTool } from "./AnzscoSearchTool";
+import { SeoContentSection } from "@/components/SeoContentSection";
+import { getAnzscoSeoContent, buildAnzscoSchema } from "@/lib/seo/anzsco-content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -38,5 +40,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function AnzscoFinderPage({ params }: PageProps) {
   const { locale } = await params;
-  return <AnzscoSearchTool locale={locale} />;
+  const seoContent = getAnzscoSeoContent(locale);
+  const schemaJson = buildAnzscoSchema(locale);
+  return (
+    <>
+      <AnzscoSearchTool locale={locale} />
+      <SeoContentSection {...seoContent} schemaJson={schemaJson} />
+    </>
+  );
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { SkillsAssessmentClient } from "./SkillsAssessmentClient";
+import { SeoContentSection } from "@/components/SeoContentSection";
+import { getSkillsAssessmentSeoContent, buildSkillsAssessmentSchema } from "@/lib/seo/skills-assessment-content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -35,5 +37,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SkillsAssessmentPage({ params }: PageProps) {
   const { locale } = await params;
-  return <SkillsAssessmentClient locale={locale} />;
+  const seoContent = getSkillsAssessmentSeoContent(locale);
+  const schemaJson = buildSkillsAssessmentSchema(locale);
+  return (
+    <>
+      <SkillsAssessmentClient locale={locale} />
+      <SeoContentSection {...seoContent} schemaJson={schemaJson} />
+    </>
+  );
 }

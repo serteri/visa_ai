@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { InvitationRoundsClient } from "./InvitationRoundsClient";
+import { SeoContentSection } from "@/components/SeoContentSection";
+import { getInvitationRoundsSeoContent, buildInvitationRoundsSchema } from "@/lib/seo/invitation-rounds-content";
 import eoiRounds from "@/src/data/eoi-rounds.json";
 import occupationPointsCutoff from "@/src/data/occupation-points-cutoff.json";
 import { prisma } from "@/lib/prisma";
@@ -37,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function InvitationRoundsPage({ params }: PageProps) {
-  await params;
+  const { locale } = await params;
 
   let dbRounds: Awaited<ReturnType<typeof prisma.eoiRound.findMany>> = [];
   try {
@@ -87,27 +89,33 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
       })
     : `${eoiRounds.lastUpdated} (seed data)`;
 
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-10 pt-28">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="mb-2 flex items-center gap-2">
-          <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
-            SkillSelect Data
-          </span>
-          <span className="text-xs text-slate-400">Last scraped {lastScrapedLabel}</span>
-        </div>
-        <h1 className="text-3xl font-bold text-slate-900">Invitation Round Tracker</h1>
-        <p className="mt-2 max-w-2xl text-base text-slate-500">
-          Historical points cutoffs and invitation volumes for Australian skilled migration
-          (subclasses 189 and 491 Family Sponsored).
-        </p>
-        <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Data sourced from official DoHA SkillSelect invitation rounds page. Last verified: November 2025.
-        </p>
-      </div>
+  const seoContent = getInvitationRoundsSeoContent(locale);
+  const schemaJson = buildInvitationRoundsSchema(locale);
 
-      <InvitationRoundsClient rounds={rounds} occupationPoints={occupationPointsCutoff} />
-    </div>
+  return (
+    <>
+      <div className="mx-auto max-w-5xl px-4 py-10 pt-28">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
+              SkillSelect Data
+            </span>
+            <span className="text-xs text-slate-400">Last scraped {lastScrapedLabel}</span>
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900">Invitation Round Tracker</h1>
+          <p className="mt-2 max-w-2xl text-base text-slate-500">
+            Historical points cutoffs and invitation volumes for Australian skilled migration
+            (subclasses 189 and 491 Family Sponsored).
+          </p>
+          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Data sourced from official DoHA SkillSelect invitation rounds page. Last verified: November 2025.
+          </p>
+        </div>
+
+        <InvitationRoundsClient rounds={rounds} occupationPoints={occupationPointsCutoff} />
+      </div>
+      <SeoContentSection {...seoContent} schemaJson={schemaJson} />
+    </>
   );
 }

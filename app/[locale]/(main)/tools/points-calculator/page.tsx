@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { PointsCalculatorClient } from "./points-calculator-client";
+import { SeoContentSection } from "@/components/SeoContentSection";
+import { getPointsCalcSeoContent, buildPointsCalcSchema } from "@/lib/seo/points-calculator-content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -37,5 +39,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PointsCalculatorPage({ params }: PageProps) {
   const { locale } = await params;
-  return <PointsCalculatorClient locale={locale} />;
+  const seoContent = getPointsCalcSeoContent(locale);
+  const schemaJson = buildPointsCalcSchema(locale);
+  return (
+    <>
+      <PointsCalculatorClient locale={locale} />
+      <SeoContentSection {...seoContent} schemaJson={schemaJson} />
+    </>
+  );
 }

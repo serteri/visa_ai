@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { StateNominationClient } from "./StateNominationClient";
+import { SeoContentSection } from "@/components/SeoContentSection";
+import { getStateNominationSeoContent, buildStateNominationSchema } from "@/lib/seo/state-nomination-content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -37,5 +39,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function StateNominationPage({ params }: PageProps) {
   const { locale } = await params;
-  return <StateNominationClient locale={locale} />;
+  const seoContent = getStateNominationSeoContent(locale);
+  const schemaJson = buildStateNominationSchema(locale);
+  return (
+    <>
+      <StateNominationClient locale={locale} />
+      <SeoContentSection {...seoContent} schemaJson={schemaJson} />
+    </>
+  );
 }
