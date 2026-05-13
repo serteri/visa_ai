@@ -22,7 +22,7 @@ export default function OccupationCheckerPage() {
 
 
   return (
-    <main className="ambient-bg flex-1 py-12">
+    <main className="ambient-bg flex-1 pt-20 pb-12">
       <section className="section-shell space-y-6">
         <div className="space-y-3">
           <Badge variant="secondary">{t("occupationChecker.badge")}</Badge>

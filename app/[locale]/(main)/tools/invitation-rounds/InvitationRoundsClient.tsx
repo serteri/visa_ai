@@ -256,7 +256,7 @@ export function InvitationRoundsClient({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pt-20">
       <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
         {t("ir.infoBanner", "ℹ️ Subclass 190 and 491 (State Nominated) are NOT included in these rounds — states nominate independently throughout the month.")}
       </div>
