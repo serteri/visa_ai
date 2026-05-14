@@ -100,6 +100,24 @@ model SavedCalculation {
   @@map("saved_calculations")
 }
 
+model GuideDownload {
+  id        String   @id @default(uuid())
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  email     String
+  phone     String?
+  locale    String   @default("tr")
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+  @@map("guide_downloads")
+}
+
+model GuideConfig {
+  id           String @id @default("main")
+  maxDownloads Int    @default(20) @map("max_downloads")
+  @@map("guide_config")
+}
+
 model SavedQuizResult {
   id              String   @id @default(uuid())
   userId          String   @map("user_id")

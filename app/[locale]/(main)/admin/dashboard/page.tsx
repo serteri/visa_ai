@@ -51,6 +51,16 @@ async function getDashboardData() {
     console.error("Failed to load latest EOI scrape timestamp", error);
   }
 
+  const guideDownloads = await prisma.guideDownload.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+  const guideDownloadCount = await prisma.guideDownload.count();
+  const guideConfig = await prisma.guideConfig.findUnique({
+    where: { id: "main" },
+    select: { maxDownloads: true },
+  });
+  const maxGuideDownloads = guideConfig?.maxDownloads || 20;
+
   return {
     waitlistTotal: waitlistTotal?.value ?? 0,
     referralTotal: referralTotal?.value ?? 0,
@@ -61,6 +71,9 @@ async function getDashboardData() {
     recentLeads: waitlistLeads.slice(0, 10),
     highIntentLeads: highIntentLeads.slice(0, 10),
     latestEoiScrapedAt: latestEoiRound?.createdAt ?? null,
+    guideDownloadCount,
+    maxGuideDownloads,
+    guideDownloads: guideDownloads.slice(0, 10), // Show only recent 10
   };
 }
 
@@ -119,6 +132,7 @@ export default async function AdminDashboardPage({ params, searchParams }: Dashb
     { label: "Total agent referrals", value: data.referralTotal },
     { label: "Total agents", value: data.agentTotal },
     { label: "Total visas in database", value: data.visaTotal },
+    { label: "Guide downloads", value: `${data.guideDownloadCount} / ${data.maxGuideDownloads}` },
   ];
 
   const visibleLeads = intentFilter === "high" ? data.highIntentLeads : data.recentLeads;
@@ -250,6 +264,87 @@ export default async function AdminDashboardPage({ params, searchParams }: Dashb
                           </tr>
                         );
                       })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-1">
+          <Card>
+            <CardHeader>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <CardTitle>Recent 10 Guide Downloads</CardTitle>
+                <div className="flex gap-2">
+                  <form action={async () => {
+                    "use server";
+                    await prisma.guideConfig.upsert({
+                      where: { id: "main" },
+                      update: { maxDownloads: { increment: 10 } },
+                      create: { id: "main", maxDownloads: 30 }, // Default to 30 if not exists
+                    });
+                    revalidatePath(`/${locale}/admin/dashboard`);
+                  }}>
+                    <button type="submit" className="rounded border px-2 py-1 text-xs">
+                      Increase Limit (+10)
+                    </button>
+                  </form>
+                  <form action={async () => {
+                    "use server";
+                    const allDownloads = await prisma.guideDownload.findMany();
+                    const csv = [
+                      ["First Name", "Last Name", "Email", "Phone", "Locale", "IP Address", "Download Date"].join(",")
+                    ].concat(
+                      allDownloads.map(d => 
+                        [
+                          d.firstName,
+                          d.lastName,
+                          d.email,
+                          d.phone || "",
+                          d.locale,
+                          d.ipAddress || "",
+                          d.createdAt.toISOString()
+                        ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(",")
+                      )
+                    ).join("\n");
+                    
+                    console.log("CSV Data:", csv);
+                    revalidatePath(`/${locale}/admin/dashboard`);
+                  }}>
+                    <button type="submit" className="rounded border px-2 py-1 text-xs">
+                      Export to CSV
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {data.guideDownloads.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No guide downloads yet.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[600px] text-sm">
+                    <thead>
+                      <tr className="border-b border-border text-left">
+                        <th className="py-2 pr-3 font-semibold">Name</th>
+                        <th className="px-3 py-2 font-semibold">Email</th>
+                        <th className="px-3 py-2 font-semibold">Phone</th>
+                        <th className="px-3 py-2 font-semibold">Locale</th>
+                        <th className="px-3 py-2 font-semibold">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.guideDownloads.map((download) => (
+                        <tr key={download.id} className="border-b border-border/70 last:border-0">
+                          <td className="py-2 pr-3">{`${download.firstName} ${download.lastName}`}</td>
+                          <td className="px-3 py-2">{download.email}</td>
+                          <td className="px-3 py-2">{download.phone || "-"}</td>
+                          <td className="px-3 py-2">{download.locale}</td>
+                          <td className="px-3 py-2">{new Date(download.createdAt).toLocaleString()}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

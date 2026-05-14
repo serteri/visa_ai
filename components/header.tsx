@@ -119,9 +119,11 @@ export function Header({
               <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
                 ANZSCO Finder
               </Link>
-              <Link href={`/${locale}/tools/state-nomination`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
-                {stateNominationLabel}
-              </Link>
+              {isTr && (
+                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-orange-100 text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-100 dark:hover:bg-orange-800">
+                  📥 Ücretsiz Rehber
+                </Link>
+              )}
               <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
                 {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
               </Link>
@@ -264,9 +266,11 @@ export function Header({
               <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
                 ANZSCO Finder
               </Link>
-              <Link href={`/${locale}/tools/state-nomination`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
-                {stateNominationLabel}
-              </Link>
+              {isTr && (
+                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-orange-100 text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-100 dark:hover:bg-orange-800">
+                  📥 Ücretsiz Rehber
+                </Link>
+              )}
               <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
                 {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
               </Link>

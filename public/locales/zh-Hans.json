@@ -1,5 +1,39 @@
 {
   "nav.home": "首页",
+  "guidePage": {
+    "title": "澳大利亚PR申请指南 2026",
+    "subtitle": "80页综合英文指南 — 免费",
+    "limitedCopiesBadge": "🎁 限量：20份免费副本",
+    "whatsInsideTitle": "内容包括：",
+    "bullet1": "✅ 13章，80+页英文内容",
+    "bullet2": "✅ 真实DoHA数据（2025年11月）",
+    "bullet3": "✅ 积分计算示例和场景",
+    "bullet4": "✅ 逐步申请清单",
+    "remainingCopies": "剩余：{{remaining}} / {{max}} 份免费副本",
+    "limitReachedMessage": "所有免费副本已分发完毕 — 请关注我们即将推出的付费版本",
+    "form": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "电子邮件",
+      "phone": "电话（可选）",
+      "submitButton": "免费下载"
+    },
+    "spamDisclaimer": "我们不发送垃圾邮件。您可以随时退订。",
+    "successMessage": "✅ 指南已发送到您的电子邮件地址！",
+    "downloadButton": "📥 点击此处下载",
+    "exploreToolsCta": "探索我们的免费工具",
+    "limitReachedError": "免费下载限制已达到。",
+    "genericError": "发生错误，请重试。",
+    "email": {
+      "subject": "您的澳大利亚PR指南已准备好 🇦🇺",
+      "greeting": "您好",
+      "body1": "点击下方按钮下载您的澳大利亚PR申请指南2026：",
+      "downloadButton": "下载指南",
+      "body2": "指南内容：",
+      "body3": "如有任何问题，请使用logivisa.com上的免费工具。"
+    }
+  },
+
   "nav.checker": "签证评估",
   "nav.legal": "法律",
   "hero.headline": "Logivisa",
