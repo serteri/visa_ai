@@ -128,6 +128,20 @@ export const fullCheckUsage = pgTable("full_check_usage", {
   updated_at: timestamp("updated_at").defaultNow(),
 });
 
+export const pdfDownloads = pgTable("pdf_downloads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  full_name: text("full_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  ip_address: text("ip_address").notNull(),
+  pdf_slug: text("pdf_slug").notNull().default("avustralya-pr-rehberi-2026"),
+  is_paid: boolean("is_paid").default(false),
+  created_at: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  ip_idx: index("pdf_downloads_ip_idx").on(table.ip_address),
+  email_idx: index("pdf_downloads_email_idx").on(table.email),
+}));
+
 export const agents = pgTable("agents", {
   id: uuid("id").primaryKey().defaultRandom(),
   full_name: text("full_name").notNull(),

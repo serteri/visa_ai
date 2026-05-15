@@ -42,7 +42,14 @@
       "Bash(npx prisma *)",
       "Bash(git status *)",
       "Bash(python -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(len\\(data\\), 'occupations'\\); print\\([d['code'] for d in data[:5]]\\)\")",
-      "Bash(python -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(d['code'], d['title']\\) for d in data]\")"
+      "Bash(python -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(d['code'], d['title']\\) for d in data]\")",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(Head -20)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\" -Depth 2 | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName | ForEach-Object { $_ -replace [regex]::Escape\\(\"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\"\\), \".\" } | Sort-Object)",
+      "Bash(Test-Path *)",
+      "Read(//mnt/c/Users/serte/**)",
+      "Bash(ls /mnt/)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\\\\app\\\\*layout*\")"
     ]
   }
 }

@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/contexts/language-context";
+import { PdfDownloadModal } from "@/components/PdfDownloadModal";
 
 
 
@@ -13,6 +15,7 @@ export function HomeContent() {
   const params = useParams();
   const locale = params.locale as string;
   const { t } = useTranslation();
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
 
   return (
     <section className="space-y-24 pb-24">
@@ -85,6 +88,42 @@ export function HomeContent() {
           </div>
         </div>
       </section>
+
+      {/* PDF Download Banner */}
+      <section className="section-shell">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-700 px-8 py-10 text-white shadow-xl">
+          {/* decorative blur */}
+          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+          <div className="absolute -left-10 bottom-0 h-48 w-48 rounded-full bg-purple-400/20 blur-2xl pointer-events-none" />
+
+          <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-3xl">📘</span>
+                <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold tracking-wide uppercase">
+                  Türkçe PDF · 2026
+                </span>
+              </div>
+              <h2 className="text-2xl font-extrabold sm:text-3xl">
+                Avustralya PR Rehberi 2026
+              </h2>
+              <p className="max-w-lg text-indigo-100 text-sm sm:text-base">
+                Kalıcı oturma izni başvuru sürecini adım adım anlatan ücretsiz
+                Türkçe rehberimizi indirin. İlk 20 indirme <strong>bedava</strong>, sonrası <strong>$20</strong>.
+              </p>
+            </div>
+            <Button
+              size="lg"
+              onClick={() => setPdfModalOpen(true)}
+              className="shrink-0 bg-white text-indigo-700 font-bold hover:bg-indigo-50 border-0 shadow-lg"
+            >
+              📥 Ücretsiz İndir
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <PdfDownloadModal open={pdfModalOpen} onClose={() => setPdfModalOpen(false)} />
 
       {/* Features Bento Box */}
       <section className="section-shell">
