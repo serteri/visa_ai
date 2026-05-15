@@ -86,6 +86,19 @@ type FreeBetaStatus = {
 };
 
 async function getFreeBetaStatus(): Promise<FreeBetaStatus> {
+  const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
+
+  // Ensure singleton usage row exists for environments where seed hasn't run yet.
+  await db
+    .insert(fullCheckUsage)
+    .values({
+      id: 1,
+      free_reports_used: 0,
+      free_limit: maxFree,
+      is_free_active: true,
+    })
+    .onConflictDoNothing();
+
   const rows = await db
     .select()
     .from(fullCheckUsage)
@@ -93,9 +106,8 @@ async function getFreeBetaStatus(): Promise<FreeBetaStatus> {
     .limit(1);
 
   const row = rows[0];
-  if (!row) return { isFreeActive: false, freeReportsUsed: 0, freeLimit: 50 };
+  if (!row) return { isFreeActive: true, freeReportsUsed: 0, freeLimit: maxFree };
 
-  const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
   const used = row.free_reports_used ?? 0;
   const active = row.is_free_active === true && used < maxFree;
 

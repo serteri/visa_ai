@@ -183,20 +183,22 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const reportCards = getReportCards(locale);
 
   // ── Fetch remaining free spots from DB ─────────────────────────────────────
-  let remainingSpots = 0;
-  let isFreeActive = false;
+  const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
+  let remainingSpots = maxFree;
+  let isFreeActive = true;
   try {
     const usageRows = await db
       .select()
       .from(fullCheckUsage)
       .where(eq(fullCheckUsage.id, 1))
       .limit(1);
-    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
+
     const used = usageRows[0]?.free_reports_used ?? 0;
     remainingSpots = Math.max(0, maxFree - used);
-    isFreeActive = remainingSpots > 0;
+    const dbFreeActive = usageRows[0]?.is_free_active !== false;
+    isFreeActive = dbFreeActive && remainingSpots > 0;
   } catch {
-    // Fail gracefully
+    // Keep defaults when DB is temporarily unavailable
   }
 
   return (
@@ -217,9 +219,9 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
               }`}>
                 {isFreeActive
                   ? tx(
-                      `🔥 Limited Offer: FREE for the first 50 users. Only ${remainingSpots} spots left!`,
-                      `🔥 Sınırlı Teklif: İlk 50 kullanıcıya ÜCRETSİZ. Yalnızca ${remainingSpots} kontenjan kaldı!`,
-                      `🔥 限时优惠：前50名用户免费。仅剩 ${remainingSpots} 个名额！`
+                      `🔥 Hurry up: FREE for the first ${maxFree} users. Only ${remainingSpots} spots left!`,
+                      `🔥 Acele edin: Ilk ${maxFree} kullaniciya UCRETSIZ. Yalnizca ${remainingSpots} kontenjan kaldi!`,
+                      `🔥 抓紧：前 ${maxFree} 名用户免费。仅剩 ${remainingSpots} 个名额！`
                     )
                   : tx(
                       "Premium Report — $29 per report.",
