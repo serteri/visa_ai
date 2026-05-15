@@ -126,8 +126,8 @@ export function PdfDownloadModal({ locale, open, onClose }: Props) {
           <DialogDescription className="text-slate-600 dark:text-slate-400">
             {tx(
               "Ucretsiz Turkce PDF rehberini indirin. Gercek verilerle hazirlanmis kapsamli kalici oturma izni kilavuzu.",
-              "Download the free English PDF guide. A comprehensive permanent residency guide built on real data.",
-              "下载免费的中文 PDF 指南。基于真实数据整理的永久居留申请全流程指南。"
+              "Download the free Turkish PDF guide. A comprehensive permanent residency guide built on real data.",
+              "下载免费的土耳其语 PDF 指南。基于真实数据整理的永久居留申请全流程指南。"
             )}
           </DialogDescription>
         </DialogHeader>

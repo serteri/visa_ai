@@ -101,11 +101,7 @@ export function HomeContent() {
               <div className="flex items-center gap-2">
                 <span className="text-3xl">📘</span>
                 <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-                  {locale === "tr"
-                    ? "Turkce PDF · 2026"
-                    : locale === "zh-Hans"
-                      ? "中文 PDF · 2026"
-                      : "English PDF · 2026"}
+                  Turkish PDF · 2026
                 </span>
               </div>
               <h2 className="text-2xl font-extrabold sm:text-3xl">
@@ -123,12 +119,12 @@ export function HomeContent() {
                   </>
                 ) : locale === "zh-Hans" ? (
                   <>
-                    下载这份免费中文指南，逐步了解永久居留申请流程。前 20 次下载
+                    下载这份免费的土耳其语指南，逐步了解永久居留申请流程。前 20 次下载
                     <strong>免费</strong>，之后 <strong>$20</strong>。
                   </>
                 ) : (
                   <>
-                    Download our free English guide that explains the permanent
+                    Download our free Turkish guide that explains the permanent
                     residency process step by step. First 20 downloads are
                     <strong> free</strong>, then <strong>$20</strong>.
                   </>
