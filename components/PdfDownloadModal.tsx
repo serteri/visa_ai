@@ -20,16 +20,23 @@ interface PdfStatus {
 }
 
 interface Props {
+  locale: string;
   open: boolean;
   onClose: () => void;
 }
 
-export function PdfDownloadModal({ open, onClose }: Props) {
+export function PdfDownloadModal({ locale, open, onClose }: Props) {
   const [status, setStatus] = useState<PdfStatus | null>(null);
   const [form, setForm] = useState({ full_name: "", email: "", phone: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  const tx = (tr: string, en: string, zh: string) => {
+    if (locale === "tr") return tr;
+    if (locale === "zh-Hans") return zh;
+    return en;
+  };
 
   useEffect(() => {
     if (open) {
@@ -61,14 +68,25 @@ export function PdfDownloadModal({ open, onClose }: Props) {
       if (!res.ok) {
         if (data.alreadyDownloaded) {
           setError(
-            "Bu IP adresinden daha önce indirildi. Her IP'den yalnızca 1 indirme yapılabilir."
+            tx(
+              "Bu IP adresinden daha once indirildi. Her IP'den yalnizca 1 indirme yapilabilir.",
+              "This PDF was already downloaded from this IP. Only 1 download is allowed per IP.",
+              "该 IP 地址已下载过该 PDF。每个 IP 仅允许下载 1 次。"
+            )
           );
         } else if (data.paymentRequired) {
           setError(
-            "Ücretsiz indirme kotası dolmuştur. Satın almak için lütfen bizimle iletişime geçin: info@logivisa.com"
+            tx(
+              "Ucretsiz indirme kotasi dolmustur. Satin almak icin lutfen bizimle iletisime gecin: info@logivisa.com",
+              "The free download quota is full. To purchase, contact us: info@logivisa.com",
+              "免费名额已满。如需购买，请联系我们：info@logivisa.com"
+            )
           );
         } else {
-          setError(data.error ?? "Bir hata oluştu.");
+          setError(
+            data.error ??
+              tx("Bir hata olustu.", "Something went wrong.", "发生错误。")
+          );
         }
         return;
       }
@@ -82,7 +100,13 @@ export function PdfDownloadModal({ open, onClose }: Props) {
       a.remove();
       setSuccess(true);
     } catch {
-      setError("Bağlantı hatası. Lütfen tekrar deneyin.");
+      setError(
+        tx(
+          "Baglanti hatasi. Lutfen tekrar deneyin.",
+          "Connection error. Please try again.",
+          "连接错误。请重试。"
+        )
+      );
     } finally {
       setLoading(false);
     }
@@ -97,11 +121,14 @@ export function PdfDownloadModal({ open, onClose }: Props) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            📘 Avustralya PR Rehberi 2026
+            {tx("📘 Avustralya PR Rehberi 2026", "📘 Australia PR Guide 2026", "📘 澳大利亚 PR 指南 2026")}
           </DialogTitle>
           <DialogDescription className="text-slate-600 dark:text-slate-400">
-            Ücretsiz Türkçe PDF rehberi indirin. Gerçek verilerle hazırlanmış
-            kapsamlı kalıcı oturma izni kılavuzu.
+            {tx(
+              "Ucretsiz Turkce PDF rehberini indirin. Gercek verilerle hazirlanmis kapsamli kalici oturma izni kilavuzu.",
+              "Download the free English PDF guide. A comprehensive permanent residency guide built on real data.",
+              "下载免费的中文 PDF 指南。基于真实数据整理的永久居留申请全流程指南。"
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -116,12 +143,21 @@ export function PdfDownloadModal({ open, onClose }: Props) {
           >
             {isFree ? (
               <>
-                ✅ İlk 20 indirme <strong>ücretsiz</strong> —{" "}
-                <strong>{freeRemaining}</strong> slot kaldı!
+                {tx(
+                  "✅ Ilk 20 indirme ",
+                  "✅ First 20 downloads are ",
+                  "✅ 前 20 次下载"
+                )}
+                <strong>{tx("ucretsiz", "free", "免费")}</strong>
+                {tx(" — ", " - ", "，还剩 ")}
+                <strong>{freeRemaining}</strong>
+                {tx(" slot kaldi!", " spots left!", " 个名额！")}
               </>
             ) : (
               <>
-                💳 Ücretsiz kota doldu. Fiyat: <strong>$20</strong> —{" "}
+                {tx("💳 Ucretsiz kota doldu. Fiyat: ", "💳 Free quota is full. Price: ", "💳 免费名额已满。价格：")}
+                <strong>$20</strong>
+                {tx(" — ", " - ", " - ")}
                 info@logivisa.com
               </>
             )}
@@ -132,35 +168,47 @@ export function PdfDownloadModal({ open, onClose }: Props) {
           <div className="space-y-4 text-center py-6">
             <div className="text-5xl">🎉</div>
             <p className="font-semibold text-slate-900 dark:text-white">
-              İndirilmesi başladı!
+              {tx("Indirme basladi!", "Download started!", "下载已开始！")}
             </p>
             <p className="text-sm text-slate-500">
-              PDF rehberiniz indirilmeye başlandı. İyi okumalar!
+              {tx(
+                "PDF rehberiniz indirilmeye basladi. Iyi okumalar!",
+                "Your PDF guide is downloading. Enjoy reading!",
+                "您的 PDF 指南正在下载，祝您阅读愉快！"
+              )}
             </p>
             <Button onClick={onClose} className="w-full">
-              Kapat
+              {tx("Kapat", "Close", "关闭")}
             </Button>
           </div>
         ) : alreadyDownloaded ? (
           <div className="space-y-3 py-4 text-center">
             <p className="text-amber-700 font-medium">
-              Bu IP adresinden zaten indirildi.
+              {tx(
+                "Bu IP adresinden zaten indirildi.",
+                "Already downloaded from this IP address.",
+                "该 IP 地址已下载过。"
+              )}
             </p>
             <p className="text-sm text-slate-500">
-              Her IP adresinden yalnızca bir kez indirilebilir.
+              {tx(
+                "Her IP adresinden yalnizca bir kez indirilebilir.",
+                "Only one download is allowed per IP address.",
+                "每个 IP 地址仅允许下载一次。"
+              )}
             </p>
             <Button variant="outline" onClick={onClose} className="w-full">
-              Kapat
+              {tx("Kapat", "Close", "关闭")}
             </Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 mt-2">
             <div className="space-y-1">
-              <Label htmlFor="full_name">Ad Soyad</Label>
+              <Label htmlFor="full_name">{tx("Ad Soyad", "Full Name", "姓名")}</Label>
               <Input
                 id="full_name"
                 name="full_name"
-                placeholder="Ahmet Yılmaz"
+                placeholder={tx("Ahmet Yilmaz", "John Smith", "张伟")}
                 value={form.full_name}
                 onChange={handleChange}
                 required
@@ -168,12 +216,12 @@ export function PdfDownloadModal({ open, onClose }: Props) {
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="email">E-posta</Label>
+              <Label htmlFor="email">{tx("E-posta", "Email", "邮箱")}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="ahmet@ornek.com"
+                placeholder={tx("ahmet@ornek.com", "john@example.com", "name@example.com")}
                 value={form.email}
                 onChange={handleChange}
                 required
@@ -181,12 +229,12 @@ export function PdfDownloadModal({ open, onClose }: Props) {
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="phone">Telefon Numarası</Label>
+              <Label htmlFor="phone">{tx("Telefon Numarasi", "Phone Number", "手机号")}</Label>
               <Input
                 id="phone"
                 name="phone"
                 type="tel"
-                placeholder="+90 555 000 0000"
+                placeholder={tx("+90 555 000 0000", "+61 412 345 678", "+86 138 0013 8000")}
                 value={form.phone}
                 onChange={handleChange}
                 required
@@ -206,7 +254,9 @@ export function PdfDownloadModal({ open, onClose }: Props) {
                 className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0"
                 disabled={loading}
               >
-                {loading ? "İndiriliyor..." : "📥 Ücretsiz İndir"}
+                {loading
+                  ? tx("Indiriliyor...", "Downloading...", "下载中...")
+                  : tx("📥 Ucretsiz Indir", "📥 Free Download", "📥 免费下载")}
               </Button>
             ) : (
               <Button
@@ -215,13 +265,16 @@ export function PdfDownloadModal({ open, onClose }: Props) {
                 variant="outline"
                 onClick={onClose}
               >
-                Kapat
+                {tx("Kapat", "Close", "关闭")}
               </Button>
             )}
 
             <p className="text-xs text-slate-400 text-center">
-              Bilgileriniz yalnızca bu indirme için kullanılır ve üçüncü
-              taraflarla paylaşılmaz.
+              {tx(
+                "Bilgileriniz yalnizca bu indirme icin kullanilir ve ucuncu taraflarla paylasilmaz.",
+                "Your details are used only for this download and are not shared with third parties.",
+                "您的信息仅用于本次下载，不会与第三方共享。"
+              )}
             </p>
           </form>
         )}

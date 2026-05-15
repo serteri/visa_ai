@@ -101,15 +101,38 @@ export function HomeContent() {
               <div className="flex items-center gap-2">
                 <span className="text-3xl">📘</span>
                 <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-                  Türkçe PDF · 2026
+                  {locale === "tr"
+                    ? "Turkce PDF · 2026"
+                    : locale === "zh-Hans"
+                      ? "中文 PDF · 2026"
+                      : "English PDF · 2026"}
                 </span>
               </div>
               <h2 className="text-2xl font-extrabold sm:text-3xl">
-                Avustralya PR Rehberi 2026
+                {locale === "tr"
+                  ? "Avustralya PR Rehberi 2026"
+                  : locale === "zh-Hans"
+                    ? "澳大利亚 PR 指南 2026"
+                    : "Australia PR Guide 2026"}
               </h2>
               <p className="max-w-lg text-indigo-100 text-sm sm:text-base">
-                Kalıcı oturma izni başvuru sürecini adım adım anlatan ücretsiz
-                Türkçe rehberimizi indirin. İlk 20 indirme <strong>bedava</strong>, sonrası <strong>$20</strong>.
+                {locale === "tr" ? (
+                  <>
+                    Kalici oturma izni basvuru surecini adim adim anlatan ucretsiz
+                    Turkce rehberimizi indirin. Ilk 20 indirme <strong>bedava</strong>, sonrasi <strong>$20</strong>.
+                  </>
+                ) : locale === "zh-Hans" ? (
+                  <>
+                    下载这份免费中文指南，逐步了解永久居留申请流程。前 20 次下载
+                    <strong>免费</strong>，之后 <strong>$20</strong>。
+                  </>
+                ) : (
+                  <>
+                    Download our free English guide that explains the permanent
+                    residency process step by step. First 20 downloads are
+                    <strong> free</strong>, then <strong>$20</strong>.
+                  </>
+                )}
               </p>
             </div>
             <Button
@@ -117,13 +140,21 @@ export function HomeContent() {
               onClick={() => setPdfModalOpen(true)}
               className="shrink-0 bg-white text-indigo-700 font-bold hover:bg-indigo-50 border-0 shadow-lg"
             >
-              📥 Ücretsiz İndir
+              {locale === "tr"
+                ? "📥 Ucretsiz Indir"
+                : locale === "zh-Hans"
+                  ? "📥 免费下载"
+                  : "📥 Free Download"}
             </Button>
           </div>
         </div>
       </section>
 
-      <PdfDownloadModal open={pdfModalOpen} onClose={() => setPdfModalOpen(false)} />
+      <PdfDownloadModal
+        locale={locale}
+        open={pdfModalOpen}
+        onClose={() => setPdfModalOpen(false)}
+      />
 
       {/* Features Bento Box */}
       <section className="section-shell">
