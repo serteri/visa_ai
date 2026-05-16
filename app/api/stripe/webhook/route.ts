@@ -9,9 +9,14 @@ import type { ReadinessInput } from "@/lib/readiness/types";
 
 export const dynamic = "force-dynamic";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export async function POST(request: NextRequest) {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeSecretKey) {
+    console.error("STRIPE_SECRET_KEY is not configured.");
+    return new Response("Stripe not configured", { status: 500 });
+  }
+  const stripe = new Stripe(stripeSecretKey);
+
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
 
