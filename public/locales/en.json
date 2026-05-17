@@ -493,6 +493,34 @@
   "dc.ctaButton": "Take the Free PR Quiz",
   "dc.ctaCaption": "Free · No signup required · 3 minutes",
   "dc.disclaimer": "This checklist is for general informational purposes only and does not constitute immigration advice. Requirements vary by visa subclass and assessing authority. Consult a registered MARA agent for advice specific to your circumstances.",
+  "documentChecklist2026": {
+    "pageTitle": "Australian Visa Document Checklist 2026",
+    "pageSubtitle": "Choose the visa subclass you want to track documents for.",
+    "viewChecklist": "View checklist ->",
+    "autoSaveNotice": "Your progress is automatically saved in your browser.",
+    "visas": {
+      "189": {
+        "title": "Subclass 189",
+        "description": "Skilled Independent"
+      },
+      "190": {
+        "title": "Subclass 190",
+        "description": "Skilled Nominated"
+      },
+      "491": {
+        "title": "Subclass 491",
+        "description": "Skilled Work Regional"
+      },
+      "482": {
+        "title": "Subclass 482",
+        "description": "Skills in Demand"
+      },
+      "485": {
+        "title": "Subclass 485",
+        "description": "Temporary Graduate"
+      }
+    }
+  },
   "visas": {
     "permanent": "Permanent",
     "temporary": "Temporary",

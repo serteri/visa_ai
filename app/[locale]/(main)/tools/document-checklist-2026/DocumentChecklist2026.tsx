@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { Progress } from '@/components/ui/progress'
 import {
   ChevronDown, ChevronUp, Printer, AlertCircle, Info,
@@ -31,6 +32,18 @@ interface DocState {
 }
 
 type ChecklistState = Record<string, DocState>
+type VisaSubclass = '189' | '190' | '491' | '482' | '485'
+
+export type DocumentChecklist2026Dictionary = {
+  pageTitle: string
+  pageSubtitle: string
+  viewChecklist: string
+  autoSaveNotice: string
+  visas: Record<VisaSubclass, {
+    title: string
+    description: string
+  }>
+}
 
 const EMPTY: DocState = { checked: false, expiryDate: '', notes: '' }
 
@@ -309,12 +322,17 @@ const VISA_485_DOCS: VisaDocument[] = [
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const VISA_OPTIONS = [
-  { subclass: '189', label: 'Subclass 189', subtitle: 'Skilled Independent',  emoji: '🌏', border: 'border-blue-400',   bg: 'bg-blue-50 hover:bg-blue-100' },
-  { subclass: '190', label: 'Subclass 190', subtitle: 'Skilled Nominated',    emoji: '🏛️', border: 'border-indigo-400', bg: 'bg-indigo-50 hover:bg-indigo-100' },
-  { subclass: '491', label: 'Subclass 491', subtitle: 'Skilled Work Regional',emoji: '🌾', border: 'border-violet-400', bg: 'bg-violet-50 hover:bg-violet-100' },
-  { subclass: '482', label: 'Subclass 482', subtitle: 'Skills in Demand',     emoji: '💼', border: 'border-green-400',  bg: 'bg-green-50 hover:bg-green-100' },
-  { subclass: '485', label: 'Subclass 485', subtitle: 'Temporary Graduate',   emoji: '🎓', border: 'border-orange-400', bg: 'bg-orange-50 hover:bg-orange-100' },
+const VISA_OPTIONS: Array<{
+  subclass: VisaSubclass
+  emoji: string
+  border: string
+  bg: string
+}> = [
+  { subclass: '189', emoji: '🌏', border: 'border-blue-400',   bg: 'bg-blue-50 hover:bg-blue-100' },
+  { subclass: '190', emoji: '🏛️', border: 'border-indigo-400', bg: 'bg-indigo-50 hover:bg-indigo-100' },
+  { subclass: '491', emoji: '🌾', border: 'border-violet-400', bg: 'bg-violet-50 hover:bg-violet-100' },
+  { subclass: '482', emoji: '💼', border: 'border-green-400',  bg: 'bg-green-50 hover:bg-green-100' },
+  { subclass: '485', emoji: '🎓', border: 'border-orange-400', bg: 'bg-orange-50 hover:bg-orange-100' },
 ]
 
 const VISA_DOCS: Record<string, VisaDocument[]> = {
@@ -355,22 +373,37 @@ function getExpiryStatus(expiryDate: string, warningMonths = 6) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function DocumentChecklist2026({ locale }: { locale: string }) {
+type DocumentChecklist2026Props = {
+  locale: string
+  dictionary: DocumentChecklist2026Dictionary
+  initialVisa?: string
+}
+
+function isVisaSubclass(value: string | undefined): value is VisaSubclass {
+  return !!value && value in VISA_DOCS
+}
+
+function loadChecklistState(selectedVisa: VisaSubclass | null): ChecklistState {
+  if (!selectedVisa || typeof window === 'undefined') return {}
+
+  try {
+    const saved = localStorage.getItem(`visa-checklist-${selectedVisa}`)
+    return saved ? (JSON.parse(saved) as ChecklistState) : {}
+  } catch {
+    return {}
+  }
+}
+
+export function DocumentChecklist2026({ locale, dictionary, initialVisa }: DocumentChecklist2026Props) {
   const { data: session } = useSession()
-  const [selectedVisa, setSelectedVisa] = useState<string | null>(null)
-  const [docStates, setDocStates] = useState<ChecklistState>({})
+  const [selectedVisa] = useState<VisaSubclass | null>(
+    isVisaSubclass(initialVisa) ? initialVisa : null,
+  )
+  const [docStates, setDocStates] = useState<ChecklistState>(() => loadChecklistState(
+    isVisaSubclass(initialVisa) ? initialVisa : null,
+  ))
   const [expandedTips, setExpandedTips] = useState<Set<string>>(new Set())
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
-
-  useEffect(() => {
-    if (!selectedVisa) return
-    try {
-      const saved = localStorage.getItem(`visa-checklist-${selectedVisa}`)
-      setDocStates(saved ? (JSON.parse(saved) as ChecklistState) : {})
-    } catch {
-      setDocStates({})
-    }
-  }, [selectedVisa])
 
   useEffect(() => {
     if (!selectedVisa) return
@@ -412,44 +445,60 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
   }, [])
 
   const toggleTip = useCallback((id: string) => {
-    setExpandedTips(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
+    setExpandedTips(prev => {
+      const n = new Set(prev)
+      if (n.has(id)) {
+        n.delete(id)
+      } else {
+        n.add(id)
+      }
+      return n
+    })
   }, [])
 
   const toggleNote = useCallback((id: string) => {
-    setExpandedNotes(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
+    setExpandedNotes(prev => {
+      const n = new Set(prev)
+      if (n.has(id)) {
+        n.delete(id)
+      } else {
+        n.add(id)
+      }
+      return n
+    })
   }, [])
 
   // ── Visa selector ─────────────────────────────────────────────────────────────
   if (!selectedVisa) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 py-16">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">
-              Avustralya Vize Belge Kontrol Listesi 2026
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-16">
+          <div className="mb-8 text-center md:mb-10">
+            <h1 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl">
+              {dictionary.pageTitle}
             </h1>
-            <p className="text-gray-500 text-lg">
-              Hangi vize için belge takibi yapmak istiyorsunuz?
+            <p className="mx-auto max-w-2xl text-base text-gray-500 md:text-lg">
+              {dictionary.pageSubtitle}
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {VISA_OPTIONS.map(v => (
-              <button
+              <Link
                 key={v.subclass}
-                onClick={() => setSelectedVisa(v.subclass)}
-                className={`rounded-xl border-2 ${v.border} ${v.bg} p-6 text-left transition-all duration-150 cursor-pointer group`}
+                href={`/${locale}/tools/document-checklist-2026/${v.subclass}`}
+                className={`group rounded-lg border-2 ${v.border} ${v.bg} p-6 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm`}
               >
                 <div className="text-3xl mb-3">{v.emoji}</div>
-                <div className="font-bold text-gray-900 text-lg">{v.label}</div>
-                <div className="text-sm text-gray-600 mt-1">{v.subtitle}</div>
+                <div className="font-bold text-gray-900 text-lg">{dictionary.visas[v.subclass].title}</div>
+                <div className="text-sm text-gray-600 mt-1">{dictionary.visas[v.subclass].description}</div>
                 <div className="mt-3 text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
-                  Kontrol listesini görüntüle →
+                  {dictionary.viewChecklist}
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
           <p className="text-center text-xs text-gray-400 mt-8">
-            İlerlemeniz otomatik olarak tarayıcı hafızasına kaydedilir.
+            {dictionary.autoSaveNotice}
           </p>
         </div>
       </div>
@@ -457,6 +506,7 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
   }
 
   const visaOption = VISA_OPTIONS.find(v => v.subclass === selectedVisa)!
+  const selectedVisaCopy = dictionary.visas[visaOption.subclass]
   const pct = progress.total > 0 ? (progress.checked / progress.total) * 100 : 0
 
   // ── Checklist view ────────────────────────────────────────────────────────────
@@ -468,16 +518,16 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
         <div className="max-w-3xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-2 gap-2">
             <div className="flex items-center gap-2 flex-wrap min-w-0">
-              <button
-                onClick={() => setSelectedVisa(null)}
+              <Link
+                href={`/${locale}/tools/document-checklist-2026`}
                 className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 transition-colors shrink-0"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">Vize Seçimi</span>
-              </button>
+              </Link>
               <span className="text-gray-300 hidden sm:inline">|</span>
               <span className="font-semibold text-sm text-gray-800 truncate">
-                {visaOption.emoji} {visaOption.label} — {visaOption.subtitle}
+                {visaOption.emoji} {selectedVisaCopy.title} — {selectedVisaCopy.description}
               </span>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -700,12 +750,12 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
 
         {/* Bottom bar */}
         <div className="flex items-center justify-between pt-2 pb-10 print:hidden">
-          <button
-            onClick={() => setSelectedVisa(null)}
+          <Link
+            href={`/${locale}/tools/document-checklist-2026`}
             className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" /> Farklı vize seç
-          </button>
+          </Link>
           <button
             onClick={() => window.print()}
             className="flex items-center gap-2 bg-gray-900 text-white text-sm font-medium rounded-lg px-4 py-2 hover:bg-gray-700 transition-colors"
@@ -716,9 +766,9 @@ export function DocumentChecklist2026({ locale }: { locale: string }) {
 
         {/* Print-only header */}
         <div className="hidden print:block mb-6">
-          <h1 className="text-2xl font-bold">Avustralya Vize Belge Kontrol Listesi 2026</h1>
+          <h1 className="text-2xl font-bold">{dictionary.pageTitle}</h1>
           <p className="text-sm text-gray-600 mt-1">
-            {visaOption.label} — {visaOption.subtitle} | {progress.checked}/{progress.total} belge hazır |{' '}
+            {selectedVisaCopy.title} — {selectedVisaCopy.description} | {progress.checked}/{progress.total} belge hazır |{' '}
             Tarih: {new Date().toLocaleDateString('tr-TR')}
           </p>
         </div>

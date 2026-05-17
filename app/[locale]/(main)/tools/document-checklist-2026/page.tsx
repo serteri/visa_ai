@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { DocumentChecklist2026 } from "./DocumentChecklist2026";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { defaultLocale, isValidLocale, type Locale } from "@/lib/i18n/config";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -11,16 +13,14 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const siteUrl = new URL(BASE_URL);
-  const isTr = locale === "tr";
+  const normalizedLocale = isValidLocale(locale) ? locale : defaultLocale;
+  const dictionary = await getDictionary(normalizedLocale);
+  const checklist = dictionary.documentChecklist2026;
 
   return {
     metadataBase: siteUrl,
-    title: isTr
-      ? "Avustralya Vize Belge Kontrol Listesi 2026 | LogiVisa"
-      : "Australian Visa Document Checklist 2026 | LogiVisa",
-    description: isTr
-      ? "Avustralya vize başvurusu için gerekli tüm belgeleri takip edin. Son kullanma tarihi uyarıları, apostil ve NAATI gereksinimleri. 189, 190, 491, 482, 485 vize türleri."
-      : "Track all documents needed for your Australian visa application. Expiry date alerts, apostille and NAATI requirements for subclasses 189, 190, 491, 482 and 485.",
+    title: `${checklist.pageTitle} | LogiVisa`,
+    description: checklist.pageSubtitle,
     alternates: {
       canonical: `/${locale}/tools/document-checklist-2026`,
       languages: {
@@ -42,5 +42,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function DocumentChecklist2026Page({ params }: PageProps) {
   const { locale } = await params;
-  return <DocumentChecklist2026 locale={locale} />;
+  const normalizedLocale = (isValidLocale(locale) ? locale : defaultLocale) as Locale;
+  const dictionary = await getDictionary(normalizedLocale);
+
+  return (
+    <DocumentChecklist2026
+      locale={normalizedLocale}
+      dictionary={dictionary.documentChecklist2026}
+    />
+  );
 }

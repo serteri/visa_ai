@@ -1,5 +1,6 @@
 import 'server-only'
 import type { Locale } from './config'
+import type { DocumentChecklist2026Dictionary } from '@/app/[locale]/(main)/tools/document-checklist-2026/DocumentChecklist2026'
 
 // We intentionally do not use a caching mechanism like `next-intl`
 // to ensure the latest translations are always fetched.
@@ -51,8 +52,9 @@ export interface Dictionary {
   "nav.checker": string;
   "nav.legal": string;
   guidePage: GuidePageDictionary;
+  documentChecklist2026: DocumentChecklist2026Dictionary;
   // ... other top-level properties as needed
-  [key: string]: any; // Fallback for other properties
+  [key: string]: unknown; // Fallback for other properties
 }
 
 // ...existing code...

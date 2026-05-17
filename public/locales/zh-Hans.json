@@ -494,6 +494,34 @@
   "dc.ctaButton": "参加免费PR测验",
   "dc.ctaCaption": "免费 · 无需注册 · 3分钟",
   "dc.disclaimer": "本清单仅供一般信息参考，不构成移民建议。",
+  "documentChecklist2026": {
+    "pageTitle": "澳大利亚签证材料清单 2026",
+    "pageSubtitle": "请选择要跟踪材料的签证类别。",
+    "viewChecklist": "查看清单 ->",
+    "autoSaveNotice": "你的进度会自动保存在浏览器中。",
+    "visas": {
+      "189": {
+        "title": "189 子类",
+        "description": "独立技术移民"
+      },
+      "190": {
+        "title": "190 子类",
+        "description": "州担保技术移民"
+      },
+      "491": {
+        "title": "491 子类",
+        "description": "偏远地区技术工作"
+      },
+      "482": {
+        "title": "482 子类",
+        "description": "技能需求签证"
+      },
+      "485": {
+        "title": "485 子类",
+        "description": "临时毕业生"
+      }
+    }
+  },
   "visas": {
     "permanent": "永久",
     "temporary": "临时",

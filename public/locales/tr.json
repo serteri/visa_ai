@@ -500,6 +500,34 @@
   "dc.ctaButton": "Ücretsiz PR Testini Yap",
   "dc.ctaCaption": "Ücretsiz · Kayıt gerekmez · 3 dakika",
   "dc.disclaimer": "Bu kontrol listesi yalnızca genel bilgilendirme amaçlıdır ve göçmenlik tavsiyesi değildir.",
+  "documentChecklist2026": {
+    "pageTitle": "Avustralya Vize Belge Kontrol Listesi 2026",
+    "pageSubtitle": "Hangi vize için belge takibi yapmak istediğinizi seçin.",
+    "viewChecklist": "Kontrol listesini görüntüle ->",
+    "autoSaveNotice": "İlerlemeniz otomatik olarak tarayıcı hafızasına kaydedilir.",
+    "visas": {
+      "189": {
+        "title": "Subclass 189",
+        "description": "Skilled Independent"
+      },
+      "190": {
+        "title": "Subclass 190",
+        "description": "Skilled Nominated"
+      },
+      "491": {
+        "title": "Subclass 491",
+        "description": "Skilled Work Regional"
+      },
+      "482": {
+        "title": "Subclass 482",
+        "description": "Skills in Demand"
+      },
+      "485": {
+        "title": "Subclass 485",
+        "description": "Temporary Graduate"
+      }
+    }
+  },
   "visas": {
     "permanent": "Kalıcı",
     "temporary": "Geçici",
