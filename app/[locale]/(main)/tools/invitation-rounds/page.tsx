@@ -4,7 +4,9 @@ import { SeoContentSection } from "@/components/SeoContentSection";
 import { getInvitationRoundsSeoContent, buildInvitationRoundsSchema } from "@/lib/seo/invitation-rounds-content";
 import eoiRounds from "@/src/data/eoi-rounds.json";
 import occupationPointsCutoff from "@/src/data/occupation-points-cutoff.json";
-import { prisma } from "@/lib/prisma";
+import { getCachedInvitationRounds } from "@/lib/cache/public-read-models";
+
+export const revalidate = 3600;
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -41,11 +43,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function InvitationRoundsPage({ params }: PageProps) {
   const { locale } = await params;
 
-  let dbRounds: Awaited<ReturnType<typeof prisma.eoiRound.findMany>> = [];
+  let dbRounds: Awaited<ReturnType<typeof getCachedInvitationRounds>> = [];
   try {
-    dbRounds = await prisma.eoiRound.findMany({
-      orderBy: [{ roundDate: "desc" }, { visaSubclass: "asc" }],
-    });
+    dbRounds = await getCachedInvitationRounds();
   } catch (error) {
     console.error("Failed to load EOI rounds from database, using fallback JSON", error);
   }

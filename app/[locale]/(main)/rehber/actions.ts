@@ -1,6 +1,7 @@
 "use server"
 
 import { headers } from "next/headers"
+import { revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { Resend } from "resend"
 import { getDictionary, Dictionary } from "@/lib/i18n/get-dictionary"
@@ -52,6 +53,8 @@ export async function submitDownloadForm(data: {
   await prisma.guideDownload.create({
     data: { ...data, ipAddress },
   })
+
+  revalidateTag("public-guide-download-stats", "max")
 
   // 4. Send email via Resend with download link
   try {

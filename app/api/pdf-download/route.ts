@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { revalidateTag } from "next/cache";
 import { db } from "@/db";
 import { pdfDownloads } from "@/db/schema";
 import { eq, count } from "drizzle-orm";
@@ -112,6 +113,8 @@ export async function POST(req: NextRequest) {
       pdf_slug: PDF_SLUG,
       is_paid: false,
     });
+
+    revalidateTag("public-guide-download-stats", "max");
 
     return Response.json({
       success: true,

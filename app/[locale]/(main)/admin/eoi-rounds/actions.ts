@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
@@ -80,6 +80,7 @@ export async function addEoiRound(input: AddEoiRoundInput): Promise<AddEoiRoundR
 
     revalidatePath("/(main)/admin/eoi-rounds");
     revalidatePath("/(main)/tools/invitation-rounds");
+    revalidateTag("public-invitation-rounds", "max");
 
     return {
       success: true,
@@ -120,6 +121,7 @@ export async function deleteEoiRound(id: string): Promise<DeleteEoiRoundResult> 
 
     revalidatePath("/(main)/admin/eoi-rounds");
     revalidatePath("/(main)/tools/invitation-rounds");
+    revalidateTag("public-invitation-rounds", "max");
 
     return {
       success: true,

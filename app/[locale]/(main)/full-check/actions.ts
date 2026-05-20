@@ -2,6 +2,7 @@
 
 import { and, eq, gte, sql } from "drizzle-orm";
 import { headers } from "next/headers";
+import { revalidateTag } from "next/cache";
 import Stripe from "stripe";
 import { Resend } from "resend";
 
@@ -604,6 +605,8 @@ export async function submitFullCheckWaitlist(
         requirePayment: true,
       };
     }
+
+    revalidateTag("public-full-check-usage", "max");
   } else {
     // Free beta is exhausted — require payment
     if (analysisProgressId) {

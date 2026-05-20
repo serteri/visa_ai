@@ -1,14 +1,12 @@
 import Link from "next/link";
-import { eq } from "drizzle-orm";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { db } from "@/db";
-import { fullCheckUsage } from "@/db/schema";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 import { ShareLogivisaCard } from "@/components/share-logivisa-card";
+import { getCachedFullCheckUsage } from "@/lib/cache/public-read-models";
 
 type ComparisonRow = {
   label: string;
@@ -183,20 +181,14 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const reportCards = getReportCards(locale);
 
   // ── Fetch remaining free spots from DB ─────────────────────────────────────
-  const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
+  let maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
   let remainingSpots = maxFree;
   let isFreeActive = true;
   try {
-    const usageRows = await db
-      .select()
-      .from(fullCheckUsage)
-      .where(eq(fullCheckUsage.id, 1))
-      .limit(1);
-
-    const used = usageRows[0]?.free_reports_used ?? 0;
-    remainingSpots = Math.max(0, maxFree - used);
-    const dbFreeActive = usageRows[0]?.is_free_active !== false;
-    isFreeActive = dbFreeActive && remainingSpots > 0;
+    const usage = await getCachedFullCheckUsage();
+    maxFree = usage.maxFree;
+    remainingSpots = usage.remainingSpots;
+    isFreeActive = usage.isFreeActive;
   } catch {
     // Keep defaults when DB is temporarily unavailable
   }

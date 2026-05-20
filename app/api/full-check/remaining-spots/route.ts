@@ -1,25 +1,15 @@
-import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { fullCheckUsage } from "@/db/schema";
+import { getCachedFullCheckUsage } from "@/lib/cache/public-read-models";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function GET() {
   try {
-    const rows = await db
-      .select()
-      .from(fullCheckUsage)
-      .where(eq(fullCheckUsage.id, 1))
-      .limit(1);
-
-    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
-    const used = rows[0]?.free_reports_used ?? 0;
-    const remaining = Math.max(0, maxFree - used);
+    const usage = await getCachedFullCheckUsage();
 
     return Response.json({
-      remaining,
-      total: maxFree,
-      isFreeActive: remaining > 0,
+      remaining: usage.remainingSpots,
+      total: usage.maxFree,
+      isFreeActive: usage.isFreeActive,
     });
   } catch (err) {
     console.error("Failed to fetch remaining spots:", err);

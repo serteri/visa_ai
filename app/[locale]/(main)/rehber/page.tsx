@@ -1,9 +1,10 @@
-import { prisma } from "@/lib/prisma"
 import { getDictionary, Dictionary } from "@/lib/i18n/get-dictionary"
 import { Locale } from "@/lib/i18n/config"
 import { DownloadForm } from "./DownloadForm"
-import { unstable_noStore as noStore } from "next/cache"
 import { Metadata } from "next"
+import { getCachedGuideDownloadStats } from "@/lib/cache/public-read-models"
+
+export const revalidate = 3600
 
 export async function generateMetadata({
   params: { locale },
@@ -22,16 +23,8 @@ export default async function RehberPage({
 }: {
   params: { locale: Locale }
 }) {
-  noStore() // Opt-out of static rendering
   const dictionary = await getDictionary(locale)
-
-  const guideConfig = await prisma.guideConfig.findUnique({
-    where: { id: "main" },
-  })
-  const currentDownloads = await prisma.guideDownload.count()
-
-  const maxDownloads = guideConfig?.maxDownloads || 20
-  const remainingDownloads = Math.max(0, maxDownloads - currentDownloads)
+  const { maxDownloads, currentDownloads, remainingDownloads } = await getCachedGuideDownloadStats()
 
   return (
     <div className="container mx-auto px-4 py-8">
