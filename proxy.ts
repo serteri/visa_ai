@@ -6,6 +6,13 @@ import { auth } from "@/auth";
 
 const LOCALES = ["en", "tr", "zh-Hans"] as const;
 const DEFAULT_LOCALE = "en";
+const BLOCKED_BOT_UA_TOKENS = ["gptbot", "ccbot", "anthropic-ai"];
+
+function isBlockedBot(userAgent: string | null): boolean {
+  if (!userAgent) return false;
+  const normalized = userAgent.toLowerCase();
+  return BLOCKED_BOT_UA_TOKENS.some((token) => normalized.includes(token));
+}
 
 function getLocale(request: NextRequest): string {
   const negotiatorHeaders: Record<string, string> = {};
@@ -35,6 +42,10 @@ function isDashboardPath(pathname: string): boolean {
 
 export const proxy = auth((req) => {
   const { pathname, searchParams } = req.nextUrl;
+
+  if (isBlockedBot(req.headers.get("user-agent"))) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
 
   if (pathname === "/") {
     const locale = getLocale(req);
