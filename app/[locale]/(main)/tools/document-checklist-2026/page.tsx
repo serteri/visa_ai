@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { DocumentChecklist2026 } from "./DocumentChecklist2026";
+import { DocumentChecklist2026Localized } from "./DocumentChecklist2026Localized";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { defaultLocale, isValidLocale, type Locale } from "@/lib/i18n/config";
 
@@ -43,12 +43,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function DocumentChecklist2026Page({ params }: PageProps) {
   const { locale } = await params;
   const normalizedLocale = (isValidLocale(locale) ? locale : defaultLocale) as Locale;
-  const dictionary = await getDictionary(normalizedLocale);
 
-  return (
-    <DocumentChecklist2026
-      locale={normalizedLocale}
-      dictionary={dictionary.documentChecklist2026}
-    />
-  );
+  return <DocumentChecklist2026Localized locale={normalizedLocale} />;
 }

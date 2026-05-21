@@ -1,6 +1,6 @@
 import 'server-only'
 import type { Locale } from './config'
-import type { DocumentChecklist2026Dictionary } from '@/app/[locale]/(main)/tools/document-checklist-2026/DocumentChecklist2026'
+import type { DocumentChecklist2026Dictionary } from '@/lib/i18n/checklist-content'
 
 // We intentionally do not use a caching mechanism like `next-intl`
 // to ensure the latest translations are always fetched.

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { DocumentChecklist2026 } from "../DocumentChecklist2026";
+import { DocumentChecklist2026Localized } from "../DocumentChecklist2026Localized";
 import { defaultLocale, isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 
@@ -46,13 +46,8 @@ export default async function DocumentChecklist2026SubclassPage({ params }: Page
   }
 
   const normalizedLocale = (isValidLocale(locale) ? locale : defaultLocale) as Locale;
-  const dictionary = await getDictionary(normalizedLocale);
 
   return (
-    <DocumentChecklist2026
-      locale={normalizedLocale}
-      dictionary={dictionary.documentChecklist2026}
-      initialVisa={subclass}
-    />
+    <DocumentChecklist2026Localized locale={normalizedLocale} initialVisa={subclass} />
   );
 }
