@@ -15,9 +15,19 @@ const notoSans = Noto_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.logivisa.com"),
   title: "Logivisa",
   description:
     "Structured visa pathway analysis and readiness reports for Australia.",
+  alternates: {
+    canonical: "https://www.logivisa.com/en",
+    languages: {
+      en: "https://www.logivisa.com/en",
+      tr: "https://www.logivisa.com/tr",
+      "zh-Hans": "https://www.logivisa.com/zh-Hans",
+      "x-default": "https://www.logivisa.com/en",
+    },
+  },
   verification: {
     google: "foOddNGs8xqNCNQ74vzcc0AheCIMssYqDONHUOkWgCk",
   },

@@ -48,10 +48,10 @@ export async function generateMetadata({
       // Relative canonical keeps the current path and drops query params like ?dpl=.
       canonical: "./",
       languages: {
-        en: "/en",
-        tr: "/tr",
-        "zh-Hans": "/zh-Hans",
-        "x-default": "/en",
+        en: "https://www.logivisa.com/en",
+        tr: "https://www.logivisa.com/tr",
+        "zh-Hans": "https://www.logivisa.com/zh-Hans",
+        "x-default": "https://www.logivisa.com/en",
       },
     },
     openGraph: {
