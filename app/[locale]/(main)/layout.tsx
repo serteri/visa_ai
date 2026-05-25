@@ -9,7 +9,7 @@ import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
 
 const SITE_NAME = "Logivisa";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = "https://www.logivisa.com";
 
 function getLocaleDescription(locale: string) {
   if (locale === "tr") {
@@ -34,9 +34,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const description = getLocaleDescription(locale);
-  const canonicalPath = `/${locale}`;
   const siteUrl = new URL(BASE_URL);
-  const canonicalUrl = `https://www.logivisa.com/${locale}`;
+  const canonicalPath = `/${locale}`;
 
   return {
     metadataBase: siteUrl,
@@ -46,11 +45,13 @@ export async function generateMetadata({
     },
     description,
     alternates: {
-      canonical: canonicalUrl,
+      // Relative canonical keeps the current path and drops query params like ?dpl=.
+      canonical: "./",
       languages: {
-        en: "https://www.logivisa.com/en",
-        tr: "https://www.logivisa.com/tr",
-        "zh-Hans": "https://www.logivisa.com/zh-Hans",
+        en: "/en",
+        tr: "/tr",
+        "zh-Hans": "/zh-Hans",
+        "x-default": "/en",
       },
     },
     openGraph: {
@@ -109,7 +110,6 @@ export default async function LocaleLayout({
 
   return (
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
-      <link rel="canonical" href={`https://www.logivisa.com/${locale}`} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}

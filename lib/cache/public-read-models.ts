@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 
 import { db } from "@/db";
 import { fullCheckUsage } from "@/db/schema";
+import { getUniqueOccupations } from "@/lib/occupations/seo";
 import { prisma } from "@/lib/prisma";
 
 const FALLBACK_FREE_LIMIT = 50;
@@ -74,4 +75,12 @@ export const getCachedFullCheckUsage = unstable_cache(
   },
   ["public-full-check-usage"],
   { revalidate: 300, tags: ["public-full-check-usage"] },
+);
+
+export const getCachedSeoOccupations = unstable_cache(
+  async () => {
+    return getUniqueOccupations();
+  },
+  ["public-seo-occupations"],
+  { revalidate: 86400, tags: ["public-seo-occupations"] },
 );

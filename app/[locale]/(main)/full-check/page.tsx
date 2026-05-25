@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
 
@@ -7,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 import { ShareLogivisaCard } from "@/components/share-logivisa-card";
 import { getCachedFullCheckUsage } from "@/lib/cache/public-read-models";
+
+const BASE_URL = "https://www.logivisa.com";
 
 type ComparisonRow = {
   label: string;
@@ -141,6 +144,39 @@ type FullCheckPageProps = {
     biggestConcern?: string;
     currentCountry?: string;
   }>;
+
+  export async function generateMetadata({ params }: FullCheckPageProps): Promise<Metadata> {
+    const { locale } = await params;
+
+    const title =
+      locale === "tr"
+        ? "Hazirlik raporunuzu olusturun"
+        : locale === "zh-Hans"
+          ? "生成准备度报告"
+          : "Generate your readiness report";
+
+    const description =
+      locale === "tr"
+        ? "Avustralya PR sureciniz icin yapilandirilmis hazirlik raporu olusturun."
+        : locale === "zh-Hans"
+          ? "为澳大利亚 PR 流程生成结构化准备度报告。"
+          : "Generate a structured readiness report for your Australia PR pathway.";
+
+    return {
+      metadataBase: new URL(BASE_URL),
+      title,
+      description,
+      alternates: {
+        canonical: `/${locale}/full-check`,
+        languages: {
+          en: "/en/full-check",
+          tr: "/tr/full-check",
+          "zh-Hans": "/zh-Hans/full-check",
+          "x-default": "/en/full-check",
+        },
+      },
+    };
+  }
 };
 
 function buildPrefilledGoal(input: {

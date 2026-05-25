@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = "https://www.logivisa.com";
 
 export default function robots(): MetadataRoute.Robots {
   return {
