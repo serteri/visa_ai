@@ -47,8 +47,26 @@ export const proxy = auth((req) => {
     return new NextResponse("Forbidden", { status: 403 });
   }
 
+  // If visiting '/en' directly or any path starting with '/en/', redirect to prefixless path
+  if (pathname === "/en") {
+    const url = new URL("/", req.url);
+    url.search = searchParams.toString();
+    return NextResponse.redirect(url);
+  }
+  if (pathname.startsWith("/en/")) {
+    const targetPath = pathname.substring(3); // Remove '/en'
+    const url = new URL(targetPath || "/", req.url);
+    url.search = searchParams.toString();
+    return NextResponse.redirect(url);
+  }
+
+  // Handle root "/" path
   if (pathname === "/") {
     const locale = getLocale(req);
+    // If preferred locale is English, rewrite to /en internally. Otherwise redirect to /tr, /zh-Hans etc.
+    if (locale === "en") {
+      return NextResponse.rewrite(new URL("/en", req.url));
+    }
     return NextResponse.redirect(new URL(`/${locale}`, req.url));
   }
 
@@ -64,14 +82,32 @@ export const proxy = auth((req) => {
     const configuredAdminToken = process.env.ADMIN_TOKEN?.trim();
     const providedAdminToken = searchParams.get("ADMIN_TOKEN")?.trim();
     if (configuredAdminToken && providedAdminToken !== configuredAdminToken) {
-      return NextResponse.redirect(new URL(`/${locale}`, req.url));
+      // For EN, redirect to root '/' instead of '/en'
+      const redirectPath = locale === "en" ? "/" : `/${locale}`;
+      return NextResponse.redirect(new URL(redirectPath, req.url));
     }
     return NextResponse.next();
   }
 
   if (isDashboardPath(pathname) && !req.auth) {
     const locale = pathname.startsWith("/tr/") ? "tr" : pathname.startsWith("/zh-Hans/") ? "zh-Hans" : "en";
-    return NextResponse.redirect(new URL(`/${locale}/sign-in`, req.url));
+    const signInPath = locale === "en" ? "/sign-in" : `/${locale}/sign-in`;
+    return NextResponse.redirect(new URL(signInPath, req.url));
+  }
+
+  // Rewrite all clean English paths (e.g. /tools/points-calculator) to /en/... internally
+  const hasLocalePrefix = pathname.startsWith("/tr/") || pathname.startsWith("/zh-Hans/") || pathname === "/tr" || pathname === "/zh-Hans";
+  if (!hasLocalePrefix) {
+    // Check if it's an asset or Next.js internal path to skip rewrite
+    const isAsset = pathname.startsWith("/_next/") || 
+                    pathname.startsWith("/api/") || 
+                    pathname.includes(".") || 
+                    pathname === "/favicon.ico" || 
+                    pathname === "/robots.txt" || 
+                    pathname === "/sitemap.xml";
+    if (!isAsset) {
+      return NextResponse.rewrite(new URL(`/en${pathname}`, req.url));
+    }
   }
 
   return NextResponse.next();
