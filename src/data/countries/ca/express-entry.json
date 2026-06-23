@@ -5,7 +5,8 @@
   "notCovered": ["Provincial Nominee Program detayları (sadece +600 puan etkisi var, PNP'nin kendi eyalet bazlı kriterleri yok)", "Family/spousal sponsorship", "Study permits", "Work permits", "NOC (occupation classification) verisi"],
   "pathwayType": "points-based",
   "system": "Express Entry",
-  "lastVerified": "2026-06-22",
+  "lastVerified": "2026-06-23",
+  "processingTimes": "Varies by program",
   "sourceUrls": [
     "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html",
     "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
@@ -19,6 +20,27 @@
     "lastIncreaseDate": "2026-04-30",
     "note": "Fees increased April 30, 2026"
   },
+
+  "sections": [
+    "Who can apply",
+    "Compare eligiblity requirements for all 3 programs",
+    "Check your score",
+    "Calculate your Comprehensive Ranking System (CRS) score",
+    "Get your documents ready",
+    "Create your profile",
+    "Submit your profile to enter the pool",
+    "Rounds of invitations",
+    "Apply for permanent residence",
+    "After you apply",
+    "If we approve your application"
+  ],
+
+  "howItWorks": [
+    "Create a profile and enter the pool.",
+    "We'll invite the candidates with the most points in rounds.",
+    "If you're invited to apply, fill out the application.",
+    "We'll review your application and make a decision."
+  ],
 
   "programs": {
     "CEC": {
