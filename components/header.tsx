@@ -73,40 +73,19 @@ export function Header({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[320px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-4 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="mb-2 px-2 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                    {isTr ? "Avustralya" : isZh ? "澳大利亚" : "Australia"}
-                  </p>
-                  {VISA_LINKS.map((v) => (
-                    <Link
-                      key={v.subclass}
-                      href={`/${locale}/visas/${v.subclass}`}
-                      className="block rounded-lg px-2 py-1.5 text-xs text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-                    >
-                      {isTr ? v.tr : isZh ? v.zh : v.en}
-                    </Link>
-                  ))}
-                  <Link
-                    href={`/${locale}/tools/visa-comparison`}
-                    className="mt-1 block rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-250 dark:hover:bg-white/10 dark:hover:text-white"
-                  >
-                    {visaComparisonLabel}
-                  </Link>
-                </div>
-                <div className="border-l border-slate-100 pl-4 dark:border-zinc-800">
-                  <p className="mb-2 px-2 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                    {isTr ? "Kanada" : isZh ? "加拿大" : "Canada"}
-                  </p>
-                  <Link
-                    href={`/${locale}/visas/canada-express-entry`}
-                    className="block rounded-lg px-2 py-1.5 text-xs text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-                  >
-                    {isTr ? "Express Entry" : isZh ? "快速通道 Express Entry" : "Express Entry"}
-                  </Link>
-                </div>
-              </div>
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[280px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
+              <Link
+                href={`/${locale}/visas/australia`}
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
+              </Link>
+              <Link
+                href={`/${locale}/visas/canada`}
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
+              </Link>
             </div>
           </div>
 
@@ -238,40 +217,19 @@ export function Header({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[320px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-4 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="mb-2 px-2 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                    {isTr ? "Avustralya" : isZh ? "澳大利亚" : "Australia"}
-                  </p>
-                  {VISA_LINKS.map((v) => (
-                    <Link
-                      key={v.subclass}
-                      href={`/${locale}/visas/${v.subclass}`}
-                      className="block rounded-lg px-2 py-1.5 text-xs text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-                    >
-                      {isTr ? v.tr : isZh ? v.zh : v.en}
-                    </Link>
-                  ))}
-                  <Link
-                    href={`/${locale}/tools/visa-comparison`}
-                    className="mt-1 block rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-250 dark:hover:bg-white/10 dark:hover:text-white"
-                  >
-                    {visaComparisonLabel}
-                  </Link>
-                </div>
-                <div className="border-l border-slate-100 pl-4 dark:border-zinc-800">
-                  <p className="mb-2 px-2 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                    {isTr ? "Kanada" : isZh ? "加拿大" : "Canada"}
-                  </p>
-                  <Link
-                    href={`/${locale}/visas/canada-express-entry`}
-                    className="block rounded-lg px-2 py-1.5 text-xs text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-                  >
-                    {isTr ? "Express Entry" : isZh ? "快速通道 Express Entry" : "Express Entry"}
-                  </Link>
-                </div>
-              </div>
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[280px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
+              <Link
+                href={`/${locale}/visas/australia`}
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
+              </Link>
+              <Link
+                href={`/${locale}/visas/canada`}
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
+              </Link>
             </div>
           </div>
 
