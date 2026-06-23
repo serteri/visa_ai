@@ -85,3 +85,62 @@ export function buildNextSteps(ctx: NextStepsContext): string[] {
 
   return steps;
 }
+
+type CanadaNextStepsContext = {
+  locale: Locale;
+  pathwayCodes: ("CEC" | "FSW" | "FSTP")[];
+  hasOccupation: boolean;
+  hasEnglish: boolean;
+  hasMissingInfo: boolean;
+};
+
+export function buildCanadaNextSteps(ctx: CanadaNextStepsContext): string[] {
+  const isTr = ctx.locale === "tr";
+  const steps: string[] = [];
+
+  if (ctx.pathwayCodes.length > 0) {
+    steps.push(
+      isTr
+        ? `Sistem, ${ctx.pathwayCodes.join("/")} programlari icin karsilastirilabilir bir CRS/uygunluk veri zemini oldugunu tespit etti.`
+        : `The analysis identified a comparable CRS/eligibility data basis for the ${ctx.pathwayCodes.join("/")} program(s).`
+    );
+  }
+
+  if (ctx.hasMissingInfo) {
+    steps.push(
+      isTr
+        ? "Eksik veri alanlari, ozellikle NOC meslegi, dil seviyesi (CLB/NCLC) ve is tecrubesi, karsilastirmali sinyal kalitesini sinirlamaktadir."
+        : "Missing data fields, especially NOC occupation, language level (CLB/NCLC), and work experience, are limiting comparative signal quality."
+    );
+  }
+
+  if (!ctx.hasOccupation) {
+    steps.push(
+      isTr
+        ? "NOC verisi olmadan, CEC/FSW/FSTP uygunluk kontrolu ve skill-transferability sinyalleri olusmamaktadir."
+        : "Without NOC data, CEC/FSW/FSTP eligibility checks and skill-transferability signals do not form."
+    );
+  }
+
+  if (!ctx.hasEnglish) {
+    steps.push(
+      isTr
+        ? "CLB/NCLC seviyesi verisi olmadiginda, CRS dil puanlamasi ve davet rekabetine iliskin karsilastirma sinyalleri eksik kalir."
+        : "Without CLB/NCLC level data, comparison signals related to CRS language scoring and invitation competitiveness remain incomplete."
+    );
+  }
+
+  steps.push(
+    isTr
+      ? "Belge kategorilerinin tamlik ve tutarlilik duzeyi, rapordaki sinyal gucunu dogrudan etkileyen bir veri kalitesi unsurudur."
+      : "Completeness and consistency across document categories are data-quality variables that directly affect signal strength in the report."
+  );
+
+  steps.push(
+    isTr
+      ? "Kisisel strateji, resmi basvuru ve taktik planlama konulari bu raporun kapsami disindadir; bu alanlar icin kayitli bir RCIC (Regulated Canadian Immigration Consultant) uzmani gerekir."
+      : "Personal strategy, formal applications, and tactical planning sit outside this report's scope; those areas require a registered RCIC (Regulated Canadian Immigration Consultant) professional."
+  );
+
+  return steps;
+}

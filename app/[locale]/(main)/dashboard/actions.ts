@@ -14,6 +14,8 @@ async function requireUserId(): Promise<string> {
 // ─── Saved calculations ────────────────────────────────────────────────────────
 
 export type CalculationData = {
+  country?: "AU" | "CA";
+  configVersion?: string;
   visaSubclass?: string;
   totalPoints: number;
   breakdown: Record<string, unknown>;
@@ -24,6 +26,8 @@ export async function saveCalculation(data: CalculationData): Promise<{ id: stri
   const row = await prisma.savedCalculation.create({
     data: {
       userId,
+      country: data.country ?? "AU",
+      configVersion: data.configVersion ?? null,
       visaSubclass: data.visaSubclass ?? null,
       totalPoints: data.totalPoints,
       breakdown: data.breakdown as object,

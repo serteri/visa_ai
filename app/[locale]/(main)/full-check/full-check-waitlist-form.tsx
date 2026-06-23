@@ -13,6 +13,7 @@ import {
   type FullCheckWaitlistState,
   submitFullCheckWaitlist,
 } from "./actions";
+import { activeCountries, countryLabels } from "@/lib/countries";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { ActionChecklist } from "@/components/ActionChecklist";
@@ -155,6 +156,7 @@ export function FullCheckWaitlistForm({
   locale: string;
   initialValues?: {
     visaInterest?: string;
+    targetCountry?: string;
     currentCountry?: string;
     occupation?: string;
     mainGoal?: string;
@@ -467,6 +469,24 @@ export function FullCheckWaitlistForm({
             required
           />
           <ErrorText message={state.errors?.email} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-target-country">
+            {txt("Hangi ülke için rapor istiyorsunuz?", "Which country is this report for?", "您希望针对哪个国家生成报告？")}
+          </Label>
+          <select
+            id="waitlist-target-country"
+            name="targetCountry"
+            defaultValue={initialValues.targetCountry ?? "AU"}
+            className={selectClassName}
+          >
+            {activeCountries.map((code) => (
+              <option key={code} value={code}>
+                {countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"]}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="space-y-2">

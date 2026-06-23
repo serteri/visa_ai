@@ -1,3 +1,5 @@
+// Australia (skilled migration points test) types
+
 export type AgeOption = "18_24" | "25_32" | "33_39" | "40_44" | "45_plus";
 
 export type EnglishOption = "competent" | "proficient" | "superior";
@@ -19,7 +21,7 @@ export type PartnerOption =
   | "single_or_partner_au_citizen_or_pr"
   | "none_or_unsure";
 
-export type SkilledPointsInput = {
+export type AustraliaPointsInput = {
   age: AgeOption;
   english: EnglishOption;
   overseasEmployment: OverseasEmploymentOption;
@@ -35,7 +37,7 @@ export type SkilledPointsInput = {
   hasNominationOrSponsorship491: boolean;
 };
 
-export type PointsBreakdown = {
+export type AustraliaPointsBreakdown = {
   age: number;
   english: number;
   overseasEmployment: number;
@@ -56,12 +58,12 @@ export type PointsBreakdown = {
   nominationOrSponsorship491: number;
 };
 
-export type SkilledPointsResult = {
+export type AustraliaPointsResult = {
   minimumThreshold: number;
   total189: number;
   total190: number;
   total491: number;
   employmentCapApplied: boolean;
   age45OrOlder: boolean;
-  breakdown: PointsBreakdown;
+  breakdown: AustraliaPointsBreakdown;
 };

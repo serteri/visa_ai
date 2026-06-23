@@ -1,5 +1,7 @@
 import { t3 } from "@/src/lib/readiness/localization";
+import expressEntryConfig from "@/src/data/countries/ca/express-entry.json";
 import type { DocumentCategory, Locale } from "./types";
+import type { CanadaPathwayCode } from "./engine";
 
 function localizedItems(
   locale: Locale,
@@ -126,6 +128,92 @@ export function getDocumentChecklist(
       ]),
     });
   }
+
+  return categories;
+}
+
+// Built from express-entry.json's documentsRequired + languageTests/ECA fields.
+// NAATI (AU translator accreditation) has no Canadian equivalent and is
+// intentionally not referenced anywhere in this function.
+export function getCanadaDocumentChecklist(
+  pathwayCodes: CanadaPathwayCode[],
+  locale: Locale
+): DocumentCategory[] {
+  if (pathwayCodes.length === 0) return [];
+
+  const categories: DocumentCategory[] = [];
+
+  categories.push({
+    category: t3(locale, "Identity and passport", "Kimlik ve pasaport", "身份与护照"),
+    items: localizedItems(locale, [
+      ["Passport or travel document", "Pasaport veya seyahat belgesi", "护照或旅行证件"],
+      ["Police certificates (applicant + family 18+, every country resided in 6+ months in last 10 years)", "Sabika kaydi (basvuru sahibi ve 18+ aile uyeleri, son 10 yilda 6+ ay yasanan her ulke icin)", "无犯罪记录证明（申请人及18岁以上家庭成员，过去10年内居住6个月以上的每个国家）"],
+    ]),
+  });
+
+  categories.push({
+    category: t3(locale, "Language test", "Dil sinavi", "语言考试"),
+    items: localizedItems(locale, [
+      [
+        `Language test results (${expressEntryConfig.languageTests.english.join(", ")} for English; ${expressEntryConfig.languageTests.french.join(", ")} for French)`,
+        `Dil sinavi sonuclari (Ingilizce icin ${expressEntryConfig.languageTests.english.join(", ")}; Fransizca icin ${expressEntryConfig.languageTests.french.join(", ")})`,
+        `语言考试成绩（英语：${expressEntryConfig.languageTests.english.join("、")}；法语：${expressEntryConfig.languageTests.french.join("、")}）`,
+      ],
+      [
+        `Test must be within validity window (${expressEntryConfig.languageTests.validityYears} years)`,
+        `Sinav gecerlilik suresi icinde olmalidir (${expressEntryConfig.languageTests.validityYears} yil)`,
+        `考试必须在有效期内（${expressEntryConfig.languageTests.validityYears} 年）`,
+      ],
+    ]),
+  });
+
+  categories.push({
+    category: t3(locale, "Education", "Egitim", "教育"),
+    items: localizedItems(locale, [
+      [
+        "Educational Credential Assessment (ECA) for foreign education, valid within 5 years",
+        "Yurt disi egitim icin Egitim Belgesi Degerlendirmesi (ECA), 5 yil gecerlilik suresi icinde",
+        "境外教育的教育资格评估（ECA），有效期5年内",
+      ],
+    ]),
+  });
+
+  if (pathwayCodes.includes("FSTP")) {
+    categories.push({
+      category: t3(locale, "FSTP: trade qualification", "FSTP: esnaflik niteligi", "FSTP：技术工种资质"),
+      items: localizedItems(locale, [
+        ["Certificate of qualification from a provincial/territorial/federal authority, or a written job offer", "Eyalet/bolge/federal yetkiliden esnaflik sertifikasi veya yazili is teklifi", "省/地区/联邦机构颁发的资格证书，或书面工作邀约"],
+        ["Evidence of skilled trade work experience (2 years / 3,120 hours within last 5 years)", "Vasifli esnaflik is tecrubesi kaniti (son 5 yilda 2 yil / 3.120 saat)", "技术工种工作经验证明（过去5年内2年/3120小时）"],
+      ]),
+    });
+  }
+
+  if (pathwayCodes.includes("CEC")) {
+    categories.push({
+      category: t3(locale, "CEC: Canadian work experience", "CEC: Kanada is tecrubesi", "CEC：加拿大工作经验"),
+      items: localizedItems(locale, [
+        ["Evidence of Canadian work experience (1 year / 1,560 hours within last 3 years, NOC TEER 0-3)", "Kanada is tecrubesi kaniti (son 3 yilda 1 yil / 1.560 saat, NOC TEER 0-3)", "加拿大工作经验证明（过去3年内1年/1560小时，NOC TEER 0-3）"],
+      ]),
+    });
+  }
+
+  if (pathwayCodes.includes("FSW")) {
+    categories.push({
+      category: t3(locale, "FSW: work experience and funds", "FSW: is tecrubesi ve fonlar", "FSW：工作经验与资金"),
+      items: localizedItems(locale, [
+        ["Evidence of skilled work experience (1 year continuous within last 10 years, NOC TEER 0-3)", "Vasifli is tecrubesi kaniti (son 10 yilda 1 yil surekli, NOC TEER 0-3)", "技术工作经验证明（过去10年内连续1年，NOC TEER 0-3）"],
+        ["Proof of funds (unless applying under CEC or with a valid job offer)", "Fon kaniti (CEC kapsaminda veya gecerli is teklifiyle basvurmadiginiz takdirde)", "资金证明（除非以CEC身份申请或持有有效工作邀约）"],
+      ]),
+    });
+  }
+
+  categories.push({
+    category: t3(locale, "If applicable", "Uygunsa", "如适用"),
+    items: localizedItems(locale, [
+      ["Provincial nomination certificate, if applying with a PNP nomination", "PNP adaylik sertifikasi, varsa", "省提名证书（如适用）"],
+      ["Written job offer, if claiming job-offer-related requirements", "Yazili is teklifi, ilgili gereksinimler icin", "书面工作邀约（如适用）"],
+    ]),
+  });
 
   return categories;
 }

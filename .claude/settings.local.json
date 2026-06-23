@@ -49,7 +49,31 @@
       "Bash(Test-Path *)",
       "Read(//mnt/c/Users/serte/**)",
       "Bash(ls /mnt/)",
-      "Bash(dir /s /b \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\\\\app\\\\*layout*\")"
+      "Bash(dir /s /b \"C:\\\\Users\\\\serte\\\\Desktop\\\\visa_ai\\\\app\\\\*layout*\")",
+      "Bash(find / -iname \"*canada*config*\" -not -path \"*/node_modules/*\" 2>/dev/null; find . -iname \"*canada*\" -not -path \"*/node_modules/*\" 2>/dev/null)",
+      "Bash(git mv *)",
+      "Bash(perl -pi -e 's/SkilledPointsInput/AustraliaPointsInput/g; s/calculateSkilledPoints/calculateAustraliaPoints/g' \"app/[locale]/\\(main\\)/points-calculator/page.tsx\")",
+      "WebFetch(domain:www.canada.ca)",
+      "WebSearch",
+      "WebFetch(domain:immigration.ca)",
+      "Bash(ls -la src/data/countries/ca/)",
+      "Bash(wc -l src/data/countries/ca/noc-list.json)",
+      "Bash(node -e ' *)",
+      "WebFetch(domain:www23.statcan.gc.ca)",
+      "Bash(curl -sL -o /tmp/noc2021.csv \"https://www.statcan.gc.ca/en/subjects/standard/noc/2021/indexV1/noc-2021-v1.0-classification-structure.csv\" -A \"Mozilla/5.0\")",
+      "Read(//tmp/**)",
+      "Bash(node scratch/build-fstp-groups.mjs)",
+      "Bash(python3 -c \"import json; json.load\\(open\\('src/data/countries/ca/noc-list.json'\\)\\); print\\('valid JSON'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/data/countries/ca/noc-list.json','utf8'\\)\\); console.log\\('valid JSON'\\)\")",
+      "Bash(rm -f scratch/build-fstp-groups.mjs scratch/noc2021.csv scratch/noc-unitgroups-raw.json)",
+      "WebFetch(domain:open.canada.ca)",
+      "WebFetch(domain:www.kaggle.com)",
+      "Bash(curl -s -o /tmp/ca-rounds.html -w 'HTTP_STATUS:%{http_code}\\\\n' https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/rounds-invitations.html -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Connection: keep-alive' -H 'Upgrade-Insecure-Requests: 1' -H 'Cache-Control: max-age=0')",
+      "Bash(curl -s -o ca-rounds2.html -w \"HTTP_STATUS:%{http_code}\\\\n\" --max-time 20 \"https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/rounds-invitations.html\" -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" -H \"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\" -H \"Accept-Language: en-US,en;q=0.5\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP_STATUS:%{http_code}\\\\n\" --max-time 15 \"https://example.com\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP_STATUS:%{http_code} TIME:%{time_total}\\\\n\" --max-time 15 \"https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/invitation-rounds\" -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP_STATUS:%{http_code} TIME:%{time_total}\\\\n\" --max-time 15 --http1.1 \"https://www.canada.ca/en.html\" -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\")",
+      "Bash(xargs grep -l \"cron\\\\|scrape\")"
     ]
   }
 }

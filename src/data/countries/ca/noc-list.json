@@ -1,0 +1,2037 @@
+[
+  {
+    "code": "00010",
+    "title": "Legislators",
+    "teer": 0,
+    "majorGroup": "00",
+    "minorGroup": "000",
+    "duties": [
+      "Participates in the development and passage of legislation at the federal, provincial, territorial or municipal level.",
+      "Represents constituents and communicates their concerns within government processes.",
+      "Reviews and debates policy proposals, budgets and government programs.",
+      "Sits on committees and councils to oversee public administration and resource allocation."
+    ]
+  },
+  {
+    "code": "00011",
+    "title": "Senior Government Managers and Officials",
+    "teer": 0,
+    "majorGroup": "00",
+    "minorGroup": "000",
+    "duties": [
+      "Plans and coordinates senior-level government department or agency operations.",
+      "Assesses operational requirements and translates them into practical service outcomes.",
+      "Prepares and maintains accurate records, reports and documentation for compliance.",
+      "Collaborates with officials and stakeholders to improve delivery standards and policy outcomes."
+    ]
+  },
+  {
+    "code": "00012",
+    "title": "Senior Managers - Financial, Communications and Other Business Services",
+    "teer": 0,
+    "majorGroup": "00",
+    "minorGroup": "000",
+    "duties": [
+      "Directs the overall strategy and operations of financial, communications or other business services.",
+      "Evaluates risks, controls and compliance against corporate governance and regulatory frameworks.",
+      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
+      "Maintains records and communicates findings to stakeholders, boards and external authorities."
+    ]
+  },
+  {
+    "code": "00013",
+    "title": "Senior Managers - Health, Education, Social and Community Services and Membership Organizations",
+    "teer": 0,
+    "majorGroup": "00",
+    "minorGroup": "000",
+    "duties": [
+      "Directs strategic planning and operations across health, education or community service organizations.",
+      "Assesses stakeholder and operational requirements and translates them into practical service outcomes.",
+      "Prepares and maintains accurate records, reports and documentation for compliance.",
+      "Collaborates with multidisciplinary teams to improve delivery standards and risk controls."
+    ]
+  },
+  {
+    "code": "00014",
+    "title": "Senior Managers - Trade, Broadcasting and Other Services, n.e.c.",
+    "teer": 0,
+    "majorGroup": "00",
+    "minorGroup": "000",
+    "duties": [
+      "Directs overall strategy and operations for trade, broadcasting or other service-sector organizations.",
+      "Evaluates risks, controls and compliance against corporate governance frameworks.",
+      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
+      "Maintains records and communicates findings to stakeholders and boards."
+    ]
+  },
+  {
+    "code": "00015",
+    "title": "Senior Managers - Construction, Transportation, Production and Utilities",
+    "teer": 0,
+    "majorGroup": "00",
+    "minorGroup": "000",
+    "duties": [
+      "Directs overall strategy and operations across construction, transportation, production or utility organizations.",
+      "Evaluates risks, controls and compliance against safety and operational frameworks.",
+      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
+      "Maintains records and communicates findings to stakeholders and boards."
+    ]
+  },
+  {
+    "code": "10010",
+    "title": "Financial Managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": [
+      "Prepares and analyses financial data relevant to organizational reporting obligations.",
+      "Evaluates risks, controls and compliance against accounting standards and regulatory frameworks.",
+      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
+      "Maintains records and communicates findings to stakeholders, management and external authorities."
+    ]
+  },
+  {
+    "code": "10011",
+    "title": "Human Resources Managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": [
+      "Plans and coordinates human resources strategy, staffing and employee relations activities.",
+      "Assesses workforce and operational requirements and translates them into HR programs.",
+      "Prepares and maintains accurate employment records and compliance documentation.",
+      "Collaborates with management to improve recruitment, retention and labour relations."
+    ]
+  },
+  {
+    "code": "10012",
+    "title": "Purchasing Managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": [
+      "Plans and coordinates procurement strategy and supplier relationship management.",
+      "Assesses supplier, cost and operational requirements and translates them into purchasing decisions.",
+      "Prepares and maintains accurate procurement records, contracts and reports.",
+      "Collaborates with internal departments to ensure timely supply of goods and services."
+    ]
+  },
+  {
+    "code": "10019",
+    "title": "Other Administrative Services Managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": [
+      "Plans and coordinates administrative service operations in line with organizational policy.",
+      "Assesses operational requirements and translates them into practical work outcomes.",
+      "Prepares and maintains accurate records, reports and documentation for compliance.",
+      "Collaborates with multidisciplinary teams to improve delivery standards and efficiency."
+    ]
+  },
+  {
+    "code": "10020",
+    "title": "Insurance, Banking and Other Financial Managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": [
+      "Directs the operations and strategy of insurance, banking or other financial services branches.",
+      "Evaluates risks, controls and compliance against financial regulatory frameworks.",
+      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
+      "Maintains records and communicates findings to stakeholders and management."
+    ]
+  },
+  {
+    "code": "11200",
+    "title": "Professional Occupations in Business",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "112",
+    "duties": [
+      "Analyses organizational, operational and management problems and develops practical recommendations.",
+      "Conducts research, data analysis and benchmarking to support client engagements.",
+      "Prepares reports and presentations communicating findings to clients and stakeholders.",
+      "Advises on the implementation of process, structural or strategic improvements."
+    ]
+  },
+  {
+    "code": "11201",
+    "title": "Financial Auditors and Accountants",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "112",
+    "duties": [
+      "Examines financial statements, records and transactions to ensure accuracy and compliance.",
+      "Prepares audit reports, tax filings and financial statements for clients or organizations.",
+      "Advises on accounting systems, internal controls and regulatory requirements.",
+      "Maintains professional standards and documentation in accordance with accounting bodies."
+    ]
+  },
+  {
+    "code": "11202",
+    "title": "Financial and Investment Analysts",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "112",
+    "duties": [
+      "Analyses financial data, market trends and investment opportunities for clients or employers.",
+      "Prepares reports, forecasts and recommendations on securities, portfolios or financial strategies.",
+      "Monitors economic, industry and company-level developments affecting investment decisions.",
+      "Communicates findings and recommendations to management, clients or investment committees."
+    ]
+  },
+  {
+    "code": "11203",
+    "title": "Securities Agents, Investment Dealers and Brokers",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "112",
+    "duties": [
+      "Buys and sells securities on behalf of clients or institutions in compliance with regulations.",
+      "Advises clients on investment strategies, risk tolerance and portfolio composition.",
+      "Monitors market conditions and communicates relevant developments to clients.",
+      "Maintains accurate trading records and client account documentation."
+    ]
+  },
+  {
+    "code": "11204",
+    "title": "Other Financial Officers",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "112",
+    "duties": [
+      "Performs specialized financial analysis, budgeting or risk assessment functions for organizations.",
+      "Evaluates risks, controls and compliance against accounting standards and regulatory frameworks.",
+      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
+      "Maintains records and communicates findings to stakeholders and management."
+    ]
+  },
+  {
+    "code": "11209",
+    "title": "Loan Officers",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "112",
+    "duties": [
+      "Assesses loan applications and creditworthiness of individuals or businesses.",
+      "Prepares documentation and recommendations regarding the approval or denial of credit.",
+      "Advises clients on lending products, terms and repayment options.",
+      "Monitors loan portfolios and ensures compliance with lending regulations."
+    ]
+  },
+  {
+    "code": "11210",
+    "title": "Human Resources Professionals",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "112",
+    "duties": [
+      "Develops and administers recruitment, compensation and employee relations programs.",
+      "Advises management on human resources policies, labour relations and compliance matters.",
+      "Prepares job descriptions, performance management frameworks and training programs.",
+      "Maintains employee records and ensures adherence to employment legislation."
+    ]
+  },
+  {
+    "code": "11211",
+    "title": "Professional Occupations in Advertising, Marketing and Public Relations",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "112",
+    "duties": [
+      "Develops advertising, marketing or public relations strategies and campaigns.",
+      "Conducts market research and analyses consumer trends to inform strategy.",
+      "Prepares content, presentations and reports for clients or internal stakeholders.",
+      "Coordinates with media, creative teams and clients to execute campaigns."
+    ]
+  },
+  {
+    "code": "13100",
+    "title": "Administrative Officers",
+    "teer": 1,
+    "majorGroup": "13",
+    "minorGroup": "131",
+    "duties": [
+      "Coordinates office administrative procedures and reviews, evaluates and implements new procedures.",
+      "Establishes work priorities, delegates work to office support staff and ensures deadlines are met.",
+      "Prepares correspondence, reports, statistical data and other information.",
+      "Assists in preparing operating budgets and maintaining inventory and financial control records."
+    ]
+  },
+  {
+    "code": "13101",
+    "title": "Property Administrators",
+    "teer": 1,
+    "majorGroup": "13",
+    "minorGroup": "131",
+    "duties": [
+      "Coordinates leasing, maintenance and financial administration of residential or commercial properties.",
+      "Negotiates lease agreements and resolves tenant or owner concerns.",
+      "Prepares budgets, financial statements and reports related to property operations.",
+      "Arranges and oversees maintenance, renovation and service contracts."
+    ]
+  },
+  {
+    "code": "13102",
+    "title": "Human Resources and Recruitment Officers",
+    "teer": 1,
+    "majorGroup": "13",
+    "minorGroup": "131",
+    "duties": [
+      "Identifies staffing needs and coordinates recruitment, screening and selection processes.",
+      "Advises managers and employees on human resources policies and procedures.",
+      "Coordinates training, performance review and employee relations programs.",
+      "Maintains accurate employee records and ensures compliance with employment standards."
+    ]
+  },
+  {
+    "code": "13110",
+    "title": "Procurement and Supply Chain Management Specialists",
+    "teer": 1,
+    "majorGroup": "13",
+    "minorGroup": "131",
+    "duties": [
+      "Identifies sourcing requirements and negotiates contracts with suppliers and vendors.",
+      "Analyses supply chain processes to improve cost, quality and delivery performance.",
+      "Prepares purchase orders, tender documents and supplier performance reports.",
+      "Coordinates with internal departments to ensure timely procurement of goods and services."
+    ]
+  },
+  {
+    "code": "20010",
+    "title": "Engineering Managers",
+    "teer": 0,
+    "majorGroup": "20",
+    "minorGroup": "200",
+    "duties": [
+      "Plans and directs engineering projects, teams and resources to meet organizational goals.",
+      "Reviews engineering designs, specifications and project plans for technical accuracy and compliance.",
+      "Allocates budgets, schedules and staffing for engineering activities.",
+      "Liaises with clients, regulators and senior management on engineering matters."
+    ]
+  },
+  {
+    "code": "20011",
+    "title": "Architecture and Science Managers",
+    "teer": 0,
+    "majorGroup": "20",
+    "minorGroup": "200",
+    "duties": [
+      "Plans and directs architectural or scientific projects, teams and resources.",
+      "Reviews designs, research plans and technical specifications for accuracy and compliance.",
+      "Allocates budgets, schedules and staffing for architecture or science activities.",
+      "Liaises with clients, regulators and senior management on technical matters."
+    ]
+  },
+  {
+    "code": "20012",
+    "title": "Computer and Information Systems Managers",
+    "teer": 0,
+    "majorGroup": "20",
+    "minorGroup": "200",
+    "duties": [
+      "Plans, organizes and directs the design, development and operation of information systems.",
+      "Manages IT budgets, staffing and vendor relationships.",
+      "Develops and enforces information technology policies and security standards.",
+      "Liaises with departments to align technology strategy with business objectives."
+    ]
+  },
+  {
+    "code": "21100",
+    "title": "Physicists and Astronomers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": [
+      "Conducts research into the properties and behaviour of matter, energy and the physical universe.",
+      "Designs and conducts experiments and analyses data using specialized instruments and models.",
+      "Prepares scientific papers, reports and presentations on research findings.",
+      "Collaborates with other scientists and institutions on research projects."
+    ]
+  },
+  {
+    "code": "21101",
+    "title": "Chemists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": [
+      "Conducts chemical analyses, tests and experiments on materials and substances.",
+      "Develops and improves chemical processes, products and formulations.",
+      "Prepares technical reports documenting methods, results and conclusions.",
+      "Ensures laboratory work complies with safety and regulatory standards."
+    ]
+  },
+  {
+    "code": "21102",
+    "title": "Geoscientists and Oceanographers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": [
+      "Conducts surveys and research into the Earth's structure, composition or oceans.",
+      "Analyses geological, geophysical or oceanographic data using specialized equipment.",
+      "Prepares maps, models and technical reports on findings.",
+      "Advises on resource exploration, environmental and engineering projects."
+    ]
+  },
+  {
+    "code": "21103",
+    "title": "Meteorologists and Climatologists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": [
+      "Analyses atmospheric data to forecast weather and study climate patterns.",
+      "Develops and applies models to predict weather events and climate change impacts.",
+      "Prepares reports, forecasts and warnings for public, government or industry use.",
+      "Collaborates with researchers and agencies on climate and weather studies."
+    ]
+  },
+  {
+    "code": "21109",
+    "title": "Other Professional Occupations in Physical Sciences",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": [
+      "Conducts research and analysis within specialized physical science disciplines.",
+      "Designs and conducts experiments and analyses results using scientific methods.",
+      "Prepares technical reports and presentations on research findings.",
+      "Collaborates with other scientists and institutions on research projects."
+    ]
+  },
+  {
+    "code": "21120",
+    "title": "Biologists and Related Scientists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": [
+      "Conducts research into living organisms, ecosystems and biological processes.",
+      "Designs and conducts experiments and field studies, collecting and analysing data.",
+      "Prepares scientific reports, papers and presentations on research findings.",
+      "Advises on conservation, environmental management or biotechnology applications."
+    ]
+  },
+  {
+    "code": "21121",
+    "title": "Forestry Professionals",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": [
+      "Plans and manages forest resources, harvesting and reforestation activities.",
+      "Conducts surveys and research into forest health, growth and sustainability.",
+      "Prepares management plans and reports for forestry operations.",
+      "Advises on conservation, regulatory compliance and land-use practices."
+    ]
+  },
+  {
+    "code": "21200",
+    "title": "Civil Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs and oversees construction of infrastructure such as roads, bridges and buildings.",
+      "Conducts site investigations, feasibility studies and structural analyses.",
+      "Prepares engineering drawings, specifications and cost estimates.",
+      "Ensures projects comply with codes, safety standards and regulations."
+    ]
+  },
+  {
+    "code": "21201",
+    "title": "Mechanical Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs, develops and tests mechanical systems, equipment and components.",
+      "Conducts engineering analyses and prepares specifications and drawings.",
+      "Oversees installation, commissioning and maintenance of mechanical systems.",
+      "Ensures designs comply with safety standards and regulatory requirements."
+    ]
+  },
+  {
+    "code": "21210",
+    "title": "Industrial and Manufacturing Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs and improves production processes, layouts and systems for efficiency.",
+      "Conducts time and process studies and analyses production data.",
+      "Prepares specifications, reports and recommendations for process improvements.",
+      "Coordinates with operations and quality teams to implement engineering solutions."
+    ]
+  },
+  {
+    "code": "21211",
+    "title": "Metallurgical and Materials Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Develops and tests materials and metallurgical processes for industrial applications.",
+      "Conducts failure analyses and recommends material or process improvements.",
+      "Prepares technical specifications and reports on material properties.",
+      "Ensures processes comply with quality and safety standards."
+    ]
+  },
+  {
+    "code": "21211b",
+    "title": "REMOVE",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "x"
+    ]
+  },
+  {
+    "code": "21220",
+    "title": "Chemical Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs and oversees chemical processes and production systems.",
+      "Conducts research and testing to improve process efficiency and safety.",
+      "Prepares process specifications, flow diagrams and technical reports.",
+      "Ensures compliance with environmental and safety regulations."
+    ]
+  },
+  {
+    "code": "21220a",
+    "title": "Architects",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs buildings and structures, preparing drawings and specifications for clients.",
+      "Coordinates with engineers, contractors and authorities throughout project lifecycles.",
+      "Ensures designs comply with building codes, zoning and safety standards.",
+      "Oversees construction administration to confirm alignment with approved plans."
+    ]
+  },
+  {
+    "code": "21221",
+    "title": "Mathematicians, Statisticians and Actuaries",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Applies mathematical and statistical methods to analyse data and solve problems.",
+      "Develops models to assess risk, forecast trends or evaluate financial outcomes.",
+      "Prepares reports and presentations communicating analytical findings.",
+      "Advises organizations on the application of quantitative methods to business decisions."
+    ]
+  },
+  {
+    "code": "21222",
+    "title": "Data Scientists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Analyses large and complex datasets to identify trends and insights.",
+      "Develops statistical models and machine learning algorithms.",
+      "Prepares visualizations and reports to communicate findings to stakeholders.",
+      "Collaborates with technical and business teams to apply data-driven solutions."
+    ]
+  },
+  {
+    "code": "21223",
+    "title": "Database Analysts and Data Administrators",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs, implements and maintains database systems and structures.",
+      "Monitors database performance and ensures data integrity and security.",
+      "Develops backup, recovery and access control procedures.",
+      "Collaborates with developers and analysts to support data requirements."
+    ]
+  },
+  {
+    "code": "21224",
+    "title": "Software Developers and Programmers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs, codes and tests software applications according to specifications.",
+      "Debugs and resolves software defects throughout the development lifecycle.",
+      "Collaborates with analysts and stakeholders to refine requirements.",
+      "Documents code and maintains version control across development projects."
+    ]
+  },
+  {
+    "code": "21225",
+    "title": "Cybersecurity Specialists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Monitors and protects information systems against security threats and breaches.",
+      "Conducts vulnerability assessments and penetration testing.",
+      "Develops and implements security policies, protocols and incident response plans.",
+      "Prepares reports on security risks and recommends mitigation measures."
+    ]
+  },
+  {
+    "code": "21226",
+    "title": "Information Systems Business Analysts and Consultants",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Analyses business processes and information needs to recommend system solutions.",
+      "Prepares functional specifications and liaises between business and technical teams.",
+      "Tests and validates information systems against business requirements.",
+      "Provides ongoing advice on system improvements and technology adoption."
+    ]
+  },
+  {
+    "code": "21227",
+    "title": "Information Systems Specialists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Plans, develops and implements information systems to meet organizational needs.",
+      "Evaluates system performance and recommends upgrades or modifications.",
+      "Coordinates with users and technical staff to resolve systems issues.",
+      "Documents systems architecture, processes and procedures."
+    ]
+  },
+  {
+    "code": "21230",
+    "title": "Mining Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs and oversees mine development, extraction and safety systems.",
+      "Conducts feasibility studies and analyses geological and engineering data.",
+      "Prepares mine plans, specifications and technical reports.",
+      "Ensures operations comply with safety and environmental regulations."
+    ]
+  },
+  {
+    "code": "21230b",
+    "title": "Database Analysts and Data Administrators (Alt)",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "x"
+    ]
+  },
+  {
+    "code": "21231",
+    "title": "Geological Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Conducts geological and geotechnical assessments for engineering and resource projects.",
+      "Analyses soil, rock and groundwater conditions to inform design decisions.",
+      "Prepares technical reports and recommendations for construction or extraction projects.",
+      "Ensures compliance with engineering and environmental standards."
+    ]
+  },
+  {
+    "code": "21232",
+    "title": "Petroleum Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs and oversees methods for extracting oil and gas from reservoirs.",
+      "Analyses reservoir data and develops production optimization strategies.",
+      "Prepares technical reports, well plans and cost estimates.",
+      "Ensures operations comply with safety and environmental regulations."
+    ]
+  },
+  {
+    "code": "21232a",
+    "title": "Software Engineers and Designers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs, develops and tests software applications, systems and architectures.",
+      "Analyses user requirements and translates them into technical specifications.",
+      "Collaborates with cross-functional teams to deliver and maintain software products.",
+      "Ensures software meets performance, security and quality standards."
+    ]
+  },
+  {
+    "code": "21233",
+    "title": "Computer Programmers and Interactive Media Developers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Writes, tests and maintains computer programs and interactive media applications.",
+      "Translates technical specifications into functioning code.",
+      "Debugs and troubleshoots software defects and performance issues.",
+      "Documents code and collaborates with designers and engineers on product development."
+    ]
+  },
+  {
+    "code": "21234",
+    "title": "Web Designers and Developers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": [
+      "Designs, builds and maintains websites and web applications.",
+      "Writes and tests front-end and back-end code to implement website features.",
+      "Collaborates with clients and designers to translate requirements into functional sites.",
+      "Optimizes websites for performance, accessibility and search visibility."
+    ]
+  },
+  {
+    "code": "21300",
+    "title": "Electrical and Electronics Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": [
+      "Designs and tests electrical and electronic systems, equipment and components.",
+      "Conducts engineering analyses and prepares specifications and drawings.",
+      "Oversees installation, commissioning and maintenance of electrical systems.",
+      "Ensures designs comply with safety standards and regulatory requirements."
+    ]
+  },
+  {
+    "code": "21301",
+    "title": "Computer Engineers (except software engineers and designers)",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": [
+      "Designs, develops and tests computer hardware, networks and embedded systems.",
+      "Conducts engineering analyses and prepares technical specifications.",
+      "Oversees installation, integration and testing of computer systems.",
+      "Ensures designs comply with performance, safety and security standards."
+    ]
+  },
+  {
+    "code": "21310",
+    "title": "Petroleum Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": [
+      "Designs systems for hydrocarbon extraction and production optimization.",
+      "Analyses reservoir and production data to improve recovery rates.",
+      "Prepares technical reports, plans and cost estimates for projects.",
+      "Ensures compliance with safety and environmental regulations."
+    ]
+  },
+  {
+    "code": "21320",
+    "title": "Aerospace Engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": [
+      "Designs, develops and tests aircraft, spacecraft and related systems.",
+      "Conducts engineering analyses on aerodynamics, structures and propulsion.",
+      "Prepares technical specifications, drawings and certification documentation.",
+      "Ensures designs comply with aviation safety standards and regulations."
+    ]
+  },
+  {
+    "code": "21390",
+    "title": "Land Surveyors",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": [
+      "Conducts land surveys to determine boundaries, elevations and property dimensions.",
+      "Prepares legal survey plans, maps and reports for clients and authorities.",
+      "Operates surveying instruments and geographic information systems.",
+      "Ensures surveys comply with legal and regulatory standards."
+    ]
+  },
+  {
+    "code": "21391",
+    "title": "Urban and Land Use Planners",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": [
+      "Develops land use plans, zoning policies and community development strategies.",
+      "Conducts research and analysis on demographic, environmental and economic factors.",
+      "Prepares reports and presentations for councils, developers and the public.",
+      "Reviews development applications for compliance with planning regulations."
+    ]
+  },
+  {
+    "code": "21399",
+    "title": "Other Professional Engineers, n.e.c.",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": [
+      "Applies engineering principles to specialized technical projects and systems.",
+      "Conducts analyses, testing and design work within a specific engineering discipline.",
+      "Prepares technical specifications, drawings and reports.",
+      "Ensures designs comply with applicable codes and safety standards."
+    ]
+  },
+  {
+    "code": "62200",
+    "title": "Chefs",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "622",
+    "duties": [
+      "Performs skilled trade duties related to chefs.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "63200",
+    "title": "Cooks",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "632",
+    "duties": [
+      "Performs skilled trade duties related to cooks.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "63201",
+    "title": "Butchers - Retail And Wholesale",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "632",
+    "duties": [
+      "Performs skilled trade duties related to butchers - retail and wholesale.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "63202",
+    "title": "Bakers",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "632",
+    "duties": [
+      "Performs skilled trade duties related to bakers.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "72010",
+    "title": "Contractors And Supervisors, Machining, Metal Forming, Shaping And Erecting Trades And Related Occupations",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Supervises and coordinates workers performing machining, metal forming, shaping and erecting trades and related occupations duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "72011",
+    "title": "Contractors And Supervisors, Electrical Trades And Telecommunications Occupations",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to contractors and supervisors, electrical trades and telecommunications occupations work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "72012",
+    "title": "Contractors And Supervisors, Pipefitting Trades",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Installs, maintains and repairs piping, fixtures and systems associated with contractors and supervisors, pipefitting trades work.",
+      "Interprets blueprints and specifications to plan layout of pipe systems.",
+      "Tests systems for leaks, pressure and code compliance.",
+      "Follows plumbing and gas-fitting codes and workplace safety procedures."
+    ]
+  },
+  {
+    "code": "72013",
+    "title": "Contractors And Supervisors, Carpentry Trades",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Supervises and coordinates workers performing carpentry trades duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "72014",
+    "title": "Contractors And Supervisors, Other Construction Trades, Installers, Repairers And Servicers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to contractors and supervisors, other construction trades, installers, repairers and servicers work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "72020",
+    "title": "Contractors And Supervisors, Mechanic Trades",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to contractors and supervisors, mechanic trades work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72021",
+    "title": "Contractors And Supervisors, Heavy Equipment Operator Crews",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Operates heavy equipment or machinery to perform contractors and supervisors, heavy equipment operator crews tasks at a worksite.",
+      "Inspects equipment before and after operation to confirm safe working condition.",
+      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
+      "Follows site safety procedures and equipment operating regulations."
+    ]
+  },
+  {
+    "code": "72022",
+    "title": "Supervisors, Printing And Related Occupations",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Supervises and coordinates workers performing printing and related occupations duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "72023",
+    "title": "Supervisors, Railway Transport Operations",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Supervises and coordinates workers performing railway transport operations duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "72024",
+    "title": "Supervisors, Motor Transport And Other Ground Transit Operators",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Supervises and coordinates workers performing motor transport and other ground transit operators duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "72025",
+    "title": "Supervisors, Mail And Message Distribution Occupations",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "720",
+    "duties": [
+      "Supervises and coordinates workers performing mail and message distribution occupations duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "72100",
+    "title": "Machinists And Machining And Tooling Inspectors",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "721",
+    "duties": [
+      "Fabricates, machines or assembles metal components related to machinists and machining and tooling inspectors work.",
+      "Reads technical drawings and specifications to plan production or fabrication steps.",
+      "Operates machine tools, welding or fabrication equipment to required tolerances.",
+      "Inspects finished work for dimensional accuracy and quality standards."
+    ]
+  },
+  {
+    "code": "72101",
+    "title": "Tool And Die Makers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "721",
+    "duties": [
+      "Fabricates, machines or assembles metal components related to tool and die makers work.",
+      "Reads technical drawings and specifications to plan production or fabrication steps.",
+      "Operates machine tools, welding or fabrication equipment to required tolerances.",
+      "Inspects finished work for dimensional accuracy and quality standards."
+    ]
+  },
+  {
+    "code": "72102",
+    "title": "Sheet Metal Workers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "721",
+    "duties": [
+      "Fabricates, machines or assembles metal components related to sheet metal workers work.",
+      "Reads technical drawings and specifications to plan production or fabrication steps.",
+      "Operates machine tools, welding or fabrication equipment to required tolerances.",
+      "Inspects finished work for dimensional accuracy and quality standards."
+    ]
+  },
+  {
+    "code": "72103",
+    "title": "Boilermakers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "721",
+    "duties": [
+      "Fabricates, machines or assembles metal components related to boilermakers work.",
+      "Reads technical drawings and specifications to plan production or fabrication steps.",
+      "Operates machine tools, welding or fabrication equipment to required tolerances.",
+      "Inspects finished work for dimensional accuracy and quality standards."
+    ]
+  },
+  {
+    "code": "72104",
+    "title": "Structural Metal And Platework Fabricators And Fitters",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "721",
+    "duties": [
+      "Fabricates, machines or assembles metal components related to structural metal and platework fabricators and fitters work.",
+      "Reads technical drawings and specifications to plan production or fabrication steps.",
+      "Operates machine tools, welding or fabrication equipment to required tolerances.",
+      "Inspects finished work for dimensional accuracy and quality standards."
+    ]
+  },
+  {
+    "code": "72105",
+    "title": "Ironworkers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "721",
+    "duties": [
+      "Fabricates, machines or assembles metal components related to ironworkers work.",
+      "Reads technical drawings and specifications to plan production or fabrication steps.",
+      "Operates machine tools, welding or fabrication equipment to required tolerances.",
+      "Inspects finished work for dimensional accuracy and quality standards."
+    ]
+  },
+  {
+    "code": "72106",
+    "title": "Welders And Related Machine Operators",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "721",
+    "duties": [
+      "Fabricates, machines or assembles metal components related to welders and related machine operators work.",
+      "Reads technical drawings and specifications to plan production or fabrication steps.",
+      "Operates machine tools, welding or fabrication equipment to required tolerances.",
+      "Inspects finished work for dimensional accuracy and quality standards."
+    ]
+  },
+  {
+    "code": "72200",
+    "title": "Electricians (except Industrial And Power System)",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "722",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to electricians (except industrial and power system) work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "72201",
+    "title": "Industrial Electricians",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "722",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to industrial electricians work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "72202",
+    "title": "Power System Electricians",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "722",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to power system electricians work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "72203",
+    "title": "Electrical Power Line And Cable Workers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "722",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to electrical power line and cable workers work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "72204",
+    "title": "Telecommunications Line And Cable Installers And Repairers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "722",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to telecommunications line and cable installers and repairers work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "72205",
+    "title": "Telecommunications Equipment Installation And Cable Television Service Technicians",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "722",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to telecommunications equipment installation and cable television service technicians work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "72300",
+    "title": "Plumbers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "723",
+    "duties": [
+      "Installs, maintains and repairs piping, fixtures and systems associated with plumbers work.",
+      "Interprets blueprints and specifications to plan layout of pipe systems.",
+      "Tests systems for leaks, pressure and code compliance.",
+      "Follows plumbing and gas-fitting codes and workplace safety procedures."
+    ]
+  },
+  {
+    "code": "72301",
+    "title": "Steamfitters, Pipefitters And Sprinkler System Installers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "723",
+    "duties": [
+      "Installs, maintains and repairs piping, fixtures and systems associated with steamfitters, pipefitters and sprinkler system installers work.",
+      "Interprets blueprints and specifications to plan layout of pipe systems.",
+      "Tests systems for leaks, pressure and code compliance.",
+      "Follows plumbing and gas-fitting codes and workplace safety procedures."
+    ]
+  },
+  {
+    "code": "72302",
+    "title": "Gas Fitters",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "723",
+    "duties": [
+      "Installs, maintains and repairs piping, fixtures and systems associated with gas fitters work.",
+      "Interprets blueprints and specifications to plan layout of pipe systems.",
+      "Tests systems for leaks, pressure and code compliance.",
+      "Follows plumbing and gas-fitting codes and workplace safety procedures."
+    ]
+  },
+  {
+    "code": "72310",
+    "title": "Carpenters",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "723",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to carpenters work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "72311",
+    "title": "Cabinetmakers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "723",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to cabinetmakers work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "72320",
+    "title": "Bricklayers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "723",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to bricklayers work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "72321",
+    "title": "Insulators",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "723",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to insulators work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "72400",
+    "title": "Construction Millwrights And Industrial Mechanics",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to construction millwrights and industrial mechanics work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "72401",
+    "title": "Heavy-duty Equipment Mechanics",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to heavy-duty equipment mechanics work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72402",
+    "title": "Heating, Refrigeration And Air Conditioning Mechanics",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to heating, refrigeration and air conditioning mechanics work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72403",
+    "title": "Railway Carmen/women",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Performs skilled trade duties related to railway carmen/women.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "72404",
+    "title": "Aircraft Mechanics And Aircraft Inspectors",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to aircraft mechanics and aircraft inspectors work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72405",
+    "title": "Machine Fitters",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to machine fitters work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72406",
+    "title": "Elevator Constructors And Mechanics",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to elevator constructors and mechanics work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72410",
+    "title": "Automotive Service Technicians, Truck And Bus Mechanics And Mechanical Repairers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to automotive service technicians, truck and bus mechanics and mechanical repairers work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72411",
+    "title": "Auto Body Collision, Refinishing And Glass Technicians And Damage Repair Estimators",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Performs skilled trade duties related to auto body collision, refinishing and glass technicians and damage repair estimators.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "72420",
+    "title": "Oil And Solid Fuel Heating Mechanics",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to oil and solid fuel heating mechanics work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72421",
+    "title": "Appliance Servicers And Repairers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to appliance servicers and repairers work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72422",
+    "title": "Electrical Mechanics",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to electrical mechanics work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "72423",
+    "title": "Motorcycle, All-terrain Vehicle And Other Related Mechanics",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to motorcycle, all-terrain vehicle and other related mechanics work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72429",
+    "title": "Other Small Engine And Small Equipment Repairers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "724",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to other small engine and small equipment repairers work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "72500",
+    "title": "Crane Operators",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "725",
+    "duties": [
+      "Operates heavy equipment or machinery to perform crane operators tasks at a worksite.",
+      "Inspects equipment before and after operation to confirm safe working condition.",
+      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
+      "Follows site safety procedures and equipment operating regulations."
+    ]
+  },
+  {
+    "code": "72501",
+    "title": "Water Well Drillers",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "725",
+    "duties": [
+      "Operates heavy equipment or machinery to perform water well drillers tasks at a worksite.",
+      "Inspects equipment before and after operation to confirm safe working condition.",
+      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
+      "Follows site safety procedures and equipment operating regulations."
+    ]
+  },
+  {
+    "code": "72999",
+    "title": "Other Technical Trades And Related Occupations",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "729",
+    "duties": [
+      "Performs skilled trade duties related to other technical trades and related occupations.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "73100",
+    "title": "Concrete Finishers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "731",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to concrete finishers work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "73101",
+    "title": "Tilesetters",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "731",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to tilesetters work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "73102",
+    "title": "Plasterers, Drywall Installers And Finishers And Lathers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "731",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to plasterers, drywall installers and finishers and lathers work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "73110",
+    "title": "Roofers And Shinglers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "731",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to roofers and shinglers work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "73111",
+    "title": "Glaziers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "731",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to glaziers work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "73112",
+    "title": "Painters And Decorators (except Interior Decorators)",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "731",
+    "duties": [
+      "Performs skilled trade duties related to painters and decorators (except interior decorators).",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "73113",
+    "title": "Floor Covering Installers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "731",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to floor covering installers work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "73200",
+    "title": "Residential And Commercial Installers And Servicers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "732",
+    "duties": [
+      "Performs skilled trade duties related to residential and commercial installers and servicers.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "73201",
+    "title": "General Building Maintenance Workers And Building Superintendents",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "732",
+    "duties": [
+      "Performs skilled trade duties related to general building maintenance workers and building superintendents.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "73202",
+    "title": "Pest Controllers And Fumigators",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "732",
+    "duties": [
+      "Performs skilled trade duties related to pest controllers and fumigators.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "73209",
+    "title": "Other Repairers And Servicers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "732",
+    "duties": [
+      "Performs skilled trade duties related to other repairers and servicers.",
+      "Reads specifications, plans or work orders to determine job requirements.",
+      "Uses trade-specific tools and equipment to complete assigned work to standard.",
+      "Follows workplace health and safety procedures and maintains required records."
+    ]
+  },
+  {
+    "code": "73300",
+    "title": "Transport Truck Drivers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "733",
+    "duties": [
+      "Operates vehicles or rolling stock to perform transport truck drivers duties.",
+      "Conducts pre-trip and post-trip inspections to confirm vehicle safety.",
+      "Follows scheduling, routing and regulatory requirements for the mode of transport.",
+      "Maintains operating logs and reports mechanical or safety issues."
+    ]
+  },
+  {
+    "code": "73301",
+    "title": "Bus Drivers, Subway Operators And Other Transit Operators",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "733",
+    "duties": [
+      "Operates vehicles or rolling stock to perform bus drivers, subway operators and other transit operators duties.",
+      "Conducts pre-trip and post-trip inspections to confirm vehicle safety.",
+      "Follows scheduling, routing and regulatory requirements for the mode of transport.",
+      "Maintains operating logs and reports mechanical or safety issues."
+    ]
+  },
+  {
+    "code": "73310",
+    "title": "Railway And Yard Locomotive Engineers",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "733",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to railway and yard locomotive engineers work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "73311",
+    "title": "Railway Conductors And Brakemen/women",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "733",
+    "duties": [
+      "Operates vehicles or rolling stock to perform railway conductors and brakemen/women duties.",
+      "Conducts pre-trip and post-trip inspections to confirm vehicle safety.",
+      "Follows scheduling, routing and regulatory requirements for the mode of transport.",
+      "Maintains operating logs and reports mechanical or safety issues."
+    ]
+  },
+  {
+    "code": "73400",
+    "title": "Heavy Equipment Operators",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "734",
+    "duties": [
+      "Operates heavy equipment or machinery to perform heavy equipment operators tasks at a worksite.",
+      "Inspects equipment before and after operation to confirm safe working condition.",
+      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
+      "Follows site safety procedures and equipment operating regulations."
+    ]
+  },
+  {
+    "code": "73401",
+    "title": "Printing Press Operators",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "734",
+    "duties": [
+      "Sets up, operates and maintains printing press equipment to produce printed materials.",
+      "Inspects print quality and adjusts equipment settings to meet specifications.",
+      "Performs routine maintenance and troubleshoots press malfunctions.",
+      "Follows production schedules and workplace safety procedures."
+    ]
+  },
+  {
+    "code": "73402",
+    "title": "Drillers And Blasters - Surface Mining, Quarrying And Construction",
+    "teer": 3,
+    "majorGroup": "73",
+    "minorGroup": "734",
+    "duties": [
+      "Builds, installs or finishes structures and materials related to drillers and blasters - surface mining, quarrying and construction work.",
+      "Reads blueprints and specifications to plan layout and material requirements.",
+      "Operates hand and power tools to construct, repair or finish work to specification.",
+      "Inspects completed work for quality and compliance with building codes and safety standards."
+    ]
+  },
+  {
+    "code": "82010",
+    "title": "Supervisors, Logging And Forestry",
+    "teer": 2,
+    "majorGroup": "82",
+    "minorGroup": "820",
+    "duties": [
+      "Supervises and coordinates workers performing logging and forestry duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "82020",
+    "title": "Supervisors, Mining And Quarrying",
+    "teer": 2,
+    "majorGroup": "82",
+    "minorGroup": "820",
+    "duties": [
+      "Supervises and coordinates workers performing mining and quarrying duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "82021",
+    "title": "Contractors And Supervisors, Oil And Gas Drilling And Services",
+    "teer": 2,
+    "majorGroup": "82",
+    "minorGroup": "820",
+    "duties": [
+      "Supervises and coordinates workers performing oil and gas drilling and services duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "82030",
+    "title": "Agricultural Service Contractors And Farm Supervisors",
+    "teer": 2,
+    "majorGroup": "82",
+    "minorGroup": "820",
+    "duties": [
+      "Supervises and coordinates workers performing agricultural service contractors and farm supervisors duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "82031",
+    "title": "Contractors And Supervisors, Landscaping, Grounds Maintenance And Horticulture Services",
+    "teer": 2,
+    "majorGroup": "82",
+    "minorGroup": "820",
+    "duties": [
+      "Supervises and coordinates workers performing landscaping, grounds maintenance and horticulture services duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "83100",
+    "title": "Underground Production And Development Miners",
+    "teer": 3,
+    "majorGroup": "83",
+    "minorGroup": "831",
+    "duties": [
+      "Performs extraction, drilling or production duties related to underground production and development miners work.",
+      "Operates equipment and follows technical procedures specific to the resource sector.",
+      "Monitors site conditions and equipment for safety and operational issues.",
+      "Maintains production and safety records as required by site procedures."
+    ]
+  },
+  {
+    "code": "83101",
+    "title": "Oil And Gas Well Drillers, Servicers, Testers And Related Workers",
+    "teer": 3,
+    "majorGroup": "83",
+    "minorGroup": "831",
+    "duties": [
+      "Operates heavy equipment or machinery to perform oil and gas well drillers, servicers, testers and related workers tasks at a worksite.",
+      "Inspects equipment before and after operation to confirm safe working condition.",
+      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
+      "Follows site safety procedures and equipment operating regulations."
+    ]
+  },
+  {
+    "code": "83110",
+    "title": "Logging Machinery Operators",
+    "teer": 3,
+    "majorGroup": "83",
+    "minorGroup": "831",
+    "duties": [
+      "Operates heavy equipment or machinery to perform logging machinery operators tasks at a worksite.",
+      "Inspects equipment before and after operation to confirm safe working condition.",
+      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
+      "Follows site safety procedures and equipment operating regulations."
+    ]
+  },
+  {
+    "code": "83120",
+    "title": "Fishing Masters And Officers",
+    "teer": 3,
+    "majorGroup": "83",
+    "minorGroup": "831",
+    "duties": [
+      "Performs extraction, drilling or production duties related to fishing masters and officers work.",
+      "Operates equipment and follows technical procedures specific to the resource sector.",
+      "Monitors site conditions and equipment for safety and operational issues.",
+      "Maintains production and safety records as required by site procedures."
+    ]
+  },
+  {
+    "code": "83121",
+    "title": "Fishermen/women",
+    "teer": 3,
+    "majorGroup": "83",
+    "minorGroup": "831",
+    "duties": [
+      "Performs extraction, drilling or production duties related to fishermen/women work.",
+      "Operates equipment and follows technical procedures specific to the resource sector.",
+      "Monitors site conditions and equipment for safety and operational issues.",
+      "Maintains production and safety records as required by site procedures."
+    ]
+  },
+  {
+    "code": "92010",
+    "title": "Supervisors, Mineral And Metal Processing",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing mineral and metal processing duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92011",
+    "title": "Supervisors, Petroleum, Gas And Chemical Processing And Utilities",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing petroleum, gas and chemical processing and utilities duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92012",
+    "title": "Supervisors, Food And Beverage Processing",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing food and beverage processing duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92013",
+    "title": "Supervisors, Plastic And Rubber Products Manufacturing",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing plastic and rubber products manufacturing duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92014",
+    "title": "Supervisors, Forest Products Processing",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing forest products processing duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92015",
+    "title": "Supervisors, Textile, Fabric, Fur And Leather Products Processing And Manufacturing",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing textile, fabric, fur and leather products processing and manufacturing duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92020",
+    "title": "Supervisors, Motor Vehicle Assembling",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing motor vehicle assembling duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92021",
+    "title": "Supervisors, Electronics And Electrical Products Manufacturing",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Installs, inspects, tests and maintains electrical or telecommunications systems related to supervisors, electronics and electrical products manufacturing work.",
+      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
+      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
+      "Follows electrical codes, safety regulations and workplace health and safety procedures."
+    ]
+  },
+  {
+    "code": "92022",
+    "title": "Supervisors, Furniture And Fixtures Manufacturing",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing furniture and fixtures manufacturing duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92023",
+    "title": "Supervisors, Other Mechanical And Metal Products Manufacturing",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to supervisors, other mechanical and metal products manufacturing work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "92024",
+    "title": "Supervisors, Other Products Manufacturing And Assembly",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "920",
+    "duties": [
+      "Supervises and coordinates workers performing other products manufacturing and assembly duties.",
+      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
+      "Resolves workplace problems and reports on production, material and labour requirements.",
+      "Trains workers and enforces compliance with safety regulations and codes."
+    ]
+  },
+  {
+    "code": "92100",
+    "title": "Power Engineers And Power Systems Operators",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "921",
+    "duties": [
+      "Diagnoses, services and repairs equipment or machinery related to power engineers and power systems operators work.",
+      "Performs scheduled maintenance and inspections to prevent equipment failure.",
+      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
+      "Maintains service records and follows manufacturer and safety standards."
+    ]
+  },
+  {
+    "code": "92101",
+    "title": "Water And Waste Treatment Plant Operators",
+    "teer": 2,
+    "majorGroup": "92",
+    "minorGroup": "921",
+    "duties": [
+      "Operates and monitors plant systems and equipment related to water and waste treatment plant operators work.",
+      "Inspects equipment, gauges and instruments to confirm safe and efficient operation.",
+      "Performs preventive maintenance and responds to operational alarms or faults.",
+      "Maintains logs and complies with regulatory and safety standards."
+    ]
+  },
+  {
+    "code": "93100",
+    "title": "Central Control And Process Operators, Mineral And Metal Processing",
+    "teer": 3,
+    "majorGroup": "93",
+    "minorGroup": "931",
+    "duties": [
+      "Performs extraction, drilling or production duties related to central control and process operators, mineral and metal processing work.",
+      "Operates equipment and follows technical procedures specific to the resource sector.",
+      "Monitors site conditions and equipment for safety and operational issues.",
+      "Maintains production and safety records as required by site procedures."
+    ]
+  },
+  {
+    "code": "93101",
+    "title": "Central Control And Process Operators, Petroleum, Gas And Chemical Processing",
+    "teer": 3,
+    "majorGroup": "93",
+    "minorGroup": "931",
+    "duties": [
+      "Monitors and controls automated processing or assembly equipment related to central control and process operators, petroleum, gas and chemical processing work.",
+      "Adjusts process controls and equipment settings to maintain product specifications.",
+      "Inspects output and equipment to identify and correct faults.",
+      "Maintains production records and follows safety and quality procedures."
+    ]
+  },
+  {
+    "code": "93102",
+    "title": "Pulping, Papermaking And Coating Control Operators",
+    "teer": 3,
+    "majorGroup": "93",
+    "minorGroup": "931",
+    "duties": [
+      "Monitors and controls automated processing or assembly equipment related to pulping, papermaking and coating control operators work.",
+      "Adjusts process controls and equipment settings to maintain product specifications.",
+      "Inspects output and equipment to identify and correct faults.",
+      "Maintains production records and follows safety and quality procedures."
+    ]
+  }
+]

@@ -9,6 +9,7 @@ import { Resend } from "resend";
 import { db } from "@/db";
 import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
+import { defaultCountry, isSupportedCountry } from "@/lib/countries";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import {
   completeFullCheckProgress,
@@ -468,6 +469,8 @@ export async function submitFullCheckWaitlist(
   const email = String(formData.get("email") ?? "").trim();
   const fullName = String(formData.get("fullName") ?? "").trim();
   const visaInterest = String(formData.get("visaInterest") ?? "").trim();
+  const rawTargetCountry = String(formData.get("targetCountry") ?? "").trim();
+  const targetCountry = isSupportedCountry(rawTargetCountry) ? rawTargetCountry : defaultCountry;
   const submittedLocale = String(formData.get("locale") ?? formData.get("preferredLanguage") ?? "").trim();
   const resolvedLocale = normalizeSubmittedLocale(submittedLocale);
   const preferredLanguage = resolvedLocale;
@@ -632,6 +635,7 @@ export async function submitFullCheckWaitlist(
 
   const generatedReport = runReadinessEngine({
     locale: resolvedLocale,
+    country: targetCountry,
     mainGoal,
     currentCountry: currentCountry || undefined,
     passportCountry,

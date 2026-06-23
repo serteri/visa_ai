@@ -1,0 +1,302 @@
+{
+  "country": "CA",
+  "countryName": "Canada",
+  "pathwayCovered": "Express Entry only (CEC, FSW, FSTP, CRS)",
+  "notCovered": ["Provincial Nominee Program detayları (sadece +600 puan etkisi var, PNP'nin kendi eyalet bazlı kriterleri yok)", "Family/spousal sponsorship", "Study permits", "Work permits", "NOC (occupation classification) verisi"],
+  "pathwayType": "points-based",
+  "system": "Express Entry",
+  "lastVerified": "2026-06-22",
+  "sourceUrls": [
+    "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html",
+    "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
+  ],
+
+  "fees": {
+    "currency": "CAD",
+    "mainApplicant": 1590,
+    "spouse": 1590,
+    "dependentChild": 270,
+    "lastIncreaseDate": "2026-04-30",
+    "note": "Fees increased April 30, 2026"
+  },
+
+  "programs": {
+    "CEC": {
+      "name": "Canadian Experience Class",
+      "languageRequirement": { "TEER_0_1": "CLB 7", "TEER_2_3": "CLB 5" },
+      "workExperience": {
+        "type": "Canadian work experience only",
+        "amount": "1 year (1,560 hours) in last 3 years",
+        "noc": ["TEER_0", "TEER_1", "TEER_2", "TEER_3"]
+      },
+      "jobOfferRequired": false,
+      "educationRequired": false,
+      "proofOfFundsRequired": false
+    },
+    "FSW": {
+      "name": "Federal Skilled Worker Program",
+      "languageRequirement": "CLB 7 all abilities",
+      "workExperience": {
+        "type": "Foreign or Canadian, primary occupation",
+        "amount": "1 year continuous within last 10 years",
+        "noc": ["TEER_0", "TEER_1", "TEER_2", "TEER_3"]
+      },
+      "jobOfferRequired": false,
+      "jobOfferGivesPoints": true,
+      "educationRequired": "secondary minimum, points for post-secondary",
+      "proofOfFundsRequired": true,
+      "selectionFactorPointsMax": 100,
+      "selectionFactorPassMark": 67,
+      "selectionFactors": {
+        "languageSkills": { "max": 28, "firstLanguageMax": 24, "secondLanguageMax": 4 },
+        "education": { "max": 25 },
+        "workExperience": {
+          "max": 15,
+          "table": { "1_year": 9, "2_3_years": 11, "4_5_years": 13, "6_plus_years": 15 }
+        },
+        "age": {
+          "max": 12,
+          "table": {
+            "under_18": 0, "18_35": 12, "36": 11, "37": 10, "38": 9, "39": 8,
+            "40": 7, "41": 6, "42": 5, "43": 4, "44": 3, "45": 2, "46": 1, "47_plus": 0
+          }
+        },
+        "arrangedEmployment": { "max": 10 },
+        "adaptability": { "max": 10 }
+      }
+    },
+    "FSTP": {
+      "name": "Federal Skilled Trades Program",
+      "languageRequirement": { "speakingListening": "CLB 5", "readingWriting": "CLB 4" },
+      "workExperience": {
+        "type": "Skilled trade, in country where qualified to practice",
+        "amount": "2 years (3,120 hours) within last 5 years",
+        "nocGroups": ["Major Group 72 (excl. 726)", "Major Group 73", "Major Group 82", "Major Group 83", "Major Group 92", "Major Group 93 (excl. 932)", "Minor Group 6320", "Unit Group 62200"]
+      },
+      "jobOfferRequired": true,
+      "jobOfferAlternative": "certificate of qualification from provincial/territorial/federal authority",
+      "educationRequired": false,
+      "proofOfFundsRequired": true
+    }
+  },
+
+  "crsScore": {
+    "maxScore": 1200,
+    "lastRuleChange": {
+      "date": "2025-03-25",
+      "change": "Job offer points removed from CRS (was 200pts Major Group 00, 50pts other skilled occupations). Job offer still required for FSTP/FSW eligibility in some cases, just no longer scores CRS points."
+    },
+
+    "coreHumanCapitalFactors": {
+      "maxWithSpouse": 460,
+      "maxWithoutSpouse": 500,
+      "age": {
+        "maxWithSpouse": 100,
+        "maxWithoutSpouse": 110,
+        "table": {
+          "17_or_less": { "withSpouse": 0, "withoutSpouse": 0 },
+          "18": { "withSpouse": 90, "withoutSpouse": 99 },
+          "19": { "withSpouse": 95, "withoutSpouse": 105 },
+          "20_29": { "withSpouse": 100, "withoutSpouse": 110 },
+          "30": { "withSpouse": 95, "withoutSpouse": 105 },
+          "31": { "withSpouse": 90, "withoutSpouse": 99 },
+          "32": { "withSpouse": 85, "withoutSpouse": 94 },
+          "33": { "withSpouse": 80, "withoutSpouse": 88 },
+          "34": { "withSpouse": 75, "withoutSpouse": 83 },
+          "35": { "withSpouse": 70, "withoutSpouse": 77 },
+          "36": { "withSpouse": 65, "withoutSpouse": 72 },
+          "37": { "withSpouse": 60, "withoutSpouse": 66 },
+          "38": { "withSpouse": 55, "withoutSpouse": 61 },
+          "39": { "withSpouse": 50, "withoutSpouse": 55 },
+          "40": { "withSpouse": 45, "withoutSpouse": 50 },
+          "41": { "withSpouse": 35, "withoutSpouse": 39 },
+          "42": { "withSpouse": 25, "withoutSpouse": 28 },
+          "43": { "withSpouse": 15, "withoutSpouse": 17 },
+          "44": { "withSpouse": 5, "withoutSpouse": 6 },
+          "45_or_more": { "withSpouse": 0, "withoutSpouse": 0 }
+        }
+      },
+      "education": {
+        "maxWithSpouse": 140,
+        "maxWithoutSpouse": 150,
+        "table": {
+          "less_than_secondary": { "withSpouse": 0, "withoutSpouse": 0 },
+          "secondary_diploma": { "withSpouse": 28, "withoutSpouse": 30 },
+          "one_year_post_secondary": { "withSpouse": 84, "withoutSpouse": 90 },
+          "two_year_post_secondary": { "withSpouse": 91, "withoutSpouse": 98 },
+          "bachelors_or_3yr_program": { "withSpouse": 112, "withoutSpouse": 120 },
+          "two_or_more_credentials_one_3yr_plus": { "withSpouse": 119, "withoutSpouse": 128 },
+          "masters_or_professional_degree": { "withSpouse": 126, "withoutSpouse": 135 },
+          "doctoral_phd": { "withSpouse": 140, "withoutSpouse": 150 }
+        },
+        "note": "Professional degree must be in: medicine, veterinary medicine, dentistry, optometry, law, chiropractic medicine, or pharmacy"
+      },
+      "firstOfficialLanguage": {
+        "maxPerAbilityWithSpouse": 32,
+        "maxPerAbilityWithoutSpouse": 34,
+        "table": {
+          "less_than_CLB4": { "withSpouse": 0, "withoutSpouse": 0 },
+          "CLB_4_5": { "withSpouse": 6, "withoutSpouse": 6 },
+          "CLB_6": { "withSpouse": 8, "withoutSpouse": 9 },
+          "CLB_7": { "withSpouse": 16, "withoutSpouse": 17 },
+          "CLB_8": { "withSpouse": 22, "withoutSpouse": 23 },
+          "CLB_9": { "withSpouse": 29, "withoutSpouse": 31 },
+          "CLB_10_plus": { "withSpouse": 32, "withoutSpouse": 34 }
+        },
+        "note": "Per-ability score (reading/writing/speaking/listening), x4 for total"
+      },
+      "secondOfficialLanguage": {
+        "maxCombinedWithSpouse": 22,
+        "maxCombinedWithoutSpouse": 24,
+        "table": {
+          "CLB4_or_less": 0,
+          "CLB5_6": 1,
+          "CLB7_8": 3,
+          "CLB9_plus": 6
+        }
+      },
+      "canadianWorkExperience": {
+        "maxWithSpouse": 70,
+        "maxWithoutSpouse": 80,
+        "table": {
+          "none_or_less_than_1yr": { "withSpouse": 0, "withoutSpouse": 0 },
+          "1_year": { "withSpouse": 35, "withoutSpouse": 40 },
+          "2_years": { "withSpouse": 46, "withoutSpouse": 53 },
+          "3_years": { "withSpouse": 56, "withoutSpouse": 64 },
+          "4_years": { "withSpouse": 63, "withoutSpouse": 72 },
+          "5_plus_years": { "withSpouse": 70, "withoutSpouse": 80 }
+        }
+      }
+    },
+
+    "spouseFactors": {
+      "maxTotal": 40,
+      "education": {
+        "max": 10,
+        "table": {
+          "less_than_secondary": 0, "secondary": 2, "one_year_post_secondary": 6,
+          "two_year_post_secondary": 7, "bachelors_or_3yr": 8,
+          "two_or_more_credentials": 9, "masters_or_professional": 10, "doctoral": 10
+        }
+      },
+      "languageFirstOfficial": { "maxPerAbility": 5, "maxTotal": 20 },
+      "canadianWorkExperience": {
+        "max": 10,
+        "table": { "none_or_less_1yr": 0, "1_year": 5, "2_years": 7, "3_years": 8, "4_years": 9, "5_plus_years": 10 }
+      }
+    },
+
+    "skillTransferabilityFactors": {
+      "maxTotal": 100,
+      "_verifiedAgainst": "https://immigration.ca/express-entry-crs-grid/ (canada.ca CRS criteria page returned 403 on direct fetch; cross-checked against immigration.ca's published grid, 2026-06-22)",
+      "educationPlusLanguage": {
+        "note": "Combines post-secondary credential count with first-language CLB scores (min across 4 abilities)",
+        "oneCredential": { "CLB_7_or_8": 13, "CLB_9_plus": 25 },
+        "twoOrMoreCredentials": { "CLB_7_or_8": 25, "CLB_9_plus": 50 }
+      },
+      "educationPlusCanadianWorkExp": {
+        "oneCredential": { "1_year": 13, "2_years_plus": 25 },
+        "twoOrMoreCredentials": { "1_year": 25, "2_years_plus": 50 }
+      },
+      "foreignWorkExpPlusLanguage": {
+        "1_2_years": { "CLB_7_or_8": 13, "CLB_9_plus": 25 },
+        "3_plus_years": { "CLB_7_or_8": 25, "CLB_9_plus": 50 }
+      },
+      "foreignWorkExpPlusCanadianWorkExp": {
+        "1_2_years": { "1_year": 13, "2_years_plus": 25 },
+        "3_plus_years": { "1_year": 25, "2_years_plus": 50 }
+      },
+      "certificateOfQualificationPlusLanguage": {
+        "maxWithCLB5": 25,
+        "maxWithCLB7": 50
+      }
+    },
+
+    "additionalPoints": {
+      "maxTotal": 600,
+      "siblingInCanada": { "points": 15, "requirement": "18+, citizen or PR" },
+      "frenchLanguageSkills": {
+        "table": {
+          "NCLC7_plus_english_CLB4_or_less": 25,
+          "NCLC7_plus_english_CLB5_plus": 50
+        }
+      },
+      "canadianPostSecondaryEducation": {
+        "one_to_two_year_credential": 15,
+        "three_year_plus_credential": 30
+      },
+      "provincialOrTerritorialNomination": {
+        "points": 600,
+        "note": "Virtually guarantees an Invitation to Apply (ITA) in next draw"
+      }
+    }
+  },
+
+  "documentsRequired": [
+    "passport_or_travel_document",
+    "language_test_results",
+    "proof_of_canadian_education_or_ECA",
+    "written_job_offer_if_applicable",
+    "proof_of_work_experience",
+    "certificate_of_qualification_if_trade",
+    "proof_of_funds",
+    "police_certificates",
+    "provincial_nomination_if_applicable"
+  ],
+
+  "languageTests": {
+    "english": ["CELPIP-General", "IELTS General Training (not One Skill Retake)", "PTE Core"],
+    "french": ["TEF Canada", "TCF Canada"],
+    "validityYears": 2,
+    "minimumByProgramAndTEER": {
+      "TEER_0_1": { "english": "CLB 7", "french": "NCLC 7" },
+      "TEER_2_3": { "english": "CLB 5", "french": "NCLC 5" },
+      "FSTP_speaking_listening": { "english": "CLB 5", "french": "NCLC 5" },
+      "FSTP_reading_writing": { "english": "CLB 4", "french": "NCLC 4" }
+    }
+  },
+
+  "educationalCredentialAssessment": {
+    "required": "Foreign education for FSW eligibility or to earn education points",
+    "validityYears": 5,
+    "designatedGeneralOrganizations": [
+      "Comparative Education Service – University of Toronto",
+      "International Credential Assessment Service of Canada",
+      "World Education Services",
+      "International Qualifications Assessment Service (IQAS)",
+      "International Credential Evaluation Service – BCIT"
+    ],
+    "designatedProfessionalBodies": {
+      "architect_NOC_21200": "Canadian Architectural Certification Board (CACB)",
+      "physician_NOC_31100_31101_31102": "Medical Council of Canada",
+      "pharmacist_NOC_31120": "Pharmacy Examining Board of Canada"
+    }
+  },
+
+  "proofOfFunds": {
+    "currency": "CAD",
+    "lastUpdated": "2025-07-07",
+    "notRequiredIf": ["applying_under_CEC", "authorized_to_work_with_valid_job_offer"],
+    "byFamilySize": {
+      "1": 15263, "2": 19001, "3": 23360, "4": 28362,
+      "5": 32168, "6": 36280, "7": 40392
+    },
+    "additionalPersonAmount": 4112
+  },
+
+  "policeCertificates": {
+    "requiredFor": "applicant + family members 18+, every country resided in 6+ consecutive months in last 10 years",
+    "currentCountryCertificateMaxAge": "6 months before application date"
+  },
+
+  "disclaimerRequired": true,
+  "disclaimerText": {
+    "tr": "Bu araç sadece bilgilendirme amaçlıdır, resmi göçmenlik tavsiyesi değildir. Sonuçlar IRCC'nin güncel kriterleriyle doğrulanmalıdır. Başvuru kararı vermeden önce lisanslı bir RCIC (Regulated Canadian Immigration Consultant) veya avukata başvurmanız önerilir.",
+    "en": "This tool is for informational purposes only and does not constitute official immigration advice. Results should be verified against IRCC's current criteria. Consult a licensed RCIC or immigration lawyer before making application decisions."
+  },
+
+  "knownPendingChanges": {
+    "note": "IRCC's 2026-2028 Forward Regulatory Plan proposes merging FSW + CEC + FSTP into a single federal high-skilled program, and removing several CRS bonus categories (spousal education/language points, French bonus, sibling points, Canadian study bonus). No implementation date confirmed as of mid-2026. Re-verify before relying on this config long-term.",
+    "watchUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
+  }
+}

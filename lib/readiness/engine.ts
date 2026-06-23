@@ -1,10 +1,14 @@
 import { checkOccupation } from "@/lib/occupations/check-occupation";
-import { calculateSkilledPoints } from "@/lib/points/calculate-skilled-points";
+import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
+import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
+import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
+import type { CanadaCRSInput, CLBLevel } from "@/lib/points/canada-types";
 import type { AgeOption, EnglishOption } from "@/lib/points/types";
+import expressEntryConfig from "@/src/data/countries/ca/express-entry.json";
 import { generatePremiumSections } from "@/src/lib/readiness/report-generator";
-import { getDocumentChecklist } from "./document-checklists";
-import { buildRiskIndicators } from "./risk-rules";
-import { buildNextSteps } from "./next-steps";
+import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-checklists";
+import { buildRiskIndicators, buildCanadaRiskIndicators } from "./risk-rules";
+import { buildNextSteps, buildCanadaNextSteps } from "./next-steps";
 import type {
   ConfidenceLevel,
   DataCompleteness,
@@ -177,6 +181,107 @@ function detectSubclasses(input: ReadinessInput): string[] {
   }
 
   return Array.from(found);
+}
+
+export type CanadaPathwayCode = "CEC" | "FSW" | "FSTP";
+
+function detectCanadaPathways(input: ReadinessInput): CanadaPathwayCode[] {
+  const combined = [
+    input.mainGoal ?? "",
+    input.preferredPathway ?? "",
+    input.sponsorOrFamily ?? "",
+    input.biggestConcern ?? "",
+    input.occupation ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const found = new Set<CanadaPathwayCode>();
+
+  if (hasKw(combined, ["cec", "canadian experience class", "canada work experience", "canadian work experience"])) {
+    found.add("CEC");
+  }
+  if (hasKw(combined, ["fsw", "federal skilled worker"])) {
+    found.add("FSW");
+  }
+  if (hasKw(combined, ["fstp", "federal skilled trade", "skilled trades program", "trade", "tradesperson"])) {
+    found.add("FSTP");
+  }
+
+  // No explicit program named but general PR/skilled-migration intent toward Canada → show all three.
+  if (
+    found.size === 0 &&
+    hasKw(combined, ["express entry", "pr", "permanent", "skilled", "points", "crs", "migrate", "migration", "nitelikli", "puan", "kalıcı", "göç"])
+  ) {
+    found.add("CEC");
+    found.add("FSW");
+    found.add("FSTP");
+  }
+
+  return Array.from(found);
+}
+
+const CANADA_PATHWAY_NAMES: Record<CanadaPathwayCode, { en: string; tr: string }> = {
+  CEC: { en: "Canadian Experience Class", tr: "Kanada Deneyim Sınıfı (CEC)" },
+  FSW: { en: "Federal Skilled Worker Program", tr: "Federal Vasıflı İşçi Programı (FSW)" },
+  FSTP: { en: "Federal Skilled Trades Program", tr: "Federal Vasıflı Esnaf Programı (FSTP)" },
+};
+
+// Intentionally simpler than the AU pathwayComparison builder — this covers
+// only what's needed for the 8 sections activated for Canada in this pass
+// (points, roadmap, risk, document checklist, gantt, PDF, disclaimer). The
+// deeper per-pathway friction/strength/financial-roadmap analysis built for
+// AU was out of scope for this pass and is not replicated here.
+function buildCanadaPathwayComparison(
+  pathwayCodes: CanadaPathwayCode[],
+  locale: Locale,
+  estimatedPoints?: number
+): PathwayComparison[] {
+  const isTr = locale === "tr";
+
+  if (pathwayCodes.length === 0) {
+    return [
+      {
+        subclass: "general",
+        visaName: isTr ? "Genel değerlendirme" : "General assessment",
+        reason: isTr
+          ? "Mevcut bilgilerle belirli bir Express Entry programı tespit edilemedi."
+          : "No specific Express Entry program was detected from available information.",
+        relevance: "not_enough_information",
+        confidenceLevel: "low",
+        confidenceExplanation: isTr
+          ? "Mevcut sinyal seti sınırlı olduğu için güven seviyesi düşük görünmektedir."
+          : "Confidence is low because the available signal set is limited.",
+        difficulty: "medium",
+        requirementType: isTr ? "Genel yol sinyali" : "General pathway signal",
+        userRelativePosition: isTr ? "Daha fazla bilgi olmadan göreli konum netleşmez." : "Relative position is unclear without additional details.",
+        keyRequirements: isTr ? ["Daha ayrıntılı hedef ve meslek bağlamı"] : ["More detailed goal and occupation context"],
+        pathwaySpecificRisks: [],
+      },
+    ];
+  }
+
+  return pathwayCodes.map((code) => ({
+    subclass: code,
+    visaName: isTr ? CANADA_PATHWAY_NAMES[code].tr : CANADA_PATHWAY_NAMES[code].en,
+    reason: isTr
+      ? `${CANADA_PATHWAY_NAMES[code].tr} sinyalleri mevcut bilgilerle eşleşiyor.`
+      : `Signals for ${CANADA_PATHWAY_NAMES[code].en} match the information provided.`,
+    relevance: "possible",
+    confidenceLevel: estimatedPoints !== undefined ? "medium" : "low",
+    confidenceExplanation: isTr
+      ? "CRS tahmini ve program kriterleri kısmi bilgiyle değerlendirilmiştir."
+      : "CRS estimate and program criteria were assessed with partial information.",
+    difficulty: "medium",
+    requirementType: isTr ? "CRS puanı ve NOC uygunluğu" : "CRS score and NOC eligibility",
+    userRelativePosition: isTr
+      ? "Göreli konum, son draw kesim puanlarına erişilemediği için belirlenememektedir."
+      : "Relative position cannot be determined yet because recent draw cutoff data is not available.",
+    keyRequirements: isTr
+      ? ["NOC uygunluğu", "Dil testi (CELPIP/IELTS/TEF)", "ECA (gerekirse)", "Kanıt fonları"]
+      : ["NOC eligibility", "Language test (CELPIP/IELTS/TEF)", "ECA (if required)", "Proof of funds"],
+    pathwaySpecificRisks: [],
+  }));
 }
 
 // ─── Visa name map ────────────────────────────────────────────────────────────
@@ -1123,7 +1228,94 @@ function parseEnglishOption(raw: string): EnglishOption | null {
   return null;
 }
 
+// Rough bridge from AU's English bands to CLB — both are ultimately derived
+// from similar IELTS/PTE thresholds, but this is an approximation, not an
+// official conversion table. Used only for the partial (age+English-only)
+// CA estimate, mirroring how the AU partial estimate also only uses age+English.
+function englishOptionToClb(option: EnglishOption | null): CLBLevel {
+  if (option === "superior") return "CLB_9";
+  if (option === "proficient") return "CLB_7";
+  if (option === "competent") return "CLB_6";
+  return "less_than_CLB4";
+}
+
+function parseCanadaAgeBracket(ageStr?: string): CanadaCRSInput["age"] | null {
+  if (!ageStr) return null;
+  const n = parseInt(ageStr.trim(), 10);
+  if (isNaN(n) || n < 17) return null;
+  if (n <= 17) return "17_or_less";
+  if (n >= 45) return "45_or_more";
+  if (n >= 20 && n <= 29) return "20_29";
+  return String(n) as CanadaCRSInput["age"];
+}
+
+function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstimate {
+  const isTr = locale === "tr";
+  const ageBracket = parseCanadaAgeBracket(input.age);
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+
+  if (!ageBracket && !englishOption) {
+    return {
+      appliesTo: ["CEC", "FSW", "FSTP"],
+      estimatedPoints: undefined,
+      breakdown: [],
+      note: isTr
+        ? "CRS tahmini için yas ve Ingilizce seviyesi saglanmadi. Puan hesaplamasi mevcut degil."
+        : "Age and English level were not provided. A CRS estimate is not available.",
+    };
+  }
+
+  const clb = englishOptionToClb(englishOption);
+  const result = calculateCanadaCRS({
+    hasSpouseOrPartner: false,
+    age: ageBracket ?? "20_29",
+    education: "less_than_secondary",
+    firstLanguageAbilityScores: { speaking: clb, listening: clb, reading: clb, writing: clb },
+    secondLanguageBand: "none",
+    canadianWorkExperience: "none_or_less_than_1yr",
+    postSecondaryCredentialCount: "none",
+    foreignWorkExperienceYears: "none",
+    hasCertificateOfQualification: false,
+    hasSiblingInCanada: false,
+    frenchAbility: "none",
+    canadianPostSecondaryCredentialYears: "none",
+    hasProvincialNomination: false,
+  });
+
+  const breakdown = [
+    ageBracket
+      ? {
+          label: isTr ? "Yas puani" : "Age points",
+          points: result.breakdown.coreHumanCapital.age,
+          note: input.age,
+        }
+      : null,
+    englishOption
+      ? {
+          label: isTr ? "Ingilizce seviyesi puani (CLB tahmini)" : "English level points (estimated CLB)",
+          points: result.breakdown.coreHumanCapital.firstLanguage,
+          note: input.englishLevel,
+        }
+      : null,
+  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
+
+  const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
+
+  const note = isTr
+    ? `Bu yalnizca yas${ageBracket ? "" : " (belirtilmedi)"} ve Ingilizce seviyesine${englishOption ? "" : " (belirtilmedi)"} dayali kismi bir CRS tahminidir (config v${result.configVersion}). Egitim, Kanada/yurt disi is tecrubesi, es faktorleri ve ek puanlar dahil degildir. Gercek CRS puaniniz IRCC'nin resmi Express Entry hesaplayicisiyla dogrulanmalidir.`
+    : `This is a partial CRS estimate (config v${result.configVersion}) based on age${ageBracket ? "" : " (not provided)"} and English level${englishOption ? "" : " (not provided)"} only. Education, Canadian/foreign work experience, spouse factors, and additional points are not included. Verify your actual CRS score against IRCC's official Express Entry calculator.`;
+
+  return {
+    appliesTo: ["CEC", "FSW", "FSTP"],
+    estimatedPoints,
+    breakdown,
+    note,
+  };
+}
+
 function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstimate {
+  if (input.country === "CA") return buildCanadaPointsEstimate(input, locale);
+
   const isTr = locale === "tr";
   const ageOption = input.age ? parseAgeOption(input.age) : null;
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
@@ -1145,7 +1337,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     };
   }
 
-  const result = calculateSkilledPoints({
+  const result = calculateAustraliaPoints({
     age: ageOption ?? "18_24",
     english: englishOption ?? "competent",
     overseasEmployment: "lt3",
@@ -1195,10 +1387,47 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
 
 // ─── Occupation indication ────────────────────────────────────────────────────
 
+function buildCanadaOccupationIndication(
+  input: ReadinessInput,
+  locale: Locale
+): OccupationIndication | undefined {
+  const isTr = locale === "tr";
+  if (!input.occupation) return undefined;
+
+  const result = checkNocOccupation({ occupation: input.occupation });
+
+  if (result.partialCoverageGap) {
+    return {
+      occupation: input.occupation,
+      matches: [],
+      note: isTr
+        ? `"${input.occupation}" su anda NOC veritabanimizda bulunamadi. Bu, meslegin gecersiz oldugu anlamina gelmez — derlememiz henuz tum NOC 2021 kategorilerini kapsamiyor. Lutfen IRCC'nin resmi NOC arama aracini kullanin: https://noc.esdc.gc.ca/Structure/NocWelcome`
+        : `"${input.occupation}" was not found in our NOC database yet. This does not mean the occupation is invalid — our NOC compilation does not yet cover every NOC 2021 category. Please use IRCC's official NOC search tool: https://noc.esdc.gc.ca/Structure/NocWelcome`,
+    };
+  }
+
+  return {
+    occupation: result.query,
+    matches: result.matches.map((m) => ({
+      title: m.title,
+      relevantVisas: [
+        "CEC",
+        "FSW",
+        ...(m.isFstpEligibleGroup ? ["FSTP"] : []),
+      ],
+    })),
+    note: isTr
+      ? `NOC verilerinde ${result.matches.length} olasi meslek eslesmesi bulundu (TEER ${result.matches[0]?.teer}). Bu yalnizca genel bilgi amaclidir; resmi bir ECA veya NOC dogrulamasi ayri bir suractir.`
+      : `${result.matches.length} possible NOC match(es) found (TEER ${result.matches[0]?.teer}). This is general information only; an official ECA or NOC verification is a separate step.`,
+  };
+}
+
 function buildOccupationIndication(
   input: ReadinessInput,
   locale: Locale
 ): OccupationIndication | undefined {
+  if (input.country === "CA") return buildCanadaOccupationIndication(input, locale);
+
   const isTr = locale === "tr";
 
   if (!input.occupation) return undefined;
@@ -1276,7 +1505,11 @@ function buildMissingInformation(
 
 // ─── Disclaimer ───────────────────────────────────────────────────────────────
 
-function buildDisclaimer(locale: Locale): string {
+function buildDisclaimer(locale: Locale, country: "AU" | "CA" = "AU"): string {
+  if (country === "CA") {
+    // express-entry.json has no zh-Hans disclaimer yet; falls back to its English text.
+    return expressEntryConfig.disclaimerText[locale === "tr" ? "tr" : "en"];
+  }
   return locale === "tr"
     ? "Bu rapor otomatik bir veri analizidir ve göcmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin."
     : locale === "zh-Hans"
@@ -2192,7 +2425,126 @@ function buildPositionChangers(
   return items.slice(0, 3);
 }
 
+// Covers the 8 sections activated for Canada in this pass (points, roadmap,
+// risk, partial skill mapping, document checklist, gantt, PDF footer,
+// disclaimer). Fields below not in that scope (pathwayStrengthComparison,
+// financialRoadmap, progressionPathways, pathwayFriction,
+// confidenceExplanation, executiveSummary depth, factorsAffectingPathways,
+// etc.) are filled with minimal, honest, country-neutral values rather than
+// AU-flavored logic — they are explicitly out of scope for this pass, not
+// silently degraded equivalents of the AU versions.
+function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
+  const locale = input.locale;
+  const isTr = locale === "tr";
+
+  const pathwayCodes = detectCanadaPathways(input);
+  const pointsEstimate = buildCanadaPointsEstimate(input, locale);
+  const dataCompleteness = buildDataCompleteness(input, locale);
+  const pathwayComparison = buildCanadaPathwayComparison(pathwayCodes, locale, pointsEstimate.estimatedPoints);
+  const occupationIndication = buildCanadaOccupationIndication(input, locale);
+
+  const riskIndicators = buildCanadaRiskIndicators({
+    locale,
+    age: input.age,
+    englishLevel: input.englishLevel,
+    occupation: input.occupation,
+    estimatedPoints: pointsEstimate.estimatedPoints,
+  });
+
+  const documentChecklist = getCanadaDocumentChecklist(pathwayCodes, locale);
+
+  const missingInformation: string[] = [];
+  if (!input.age) missingInformation.push(isTr ? "Yaş" : "Age");
+  if (!input.englishLevel) missingInformation.push(isTr ? "Dil seviyesi (CLB/NCLC)" : "Language level (CLB/NCLC)");
+  if (!input.occupation) missingInformation.push(isTr ? "Meslek (NOC)" : "Occupation (NOC)");
+
+  const suggestedNextSteps = buildCanadaNextSteps({
+    locale,
+    pathwayCodes,
+    hasOccupation: Boolean(input.occupation),
+    hasEnglish: Boolean(input.englishLevel),
+    hasMissingInfo: missingInformation.length > 0,
+  });
+
+  const premiumSections: PremiumSections = generatePremiumSections({
+    locale,
+    occupation: input.occupation,
+    timeline: input.timeline,
+    mainGoal: input.mainGoal,
+    biggestConcern: input.biggestConcern,
+    country: "CA",
+  });
+
+  const disclaimer = buildDisclaimer(locale, "CA");
+
+  const keyVisaRequirements = buildKeyVisaRequirements(pathwayComparison);
+
+  const executiveSummary = [
+    isTr
+      ? pathwayCodes.length > 0
+        ? `Bu rapor ${pathwayCodes.join(", ")} programlarını CRS yapısal kriterleriyle karşılaştırır.`
+        : "Bu rapor, verilen bilgilerle görünen Express Entry sinyallerini karşılaştırır."
+      : pathwayCodes.length > 0
+        ? `This report compares the ${pathwayCodes.join(", ")} program(s) against CRS structural criteria.`
+        : "This report compares visible Express Entry signals based on the information provided.",
+  ];
+
+  const signalSnapshot: SignalSnapshot = {
+    strongest: pathwayComparison[0]?.visaName ?? (isTr ? "Belirlenemedi" : "Not yet determined"),
+    secondary: pathwayComparison.slice(1).map((p) => p.visaName),
+    confidenceLabel: pointsEstimate.estimatedPoints !== undefined ? "moderate" : "limited",
+    confidenceExplanation: isTr
+      ? "Bu yalnızca kısmi bir CRS tahminine dayanmaktadır."
+      : "This is based on a partial CRS estimate only.",
+  };
+
+  const primaryLimitingFactor: PrimaryLimitingFactor = {
+    label: missingInformation[0] ?? (isTr ? "Ek bilgi" : "Additional information"),
+    explanation: isTr
+      ? "Eksik veri alanları, CRS ve uygunluk değerlendirmesinin tamlığını sınırlamaktadır."
+      : "Missing data fields limit the completeness of the CRS and eligibility assessment.",
+  };
+
+  return {
+    executiveSummary,
+    signalSnapshot,
+    primaryLimitingFactor,
+    positionChangers: [],
+    pathwayComparison,
+    pathwayStrengthComparison: [],
+    evidenceReadiness: [],
+    financialRoadmap: [],
+    progressionPathways: [],
+    pathwayFriction: [],
+    confidenceExplanation: signalSnapshot.confidenceExplanation,
+    reportIndicators: {
+      dataCompletenessScore: dataCompleteness.percentage,
+      dataCompletenessLabel: isTr ? "Veri tamlığı" : "Data completeness",
+      documentReadinessIndicator: "medium",
+      informationCoverageLevel: dataCompleteness.percentage >= 70 ? "comprehensive" : dataCompleteness.percentage >= 40 ? "partial" : "initial",
+      explanation: isTr
+        ? "Bu, Kanada Express Entry için ilk aşama bir değerlendirmedir."
+        : "This is a first-pass assessment for Canada Express Entry.",
+    },
+    primaryGap: primaryLimitingFactor.label,
+    dataCompleteness,
+    keyVisaRequirements,
+    factorsAffectingPathways: [],
+    pointsEstimate,
+    occupationIndication,
+    riskIndicators,
+    documentChecklist,
+    premiumSections,
+    frictionAnalysis: [],
+    suggestedNextSteps,
+    missingInformation,
+    disclaimer,
+  };
+}
+
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
+  if (input.country === "CA") return runCanadaReadinessEngine(input);
+
   const locale = input.locale;
 
   const detectedSubclasses = detectSubclasses(input);

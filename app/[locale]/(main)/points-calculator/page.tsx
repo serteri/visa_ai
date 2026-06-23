@@ -9,18 +9,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { calculateSkilledPoints } from "@/lib/points/calculate-skilled-points";
+import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
 import type {
   AgeOption,
   AustralianEmploymentOption,
+  AustraliaPointsInput,
   EducationOption,
   EnglishOption,
   OverseasEmploymentOption,
   PartnerOption,
-  SkilledPointsInput,
 } from "@/lib/points/types";
 
-const DEFAULT_INPUT: SkilledPointsInput = {
+const DEFAULT_INPUT: AustraliaPointsInput = {
   age: "25_32",
   english: "competent",
   overseasEmployment: "lt3",
@@ -98,9 +98,9 @@ export default function PointsCalculatorPage() {
   const locale = String(params.locale ?? "en");
   const isTr = locale === "tr";
 
-  const [input, setInput] = useState<SkilledPointsInput>(DEFAULT_INPUT);
+  const [input, setInput] = useState<AustraliaPointsInput>(DEFAULT_INPUT);
 
-  const result = useMemo(() => calculateSkilledPoints(input), [input]);
+  const result = useMemo(() => calculateAustraliaPoints(input), [input]);
 
   const content = {
     pageBadge: isTr ? "Genel Bilgi Aracı" : "General Information Tool",
@@ -136,7 +136,7 @@ export default function PointsCalculatorPage() {
       : "This calculator provides a general estimate only. It does not provide migration advice, legal advice, or predict invitation or visa grant.",
   };
 
-  const setField = <K extends keyof SkilledPointsInput>(key: K, value: SkilledPointsInput[K]) => {
+  const setField = <K extends keyof AustraliaPointsInput>(key: K, value: AustraliaPointsInput[K]) => {
     setInput((prev) => ({ ...prev, [key]: value }));
   };
 

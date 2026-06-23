@@ -16,12 +16,13 @@ export type InvitationTrendSection = {
   anzscoCode: string;
   estimates: InvitationTrendEstimate[];
   note: string;
+  comingSoon?: boolean;
 };
 
 export type LivingCostSection = {
   city: string;
   familyProfile: string;
-  currency: "AUD";
+  currency: "AUD" | "CAD";
   monthly: {
     rent: number;
     groceries: number;
@@ -29,6 +30,7 @@ export type LivingCostSection = {
     total: number;
   };
   note: string;
+  comingSoon?: boolean;
 };
 
 export type GanttStep = {
@@ -283,6 +285,45 @@ function getLocalizedFamilyProfile(locale: Locale, familyProfile: FamilyProfile)
   return familyProfile;
 }
 
+// Canada-specific terminology swap applied to the (otherwise generic) gantt
+// text — the time-window structure itself is intentionally left untouched.
+const CA_TERMINOLOGY_SWAP: Array<[RegExp, string]> = [
+  [/state nomination/gi, "provincial nomination"],
+  [/state-interest/gi, "provincial-interest"],
+  [/Skills Assessment/g, "ECA (Educational Credential Assessment)"],
+  [/skills-assessment/gi, "ECA"],
+  // Express Entry uses ITA (Invitation to Apply), not EOI (an AU/SkillSelect term).
+  [/\bEOI\b/g, "ITA"],
+];
+
+function applyCanadaTerminology(text: string): string {
+  return CA_TERMINOLOGY_SWAP.reduce((acc, [pattern, replacement]) => acc.replace(pattern, replacement), text);
+}
+
+function comingSoonInvitationTrends(locale: Locale): InvitationTrendSection {
+  return {
+    matchedOccupationGroup: "-",
+    anzscoCode: "-",
+    estimates: [],
+    note: localizeText(
+      locale,
+      "Historical Express Entry draw and CRS cutoff trends for Canada are coming soon."
+    ),
+    comingSoon: true,
+  };
+}
+
+function comingSoonLivingCost(locale: Locale): LivingCostSection {
+  return {
+    city: "-",
+    familyProfile: "-",
+    currency: "CAD",
+    monthly: { rent: 0, groceries: 0, transport: 0, total: 0 },
+    note: localizeText(locale, "Living cost projections for Canadian cities are coming soon."),
+    comingSoon: true,
+  };
+}
+
 export function generatePremiumSections(input: {
   locale?: Locale;
   occupation?: string;
@@ -291,8 +332,28 @@ export function generatePremiumSections(input: {
   timeline?: string;
   mainGoal?: string;
   biggestConcern?: string;
+  country?: "AU" | "CA";
 }): PremiumSections {
   const locale = input.locale ?? "en";
+
+  if (input.country === "CA") {
+    const gantt = buildGanttByTimeline(input.timeline);
+    return {
+      historicalInvitationTrends: comingSoonInvitationTrends(locale),
+      livingCostProjection: comingSoonLivingCost(locale),
+      strategicGanttChart: {
+        ...gantt,
+        steps: gantt.steps.map((step) => ({
+          ...step,
+          title: applyCanadaTerminology(localizeText(locale, step.title)),
+          window: localizeWaitWindow(locale, step.window),
+          description: applyCanadaTerminology(localizeText(locale, step.description)),
+        })),
+        timelineBand: localizeWaitWindow(locale, gantt.timelineBand),
+      },
+    };
+  }
+
   const trend = matchTrendByOccupation(input.occupation);
   const city = inferCity({
     selectedCity: input.selectedCity,

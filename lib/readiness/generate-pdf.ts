@@ -580,7 +580,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   function addGlobalFooters() {
     const totalPages = doc.getNumberOfPages();
     const footerWidth = pageWidth - margin * 2;
-    const footerText = GLOBAL_FOOTER_TEXTS[effectiveLocale];
+    // report.disclaimer is country-aware (MARA for AU, RCIC for CA per
+    // src/data/countries/ca/express-entry.json); GLOBAL_FOOTER_TEXTS remains
+    // only as a fallback for the (should-not-happen) case where it's missing.
+    const footerText = report.disclaimer || GLOBAL_FOOTER_TEXTS[effectiveLocale];
     const credit = PDF_VIRAL_FOOTER_CREDIT[effectiveLocale];
 
     for (let page = 1; page <= totalPages; page += 1) {
@@ -1824,37 +1827,45 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSectionHeading("", text.premiumSections);
 
     addBody(text.invitationTrends);
-    addSmallText(
-      `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
-      2
-    );
-    drawTable(
-      [text.subclass, text.estimatedPoints, text.estimatedWait],
-      report.premiumSections.historicalInvitationTrends.estimates.map((item) => [
-        item.subclass,
-        `${item.estimatedPoints}`,
-        item.estimatedWait,
-      ]),
-      [0.2, 0.3, 0.5]
-    );
-    addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
+    if (report.premiumSections.historicalInvitationTrends.comingSoon) {
+      addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
+    } else {
+      addSmallText(
+        `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
+        2
+      );
+      drawTable(
+        [text.subclass, text.estimatedPoints, text.estimatedWait],
+        report.premiumSections.historicalInvitationTrends.estimates.map((item) => [
+          item.subclass,
+          `${item.estimatedPoints}`,
+          item.estimatedWait,
+        ]),
+        [0.2, 0.3, 0.5]
+      );
+      addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
+    }
 
     addBody(text.livingCostProjection);
-    addSmallText(
-      `${report.premiumSections.livingCostProjection.city} - ${report.premiumSections.livingCostProjection.familyProfile} (${report.premiumSections.livingCostProjection.currency})`,
-      2
-    );
-    drawTable(
-      [text.monthlyRent, text.monthlyGroceries, text.monthlyTransport, text.monthlyTotal],
-      [[
-        `${report.premiumSections.livingCostProjection.monthly.rent}`,
-        `${report.premiumSections.livingCostProjection.monthly.groceries}`,
-        `${report.premiumSections.livingCostProjection.monthly.transport}`,
-        `${report.premiumSections.livingCostProjection.monthly.total}`,
-      ]],
-      [0.25, 0.25, 0.25, 0.25]
-    );
-    addSmallText(report.premiumSections.livingCostProjection.note, 2);
+    if (report.premiumSections.livingCostProjection.comingSoon) {
+      addSmallText(report.premiumSections.livingCostProjection.note, 2);
+    } else {
+      addSmallText(
+        `${report.premiumSections.livingCostProjection.city} - ${report.premiumSections.livingCostProjection.familyProfile} (${report.premiumSections.livingCostProjection.currency})`,
+        2
+      );
+      drawTable(
+        [text.monthlyRent, text.monthlyGroceries, text.monthlyTransport, text.monthlyTotal],
+        [[
+          `${report.premiumSections.livingCostProjection.monthly.rent}`,
+          `${report.premiumSections.livingCostProjection.monthly.groceries}`,
+          `${report.premiumSections.livingCostProjection.monthly.transport}`,
+          `${report.premiumSections.livingCostProjection.monthly.total}`,
+        ]],
+        [0.25, 0.25, 0.25, 0.25]
+      );
+      addSmallText(report.premiumSections.livingCostProjection.note, 2);
+    }
 
     drawGanttTimeline();
   }

@@ -905,6 +905,17 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
 
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const base = runBaseReadinessEngine(input);
+
+  // Everything below this point (ranked pathways, AU state nomination
+  // tracker, ANZSCO-based document checklist/next-steps overrides, friction
+  // analysis, and the hardcoded-MARA zh-Hans formatter) is AU-only logic
+  // built on AU subclasses (189/190/491) and ANZSCO data. For Canada, the
+  // base report from runBaseReadinessEngine already contains the correct
+  // CA-specific sections (CRS points, NOC occupation check, CEC/FSW/FSTP
+  // document checklist, RCIC disclaimer) — passing it through unmodified
+  // avoids overwriting that with AU-shaped data.
+  if (input.country === "CA") return base;
+
   const occupation = findOccupationRecord(input);
   const stateNominationTracker = calculateStateNominationTracker(input);
   const report = {

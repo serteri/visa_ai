@@ -89,13 +89,15 @@ model VerificationToken {
 }
 
 model SavedCalculation {
-  id           String   @id @default(uuid())
-  userId       String   @map("user_id")
-  visaSubclass String?  @map("visa_subclass")
-  totalPoints  Int      @map("total_points")
-  breakdown    Json?
-  createdAt    DateTime @default(now()) @map("created_at")
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  country       String   @default("AU") @map("country")
+  configVersion String?  @map("config_version")
+  visaSubclass  String?  @map("visa_subclass")
+  totalPoints   Int      @map("total_points")
+  breakdown     Json?
+  createdAt     DateTime @default(now()) @map("created_at")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("saved_calculations")
 }
@@ -185,4 +187,17 @@ model EoiRound {
 
   @@unique([roundDate, visaSubclass])
   @@map("eoi_rounds")
+}
+
+model CaEoiRound {
+  id          String   @id @default(uuid())
+  drawNumber  Int      @unique @map("draw_number")
+  roundDate   DateTime @map("round_date")
+  drawName    String   @map("draw_name")
+  crsScore    Int      @map("crs_score")
+  invitations Int
+  source      String   @default("scraper")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("ca_eoi_rounds")
 }

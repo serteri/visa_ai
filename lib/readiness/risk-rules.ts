@@ -58,6 +58,68 @@ function hasPartnerKeyword(text?: string): boolean {
   );
 }
 
+type CanadaRiskContext = {
+  locale: Locale;
+  age?: string;
+  englishLevel?: string;
+  occupation?: string;
+  estimatedPoints?: number; // CRS estimate
+};
+
+// Scoped to CRS-structural risks only (age curve, missing factors). Risks
+// that depend on recent Express Entry draw cutoffs are intentionally NOT
+// included here — that requires the (currently blocked) Historical
+// Invitation Trends data source for Canada.
+export function buildCanadaRiskIndicators(ctx: CanadaRiskContext): RiskIndicator[] {
+  const isTr = ctx.locale === "tr";
+  const risks: RiskIndicator[] = [];
+  const ageNum = ctx.age ? parseInt(ctx.age.trim(), 10) : null;
+
+  // CRS age points peak at a flat 20-29 plateau and decline gradually
+  // (not a single cliff like AU's 45+ zeroing) — see express-entry.json crsScore.coreHumanCapitalFactors.age.
+  if (ageNum !== null && !isNaN(ageNum) && ageNum >= 40) {
+    risks.push({
+      level: ageNum >= 45 ? "high" : "medium",
+      title: isTr ? "Yaş faktörü (CRS)" : "Age factor (CRS)",
+      explanation: isTr
+        ? "CRS yaş puanlama tablosu 20-29 yaş aralığında sabit tepe noktasındadır ve sonrasında kademeli olarak düşer (AU'nun 45+ için ani sıfırlamasından farklıdır); 40 yaş ve üzeri profillerde bu kademeli düşüş toplam CRS puanını önemli ölçüde etkileyebilir."
+        : "The CRS age table peaks on a flat plateau at ages 20-29 and then declines gradually (unlike AU's sudden zeroing at 45+); for profiles aged 40 or over, this gradual decline can meaningfully affect total CRS score.",
+    });
+  }
+
+  if (!ctx.englishLevel) {
+    risks.push({
+      level: "medium",
+      title: isTr ? "Eksik dil seviyesi verisi" : "Missing language level data",
+      explanation: isTr
+        ? "CLB/NCLC seviyesi olmadan, CRS dil puanlaması ve skill-transferability faktörleri eksik kalmaktadır."
+        : "Without a CLB/NCLC level, CRS language scoring and skill-transferability factors remain incomplete.",
+    });
+  }
+
+  if (!ctx.occupation) {
+    risks.push({
+      level: "medium",
+      title: isTr ? "Eksik meslek verisi" : "Missing occupation data",
+      explanation: isTr
+        ? "NOC kodu olmadan, CEC/FSW/FSTP uygunluk kontrolü ve skill-transferability hesaplaması yapılamaz."
+        : "Without a NOC code, CEC/FSW/FSTP eligibility checks and skill-transferability scoring cannot be completed.",
+    });
+  }
+
+  if (ctx.estimatedPoints !== undefined && ctx.estimatedPoints < 300) {
+    risks.push({
+      level: "medium",
+      title: isTr ? "CRS tahmini düşük bant" : "CRS estimate in a lower band",
+      explanation: isTr
+        ? "Tahmini temel CRS puanınız, yapısal olarak güçlü profillerin tipik bandının altında kalıyor olabilir; bu yalnızca kısmi bir tahmindir ve son draw kesim puanlarıyla karşılaştırılmamıştır."
+        : "Your estimated base CRS score may sit below the band typical of structurally strong profiles; this is only a partial estimate and has not been compared against recent draw cutoffs.",
+    });
+  }
+
+  return risks;
+}
+
 export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
   const isTr = ctx.locale === "tr";
   const risks: RiskIndicator[] = [];

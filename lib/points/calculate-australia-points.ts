@@ -1,12 +1,12 @@
 import type {
   AgeOption,
   AustralianEmploymentOption,
+  AustraliaPointsInput,
+  AustraliaPointsResult,
   EducationOption,
   EnglishOption,
   OverseasEmploymentOption,
   PartnerOption,
-  SkilledPointsInput,
-  SkilledPointsResult,
 } from "@/lib/points/types";
 
 const MINIMUM_THRESHOLD = 65;
@@ -55,7 +55,7 @@ const PARTNER_POINTS: Record<PartnerOption, number> = {
   none_or_unsure: 0,
 };
 
-export function calculateSkilledPoints(input: SkilledPointsInput): SkilledPointsResult {
+export function calculateAustraliaPoints(input: AustraliaPointsInput): AustraliaPointsResult {
   const age = AGE_POINTS[input.age];
   const english = ENGLISH_POINTS[input.english];
   const overseasEmployment = OVERSEAS_EMPLOYMENT_POINTS[input.overseasEmployment];

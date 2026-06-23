@@ -2,6 +2,8 @@ export type Locale = "en" | "tr" | "zh-Hans";
 
 export type ReadinessInput = {
   locale: Locale;
+  /** Defaults to "AU" when omitted, preserving existing behavior. */
+  country?: "AU" | "CA";
   mainGoal?: string;
   currentCountry?: string;
   preferredCity?: string;
@@ -271,12 +273,14 @@ export type PremiumInvitationTrendSection = {
   anzscoCode: string;
   estimates: PremiumInvitationTrendEstimate[];
   note: string;
+  /** True when this section has no real data yet for the report's country (e.g. CA draw history). */
+  comingSoon?: boolean;
 };
 
 export type PremiumLivingCostSection = {
   city: string;
   familyProfile: string;
-  currency: "AUD";
+  currency: "AUD" | "CAD";
   monthly: {
     rent: number;
     groceries: number;
@@ -284,6 +288,7 @@ export type PremiumLivingCostSection = {
     total: number;
   };
   note: string;
+  comingSoon?: boolean;
 };
 
 export type PremiumGanttStep = {
