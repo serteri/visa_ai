@@ -255,9 +255,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                     {processingTimeLabel}
                   </div>
                   <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">
-                    {isVaries 
-                      ? (locale === "tr" ? "Programa göre değişir" : locale === "zh-Hans" ? "视具体项目而定" : "Varies by program") 
-                      : `${visa.processingTime} ${processingTimeUnit}`.trim()}
+                    {processingTimeText}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">

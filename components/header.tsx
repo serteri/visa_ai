@@ -360,38 +360,19 @@ export function Header({
         <div className="absolute left-0 top-[calc(100%+0.5rem)] w-full rounded-3xl border border-white/20 bg-white/95 px-6 py-4 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/95 md:hidden">
           <div className="flex flex-col space-y-4">
             <div className="space-y-1">
-              <p className="px-2 text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
-              </p>
-              {VISA_LINKS.map((v) => (
-                <Link
-                  key={v.subclass}
-                  href={`/${locale}/visas/${v.subclass}`}
-                  className="block rounded-lg px-2 py-2 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {isTr ? v.tr : isZh ? v.zh : v.en}
-                </Link>
-              ))}
               <Link
-                href={`/${locale}/tools/visa-comparison`}
+                href={`/${locale}/visas/australia`}
                 className="block rounded-lg px-2 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {visaComparisonLabel}
+                {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
               </Link>
-
-              <div className="h-px w-full my-2 bg-slate-100 dark:bg-white/10" />
-
-              <p className="mt-2 px-2 text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
-              </p>
               <Link
-                href={`/${locale}/visas/canada-express-entry`}
-                className="block rounded-lg px-2 py-2 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                href={`/${locale}/visas/canada`}
+                className="block rounded-lg px-2 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {isTr ? "Express Entry" : isZh ? "快速通道 Express Entry" : "Express Entry"}
+                {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
               </Link>
             </div>
 
