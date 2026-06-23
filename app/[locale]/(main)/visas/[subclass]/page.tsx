@@ -22,6 +22,8 @@ type VisaDetail = {
   nameKey: string;
   type: string;
   processingTime: string;
+  processingTime_tr?: string;
+  processingTime_zh?: string;
   processingTimeUnit: string;
   fee: number;
   minPoints: number | null;
@@ -107,6 +109,17 @@ function getVisaTypeLabel(translations: Record<string, unknown>, type: string) {
   return t(translations, "visas.temporary", "Temporary");
 }
 
+function getProcessingTimeText(visa: VisaDetail, locale: string, translations: Record<string, unknown>) {
+  const isVaries = visa.processingTime.toLowerCase().includes("varies");
+  if (isVaries) {
+    if (locale === "tr") return visa.processingTime_tr ?? "Programa göre değişir";
+    if (locale === "zh-Hans") return visa.processingTime_zh ?? "视具体项目而定";
+    return visa.processingTime;
+  }
+  const processingTimeUnit = t(translations, `timeUnits.${visa.processingTimeUnit}`, visa.processingTimeUnit);
+  return `${visa.processingTime} ${processingTimeUnit}`.trim();
+}
+
 function getMinPointsLabel(translations: Record<string, unknown>, minPoints: number | null) {
   if (minPoints === null) {
     return t(translations, "visas.notRequired", "Not required");
@@ -172,10 +185,11 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const officialInfoLabel = t(translations, "visas.officialInfo", "Official Information");
   const checkEligibilityLabel = t(translations, "visas.checkEligibility", "Check your eligibility");
   const checkEligibilityDesc = t(translations, "visas.checkEligibilityDesc", "Get your free PR readiness report");
-  const visitDohaLabel = t(translations, "visas.visitDoHA", "Visit DoHA website");
+  const visitOfficialWebsiteLabel = t(translations, "visas.visitOfficialWebsite", "Visit official website");
+  const visitIRCCLabel = t(translations, "visas.visitIRCC", locale === "tr" ? "IRCC Sitesini Ziyaret Et" : locale === "zh-Hans" ? "访问 IRCC 官网" : "Visit IRCC website");
   const backToVisasLabel = t(translations, "visas.backToVisas", "Back to visas");
   const processingTimeLabel = t(translations, "visas.processingTime", "Processing Time");
-  const processingTimeUnit = t(translations, `timeUnits.${visa.processingTimeUnit}`, visa.processingTimeUnit);
+  const processingTimeText = getProcessingTimeText(visa, locale, translations);
   const visaFeeLabel = t(translations, "visas.visaFee", "Visa Fee");
   const minPointsLabel = t(translations, "visas.minPoints", "Minimum Points");
   const notRequiredLabel = t(translations, "visas.notRequired", "Not required");
@@ -186,16 +200,14 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const minPointsText = getMinPointsLabel(translations, visa.minPoints);
 
   const isCanada = subclass === "canada-express-entry";
-  const officialBtnLabel = isCanada 
-    ? (locale === "tr" ? "IRCC Sitesini Ziyaret Et" : locale === "zh-Hans" ? "访问 IRCC 官网" : "Visit IRCC website") 
-    : visitDohaLabel;
+  const officialBtnLabel = isCanada ? visitIRCCLabel : visitOfficialWebsiteLabel;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <Link
-            href={`/${locale}`}
+            href={`/${locale}/visas`}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             {backToVisasLabel}
@@ -242,7 +254,11 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                     <Clock3 className="h-4 w-4 text-cyan-600" />
                     {processingTimeLabel}
                   </div>
-                  <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{visa.processingTime} {processingTimeUnit}</p>
+                  <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">
+                    {isVaries 
+                      ? (locale === "tr" ? "Programa göre değişir" : locale === "zh-Hans" ? "视具体项目而定" : "Varies by program") 
+                      : `${visa.processingTime} ${processingTimeUnit}`.trim()}
+                  </p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
@@ -284,7 +300,9 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {processingTimeLabel}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{visa.processingTime} {processingTimeUnit}</p>
+                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">
+                  {processingTimeText}
+                </p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -304,7 +322,14 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {officialInfoLabel}
                 </p>
-                <p className="mt-1 break-all text-sm font-medium text-cyan-700 dark:text-cyan-300">{officialUrl}</p>
+                <a
+                  href={officialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 break-all text-sm font-medium text-cyan-700 dark:text-cyan-300"
+                >
+                  {officialUrl}
+                </a>
               </div>
             </CardContent>
           </Card>
