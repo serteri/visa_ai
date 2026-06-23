@@ -43,7 +43,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3
 export const dynamic = "force-static";
 export const revalidate = false;
 
-const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820_801"] as const;
+const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820_801", "canada-express-entry"] as const;
 
 function normalizeSubclass(subclass: string) {
   const value = subclass.trim();
@@ -55,10 +55,11 @@ function getVisaDetail(subclass: string) {
   return VISA_DETAILS.find((visa) => visa.subclass === normalizeSubclass(subclass)) ?? null;
 }
 
-function formatFee(locale: string, fee: number) {
-  return new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-AU", {
+function formatFee(locale: string, fee: number, subclass: string) {
+  const isCanada = subclass === "canada-express-entry";
+  return new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : (isCanada ? "en-CA" : "en-AU"), {
     style: "currency",
-    currency: "AUD",
+    currency: isCanada ? "CAD" : "AUD",
     maximumFractionDigits: 0,
   }).format(fee);
 }
@@ -181,8 +182,13 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const requirements = getLocalizedVisaList(visa, locale, "requirements");
   const steps = getLocalizedVisaList(visa, locale, "steps");
   const officialUrl = visa.officialUrl;
-  const fee = formatFee(locale, visa.fee);
+  const fee = formatFee(locale, visa.fee, subclass);
   const minPointsText = getMinPointsLabel(translations, visa.minPoints);
+
+  const isCanada = subclass === "canada-express-entry";
+  const officialBtnLabel = isCanada 
+    ? (locale === "tr" ? "IRCC Sitesini Ziyaret Et" : locale === "zh-Hans" ? "访问 IRCC 官网" : "Visit IRCC website") 
+    : visitDohaLabel;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
@@ -260,7 +266,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
                 >
-                  {visitDohaLabel}
+                  {officialBtnLabel}
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </div>

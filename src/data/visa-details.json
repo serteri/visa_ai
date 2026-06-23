@@ -431,5 +431,69 @@
       "2年以上后获批801（永久）"
     ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801"
+  },
+  {
+    "subclass": "canada-express-entry",
+    "name": "Express Entry Canada",
+    "name_tr": "Kanada Express Entry",
+    "name_zh": "加拿大快速通道 Express Entry",
+    "nameKey": "canada_express_entry",
+    "type": "Permanent",
+    "processingTime": "6",
+    "processingTimeUnit": "months",
+    "fee": 1525,
+    "minPoints": null,
+    "description": "Canada's primary immigration system for skilled workers seeking permanent residency, utilizing the Comprehensive Ranking System (CRS).",
+    "description_tr": "Kanada'nın nitelikli göçmenler için uyguladığı, Kapsamlı Sıralama Sistemi (CRS) puan tabanlı daimi oturum (PR) sistemidir.",
+    "description_zh": "加拿大针对寻求永久居民身份的技术工人的主要移民系统，采用综合排名系统（CRS）进行筛选。",
+    "requirements": [
+      "Meet eligibility for Federal Skilled Worker, Skilled Trades, or Canadian Experience Class",
+      "Language test results (CLB 7 minimum for English or French)",
+      "Educational Credential Assessment (ECA) for non-Canadian degrees",
+      "Proof of funds (unless authorized to work or have a job offer)",
+      "No criminal record and clean health assessment"
+    ],
+    "requirements_tr": [
+      "Federal Skilled Worker, Skilled Trades veya Canadian Experience Class şartlarını karşılamak",
+      "Dil sınavı sonuçları (İngilizce veya Fransızca için en az CLB 7)",
+      "Kanada dışı diplomalar için Eğitim Denklik Değerlendirmesi (ECA)",
+      "Yeterli finansal birikim kanıtı (iş teklifi veya çalışma izni yoksa)",
+      "Adli sicil kaydı olmaması ve sağlık muayenesi onayı"
+    ],
+    "requirements_zh": [
+      "满足联邦技术移民、联邦技工移民或加拿大经验类移民的要求",
+      "语言测试成绩（英语或法语至少达到 CLB 7）",
+      "非加拿大学历的学历认证（ECA）",
+      "资金证明（获得工作授权或工作聘书除外）",
+      "无犯罪记录且体检合格"
+    ],
+    "steps": [
+      "Find your NOC code (National Occupational Classification)",
+      "Take your language test (IELTS, CELPIP or PTE Core)",
+      "Get your foreign education credentials assessed (ECA)",
+      "Calculate your CRS (Comprehensive Ranking System) score",
+      "Submit your Express Entry profile to the pool",
+      "Wait for an Invitation to Apply (ITA)",
+      "Submit your complete PR application within 60 days of invitation"
+    ],
+    "steps_tr": [
+      "NOC (Ulusal Meslek Sınıflandırması) kodunuzu bulun",
+      "Dil sınavına girin (IELTS, CELPIP veya PTE Core)",
+      "Eğitim denklik değerlendirmenizi (ECA) alın",
+      "CRS (Kapsamlı Sıralama Sistemi) puanınızı hesaplayın",
+      "Express Entry profilinizi havuza gönderin",
+      "Başvuru Davetiyesini (ITA) bekleyin",
+      "Davetiyeden sonra 60 gün içinde tam PR başvurunuzu yapın"
+    ],
+    "steps_zh": [
+      "确定您的国家职业分类（NOC）代码",
+      "进行语言测试（IELTS、CELPIP 或 PTE Core）",
+      "完成海外学历认证（ECA）",
+      "计算您的 CRS（综合排名系统）分数",
+      "向池中提交您的 Express Entry 个人档案",
+      "等待申请邀请（ITA）",
+      "收到邀请后 60 天内提交完整的永久居民（PR）申请"
+    ],
+    "officialUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html"
   }
 ]
