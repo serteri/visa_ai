@@ -200,12 +200,12 @@
     "name_tr": "Talep Üzerine Beceri Vizesi",
     "name_zh": "技能需求签证",
     "nameKey": "visa482",
-    "type": "Temporary (1-4 years)",
-    "processingTime": "1-3",
+    "type": "Temporary (up to 4 years; up to 5 for some Hong Kong passport holders)",
+    "processingTime": "Varies (see processing time guide)",
     "processingTimeUnit": "months",
-    "fee": 3035,
+    "fee": 3210,
     "minPoints": null,
-    "description": "Employer sponsored visa for skilled workers. Replaced the TSS 482 visa.",
+    "description": "Employer‑sponsored temporary visa for skilled workers. Stay up to 4 years (up to 5 for eligible Hong Kong passport holders). Fees and processing times vary; consult the Home Affairs visa page and processing time guide.",
     "description_tr": "Yetenekli çalışanlar için işveren destekli geçici vize.",
     "description_zh": "雇主担保的技术工人临时签证。",
     "requirements": [
@@ -439,33 +439,33 @@
     "name_zh": "加拿大快速通道 Express Entry",
     "nameKey": "canada_express_entry",
     "type": "Permanent",
-    "processingTime": "6",
+    "processingTime": "Varies by program",
     "processingTimeUnit": "months",
-    "fee": 1525,
+    "fee": 1590,
     "minPoints": null,
-    "description": "Canada's primary immigration system for skilled workers seeking permanent residency, utilizing the Comprehensive Ranking System (CRS).",
-    "description_tr": "Kanada'nın nitelikli göçmenler için uyguladığı, Kapsamlı Sıralama Sistemi (CRS) puan tabanlı daimi oturum (PR) sistemidir.",
-    "description_zh": "加拿大针对寻求永久居民身份的技术工人的主要移民系统，采用综合排名系统（CRS）进行筛选。",
+    "description": "Canada's primary immigration system for skilled workers seeking permanent residency, utilizing the Comprehensive Ranking System (CRS). Covers FSWP, CEC, and FSTP.",
+    "description_tr": "Kanada'nın nitelikli göçmenler için uyguladığı, Kapsamlı Sıralama Sistemi (CRS) puan tabanlı daimi oturum (PR) sistemidir. FSWP, CEC ve FSTP programlarını yönetir.",
+    "description_zh": "加拿大针对寻求永久居民身份的技术工人的主要移民系统，包括 FSWP、CEC 和 FSTP，采用综合排名系统（CRS）进行筛选。",
     "requirements": [
       "Meet eligibility for Federal Skilled Worker, Skilled Trades, or Canadian Experience Class",
-      "Language test results (CLB 7 minimum for English or French)",
-      "Educational Credential Assessment (ECA) for non-Canadian degrees",
-      "Proof of funds (unless authorized to work or have a job offer)",
-      "No criminal record and clean health assessment"
+      "Language test results (CLB 7 minimum for FSWP/CEC TEER 0-1, CLB 5 for TEER 2-3)",
+      "Educational Credential Assessment (ECA) for foreign degrees (FSWP requirement)",
+      "Proof of funds (unless authorized to work or have a valid job offer)",
+      "No criminal record (police certificate) and clean health assessment"
     ],
     "requirements_tr": [
       "Federal Skilled Worker, Skilled Trades veya Canadian Experience Class şartlarını karşılamak",
-      "Dil sınavı sonuçları (İngilizce veya Fransızca için en az CLB 7)",
-      "Kanada dışı diplomalar için Eğitim Denklik Değerlendirmesi (ECA)",
-      "Yeterli finansal birikim kanıtı (iş teklifi veya çalışma izni yoksa)",
-      "Adli sicil kaydı olmaması ve sağlık muayenesi onayı"
+      "Dil sınavı sonuçları (FSWP/CEC TEER 0-1 için en az CLB 7, TEER 2-3 için CLB 5)",
+      "Yabancı diplomalar için Eğitim Denklik Değerlendirmesi (ECA) (FSWP için zorunlu)",
+      "Yeterli finansal birikim kanıtı (iş teklifi veya Kanada'da çalışma izni yoksa)",
+      "Adli sicil kaydı olmaması (polis sertifikası) ve sağlık muayenesi onayı"
     ],
     "requirements_zh": [
-      "满足联邦技术移民、联邦技工移民或加拿大经验类移民的要求",
-      "语言测试成绩（英语或法语至少达到 CLB 7）",
-      "非加拿大学历的学历认证（ECA）",
-      "资金证明（获得工作授权或工作聘书除外）",
-      "无犯罪记录且体检合格"
+      "满足联邦技术移民（FSWP）、联邦技工移民（FSTP）或加拿大经验类移民（CEC）的要求",
+      "语言测试成绩（FSWP/CEC TEER 0-1 至少达到 CLB 7，TEER 2-3 达到 CLB 5）",
+      "非加拿大学历的学历认证（ECA，FSWP 必须）",
+      "资金证明（获得工作授权或有效工作聘书除外）",
+      "无犯罪记录（警方证明）且体检合格"
     ],
     "steps": [
       "Find your NOC code (National Occupational Classification)",
@@ -494,6 +494,7 @@
       "等待申请邀请（ITA）",
       "收到邀请后 60 天内提交完整的永久居民（PR）申请"
     ],
+    "detailUrl": "https://www.logivisa.com/visas/canada-express-entry",
     "officialUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html"
   }
 ]
