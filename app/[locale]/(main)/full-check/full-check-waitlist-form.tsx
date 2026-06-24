@@ -479,6 +479,7 @@ export function FullCheckWaitlistForm({
             id="waitlist-target-country"
             name="targetCountry"
             defaultValue={initialValues.targetCountry ?? "AU"}
+            disabled={Boolean(initialValues.targetCountry)}
             className={selectClassName}
           >
             {activeCountries.map((code) => (
@@ -487,6 +488,9 @@ export function FullCheckWaitlistForm({
               </option>
             ))}
           </select>
+          {initialValues.targetCountry && (
+            <input type="hidden" name="targetCountry" value={initialValues.targetCountry} />
+          )}
         </div>
 
         <div className="space-y-2">

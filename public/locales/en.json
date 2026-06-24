@@ -36,7 +36,7 @@
     }
   },
   "hero.headline": "Logivisa",
-  "hero.subheadline": "Structured visa pathway analysis and readiness reports for Australia.",
+  "hero.subheadline": "Structured visa pathway analysis and readiness reports for your destination country.",
   "hero.cta": "Start pathway check",
   "hero.secondary": "Ask the assistant",
   "hero.trustBadge": "Logivisa",
@@ -171,8 +171,7 @@
   "legal.whatDoesNotText3": "Does not replace consultation with a registered migration agent.",
   "hero.noCreditCard": "🔒 No credit card required for Beta",
   "hero.instantPdf": "⚡️ Instant PDF Delivery",
-  "socialProof.dha": "Based on 2026 DHA Data",
-  "socialProof.mara": "MARA Compliance Checked",
+  "socialProof.dha": "Based on Official Government Data",
   "socialProof.users": "500+ Beta Users",
   "fullCheck.whatYouGet.title": "What you'll get",
   "fullCheck.whatYouGet.points": "Points Calculation",

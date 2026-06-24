@@ -36,7 +36,7 @@
     }
   },
   "hero.headline": "Logivisa",
-  "hero.subheadline": "Avustralya vize yollari icin yapilandirilmis analiz ve hazirlik raporlari.",
+  "hero.subheadline": "Hedef ulkeniz icin yapilandirilmis vize yolu analizi ve hazirlik raporlari.",
   "hero.cta": "Yol kontrolunu baslat",
   "hero.secondary": "Asistana sor",
   "hero.trustBadge": "Logivisa",
@@ -178,8 +178,7 @@
   "premiumCta.full.trustNote": "Erken erişim döneminde ödeme gerekmez.",
   "hero.noCreditCard": "🔒 Beta sürümü için kredi kartı gerekmez",
   "hero.instantPdf": "⚡️ Anında PDF Teslimi",
-  "socialProof.dha": "2026 DHA Verilerine Dayanır",
-  "socialProof.mara": "MARA Uyum Kontrolünden Geçmiştir",
+  "socialProof.dha": "Resmi Devlet Verilerine Dayanır",
   "socialProof.users": "500+ Beta Kullanıcısı",
   "fullCheck.whatYouGet.title": "Ne alacaksınız?",
   "fullCheck.whatYouGet.points": "Puan Hesaplaması",

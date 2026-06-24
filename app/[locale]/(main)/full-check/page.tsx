@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 import { ShareLogivisaCard } from "@/components/share-logivisa-card";
 import { getCachedFullCheckUsage } from "@/lib/cache/public-read-models";
+import { isSupportedCountry } from "@/lib/countries";
 
 const BASE_URL = "https://www.logivisa.com";
 
@@ -143,6 +144,7 @@ type FullCheckPageProps = {
     visaInterest?: string;
     biggestConcern?: string;
     currentCountry?: string;
+    country?: string;
   }>;
 };
 
@@ -204,6 +206,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const initialValues = {
     visaInterest: query.visaInterest ?? query.preferredPathway ?? "",
     currentCountry: query.currentCountry ?? "",
+    targetCountry: isSupportedCountry(query.country) ? query.country : "",
     occupation: query.occupation ?? "",
     source: query.source ?? "full_check",
     mainGoal: buildPrefilledGoal({

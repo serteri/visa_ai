@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/contexts/language-context";
 import { PdfDownloadModal } from "@/components/PdfDownloadModal";
+import { activeCountries, countryComplianceBadge } from "@/lib/countries";
 
 
 
@@ -47,7 +48,7 @@ export function HomeContent() {
           
           <div className="mt-10 flex w-full max-w-md flex-col gap-4 sm:flex-row sm:justify-center">
             <Button asChild size="lg" className="h-14 px-8 text-base bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/50 border-0">
-              <Link href={`/${locale}/full-check`}>
+              <Link href={`/${locale}/reports`}>
                 {locale === "tr" ? "Hemen Başla" : locale === "zh-Hans" ? "立即开始" : "Get Free Report"}
               </Link>
             </Button>
@@ -77,10 +78,12 @@ export function HomeContent() {
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">✓</span>
               {t("socialProof.users")}
             </div>
-            <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">🛡️</span>
-              {t("socialProof.mara")}
-            </div>
+            {activeCountries.map((code) => (
+              <div key={code} className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">🛡️</span>
+                {countryComplianceBadge[code][locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en"]}
+              </div>
+            ))}
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">📊</span>
               {t("socialProof.dha")}
