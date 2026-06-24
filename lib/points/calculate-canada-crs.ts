@@ -7,6 +7,7 @@ import type {
 } from "@/lib/points/canada-types";
 
 const CLB_RANK: Record<CLBLevel, number> = {
+  not_selected: 0,
   less_than_CLB4: 0,
   CLB_4_5: 5,
   CLB_6: 6,
@@ -29,8 +30,10 @@ function coreHumanCapital(input: CanadaCRSInput) {
   const spouseKey = input.hasSpouseOrPartner ? "withSpouse" : "withoutSpouse";
   const crs = expressEntryConfig.crsScore.coreHumanCapitalFactors;
 
-  const age = crs.age.table[input.age]?.[spouseKey] ?? 0;
-  const education = crs.education.table[input.education]?.[spouseKey] ?? 0;
+  const ageTable: Record<string, { withSpouse: number; withoutSpouse: number }> = crs.age.table;
+  const educationTable: Record<string, { withSpouse: number; withoutSpouse: number }> = crs.education.table;
+  const age = ageTable[input.age]?.[spouseKey] ?? 0;
+  const education = educationTable[input.education]?.[spouseKey] ?? 0;
 
   const firstLanguagePerAbilityMax = input.hasSpouseOrPartner
     ? crs.firstOfficialLanguage.maxPerAbilityWithSpouse
@@ -41,8 +44,10 @@ function coreHumanCapital(input: CanadaCRSInput) {
     input.firstLanguageAbilityScores.reading,
     input.firstLanguageAbilityScores.writing,
   ];
+  const firstLanguageTable: Record<string, { withSpouse: number; withoutSpouse: number }> =
+    crs.firstOfficialLanguage.table;
   const firstLanguage = firstLanguageAbilities.reduce((sum, ability) => {
-    const row = crs.firstOfficialLanguage.table[ability]?.[spouseKey] ?? 0;
+    const row = firstLanguageTable[ability]?.[spouseKey] ?? 0;
     return sum + Math.min(row, firstLanguagePerAbilityMax);
   }, 0);
 

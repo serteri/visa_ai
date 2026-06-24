@@ -2,6 +2,7 @@
 // Field names follow src/data/countries/ca/express-entry.json table keys.
 
 export type CanadaAgeBracket =
+  | "not_selected"
   | "17_or_less"
   | "18"
   | "19"
@@ -24,6 +25,7 @@ export type CanadaAgeBracket =
   | "45_or_more";
 
 export type CanadaEducationLevel =
+  | "not_selected"
   | "less_than_secondary"
   | "secondary_diploma"
   | "one_year_post_secondary"
@@ -44,6 +46,7 @@ export type CanadaSpouseEducationLevel =
   | "doctoral";
 
 export type CLBLevel =
+  | "not_selected"
   | "less_than_CLB4"
   | "CLB_4_5"
   | "CLB_6"

@@ -10,6 +10,7 @@ import type { CanadaCRSInput, CanadaAgeBracket, CanadaEducationLevel, CLBLevel, 
 // Option lists mapping to keys in express-entry.json and language contexts
 
 const AGE_OPTIONS = [
+  { value: "not_selected", label: "Select your age" },
   { value: "17_or_less", label: "17 or less" },
   { value: "18", label: "18" },
   { value: "19", label: "19" },
@@ -33,6 +34,7 @@ const AGE_OPTIONS = [
 ] as const;
 
 const EDUCATION_OPTIONS = [
+  { value: "not_selected", label: "Select your education level" },
   { value: "less_than_secondary", label: "Less than secondary school (High school)" },
   { value: "secondary_diploma", label: "Secondary school (High school graduation)" },
   { value: "one_year_post_secondary", label: "One-year program at a college or university" },
@@ -44,6 +46,7 @@ const EDUCATION_OPTIONS = [
 ] as const;
 
 const CLB_OPTIONS = [
+  { value: "not_selected", label: "Select your score" },
   { value: "less_than_CLB4", label: "CLB 4 or less" },
   { value: "CLB_4_5", label: "CLB 5" },
   { value: "CLB_6", label: "CLB 6" },
@@ -94,17 +97,17 @@ type FormState = CanadaCRSInput;
 
 const INIT: FormState = {
   hasSpouseOrPartner: false,
-  age: "20_29",
-  education: "bachelors_or_3yr_program",
+  age: "not_selected",
+  education: "not_selected",
   firstLanguageAbilityScores: {
-    speaking: "CLB_7",
-    listening: "CLB_7",
-    reading: "CLB_7",
-    writing: "CLB_7",
+    speaking: "not_selected",
+    listening: "not_selected",
+    reading: "not_selected",
+    writing: "not_selected",
   },
   secondLanguageBand: "none",
   canadianWorkExperience: "none_or_less_than_1yr",
-  postSecondaryCredentialCount: "one",
+  postSecondaryCredentialCount: "none",
   foreignWorkExperienceYears: "none",
   hasCertificateOfQualification: false,
   hasSiblingInCanada: false,
@@ -503,10 +506,17 @@ export function CanadaPointsCalculatorClient({ locale }: { locale: string }) {
                 <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3 dark:border-zinc-800">
                   <span className="text-xs font-bold text-slate-700 dark:text-zinc-300">Total Score</span>
                   <span className="text-sm font-black text-slate-900 dark:text-white">
-                    {calc.totalScore} / 1200
+                    {calc.totalScore} / {calc.maxScore}
                   </span>
                 </div>
               </div>
+              <p className="mt-3 text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
+                {isTr
+                  ? `Toplam puanınız, Express Entry havuzundaki sıralamanızı belirleyen CRS skorudur (en yüksek olası skor ${calc.maxScore}'dur, ancak pratikte çoğu davet 300-600 puan aralığında verilir). Hangi puanın gerektiği her çekilişte değişir; en güncel kesme puanlarını IRCC'nin resmi Express Entry çekiliş duyurularından kontrol edebilirsiniz.`
+                  : isZh
+                  ? `您的总分是用于在Express Entry候选池中排名的CRS分数（理论最高分为${calc.maxScore}，但实际邀请通常在300-600分之间）。每次抽签所需的分数都会变化；请查阅IRCC官方Express Entry抽签公告以获取最新的分数线。`
+                  : `Your total is the CRS score used to rank you in the Express Entry pool (the theoretical maximum is ${calc.maxScore}, though in practice most invitations are issued in the 300-600 range). The score needed changes with every draw — check IRCC's official Express Entry round results for the latest cutoffs.`}
+              </p>
               <p className="mt-3 text-[10px] text-slate-400 dark:text-zinc-500 italic">
                 Verified against 2026 IRCC Comprehensive Ranking System rules. Last configuration update: {calc.configVersion}.
               </p>
