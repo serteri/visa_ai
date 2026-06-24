@@ -185,7 +185,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
     }
   }
 
-  // Partner/spouse relationship intent → subclass 820_801
+  // Partner/spouse relationship intent → subclass 820 (entry-point temporary stage)
   const wantsPartnerPathway =
     hasWord(normalised, "partner") ||
     hasWord(normalised, "spouse") ||
@@ -209,7 +209,7 @@ export async function matchVisas(input: MatchInput): Promise<MatchedVisa[]> {
       })
       .from(visaTypes)
       .leftJoin(sourceSnapshots, eq(sourceSnapshots.visa_type_id, visaTypes.id))
-      .where(eq(visaTypes.subclass, "820_801"))
+      .where(eq(visaTypes.subclass, "820"))
       .limit(1);
 
     if (row820801) {

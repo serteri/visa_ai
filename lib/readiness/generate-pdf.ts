@@ -1640,9 +1640,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function getFrictionForPathway(subclass: string) {
-    return report.frictionAnalysis.find(
-      (f) => f.pathway === subclass || (subclass === "820_801" && f.pathway === "820/801")
-    );
+    return report.frictionAnalysis.find((f) => f.pathway === subclass);
   }
 
   // Cover page

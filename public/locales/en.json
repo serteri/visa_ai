@@ -544,14 +544,16 @@
     "visa482name": "Skills in Demand visa",
     "visa485name": "Temporary Graduate visa",
     "visa500name": "Student visa",
-    "visa820_801name": "Partner visa",
+    "visa820name": "Partner visa (Temporary)",
+    "visa801name": "Partner visa (Permanent)",
     "visa189desc": "For skilled workers who are not sponsored by an employer, state or family member.",
     "visa190desc": "For skilled workers nominated by a state or territory government.",
     "visa491desc": "For skilled workers nominated by a state or sponsored by family to live and work in regional Australia.",
     "visa482desc": "Employer sponsored visa for skilled workers.",
     "visa485desc": "Allows international graduates to live and work in Australia after completing studies.",
     "visa500desc": "For international students to study full-time in Australia.",
-    "visa820_801desc": "For partners or spouses of Australian citizens or permanent residents."
+    "visa820desc": "The first step toward permanent residence for partners or spouses of Australian citizens or permanent residents.",
+    "visa801desc": "Permanent residence for partners or spouses of Australian citizens or permanent residents, granted after the temporary stage."
   },
   "timeUnits": {
     "months": "months",

@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-const AU_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820_801"];
+const AU_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820", "801"];
 
 export default async function AustraliaVisasPage({ params }: PageProps) {
   const { locale } = await params;

@@ -86,7 +86,8 @@ function detectSubclasses(input: ReadinessInput): string[] {
   if (/\b189\b/.test(pref)) found.add("189");
   if (/\b190\b/.test(pref)) found.add("190");
   if (/\b491\b/.test(pref)) found.add("491");
-  if (/820|801/.test(pref)) found.add("820_801");
+  if (/\b820\b/.test(pref)) found.add("820");
+  if (/\b801\b/.test(pref)) found.add("801");
 
   // Study → 500
   if (hasKw(combined, ["study", "student", "course", "university", "college", "school", "eğitim", "öğrenci", "okul"])) {
@@ -147,7 +148,9 @@ function detectSubclasses(input: ReadinessInput): string[] {
     found.add("491");
   }
 
-  // Partner → 820_801
+  // Partner → 820 (the entry-point application stage). 801 (permanent) is added
+  // on top when the text specifically signals the permanent/later stage,
+  // since most partner-pathway applicants are starting at 820.
   if (
     hasKw(combined, [
       "partner",
@@ -166,7 +169,10 @@ function detectSubclasses(input: ReadinessInput): string[] {
       "nişan",
     ])
   ) {
-    found.add("820_801");
+    found.add("820");
+  }
+  if (hasKw(combined, ["801", "permanent partner", "kalıcı partner"])) {
+    found.add("801");
   }
 
   // Work without explicit sponsor and no other pathway → suggest 482 as needs_more_info
@@ -175,7 +181,8 @@ function detectSubclasses(input: ReadinessInput): string[] {
     !found.has("482") &&
     !found.has("189") &&
     !found.has("500") &&
-    !found.has("820_801")
+    !found.has("820") &&
+    !found.has("801")
   ) {
     found.add("482");
   }
@@ -293,7 +300,8 @@ const VISA_NAMES: Record<string, { en: string; tr: string }> = {
   "189": { en: "Skilled Independent Visa", tr: "Yetenekli Bağımsız Vize" },
   "190": { en: "Skilled Nominated Visa", tr: "Yetenekli Aday Gösterilen Vize" },
   "491": { en: "Skilled Work Regional Visa", tr: "Bölgesel Yetenekli Çalışma Vizesi" },
-  "820_801": { en: "Partner Visa (Onshore)", tr: "Partner Vizesi (Yerinde)" },
+  "820": { en: "Partner Visa - Temporary (Onshore)", tr: "Partner Vizesi - Geçici (Yerinde)" },
+  "801": { en: "Partner Visa - Permanent", tr: "Partner Vizesi - Kalıcı" },
 };
 
 function getPathwayKeyRequirements(
@@ -375,7 +383,8 @@ function getPathwayKeyRequirements(
             "Occupation and skills assessment context",
             "Regional nomination or relative sponsorship context",
           ];
-    case "820_801":
+    case "820":
+    case "801":
       return isTr
         ? [
             "Uygun partner sponsorluğu statüsü bağlamı",
@@ -494,7 +503,7 @@ function getPathwaySpecificRisks(
     }
   }
 
-  if (subclass === "820_801") {
+  if ((subclass === "820" || subclass === "801")) {
     if (!input.sponsorOrFamily) {
       risks.push(
         isTr
@@ -588,7 +597,7 @@ function getPathwayConfidenceLevel(
     return input.occupation ? "medium" : "low";
   }
 
-  if (subclass === "820_801") {
+  if ((subclass === "820" || subclass === "801")) {
     const base = hasKw(sponsorText, ["partner", "spouse", "de facto", "eş", "ilişki"]) && Boolean(input.sponsorOrFamily)
       ? "high"
       : "medium";
@@ -665,7 +674,7 @@ function getConfidenceExplanation(
       : `Confidence is estimated indicatively from age/English/occupation inputs, ${pointsText}, and available detail (${dataCompletenessPercentage}%).`;
   }
 
-  if (subclass === "820_801") {
+  if ((subclass === "820" || subclass === "801")) {
     return isTr
       ? hasSponsorContext
         ? `İlişki/sponsor bağlamı mevcut ve veri tamamlanma düzeyi (%${dataCompletenessPercentage}) güveni destekliyor.`
@@ -749,7 +758,7 @@ function buildPathwayEntry(
     reason = isTr
       ? "491 Bölgesel Yetenekli Çalışma Vizesi, bölgesel adaylık veya akraba sponsorluğu gerektiren geçici bir yoldur. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
       : "The 491 Skilled Work Regional Visa is a provisional regional pathway requiring nomination or relative sponsorship. This is general information only and depends on individual circumstances.";
-  } else if (subclass === "820_801") {
+  } else if ((subclass === "820" || subclass === "801")) {
     const hasPartnerSignal = hasKw(sponsorText, ["partner", "citizen", "pr", "permanent", "nz", "eş", "vatandaş", "daimi"]);
     relevance = hasPartnerSignal ? "possible" : "needs_more_information";
     reason = isTr
@@ -820,7 +829,7 @@ function getDifficultyForPathway(
   if (pathway.subclass === "500") return "medium";
   if (pathway.subclass === "485") return "medium";
   if (pathway.subclass === "482") return "medium";
-  if (pathway.subclass === "820_801") return "high";
+  if (pathway.subclass === "820" || pathway.subclass === "801") return "high";
   if (["189", "190", "491"].includes(pathway.subclass)) return "high";
   return "medium";
 }
@@ -850,7 +859,7 @@ function getRequirementType(
       ? "Puan, meslek ve davet/adaylık odaklı"
       : "Points, occupation, and invitation/nomination based";
   }
-  if (pathway.subclass === "820_801") {
+  if (pathway.subclass === "820" || pathway.subclass === "801") {
     return isTr
       ? "İlişki ve sponsor kanıtı odaklı"
       : "Relationship and sponsor evidence based";
@@ -1468,7 +1477,7 @@ function buildMissingInformation(
   const skilled = subclasses.some((s) => ["189", "190", "491"].includes(s));
   const has485 = subclasses.includes("485");
   const has482 = subclasses.includes("482");
-  const hasPartner = subclasses.includes("820_801");
+  const hasPartner = (subclasses.includes("820") || subclasses.includes("801"));
 
   if (!input.mainGoal && subclasses.length === 0) {
     missing.push(isTr ? "Ana hedef veya vize ilgi alanı" : "Main goal or visa interest");
@@ -1621,7 +1630,8 @@ function getEvidenceStatusItems(
         { label: isTr ? "Mali kanıt" : "Financial evidence", status: "typically_required" },
         { label: isTr ? "Pasaport ülkesi" : "Passport country", status: input.passportCountry ? "provided" : "typically_required" },
       ];
-    case "820_801":
+    case "820":
+    case "801":
       return [
         { label: isTr ? "İlişki kanıtı" : "Relationship evidence", status: hasSponsor ? "provided" : "missing" },
         { label: isTr ? "Sponsor kanıtı" : "Sponsor evidence", status: hasSponsor ? "provided" : "typically_required" },
@@ -1721,15 +1731,25 @@ const PATHWAY_STRENGTH_META: Record<
     limitingFactorsEn: ["Regional nomination or relative sponsorship context may affect pathway"],
     limitingFactorsTr: ["Bölgesel adaylık veya akraba sponsorluğu bağlamı bu yolu etkileyebilir"],
   },
-  "820_801": {
+  "820": {
     friction: "high",
     evidenceLoad: "high",
-    typicalPathEn: "Onshore partner pathway",
-    typicalPathTr: "Avustralya içi partner yolu",
+    typicalPathEn: "Onshore partner pathway (temporary stage)",
+    typicalPathTr: "Avustralya içi partner yolu (geçici aşama)",
     signalReasonsEn: ["Partner pathway context"],
     signalReasonsTr: ["Partner yolu bağlamı"],
     limitingFactorsEn: ["Relationship evidence and sponsor context are central to this pathway"],
     limitingFactorsTr: ["İlişki kanıtı ve sponsor bağlamı bu yol için merkezi önemdedir"],
+  },
+  "801": {
+    friction: "medium",
+    evidenceLoad: "medium",
+    typicalPathEn: "Onshore partner pathway (permanent stage)",
+    typicalPathTr: "Avustralya içi partner yolu (kalıcı aşama)",
+    signalReasonsEn: ["Continuing partner relationship context"],
+    signalReasonsTr: ["Süregelen partner ilişkisi bağlamı"],
+    limitingFactorsEn: ["Eligibility for assessment depends on the 2-year wait since the subclass 820 application"],
+    limitingFactorsTr: ["Değerlendirmeye uygunluk, subclass 820 başvurusundan itibaren 2 yıllık bekleme süresine bağlıdır"],
   },
 };
 
@@ -1803,7 +1823,7 @@ function buildEvidenceReadiness(
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
   const has485 = subclasses.includes("485");
   const has482 = subclasses.includes("482");
-  const hasPartner = subclasses.includes("820_801");
+  const hasPartner = (subclasses.includes("820") || subclasses.includes("801"));
   const items: EvidenceReadinessItem[] = [
     {
       category: isTr ? "Kimlik ve pasaport" : "Identity and passport",
@@ -1981,7 +2001,8 @@ const GOV_FEES_EN: Record<string, string> = {
   "189": "From AUD 4,910 (main applicant)",
   "190": "From AUD 4,910 (main applicant)",
   "491": "From AUD 4,910 (main applicant)",
-  "820_801": "From AUD 9,365 (most applicants)",
+  "820": "From AUD 9,365 (most applicants) — covers both the temporary (820) and permanent (801) stages",
+  "801": "No separate fee — already paid as part of the subclass 820 application",
 };
 const GOV_FEES_TR: Record<string, string> = {
   "500": "AUD 2.000'den itibaren (muaf olmayan başvurular için)",
@@ -1990,7 +2011,8 @@ const GOV_FEES_TR: Record<string, string> = {
   "189": "AUD 4.910'dan itibaren (ana başvurucu)",
   "190": "AUD 4.910'dan itibaren (ana başvurucu)",
   "491": "AUD 4.910'dan itibaren (ana başvurucu)",
-  "820_801": "AUD 9.365'ten itibaren (çoğu başvurucu)",
+  "820": "AUD 9.365'ten itibaren (çoğu başvurucu) — geçici (820) ve kalıcı (801) aşamaları kapsar",
+  "801": "Ayrı bir ücret yok — subclass 820 başvurusu kapsamında ödenmiştir",
 };
 
 function buildFinancialRoadmap(
@@ -2139,7 +2161,7 @@ function buildProgressionPathways(
         : "This may be considered a typical system progression after the relevant period if criteria are met.",
     });
   }
-  if (subclasses.includes("820_801")) {
+  if ((subclasses.includes("820") || subclasses.includes("801"))) {
     items.push({
       from: "820",
       to: "801",
@@ -2197,9 +2219,13 @@ function buildPathwayFriction(
         en: "Regional requirements and nomination or sponsorship context may affect this pathway.",
         tr: "Bölgesel gereklilikler ve adaylık veya sponsorluk bağlamı bu yolu etkileyebilir.",
       },
-      "820_801": {
+      "820": {
         en: "Relationship evidence is central to this pathway.",
         tr: "İlişki kanıtı bu yol için merkezi önemdedir.",
+      },
+      "801": {
+        en: "Continuing to meet relationship requirements is central to this pathway.",
+        tr: "İlişki gerekliliklerini sürdürmek bu yol için merkezi önemdedir.",
       },
       general: {
         en: "More detail is needed before pathway friction can be compared.",
@@ -2302,7 +2328,7 @@ function buildPrimaryLimitingFactor(
 ): PrimaryLimitingFactor {
   const isTr = locale === "tr";
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
-  const sponsorRequired = subclasses.some((subclass) => subclass === "482" || subclass === "820_801");
+  const sponsorRequired = subclasses.some((subclass) => subclass === "482" || (subclass === "820" || subclass === "801"));
   const sponsorMissing = sponsorRequired && !hasSponsorContext(input.sponsorOrFamily);
 
   if (estimatedPoints !== undefined && estimatedPoints < 65) {
@@ -2395,7 +2421,7 @@ function buildPositionChangers(
     });
   }
 
-  if (subclasses.includes("482") || subclasses.includes("820_801")) {
+  if (subclasses.includes("482") || (subclasses.includes("820") || subclasses.includes("801"))) {
     items.push({
       label: isTr ? "Sponsor veya ilişki kanıtı" : "Sponsor or relationship evidence",
       explanation: isTr
@@ -2651,7 +2677,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     dataCompleteness,
     hasSkilledPathway,
     detectedSubclasses.includes("482"),
-    detectedSubclasses.includes("820_801")
+    (detectedSubclasses.includes("820") || detectedSubclasses.includes("801"))
   );
 
   const keyVisaRequirements = buildKeyVisaRequirements(pathwayComparison);
@@ -2730,7 +2756,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     hasOccupation: Boolean(input.occupation),
     hasEnglish: Boolean(input.englishLevel),
     hasSkilledPathway,
-    hasPartnerPathway: detectedSubclasses.includes("820_801"),
+    hasPartnerPathway: (detectedSubclasses.includes("820") || detectedSubclasses.includes("801")),
     has482Pathway: detectedSubclasses.includes("482"),
     hasMissingInfo: missingInformation.length > 0,
   });

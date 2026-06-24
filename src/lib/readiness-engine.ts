@@ -198,7 +198,7 @@ function getTrendPoint(estimate?: { last_invited_point?: number; estimated_point
 }
 
 function toPathwayKey(subclass: string): string {
-  return subclass === "820_801" ? "820/801" : subclass;
+  return subclass;
 }
 
 function isMarriedContext(raw?: string): boolean {
@@ -441,7 +441,8 @@ const ZH_VISA_NAMES: Record<string, string> = {
   "189": "189 独立技术移民",
   "190": "190 州担保技术移民",
   "491": "491 偏远地区技术移民",
-  "820_801": "820/801 境内配偶签证",
+  "820": "820 境内配偶签证（临时）",
+  "801": "801 境内配偶签证（永久）",
   general: "一般评估",
 };
 
@@ -540,7 +541,7 @@ function zhPathwayReason(subclass: string): string {
   if (subclass === "190") return `${name} 是打分制技术移民路径，通常需要获得州或领地提名。本内容仅为一般信息，具体情况取决于个人背景。`;
   if (subclass === "491") return `${name} 是偏远地区技术移民路径，通常涉及州/领地提名或合资格亲属担保。本内容仅为一般信息，具体情况取决于个人背景。`;
   if (subclass === "482") return `${name} 以雇主担保和岗位匹配为核心。本内容仅为一般信息，具体情况取决于个人背景。`;
-  if (subclass === "820_801") return `${name} 通常围绕配偶关系证据、担保人背景和境内申请阶段进行评估。本内容仅为一般信息，具体情况取决于个人背景。`;
+  if (subclass === "820" || subclass === "801") return `${name} 通常围绕配偶关系证据、担保人背景和境内申请阶段进行评估。本内容仅为一般信息，具体情况取决于个人背景。`;
   if (subclass === "500") return `${name} 通常围绕课程注册、学习目的和资金安排进行评估。本内容仅为一般信息。`;
   if (subclass === "485") return `${name} 通常适用于符合条件的澳大利亚近期毕业生。本内容仅为一般信息。`;
   return "现有信息尚不足以确定单一签证路径。补充目标、职业和担保背景后，可进行更完整的结构化评估。";
@@ -555,7 +556,7 @@ function zhPathwayRisks(subclass: string, estimatedPoints?: number): string[] {
   if (subclass === "190") risks.push("190 州担保技术移民还取决于州或领地提名设置及职业需求。");
   if (subclass === "491") risks.push("491 偏远地区技术移民还取决于偏远地区提名或合资格担保背景。");
   if (subclass === "482") risks.push("482 路径高度依赖雇主担保、岗位真实性和职业匹配。");
-  if (subclass === "820_801") risks.push("820/801 配偶签证对关系证据的一致性和完整性要求较高。");
+  if (subclass === "820" || subclass === "801") risks.push("820/801 配偶签证对关系证据的一致性和完整性要求较高。");
   return risks.length ? risks : ["现有信息提供了初步路径信号，但个人背景和证据质量仍可能改变判断。"];
 }
 
@@ -653,7 +654,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
       ? "打分、职业、邀请/提名相关要求"
       : pathway.subclass === "482"
         ? "雇主担保、职业和岗位相关要求"
-        : pathway.subclass === "820_801"
+        : pathway.subclass === "820" || pathway.subclass === "801"
           ? "关系、担保和证据相关要求"
           : "路径相关要求",
     userRelativePosition: pathway.confidenceLevel === "high"
@@ -700,9 +701,11 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
             ? "EOI → 偏远地区提名/担保 → 递交 491"
             : item.subclass === "482"
               ? "雇主担保 → 提名 → 递交 482"
-              : item.subclass === "820_801"
+              : item.subclass === "820"
                 ? "关系证据准备 → 递交 820 → 进入 801 阶段"
-                : item.typicalPath,
+                : item.subclass === "801"
+                  ? "持有 820 → 满足2年等待期 → 递交 801 评估"
+                  : item.typicalPath,
     explanation: "该路径强度基于已提供资料、材料准备难度、竞争激烈度和路径匹配度综合评估。",
     signalReasons: item.signalReasons.length ? item.signalReasons.map((_reason, index) =>
       index === 0
@@ -743,7 +746,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
         : subclass === "190" ? "州或领地提名设置可能影响该路径。"
         : subclass === "491" ? "偏远地区要求、提名或担保背景可能影响该路径。"
         : subclass === "482" ? "雇主担保背景是该路径的核心限制因素。"
-        : subclass === "820_801" ? "关系证明质量是该路径的核心。"
+        : subclass === "820" || subclass === "801" ? "关系证明质量是该路径的核心。"
         : "需要更多资料后才能比较路径竞争激烈度。",
     };
   });
@@ -849,7 +852,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
   return {
     ...report,
     executiveSummary: [
-      `本报告将 ${pathwayComparison.map((p) => p.subclass === "820_801" ? "820/801" : p.subclass).join("、")} 等路径放在同一视图中进行结构化比较。`,
+      `本报告将 ${pathwayComparison.map((p) => p.subclass).join("、")} 等路径放在同一视图中进行结构化比较。`,
       estimatedPoints !== undefined
         ? `当前初步打分估算为 ${estimatedPoints}；该估算可能影响打分制路径的相对位置。`
         : "当前资料已形成初步路径匹配度判断，但仍需核对路径特定证据。",

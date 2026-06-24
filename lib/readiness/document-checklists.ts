@@ -114,17 +114,29 @@ export function getDocumentChecklist(
     });
   }
 
-  if (subclasses.includes("820_801")) {
+  if (subclasses.includes("820")) {
     categories.push({
-      category: t3(locale, "820/801 Partner Visa", "820/801 Partner Vizesi", "820/801 配偶签证"),
+      category: t3(locale, "820 Partner Visa (Temporary)", "820 Partner Vizesi (Geçici)", "820 配偶签证（临时）"),
       items: localizedItems(locale, [
-        ["Sponsor evidence", "Sponsor kaniti", "担保人证明"],
+        ["Sponsorship approval evidence", "Sponsorluk onay kaniti", "担保批准证明"],
         ["Relationship history statement", "Iliski gecmisi beyani", "关系历史陈述"],
         ["Financial relationship evidence", "Mali iliski kaniti", "财务关系证明"],
         ["Household evidence", "Ortak yasam kaniti", "共同生活证明"],
         ["Social evidence and Form 888", "Sosyal kanit ve Form 888", "社会关系证明与 888 表格"],
         ["Commitment evidence", "Baglilik kaniti", "长期承诺证明"],
         ["Police certificates if required", "Gerekiyorsa sabika kaydi", "如要求，无犯罪记录证明"],
+      ]),
+    });
+  }
+
+  if (subclasses.includes("801")) {
+    categories.push({
+      category: t3(locale, "801 Partner Visa (Permanent)", "801 Partner Vizesi (Kalıcı)", "801 配偶签证（永久）"),
+      items: localizedItems(locale, [
+        ["Updated statutory declaration from sponsor", "Sponsordan guncel yeminli beyan", "担保人更新的法定声明"],
+        ["Updated financial and household evidence", "Guncel mali ve ev ici kanitlar", "更新的财务及家庭证据"],
+        ["Updated Australian police certificate, if previous one expired", "Onceki belge suresi dolduysa guncel Avustralya sabika kaydi", "如先前证明已过期，需提供更新的澳大利亚无犯罪记录证明"],
+        ["Confirmation that 2 years have passed since the subclass 820 application", "Subclass 820 basvurusundan itibaren 2 yil gectigine dair teyit", "确认自820类别申请以来已满2年"],
       ]),
     });
   }

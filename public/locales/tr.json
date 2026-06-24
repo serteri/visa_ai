@@ -551,14 +551,16 @@
     "visa482name": "Talep Üzerine Beceri Vizesi",
     "visa485name": "Geçici Mezun Vizesi",
     "visa500name": "Öğrenci Vizesi",
-    "visa820_801name": "Partner Vizesi",
+    "visa820name": "Partner Vizesi (Geçici)",
+    "visa801name": "Partner Vizesi (Kalıcı)",
     "visa189desc": "İşveren, eyalet veya aile tarafından desteklenmeyen yetenekli çalışanlar için.",
     "visa190desc": "Eyalet veya bölge hükümeti tarafından aday gösterilen yetenekli çalışanlar için.",
     "visa491desc": "Avustralya'nın bölgesel alanlarında yaşamak ve çalışmak isteyen yetenekli çalışanlar için.",
     "visa482desc": "Yetenekli çalışanlar için işveren destekli geçici vize.",
     "visa485desc": "Avustralya'da eğitimini tamamlayan uluslararası mezunlar için.",
     "visa500desc": "Avustralya'da tam zamanlı eğitim almak isteyen uluslararası öğrenciler için.",
-    "visa820_801desc": "Avustralyalı vatandaş veya daimi oturma iznine sahip kişilerin partnerleri için."
+    "visa820desc": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için kalıcı oturuma ilk adım.",
+    "visa801desc": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için, geçici aşamadan sonra verilen kalıcı oturum."
   },
   "timeUnits": {
     "months": "ay",

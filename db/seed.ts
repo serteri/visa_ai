@@ -930,8 +930,8 @@ const skilledWorkRegional491Data = {
 };
 
 const partnerVisa820801Data = {
-  subclass: "820_801",
-  visa_name: "Partner visa (onshore)",
+  subclass: "820",
+  visa_name: "Partner visa (Temporary, onshore)",
   stream: "Apply in Australia",
   category: "Family Migration",
   purpose:
@@ -1310,6 +1310,39 @@ const partnerVisa820801Data = {
     permanent_stage_documents:
       "If two years have passed since first applying and the applicant holds subclass 820, they may complete Stage 2 Permanent Partner Visa Assessment in ImmiAccount.",
   },
+};
+
+// Promoted from partnerVisa820801Data.permanent_stage_801 into its own seed
+// row so subclass 801 can be queried/displayed independently of subclass 820.
+const partnerVisa801Data = {
+  subclass: "801",
+  visa_name: "Partner visa (Permanent)",
+  stream: "Apply in Australia",
+  category: "Family Migration",
+  purpose:
+    "Grants permanent residence to the de facto partner or spouse of an Australian citizen, Australian permanent resident, or eligible New Zealand citizen, after holding a temporary Partner visa subclass 820 (or Dependent Child visa subclass 445).",
+  stay_period: "Permanently",
+  cost: "Paid when applying for the temporary and permanent Partner visas (no separate fee)",
+  work_rights:
+    "Live, work and study in Australia permanently. Access Medicare. Sponsor eligible family members. Travel to and from Australia for 5 years from grant date. Apply for Australian citizenship if eligible.",
+  key_requirements: partnerVisa820801Data.permanent_stage_801.key_requirements,
+  documents_required: partnerVisa820801Data.permanent_stage_801.documents_required,
+  application_steps: partnerVisa820801Data.permanent_stage_801.application_steps,
+  visa_conditions: partnerVisa820801Data.permanent_stage_801.visa_conditions,
+  risks: partnerVisa820801Data.permanent_stage_801.risks,
+  english_requirements: {
+    status: "not_specified_in_source_text",
+    notes: ["The provided source text does not specify a separate English test requirement for the permanent stage."],
+  },
+  financial_requirements: {
+    status: "no_separate_fee",
+    notes: ["No separate visa application charge — paid as part of the subclass 820 application."],
+  },
+  rights_and_benefits: partnerVisa820801Data.permanent_stage_801.rights_and_benefits,
+  relationship_evidence: partnerVisa820801Data.permanent_stage_801.relationship_evidence,
+  processing_time_note: partnerVisa820801Data.permanent_stage_801.processing_time_note,
+  sponsor_801_requirements: partnerVisa820801Data.permanent_stage_801.sponsor_801_requirements,
+  family_members: partnerVisa820801Data.permanent_stage_801.family_members,
 };
 
 const tempGraduate485Data = {
@@ -2009,7 +2042,7 @@ async function seed() {
       console.log("✅ Inserted PDF snapshot 491:", inserted.id, "|", snapshot491.notes);
     }
 
-    // ── Subclass 820_801: Partner visa (onshore) ───────────────────────────
+    // ── Subclass 820: Partner visa (Temporary, onshore) ─────────────────────
 
     const visa820801Payload = {
       subclass: partnerVisa820801Data.subclass,
@@ -2036,7 +2069,7 @@ async function seed() {
       })
       .returning();
 
-    console.log("✅ Upserted visa type 820_801:", upsertedVisa820801.id);
+    console.log("✅ Upserted visa type 820:", upsertedVisa820801.id);
 
     const structured820801Payload = {
       visa_type_id: upsertedVisa820801.id,
@@ -2064,14 +2097,14 @@ async function seed() {
         .where(eq(visaStructuredData.id, existingStructuredData820801.id))
         .returning({ id: visaStructuredData.id });
 
-      console.log("✅ Updated structured data 820_801:", updated.id);
+      console.log("✅ Updated structured data 820:", updated.id);
     } else {
       const [inserted] = await db
         .insert(visaStructuredData)
         .values(structured820801Payload)
         .returning({ id: visaStructuredData.id });
 
-      console.log("✅ Inserted structured data 820_801:", inserted.id);
+      console.log("✅ Inserted structured data 820:", inserted.id);
     }
 
     const existingSnapshots820801 = await db
@@ -2084,15 +2117,7 @@ async function seed() {
         source_url: PARTNER_820_801_SOURCE_URL,
         pdf_snapshot_url: PARTNER_820_801_PDF_URL,
         captured_at: PARTNER_820_801_CAPTURED_AT,
-        notes:
-          "Manual PDF snapshot for Partner visa subclass 820 temporary stage, onshore 820/801 pathway",
-      },
-      {
-        source_url: PARTNER_801_SOURCE_URL,
-        pdf_snapshot_url: PARTNER_801_PDF_URL,
-        captured_at: PARTNER_820_801_CAPTURED_AT,
-        notes:
-          "Manual PDF snapshot for Partner visa subclass 801 permanent stage, onshore 820/801 pathway",
+        notes: "Manual PDF snapshot for Partner visa subclass 820 (temporary stage)",
       },
     ];
 
@@ -2102,14 +2127,103 @@ async function seed() {
       );
 
       if (existingSnapshot820801) {
-        console.log("✅ PDF snapshot 820_801 already exists:", existingSnapshot820801.id);
+        console.log("✅ PDF snapshot 820 already exists:", existingSnapshot820801.id);
       } else {
         const [inserted] = await db
           .insert(sourceSnapshots)
           .values({ visa_type_id: upsertedVisa820801.id, ...snapshot820801 })
           .returning({ id: sourceSnapshots.id });
-        console.log("✅ Inserted PDF snapshot 820_801:", inserted.id, "|", snapshot820801.notes);
+        console.log("✅ Inserted PDF snapshot 820:", inserted.id, "|", snapshot820801.notes);
       }
+    }
+
+    // ── Subclass 801: Partner visa (Permanent) ───────────────────────────────
+
+    const visa801Payload = {
+      subclass: partnerVisa801Data.subclass,
+      visa_name: partnerVisa801Data.visa_name,
+      category: partnerVisa801Data.category,
+      purpose: partnerVisa801Data.purpose,
+      stay_period: partnerVisa801Data.stay_period,
+      cost: partnerVisa801Data.cost,
+      work_rights: partnerVisa801Data.work_rights,
+      source_url: PARTNER_801_SOURCE_URL,
+      last_checked: "2026-04-26",
+      reviewed_status: "needs_review",
+      updated_at: new Date(),
+    };
+
+    const [upsertedVisa801] = await db
+      .insert(visaTypes)
+      .values(visa801Payload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visa801Payload,
+      })
+      .returning();
+
+    console.log("✅ Upserted visa type 801:", upsertedVisa801.id);
+
+    const structured801Payload = {
+      visa_type_id: upsertedVisa801.id,
+      key_requirements: partnerVisa801Data.key_requirements,
+      documents_required: partnerVisa801Data.documents_required,
+      application_steps: partnerVisa801Data.application_steps,
+      visa_conditions: partnerVisa801Data.visa_conditions,
+      risks: partnerVisa801Data.risks,
+      english_requirements: partnerVisa801Data.english_requirements,
+      financial_requirements: partnerVisa801Data.financial_requirements,
+      raw_json: partnerVisa801Data,
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredData801] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedVisa801.id))
+      .limit(1);
+
+    if (existingStructuredData801) {
+      const [updated] = await db
+        .update(visaStructuredData)
+        .set(structured801Payload)
+        .where(eq(visaStructuredData.id, existingStructuredData801.id))
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Updated structured data 801:", updated.id);
+    } else {
+      const [inserted] = await db
+        .insert(visaStructuredData)
+        .values(structured801Payload)
+        .returning({ id: visaStructuredData.id });
+
+      console.log("✅ Inserted structured data 801:", inserted.id);
+    }
+
+    const existingSnapshots801 = await db
+      .select({ id: sourceSnapshots.id, pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url })
+      .from(sourceSnapshots)
+      .where(eq(sourceSnapshots.visa_type_id, upsertedVisa801.id));
+
+    const snapshot801 = {
+      source_url: PARTNER_801_SOURCE_URL,
+      pdf_snapshot_url: PARTNER_801_PDF_URL,
+      captured_at: PARTNER_820_801_CAPTURED_AT,
+      notes: "Manual PDF snapshot for Partner visa subclass 801 (permanent stage)",
+    };
+
+    const existingSnapshot801 = existingSnapshots801.find(
+      (s) => s.pdf_snapshot_url === snapshot801.pdf_snapshot_url
+    );
+
+    if (existingSnapshot801) {
+      console.log("✅ PDF snapshot 801 already exists:", existingSnapshot801.id);
+    } else {
+      const [inserted] = await db
+        .insert(sourceSnapshots)
+        .values({ visa_type_id: upsertedVisa801.id, ...snapshot801 })
+        .returning({ id: sourceSnapshots.id });
+      console.log("✅ Inserted PDF snapshot 801:", inserted.id, "|", snapshot801.notes);
     }
 
     // ── Subclass 485: Temporary Graduate visa (Post-Higher Education Work stream) ─

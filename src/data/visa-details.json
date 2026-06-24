@@ -133,8 +133,10 @@
     "name_zh": "地区工作签证",
     "nameKey": "visa491",
     "type": "Provisional (5 years)",
-    "processingTime": "6-12",
-    "processingTimeUnit": "months",
+    "processingTime": "Varies - consult processing time guide",
+    "processingTime_tr": "Programı kontrol edin",
+    "processingTime_zh": "参考处理时间指南",
+    "processingTimeUnit": "",
     "fee": 4910,
     "minPoints": 65,
     "description": "For skilled workers nominated by a state or sponsored by family to live and work in regional Australia.",
@@ -397,60 +399,134 @@
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500"
   },
   {
-    "subclass": "820_801",
-    "name": "Partner visa",
-    "name_tr": "Partner Vizesi",
-    "name_zh": "配偶签证",
-    "nameKey": "visa820_801",
-    "type": "Temporary then Permanent",
-    "processingTime": "24-48",
-    "processingTimeUnit": "months",
+    "subclass": "820",
+    "name": "Partner visa (Temporary)",
+    "name_tr": "Partner Vizesi (Geçici)",
+    "name_zh": "配偶签证（临时）",
+    "nameKey": "visa820",
+    "type": "Temporary",
+    "processingTime": "Varies",
+    "processingTime_tr": "Programa göre değişir",
+    "processingTime_zh": "视申请情况而定",
+    "processingTimeUnit": "",
     "fee": 9365,
     "minPoints": null,
-    "description": "For partners or spouses of Australian citizens or permanent residents.",
-    "description_tr": "Avustralyalı vatandaş veya daimi oturma iznine sahip kişilerin partnerleri için.",
-    "description_zh": "适用于澳大利亚公民或永久居民的配偶或伴侣。",
+    "description": "Lets the de facto partner or spouse of an Australian citizen, permanent resident or eligible NZ citizen live in Australia temporarily. The first step toward the permanent Partner visa (subclass 801).",
+    "description_tr": "Avustralya vatandaşı, daimi oturma izni sahibi veya uygun bir Yeni Zelanda vatandaşının de facto partnerinin veya eşinin Avustralya'da geçici olarak yaşamasına izin verir. Kalıcı Partner Vizesi'ne (subclass 801) ilk adımdır.",
+    "description_zh": "允许澳大利亚公民、永久居民或符合条件的新西兰公民的事实伴侣或配偶在澳大利亚临时居住。这是获得永久配偶签证（801类别）的第一步。",
     "requirements": [
-      "In genuine relationship with Australian citizen or PR",
-      "Sponsor must be 18+",
-      "Health and character checks",
-      "Financial sponsor requirement"
+      "In a genuine relationship (married or de facto) with an Australian citizen, permanent resident, or eligible NZ citizen",
+      "Sponsored by that partner (sponsorship must be approved)",
+      "Must be in Australia when you apply; family members applying with you must also be in Australia",
+      "Meet health and character requirements",
+      "No outstanding debt to the Australian Government",
+      "Sign the Australian values statement"
     ],
     "requirements_tr": [
-      "Avustralya vatandaşı veya PR ile gerçek ilişki",
-      "Sponsor 18+ olmalı",
-      "Sağlık ve karakter kontrolleri",
-      "Mali sponsor şartı"
+      "Avustralya vatandaşı, daimi oturma izni sahibi veya uygun bir Yeni Zelanda vatandaşıyla gerçek bir ilişki (evlilik veya de facto) içinde olmak",
+      "O partner tarafından sponsor olunmak (sponsorluk onaylanmış olmalı)",
+      "Başvuru sırasında Avustralya'da olmak; sizinle başvuran aile üyeleri de Avustralya'da olmalı",
+      "Sağlık ve karakter gereksinimlerini karşılamak",
+      "Avustralya Hükümeti'ne ödenmemiş borç olmaması",
+      "Avustralya değerler beyanını imzalamak"
     ],
     "requirements_zh": [
-      "与澳大利亚公民或永久居民存在真实关系",
-      "担保人必须年满18岁",
-      "健康和品格审查",
-      "财务担保要求"
+      "与澳大利亚公民、永久居民或符合条件的新西兰公民存在真实关系（婚姻或事实关系）",
+      "由该伴侣担保（担保必须获得批准）",
+      "申请时必须在澳大利亚境内；随同申请的家庭成员也必须在澳大利亚境内",
+      "符合健康和品格要求",
+      "对澳大利亚政府无未偿还债务",
+      "签署澳大利亚价值观声明"
     ],
     "steps": [
-      "Gather relationship evidence",
-      "Sponsor lodges sponsorship",
-      "Lodge 820 (temporary) application",
-      "Wait for bridging visa",
-      "820 granted (temporary stage)",
-      "After 2+ years: 801 (permanent) granted"
+      "Gather relationship evidence (relationship history, financial, household, social, and commitment evidence)",
+      "Sponsor lodges the 'Sponsorship for a Partner to Migrate to Australia' form",
+      "Lodge your subclass 820 application online via ImmiAccount while in Australia",
+      "Complete health examinations and provide character/police documents",
+      "Receive a Bridging visa A (BVA) if your current substantive visa expires first",
+      "Wait for a decision — processing times vary; check the official visa processing time guide tool",
+      "If granted, you hold subclass 820 until your permanent Partner visa (subclass 801) is finalised"
     ],
     "steps_tr": [
-      "İlişki kanıtlarını toplayın",
-      "Sponsor sponsorluk başvurusu yapar",
-      "820 (geçici) başvurusu yapın",
-      "Bridging vize bekleyin",
-      "820 onayı (geçici aşama)",
-      "2+ yıl sonra: 801 (kalıcı) onayı"
+      "İlişki kanıtlarını toplayın (ilişki geçmişi, mali, ev içi, sosyal ve bağlılık kanıtları)",
+      "Sponsor 'Sponsorship for a Partner to Migrate to Australia' formunu gönderir",
+      "Avustralya'dayken ImmiAccount üzerinden subclass 820 başvurunuzu yapın",
+      "Sağlık muayenelerini tamamlayın ve karakter/polis belgelerini sağlayın",
+      "Mevcut geçerli vizeniz daha önce sona ererse Bridging visa A (BVA) alırsınız",
+      "Karar için bekleyin — işlem süreleri değişkendir; resmi vize işlem süresi rehber aracını kontrol edin",
+      "Onaylanırsa, kalıcı Partner Vizesi (subclass 801) sonuçlanana kadar subclass 820 tutarsınız"
     ],
     "steps_zh": [
-      "收集关系证据",
-      "担保人提交担保申请",
-      "提交820（临时）申请",
-      "等待过桥签证",
-      "获批820（临时阶段）",
-      "2年以上后获批801（永久）"
+      "收集关系证据（关系历史、财务、家庭、社会及承诺证据）",
+      "担保人提交'担保伴侣移民澳大利亚'表格",
+      "在澳大利亚境内通过ImmiAccount提交820类别申请",
+      "完成体检并提供品格/警方证明文件",
+      "如果您当前的实质性签证先到期，您将获得过桥签证A（BVA）",
+      "等待结果——处理时间不固定；请查阅官方签证处理时间指南工具",
+      "获批后，您将持有820类别签证，直至永久配偶签证（801类别）最终确定"
+    ],
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801"
+  },
+  {
+    "subclass": "801",
+    "name": "Partner visa (Permanent)",
+    "name_tr": "Partner Vizesi (Kalıcı)",
+    "name_zh": "配偶签证（永久）",
+    "nameKey": "visa801",
+    "type": "Permanent",
+    "processingTime": "Varies",
+    "processingTime_tr": "Programa göre değişir",
+    "processingTime_zh": "视申请情况而定",
+    "processingTimeUnit": "",
+    "fee": 0,
+    "minPoints": null,
+    "description": "Permanent residence for partners or spouses of Australian citizens or permanent residents, granted after holding a subclass 820 (or 445) visa. You become eligible for assessment 2 years after you first applied for the temporary and permanent Partner visas.",
+    "description_tr": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için, subclass 820 (veya 445) vizesini taşıdıktan sonra verilen daimi oturma izni. Geçici ve kalıcı Partner Vizesi için ilk başvurduğunuzdan 2 yıl sonra değerlendirmeye uygun hale gelirsiniz.",
+    "description_zh": "为澳大利亚公民或永久居民的配偶或伴侣提供永久居留权，在持有820类别（或445类别）签证后授予。自您首次申请临时及永久配偶签证之日起2年后，您将具备评估资格。",
+    "requirements": [
+      "Hold a temporary Partner visa (subclass 820) or Dependent Child visa (subclass 445)",
+      "2 years must have passed since you applied for the subclass 820 and 801 visas (may be waived for long-term relationships)",
+      "Continue to be the spouse or de facto partner of the same person who sponsored your subclass 820 visa",
+      "Continue to meet health and character requirements",
+      "No outstanding debt to the Australian Government"
+    ],
+    "requirements_tr": [
+      "Geçici Partner Vizesi (subclass 820) veya Dependent Child vizesi (subclass 445) tutmak",
+      "Subclass 820 ve 801 başvurusu yapmanızdan itibaren 2 yıl geçmiş olmalı (uzun süreli ilişkilerde muaf olabilir)",
+      "Subclass 820 vizenizi sponsor eden kişiyle eş veya de facto partner olarak ilişkinize devam etmeniz",
+      "Sağlık ve karakter gereksinimlerini karşılamaya devam etmek",
+      "Avustralya Hükümeti'ne ödenmemiş borç olmaması"
+    ],
+    "requirements_zh": [
+      "持有临时配偶签证（820类别）或受抚养子女签证（445类别）",
+      "自您申请820和801类别签证以来必须已过2年（长期关系可能获得豁免）",
+      "继续与担保您820类别签证的同一人保持配偶或事实伴侣关系",
+      "继续符合健康和品格要求",
+      "对澳大利亚政府无未偿还债务"
+    ],
+    "steps": [
+      "Become eligible for assessment 2 years after you first applied (check your application date in ImmiAccount)",
+      "Provide updated relationship evidence (statutory declaration from sponsor, financial/household/social/commitment evidence)",
+      "Provide an updated Australian police certificate if your previous one has expired",
+      "Submit your Stage 2 - Permanent Partner Visa Assessment via ImmiAccount",
+      "Wait for a decision — processing times vary; check the official visa processing time guide tool",
+      "If granted, you become a permanent resident from the day the visa is granted"
+    ],
+    "steps_tr": [
+      "İlk başvurunuzdan 2 yıl sonra değerlendirmeye uygun hale gelirsiniz (başvuru tarihinizi ImmiAccount'tan kontrol edin)",
+      "Güncellenmiş ilişki kanıtları sağlayın (sponsordan yeminli beyan, mali/ev içi/sosyal/bağlılık kanıtları)",
+      "Önceki polis belgeniz süresi dolmuşsa güncellenmiş bir Avustralya polis belgesi sağlayın",
+      "ImmiAccount üzerinden Stage 2 - Permanent Partner Visa Assessment başvurunuzu gönderin",
+      "Karar için bekleyin — işlem süreleri değişkendir; resmi vize işlem süresi rehber aracını kontrol edin",
+      "Onaylanırsa, vizenin verildiği günden itibaren daimi oturma izni sahibi olursunuz"
+    ],
+    "steps_zh": [
+      "自首次申请之日起2年后具备评估资格（请在ImmiAccount中查看您的申请日期）",
+      "提供更新的关系证据（担保人法定声明、财务/家庭/社会/承诺证据）",
+      "如先前的警方证明已过期，请提供更新的澳大利亚警方证明",
+      "通过ImmiAccount提交第二阶段——永久配偶签证评估申请",
+      "等待结果——处理时间不固定；请查阅官方签证处理时间指南工具",
+      "获批后，您将自签证授予之日起成为永久居民"
     ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801"
   },

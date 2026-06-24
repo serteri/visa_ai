@@ -189,6 +189,24 @@ model EoiRound {
   @@map("eoi_rounds")
 }
 
+model ExpressEntryDraw {
+  id                String    @id @default(uuid())
+  drawDate          DateTime  @map("draw_date")
+  // Free text, not an enum: IRCC's category-based draws (e.g. "category_healthcare",
+  // "category_french") are an open-ended, evolving list (see knownPendingChanges in
+  // src/data/countries/ca/express-entry.json) on top of CEC/FSW/FSTP/PNP/general.
+  programType       String    @map("program_type")
+  crsScoreCutoff    Int?      @map("crs_score_cutoff")
+  invitationsIssued Int       @map("invitations_issued")
+  tieBreakRule      DateTime? @map("tie_break_rule")
+  isEstimated       Boolean   @default(false) @map("is_estimated")
+  source            String    @default("scraper")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  @@unique([drawDate, programType])
+  @@map("express_entry_draws")
+}
+
 model CaEoiRound {
   id          String   @id @default(uuid())
   drawNumber  Int      @unique @map("draw_number")

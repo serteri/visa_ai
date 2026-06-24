@@ -18,7 +18,7 @@ function hasSkilledPathway(pathways: PathwayComparison[]): boolean {
 }
 
 function hasPartnerPathway(pathways: PathwayComparison[]): boolean {
-  return pathways.some((p) => p.subclass === "820_801");
+  return pathways.some((p) => p.subclass === "820" || p.subclass === "801");
 }
 
 function has482Pathway(pathways: PathwayComparison[]): boolean {

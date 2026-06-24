@@ -45,11 +45,12 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3
 export const dynamic = "force-static";
 export const revalidate = false;
 
-const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820_801", "canada-express-entry"] as const;
+const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820", "801", "canada-express-entry"] as const;
 
 function normalizeSubclass(subclass: string) {
   const value = subclass.trim();
-  if (value === "820/801" || value === "820-801") return "820_801";
+  // Legacy combined route/links — redirect to the temporary (entry-point) visa.
+  if (value === "820_801" || value === "820/801" || value === "820-801") return "820";
   return value;
 }
 

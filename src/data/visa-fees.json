@@ -51,12 +51,22 @@
         "child_under_18": 1230
       }
     },
-    "820_801": {
-      "label": "Partner visa (subclass 820/801)",
+    "820": {
+      "label": "Partner visa - Temporary (subclass 820)",
+      "vac_note": "This fee covers both the temporary (820) and permanent (801) stages of the application.",
       "vac": {
         "main": 9365,
         "partner_18_plus": 0,
         "child_under_18": 2345
+      }
+    },
+    "801": {
+      "label": "Partner visa - Permanent (subclass 801)",
+      "vac_note": "No separate fee — already paid as part of the subclass 820 application.",
+      "vac": {
+        "main": 0,
+        "partner_18_plus": 0,
+        "child_under_18": 0
       }
     }
   },
