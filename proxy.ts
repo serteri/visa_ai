@@ -106,7 +106,9 @@ export const proxy = auth((req) => {
                     pathname === "/robots.txt" || 
                     pathname === "/sitemap.xml";
     if (!isAsset) {
-      return NextResponse.rewrite(new URL(`/en${pathname}`, req.url));
+      const rewriteUrl = new URL(`/en${pathname}`, req.url);
+      rewriteUrl.search = searchParams.toString();
+      return NextResponse.rewrite(rewriteUrl);
     }
   }
 
