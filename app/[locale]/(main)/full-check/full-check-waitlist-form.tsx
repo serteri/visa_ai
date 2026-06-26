@@ -13,7 +13,7 @@ import {
   type FullCheckWaitlistState,
   submitFullCheckWaitlist,
 } from "./actions";
-import { activeCountries, countryLabels } from "@/lib/countries";
+import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, type SupportedCountry } from "@/lib/countries";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { ActionChecklist } from "@/components/ActionChecklist";
@@ -178,6 +178,9 @@ export function FullCheckWaitlistForm({
   const [state, formAction, isPending] = useActionState(
     submitFullCheckWaitlist,
     initialState
+  );
+  const [selectedCountry, setSelectedCountry] = useState<SupportedCountry>(
+    isSupportedCountry(initialValues.targetCountry) ? initialValues.targetCountry : defaultCountry
   );
   const [analysisStepIndex, setAnalysisStepIndex] = useState(0);
   const [analysisProgressId, setAnalysisProgressId] = useState(() =>
@@ -478,7 +481,8 @@ export function FullCheckWaitlistForm({
           <select
             id="waitlist-target-country"
             name="targetCountry"
-            defaultValue={initialValues.targetCountry ?? "AU"}
+            value={selectedCountry}
+            onChange={(e) => setSelectedCountry(e.target.value as SupportedCountry)}
             disabled={Boolean(initialValues.targetCountry)}
             className={selectClassName}
           >
@@ -504,13 +508,11 @@ export function FullCheckWaitlistForm({
             className={selectClassName}
           >
             <option value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
-            <option value="500">{txt("Öğrenci Vizesi 500", "Student visa 500", "500 学生签证")}</option>
-            <option value="485">{txt("Geçici Mezun Vizesi 485", "Temporary Graduate visa 485", "485 临时毕业生签证")}</option>
-            <option value="482">{txt("Skills in Demand Vizesi 482", "Skills in Demand visa 482", "482 紧缺技能签证")}</option>
-            <option value="189">{txt("Skilled Independent Vizesi 189", "Skilled Independent visa 189", "189 独立技术移民")}</option>
-            <option value="190">{txt("Skilled Nominated Vizesi 190", "Skilled Nominated visa 190", "190 州担保技术移民")}</option>
-            <option value="491">{txt("Skilled Work Regional Vizesi 491", "Skilled Work Regional visa 491", "491 偶远地区技术签证")}</option>
-            <option value="820_801">{txt("Partner Vizesi 820/801", "Partner visa 820/801", "820/801 境内配偶签证")}</option>
+            {countryVisaPathways[selectedCountry].map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label[isTr ? "tr" : isZh ? "zh-Hans" : "en"]}
+              </option>
+            ))}
           </select>
         </div>
 
