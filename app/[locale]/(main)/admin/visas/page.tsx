@@ -6,26 +6,50 @@ import { Badge } from "@/components/ui/badge";
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
 
 async function getVisas() {
-  const visas = await db.select().from(visaTypes);
+  let visas: Awaited<ReturnType<typeof db.select>> extends { from: (...args: any[]) => Promise<infer T> } ? T : any[];
+  try {
+    visas = await db.select().from(visaTypes);
+  } catch (error) {
+    console.error("Failed to read visa_types for admin list:", error);
+    return [];
+  }
 
   const visasWithData = await Promise.all(
     visas.map(async (visa) => {
-      const [structuredData] = await db
-        .select()
-        .from(visaStructuredData)
-        .where(eq(visaStructuredData.visa_type_id, visa.id))
-        .limit(1);
+      let structuredData: typeof visaStructuredData.$inferSelect | undefined;
+      let snapshots: Array<{
+        id: string;
+        source_url: string;
+        pdf_snapshot_url: string | null;
+        captured_at: Date | null;
+        notes: string | null;
+      }> = [];
 
-      const snapshots = await db
-        .select({
-          id: sourceSnapshots.id,
-          source_url: sourceSnapshots.source_url,
-          pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
-          captured_at: sourceSnapshots.captured_at,
-          notes: sourceSnapshots.notes,
-        })
-        .from(sourceSnapshots)
-        .where(eq(sourceSnapshots.visa_type_id, visa.id));
+      try {
+        const [row] = await db
+          .select()
+          .from(visaStructuredData)
+          .where(eq(visaStructuredData.visa_type_id, visa.id))
+          .limit(1);
+        structuredData = row;
+      } catch (error) {
+        console.error("Failed to read visa_structured_data for admin list:", error);
+      }
+
+      try {
+        snapshots = await db
+          .select({
+            id: sourceSnapshots.id,
+            source_url: sourceSnapshots.source_url,
+            pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url,
+            captured_at: sourceSnapshots.captured_at,
+            notes: sourceSnapshots.notes,
+          })
+          .from(sourceSnapshots)
+          .where(eq(sourceSnapshots.visa_type_id, visa.id));
+      } catch (error) {
+        console.error("Failed to read source_snapshots for admin list:", error);
+      }
       
       return {
         ...visa,
