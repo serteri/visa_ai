@@ -1,0 +1,177 @@
+{
+  "country": "CA",
+  "pathwayCovered": "Provincial Nominee Program - Non-Express Entry process (process/fees/documents only, NOT eligibility criteria)",
+  "note": "Bu dosya PNP'nin her eyaletin kendi stream/eligibility kriterini ICERMEZ - o, ayri bir 'pnp-streams-{province}.json' setinde olacak. Bu dosya sadece IRCC'nin federal duzeyde, hangi eyalet/stream olursa olsun ortak olan BASVURU SURECI, UCRET ve BELGE bilgisini tasir.",
+  "lastVerified": "2026-06-27",
+  "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/provincial-nominees/non-express-entry.html",
+  "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Provincial%20Nominee%20Program%3A%20Non-Express%20Entry%20Process/Provincial%20Nominee%20Program_%20Non-Express%20Entry%20Process%20-%20Canada.ca.pdf",
+  "status": "open",
+  "fees": {
+    "currency": "CAD",
+    "processingFeeFrom": 1590,
+    "lastIncreaseDate": "2026-04-30",
+    "feeTypes": [
+      {
+        "type": "processing_fee",
+        "description": "Paid for applicant + each included family member"
+      },
+      {
+        "type": "right_of_permanent_residence_fee",
+        "description": "Paid upon approval"
+      },
+      {
+        "type": "biometrics_fee",
+        "description": "Paid at submission, covers fingerprints + digital photo"
+      },
+      {
+        "type": "third_party_fees",
+        "description": "Medical exam, police certificates, ECA - paid separately to third parties, not to IRCC"
+      }
+    ]
+  },
+  "processingTime": {
+    "estimate": "about 13 months",
+    "variableFactors": [
+      "type of application",
+      "application completeness",
+      "current processing volume",
+      "ease of verifying information",
+      "applicant response time to requests",
+      "annual immigration intake levels"
+    ]
+  },
+  "processSteps": [
+    {
+      "step": 1,
+      "name": "Get nominated by a province or territory",
+      "description": "Applicant chooses a province/territory and applies under one of its non-Express-Entry streams. Province reviews based on their immigration needs, minimum stream requirements, and genuine intention to live there."
+    },
+    {
+      "step": 2,
+      "name": "Get your documents ready",
+      "description": "Principal applicant signs for entire application incl. family members 18+."
+    },
+    {
+      "step": 3,
+      "name": "Apply for permanent residence",
+      "description": "Online application via PR Portal, after provincial nomination confirmed."
+    },
+    {
+      "step": 4,
+      "name": "After you apply",
+      "description": "AOR issued, biometrics + medical exam requested, eligibility/admissibility assessed."
+    },
+    {
+      "step": 5,
+      "name": "Settling in Canada",
+      "description": "COPR issued, PR card mailed, settlement services available."
+    }
+  ],
+  "documentsRequired": {
+    "fillInPortal": [
+      {
+        "form": "IMM 0008",
+        "name": "Generic Application Form for Canada"
+      },
+      {
+        "form": "IMM 5669",
+        "name": "Schedule A - Background/Declaration"
+      },
+      {
+        "form": "IMM 5406",
+        "name": "Additional Family Information"
+      },
+      {
+        "form": "IMM 5562",
+        "name": "Supplementary Information - Your travels"
+      }
+    ],
+    "downloadAndUpload": [
+      {
+        "form": "IMM 0199",
+        "name": "Document Checklist"
+      },
+      {
+        "form": "IMM 0008 Schedule 4",
+        "name": "Economic Classes: Provincial Nominees"
+      },
+      {
+        "form": "IMM 0008 Schedule 4A",
+        "name": "Economic Classes: Provincial Nominees - Business Nominees",
+        "note": "Only for business/entrepreneur nominees"
+      }
+    ],
+    "conditionalForms": [
+      {
+        "form": "IMM 5604",
+        "name": "Declaration From Non-accompanying Parent/Guardian for Minors",
+        "condition": "If a parent of a minor applicant is not coming to Canada"
+      },
+      {
+        "form": "IMM 5409",
+        "name": "Statutory Declaration of Common-law Union",
+        "condition": "If applicant has a common-law partner"
+      },
+      {
+        "form": "IMM 5476",
+        "name": "Use of a representative",
+        "condition": "If using an immigration representative"
+      }
+    ],
+    "supportingDocuments": [
+      "Photos (taken within 12 months, both sides scanned per portal instructions)",
+      "Confirmation of nomination from the province/territory (approval letter or official notice)",
+      "Passport/travel document copies (regular passport only - diplomatic/official/service/public-affairs passports NOT valid)",
+      "Birth certificates (applicant + spouse/partner)",
+      "Marriage certificates, divorce/annulment certificates (all marriages if more than one)",
+      "Death certificates for former spouses (if applicable)",
+      "National ID / family registry book (if applicable)",
+      "Common-law evidence: 12+ months cohabitation proof (joint bank statements, leases, utility bills) - required if claiming common-law status",
+      "Children's documents: birth certificates showing parents' names, custody proof, adoption papers (if applicable)",
+      "Police certificate: required for every country (excl. Canada) where applicant lived 6+ consecutive months since age 18"
+    ]
+  },
+  "afterApply": {
+    "biometrics": {
+      "ageRange": "14-79",
+      "deadline": "30 days from request letter date",
+      "note": "Required even if biometrics were previously given and are still valid"
+    },
+    "medicalExam": {
+      "required": true,
+      "appliesTo": "applicant + all family members, even non-accompanying ones",
+      "disqualifiers": [
+        "danger to Canada's public health/safety",
+        "excessive demand on health/social services"
+      ]
+    },
+    "decisionCriteria": [
+      "meets eligibility criteria for the program",
+      "has funds to support self and family on arrival",
+      "admissible (medical exam, police certificate, background checks)"
+    ],
+    "misrepresentationConsequence": "Application refusal, inadmissibility finding, and/or 5-year bar from applying for permanent residence"
+  },
+  "importantCaveats": [
+    {
+      "topic": "work_authorization",
+      "text": "A provincial nomination does NOT itself grant permission to work in Canada. A separate work permit application is required to work while the PR application is processed."
+    },
+    {
+      "topic": "physician_fast_track",
+      "text": "Faster work permit processing available for physicians/healthcare specialists (clinical lab medicine, surgery, general practice/family medicine) with a full-time offer + a support letter from the nominating province/territory."
+    },
+    {
+      "topic": "bridging_open_work_permit",
+      "text": "Available if applicant's existing work permit is about to expire while PR application is still processing."
+    },
+    {
+      "topic": "representative_limitations",
+      "text": "An immigration representative cannot open a portal account on the applicant's behalf, sign the application electronically, or log in using the applicant's credentials. They can fill forms and communicate via their own account."
+    }
+  ],
+  "knownPendingChanges": {
+    "note": "Newcomer settlement-service eligibility period changed starting April 1, 2026 for economic class PRs (limited-time access, was previously unrestricted). Re-verify if this affects how settlement guidance is presented to users.",
+    "watchUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/provincial-nominees/non-express-entry.html"
+  }
+}
