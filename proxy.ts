@@ -42,6 +42,7 @@ function isDashboardPath(pathname: string): boolean {
 
 export const proxy = auth((req) => {
   const { pathname, searchParams } = req.nextUrl;
+  const isEnAdminPath = pathname === "/en/admin" || pathname.startsWith("/en/admin/");
 
   if (isBlockedBot(req.headers.get("user-agent"))) {
     return new NextResponse("Forbidden", { status: 403 });
@@ -53,7 +54,7 @@ export const proxy = auth((req) => {
     url.search = searchParams.toString();
     return NextResponse.redirect(url);
   }
-  if (pathname.startsWith("/en/")) {
+  if (pathname.startsWith("/en/") && !isEnAdminPath) {
     const targetPath = pathname.substring(3); // Remove '/en'
     const url = new URL(targetPath || "/", req.url);
     url.search = searchParams.toString();

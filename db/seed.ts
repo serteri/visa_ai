@@ -15,6 +15,8 @@ import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 import { sourceSnapshots, visaStructuredData, visaTypes } from "./schema";
 import { eq } from "drizzle-orm";
+import canadaExpressEntryData from "../src/data/countries/ca/express-entry.json";
+import canadaPnpNonExpressProcessData from "../src/data/countries/ca/pnp-non-express-process.json";
 
 // Initialize database
 const sql = neon(process.env.DATABASE_URL);
@@ -2315,6 +2317,180 @@ async function seed() {
         })
         .returning({ id: sourceSnapshots.id });
       console.log("✅ Inserted PDF snapshot 485:", inserted.id);
+    }
+
+    // ── Canada Express Entry (reference dataset) ─────────────────────────────
+
+    const ee = canadaExpressEntryData as {
+      sourceUrls?: string[];
+      fees?: { mainApplicant?: number; currency?: string };
+      processingTimes?: string;
+      pathwayCovered?: string;
+      system?: string;
+      howItWorks?: string[];
+      documentsRequired?: string[];
+      knownPendingChanges?: unknown;
+      lastVerified?: string;
+    };
+
+    const visaCanadaEePayload = {
+      subclass: "canada-express-entry",
+      visa_name: "Express Entry Canada",
+      category: "Canada",
+      purpose: ee.pathwayCovered ?? "Express Entry immigration pathways",
+      stay_period: ee.processingTimes ?? "Varies by program",
+      cost: `From ${(ee.fees?.currency ?? "CAD")} ${ee.fees?.mainApplicant ?? 1590}`,
+      work_rights: "Permanent residence pathway for eligible skilled applicants",
+      source_url: ee.sourceUrls?.[0] ?? null,
+      last_checked: ee.lastVerified ?? "2026-06-27",
+      reviewed_status: "reviewed",
+      updated_at: new Date(),
+    };
+
+    const [upsertedCanadaEe] = await db
+      .insert(visaTypes)
+      .values(visaCanadaEePayload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visaCanadaEePayload,
+      })
+      .returning();
+
+    const structuredCanadaEePayload = {
+      visa_type_id: upsertedCanadaEe.id,
+      key_requirements: ee.howItWorks ?? [],
+      documents_required: ee.documentsRequired ?? [],
+      application_steps: ee.howItWorks ?? [],
+      visa_conditions: ["Program eligibility must be met before invitation"],
+      risks: ["CRS thresholds and rounds of invitations change over time"],
+      english_requirements: null,
+      financial_requirements: ee.fees ?? null,
+      raw_json: ee,
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredCanadaEe] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedCanadaEe.id))
+      .limit(1);
+
+    if (existingStructuredCanadaEe) {
+      await db
+        .update(visaStructuredData)
+        .set(structuredCanadaEePayload)
+        .where(eq(visaStructuredData.id, existingStructuredCanadaEe.id));
+    } else {
+      await db.insert(visaStructuredData).values(structuredCanadaEePayload);
+    }
+
+    // ── Canada PNP Non-Express Entry Process (reference dataset) ─────────────
+
+    const pnp = canadaPnpNonExpressProcessData as {
+      sourceUrl?: string;
+      sourcePdfBlobUrl?: string;
+      fees?: { currency?: string; processingFeeFrom?: number };
+      processingTime?: { estimate?: string };
+      pathwayCovered?: string;
+      processSteps?: Array<{ name?: string; description?: string }>;
+      documentsRequired?: {
+        fillInPortal?: Array<{ name?: string }>;
+        downloadAndUpload?: Array<{ name?: string }>;
+        conditionalForms?: Array<{ name?: string }>;
+        supportingDocuments?: string[];
+      };
+      afterApply?: { decisionCriteria?: string[]; misrepresentationConsequence?: string };
+      importantCaveats?: Array<{ text?: string }>;
+      lastVerified?: string;
+      status?: string;
+      knownPendingChanges?: unknown;
+    };
+
+    const pnpApplicationSteps = (pnp.processSteps ?? []).map(
+      (step) => `${step.name ?? "Step"}: ${step.description ?? ""}`.trim()
+    );
+
+    const pnpDocuments = [
+      ...(pnp.documentsRequired?.fillInPortal ?? []).map((f) => f.name ?? ""),
+      ...(pnp.documentsRequired?.downloadAndUpload ?? []).map((f) => f.name ?? ""),
+      ...(pnp.documentsRequired?.conditionalForms ?? []).map((f) => f.name ?? ""),
+      ...(pnp.documentsRequired?.supportingDocuments ?? []),
+    ].filter(Boolean);
+
+    const visaCanadaPnpPayload = {
+      subclass: "canada-pnp-non-express",
+      visa_name: "Provincial Nominee Program - Non-Express Entry Process",
+      category: "Canada",
+      purpose: pnp.pathwayCovered ?? "PNP non-Express Entry process",
+      stay_period: pnp.processingTime?.estimate ?? "about 13 months",
+      cost: `From ${(pnp.fees?.currency ?? "CAD")} ${pnp.fees?.processingFeeFrom ?? 1590}`,
+      work_rights:
+        "Provincial nomination is part of PR process; separate work authorization may be required while application is processed",
+      source_url: pnp.sourceUrl ?? null,
+      last_checked: pnp.lastVerified ?? "2026-06-27",
+      reviewed_status: pnp.status === "open" ? "reviewed" : "needs_review",
+      updated_at: new Date(),
+    };
+
+    const [upsertedCanadaPnp] = await db
+      .insert(visaTypes)
+      .values(visaCanadaPnpPayload)
+      .onConflictDoUpdate({
+        target: visaTypes.subclass,
+        set: visaCanadaPnpPayload,
+      })
+      .returning();
+
+    const structuredCanadaPnpPayload = {
+      visa_type_id: upsertedCanadaPnp.id,
+      key_requirements: (pnp.processSteps ?? []).map((s) => s.name ?? ""),
+      documents_required: pnpDocuments,
+      application_steps: pnpApplicationSteps,
+      visa_conditions: pnp.afterApply?.decisionCriteria ?? [],
+      risks: [
+        ...(pnp.importantCaveats ?? []).map((item) => item.text ?? "").filter(Boolean),
+        pnp.afterApply?.misrepresentationConsequence ?? "",
+      ].filter(Boolean),
+      english_requirements: null,
+      financial_requirements: pnp.fees ?? null,
+      raw_json: pnp,
+      updated_at: new Date(),
+    };
+
+    const [existingStructuredCanadaPnp] = await db
+      .select({ id: visaStructuredData.id })
+      .from(visaStructuredData)
+      .where(eq(visaStructuredData.visa_type_id, upsertedCanadaPnp.id))
+      .limit(1);
+
+    if (existingStructuredCanadaPnp) {
+      await db
+        .update(visaStructuredData)
+        .set(structuredCanadaPnpPayload)
+        .where(eq(visaStructuredData.id, existingStructuredCanadaPnp.id));
+    } else {
+      await db.insert(visaStructuredData).values(structuredCanadaPnpPayload);
+    }
+
+    if (pnp.sourceUrl && pnp.sourcePdfBlobUrl) {
+      const existingPnpSnapshots = await db
+        .select({ id: sourceSnapshots.id, pdf_snapshot_url: sourceSnapshots.pdf_snapshot_url })
+        .from(sourceSnapshots)
+        .where(eq(sourceSnapshots.visa_type_id, upsertedCanadaPnp.id));
+
+      const existingPnpSnapshot = existingPnpSnapshots.find(
+        (s) => s.pdf_snapshot_url === pnp.sourcePdfBlobUrl
+      );
+
+      if (!existingPnpSnapshot) {
+        await db.insert(sourceSnapshots).values({
+          visa_type_id: upsertedCanadaPnp.id,
+          source_url: pnp.sourceUrl,
+          pdf_snapshot_url: pnp.sourcePdfBlobUrl,
+          captured_at: new Date(),
+          notes: "Manual PDF snapshot for Canada PNP non-Express Entry process",
+        });
+      }
     }
 
     console.log("🎉 Database seed completed successfully!");
