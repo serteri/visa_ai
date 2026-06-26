@@ -261,11 +261,11 @@ export default async function AdminVisasPage({ params }: AdminVisasPageProps) {
                     <p className="text-xs font-semibold uppercase text-muted-foreground">
                       PDF Snapshots
                     </p>
-                    {visa.snapshots.some((snapshot) => snapshot.pdf_snapshot_url) ? (
+                    {visa.snapshots.some((snapshot: { pdf_snapshot_url: string | null }) => snapshot.pdf_snapshot_url) ? (
                       <div className="space-y-2 pt-1">
                         {visa.snapshots
-                          .filter((snapshot) => snapshot.pdf_snapshot_url)
-                          .map((snapshot) => (
+                          .filter((snapshot: { pdf_snapshot_url: string | null }) => snapshot.pdf_snapshot_url)
+                          .map((snapshot: { id: string; notes: string | null; pdf_snapshot_url: string | null }) => (
                             <div key={snapshot.id} className="space-y-0.5">
                               {snapshot.notes && (
                                 <p className="text-xs text-muted-foreground">{snapshot.notes}</p>
