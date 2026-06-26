@@ -1,12 +1,24 @@
-import { db } from "@/db";
-import { sourceSnapshots, visaStructuredData, visaTypes } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
 
 async function getVisas() {
-  let visas: Awaited<ReturnType<typeof db.select>> extends { from: (...args: any[]) => Promise<infer T> } ? T : any[];
+  let db: Awaited<typeof import("@/db")>["db"];
+  let sourceSnapshots: Awaited<typeof import("@/db/schema")>["sourceSnapshots"];
+  let visaStructuredData: Awaited<typeof import("@/db/schema")>["visaStructuredData"];
+  let visaTypes: Awaited<typeof import("@/db/schema")>["visaTypes"];
+  let eq: Awaited<typeof import("drizzle-orm")>["eq"];
+
+  try {
+    ({ db } = await import("@/db"));
+    ({ sourceSnapshots, visaStructuredData, visaTypes } = await import("@/db/schema"));
+    ({ eq } = await import("drizzle-orm"));
+  } catch (error) {
+    console.error("Failed to initialize DB modules for admin visa list:", error);
+    return [];
+  }
+
+  let visas: any[];
   try {
     visas = await db.select().from(visaTypes);
   } catch (error) {
