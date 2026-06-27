@@ -148,10 +148,8 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             </div>
           </Link>
 
-          <a
-            href={pnp.sourceUrl ?? "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/provincial-nominees/non-express-entry.html"}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href={`/${locale}/visas/canada-pnp-non-express-entry`}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
@@ -193,7 +191,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                 <ArrowRight className="ml-1 h-3.5 w-3.5" />
               </div>
             </div>
-          </a>
+          </Link>
         </div>
       </div>
     </main>

@@ -6,6 +6,7 @@ import { ArrowRight, ExternalLink, BadgeCheck, Clock3, DollarSign, ListChecks, S
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import visaDetails from "@/src/data/visa-details.json";
@@ -37,6 +38,7 @@ type VisaDetail = {
   steps_tr?: string[];
   steps_zh?: string[];
   officialUrl: string;
+  pdfSnapshotUrls?: string[];
 };
 
 const VISA_DETAILS = visaDetails as VisaDetail[];
@@ -197,6 +199,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const requirements = getLocalizedVisaList(visa, locale, "requirements");
   const steps = getLocalizedVisaList(visa, locale, "steps");
   const officialUrl = visa.officialUrl;
+  const pdfSnapshotUrls = visa.pdfSnapshotUrls?.filter((url) => Boolean(url)) ?? [];
   const fee = formatFee(locale, visa.fee, subclass);
   const minPointsText = getMinPointsLabel(translations, visa.minPoints);
 
@@ -336,6 +339,23 @@ export default async function VisaSubclassPage({ params }: PageProps) {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+        {pdfSnapshotUrls.length > 0 ? (
+          <div className="mb-6">
+            <VisaPdfDownloadCard
+              pdfUrls={pdfSnapshotUrls}
+              sourceUrl={officialUrl}
+              title={isCanada ? "Canada Express Entry Official Guide (PDF)" : "Official Migration Guide (PDF)"}
+              description={
+                isCanada
+                  ? t(translations, "visas.checkEligibilityDesc", "Open the official Canada immigration guide snapshot hosted on Vercel Blob.")
+                  : "Open the official guide snapshot hosted on Vercel Blob and keep the source handy."
+              }
+              primaryLabel="Open PDF"
+              sourceLabel={visitOfficialWebsiteLabel}
+            />
+          </div>
+        ) : null}
+
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>

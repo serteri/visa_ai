@@ -60,7 +60,10 @@
       "等待邀请",
       "60天内提交签证申请"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189"
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Skilled%20Independent%20visa%20%28subclass%20189%29%20Points-tested%20stream/Skilled%20Independent%20visa%20%28subclass%20189%29%20Points-tested%20stream_25April2026.pdf"
+    ]
   },
   {
     "subclass": "190",
@@ -126,7 +129,10 @@
       "收到邀请",
       "提交签证申请"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190"
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20190%20Skilled%20Nominated%20visa/Subclass%20190%20Skilled%20Nominated%20visa_25April2026.pdf"
+    ]
   },
   {
     "subclass": "491",
@@ -198,7 +204,10 @@
       "提交签证申请",
       "在偏远地区生活3年后可申请191永居签证"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491"
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant_25April2026.pdf"
+    ]
   },
   {
     "subclass": "482",
@@ -256,7 +265,11 @@
       "提交签证申请",
       "完成健康和品格审查"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482"
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/Skills%20in%20Demand%20Visa%20%28subclass%20482%29%20Core%20Skills%20stream_25April2026.pdf",
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/English%20proficiency%20%28subclass%20482%29_25April2026.pdf"
+    ]
   },
   {
     "subclass": "485",
@@ -334,7 +347,10 @@
       "提供所有必需的文件和证据",
       "等待签证决定"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485/post-higher-education-work"
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485/post-higher-education-work",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Temporary%20Graduate%20visa%20%28subclass%20485%29%20Post-Higher%20Education%20Work%20stream/Temporary%20Graduate%20visa%20%28subclass%20485%29%20Post-Higher%20Education%20Work%20stream%20_29April2026.pdf"
+    ]
   },
   {
     "subclass": "500",
@@ -400,7 +416,10 @@
       "如需则提供生物识别信息",
       "等待结果"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500"
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa_500/visa_class_500_24April2026.pdf"
+    ]
   },
   {
     "subclass": "820",
@@ -469,7 +488,10 @@
       "等待结果——处理时间不固定；请查阅官方签证处理时间指南工具",
       "获批后，您将持有820类别签证，直至永久配偶签证（801类别）最终确定"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801"
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/%28Subclasses%20820%20and%20801%29%20Partner%20visas%20%28apply%20in%20Australia%29/Subclass%20820%20Partner%20visa%20%28temporary%29/Subclass%20820%20Partner%20visa%20%28temporary%29_26April2026.pdf"
+    ]
   },
   {
     "subclass": "801",
@@ -532,7 +554,10 @@
       "等待结果——处理时间不固定；请查阅官方签证处理时间指南工具",
       "获批后，您将自签证授予之日起成为永久居民"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801"
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/%28Subclasses%20820%20and%20801%29%20Partner%20visas%20%28apply%20in%20Australia%29/Subclass%20801%20Partner%20visa%20%28Permanent%29/Subclass%20801%20Partner%20visa%20%28Permanent%29_26April2026.pdf"
+    ]
   },
   {
     "subclass": "canada-express-entry",
