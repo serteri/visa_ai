@@ -623,5 +623,274 @@
     ],
     "detailUrl": "https://www.logivisa.com/visas/canada-express-entry",
     "officialUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html"
+  },
+  {
+    "subclass": "atlantic-immigration-program",
+    "id": "canada-atlantic-immigration-program",
+    "country": "Canada",
+    "program_name": "Atlantic Immigration Program (AIP)",
+    "status": "Open",
+    "fees": "From $1,590 (Increased April 30, 2026)",
+    "processing_time": "About 26 months (Does not include biometrics)",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Atlantic%20Immigration%20Program/Atlantic%20Immigration%20Program.pdf"
+    ],
+    "overview": "A pathway to permanent residence for skilled foreign workers and international graduates from a Canadian institution who want to work and live in 1 of Canada's 4 Atlantic provinces: New Brunswick, Nova Scotia, Prince Edward Island, or Newfoundland and Labrador. The program helps employers hire qualified candidates for jobs they haven't been able to fill locally.",
+    "target_provinces": [
+      "New Brunswick",
+      "Newfoundland and Labrador",
+      "Nova Scotia",
+      "Prince Edward Island"
+    ],
+    "candidate_eligibility": {
+      "core_requirements": [
+        "Must receive a valid job offer from a designated employer in Atlantic Canada.",
+        "Must be either a recent graduate of a recognized post-secondary institution in Atlantic Canada OR a skilled worker.",
+        "Can be living abroad or in Canada as a temporary resident.",
+        "Must have the right level of education for the job offered.",
+        "Must prove language abilities by taking an approved test.",
+        "Must show proof of funds to support self and family (Exempt if already living and working in Canada with a valid work permit).",
+        "Must get a personalized settlement plan from a service provider organization."
+      ],
+      "teer_matrix": [
+        { "job_offer_teer": "TEER 0", "required_work_experience_teer": "TEER 0, 1, 2, 3, 4" },
+        { "job_offer_teer": "TEER 1", "required_work_experience_teer": "TEER 1, 2, 3, 4" },
+        { "job_offer_teer": "TEER 2", "required_work_experience_teer": "TEER 2, 3, 4" },
+        { "job_offer_teer": "TEER 3", "required_work_experience_teer": "TEER 3, 4" },
+        { "job_offer_teer": "TEER 4", "required_work_experience_teer": "TEER 4" }
+      ],
+      "exemptions": {
+        "international_graduates": "Do not need qualifying work experience if they are an international student who graduated from a recognized post-secondary institution in Atlantic Canada and lived in an Atlantic province for at least 16 of the 24 months before receiving the credential.",
+        "healthcare_sector": "Work experience in NOC 31201 (licensed practical nurses) and NOC 31301 (registered nurses) can be used for a job offer in NOC 33102 (TEER 3 - Nurse aides, orderlies) and NOC 44101 (TEER 4 - Home support workers, caregivers)."
+      }
+    },
+    "job_offer_criteria": [
+      "Must be full-time (at least 30 hours a week).",
+      "Must be non-seasonal (consistent and paid all year).",
+      "Must be for at least 1 year from becoming a permanent resident for TEER 0, 1, 2, 3 offers.",
+      "Must be for permanent employment with no set end date for TEER 4 offers.",
+      "Must be at the same or higher skill level as the qualifying work experience (unless exempt as a graduate).",
+      "The job offer cannot come from a company in which the applicant, spouse, or common-law partner are a majority owner."
+    ],
+    "required_forms": {
+      "portal_digital_forms": [
+        { "code": "IMM 0008", "name": "Generic Application Form for Canada" },
+        { "code": "IMM 5669", "name": "Schedule A - Background/Declaration" },
+        { "code": "IMM 5406", "name": "Additional Family Information" },
+        { "code": "IMM 5562", "name": "Supplementary Information - Your travels" }
+      ],
+      "portal_upload_pdfs": [
+        { "code": "IMM 0155", "name": "Document Checklist" },
+        { "code": "IMM 5501", "name": "Economic Classes – Atlantic Immigration Program" },
+        { "code": "IMM 0157", "name": "Offer of Employment to a Foreign National under the Atlantic Immigration Program (Must enter 'Permanent' in box 22 for TEER 4)" },
+        { "code": "IMM 5409", "name": "Statutory Declaration of Common-law Union (Requires hand-signatures and consecutive 1-year joint proof like bank statements, leases, utility bills)" },
+        { "code": "IMM 5604", "name": "Separation Declaration for Minors Travelling to Canada (Must be signed by hand in front of a notary public if minor travels without both parents)" }
+      ]
+    },
+    "legal_and_translations": {
+      "rules": [
+        "Every document not in English or French must include a certified translation with the translator's membership number, seal, or stamp.",
+        "If a certified translator is unavailable, an affidavit sworn in front of an authorized person is required.",
+        "Authorized persons to witness affidavits/certify inside Canada: Notary Public, Commissioner of Oaths, Commissioner of taking affidavits.",
+        "Family members and immigration representatives/consultants are strictly FORBIDDEN from translating documents or witnessing affidavits/certifying copies."
+      ],
+      "alternate_format_request": {
+        "email": "IRCC.PRPortalALTRequest-DemandeALTPortailRP.IRCC@cic.gc.ca",
+        "subject_line": "[Format Needed: Braille / Large Print / Paper] - [Application Package Name]",
+        "instructions": "Send a plain email with Requested Format, Application Package, Preferred Language, Delivery Method, Full Name, Email, and Mailing Address. Do not add extra information. Technical issues form dummy data: UCI enter 1111111111, Application number enter 0000000."
+      }
+    },
+    "employer_requirements": {
+      "designation_criteria": [
+        "Must not be in violation of the Immigration and Refugee Protection Act or Regulations.",
+        "Must be in good standing with employment standards and occupational health and safety legislation.",
+        "Cannot recruit workers to establish a pool to be later transferred or contracted out.",
+        "Must have been in continuous, active operation under the same management for at least 2 years in 1 of the Atlantic provinces (or show operation in another location with provincial confirmation).",
+        "Must work with a settlement service provider organization to help candidates.",
+        "Must complete free mandatory onboarding training and free intercultural competency training."
+      ],
+      "mandatory_training": {
+        "onboarding": "Watch a sent training video covering Canada's immigration system, AIP background, roles, PR/Work permit applications, and integration. Sign up by emailing business legal/operating name, address, and name of individual completing training to the Dedicated Service Channel.",
+        "intercultural_competency": "Takes half a day, offered in person or via live webinar. Covers creating welcoming workplaces, newcomer experiences, and cultural awareness. Targets hiring managers."
+      },
+      "english_service_providers": [
+        { "organization": "Immigrant Services Association of Nova Scotia (ISANS)", "contact": "6960 Mumford Road, Suite 2120 Halifax, Nova Scotia B3L 4P1 | Phone: 902-482-4346 | ysuresh@isans.ca", "province": "Nova Scotia", "areas_served": "Halifax Regional Municipality" },
+        { "organization": "YMCA of Greater Halifax/Dartmouth", "contact": "104-7071 Bayers Road Halifax, Nova Scotia | Phone: 902-301-6572 | AIPTraining@halifax.ymca.ca", "province": "Nova Scotia", "areas_served": "All areas of Nova Scotia outside of the Halifax Regional Municipality" },
+        { "organization": "Multicultural Association of Fredericton (MCAF)", "contact": "28 Saunders St. Fredericton, New Brunswick E3B 1N1 | Phone: 506-292-1329 | aip@mcaf.nb.ca", "province": "New Brunswick", "areas_served": "Fredericton region including Oromocto/Gagetown, Minto, Harvey, Nackawic and McAdam" },
+        { "organization": "Association for New Canadians", "contact": "144 Military Road St. John’s, Newfoundland and Labrador | Phone: 709-722-9680 | ict@ancnl.ca", "province": "Newfoundland and Labrador", "areas_served": "All of Newfoundland and Labrador" },
+        { "organization": "YMCA Newcomer Connections (YMCA Saint John)", "contact": "191 Churchill Blvd. Saint John, New Brunswick E2K 3E2 | Phone: 506-343-5515 | ylearning@saintjohny.ca", "province": "New Brunswick", "areas_served": "Greater Saint John" },
+        { "organization": "Multicultural Association of Carleton County (MACC)", "contact": "645/647 Main St. Woodstock, New Brunswick E7M 2C7 | Phone: 506-328-4690 | settlement@maccnb.ca", "province": "New Brunswick", "areas_served": "Serving all of Carleton County, the towns of Woodstock, Hartland, Florenceville and surrounding areas" },
+        { "organization": "Multicultural Association of Charlotte County (CCMA)", "contact": "19 Main St., Unit 1 St. George, New Brunswick E5C 3H9 | Phone: 506-755-9295 | suren@ccmanb.com", "province": "New Brunswick", "areas_served": "Charlotte County including St. George, Blacks Harbour, Pennfield, Saint Andrews, St. Stephen, Deer Island, Campobello Island and Grand Manan" },
+        { "organization": "The Multicultural Association of the Greater Moncton Area (MAGMA)", "contact": "22 Church St. Suite C170 Moncton, New Brunswick E1C 0P7 | Phone: 506-800-6250 | jacques.savoie@magma-amgm.org", "province": "New Brunswick", "areas_served": "Greater Moncton area" },
+        { "organization": "Centre de ressources pour nouveaux arrivants au Nord-Ouest (CRNANO)", "contact": "59 Queen St. Edmundston, New Brunswick E3V 1A4 | Phone: 506-735-0604 | info@crna.ca", "province": "New Brunswick", "areas_served": "Northwest New Brunswick" },
+        { "organization": "Association Multiculturelle Région Chaleur – Multicultural Association Chaleur Region (AMRC-MACR)", "contact": "325 Main Bathurst St. New Brunswick E2A 1B1 | Phone: 506-547-7651 | info@macr-amrc.ca", "province": "New Brunswick", "areas_served": "Chaleur region" }
+      ],
+      "french_service_providers": [
+        { "organization": "Multicultural Association of Fredericton (MCAF)", "contact": "28 Saunders St. Fredericton, New Brunswick E3B 1N1 | Téléphone: 506-292-1329 | aip@mcaf.nb.ca", "province": "New Brunswick", "areas_served": "Fredericton region including Oromocto/Gagetown, Minto, Harvey, Nackawic and McAdam" },
+        { "organization": "Centre de ressources pour nouveaux arrivants au Nord-Ouest (CRNANO)", "contact": "59 Queen St. Edmundston, New Brunswick E3V 1A4 | Phone: 506-735-0604 | info@crna.ca", "province": "New Brunswick", "areas_served": "Northwest New Brunswick" },
+        { "organization": "Le Centre des nouveaux arrivants de Saint-Jean", "contact": "165 Union St. Saint-Jean, New Brunswick E2L 5C7 | Phone: 506-642-4242 | bienvenue@sjnewcomers.ca", "province": "New Brunswick", "areas_served": "Grand Saint-Jean region" },
+        { "organization": "La Coopérative d’intégration francophone de l’Î.-P.-É. (CIF IPE)", "contact": "149 Kent St., Suite 202 Charlottetown, Prince Edward Island C1A 1N5 | Phone: 1-888-954-5888 | services@cifipe.ca", "province": "Prince Edward Island", "areas_served": "Prince Edward Island" },
+        { "organization": "Association Multiculturelle Région Chaleur – Multicultural Association Chaleur Region (AMRC-MACR)", "contact": "325 Main Bathurst St. New Brunswick E2A 1B1 | Phone: 506-547-7651 | info@macr-amrc.ca", "province": "New Brunswick", "areas_served": "Chaleur region" },
+        { "organization": "Horizon TNL", "contact": "65 Ridge Road St. John’s, Newfoundland and Labrador A1B 4P5 | Phone: 709-726-5976 | info@horizontnl.com", "province": "Newfoundland and Labrador", "areas_served": "Newfoundland and Labrador" },
+        { "organization": "Centre d’accueil et d’accompagnement francophone des immigrants du Sud-Est du Nouveau-Brunswick (CAFi)", "contact": "140 Champlain St. Dieppe, New Brunswick E1A 1N8 | Phone: 506-382-7494 | info@cafi-nb.org", "province": "New Brunswick", "areas_served": "Southwest New Brunswick" },
+        { "organization": "Conseil de développement économique de la Nouvelle-Écosse (CDÉNÉ)", "contact": "1809 Barrington St., Office 902 Halifax, Nova Scotia B3J 3K8 | Phone: 902-424-7230 | info@cdene.ns.ca", "province": "Nova Scotia", "areas_served": "Nova Scotia" }
+      ],
+      "provincial_websites": {
+        "new_brunswick": "New Brunswick Provincial Site",
+        "newfoundland_and_labrador": "Newfoundland and Labrador Provincial Site",
+        "nova_scotia": "Nova Scotia Provincial Site",
+        "prince_edward_island": "Prince Edward Island Provincial Site"
+      }
+    },
+    "process_steps": {
+      "endorsement_phase": [
+        "A designated AIP employer offers you a valid full-time, non-seasonal job.",
+        "The candidate connects with an authorized settlement service provider to get a customized Settlement Plan.",
+        "Candidate sends the finalized settlement plan back to the designated employer.",
+        "The employer submits a formal endorsement application to the respective provincial department (No LMIA required).",
+        "The candidate receives a official Provincial Endorsement Certificate and a temporary work permit support letter (if required)."
+      ],
+      "immigration_phase": [
+        "Submit the official Permanent Residence (PR) application along with the Endorsement Certificate, IMM 0155 checklist, and supporting docs via the online PR Portal.",
+        "IRCC reviews, performs background/security checks, and processes the PR application.",
+        "Optional: Apply online for a 2-year employer-specific temporary work permit using the provincial referral letter while PR is processing to begin working early.",
+        "Complete biometrics within 30 days of receiving the IRCC instruction letter, and book the mandatory medical exam.",
+        "Upon final approval, travel to Atlantic Canada to live and work with ongoing support from the employer and settlement provider."
+      ]
+    }
+  },
+  {
+    "id": "canada-atlantic-immigration-program",
+    "country": "Canada",
+    "program_name": "Atlantic Immigration Program (AIP)",
+    "status": "Open",
+    "fees": "From $1,590 (Increased April 30, 2026)",
+    "processing_time": "About 26 months (Does not include biometrics)",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Atlantic%20Immigration%20Program/Atlantic%20Immigration%20Program.pdf"
+    ],
+    "overview": "A pathway to permanent residence for skilled foreign workers and international graduates from a Canadian institution who want to work and live in 1 of Canada's 4 Atlantic provinces: New Brunswick, Nova Scotia, Prince Edward Island, or Newfoundland and Labrador. The program helps employers hire qualified candidates for jobs they haven't been able to fill locally.",
+    "target_provinces": [
+      "New Brunswick",
+      "Newfoundland and Labrador",
+      "Nova Scotia",
+      "Prince Edward Island"
+    ],
+    "candidate_eligibility": {
+      "core_requirements": [
+        "Must receive a valid job offer from a designated employer in Atlantic Canada.",
+        "Must be either a recent graduate of a recognized post-secondary institution in Atlantic Canada OR a skilled worker.",
+        "Can be living abroad or in Canada as a temporary resident.",
+        "Must have the right level of education for the job offered.",
+        "Must prove language abilities by taking an approved test.",
+        "Must show proof of funds to support self and family (Exempt if already living and working in Canada with a valid work permit).",
+        "Must get a personalized settlement plan from a service provider organization."
+      ],
+      "teer_matrix": [
+        { "job_offer_teer": "TEER 0", "required_work_experience_teer": "TEER 0, 1, 2, 3, 4" },
+        { "job_offer_teer": "TEER 1", "required_work_experience_teer": "TEER 1, 2, 3, 4" },
+        { "job_offer_teer": "TEER 2", "required_work_experience_teer": "TEER 2, 3, 4" },
+        { "job_offer_teer": "TEER 3", "required_work_experience_teer": "TEER 3, 4" },
+        { "job_offer_teer": "TEER 4", "required_work_experience_teer": "TEER 4" }
+      ],
+      "exemptions": {
+        "international_graduates": "Do not need qualifying work experience if they are an international student who graduated from a recognized post-secondary institution in Atlantic Canada and lived in an Atlantic province for at least 16 of the 24 months before receiving the credential.",
+        "healthcare_sector": "Work experience in NOC 31201 (licensed practical nurses) and NOC 31301 (registered nurses) can be used for a job offer in NOC 33102 (TEER 3 - Nurse aides, orderlies) and NOC 44101 (TEER 4 - Home support workers, caregivers)."
+      }
+    },
+    "job_offer_criteria": [
+      "Must be full-time (at least 30 hours a week).",
+      "Must be non-seasonal (consistent and paid all year).",
+      "Must be for at least 1 year from becoming a permanent resident for TEER 0, 1, 2, 3 offers.",
+      "Must be for permanent employment with no set end date for TEER 4 offers.",
+      "Must be at the same or higher skill level as the qualifying work experience (unless exempt as a graduate).",
+      "The job offer cannot come from a company in which the applicant, spouse, or common-law partner are a majority owner."
+    ],
+    "required_forms": {
+      "portal_digital_forms": [
+        { "code": "IMM 0008", "name": "Generic Application Form for Canada" },
+        { "code": "IMM 5669", "name": "Schedule A - Background/Declaration" },
+        { "code": "IMM 5406", "name": "Additional Family Information" },
+        { "code": "IMM 5562", "name": "Supplementary Information - Your travels" }
+      ],
+      "portal_upload_pdfs": [
+        { "code": "IMM 0155", "name": "Document Checklist" },
+        { "code": "IMM 5501", "name": "Economic Classes – Atlantic Immigration Program" },
+        { "code": "IMM 0157", "name": "Offer of Employment to a Foreign National under the Atlantic Immigration Program (Must enter 'Permanent' in box 22 for TEER 4)" },
+        { "code": "IMM 5409", "name": "Statutory Declaration of Common-law Union (Requires hand-signatures and consecutive 1-year joint proof like bank statements, leases, utility bills)" },
+        { "code": "IMM 5604", "name": "Separation Declaration for Minors Travelling to Canada (Must be signed by hand in front of a notary public if minor travels without both parents)" }
+      ]
+    },
+    "legal_and_translations": {
+      "rules": [
+        "Every document not in English or French must include a certified translation with the translator's membership number, seal, or stamp.",
+        "If a certified translator is unavailable, an affidavit sworn in front of an authorized person is required.",
+        "Authorized persons to witness affidavits/certify inside Canada: Notary Public, Commissioner of Oaths, Commissioner of taking affidavits.",
+        "Family members and immigration representatives/consultants are strictly FORBIDDEN from translating documents or witnessing affidavits/certifying copies."
+      ],
+      "alternate_format_request": {
+        "email": "IRCC.PRPortalALTRequest-DemandeALTPortailRP.IRCC@cic.gc.ca",
+        "subject_line": "[Format Needed: Braille / Large Print / Paper] - [Application Package Name]",
+        "instructions": "Send a plain email with Requested Format, Application Package, Preferred Language, Delivery Method, Full Name, Email, and Mailing Address. Do not add extra information. Technical issues form dummy data: UCI enter 1111111111, Application number enter 0000000."
+      }
+    },
+    "employer_requirements": {
+      "designation_criteria": [
+        "Must not be in violation of the Immigration and Refugee Protection Act or Regulations.",
+        "Must be in good standing with employment standards and occupational health and safety legislation.",
+        "Cannot recruit workers to establish a pool to be later transferred or contracted out.",
+        "Must have been in continuous, active operation under the same management for at least 2 years in 1 of the Atlantic provinces (or show operation in another location with provincial confirmation).",
+        "Must work with a settlement service provider organization to help candidates.",
+        "Must complete free mandatory onboarding training and free intercultural competency training."
+      ],
+      "mandatory_training": {
+        "onboarding": "Watch a sent training video covering Canada's immigration system, AIP background, roles, PR/Work permit applications, and integration. Sign up by emailing business legal/operating name, address, and name of individual completing training to the Dedicated Service Channel.",
+        "intercultural_competency": "Takes half a day, offered in person or via live webinar. Covers creating welcoming workplaces, newcomer experiences, and cultural awareness. Targets hiring managers."
+      },
+      "english_service_providers": [
+        { "organization": "Immigrant Services Association of Nova Scotia (ISANS)", "contact": "6960 Mumford Road, Suite 2120 Halifax, Nova Scotia B3L 4P1 | Phone: 902-482-4346 | ysuresh@isans.ca", "province": "Nova Scotia", "areas_served": "Halifax Regional Municipality" },
+        { "organization": "YMCA of Greater Halifax/Dartmouth", "contact": "104-7071 Bayers Road Halifax, Nova Scotia | Phone: 902-301-6572 | AIPTraining@halifax.ymca.ca", "province": "Nova Scotia", "areas_served": "All areas of Nova Scotia outside of the Halifax Regional Municipality" },
+        { "organization": "Multicultural Association of Fredericton (MCAF)", "contact": "28 Saunders St. Fredericton, New Brunswick E3B 1N1 | Phone: 506-292-1329 | aip@mcaf.nb.ca", "province": "New Brunswick", "areas_served": "Fredericton region including Oromocto/Gagetown, Minto, Harvey, Nackawic and McAdam" },
+        { "organization": "Association for New Canadians", "contact": "144 Military Road St. John’s, Newfoundland and Labrador | Phone: 709-722-9680 | ict@ancnl.ca", "province": "Newfoundland and Labrador", "areas_served": "All of Newfoundland and Labrador" },
+        { "organization": "YMCA Newcomer Connections (YMCA Saint John)", "contact": "191 Churchill Blvd. Saint John, New Brunswick E2K 3E2 | Phone: 506-343-5515 | ylearning@saintjohny.ca", "province": "New Brunswick", "areas_served": "Greater Saint John" },
+        { "organization": "Multicultural Association of Carleton County (MACC)", "contact": "645/647 Main St. Woodstock, New Brunswick E7M 2C7 | Phone: 506-328-4690 | settlement@maccnb.ca", "province": "New Brunswick", "areas_served": "Serving all of Carleton County, the towns of Woodstock, Hartland, Florenceville and surrounding areas" },
+        { "organization": "Multicultural Association of Charlotte County (CCMA)", "contact": "19 Main St., Unit 1 St. George, New Brunswick E5C 3H9 | Phone: 506-755-9295 | suren@ccmanb.com", "province": "New Brunswick", "areas_served": "Charlotte County including St. George, Blacks Harbour, Pennfield, Saint Andrews, St. Stephen, Deer Island, Campobello Island and Grand Manan" },
+        { "organization": "The Multicultural Association of the Greater Moncton Area (MAGMA)", "contact": "22 Church St. Suite C170 Moncton, New Brunswick E1C 0P7 | Phone: 506-800-6250 | jacques.savoie@magma-amgm.org", "province": "New Brunswick", "areas_served": "Greater Moncton area" },
+        { "organization": "Centre de ressources pour nouveaux arrivants au Nord-Ouest (CRNANO)", "contact": "59 Queen St. Edmundston, New Brunswick E3V 1A4 | Phone: 506-735-0604 | info@crna.ca", "province": "New Brunswick", "areas_served": "Northwest New Brunswick" },
+        { "organization": "Association Multiculturelle Région Chaleur – Multicultural Association Chaleur Region (AMRC-MACR)", "contact": "325 Main Bathurst St. New Brunswick E2A 1B1 | Phone: 506-547-7651 | info@macr-amrc.ca", "province": "New Brunswick", "areas_served": "Chaleur region" }
+      ],
+      "french_service_providers": [
+        { "organization": "Multicultural Association of Fredericton (MCAF)", "contact": "28 Saunders St. Fredericton, New Brunswick E3B 1N1 | Téléphone: 506-292-1329 | aip@mcaf.nb.ca", "province": "New Brunswick", "areas_served": "Fredericton region including Oromocto/Gagetown, Minto, Harvey, Nackawic and McAdam" },
+        { "organization": "Centre de ressources pour nouveaux arrivants au Nord-Ouest (CRNANO)", "contact": "59 Queen St. Edmundston, New Brunswick E3V 1A4 | Phone: 506-735-0604 | info@crna.ca", "province": "New Brunswick", "areas_served": "Northwest New Brunswick" },
+        { "organization": "Le Centre des nouveaux arrivants de Saint-Jean", "contact": "165 Union St. Saint-Jean, New Brunswick E2L 5C7 | Phone: 506-642-4242 | bienvenue@sjnewcomers.ca", "province": "New Brunswick", "areas_served": "Grand Saint-Jean region" },
+        { "organization": "La Coopérative d’intégration francophone de l’Î.-P.-É. (CIF IPE)", "contact": "149 Kent St., Suite 202 Charlottetown, Prince Edward Island C1A 1N5 | Phone: 1-888-954-5888 | services@cifipe.ca", "province": "Prince Edward Island", "areas_served": "Prince Edward Island" },
+        { "organization": "Association Multiculturelle Région Chaleur – Multicultural Association Chaleur Region (AMRC-MACR)", "contact": "325 Main Bathurst St. New Brunswick E2A 1B1 | Phone: 506-547-7651 | info@macr-amrc.ca", "province": "New Brunswick", "areas_served": "Chaleur region" },
+        { "organization": "Horizon TNL", "contact": "65 Ridge Road St. John’s, Newfoundland and Labrador A1B 4P5 | Phone: 709-726-5976 | info@horizontnl.com", "province": "Newfoundland and Labrador", "areas_served": "Newfoundland and Labrador" },
+        { "organization": "Centre d’accueil et d’accompagnement francophone des immigrants du Sud-Est du Nouveau-Brunswick (CAFi)", "contact": "140 Champlain St. Dieppe, New Brunswick E1A 1N8 | Phone: 506-382-7494 | info@cafi-nb.org", "province": "New Brunswick", "areas_served": "Southwest New Brunswick" },
+        { "organization": "Conseil de développement économique de la Nouvelle-Écosse (CDÉNÉ)", "contact": "1809 Barrington St., Office 902 Halifax, Nova Scotia B3J 3K8 | Phone: 902-424-7230 | info@cdene.ns.ca", "province": "Nova Scotia", "areas_served": "Nova Scotia" }
+      ],
+      "provincial_websites": {
+        "new_brunswick": "New Brunswick Provincial Site",
+        "newfoundland_and_labrador": "Newfoundland and Labrador Provincial Site",
+        "nova_scotia": "Nova Scotia Provincial Site",
+        "prince_edward_island": "Prince Edward Island Provincial Site"
+      }
+    },
+    "process_steps": {
+      "endorsement_phase": [
+        "A designated AIP employer offers you a valid full-time, non-seasonal job.",
+        "The candidate connects with an authorized settlement service provider to get a customized Settlement Plan.",
+        "Candidate sends the finalized settlement plan back to the designated employer.",
+        "The employer submits a formal endorsement application to the respective provincial department (No LMIA required).",
+        "The candidate receives a official Provincial Endorsement Certificate and a temporary work permit support letter (if required)."
+      ],
+      "immigration_phase": [
+        "Submit the official Permanent Residence (PR) application along with the Endorsement Certificate, IMM 0155 checklist, and supporting docs via the online PR Portal.",
+        "IRCC reviews, performs background/security checks, and processes the PR application.",
+        "Optional: Apply online for a 2-year employer-specific temporary work permit using the provincial referral letter while PR is processing to begin working early.",
+        "Complete biometrics within 30 days of receiving the IRCC instruction letter, and book the mandatory medical exam.",
+        "Upon final approval, travel to Atlantic Canada to live and work with ongoing support from the employer and settlement provider."
+      ]
+    }
   }
 ]

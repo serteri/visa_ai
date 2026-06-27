@@ -9,6 +9,20 @@ type PageProps = {
   params: Promise<{ locale: string }>;
 };
 
+type AustraliaVisaCard = {
+  subclass: string;
+  name: string;
+  name_tr?: string;
+  name_zh?: string;
+  description: string;
+  description_tr?: string;
+  description_zh?: string;
+  fee: number;
+  type: string;
+  processingTime: string;
+  processingTimeUnit: string;
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   return {
@@ -33,7 +47,9 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
 
-  const visas = visaDetails.filter((v) => AU_SUBCLASSES.includes(v.subclass));
+  const visas = (visaDetails as Array<Partial<AustraliaVisaCard>>).filter(
+    (v): v is AustraliaVisaCard => typeof v.subclass === "string" && AU_SUBCLASSES.includes(v.subclass)
+  );
 
   const title = isTr ? "Avustralya Vize Yolları" : isZh ? "澳大利亚签证通道" : "Australia Visa Pathways";
   const subtitle = isTr

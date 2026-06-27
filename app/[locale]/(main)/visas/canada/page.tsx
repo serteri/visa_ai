@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
 import expressEntryData from "@/src/data/countries/ca/express-entry.json";
 import pnpProcessData from "@/src/data/countries/ca/pnp-non-express-process.json";
+import visaDetails from "@/src/data/visa-details.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -45,6 +46,15 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     documentsRequired?: { supportingDocuments?: string[] };
     sourceUrl?: string;
   };
+  const aip = (visaDetails as Array<{
+    id?: string;
+    program_name?: string;
+    status?: string;
+    overview?: string;
+    fees?: string;
+    processing_time?: string;
+    target_provinces?: string[];
+  }>).find((item) => item.id === "canada-atlantic-immigration-program");
 
   const title = isTr ? "Kanada Vize Yolları" : isZh ? "加拿大移民通道" : "Canada Visa Pathways";
   const subtitle = isTr 
@@ -72,6 +82,11 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   const pnpProcessingTimeText = pnp.processingTime?.estimate ?? (isTr ? "Yaklaşık 13 ay" : isZh ? "约13个月" : "about 13 months");
   const pnpStepsCount = pnp.processSteps?.length ?? 0;
   const pnpDocsCount = pnp.documentsRequired?.supportingDocuments?.length ?? 0;
+  const aipProvincesCount = aip?.target_provinces?.length ?? 4;
+  const aipFeeText = aip?.fees ?? "From $1,590 (Increased April 30, 2026)";
+  const aipProcessingTimeText = aip?.processing_time ?? "About 26 months (Does not include biometrics)";
+  const aipTitle = aip?.program_name ?? "Atlantic Immigration Program (AIP)";
+  const aipBody = aip?.overview ?? "A pathway to permanent residence for skilled foreign workers and international graduates who want to live and work in Atlantic Canada.";
 
   const pnpTitle = isTr
     ? "Provincial Nominee Program (Non-Express Entry Süreci)"
@@ -187,6 +202,48 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               </div>
 
               <div className="mt-4 flex items-center justify-end text-xs font-bold text-emerald-600 group-hover:translate-x-1 transition-transform dark:text-emerald-400">
+                <span>{viewDetailsLabel}</span>
+                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href={`/${locale}/visas/atlantic-immigration-program`}
+            className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="inline-block rounded-lg bg-sky-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-sky-700 dark:bg-sky-950/40 dark:text-sky-400">
+                  Atlantic Immigration Program
+                </span>
+                <span className="text-xs font-semibold text-slate-400">Open</span>
+              </div>
+
+              <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-sky-600 transition-colors dark:text-white dark:group-hover:text-sky-400">
+                {aipTitle}
+              </h3>
+              <p className="mt-2.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-4">
+                {aipBody}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <span>{isTr ? "Hedef eyalet" : isZh ? "目标省份" : "Target provinces"}: {aipProvincesCount}</span>
+                <span>{isTr ? "Durum" : isZh ? "状态" : "Status"}: Open</span>
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-slate-100 pt-4 dark:border-zinc-800">
+              <div className="flex items-center justify-between gap-3 text-xs text-slate-400">
+                <div className="flex items-center gap-1 min-w-0">
+                  <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <span className="truncate">{aipProcessingTimeText}</span>
+                </div>
+                <div className="font-semibold text-slate-700 dark:text-zinc-300 text-right">
+                  <span>{aipFeeText}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-end text-xs font-bold text-sky-600 group-hover:translate-x-1 transition-transform dark:text-sky-400">
                 <span>{viewDetailsLabel}</span>
                 <ArrowRight className="ml-1 h-3.5 w-3.5" />
               </div>
