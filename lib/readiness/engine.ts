@@ -190,7 +190,7 @@ function detectSubclasses(input: ReadinessInput): string[] {
   return Array.from(found);
 }
 
-export type CanadaPathwayCode = "CEC" | "FSW" | "FSTP";
+export type CanadaPathwayCode = "CEC" | "FSW" | "FSTP" | "AIP" | "FAMILY_SPONSORSHIP";
 
 function detectCanadaPathways(input: ReadinessInput): CanadaPathwayCode[] {
   const combined = [
@@ -205,6 +205,11 @@ function detectCanadaPathways(input: ReadinessInput): CanadaPathwayCode[] {
 
   const found = new Set<CanadaPathwayCode>();
 
+  // The CEC/FSW/FSTP/AIP/FAMILY_SPONSORSHIP keyword lists also match the
+  // slug-style values sent by the full-check "visa pathway" dropdown
+  // (e.g. "canada-express-entry-cec", "atlantic-immigration-program",
+  // "canada-family-sponsorship") so an explicit selection is always detected
+  // exactly, on top of the free-text fallback phrases.
   if (hasKw(combined, ["cec", "canadian experience class", "canada work experience", "canadian work experience"])) {
     found.add("CEC");
   }
@@ -214,11 +219,39 @@ function detectCanadaPathways(input: ReadinessInput): CanadaPathwayCode[] {
   if (hasKw(combined, ["fstp", "federal skilled trade", "skilled trades program", "trade", "tradesperson"])) {
     found.add("FSTP");
   }
+  if (
+    hasKw(combined, [
+      "aip",
+      "atlantic-immigration-program",
+      "atlantic immigration program",
+      "atlantic immigration",
+    ])
+  ) {
+    found.add("AIP");
+  }
+  if (
+    hasKw(combined, [
+      "canada-family-sponsorship",
+      "family sponsorship",
+      "family-sponsorship",
+      "sponsor my spouse",
+      "sponsor my partner",
+      "sponsor my child",
+      "spouse sponsorship",
+      "partner sponsorship",
+    ])
+  ) {
+    found.add("FAMILY_SPONSORSHIP");
+  }
 
-  // No explicit program named but general PR/skilled-migration intent toward Canada → show all three.
+  // No explicit program named but general PR/skilled-migration intent toward Canada → show all three Express Entry streams.
+  // "pr" is checked as a whole word (not hasKw's plain substring) because it
+  // otherwise false-matches inside unrelated words/slugs like "express" or
+  // "atlantic-immigration-program".
   if (
     found.size === 0 &&
-    hasKw(combined, ["express entry", "pr", "permanent", "skilled", "points", "crs", "migrate", "migration", "nitelikli", "puan", "kalıcı", "göç"])
+    (hasKw(combined, ["express entry", "permanent", "skilled", "points", "crs", "migrate", "migration", "nitelikli", "puan", "kalıcı", "göç"]) ||
+      /\bpr\b/i.test(combined))
   ) {
     found.add("CEC");
     found.add("FSW");
@@ -232,6 +265,8 @@ const CANADA_PATHWAY_NAMES: Record<CanadaPathwayCode, { en: string; tr: string }
   CEC: { en: "Canadian Experience Class", tr: "Kanada Deneyim Sınıfı (CEC)" },
   FSW: { en: "Federal Skilled Worker Program", tr: "Federal Vasıflı İşçi Programı (FSW)" },
   FSTP: { en: "Federal Skilled Trades Program", tr: "Federal Vasıflı Esnaf Programı (FSTP)" },
+  AIP: { en: "Atlantic Immigration Program", tr: "Atlantic Immigration Program (AIP)" },
+  FAMILY_SPONSORSHIP: { en: "Family Sponsorship", tr: "Aile Sponsorluğu" },
 };
 
 // Intentionally simpler than the AU pathwayComparison builder — this covers
@@ -268,27 +303,56 @@ function buildCanadaPathwayComparison(
     ];
   }
 
-  return pathwayCodes.map((code) => ({
-    subclass: code,
-    visaName: isTr ? CANADA_PATHWAY_NAMES[code].tr : CANADA_PATHWAY_NAMES[code].en,
-    reason: isTr
-      ? `${CANADA_PATHWAY_NAMES[code].tr} sinyalleri mevcut bilgilerle eşleşiyor.`
-      : `Signals for ${CANADA_PATHWAY_NAMES[code].en} match the information provided.`,
-    relevance: "possible",
-    confidenceLevel: estimatedPoints !== undefined ? "medium" : "low",
-    confidenceExplanation: isTr
-      ? "CRS tahmini ve program kriterleri kısmi bilgiyle değerlendirilmiştir."
-      : "CRS estimate and program criteria were assessed with partial information.",
-    difficulty: "medium",
-    requirementType: isTr ? "CRS puanı ve NOC uygunluğu" : "CRS score and NOC eligibility",
-    userRelativePosition: isTr
-      ? "Göreli konum, son draw kesim puanlarına erişilemediği için belirlenememektedir."
-      : "Relative position cannot be determined yet because recent draw cutoff data is not available.",
-    keyRequirements: isTr
-      ? ["NOC uygunluğu", "Dil testi (CELPIP/IELTS/TEF)", "ECA (gerekirse)", "Kanıt fonları"]
-      : ["NOC eligibility", "Language test (CELPIP/IELTS/TEF)", "ECA (if required)", "Proof of funds"],
-    pathwaySpecificRisks: [],
-  }));
+  return pathwayCodes.map((code) => {
+    const isExpressEntry = code === "CEC" || code === "FSW" || code === "FSTP";
+    const isAip = code === "AIP";
+
+    return {
+      subclass: code,
+      visaName: isTr ? CANADA_PATHWAY_NAMES[code].tr : CANADA_PATHWAY_NAMES[code].en,
+      reason: isTr
+        ? `${CANADA_PATHWAY_NAMES[code].tr} sinyalleri mevcut bilgilerle eşleşiyor.`
+        : `Signals for ${CANADA_PATHWAY_NAMES[code].en} match the information provided.`,
+      relevance: "possible",
+      confidenceLevel: isExpressEntry && estimatedPoints !== undefined ? "medium" : "low",
+      confidenceExplanation: isExpressEntry
+        ? (isTr
+            ? "CRS tahmini ve program kriterleri kısmi bilgiyle değerlendirilmiştir."
+            : "CRS estimate and program criteria were assessed with partial information.")
+        : isAip
+          ? (isTr
+              ? "Atlantik eyaleti onayı ve işveren teklifi bağlamı kısmi bilgiyle değerlendirilmiştir."
+              : "Atlantic province endorsement and employer offer context were assessed with partial information.")
+          : (isTr
+              ? "Sponsor uygunluğu ve ilişki kanıtı bağlamı kısmi bilgiyle değerlendirilmiştir."
+              : "Sponsor eligibility and relationship evidence context were assessed with partial information."),
+      difficulty: "medium",
+      requirementType: isExpressEntry
+        ? (isTr ? "CRS puanı ve NOC uygunluğu" : "CRS score and NOC eligibility")
+        : isAip
+          ? (isTr ? "İşveren teklifi ve eyalet onayı" : "Employer job offer and provincial endorsement")
+          : (isTr ? "Sponsor uygunluğu ve ilişki kanıtı" : "Sponsor eligibility and relationship evidence"),
+      userRelativePosition: isExpressEntry
+        ? (isTr
+            ? "Göreli konum, son draw kesim puanlarına erişilemediği için belirlenememektedir."
+            : "Relative position cannot be determined yet because recent draw cutoff data is not available.")
+        : (isTr
+            ? "Bu yol bir puan testine değil, uygunluk kriterlerine dayanır; göreli konum kavramı geçerli değildir."
+            : "This pathway is criteria-based rather than points-tested, so a relative-position comparison does not apply."),
+      keyRequirements: isExpressEntry
+        ? (isTr
+            ? ["NOC uygunluğu", "Dil testi (CELPIP/IELTS/TEF)", "ECA (gerekirse)", "Kanıt fonları"]
+            : ["NOC eligibility", "Language test (CELPIP/IELTS/TEF)", "ECA (if required)", "Proof of funds"])
+        : isAip
+          ? (isTr
+              ? ["Atlantik eyaletinde geçerli iş teklifi", "Eyalet onayı sertifikası", "Yerleşim planı"]
+              : ["Valid job offer in an Atlantic province", "Provincial endorsement certificate", "Settlement plan"])
+          : (isTr
+              ? ["Sponsor uygunluk kriterleri", "İlişki kanıtı", "Asgari gelir/finansal taahhüt belgeleri"]
+              : ["Sponsor eligibility criteria", "Proof of relationship", "Minimum income / financial undertaking documents"]),
+      pathwaySpecificRisks: [],
+    };
+  });
 }
 
 // ─── Visa name map ────────────────────────────────────────────────────────────

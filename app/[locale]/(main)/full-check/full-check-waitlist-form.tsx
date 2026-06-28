@@ -13,7 +13,7 @@ import {
   type FullCheckWaitlistState,
   submitFullCheckWaitlist,
 } from "./actions";
-import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, type SupportedCountry } from "@/lib/countries";
+import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, type SupportedCountry, type VisaPathwayOption } from "@/lib/countries";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { ActionChecklist } from "@/components/ActionChecklist";
@@ -144,6 +144,53 @@ function LockedSection({ title, isTr, isZh }: { title: string; isTr: boolean; is
         </div>
       </div>
     </Card>
+  );
+}
+
+// Groups CA's Express Entry sub-streams (CEC/FSW/FSTP) and other single-item
+// pathways (PNP, AIP, Family Sponsorship) under <optgroup> labels so the
+// hierarchy is visible in the dropdown. AU's flat list (no `group`) renders
+// unchanged as plain <option> elements.
+function renderVisaPathwayOptions(
+  options: VisaPathwayOption[],
+  isTr: boolean,
+  isZh: boolean
+) {
+  const lang = isTr ? "tr" : isZh ? "zh-Hans" : "en";
+  const groups: { label: string; options: VisaPathwayOption[] }[] = [];
+  const ungrouped: VisaPathwayOption[] = [];
+
+  for (const opt of options) {
+    if (!opt.group) {
+      ungrouped.push(opt);
+      continue;
+    }
+    const groupLabel = opt.group[lang];
+    const existing = groups.find((g) => g.label === groupLabel);
+    if (existing) {
+      existing.options.push(opt);
+    } else {
+      groups.push({ label: groupLabel, options: [opt] });
+    }
+  }
+
+  return (
+    <>
+      {ungrouped.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label[lang]}
+        </option>
+      ))}
+      {groups.map((group) => (
+        <optgroup key={group.label} label={group.label}>
+          {group.options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label[lang]}
+            </option>
+          ))}
+        </optgroup>
+      ))}
+    </>
   );
 }
 
@@ -515,11 +562,7 @@ export function FullCheckWaitlistForm({
             className={selectClassName}
           >
             <option value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
-            {countryVisaPathways[selectedCountry].map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label[isTr ? "tr" : isZh ? "zh-Hans" : "en"]}
-              </option>
-            ))}
+            {renderVisaPathwayOptions(countryVisaPathways[selectedCountry], isTr, isZh)}
           </select>
         </div>
 

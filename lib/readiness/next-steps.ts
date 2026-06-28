@@ -1,4 +1,5 @@
 import type { Locale, PathwayComparison } from "./types";
+import type { CanadaPathwayCode } from "./engine";
 
 type NextStepsContext = {
   locale: Locale;
@@ -88,7 +89,7 @@ export function buildNextSteps(ctx: NextStepsContext): string[] {
 
 type CanadaNextStepsContext = {
   locale: Locale;
-  pathwayCodes: ("CEC" | "FSW" | "FSTP")[];
+  pathwayCodes: CanadaPathwayCode[];
   hasOccupation: boolean;
   hasEnglish: boolean;
   hasMissingInfo: boolean;
