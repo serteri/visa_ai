@@ -1,0 +1,78 @@
+{
+  "country": "CA",
+  "dataType": "program_status_registry",
+  "lastVerified": "2026-06-28",
+  "purpose": "Kullanicinin acik olmayan bir programa zaman harcamasini onlemek icin seffaf durum listesi. Detayli kriterler bu dosyada yok - sadece durum (paused/closed) + resmi link.",
+  "importantCrossReference": {
+    "warning": "Federal 'Self-employed persons Program' (self-employed.html) burada PAUSED gorunuyor. Bu, Quebec'in KENDI self-employed akisiyla (quebec-investors-entrepreneurs-self-employed.json icindeki selfEmployedPerson) AYNI SEY DEGIL - Quebec MIFI uzerinden isleyen ayri bir program, bu listede ayrica durmuyor.",
+    "actionNeeded": "Quebec'in kendi self-employed akiminin (MIFI tarafindan) su an gercekten acik olup olmadigini ayrica dogrulamak gerekiyor - bu listenin 'kapali' demedigi her seyin otomatik 'acik' oldugu anlamina gelmez, ayri teyit gerekir."
+  },
+  "paused": [
+    {
+      "name": "Start-up Visa",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/start-visa.html",
+      "status": "paused",
+      "note": "Yeni basvuru almiyor ama tamamen kapatilmamis (closed degil, paused) - gelecekte yeniden acilabilir."
+    },
+    {
+      "name": "Self-employed persons (Federal Program)",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/self-employed.html",
+      "status": "paused",
+      "note": "Bu FEDERAL program - Quebec'in kendi self-employed akisiyla karistirilmamali."
+    }
+  ],
+  "closed": [
+    {
+      "name": "Economic Mobility Pathways Pilot (EMPP)",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/refugees/economic-mobility-pathways-pilot.html",
+      "category": "refugee/economic hybrid pilot"
+    },
+    {
+      "name": "Temporary resident (TR) to permanent resident (PR) pathway",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/tr-pr-pathway.html",
+      "category": "special transitional pathway"
+    },
+    {
+      "name": "Agri-Food Pilot",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/agri-food-pilot.html",
+      "category": "sector-specific pilot"
+    },
+    {
+      "name": "People affected by the conflict in Sudan",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/sudan2023/pr-pathway.html",
+      "category": "humanitarian/crisis-specific"
+    },
+    {
+      "name": "Family-based program for Colombians, Haitians and Venezuelans",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/humanitarian-colombia-haiti-venezuela.html",
+      "category": "humanitarian/crisis-specific"
+    },
+    {
+      "name": "Rural and Northern Immigration Pilot (RNIP)",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/rural-northern-immigration-pilot.html",
+      "category": "regional pilot",
+      "note": "Bu, daha once konustugumuz Rural Community Immigration Pilot (RCIP)'in SELEFI - RNIP kapandi, RCIP onun yerine geldi. JSON'larda bu ardillik iliskisini karistirmamak icin not edildi."
+    },
+    {
+      "name": "Out-of-status construction workers",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/gta-construction-workers.html",
+      "category": "sector/region-specific (GTA)"
+    },
+    {
+      "name": "Ukrainian nationals with family in Canada",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/ukraine-measures/pr-family-reunification.html",
+      "category": "humanitarian/crisis-specific"
+    },
+    {
+      "name": "Families of flight PS752 victims",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/families-ps752.html",
+      "category": "humanitarian/crisis-specific"
+    },
+    {
+      "name": "Resettled Yazidis and survivors of Daesh",
+      "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/yazidi-or-survivors-of-daesh.html",
+      "category": "humanitarian/crisis-specific"
+    }
+  ],
+  "displayRecommendation": "Bu listeyi /visas/canada sayfasinin ALT kisminda, ana (acik) pathway kartlarindan gorsel olarak ayri, sonuk/collapsed bir bolum olarak goster (ornek: 'Paused or Closed Programs (click to expand)') - ana dikkat acik programlara gitmeli, bu liste sadece referans/seffaflik amacli."
+}

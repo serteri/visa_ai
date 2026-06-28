@@ -4,6 +4,7 @@ import { ArrowRight, Clock } from "lucide-react";
 import expressEntryData from "@/src/data/countries/ca/express-entry.json";
 import pnpProcessData from "@/src/data/countries/ca/pnp-non-express-process.json";
 import physicianOverlayData from "@/src/data/countries/ca/occupation-overlays/physician.json";
+import pausedClosedProgramsData from "@/src/data/countries/ca/paused-closed-programs.json";
 import quebecBusinessData from "@/src/data/countries/ca/quebec-investors-entrepreneurs-self-employed.json";
 import quebecSelectedFederalData from "@/src/data/countries/ca/quebec-selected-skilled-workers.json";
 import ruralFrancophonePilotsData from "@/src/data/countries/ca/rural-francophone-pilots.json";
@@ -71,6 +72,13 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   };
   const quebecBusiness = quebecBusinessData as {
     twoStageProcess?: { stage2_federal?: { fee?: { processingFeeFrom?: number; from?: number; currency?: string } } };
+  };
+  const pausedClosedRegistry = pausedClosedProgramsData as {
+    lastVerified?: string;
+    purpose?: string;
+    importantCrossReference?: { warning?: string; actionNeeded?: string };
+    paused?: Array<{ name: string; url: string; status?: string; note?: string }>;
+    closed?: Array<{ name: string; url: string; category?: string; note?: string }>;
   };
   const aip = (visaDetails as Array<{
     id?: string;
@@ -197,6 +205,8 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     currency: quebecBusiness.twoStageProcess?.stage2_federal?.fee?.currency ?? "CAD",
     maximumFractionDigits: 0,
   }).format(quebecBusiness.twoStageProcess?.stage2_federal?.fee?.from ?? 2495);
+  const pausedPrograms = pausedClosedRegistry.paused ?? [];
+  const closedPrograms = pausedClosedRegistry.closed ?? [];
 
   return (
     <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
@@ -645,6 +655,85 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             </div>
           </Link>
         </div>
+
+        <section className="mt-14">
+          <details className="group rounded-2xl border border-slate-200 bg-slate-100/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
+            <summary className="cursor-pointer list-none text-sm font-semibold text-slate-800 dark:text-slate-200">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span>
+                  {isTr
+                    ? "Duraklatilan veya Kapatilan Programlar (genisletmek icin tikla)"
+                    : isZh
+                      ? "暂停或关闭项目（点击展开）"
+                      : "Paused or Closed Programs (click to expand)"}
+                </span>
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  {isTr ? "Referans" : isZh ? "参考" : "Reference only"} - {pausedPrograms.length + closedPrograms.length}
+                </span>
+              </div>
+            </summary>
+
+            <div className="mt-4 space-y-5 border-t border-slate-200 pt-4 dark:border-zinc-800">
+              <p className="text-xs leading-5 text-slate-600 dark:text-slate-400">{pausedClosedRegistry.purpose}</p>
+
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900 dark:border-amber-700/30 dark:bg-amber-950/20 dark:text-amber-100">
+                <p className="font-semibold">Cross-reference warning</p>
+                <p className="mt-1">{pausedClosedRegistry.importantCrossReference?.warning}</p>
+                <p className="mt-1">{pausedClosedRegistry.importantCrossReference?.actionNeeded}</p>
+                <p className="mt-1">
+                  {isTr
+                    ? "Not: Quebec resmi sayfasinda self-employed worker akisinda basvurunun acik oldugu ('You can submit an application at any time') ifadesi goruldu; yine de MIFI guncellemeleri duzenli kontrol edilmelidir."
+                    : isZh
+                      ? "注：魁北克官方 self-employed 页面显示“可随时提交申请”；仍需持续核对 MIFI 更新。"
+                      : "Note: Quebec official self-employed page states applications can be submitted at any time; still re-check MIFI updates regularly."}
+                </p>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Paused</p>
+                <div className="space-y-2">
+                  {pausedPrograms.map((item) => (
+                    <div key={item.name} className="rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 dark:text-white">
+                          {item.name}
+                        </a>
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">
+                          {item.status ?? "paused"}
+                        </span>
+                      </div>
+                      {item.note ? <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{item.note}</p> : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Closed</p>
+                <div className="space-y-2">
+                  {closedPrograms.map((item) => (
+                    <div key={item.name} className="rounded-lg border border-slate-200 bg-white p-3 text-sm opacity-85 dark:border-zinc-800 dark:bg-zinc-900">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 dark:text-white">
+                          {item.name}
+                        </a>
+                        <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-rose-900 dark:bg-rose-900/40 dark:text-rose-200">
+                          closed
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{item.category}</p>
+                      {item.note ? <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">{item.note}</p> : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Last verified: {pausedClosedRegistry.lastVerified}
+              </p>
+            </div>
+          </details>
+        </section>
       </div>
     </main>
   );
