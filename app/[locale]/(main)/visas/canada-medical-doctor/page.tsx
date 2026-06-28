@@ -1,0 +1,444 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Clock3,
+  ExternalLink,
+  Globe2,
+  HeartPulse,
+  ListChecks,
+  Sparkles,
+  Stethoscope,
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
+import physicianData from "@/src/data/countries/ca/occupation-overlays/physician.json";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+
+type PageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+type PhysicianData = {
+  sourceUrl?: string;
+  sourcePdfBlobUrl?: string;
+  lastVerified?: string;
+  newFor2026?: string[];
+  sectorStatistics?: {
+    internationallyTrainedFamilyPhysiciansPercent2024?: number;
+    immigrantHealthcareWorkersRatio?: string;
+    healthcareWorkersArrived2024ViaEconomicPrograms?: string;
+  };
+  applicantTracks?: {
+    hasCanadianMDExperience?: { description?: string; availablePathways?: string[] };
+    noCanadianMDExperienceYet?: { description?: string; availablePathways?: string[]; prerequisite?: string };
+  };
+  immigrationPathways?: Array<{
+    id: string;
+    name: string;
+    eligibility?: string[];
+    processSteps?: string[];
+    reservedSpaces?: number;
+    expeditedWorkPermitDays?: number;
+  }>;
+  medicalLicensingPathway?: {
+    note?: string;
+    framework?: { name?: string; components?: Record<string, string> };
+    centralPortal?: { name?: string; services?: string[]; specialNote?: string };
+    exams?: {
+      MCCQE?: { fullName?: string; format?: string; deliveredIn?: string; attemptLimit?: { max?: number; rule?: string } };
+      NAC?: { fullName?: string; purpose?: string; orderFlexibility?: string };
+    };
+    postLicensureSteps?: string[];
+    languageRequirements?: {
+      generalRule?: string;
+      englishTests?: Record<string, string>;
+      frenchTestQuebec?: string;
+      validityWindow?: string;
+      possibleExemption?: string;
+    };
+    keyDeadlineExample?: { context?: string; deadline?: string; requirement?: string };
+    regulatoryAuthorities?: string[];
+  };
+  foreignCredentialRecognition?: {
+    process?: string;
+    tool?: string;
+    supportServices?: string[];
+    otherNewcomerServices?: string[];
+  };
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title: "Live and work as a medical doctor in Canada | LogiVisa",
+    description:
+      "Physician-focused Canada pathway: 2026 Express Entry physician category, PNP reserved spaces, and separate medical licensing steps through MCC and provincial regulators.",
+    alternates: {
+      canonical: `/${locale}/visas/canada-medical-doctor`,
+      languages: {
+        en: "/en/visas/canada-medical-doctor",
+        tr: "/tr/visas/canada-medical-doctor",
+        "zh-Hans": "/zh-Hans/visas/canada-medical-doctor",
+      },
+    },
+  };
+}
+
+function pathLabel(pathwayId: string) {
+  return pathwayId
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
+  const { locale } = await params;
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+
+  const data = physicianData as PhysicianData;
+  const newFor2026 = data.newFor2026 ?? [];
+  const immigrationPathways = data.immigrationPathways ?? [];
+  const pnpPathway = immigrationPathways.find((item) => item.id === "pnp");
+  const licensing = data.medicalLicensingPathway;
+  const englishTests = Object.entries(licensing?.languageRequirements?.englishTests ?? {});
+
+  const stats = [
+    {
+      label: isTr ? "Yeni 2026 güncellemesi" : isZh ? "2026 新增更新" : "New in 2026",
+      value: `${newFor2026.length}`,
+    },
+    {
+      label: isTr ? "PNP rezerve kontenjan" : isZh ? "PNP 保留名额" : "PNP reserved spaces",
+      value: `${pnpPathway?.reservedSpaces ?? 5000}`,
+    },
+    {
+      label: isTr ? "Hızlandırılmış izin" : isZh ? "加速工签处理" : "Expedited permit",
+      value: `${pnpPathway?.expeditedWorkPermitDays ?? 14} days`,
+    },
+  ];
+
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
+      <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <Link
+            href={`/${locale}/visas/canada`}
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            {isTr ? "Kanada vizelerine dön" : isZh ? "返回加拿大签证" : "Back to Canada visas"}
+          </Link>
+          <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-100">
+            <Sparkles className="h-4 w-4" />
+            {isTr ? "Meslek Overlay" : isZh ? "职业 Overlay" : "Occupation Overlay"}
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
+          <Card className="overflow-hidden border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <CardContent className="space-y-6 p-6 sm:p-8">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100">Canada</Badge>
+                  <Badge className="bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-100">
+                    Medical Doctor / Physician
+                  </Badge>
+                </div>
+
+                <div className="space-y-3">
+                  <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
+                    Live and work as a medical doctor in Canada
+                  </h1>
+                  <p className="max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
+                    {isTr
+                      ? "Bu sayfa tek bir vize turu degil: doktorlar icin gocmenlik yollarini ve tamamen ayri tibbi lisanslama yolunu birlikte gosterir. Kanada'da pratik yapmak icin her iki track de tamamlanmalidir."
+                      : isZh
+                        ? "本页不是单一签证类型：同时展示医生的移民路径与独立医疗执照路径。在加拿大执业需要两条路径都完成。"
+                        : "This is not a single visa stream. It combines physician-specific immigration options and a separate medical licensing process. To practise in Canada, both tracks must be completed."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                {stats.map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
+                    <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{item.label}</p>
+                    <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Link href={`/${locale}/full-check`}>
+                  <Button className="bg-rose-600 text-white hover:bg-rose-700">
+                    <span>{isTr ? "Uygunlugunu kontrol et" : isZh ? "检查你的资格" : "Check your eligibility"}</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <a
+                  href={data.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
+                >
+                  {isTr ? "Resmi kaynagi ac" : isZh ? "打开官方来源" : "Open official source"}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="text-xl">{isTr ? "Hizli Ozet" : isZh ? "快速摘要" : "Quick Summary"}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Last verified</p>
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">{data.lastVerified ?? "2026-06-27"}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Internationally trained family physicians (2024)</p>
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">
+                  {data.sectorStatistics?.internationallyTrainedFamilyPhysiciansPercent2024 ?? 31}%
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Immigrant healthcare workers ratio</p>
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">
+                  {data.sectorStatistics?.immigrantHealthcareWorkersRatio ?? "1 in 4"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Healthcare workers arrived via economic programs (2024)</p>
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">
+                  {data.sectorStatistics?.healthcareWorkersArrived2024ViaEconomicPrograms ?? "11,000+"}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-6 sm:px-6 lg:px-8">
+        <VisaPdfDownloadCard
+          pdfUrls={data.sourcePdfBlobUrl ? [data.sourcePdfBlobUrl] : []}
+          sourceUrl={data.sourceUrl}
+          title="Live and work as a medical doctor in Canada (Official PDF)"
+          description="Official IRCC physician guide snapshot stored on Vercel Blob for public access."
+          primaryLabel={isTr ? "PDF Ac" : isZh ? "打开 PDF" : "Open PDF"}
+          sourceLabel={isTr ? "Resmi site" : isZh ? "官方页面" : "Official page"}
+        />
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Stethoscope className="h-5 w-5 text-rose-600" />
+                {isTr ? "Gocmenlik Pathway'leri" : isZh ? "移民路径" : "Immigration Pathways"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              {immigrationPathways.map((pathway) => (
+                <div key={pathway.id} className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{pathway.name}</p>
+                  <ul className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                    {(pathway.eligibility ?? []).map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span className="text-rose-500">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {pathway.processSteps && pathway.processSteps.length > 0 ? (
+                    <p className="mt-2 text-xs font-medium text-slate-500">
+                      {isTr ? "Süreç adımı" : isZh ? "流程步骤" : "Process steps"}: {pathway.processSteps.length}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <HeartPulse className="h-5 w-5 text-rose-600" />
+                {isTr ? "Tibbi Lisanslama" : isZh ? "医疗执照路径" : "Medical Licensing Pathway"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
+              <p>{licensing?.note}</p>
+              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+                <p className="font-semibold text-slate-900 dark:text-white">{licensing?.framework?.name ?? "IMG-L Framework"}</p>
+                <ul className="mt-2 space-y-1">
+                  {Object.entries(licensing?.framework?.components ?? {}).map(([key, value]) => (
+                    <li key={key} className="flex gap-2">
+                      <span className="font-semibold text-rose-600">{key}</span>
+                      <span>{value}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+                <p className="font-semibold text-slate-900 dark:text-white">{licensing?.centralPortal?.name}</p>
+                <ul className="mt-2 space-y-1">
+                  {(licensing?.centralPortal?.services ?? []).map((service) => (
+                    <li key={service} className="flex gap-2">
+                      <span className="text-rose-500">•</span>
+                      <span>{service}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <ListChecks className="h-5 w-5 text-rose-600" />
+                Exams and Deadlines
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
+              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+                <p className="font-semibold text-slate-900 dark:text-white">{licensing?.exams?.MCCQE?.fullName}</p>
+                <p className="mt-1">{licensing?.exams?.MCCQE?.format}</p>
+                <p className="mt-1">{licensing?.exams?.MCCQE?.deliveredIn}</p>
+                <p className="mt-1">
+                  Max attempts: {licensing?.exams?.MCCQE?.attemptLimit?.max ?? 4}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+                <p className="font-semibold text-slate-900 dark:text-white">{licensing?.exams?.NAC?.fullName}</p>
+                <p className="mt-1">{licensing?.exams?.NAC?.purpose}</p>
+                <p className="mt-1">{licensing?.exams?.NAC?.orderFlexibility}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+                <p className="font-semibold text-slate-900 dark:text-white">{licensing?.keyDeadlineExample?.context}</p>
+                <p className="mt-1 flex items-center gap-2">
+                  <Clock3 className="h-4 w-4 text-rose-600" />
+                  {licensing?.keyDeadlineExample?.deadline}
+                </p>
+                <p className="mt-1">{licensing?.keyDeadlineExample?.requirement}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <BadgeCheck className="h-5 w-5 text-rose-600" />
+                Language and Registration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
+              <p>{licensing?.languageRequirements?.generalRule}</p>
+              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+                <p className="font-semibold text-slate-900 dark:text-white">English tests</p>
+                <ul className="mt-2 space-y-1">
+                  {englishTests.map(([testName, scoreRule]) => (
+                    <li key={testName} className="flex gap-2">
+                      <span className="text-rose-500">•</span>
+                      <span>{testName}: {scoreRule}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <p>{licensing?.languageRequirements?.frenchTestQuebec}</p>
+              <p>{licensing?.languageRequirements?.validityWindow}</p>
+              <p>{licensing?.languageRequirements?.possibleExemption}</p>
+              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+                <p className="font-semibold text-slate-900 dark:text-white">Post-licensure steps</p>
+                <ul className="mt-2 space-y-1">
+                  {(licensing?.postLicensureSteps ?? []).map((step) => (
+                    <li key={step} className="flex gap-2">
+                      <span className="text-rose-500">•</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Globe2 className="h-5 w-5 text-rose-600" />
+                Applicant Tracks
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-white">With Canadian MD experience</p>
+                <p className="mt-1">{data.applicantTracks?.hasCanadianMDExperience?.description}</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {(data.applicantTracks?.hasCanadianMDExperience?.availablePathways ?? []).map(pathLabel).join(" • ")}
+                </p>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-white">No Canadian MD experience yet</p>
+                <p className="mt-1">{data.applicantTracks?.noCanadianMDExperienceYet?.description}</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {(data.applicantTracks?.noCanadianMDExperienceYet?.availablePathways ?? []).map(pathLabel).join(" • ")}
+                </p>
+                <p className="mt-1">{data.applicantTracks?.noCanadianMDExperienceYet?.prerequisite}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="text-xl">Credential Recognition and Support</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
+              <p>{data.foreignCredentialRecognition?.process}</p>
+              <p>{data.foreignCredentialRecognition?.tool}</p>
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-white">Support services</p>
+                <ul className="mt-2 space-y-1">
+                  {(data.foreignCredentialRecognition?.supportServices ?? []).map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="text-rose-500">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-white">Newcomer services</p>
+                <ul className="mt-2 space-y-1">
+                  {(data.foreignCredentialRecognition?.otherNewcomerServices ?? []).map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="text-rose-500">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    </main>
+  );
+}

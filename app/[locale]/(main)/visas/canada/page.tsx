@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
 import expressEntryData from "@/src/data/countries/ca/express-entry.json";
 import pnpProcessData from "@/src/data/countries/ca/pnp-non-express-process.json";
+import physicianOverlayData from "@/src/data/countries/ca/occupation-overlays/physician.json";
 import visaDetails from "@/src/data/visa-details.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -45,6 +46,9 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     processSteps?: Array<{ step: number; name: string }>;
     documentsRequired?: { supportingDocuments?: string[] };
     sourceUrl?: string;
+  };
+  const physicianOverlay = physicianOverlayData as {
+    newFor2026?: string[];
   };
   const aip = (visaDetails as Array<{
     id?: string;
@@ -142,6 +146,18 @@ export default async function CanadaVisasPage({ params }: PageProps) {
       ? "按省份的细分通道对比将在独立模块中上线。"
       : "Detailed province-by-province stream comparison will be provided in a separate module.";
 
+  const physicianCardTitle = isTr
+    ? "Live and work as a medical doctor in Canada"
+    : isZh
+      ? "Live and work as a medical doctor in Canada"
+      : "Live and work as a medical doctor in Canada";
+  const physicianCardBody = isTr
+    ? "Doktorlar için yeni 2026 pathway güncellemeleri + göçten bağımsız tıbbi lisanslama adımlarını birlikte gösteren detay sayfası."
+    : isZh
+      ? "面向医生的 2026 新路径更新 + 独立医疗执照步骤，整合在一个详细页面中。"
+      : "Physician-focused 2026 pathway updates plus separate medical licensing steps in one detailed page.";
+  const physicianNewUpdatesCount = physicianOverlay.newFor2026?.length ?? 3;
+
   return (
     <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -159,6 +175,48 @@ export default async function CanadaVisasPage({ params }: PageProps) {
 
         {/* Visas Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Link
+            href={`/${locale}/visas/canada-medical-doctor`}
+            className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="inline-block rounded-lg bg-red-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-red-700 dark:bg-red-950/40 dark:text-red-400">
+                  Physician Overlay
+                </span>
+                <span className="text-xs font-semibold text-slate-400">2026</span>
+              </div>
+
+              <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-red-600 transition-colors dark:text-white dark:group-hover:text-red-400">
+                {physicianCardTitle}
+              </h3>
+              <p className="mt-2.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-4">
+                {physicianCardBody}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <span>{isTr ? "Yeni güncelleme" : isZh ? "新增更新" : "New updates"}: {physicianNewUpdatesCount}</span>
+                <span>{isTr ? "Track" : isZh ? "路径" : "Tracks"}: 2</span>
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-slate-100 pt-4 dark:border-zinc-800">
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 text-slate-400" />
+                  <span>{isTr ? "Güncel 2026" : isZh ? "2026 已更新" : "Updated for 2026"}</span>
+                </div>
+                <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-zinc-300">
+                  <span>Dual-track</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-end text-xs font-bold text-red-600 group-hover:translate-x-1 transition-transform dark:text-red-400">
+                <span>{viewDetailsLabel}</span>
+                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              </div>
+            </div>
+          </Link>
+
           <Link 
             href={`/${locale}/visas/canada-express-entry`}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
