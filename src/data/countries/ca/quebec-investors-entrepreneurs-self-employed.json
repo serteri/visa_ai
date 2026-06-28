@@ -1,0 +1,221 @@
+{
+  "country": "CA",
+  "pathwayCovered": "Quebec investors, entrepreneurs and self-employed persons",
+  "lastVerified": "2026-06-28",
+  "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Quebec%20investors%2C%20entrepreneurs%20and%20self-employed%20persons/Quebec%20investors%2C%20entrepreneurs%20and%20self-employed%20persons.pdf",
+  "relationToOtherQuebecFile": "Bu, 'canada-quebec-selected-skilled-workers.json' dosyasindaki missingDataFlags'in bir kismini dolduruyor - ama SADECE bu is sinifi (investor/entrepreneur/self-employed) icin. Genel skilled-worker akisinin (QSWP/PSTQ, Arrima portali) kendi secim kriterleri hala ayri, hala belgelenmedi.",
+  "twoStageProcess": {
+    "stage1_quebec": {
+      "authority": "Ministere de l'Immigration, de la Francisation et de l'Integration (MIFI)",
+      "outcome": "Certificat de selection du Quebec (CSQ)",
+      "note": "Bu dosyada (onceki skilled-worker dosyasindan farkli olarak) Quebec'in kendi secim kriterleri DETAYLI olarak var - asagidaki subStreams alanina bakin."
+    },
+    "stage2_federal": {
+      "authority": "IRCC",
+      "fee": { "currency": "CAD", "from": 2495, "lastIncreaseDate": "2026-04-30", "note": "Skilled-worker akisinin $1,590 ucretinden YUKSEK - farkli ucret kademesi" },
+      "prerequisite": "Must hold CSQ before applying for federal PR"
+    }
+  },
+  "ineligibleSectorsGeneral": [
+    "Payday loans, cheque cashing, or pledge loans",
+    "Production, distribution, or sale of pornographic/sexually-explicit products or sex-industry services (nude/erotic dancing, escort services, erotic massage)"
+  ],
+  "subStreams": {
+    "investor": {
+      "conditions": {
+        "investmentAgreement": "Must enter into an investment agreement with a financial intermediary that has signed a participation agreement with the Ministere AND with Investissement Quebec Immigrants Investisseurs Inc.",
+        "managementExperience": {
+          "minimumYears": 2,
+          "window": "within 5 years preceding application submission",
+          "ineligibleSectors": "Same as ineligibleSectorsGeneral, applies to where this experience was acquired"
+        },
+        "netWorth": {
+          "minimumCAD": 2000000,
+          "exclusions": "Donations received in the 6 months preceding application submission",
+          "canShareWithSpouse": true,
+          "mustProveLawfulOrigin": true
+        },
+        "education": {
+          "minimum": "Diploma equivalent to Quebec Secondary School Diploma (Diplome d'etudes secondaires), OR a 1+ year full-time program equivalent to Quebec Diploma of Vocational Studies / Certificate of Vocational Specialisation (secondary level) / Certificate of College Studies (college level)",
+          "ifObtainedInQuebec": "Must be 600+ hours (secondary level) or 900+ hours (college level)",
+          "ECE_required": false
+        },
+        "frenchLanguage": {
+          "minimumLevel": "Level 7 on the Echelle quebecoise des niveaux de competence en francais",
+          "requiredEvenIfNativeSpeaker": true,
+          "acceptedTests": [
+            "TCF-Quebec",
+            "TCF-Canada",
+            "TCF",
+            "DALF",
+            "DELF",
+            "TEFAQ",
+            "TEF Canada",
+            "TEF"
+          ],
+          "acceptedTestProviders": [
+            "France Education international",
+            "Chambre de commerce et d'industrie de Paris Ile-de-France (CCIP-IDF)"
+          ],
+          "resultValidityYears": 2,
+          "acceptedSecondarySchoolDiplomasAsAlternative": [
+            "French baccalaureate (general/vocational/technological) - French Ministry of Education",
+            "Certificat d'enseignement secondaire superieur (CESS) - Government of the French Community of Belgium",
+            "Certificat de maturite - French-speaking canton of Switzerland"
+          ],
+          "interviewPossible": "Ministere may call for an interview to verify declared French level"
+        },
+        "democraticValuesAttestation": {
+          "required": true,
+          "deadlineDays": 60,
+          "alsoRequiredFor": [
+            "spouse aged 16+",
+            "dependent children aged 18+"
+          ],
+          "exemption": "Not required again if already obtained previously"
+        },
+        "investmentAndContribution": {
+          "investmentCAD": 1000000,
+          "investmentTerm": "5 years",
+          "financialContributionCAD": 200000,
+          "contributionRecipient": "Investissement Quebec Immigrants Investisseurs Inc.",
+          "deadlineDaysFromMinistereRequest": 120,
+          "governmentGuaranteed": true,
+          "repaymentTerms": "CAD $1,000,000 repaid without interest within 30 days of investment term end",
+          "incomeDestination": [
+            "Business Assistance - Immigrant Investor Program (BAIIP)",
+            "Fonds de developpement du marche du travail (FDMT)"
+          ]
+        },
+        "noticeOfIntentToSelect": {
+          "issuedWhen": "Selection conditions met + Ministere confirms investment/contribution",
+          "enables": "Work permit application for applicant + included family members",
+          "workPermitApplicationDeadline": "6 months from date of notice"
+        },
+        "quebecStayRequirement": {
+          "totalMonths": 12,
+          "windowYears": 2,
+          "windowStartsFrom": "work permit issuance",
+          "minimumPersonalMonths": 6,
+          "remainingMonthsCanBeFulfilledBy": "applicant OR spouse/de facto spouse",
+          "proofSubmission": "Documents demonstrating the stay must be mailed to the Ministere after the 12-month period is completed"
+        }
+      }
+    },
+    "entrepreneur": {
+      "subStreamsNamedOnly_notDetailedInSource": [
+        { "id": "innovative_business", "name": "Innovative business", "description": "Start up an innovative business or carry out an innovative project with support of an accompanying organization" },
+        { "id": "business_startup", "name": "Business startup", "description": "Start a business or operate a business already started" },
+        { "id": "takeover", "name": "Takeover", "description": "Take over or operate an acquired business with assistance of a support organization" }
+      ],
+      "note": "Bu uc alt-akimin 'Show more' detaylari bu kaynakta acilmamis/kapsanmamis - ayri bir kaynaktan arastirilmasi gerekiyor."
+    },
+    "selfEmployedPerson": {
+      "conditions": {
+        "practiceRequirement": "Must practise profession in Quebec, alone or with paid/unpaid help",
+        "ineligibleSectors": [
+          "Same as ineligibleSectorsGeneral",
+          "Trading, leasing, brokerage, development or planning in the property/real-estate sector"
+        ],
+        "workExperience": {
+          "minimumYears": 2,
+          "window": "within 5 years preceding application submission",
+          "mustBeInOwnName": true,
+          "mustNotBeInIneligibleSector": true
+        },
+        "regulatedProfessionRequirement": {
+          "appliesIf": "Profession is regulated in Quebec",
+          "mustHave": "EITHER authorization to practise in Quebec OR proof of partial/full training-diploma equivalence recognition (dated within 5 years of application)",
+          "processSteps": [
+            "Find NOC code via Qualifications Quebec website (French only)",
+            "Check if profession is on the Liste des professions reglementees (Ministere's regulated professions list, PDF)",
+            "If regulated: find practice conditions via Qualifications Quebec site or the profession's Quebec regulatory body directly",
+            "Obtain authorization or recognition document from the relevant regulatory authority"
+          ],
+          "exemption": "Not required if profession isn't regulated, OR if planning to practise in a context where authorization isn't required even if profession appears on the regulated list"
+        },
+        "netWorth": {
+          "minimumCAD": 100000,
+          "exclusions": "Donations received in the 6 months preceding application submission",
+          "canShareWithSpouse": true,
+          "mustProveLawfulOrigin": true
+        },
+        "education": "Same diploma requirement as investor sub-stream",
+        "frenchLanguage": "Same Level 7 requirement, same accepted tests/providers as investor sub-stream",
+        "startUpDeposit": {
+          "outsideCMM_CAD": 25000,
+          "withinCMM_CAD": 50000,
+          "CMM_meaning": "Communaute metropolitaine de Montreal (Montreal Metropolitan Community)",
+          "requestedWhen": "A few weeks after file-opening confirmation letter, at the Ministere's request"
+        },
+        "financialSelfSufficiencyContract": {
+          "required": true,
+          "commitmentPeriodMonths": 3,
+          "startsFrom": "date of obtaining permanent resident status",
+          "covers": [
+            "applicant's essential needs",
+            "accompanying family members' needs",
+            "dependent children who are Canadian citizens, if applicable"
+          ],
+          "amountReference": "Per Ministere's current schedules (not itemized in this source)"
+        },
+        "democraticValuesAttestation": "Same requirement as investor sub-stream"
+      }
+    }
+  },
+  "federalApplicationStage": {
+    "documentChecklists": {
+      "investorsAndEntrepreneurs": "IMM 5722",
+      "selfEmployedPersons": "IMM 5784"
+    },
+    "fillInPortal": [
+      { "form": "IMM 0008", "name": "Generic Application Form for Canada" },
+      { "form": "IMM 5669", "name": "Schedule A - Background/Declaration" },
+      { "form": "IMM 5406", "name": "Additional Family Information" },
+      { "form": "IMM 5562", "name": "Supplementary Information - Your travels" }
+    ],
+    "uploadOnly_noSignature": [
+      { "form": "IMM 0008 Schedule 5", "name": "Declaration of Intent to Reside in Quebec - Economic Classes" },
+      { "form": "IMM 0008 Schedule 6", "name": "Business Immigrants - Investors and entrepreneurs", "appliesTo": ["investor", "entrepreneur"] },
+      { "form": "IMM 0008 Schedule 6A", "name": "Business Immigrants - Self-employed persons", "appliesTo": ["selfEmployedPerson"] },
+      { "form": "IMM 5722", "name": "Document Checklist - Investors and entrepreneurs", "appliesTo": ["investor", "entrepreneur"] },
+      { "form": "IMM 5784", "name": "Document Checklist - Self-employed persons", "appliesTo": ["selfEmployedPerson"] }
+    ],
+    "conditionalForms_handSigned": [
+      { "form": "IMM 5409", "name": "Statutory Declaration of Common-law Union", "condition": "If common-law partner, plus 12+ months cohabitation proof" },
+      { "form": "IMM 5604", "name": "Separation Declaration for Minors Travelling to Canada", "condition": "If minor immigrating without both parents/guardians", "note": "Non-accompanying parent/guardian must sign in front of a notary public - stricter than the standard hand-signature requirement seen elsewhere" }
+    ],
+    "supportingDocuments": [
+      "Travel documents/passport (regular passport only, NOT diplomatic/official/service/public-affairs) for applicant + spouse + dependent children",
+      "Visa copy if living outside passport-issuing country",
+      "Identity/civil status docs: birth certificates, name/DOB change documents, marriage/divorce/annulment certificates (all marriages if multiple), death certificate for former spouse if applicable, national ID/family registry",
+      "Police certificate per country lived in 6+ months since age 18 (valid ~1 year from issue)",
+      "Photo(s) for applicant + all family members, not older than 6 months",
+      "Certificat de selection du Quebec (CSQ) - issued by MIFI; remains valid for federal purposes until IRCC decision even if technically expired; MIFI stopped renewing CSQs as of 2018"
+    ],
+    "translationRule": "Same as other Canada pathways: certified-translator-stamped translation + affidavit if no certified translator + scan of original; family members/applicant's own representative cannot translate.",
+    "representativeRules": "Same paid/unpaid representative framework as other Canada pathways (IMM 5476, cannot sign/log in on applicant's behalf, applicant must personally type name)."
+  },
+  "afterApply": {
+    "biometrics": { "ageRange": "14-79", "deadline": "30 days from Biometric Instruction Letter (BIL)", "note": "Required even if previously given and valid" },
+    "medicalExam": { "required": true, "appliesTo": "applicant + partner + children", "disqualifiers": ["danger to public health/safety", "excessive demand on health/social services"] },
+    "processingTimeFactors": [
+      "type of application",
+      "completeness",
+      "criminal/security issues or background checks needed",
+      "unclear family situation (incomplete divorce/adoption, custody issues)",
+      "ease of verifying information",
+      "need for interview",
+      "communication method (mail vs online)",
+      "applicant response time",
+      "current processing volume",
+      "annual immigration levels plan capacity"
+    ],
+    "decisionOutcomes": {
+      "approved": "Must pay Right of Permanent Residence Fee if not already paid before finalization",
+      "refused": "Letter explaining reason; reconsideration requires new application + meeting eligibility + admissibility",
+      "withdrawal": "Possible via webform; partial fee refund depending on processing stage"
+    }
+  },
+  "disclaimerRequired": true
+}

@@ -4,6 +4,7 @@ import { ArrowRight, Clock } from "lucide-react";
 import expressEntryData from "@/src/data/countries/ca/express-entry.json";
 import pnpProcessData from "@/src/data/countries/ca/pnp-non-express-process.json";
 import physicianOverlayData from "@/src/data/countries/ca/occupation-overlays/physician.json";
+import quebecBusinessData from "@/src/data/countries/ca/quebec-investors-entrepreneurs-self-employed.json";
 import quebecSelectedFederalData from "@/src/data/countries/ca/quebec-selected-skilled-workers.json";
 import ruralFrancophonePilotsData from "@/src/data/countries/ca/rural-francophone-pilots.json";
 import visaDetails from "@/src/data/visa-details.json";
@@ -67,6 +68,9 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     twoStageProcess?: {
       stage2_federal_this_document?: { processingTime?: string };
     };
+  };
+  const quebecBusiness = quebecBusinessData as {
+    twoStageProcess?: { stage2_federal?: { fee?: { processingFeeFrom?: number; from?: number; currency?: string } } };
   };
   const aip = (visaDetails as Array<{
     id?: string;
@@ -188,6 +192,11 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     maximumFractionDigits: 0,
   }).format(quebecFederal.fees?.processingFeeFrom ?? 1590);
   const quebecFederalProcessing = quebecFederal.twoStageProcess?.stage2_federal_this_document?.processingTime ?? "11 months (federal only)";
+  const quebecBusinessFeeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
+    style: "currency",
+    currency: quebecBusiness.twoStageProcess?.stage2_federal?.fee?.currency ?? "CAD",
+    maximumFractionDigits: 0,
+  }).format(quebecBusiness.twoStageProcess?.stage2_federal?.fee?.from ?? 2495);
 
   return (
     <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
@@ -206,6 +215,48 @@ export default async function CanadaVisasPage({ params }: PageProps) {
 
         {/* Visas Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Link
+            href={`/${locale}/visas/canada-quebec-business`}
+            className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-violet-200 bg-violet-50 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-violet-700/40 dark:bg-violet-950/20"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="inline-block rounded-lg bg-violet-100 px-3 py-1.5 text-xs font-extrabold tracking-wider text-violet-900 dark:bg-violet-700/30 dark:text-violet-100">
+                  Quebec Business
+                </span>
+                <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">3 streams</span>
+              </div>
+
+              <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-violet-700 transition-colors dark:text-white dark:group-hover:text-violet-300">
+                {isTr ? "Quebec investors, entrepreneurs, self-employed" : isZh ? "魁北克投资/企业家/自雇" : "Quebec investors, entrepreneurs, self-employed"}
+              </h3>
+              <p className="mt-2.5 text-xs leading-relaxed text-slate-700 dark:text-slate-300 line-clamp-4">
+                {isTr
+                  ? "Tek kartta 3 alt-akim: investor, entrepreneur, self-employed. Entrepreneur alt-akim detaylari kaynakta eksik oldugu icin sayfada acikca isaretlenir."
+                  : isZh
+                    ? "单页展示 3 个子路径：投资者、企业家、自雇。企业家细则在来源中不完整，页面中会明确标注。"
+                    : "Three sub-streams in one page: investor, entrepreneur, and self-employed. Entrepreneur sub-stream details are marked as incomplete in source."}
+              </p>
+            </div>
+
+            <div className="mt-6 border-t border-violet-200 pt-4 dark:border-violet-800/40">
+              <div className="flex items-center justify-between gap-2 text-xs text-violet-800 dark:text-violet-300">
+                <div className="flex items-center gap-1 min-w-0">
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">Stage 2 federal fee tier (higher)</span>
+                </div>
+                <div className="font-semibold">
+                  <span>{quebecBusinessFeeText}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-end text-xs font-bold text-violet-800 group-hover:translate-x-1 transition-transform dark:text-violet-300">
+                <span>{viewDetailsLabel}</span>
+                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              </div>
+            </div>
+          </Link>
+
           <Link
             href={`/${locale}/visas/canada-quebec-skilled-workers`}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-300 bg-amber-50 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-amber-700/40 dark:bg-amber-950/20"
