@@ -2532,6 +2532,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   };
 
   return {
+    country: "CA",
     executiveSummary,
     signalSnapshot,
     primaryLimitingFactor,
@@ -2764,6 +2765,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const disclaimer = buildDisclaimer(locale);
 
   return {
+    country: "AU",
     executiveSummary,
     signalSnapshot,
     primaryLimitingFactor,

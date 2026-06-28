@@ -289,6 +289,7 @@ export function FullCheckWaitlistForm({
   const report = activeUnlockedReportState?.report ?? null;
   const assistantReportData: AssistantReportData | null = report
     ? {
+        country: report.country ?? "AU",
         user: {
           name: activeUnlockedReportState?.name ?? state.userInput?.name,
           email: activeUnlockedReportState?.email ?? state.userInput?.email,

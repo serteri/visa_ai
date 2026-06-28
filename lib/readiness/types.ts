@@ -217,6 +217,8 @@ export type LodgementReadyChecklist = {
 };
 
 export type AssistantReportData = {
+  /** Defaults to "AU" when omitted, preserving existing behavior. */
+  country?: "AU" | "CA";
   user: {
     name?: string;
     email?: string;
@@ -310,6 +312,8 @@ export type PremiumSections = {
 };
 
 export type ReadinessReport = {
+  /** Defaults to "AU" when omitted, preserving existing behavior. */
+  country?: "AU" | "CA";
   executiveSummary: string[];
   rankedPathways?: RankedPathway[];
   stateNominationTracker?: StateNominationTracker;

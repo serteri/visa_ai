@@ -13,11 +13,19 @@ type ChatRequestBody = {
   locale?: string;
 };
 
-const SYSTEM_PROMPT =
-  "Sen Logi AI'sın. Avustralya göçmenlik stratejistisin. Asla yasal tavsiye verme, MARA acentesine yönlendir. Kullanıcının sorduğu soruları YALNIZCA sana iletilen reportData içeriğine göre net ve profesyonelce cevapla.";
+const SYSTEM_PROMPTS: Record<"AU" | "CA", string> = {
+  AU: "Sen Logi AI'sın. Sadece ve sadece Avustralya göçmenlik stratejistisin. Asla yasal tavsiye verme, MARA acentesine yönlendir. Kanada göçmenlik mevzuatı, IRCC, CRS veya NOC hakkında hiçbir bilgi üretme. Kullanıcının sorduğu soruları YALNIZCA sana iletilen reportData içeriğine göre net ve profesyonelce cevapla.",
+  CA: "Sen Logi AI'sın. Sadece ve sadece Kanada göçmenlik stratejistisin. Asla yasal tavsiye verme, RCIC (Regulated Canadian Immigration Consultant) danışmanına yönlendir. Avustralya göçmenlik mevzuatı, MARA, ANZSCO veya eyalet aday gösterimi (state nomination) hakkında hiçbir bilgi üretme. Kullanıcının sorduğu soruları YALNIZCA sana iletilen reportData içeriğine göre net ve profesyonelce cevapla.",
+};
 
-const MARA_REMINDER =
-  "Please consult a registered MARA agent for official lodgements and personalized legal migration advice.";
+const COMPLIANCE_REMINDERS: Record<"AU" | "CA", string> = {
+  AU: "Please consult a registered MARA agent for official lodgements and personalized legal migration advice.",
+  CA: "Please consult a Regulated Canadian Immigration Consultant (RCIC) for official lodgements and personalized legal migration advice.",
+};
+
+function resolveReportCountry(reportData?: AssistantReportData): "AU" | "CA" {
+  return reportData?.country === "CA" ? "CA" : "AU";
+}
 
 function buildReportContext(reportData?: AssistantReportData): string {
   if (!reportData) return "No report data provided.";
@@ -43,6 +51,7 @@ function buildReportContext(reportData?: AssistantReportData): string {
     : [];
 
   const compactContext = {
+    country: reportData.country ?? "AU",
     user: reportData.user,
     targetVisa: reportData.targetVisa,
     pointsEstimate: reportData.pointsEstimate,
@@ -59,7 +68,11 @@ function buildReportContext(reportData?: AssistantReportData): string {
   return JSON.stringify(compactContext);
 }
 
-function createFallbackStream(question: string, reportContext: string): ReadableStream<Uint8Array> {
+function createFallbackStream(
+  question: string,
+  reportContext: string,
+  country: "AU" | "CA"
+): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   const safeQuestion = question.trim() || "the user's request";
 
@@ -67,10 +80,14 @@ function createFallbackStream(question: string, reportContext: string): Readable
     "Based on your Visa Readiness Report context, here is a focused interpretation:",
     `Question: ${safeQuestion}`,
     "",
-    "I can explain your ranked pathways, points-related gaps, and practical next steps using only your report data.",
-    "If you want, ask me to break down one pathway line-by-line (for example 189 vs 190 vs 491) and I will map each score driver.",
+    country === "CA"
+      ? "I can explain your CRS-related pathways, point gaps, and practical next steps using only your report data."
+      : "I can explain your ranked pathways, points-related gaps, and practical next steps using only your report data.",
+    country === "CA"
+      ? "If you want, ask me to break down one pathway line-by-line (for example CEC vs FSW vs PNP) and I will map each score driver."
+      : "If you want, ask me to break down one pathway line-by-line (for example 189 vs 190 vs 491) and I will map each score driver.",
     "",
-    MARA_REMINDER,
+    COMPLIANCE_REMINDERS[country],
     "",
     `Report context snapshot: ${reportContext}`,
   ].join("\n");
@@ -92,6 +109,7 @@ function streamFromOpenAI(args: {
   model: string;
   messages: ChatMessage[];
   reportContext: string;
+  country: "AU" | "CA";
 }): Promise<ReadableStream<Uint8Array>> {
   const encoder = new TextEncoder();
 
@@ -108,7 +126,7 @@ function streamFromOpenAI(args: {
           stream: true,
           temperature: 0.2,
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: SYSTEM_PROMPTS[args.country] },
             {
               role: "system",
               content: `Use only this report context as your factual basis:\n${args.reportContext}`,
@@ -158,7 +176,7 @@ function streamFromOpenAI(args: {
               }
             }
 
-            controller.enqueue(encoder.encode(`\n\n${MARA_REMINDER}`));
+            controller.enqueue(encoder.encode(`\n\n${COMPLIANCE_REMINDERS[args.country]}`));
             controller.close();
           } catch (error) {
             controller.error(error);
@@ -191,6 +209,7 @@ export async function POST(request: Request) {
     }
 
     const reportContext = buildReportContext(body.reportData);
+    const country = resolveReportCountry(body.reportData);
     const question = messages.filter((m) => m.role === "user").at(-1)?.content ?? "";
     const apiKey = process.env.OPENAI_API_KEY;
     const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
@@ -201,8 +220,9 @@ export async function POST(request: Request) {
           model,
           messages,
           reportContext,
-        }).catch(() => createFallbackStream(question, reportContext))
-      : createFallbackStream(question, reportContext);
+          country,
+        }).catch(() => createFallbackStream(question, reportContext, country))
+      : createFallbackStream(question, reportContext, country);
 
     return new Response(stream, {
       headers: {
