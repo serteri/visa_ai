@@ -28,6 +28,12 @@ type PhysicianData = {
   sourceUrl?: string;
   sourcePdfBlobUrl?: string;
   lastVerified?: string;
+  occupationOverlay?: string;
+  occupationOverlay_tr?: string;
+  occupationOverlay_zh?: string;
+  structuralNote?: string;
+  structuralNote_tr?: string;
+  structuralNote_zh?: string;
   newFor2026?: string[];
   sectorStatistics?: {
     internationallyTrainedFamilyPhysiciansPercent2024?: number;
@@ -48,6 +54,8 @@ type PhysicianData = {
   }>;
   medicalLicensingPathway?: {
     note?: string;
+    note_tr?: string;
+    note_zh?: string;
     framework?: { name?: string; components?: Record<string, string> };
     centralPortal?: { name?: string; services?: string[]; specialNote?: string };
     exams?: {
@@ -100,27 +108,56 @@ function pathLabel(pathwayId: string) {
 
 export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
   const { locale } = await params;
-  const isTr = locale === "tr";
-  const isZh = locale === "zh-Hans";
+  const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
 
   const data = physicianData as PhysicianData;
+  const ui = {
+    back: locale === "tr" ? "Kanada vizelerine dön" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
+    overlay: locale === "tr" ? "Meslek Overlay" : locale === "zh-Hans" ? "职业 Overlay" : "Occupation Overlay",
+    check: locale === "tr" ? "Uygunlugunu kontrol et" : locale === "zh-Hans" ? "检查你的资格" : "Check your eligibility",
+    openSource: locale === "tr" ? "Resmi kaynagi ac" : locale === "zh-Hans" ? "打开官方来源" : "Open official source",
+    quickSummary: locale === "tr" ? "Hizli Ozet" : locale === "zh-Hans" ? "快速摘要" : "Quick Summary",
+    openPdf: locale === "tr" ? "PDF Ac" : locale === "zh-Hans" ? "打开 PDF" : "Open PDF",
+    officialPage: locale === "tr" ? "Resmi site" : locale === "zh-Hans" ? "官方页面" : "Official page",
+    immigrationPathways: locale === "tr" ? "Gocmenlik Pathway'leri" : locale === "zh-Hans" ? "移民路径" : "Immigration Pathways",
+    processSteps: locale === "tr" ? "Süreç adımı" : locale === "zh-Hans" ? "流程步骤" : "Process steps",
+    licensing: locale === "tr" ? "Tibbi Lisanslama" : locale === "zh-Hans" ? "医疗执照路径" : "Medical Licensing Pathway",
+  };
+  const localizedField = (base: string, fallback?: string) => {
+    if (!localeSuffix) {
+      return fallback ?? ((data as Record<string, unknown>)[base] as string | undefined) ?? "";
+    }
+    const source = data as Record<string, unknown>;
+    const key = `${base}${localeSuffix}`;
+    const value = (source[key] as string | undefined) ?? (source[base] as string | undefined);
+    return value ?? fallback ?? "";
+  };
   const newFor2026 = data.newFor2026 ?? [];
   const immigrationPathways = data.immigrationPathways ?? [];
   const pnpPathway = immigrationPathways.find((item) => item.id === "pnp");
   const licensing = data.medicalLicensingPathway;
   const englishTests = Object.entries(licensing?.languageRequirements?.englishTests ?? {});
+  const structuralNoteText = localizedField(
+    "structuralNote",
+    "This is not a single visa stream. It combines physician-specific immigration options and a separate medical licensing process. To practise in Canada, both tracks must be completed."
+  );
+  const licensingNote = locale === "tr"
+    ? (licensing?.note_tr ?? licensing?.note)
+    : locale === "zh-Hans"
+      ? (licensing?.note_zh ?? licensing?.note)
+      : (licensing?.note ?? "This process is separate from IRCC immigration and managed by the Medical Council of Canada (MCC) and provincial/territorial Medical Regulatory Authorities (MRA). It must be completed independently from immigration status.");
 
   const stats = [
     {
-      label: isTr ? "Yeni 2026 güncellemesi" : isZh ? "2026 新增更新" : "New in 2026",
+      label: locale === "tr" ? "Yeni 2026 güncellemesi" : locale === "zh-Hans" ? "2026 新增更新" : "New in 2026",
       value: `${newFor2026.length}`,
     },
     {
-      label: isTr ? "PNP rezerve kontenjan" : isZh ? "PNP 保留名额" : "PNP reserved spaces",
+      label: locale === "tr" ? "PNP rezerve kontenjan" : locale === "zh-Hans" ? "PNP 保留名额" : "PNP reserved spaces",
       value: `${pnpPathway?.reservedSpaces ?? 5000}`,
     },
     {
-      label: isTr ? "Hızlandırılmış izin" : isZh ? "加速工签处理" : "Expedited permit",
+      label: locale === "tr" ? "Hızlandırılmış izin" : locale === "zh-Hans" ? "加速工签处理" : "Expedited permit",
       value: `${pnpPathway?.expeditedWorkPermitDays ?? 14} days`,
     },
   ];
@@ -133,11 +170,11 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
             href={`/${locale}/visas/canada`}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            {isTr ? "Kanada vizelerine dön" : isZh ? "返回加拿大签证" : "Back to Canada visas"}
+            {ui.back}
           </Link>
           <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-100">
             <Sparkles className="h-4 w-4" />
-            {isTr ? "Meslek Overlay" : isZh ? "职业 Overlay" : "Occupation Overlay"}
+            {ui.overlay}
           </div>
         </div>
 
@@ -157,11 +194,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
                     Live and work as a medical doctor in Canada
                   </h1>
                   <p className="max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
-                    {isTr
-                      ? "Bu sayfa tek bir vize turu degil: doktorlar icin gocmenlik yollarini ve tamamen ayri tibbi lisanslama yolunu birlikte gosterir. Kanada'da pratik yapmak icin her iki track de tamamlanmalidir."
-                      : isZh
-                        ? "本页不是单一签证类型：同时展示医生的移民路径与独立医疗执照路径。在加拿大执业需要两条路径都完成。"
-                        : "This is not a single visa stream. It combines physician-specific immigration options and a separate medical licensing process. To practise in Canada, both tracks must be completed."}
+                    {structuralNoteText}
                   </p>
                 </div>
               </div>
@@ -178,7 +211,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
               <div className="flex flex-wrap gap-3">
                 <Link href={`/${locale}/full-check`}>
                   <Button className="bg-rose-600 text-white hover:bg-rose-700">
-                    <span>{isTr ? "Uygunlugunu kontrol et" : isZh ? "检查你的资格" : "Check your eligibility"}</span>
+                    <span>{ui.check}</span>
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -188,7 +221,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
                 >
-                  {isTr ? "Resmi kaynagi ac" : isZh ? "打开官方来源" : "Open official source"}
+                  {ui.openSource}
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </div>
@@ -197,7 +230,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
 
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
-              <CardTitle className="text-xl">{isTr ? "Hizli Ozet" : isZh ? "快速摘要" : "Quick Summary"}</CardTitle>
+              <CardTitle className="text-xl">{ui.quickSummary}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div>
@@ -233,8 +266,8 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
           sourceUrl={data.sourceUrl}
           title="Live and work as a medical doctor in Canada (Official PDF)"
           description="Official IRCC physician guide snapshot stored on Vercel Blob for public access."
-          primaryLabel={isTr ? "PDF Ac" : isZh ? "打开 PDF" : "Open PDF"}
-          sourceLabel={isTr ? "Resmi site" : isZh ? "官方页面" : "Official page"}
+          primaryLabel={ui.openPdf}
+          sourceLabel={ui.officialPage}
         />
       </section>
 
@@ -244,7 +277,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <Stethoscope className="h-5 w-5 text-rose-600" />
-                {isTr ? "Gocmenlik Pathway'leri" : isZh ? "移民路径" : "Immigration Pathways"}
+                {ui.immigrationPathways}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -261,7 +294,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
                   </ul>
                   {pathway.processSteps && pathway.processSteps.length > 0 ? (
                     <p className="mt-2 text-xs font-medium text-slate-500">
-                      {isTr ? "Süreç adımı" : isZh ? "流程步骤" : "Process steps"}: {pathway.processSteps.length}
+                      {ui.processSteps}: {pathway.processSteps.length}
                     </p>
                   ) : null}
                 </div>
@@ -273,11 +306,11 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <HeartPulse className="h-5 w-5 text-rose-600" />
-                {isTr ? "Tibbi Lisanslama" : isZh ? "医疗执照路径" : "Medical Licensing Pathway"}
+                {ui.licensing}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
-              <p>{licensing?.note}</p>
+              <p>{licensingNote}</p>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <p className="font-semibold text-slate-900 dark:text-white">{licensing?.framework?.name ?? "IMG-L Framework"}</p>
                 <ul className="mt-2 space-y-1">

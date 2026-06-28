@@ -17,10 +17,18 @@ type PageProps = {
 type SharedData = {
   sourcePdfBlobUrl?: string;
   pathwayGroup?: string;
+  pathwayGroup_tr?: string;
+  pathwayGroup_zh?: string;
   structuralNote?: string;
+  structuralNote_tr?: string;
+  structuralNote_zh?: string;
   lastVerified?: string;
   sharedEligibilityCore?: string[];
+  sharedEligibilityCore_tr?: string[];
+  sharedEligibilityCore_zh?: string[];
   sharedProcessSteps?: Array<{ step: number; name: string; description?: string }>;
+  sharedProcessSteps_tr?: Array<{ step: number; name: string; description?: string }>;
+  sharedProcessSteps_zh?: Array<{ step: number; name: string; description?: string }>;
   sharedFees?: {
     currency?: string;
     processingFeeFrom?: number;
@@ -36,13 +44,21 @@ type SharedData = {
   pilots?: Array<{
     id: string;
     name: string;
+    name_tr?: string;
+    name_zh?: string;
     purpose?: string;
+    purpose_tr?: string;
+    purpose_zh?: string;
     numberOfCommunities?: number;
     communities?: string[];
     pilotSpecificForms?: Array<{ form: string; name: string }>;
     languageRequirement?: string;
+    languageRequirement_tr?: string;
+    languageRequirement_zh?: string;
     optionalWorkPermit?: boolean;
     note?: string;
+    note_tr?: string;
+    note_zh?: string;
   }>;
 };
 
@@ -65,12 +81,35 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CanadaFrancophonePilotPage({ params }: PageProps) {
   const { locale } = await params;
-  const isTr = locale === "tr";
-  const isZh = locale === "zh-Hans";
+  const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
 
   const data = pilotData as SharedData;
   const fcip = (data.pilots ?? []).find((pilot) => pilot.id === "francophone_community_immigration_pilot");
   const overlapCommunities = ["Sudbury, ON", "Timmins, ON"];
+  const ui = {
+    back: locale === "tr" ? "Kanada vizelerine don" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
+    check: locale === "tr" ? "Uygunlugunu kontrol et" : locale === "zh-Hans" ? "检查你的资格" : "Check your eligibility",
+    openPdf: locale === "tr" ? "PDF Ac" : locale === "zh-Hans" ? "打开 PDF" : "Open PDF",
+  };
+  const localizedField = <T extends Record<string, unknown>>(obj: T | undefined, base: string, fallback?: string) => {
+    if (!obj) return fallback ?? "";
+    const key = `${base}${localeSuffix}`;
+    const value = (obj[key] as string | undefined) ?? (obj[base] as string | undefined);
+    return value ?? fallback ?? "";
+  };
+  const localizedArray = <T,>(base: T[] | undefined, tr: T[] | undefined, zh: T[] | undefined) => {
+    if (locale === "tr") return tr ?? base ?? [];
+    if (locale === "zh-Hans") return zh ?? base ?? [];
+    return base ?? [];
+  };
+  const pathwayGroupText = localizedField(data as unknown as Record<string, unknown>, "pathwayGroup");
+  const structuralNoteText = localizedField(
+    data as unknown as Record<string, unknown>,
+    "structuralNote",
+    "Two distinct pilots with highly overlapping process structure: RCIP (general, 14 communities) and FCIP (French-speaking, 6 Francophone-minority communities). They share the same process/document/fee framework; community list and language requirement differ."
+  );
+  const eligibilityItems = localizedArray(data.sharedEligibilityCore, data.sharedEligibilityCore_tr, data.sharedEligibilityCore_zh);
+  const processSteps = localizedArray(data.sharedProcessSteps, data.sharedProcessSteps_tr, data.sharedProcessSteps_zh);
 
   const feeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
     style: "currency",
@@ -86,7 +125,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
             href={`/${locale}/visas/canada`}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            {isTr ? "Kanada vizelerine don" : isZh ? "返回加拿大签证" : "Back to Canada visas"}
+            {ui.back}
           </Link>
           <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-100">FCIP</Badge>
         </div>
@@ -101,12 +140,12 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
                 </div>
                 <div className="space-y-3">
                   <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
-                    {fcip?.name ?? "Francophone Community Immigration Pilot (FCIP)"}
+                    {localizedField(fcip as unknown as Record<string, unknown>, "name", "Francophone Community Immigration Pilot (FCIP)")}
                   </h1>
                   <p className="max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
-                    {fcip?.purpose}
+                    {localizedField(fcip as unknown as Record<string, unknown>, "purpose")}
                   </p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">{data.structuralNote}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{structuralNoteText}</p>
                 </div>
               </div>
 
@@ -128,7 +167,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
               <div className="flex flex-wrap gap-3">
                 <Link href={`/${locale}/full-check`}>
                   <Button className="bg-indigo-600 text-white hover:bg-indigo-700">
-                    <span>{isTr ? "Uygunlugunu kontrol et" : isZh ? "检查你的资格" : "Check your eligibility"}</span>
+                    <span>{ui.check}</span>
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -150,7 +189,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
             <CardContent className="space-y-4 text-sm">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pathway group</p>
-                <p className="mt-1 font-medium text-slate-900 dark:text-white">{data.pathwayGroup}</p>
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">{pathwayGroupText}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Last verified</p>
@@ -158,7 +197,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Language requirement</p>
-                <p className="mt-1 font-medium text-slate-900 dark:text-white">{fcip?.languageRequirement}</p>
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">{localizedField(fcip as unknown as Record<string, unknown>, "languageRequirement")}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Optional work permit</p>
@@ -174,7 +213,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
           pdfUrls={data.sourcePdfBlobUrl ? [data.sourcePdfBlobUrl] : []}
           title="Rural and Francophone Community Immigration pilots (Official PDF)"
           description="Official pilot reference PDF snapshot used by this visa page."
-          primaryLabel={isTr ? "PDF Ac" : isZh ? "打开 PDF" : "Open PDF"}
+          primaryLabel={ui.openPdf}
         />
       </section>
 
@@ -191,7 +230,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
               <div>
                 <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">Core eligibility</p>
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                  {(data.sharedEligibilityCore ?? []).map((item) => (
+                  {eligibilityItems.map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="text-indigo-600">•</span>
                       <span>{item}</span>
@@ -202,7 +241,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
               <div>
                 <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">Application steps</p>
                 <ol className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                  {(data.sharedProcessSteps ?? []).map((step) => (
+                  {processSteps.map((step) => (
                     <li key={step.step} className="flex gap-2">
                       <span className="font-semibold text-indigo-700">{step.step}.</span>
                       <span>
@@ -239,7 +278,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
               </div>
               {fcip?.note ? (
                 <div className="rounded-lg border border-slate-200 p-3 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-300">
-                  {fcip.note}
+                  {localizedField(fcip as unknown as Record<string, unknown>, "note")}
                 </div>
               ) : null}
             </CardContent>

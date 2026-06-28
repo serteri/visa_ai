@@ -18,15 +18,20 @@ type PageProps = {
 
 type PnpProcessData = {
   pathwayCovered?: string;
+  pathwayCovered_tr?: string;
+  pathwayCovered_zh?: string;
+  note?: string;
+  note_tr?: string;
+  note_zh?: string;
   sourceUrl?: string;
   sourcePdfBlobUrl?: string;
   fees?: { currency?: string; processingFeeFrom?: number };
-  processingTime?: { estimate?: string };
-  processSteps?: Array<{ step: number; name: string; description?: string }>;
+  processingTime?: { estimate?: string; estimate_tr?: string; estimate_zh?: string };
+  processSteps?: Array<{ step: number; name: string; name_tr?: string; name_zh?: string; description?: string; description_tr?: string; description_zh?: string }>;
   documentsRequired?: {
-    fillInPortal?: Array<{ form: string; name: string }>;
-    downloadAndUpload?: Array<{ form: string; name: string }>;
-    conditionalForms?: Array<{ form: string; name: string }>;
+    fillInPortal?: Array<{ form: string; name: string; name_tr?: string; name_zh?: string }>;
+    downloadAndUpload?: Array<{ form: string; name: string; name_tr?: string; name_zh?: string }>;
+    conditionalForms?: Array<{ form: string; name: string; name_tr?: string; name_zh?: string }>;
     supportingDocuments?: string[];
   };
   afterApply?: { decisionCriteria?: string[]; misrepresentationConsequence?: string };
@@ -71,20 +76,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps) {
   const { locale } = await params;
   const translations = await getTranslations(locale as Locale);
-  const isTr = locale === "tr";
-  const isZh = locale === "zh-Hans";
   const pnp = pnpProcessData as PnpProcessData;
 
-  const title = isTr
-    ? "Kanada PNP - Non-Express Entry"
-    : isZh
-      ? "加拿大省提名计划 - 非快速通道"
-      : "Canada Provincial Nominee Program - Non-Express Entry";
-  const subtitle = isTr
-    ? "Federal süreç, ücret ve belge katmanını tek bir detay kartında görün."
-    : isZh
-      ? "在一个详细页面中查看联邦流程、费用和材料层。"
-      : "See the federally verified process, fee, and document layer in one detailed card.";
+  const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
+  const localized = (base: string, fallback?: string) => {
+    if (!localeSuffix) {
+      return fallback ?? ((pnp as Record<string, unknown>)[base] as string | undefined) ?? "";
+    }
+    const key = `${base}${localeSuffix}`;
+    const source = pnp as Record<string, unknown>;
+    const value = (source[key] as string | undefined) ?? (source[base] as string | undefined);
+    return value ?? fallback ?? "";
+  };
+  const localizedField = <T extends Record<string, unknown>>(obj: T | undefined, base: string, fallback?: string) => {
+    if (!obj) return fallback ?? "";
+    const key = `${base}${localeSuffix}`;
+    const value = (obj[key] as string | undefined) ?? (obj[base] as string | undefined);
+    return value ?? fallback ?? "";
+  };
+
+  const title = localized("pathwayCovered", "Canada Provincial Nominee Program - Non-Express Entry");
+  const subtitle = localized("note", "See the federally verified process, fee, and document layer in one detailed card.");
 
   const feeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
     style: "currency",
@@ -92,7 +104,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
     maximumFractionDigits: 0,
   }).format(pnp.fees?.processingFeeFrom ?? 1590);
 
-  const processingTimeText = pnp.processingTime?.estimate ?? (isTr ? "Yaklaşık 13 ay" : isZh ? "约13个月" : "about 13 months");
+  const processingTimeText = localizedField(pnp.processingTime, "estimate", "about 13 months");
   const processSteps = pnp.processSteps ?? [];
   const documentsRequired = pnp.documentsRequired ?? {};
   const supportingDocuments = documentsRequired.supportingDocuments ?? [];
@@ -223,7 +235,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
           sourceUrl={pnp.sourceUrl}
           description="This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app."
           title="Canada PNP Non-Express Entry Official Guide (PDF)"
-          primaryLabel={isTr ? "PDF'yi Aç" : isZh ? "打开 PDF" : "Open PDF"}
+          primaryLabel={locale === "tr" ? "PDF'yi Aç" : locale === "zh-Hans" ? "打开 PDF" : "Open PDF"}
           sourceLabel={visitOfficialWebsiteLabel}
         />
       </section>
@@ -245,8 +257,8 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                       {item.step}
                     </span>
                     <span>
-                      <span className="font-semibold text-slate-900 dark:text-white">{item.name}</span>
-                      {item.description ? <span className="block pt-1 text-slate-600 dark:text-slate-400">{item.description}</span> : null}
+                      <span className="font-semibold text-slate-900 dark:text-white">{localizedField(item, "name")}</span>
+                      {localizedField(item, "description") ? <span className="block pt-1 text-slate-600 dark:text-slate-400">{localizedField(item, "description")}</span> : null}
                     </span>
                   </li>
                 ))}
@@ -268,7 +280,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                   {documentsRequired.fillInPortal?.map((item) => (
                     <li key={item.form} className="flex gap-2">
                       <span className="text-emerald-600">•</span>
-                      <span>{item.form} - {item.name}</span>
+                      <span>{item.form} - {localizedField(item, "name")}</span>
                     </li>
                   ))}
                 </ul>
@@ -280,7 +292,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                   {documentsRequired.downloadAndUpload?.map((item) => (
                     <li key={item.form} className="flex gap-2">
                       <span className="text-emerald-600">•</span>
-                      <span>{item.form} - {item.name}</span>
+                      <span>{item.form} - {localizedField(item, "name")}</span>
                     </li>
                   ))}
                 </ul>
@@ -292,7 +304,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                   {documentsRequired.conditionalForms?.map((item) => (
                     <li key={item.form} className="flex gap-2">
                       <span className="text-emerald-600">•</span>
-                      <span>{item.form} - {item.name}</span>
+                      <span>{item.form} - {localizedField(item, "name")}</span>
                     </li>
                   ))}
                 </ul>

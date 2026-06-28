@@ -16,9 +16,13 @@ type PageProps = {
 
 type QuebecFederalData = {
   pathwayCovered?: string;
+  pathwayCovered_tr?: string;
+  pathwayCovered_zh?: string;
   lastVerified?: string;
   sourcePdfBlobUrl?: string;
   CRITICAL_STRUCTURAL_WARNING?: string;
+  CRITICAL_STRUCTURAL_WARNING_tr?: string;
+  CRITICAL_STRUCTURAL_WARNING_zh?: string;
   twoStageProcess?: {
     stage1_quebec?: {
       name?: string;
@@ -34,7 +38,39 @@ type QuebecFederalData = {
       fee?: { currency?: string; from?: number; lastIncreaseDate?: string };
     };
   };
+  twoStageProcess_tr?: {
+    stage1_quebec?: {
+      name?: string;
+      authority?: string;
+      status?: string;
+      knownFacts?: string[];
+    };
+    stage2_federal_this_document?: {
+      name?: string;
+      authority?: string;
+      prerequisite?: string;
+      processingTime?: string;
+      fee?: { currency?: string; from?: number; lastIncreaseDate?: string };
+    };
+  };
+  twoStageProcess_zh?: {
+    stage1_quebec?: {
+      name?: string;
+      authority?: string;
+      status?: string;
+      knownFacts?: string[];
+    };
+    stage2_federal_this_document?: {
+      name?: string;
+      authority?: string;
+      prerequisite?: string;
+      processingTime?: string;
+      fee?: { currency?: string; from?: number; lastIncreaseDate?: string };
+    };
+  };
   eligibility?: string[];
+  eligibility_tr?: string[];
+  eligibility_zh?: string[];
   applicationProcess?: {
     mandatoryOnlineSince?: string;
     alternateFormatAvailable?: string[];
@@ -93,9 +129,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CanadaQuebecSkilledWorkersPage({ params }: PageProps) {
   const { locale } = await params;
-  const isTr = locale === "tr";
-  const isZh = locale === "zh-Hans";
+  const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
   const data = quebecData as QuebecFederalData;
+  const ui = {
+    back: locale === "tr" ? "Kanada vizelerine don" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
+    check: locale === "tr" ? "Uygunlugunu kontrol et" : locale === "zh-Hans" ? "检查你的资格" : "Check your eligibility",
+    openPdf: locale === "tr" ? "PDF Ac" : locale === "zh-Hans" ? "打开 PDF" : "Open PDF",
+  };
+  const localizedField = (base: string, fallback?: string) => {
+    if (!localeSuffix) {
+      return fallback ?? ((data as Record<string, unknown>)[base] as string | undefined) ?? "";
+    }
+    const source = data as Record<string, unknown>;
+    const key = `${base}${localeSuffix}`;
+    const value = (source[key] as string | undefined) ?? (source[base] as string | undefined);
+    return value ?? fallback ?? "";
+  };
+  const localizedTwoStage = locale === "tr"
+    ? (data.twoStageProcess_tr ?? data.twoStageProcess)
+    : locale === "zh-Hans"
+      ? (data.twoStageProcess_zh ?? data.twoStageProcess)
+      : data.twoStageProcess;
+  const localizedEligibility = locale === "tr"
+    ? (data.eligibility_tr ?? data.eligibility ?? [])
+    : locale === "zh-Hans"
+      ? (data.eligibility_zh ?? data.eligibility ?? [])
+      : (data.eligibility ?? []);
 
   const feeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
     style: "currency",
@@ -111,7 +170,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
             href={`/${locale}/visas/canada`}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            {isTr ? "Kanada vizelerine don" : isZh ? "返回加拿大签证" : "Back to Canada visas"}
+            {ui.back}
           </Link>
           <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-100">Stage 2 of 2 - Federal only</Badge>
         </div>
@@ -122,7 +181,10 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
             <div>
               <p className="font-semibold">Critical scope warning</p>
               <p className="mt-1 text-sm leading-6">
-                This page covers the federal processing stage only, after you already hold a Quebec Selection Certificate (CSQ). Quebec&apos;s own selection process (Arrima, Quebec points logic, Quebec-side fees/timelines) is not covered in detail here yet.
+                {localizedField(
+                  "CRITICAL_STRUCTURAL_WARNING",
+                  "This page covers the federal processing stage only, after you already hold a Quebec Selection Certificate (CSQ). Quebec's own selection process (Arrima, Quebec points logic, Quebec-side fees/timelines) is not covered in detail here yet."
+                )}
               </p>
             </div>
           </div>
@@ -133,10 +195,10 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
             <CardContent className="space-y-6 p-6 sm:p-8">
               <div className="space-y-3">
                 <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
-                  Quebec-selected skilled workers - Federal stage
+                  {localizedField("pathwayCovered", "Quebec-selected skilled workers - Federal stage")}
                 </h1>
                 <p className="max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
-                  {data.pathwayCovered}
+                  {localizedField("pathwayCovered")}
                 </p>
               </div>
 
@@ -145,7 +207,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
                 <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                   <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Stage 1 (Quebec)</p>
-                    <p className="mt-1 font-semibold text-slate-900 dark:text-white">{data.twoStageProcess?.stage1_quebec?.name}</p>
+                    <p className="mt-1 font-semibold text-slate-900 dark:text-white">{localizedTwoStage?.stage1_quebec?.name}</p>
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Separate process, not detailed here.</p>
                   </div>
                   <div className="flex justify-center text-slate-400">
@@ -153,7 +215,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
                   </div>
                   <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-600/30 dark:bg-emerald-950/20">
                     <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-200">Stage 2 (Federal IRCC)</p>
-                    <p className="mt-1 font-semibold text-emerald-900 dark:text-emerald-100">{data.twoStageProcess?.stage2_federal_this_document?.name}</p>
+                    <p className="mt-1 font-semibold text-emerald-900 dark:text-emerald-100">{localizedTwoStage?.stage2_federal_this_document?.name}</p>
                     <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-200">Detailed on this page.</p>
                   </div>
                 </div>
@@ -162,7 +224,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Federal processing time</p>
-                  <p className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{data.twoStageProcess?.stage2_federal_this_document?.processingTime}</p>
+                  <p className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{localizedTwoStage?.stage2_federal_this_document?.processingTime}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Federal fee from</p>
@@ -177,7 +239,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
               <div className="flex flex-wrap gap-3">
                 <Link href={`/${locale}/full-check`}>
                   <Button className="bg-emerald-600 text-white hover:bg-emerald-700">
-                    <span>{isTr ? "Uygunlugunu kontrol et" : isZh ? "检查你的资格" : "Check your eligibility"}</span>
+                    <span>{ui.check}</span>
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -206,7 +268,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
           pdfUrls={data.sourcePdfBlobUrl ? [data.sourcePdfBlobUrl] : []}
           title="Quebec-selected skilled workers (Federal stage only) - Official PDF"
           description="This PDF reflects the federal IRCC stage after CSQ and does not include Quebec's own selection stage details."
-          primaryLabel={isTr ? "PDF Ac" : isZh ? "打开 PDF" : "Open PDF"}
+          primaryLabel={ui.openPdf}
         />
       </section>
 
@@ -223,7 +285,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
               <div>
                 <p className="font-semibold text-slate-900 dark:text-white">Eligibility</p>
                 <ul className="mt-2 space-y-1">
-                  {(data.eligibility ?? []).map((item) => (
+                  {localizedEligibility.map((item) => (
                     <li key={item} className="flex gap-2">
                       <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                       <span>{item}</span>
