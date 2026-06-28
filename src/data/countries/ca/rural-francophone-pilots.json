@@ -1,0 +1,165 @@
+{
+  "country": "CA",
+  "pathwayGroup": "Rural and Francophone Community Immigration Pilots",
+  "lastVerified": "2026-06-28",
+  "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Rural%20and%20Francophone%20Community%20Immigration%20pilots/Rural%20and%20Francophone%20Community%20Immigration%20pilots.pdf",
+  "structuralNote": "Iki ayri ama surec olarak buyuk olcude ortusen pilot program: RCIP (genel, 14 topluluk) ve FCIP (Fransizca konusan, 6 Francophone-minority topluluk). Ayni surec/belge/ucret iskeletini paylasiyorlar, sadece topluluk listesi ve dil sarti farkli.",
+  "sharedEligibilityCore": [
+    "Valid job offer from a designated employer in a participating community",
+    "At least 1 year (1,560 hours) of related work experience in the past 3 years",
+    "Approved language test proving language ability",
+    "Canadian educational credential or foreign equivalent",
+    "Proof of sufficient funds to support self and family"
+  ],
+  "sharedProcessSteps": [
+    { "step": 1, "name": "Check eligibility" },
+    { "step": 2, "name": "Get a job offer", "description": "From a designated employer in one of the participating communities" },
+    { "step": 3, "name": "Get a community recommendation", "description": "Employer sends recommendation application to the community; community verifies job is in priority sector, offer is genuine, and applicant meets pilot requirements" },
+    { "step": 4, "name": "Apply for permanent residence", "description": "Online via PR Portal, after community recommendation received" },
+    { "step": 5, "name": "After you apply", "description": "AOR issued, biometrics + medical exam requested" },
+    { "step": 6, "name": "Settling in Canada" }
+  ],
+  "sharedFees": {
+    "currency": "CAD",
+    "processingFeeFrom": 1590,
+    "lastIncreaseDate": "2026-04-30",
+    "otherFeeCategories": [
+      "right_of_permanent_residence_fee",
+      "biometrics_fee",
+      "medical_exam",
+      "police_certificate",
+      "language_test",
+      "educational_credential_assessment"
+    ]
+  },
+  "sharedDocuments": {
+    "fillInPortal": [
+      { "form": "IMM 0008", "name": "Generic Application Form for Canada" },
+      { "form": "IMM 5669", "name": "Schedule A - Background/Declaration" },
+      { "form": "IMM 5406", "name": "Additional Family Information" },
+      { "form": "IMM 5562", "name": "Supplementary Information - Your travels" }
+    ],
+    "conditionalForms": [
+      { "form": "IMM 5409", "name": "Statutory Declaration of Common-law Union", "condition": "If applicant has a common-law partner, plus 12+ months cohabitation proof" },
+      { "form": "IMM 5604", "name": "Separation Declaration for Minors Travelling to Canada", "condition": "If applicable" },
+      { "form": "IMM 5476", "name": "Use of a Representative", "condition": "If using paid or unpaid representative" },
+      { "form": "IMM 5475", "name": "Authority to Release Personal Information to a Designated Individual", "condition": "If releasing application info to a non-representative third party" }
+    ],
+    "supportingDocuments": [
+      "Proof of language proficiency",
+      "Proof of education",
+      "Proof of settlement funds",
+      "Proof of relevant work experience",
+      "Valid regular passport (NOT diplomatic/official/service/public-affairs) + visa copy if residing outside passport country",
+      "Birth certificates (applicant + spouse/partner)",
+      "Marriage/divorce/annulment certificates (all marriages if more than once)",
+      "Death certificate for former spouse(s) if applicable",
+      "National ID / family registry book if applicable",
+      "Police certificate per country lived in 6+ months since age 18 (valid ~1 year from issue)",
+      "Photo(s) for applicant + all family members (even non-accompanying), not older than 6 months",
+      "Fee payment receipt"
+    ],
+    "translationRule": "Any supporting document not in English/French needs: (1) a certified-translator-stamped translation OR a signed affidavit from the translator if no certified translator available, AND (2) a scan of the original or certified photocopy. Family members and the applicant's own immigration representative CANNOT serve as the translator."
+  },
+  "representativeRules": {
+    "paid": {
+      "mustBeAuthorized": true,
+      "requiredForm": "IMM 5476",
+      "canDo": [
+        "fill forms and communicate via their own account",
+        "help prepare documents",
+        "answer questions about forms"
+      ],
+      "cannotDo": [
+        "open a portal account on applicant's behalf",
+        "electronically sign the application",
+        "log in using applicant's credentials"
+      ]
+    },
+    "unpaid": {
+      "mustBeAuthorized": false,
+      "examples": [
+        "family members",
+        "friends",
+        "anyone not charging a fee"
+      ],
+      "requiredForm": "IMM 5476",
+      "canDo": [
+        "help open a PR portal account",
+        "fill out forms (not sign)",
+        "communicate on applicant's behalf",
+        "help prepare documents",
+        "answer questions"
+      ],
+      "cannotDo": [
+        "electronically sign the application"
+      ]
+    },
+    "informalHelper": {
+      "note": "Someone helping without being a 'representative' doesn't need to be disclosed, AS LONG AS they don't advise on which program to apply for, complete/update the application as the applicant, or act as the applicant when dealing with IRCC."
+    },
+    "legalSignatureRule": "Regardless of representative type, the applicant must personally type their own name after reading the declaration - this is the legal definition of 'signed' under Canadian immigration law."
+  },
+  "afterApply": {
+    "biometrics": { "ageRange": "14-79", "deadline": "30 days from instruction letter", "method": "in-person at collection sites", "note": "Required even if previously given and still valid" },
+    "medicalExam": { "required": true, "appliesTo": "applicant + partner + children, even non-accompanying", "disqualifiers": ["danger to public health/safety", "excessive demand on health/social services"] },
+    "qualityAssuranceReview": "Applications may be randomly selected for special review.",
+    "withdrawal": "Can submit a webform to withdraw/cancel; partial fee refund possible depending on processing stage."
+  },
+  "pilots": [
+    {
+      "id": "rural_community_immigration_pilot",
+      "name": "Rural Community Immigration Pilot (RCIP)",
+      "purpose": "Permanent residence for skilled workers wanting to work/settle in rural and remote communities",
+      "numberOfCommunities": 14,
+      "communities": [
+        "Pictou County, NS",
+        "North Bay, ON",
+        "Sudbury, ON",
+        "Timmins, ON",
+        "Sault Ste. Marie, ON",
+        "Thunder Bay, ON",
+        "Steinbach, MB",
+        "Altona/Rhineland, MB",
+        "Brandon, MB",
+        "Moose Jaw, SK",
+        "Claresholm, AB",
+        "West Kootenay, BC",
+        "North Okanagan Shuswap, BC",
+        "Peace Liard, BC"
+      ],
+      "pilotSpecificForms": [
+        { "form": "IMM 0246", "name": "Document Checklist - Rural Community Immigration Pilot" },
+        { "form": "IMM 0247", "name": "Offer of Employment to a Foreign National - RCIP" },
+        { "form": "IMM 0248", "name": "Schedule 1 - Rural Community Immigration Pilot" },
+        { "form": "IMM 0249", "name": "Recommendation from the Designated Economic Development Organization - RCIP" }
+      ],
+      "languageRequirement": "Approved test required, no French-specific mandate",
+      "optionalWorkPermit": true
+    },
+    {
+      "id": "francophone_community_immigration_pilot",
+      "name": "Francophone Community Immigration Pilot (FCIP)",
+      "purpose": "Permanent residence for skilled workers wanting to work/settle in rural Francophone-minority communities",
+      "numberOfCommunities": 6,
+      "communities": [
+        "Acadian Peninsula, NB",
+        "Sudbury, ON",
+        "Timmins, ON",
+        "Superior East Region, ON",
+        "St. Pierre Jolys, MB",
+        "Kelowna, BC"
+      ],
+      "pilotSpecificForms": [
+        { "form": "IMM 0250", "name": "Document Checklist - Francophone Community Immigration Pilot" },
+        { "form": "IMM 0251", "name": "Offer of Employment to a Foreign National - FCIP" },
+        { "form": "IMM 0252", "name": "Schedule 1 - Francophone Community Immigration Pilot" },
+        { "form": "IMM 0253", "name": "Recommendation from the Designated Economic Development Organization - FCIP" }
+      ],
+      "languageRequirement": "Must be able to communicate in French - distinguishing requirement vs. RCIP",
+      "optionalWorkPermit": true,
+      "note": "Sudbury and Timmins, ON appear in BOTH RCIP and FCIP community lists - flag for UI disambiguation."
+    }
+  ],
+  "disclaimerRequired": true
+}

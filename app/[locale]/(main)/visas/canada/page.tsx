@@ -4,6 +4,7 @@ import { ArrowRight, Clock } from "lucide-react";
 import expressEntryData from "@/src/data/countries/ca/express-entry.json";
 import pnpProcessData from "@/src/data/countries/ca/pnp-non-express-process.json";
 import physicianOverlayData from "@/src/data/countries/ca/occupation-overlays/physician.json";
+import ruralFrancophonePilotsData from "@/src/data/countries/ca/rural-francophone-pilots.json";
 import visaDetails from "@/src/data/visa-details.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -49,6 +50,16 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   };
   const physicianOverlay = physicianOverlayData as {
     newFor2026?: string[];
+  };
+  const ruralFrancophone = ruralFrancophonePilotsData as {
+    sharedFees?: { processingFeeFrom?: number; currency?: string };
+    pilots?: Array<{
+      id: string;
+      name?: string;
+      numberOfCommunities?: number;
+      languageRequirement?: string;
+      note?: string;
+    }>;
   };
   const aip = (visaDetails as Array<{
     id?: string;
@@ -157,6 +168,13 @@ export default async function CanadaVisasPage({ params }: PageProps) {
       ? "面向医生的 2026 新路径更新 + 独立医疗执照步骤，整合在一个详细页面中。"
       : "Physician-focused 2026 pathway updates plus separate medical licensing steps in one detailed page.";
   const physicianNewUpdatesCount = physicianOverlay.newFor2026?.length ?? 3;
+  const pilotsFeeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
+    style: "currency",
+    currency: ruralFrancophone.sharedFees?.currency ?? "CAD",
+    maximumFractionDigits: 0,
+  }).format(ruralFrancophone.sharedFees?.processingFeeFrom ?? 1590);
+  const rcip = ruralFrancophone.pilots?.find((pilot) => pilot.id === "rural_community_immigration_pilot");
+  const fcip = ruralFrancophone.pilots?.find((pilot) => pilot.id === "francophone_community_immigration_pilot");
 
   return (
     <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
@@ -175,6 +193,105 @@ export default async function CanadaVisasPage({ params }: PageProps) {
 
         {/* Visas Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Link
+            href={`/${locale}/visas/canada-rural-pilot`}
+            className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="inline-block rounded-lg bg-cyan-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-400">
+                  RCIP
+                </span>
+                <span className="text-xs font-semibold text-slate-400">Open</span>
+              </div>
+
+              <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors dark:text-white dark:group-hover:text-cyan-400">
+                {isTr ? "Canada Rural Community Immigration Pilot" : isZh ? "加拿大乡村社区移民试点" : "Canada Rural Community Immigration Pilot"}
+              </h3>
+              <p className="mt-2.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-4">
+                {isTr
+                  ? "14 topluluk odakli genel pilot. Gecerli is teklifi, topluluk tavsiyesi ve PR basvurusu adimlarini izler."
+                  : isZh
+                    ? "覆盖 14 个社区的通用试点。流程包含有效工作聘书、社区推荐和永居申请。"
+                    : "General pilot across 14 communities with job offer, community recommendation, and PR application steps."}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <span>{isTr ? "Topluluk" : isZh ? "社区" : "Communities"}: {rcip?.numberOfCommunities ?? 14}</span>
+                <span>{isTr ? "Dil" : isZh ? "语言" : "Language"}: EN/FR</span>
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-slate-100 pt-4 dark:border-zinc-800">
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 text-slate-400" />
+                  <span>{isTr ? "Pilot Program" : isZh ? "试点项目" : "Pilot program"}</span>
+                </div>
+                <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-zinc-300">
+                  <span>{pilotsFeeText}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-end text-xs font-bold text-cyan-600 group-hover:translate-x-1 transition-transform dark:text-cyan-400">
+                <span>{viewDetailsLabel}</span>
+                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href={`/${locale}/visas/canada-francophone-pilot`}
+            className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="inline-block rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400">
+                  FCIP
+                </span>
+                <span className="text-xs font-semibold text-slate-400">Open</span>
+              </div>
+
+              <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors dark:text-white dark:group-hover:text-indigo-400">
+                {isTr ? "Canada Francophone Community Immigration Pilot" : isZh ? "加拿大法语社区移民试点" : "Canada Francophone Community Immigration Pilot"}
+              </h3>
+              <p className="mt-2.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-4">
+                {isTr
+                  ? "6 Francophone-minority topluluga odakli pilot. Ayristirici uygunluk farki: Fransizca iletisimi zorunlu."
+                  : isZh
+                    ? "面向 6 个法语少数社区。核心区分条件：必须具备法语沟通能力。"
+                    : "Pilot across 6 Francophone-minority communities. Distinguishing eligibility: ability to communicate in French."}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <span>{isTr ? "Topluluk" : isZh ? "社区" : "Communities"}: {fcip?.numberOfCommunities ?? 6}</span>
+                <span>{isTr ? "Dil" : isZh ? "语言" : "Language"}: FR</span>
+              </div>
+              <p className="mt-2 text-[11px] font-medium text-amber-700 dark:text-amber-400">
+                {isTr
+                  ? "Not: Sudbury ve Timmins iki pilotta da var; iki sayfayi da inceleyin."
+                  : isZh
+                    ? "注意：Sudbury 和 Timmins 同时存在于两个试点，请同时查看两页。"
+                    : "Note: Sudbury and Timmins appear in both pilots; review both pages."}
+              </p>
+            </div>
+
+            <div className="mt-6 border-t border-slate-100 pt-4 dark:border-zinc-800">
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 text-slate-400" />
+                  <span>{fcip?.languageRequirement ?? "French required"}</span>
+                </div>
+                <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-zinc-300">
+                  <span>{pilotsFeeText}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-end text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition-transform dark:text-indigo-400">
+                <span>{viewDetailsLabel}</span>
+                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              </div>
+            </div>
+          </Link>
+
           <Link
             href={`/${locale}/visas/canada-medical-doctor`}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
