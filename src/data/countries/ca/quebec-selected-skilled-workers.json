@@ -1,0 +1,103 @@
+{
+  "country": "CA",
+  "pathwayCovered": "Quebec-selected skilled workers - FEDERAL (IRCC) stage only",
+  "lastVerified": "2026-06-28",
+  "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Quebec-selected%20skilled%20workers/Quebec-selected%20skilled%20workers.pdf",
+  "CRITICAL_STRUCTURAL_WARNING": "Bu dosya Kanada'nin diger pathway dosyalarindan (Express Entry, PNP, AIP, RCIP/FCIP) koklu sekilde farkli bir uyari tasiyor: BU SADECE IKI ASAMALI SURECIN IKINCI (federal/IRCC) ASAMASI. Quebec'in KENDI secim sureci (Certificat de selection du Quebec - CSQ alma; kendi puan tablosu - CRS degil; kendi portali - Arrima; muhtemelen kendi ucretleri ve isleme suresi) BU DOSYADA YOK ve henuz hic arastirilmadi/JSON'a dokulmedi. Bu sayfayi 'Quebec'e goc etmenin tam sureci' gibi sunmak YANLIS olur - kullanici once Quebec'ten CSQ almak zorunda, bu federal 11 ay/$1,590 asamasi CSQ alindiktan SONRA basliyor. Quebec'in kendi tarafi (QSWP/PSTQ, Arrima) tamamen ayri, henuz baslanmamis bir arastirma/entegrasyon isi.",
+  "twoStageProcess": {
+    "stage1_quebec": {
+      "name": "Quebec Selection (Certificat de selection du Quebec - CSQ)",
+      "authority": "Ministere de l'Immigration, de la Francisation et de l'Integration (MIFI), Government of Quebec",
+      "status": "NOT YET DOCUMENTED - separate research task required (own points grid, own portal Arrima, own fees/processing time, distinct from federal CRS)",
+      "knownFacts": [
+        "As of 2018, MIFI no longer renews CSQs",
+        "A CSQ remains valid for federal application purposes until IRCC makes a decision, even if it has technically expired"
+      ]
+    },
+    "stage2_federal_this_document": {
+      "name": "Federal Permanent Residence Application (IRCC)",
+      "authority": "Immigration, Refugees and Citizenship Canada (IRCC)",
+      "prerequisite": "Must already hold a valid CSQ from Quebec before applying",
+      "processingTime": "11 months (IRCC processing only - excludes Quebec's CSQ processing time entirely)",
+      "fee": { "currency": "CAD", "from": 1590, "lastIncreaseDate": "2026-04-30" }
+    }
+  },
+  "eligibility": [
+    "Hold a Quebec Selection Certificate (CSQ) from the Government of Quebec",
+    "Submit a complete permanent residence application, including police certificates"
+  ],
+  "applicationProcess": {
+    "mandatoryOnlineSince": "2022-09-23",
+    "alternateFormatAvailable": ["paper", "braille", "large print"],
+    "portal": "Permanent residence online application portal (PR Portal)",
+    "instructionGuide": "Q7000",
+    "quebecContactNote": "To apply to Quebec for a CSQ, contact the MIFI office that processes applications from the applicant's country - this contact/process is NOT detailed in this document."
+  },
+  "documentsRequired": {
+    "fillInPortal": [
+      { "form": "IMM 0008", "name": "Generic Application Form for Canada" },
+      { "form": "IMM 5669", "name": "Schedule A - Background/Declaration" },
+      { "form": "IMM 5406", "name": "Additional Family Information" },
+      { "form": "IMM 5562", "name": "Supplementary Information - Your travels" }
+    ],
+    "downloadAndUpload_noSignatureNeeded": [
+      { "form": "IMM 5690", "name": "Document Checklist" },
+      { "form": "IMM 0008 Schedule 5", "name": "Economic Classes - Declaration of Intent to Reside in Quebec", "note": "Distinguishing form for this pathway - explicit declaration of intent to live in Quebec specifically" }
+    ],
+    "conditionalForms_handSigned": [
+      { "form": "IMM 5604", "name": "Separation Declaration for Minors Travelling to Canada", "condition": "If applicable" },
+      { "form": "IMM 5409", "name": "Statutory Declaration of Common-law Union", "condition": "If applicable" }
+    ],
+    "representativeForms": [
+      { "form": "IMM 5476", "name": "Use of a Representative" },
+      { "form": "IMM 5475", "name": "Authority to Release Personal Information to a Designated Individual" }
+    ],
+    "photos": "One photo per person on the application, both sides scanned per portal instructions"
+  },
+  "representativeRules": {
+    "canDo": [
+      "give advice and help with application for a fee",
+      "prepare forms/documents",
+      "answer questions about forms",
+      "communicate with IRCC via their own account"
+    ],
+    "cannotDo": [
+      "open a portal account on applicant's behalf",
+      "electronically sign the application",
+      "log in using applicant's credentials"
+    ],
+    "legalSignatureRule": "Applicant must personally type their own name (exactly as shown on passport) after reading the declaration - legal definition of 'signed' under Canadian immigration law."
+  },
+  "fees": {
+    "currency": "CAD",
+    "processingFeeFrom": 1590,
+    "lastIncreaseDate": "2026-04-30",
+    "components": [
+      "processing_fee",
+      "right_of_permanent_residence_fee (RPRF)",
+      "biometrics_fee",
+      "third_party_fees (medical exam, police certificates, ECA)"
+    ],
+    "note": "These are FEDERAL fees only - does not include whatever Quebec charges for CSQ processing (not documented here)."
+  },
+  "afterApply": {
+    "biometrics": { "ageRange": "14-79", "deadline": "30 days from instruction letter", "note": "Required for every PR application, even if previously given and still valid" },
+    "medicalExam": { "required": true, "appliesTo": "applicant + all family members, even non-accompanying", "disqualifiers": ["danger to public health/safety", "excessive demand on health/social services"] },
+    "policeCertificates": {
+      "rule": "Must provide ADDITIONAL police certificates IF ASKED during processing",
+      "differenceFromOtherPathways": "Phrased conditionally ('if asked') rather than the upfront blanket rule seen in PNP/RCIP/FCIP - worth re-verifying directly with IRCC source if this is a genuine procedural difference or just a phrasing variation."
+    },
+    "decisionCriteria": ["program eligibility", "proof of funds", "medical exam results", "police certificate information"],
+    "misrepresentationConsequence": "Refusal, inadmissibility finding, and/or 5-year bar from applying to come to Canada for any reason",
+    "approvalOutcome": ["Confirmation of Permanent Residence (COPR)", "permanent resident visa (if applicant's country requires one)"],
+    "coprCannotBeExtended": true
+  },
+  "missingDataFlags": [
+    "Quebec's own CSQ selection criteria / points grid (QSWP or its 2025 successor PSTQ)",
+    "Arrima expression-of-interest portal process",
+    "Quebec-side fees for CSQ application",
+    "Quebec-side processing time for CSQ",
+    "French-language requirement specifics for Quebec selection itself (distinct from any federal language test)"
+  ],
+  "disclaimerRequired": true
+}
