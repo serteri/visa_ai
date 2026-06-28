@@ -1015,5 +1015,46 @@
         "technical_dummy_data": "If facing portal issues on the web form, enter 1111111111 for UCI and 0000000 for Application number if not yet assigned. Upload full screenshots showing error messages."
       }
     }
+  },
+  {
+    "id": "canada-caregivers-tfwp",
+    "country": "Canada",
+    "program_name": "Home Care Workers & Caregivers (TFWP)",
+    "status": "Pilot Programs Closed; TFWP (LMIA) Open",
+    "fees": "Work Permit fees vary; LMIA processing fees apply per application.",
+    "processing_time": "Varies by LMIA approval and work permit stream.",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Home%20care%20workers%20%28caregivers%29/Home%20care%20workers%20%28caregivers%29.pdf"
+    ],
+    "overview": "Federal caregiver pilot programs (Home Child Care Provider/Support Worker) are CLOSED as of June 2024. New caregivers must now enter through the Temporary Foreign Worker Program (TFWP) with a positive Labour Market Impact Assessment (LMIA).",
+    "temporary_work_permit": {
+      "requirements": {
+        "who_can_apply": [
+          "Outside Canada: Only if working in Quebec.",
+          "Inside Canada: If you have a valid study/work permit OR are allowed to work without a permit.",
+          "Quebec-bound workers may apply from inside Canada if eligible."
+        ],
+        "who_cannot_apply": [
+          "Applying from outside Canada (excluding Quebec).",
+          "Applying at a port of entry.",
+          "Currently in Canada as a visitor (with limited exceptions)."
+        ]
+      },
+      "employer_lmia_process": {
+        "recruitment": "Employer must advertise the position for 4 weeks (high-wage) or 8 weeks (low-wage) to prove no Canadians are available.",
+        "application_method": "Must use 'LMIA Online' with a Job Bank for Employers account.",
+        "quebec_specific": "Must file simultaneously with MIFI (CAQ) and Service Canada (LMIA) for periods over 30 days."
+      }
+    },
+    "proof_of_experience_submission": {
+      "scope": "Only for those who already submitted applications to the now-closed pilots.",
+      "documentation": [
+        "Schedule 19b: Home Child Care Provider or Home Support Worker – Work Experience form [IMM 5910].",
+        "T4 tax slips and Notice of Assessment (NOA) (Must mask SIN).",
+        "Detailed Reference Letters: Start/end dates, NOC code, duties, salary/hours, employer contact/signature/letterhead.",
+        "Proof of payment: Bank deposits, pay stubs, work contracts, ROEs."
+      ],
+      "submission_protocol": "Must be sent via Web Form. Naming convention: 'Proof of experience - #'. Max size 2MB per file (3.5MB total). Use E-number (not W-number) for PR applications."
+    }
   }
 ]

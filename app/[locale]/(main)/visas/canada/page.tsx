@@ -65,6 +65,15 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     processing_time?: string;
   }>).find((item) => item.id === "canada-family-sponsorship");
 
+  const caregivers = (visaDetails as Array<{
+    id?: string;
+    program_name?: string;
+    status?: string;
+    overview?: string;
+    fees?: string;
+    processing_time?: string;
+  }>).find((item) => item.id === "canada-caregivers-tfwp");
+
   const title = isTr ? "Kanada Vize Yolları" : isZh ? "加拿大移民通道" : "Canada Visa Pathways";
   const subtitle = isTr 
     ? "Kanada'da daimi oturum sahibi olmak ve çalışmak için güncel vize seçeneklerini keşfedin." 
@@ -105,6 +114,15 @@ export default async function CanadaVisasPage({ params }: PageProps) {
       : "Sponsor your spouse, common-law/conjugal partner, or dependent child for Canadian permanent residence, including the binding sponsorship undertaking and open work permit pathway.";
   const familySponsorshipFee = familySponsorship?.fees ?? "From $1,260 (spouse/partner) / $180 (child)";
   const familySponsorshipProcessingTime = familySponsorship?.processing_time ?? "Varies by complexity";
+
+  const caregiversTitle = caregivers?.program_name ?? "Home Care Workers & Caregivers (TFWP)";
+  const caregiversBody = isTr
+    ? "Federal bakıcı pilot programları kapandı. Yeni başvurular artık LMIA destekli Geçici Yabancı İşçi Programı (TFWP) veya PNP üzerinden işleniyor."
+    : isZh
+      ? "联邦护理人员试点计划已关闭。新申请现通过获得 LMIA 支持的临时外国工人计划 (TFWP) 或省提名计划 (PNP) 处理。"
+      : "Federal caregiver pilot programs are closed. New applications are now processed via the LMIA-backed Temporary Foreign Worker Program (TFWP) or a PNP.";
+  const caregiversFee = caregivers?.fees ?? "Work Permit fees vary; LMIA processing fees apply per application.";
+  const caregiversProcessingTime = caregivers?.processing_time ?? "Varies by LMIA approval and work permit stream.";
 
   const pnpTitle = isTr
     ? "Provincial Nominee Program (Non-Express Entry Süreci)"
@@ -300,6 +318,46 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               </div>
 
               <div className="mt-4 flex items-center justify-end text-xs font-bold text-rose-600 group-hover:translate-x-1 transition-transform dark:text-rose-400">
+                <span>{viewDetailsLabel}</span>
+                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href={`/${locale}/visas/canada-caregivers`}
+            className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="inline-block rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+                  TFWP / LMIA-based
+                </span>
+                <span className="text-xs font-semibold text-slate-400">
+                  {isTr ? "Pilot Kapandı" : isZh ? "试点已关闭" : "Pilots Closed"}
+                </span>
+              </div>
+
+              <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors dark:text-white dark:group-hover:text-amber-400">
+                {caregiversTitle}
+              </h3>
+              <p className="mt-2.5 text-xs leading-relaxed text-slate-500 line-clamp-4 dark:text-slate-400">
+                {caregiversBody}
+              </p>
+            </div>
+
+            <div className="mt-6 border-t border-slate-100 pt-4 dark:border-zinc-800">
+              <div className="flex items-center justify-between gap-3 text-xs text-slate-400">
+                <div className="flex items-center gap-1 min-w-0">
+                  <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <span className="truncate">{caregiversProcessingTime}</span>
+                </div>
+                <div className="font-semibold text-slate-700 dark:text-zinc-300 text-right">
+                  <span className="truncate">{caregiversFee}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-end text-xs font-bold text-amber-600 group-hover:translate-x-1 transition-transform dark:text-amber-400">
                 <span>{viewDetailsLabel}</span>
                 <ArrowRight className="ml-1 h-3.5 w-3.5" />
               </div>
