@@ -152,6 +152,7 @@ export function FullCheckWaitlistForm({
   initialValues = {},
   isFreeActive = true,
   remainingSpots = 0,
+  onCountryChange,
 }: {
   locale: string;
   initialValues?: {
@@ -164,6 +165,7 @@ export function FullCheckWaitlistForm({
   };
   isFreeActive?: boolean;
   remainingSpots?: number;
+  onCountryChange?: (country: SupportedCountry) => void;
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -482,7 +484,11 @@ export function FullCheckWaitlistForm({
             id="waitlist-target-country"
             name="targetCountry"
             value={selectedCountry}
-            onChange={(e) => setSelectedCountry(e.target.value as SupportedCountry)}
+            onChange={(e) => {
+              const next = e.target.value as SupportedCountry;
+              setSelectedCountry(next);
+              onCountryChange?.(next);
+            }}
             disabled={Boolean(initialValues.targetCountry)}
             className={selectClassName}
           >
