@@ -130,6 +130,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CanadaQuebecSkilledWorkersPage({ params }: PageProps) {
   const { locale } = await params;
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
+  const localeKind = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh" : "en";
   const data = quebecData as QuebecFederalData;
   const ui = {
     back: locale === "tr" ? "Kanada vizelerine don" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
@@ -145,6 +146,28 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
     const value = (source[key] as string | undefined) ?? (source[base] as string | undefined);
     return value ?? fallback ?? "";
   };
+  const t = {
+    criticalWarningBody: localeKind === "tr"
+      ? "Bu dosya Kanada'nın diğer pathway dosyalarından (Express Entry, PNP, AIP, RCIP/FCIP) köklü biçimde farklı bir uyarı taşır: BU SADECE İKİ AŞAMALI SÜRECİN İKİNCİ (federal/IRCC) AŞAMASIDIR. Quebec'in kendi seçim süreci (Certificat de selection du Quebec - CSQ alma; kendi puan tablosu - CRS değil; kendi portalı - Arrima; muhtemelen kendi ücretleri ve işlem süresi) BU DOSYADA YOK ve henüz araştırılmadı/JSON'a dökülmedi. Bu sayfayı 'Quebec'e göç etmenin tam süreci' gibi sunmak YANLIŞ olur; kullanıcı önce Quebec'ten CSQ almak zorunda, bu federal 11 ay/$1,590 aşaması ise CSQ alındıktan SONRA başlıyor. Quebec'in kendi tarafı (QSWP/PSTQ, Arrima) tamamen ayrı ve ayrıca ele alınması gereken bir araştırma/entegrasyon işidir."
+      : localeKind === "zh"
+        ? "此文件与加拿大其他路径文件（Express Entry、PNP、AIP、RCIP/FCIP）有根本不同的警告：这只是两阶段流程中的第二阶段（联邦阶段/IRCC）。魁北克自己的筛选流程（获取 Certificat de selection du Quebec - CSQ；自己的积分体系——不是 CRS；自己的门户——Arrima；以及可能不同的费用与处理时间）不在本文件中，且尚未研究/结构化入 JSON。把本页当作“移民魁北克的完整流程”是错误的：用户必须先获得魁北克 CSQ，之后才进入这里的联邦 11 个月/$1,590 阶段。魁北克端（QSWP/PSTQ、Arrima）是完全独立、尚待单独集成的工作。"
+        : "This page covers the federal processing stage only, after you already hold a Quebec Selection Certificate (CSQ). Quebec's own selection process (Arrima, Quebec points logic, Quebec-side fees/timelines) is not covered in detail here yet.",
+    pathwayCovered: localeKind === "tr"
+      ? "Quebec seçilmiş nitelikli işçiler - yalnızca FEDERAL (IRCC) aşaması"
+      : localeKind === "zh"
+        ? "魁北克技术工人——仅联邦（IRCC）阶段"
+        : "Quebec-selected skilled workers - Federal stage",
+    stage1Name: localeKind === "tr"
+      ? "Quebec Seçimi (Certificat de selection du Quebec - CSQ)"
+      : localeKind === "zh"
+        ? "魁北克筛选阶段（Certificat de selection du Quebec - CSQ）"
+        : "Quebec Selection (Certificat de selection du Quebec - CSQ)",
+    stage2Name: localeKind === "tr"
+      ? "Federal Daimi Oturum Başvurusu (IRCC)"
+      : localeKind === "zh"
+        ? "联邦永久居留申请阶段（IRCC）"
+        : "Federal Permanent Residence Application (IRCC)",
+  };
   const localizedTwoStage = locale === "tr"
     ? (data.twoStageProcess_tr ?? data.twoStageProcess)
     : locale === "zh-Hans"
@@ -156,7 +179,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
       ? (data.eligibility_zh ?? data.eligibility ?? [])
       : (data.eligibility ?? []);
 
-  const feeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
+  const feeText = new Intl.NumberFormat("en-CA", {
     style: "currency",
     currency: data.fees?.currency ?? "CAD",
     maximumFractionDigits: 0,
@@ -183,7 +206,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
               <p className="mt-1 text-sm leading-6">
                 {localizedField(
                   "CRITICAL_STRUCTURAL_WARNING",
-                  "This page covers the federal processing stage only, after you already hold a Quebec Selection Certificate (CSQ). Quebec's own selection process (Arrima, Quebec points logic, Quebec-side fees/timelines) is not covered in detail here yet."
+                  t.criticalWarningBody
                 )}
               </p>
             </div>
@@ -195,7 +218,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
             <CardContent className="space-y-6 p-6 sm:p-8">
               <div className="space-y-3">
                 <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
-                  {localizedField("pathwayCovered", "Quebec-selected skilled workers - Federal stage")}
+                  {localizedField("pathwayCovered", t.pathwayCovered)}
                 </h1>
                 <p className="max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
                   {localizedField("pathwayCovered")}
@@ -207,7 +230,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
                 <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                   <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Stage 1 (Quebec)</p>
-                    <p className="mt-1 font-semibold text-slate-900 dark:text-white">{localizedTwoStage?.stage1_quebec?.name}</p>
+                    <p className="mt-1 font-semibold text-slate-900 dark:text-white">{localizedTwoStage?.stage1_quebec?.name ?? t.stage1Name}</p>
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Separate process, not detailed here.</p>
                   </div>
                   <div className="flex justify-center text-slate-400">
@@ -215,7 +238,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
                   </div>
                   <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-600/30 dark:bg-emerald-950/20">
                     <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-200">Stage 2 (Federal IRCC)</p>
-                    <p className="mt-1 font-semibold text-emerald-900 dark:text-emerald-100">{localizedTwoStage?.stage2_federal_this_document?.name}</p>
+                    <p className="mt-1 font-semibold text-emerald-900 dark:text-emerald-100">{localizedTwoStage?.stage2_federal_this_document?.name ?? t.stage2Name}</p>
                     <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-200">Detailed on this page.</p>
                   </div>
                 </div>

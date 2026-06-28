@@ -46,6 +46,20 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     }
     return fallback ?? (obj[base] as string | undefined) ?? "";
   };
+  const localizeStatus = (obj: Record<string, unknown>) => {
+    const localized = localize(obj, "status", "");
+    if (localized) return localized;
+    const raw = String(obj.status ?? "").toLowerCase();
+    if (localeKind === "tr") {
+      if (raw.includes("pause")) return "duraklatıldı";
+      if (raw.includes("close")) return "kapatıldı";
+    }
+    if (localeKind === "zh") {
+      if (raw.includes("pause")) return "暂停";
+      if (raw.includes("close")) return "已关闭";
+    }
+    return obj.status as string | undefined;
+  };
 
   const ee = expressEntryData as Record<string, any>;
   const pnp = pnpProcessData as Record<string, any>;
@@ -183,13 +197,21 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     "structuralNote",
     "General pilot across 14 communities with job offer, community recommendation, and PR application steps."
   );
-  const rcipName = localize(rcip, "name", "Canada Rural Community Immigration Pilot");
+  const rcipName = localize(
+    rcip,
+    "name",
+    localeKind === "tr" ? "Kırsal Topluluk Göç Pilot Programı" : localeKind === "zh" ? "加拿大农村社区移民试点" : "Canada Rural Community Immigration Pilot"
+  );
   const rcipPurpose = localize(rcip, "purpose", ruralSharedStructuralNote);
-  const fcipName = localize(fcip, "name", "Canada Francophone Community Immigration Pilot");
+  const fcipName = localize(
+    fcip,
+    "name",
+    localeKind === "tr" ? "Frankofon Topluluk Göç Pilot Programı" : localeKind === "zh" ? "加拿大法语社区移民试点" : "Canada Francophone Community Immigration Pilot"
+  );
   const fcipPurpose = localize(fcip, "purpose", "Pilot across 6 Francophone-minority communities. Distinguishing eligibility: ability to communicate in French.");
   const fcipNote = localize(fcip, "note", "Note: Sudbury and Timmins appear in both pilots; review both pages.");
   const fcipLanguage = localize(fcip, "languageRequirement", "French required");
-  const quebecFederalFeeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
+  const quebecFederalFeeText = new Intl.NumberFormat("en-CA", {
     style: "currency",
     currency: quebecFederal.fees?.currency ?? "CAD",
     maximumFractionDigits: 0,
@@ -200,7 +222,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
       ? (quebecFederal.twoStageProcess_zh ?? quebecFederal.twoStageProcess)
       : quebecFederal.twoStageProcess;
   const quebecFederalProcessing = quebecFederalStage?.stage2_federal_this_document?.processingTime ?? "11 months (federal only)";
-  const quebecBusinessFeeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
+  const quebecBusinessFeeText = new Intl.NumberFormat("en-CA", {
     style: "currency",
     currency: ((localeKind === "tr" ? quebecBusiness.twoStageProcess_tr : localeKind === "zh" ? quebecBusiness.twoStageProcess_zh : quebecBusiness.twoStageProcess)?.stage2_federal?.fee?.currency) ?? "CAD",
     maximumFractionDigits: 0,
@@ -276,10 +298,22 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors dark:text-white dark:group-hover:text-amber-300">
-                {localize(quebecFederal, "pathwayCovered", "Quebec-selected skilled workers (Federal stage)")}
+                {localize(
+                  quebecFederal,
+                  "pathwayCovered",
+                  localeKind === "tr" ? "Quebec seçilmiş nitelikli işçiler (Federal aşama)" : localeKind === "zh" ? "魁北克技术工人（联邦阶段）" : "Quebec-selected skilled workers (Federal stage)"
+                )}
               </h3>
               <p className="mt-2.5 text-xs leading-relaxed text-slate-700 dark:text-slate-300 line-clamp-4">
-                {localize(quebecFederal, "CRITICAL_STRUCTURAL_WARNING", "This covers the federal processing stage only, after you already hold a Quebec Selection Certificate (CSQ). Quebec's own selection process (Arrima/CSQ) is not yet covered in detail here.")}
+                {localize(
+                  quebecFederal,
+                  "CRITICAL_STRUCTURAL_WARNING",
+                  localeKind === "tr"
+                    ? "Bu kart yalnızca CSQ sonrası federal IRCC aşamasını kapsar. Quebec'in kendi seçim süreci (Arrima/CSQ) burada detaylı değildir."
+                    : localeKind === "zh"
+                      ? "本卡仅覆盖获得 CSQ 后的联邦 IRCC 阶段；魁北克自有筛选流程（Arrima/CSQ）未在此详述。"
+                      : "This covers the federal processing stage only, after you already hold a Quebec Selection Certificate (CSQ). Quebec's own selection process (Arrima/CSQ) is not yet covered in detail here."
+                )}
               </p>
             </div>
 
@@ -671,7 +705,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                           {localize(item as Record<string, unknown>, "name", item.name)}
                         </a>
                         <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">
-                          {localize(item as Record<string, unknown>, "status", item.status ?? "paused")}
+                          {localizeStatus(item as Record<string, unknown>) ?? "paused"}
                         </span>
                       </div>
                       {(localize(item as Record<string, unknown>, "note") || item.note) ? <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{localize(item as Record<string, unknown>, "note", item.note)}</p> : null}
@@ -690,7 +724,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                           {localize(item as Record<string, unknown>, "name", item.name)}
                         </a>
                         <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-rose-900 dark:bg-rose-900/40 dark:text-rose-200">
-                          {localize(item as Record<string, unknown>, "status", "closed")}
+                          {localizeStatus(item as Record<string, unknown>) ?? "closed"}
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{localize(item as Record<string, unknown>, "category", item.category)}</p>
