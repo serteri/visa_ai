@@ -892,5 +892,128 @@
         "Upon final approval, travel to Atlantic Canada to live and work with ongoing support from the employer and settlement provider."
       ]
     }
+  },
+  {
+    "subclass": "canada-family-sponsorship",
+    "id": "canada-family-sponsorship",
+    "country": "Canada",
+    "program_name": "Family Sponsorship (Spouse, Partner or Child)",
+    "status": "Open",
+    "fees": "Sponsor a spouse or partner: from $1,260 (Increased April 30, 2026) | Sponsor a child: from $180 (Increased April 30, 2026)",
+    "processing_time": "Varies by complexity (Check tracker after receiving AOR)",
+    "pdfSnapshotUrls": [
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Sponsor%20your%20spouse%2C%20partner%20or%20child/Sponsor%20your%20spouse%2C%20partner%20or%20child.pdf"
+    ],
+    "overview": "A comprehensive program to sponsor your spouse, common-law partner, conjugal partner or dependent child to become a permanent resident of Canada. Sponsors must commit to financially supporting the sponsored individuals so they do not require social assistance from the government.",
+    "sponsorship_undertaking": {
+      "definition": "A binding contract where the sponsor commits to financially support the sponsored people starting when they become permanent residents. If they receive social assistance, the sponsor must repay the government in full before sponsoring anyone else. Undertaking CANNOT be cancelled or shortened even if citizenship is gained, financial problems arise, or the relationship ends.",
+      "durations_outside_quebec": [
+        { "person": "Spouse, common-law partner or conjugal partner", "length": "3 years" },
+        { "person": "Dependent child 22 years of age and older", "length": "3 years" },
+        { "person": "Dependent child under 22 years of age", "length": "10 years or until the child becomes 25 years of age, whichever comes first (age measured on date they become PR)" }
+      ],
+      "quebec_rule": "Sponsors living in Quebec must sign a separate undertaking with the Government of Quebec. Do not submit the application to Quebec until instructed by IRCC, otherwise it will not be processed."
+    },
+    "sponsor_eligibility": {
+      "positive_criteria": [
+        "Must be at least 18 years old.",
+        "Must be a Canadian citizen, a permanent resident of Canada, or a person registered under the Canadian Indian Act.",
+        "Must live in Canada (Canadian citizens living outside Canada must show plans to live in Canada when the sponsored person becomes PR; Permanent residents living outside Canada CANNOT sponsor).",
+        "Must commit to supporting the people by signing the undertaking and sponsorship agreement."
+      ],
+      "income_requirement": "In most cases, there is no income requirement to sponsor a spouse, partner, or child. Income proof via Financial Evaluation Form (IMM 1283) is ONLY required if: 1) You are sponsoring a dependent child who has 1 or more dependent children of their own, OR 2) You are sponsoring a spouse/partner who has a dependent child, and that child has 1 or more dependent children of their own.",
+      "negative_criteria": [
+        "Were sponsored by a spouse/partner and became a PR less than 5 years ago.",
+        "Sponsored a previous spouse/partner and less than 3 years have passed since they became a PR.",
+        "Have an active, undecided sponsorship application for the same person.",
+        "Are in jail, prison, or a penitentiary.",
+        "Are behind on payments for an immigration loan, a performance bond, or court-ordered family support payments like alimony or child support (Quebec exceptions apply).",
+        "Failed to give agreed financial support for a previous sponsorship in the past (Quebec exceptions apply).",
+        "Declared bankruptcy and are not discharged yet (Quebec exceptions apply).",
+        "Are receiving social assistance for a reason other than a disability.",
+        "Were convicted of a violent criminal offence, an offence against a relative causing bodily harm, or a sexual offence inside or outside Canada.",
+        "Are under a removal order and cannot legally stay in Canada."
+      ]
+    },
+    "sponsored_person_types": {
+      "spouse": {
+        "definition": "Legally married to the sponsor, at least 18 years old, can be any gender, must be in a genuine relationship not solely for permanent residence, must not be inadmissible."
+      },
+      "common_law_partner": {
+        "definition": "Not legally married, at least 18 years old, can be any gender, in a genuine relationship, must have lived together continuously for at least 12 consecutive months without long periods apart (short family or business trips allowed). Relationship is legally over if either party chooses to end it."
+      },
+      "conjugal_partner": {
+        "definition": "Not legally married or common-law, at least 18 years old, can be any gender, in an exclusive and mutually interdependent relationship for at least 1 year (sharing life physically, emotionally, financially, socially). Must live OUTSIDE Canada and be unable to live together or marry due to legal/social/cultural/religious barriers (e.g., divorce banned, same-sex marriage illegal, or religious persecution)."
+      },
+      "dependent_child": {
+        "definition": "Biological or adopted child of the sponsor or spouse/partner. Must be under 22 years old and have no spouse or common-law partner. If 22 or older, they qualify ONLY if unable to financially support themselves due to a mental or physical condition AND have depended on parents for support since before age 22. Must meet these rules until processing completes.",
+        "custody_and_declaration_rules": [
+          "If sponsoring a child alone without a spouse, the child is the principal applicant. Must provide proof that the other parent/guardian agrees to the immigration.",
+          "If a child has a child of their own (grandchild), the grandchild MUST be declared as a dependant, whether coming to Canada or not.",
+          "Sponsors must declare ALL children in existence, even those in the sole custody of an ex-spouse where no custody or responsibility remains. They must pass medical and background checks. Failure to declare any family member risks total loss of PR status.",
+          "Canadian citizens born abroad cannot be sponsored for PR if they are already citizens by descent; check citizenship status first."
+        ]
+      }
+    },
+    "how_to_apply_steps": [
+      "Create an account or sign in to the online Permanent Residence (PR) Portal.",
+      "Understand that there are 2 concurrent applications: the Sponsorship Application (by the sponsor) and the Permanent Residence Application (by the principal applicant). Both must be submitted together online by the principal applicant.",
+      "Get country-specific forms and instructions based on where the sponsored person lives, along with the Document Checklist.",
+      "Scan and upload both sides of 1 photo for the principal applicant and each family member, adhering strictly to online specifications (not older than 12 months).",
+      "Pay all application fees online (Sponsor fee, principal applicant processing fee, Right of Permanent Residence Fee, and Biometrics fee) and upload the receipt. Optional third-party fees apply for medicals and police checks.",
+      "Review all digital forms for complete and truthful answers. The principal applicant must electronically sign the application by typing their full name exactly as shown in the passport.",
+      "Submit the completed application. If incomplete or missing fees, the application will be rejected and returned for resubmission."
+    ],
+    "required_forms": {
+      "portal_digital_forms": [
+        { "code": "IMM 0008", "name": "Generic Application Form for Canada" },
+        { "code": "IMM 5669", "name": "Schedule A – Background/Declaration" },
+        { "code": "IMM 5406", "name": "Additional Family Information" },
+        { "code": "IMM 5562", "name": "Supplementary Information - Your travels" }
+      ],
+      "portal_upload_forms": [
+        { "code": "IMM 0155 / Checklist", "name": "Document Checklist tailored to applicant's region" },
+        { "code": "Sponsorship Agreement", "name": "Sponsorship Agreement and Undertaking form specifying everyday and health needs (Not signed by children under 22)" },
+        { "code": "IMM 5476", "name": "Use of a Representative (Required if using a paid/unpaid representative. Paid must be authorized. Representatives cannot sign or open portals for the applicant; applicant must type their own name for legal signature)" },
+        { "code": "IMM 5475", "name": "Authority to Release Personal Information to a Designated Individual (Required if releasing info to a non-representative)" },
+        { "code": "IMM 5409", "name": "Statutory Declaration of Common-law Union (Required for common-law couples, must be hand-signed with 1-year joint proof like bank statements, leases, utility bills)" },
+        { "code": "IMM 5604", "name": "Separation Declaration for Minors Travelling to Canada (Required if a minor child travels without both parents; must be hand-signed by non-accompanying parent before a notary public. Exempt if sole custody court order or death certificate is provided)" }
+      ]
+    },
+    "open_work_permit_policy": {
+      "eligibility_criteria": [
+        "Must be a spouse, common-law partner, or conjugal partner living in Canada who is being sponsored for permanent residence, OR an accompanying dependent child.",
+        "Must be living in Canada with the sponsor in a genuine relationship.",
+        "Must have received an official Acknowledgement of Receipt (AOR) letter from IRCC confirming the PR application is currently in progress.",
+        "Must hold valid temporary resident status (valid visitor record, work permit, study permit, temporary resident permit, or have maintained status/applied for restoration)."
+      ],
+      "ineligibility": [
+        "Cannot apply if the PR application has been refused, withdrawn, or returned.",
+        "Cannot apply for this specific open work permit at a port of entry (must apply online)."
+      ],
+      "visitor_visa_acceleration": "Spouses or partners outside Canada can apply for a visitor visa while waiting. If they have the PR AOR letter, their visitor visa application is eligible for faster automated/electronic processing to help them join their sponsor in Canada early."
+    },
+    "after_apply_and_decisions": {
+      "processing_mechanisms": [
+        "IRCC may use electronic methods, automated systems, and computer analytics to help process applications, manage risk, and evaluate compliance using personal data.",
+        "Upon complete review, IRCC sends the application number and AOR, and triggers mandatory biometrics instructions (30 days deadline to visit an in-person collection site) and medical exams.",
+        "If living in Quebec, the PR application remains in inventory until the MIFI undertaking is secured; PR cannot be finalized without it."
+      ],
+      "approval_and_refusal_outcomes": [
+        "If the sponsor is approved, IRCC moves to evaluate the applicant. If the sponsor is refused, the application proceeds or withdraws based on the initial check-box choice (Withdrawal refunds PR fees but forfeits the sponsorship fee; Continuing gives no refunds and zero approval guarantees).",
+        "Upon final PR approval for outside-Canada applicants: Confirmation of Permanent Residence (COPR) and a PR visa stamp are issued. Must enter Canada before the document expiry date shown.",
+        "Upon final PR approval for inside-Canada applicants: Status is confirmed online via the PR Portal, or an in-person interview is scheduled.",
+        "Refusal of inside-Canada class applications (spouse or common-law partner in Canada class) CANNOT be appealed."
+      ],
+      "withdrawal_and_refunds": [
+        "Sponsorship can be withdrawn at any time before the applicant officially becomes a PR via the IRCC web form (requires full name, DOB, country of birth, application number, UCI, and signed withdrawal request letter).",
+        "Right of Permanent Residence Fee is refundable if withdrawn or refused (requires declining right of appeal first; processes in 2-8 weeks)."
+      ],
+      "alternate_format_and_technical": {
+        "accommodation_email": "IRCC.PRPortalALTRequest-DemandeALTPortailRP.IRCC@cic.gc.ca",
+        "accommodation_subject": "[Braille / Large Print / Paper] - [Application Package Name]",
+        "technical_dummy_data": "If facing portal issues on the web form, enter 1111111111 for UCI and 0000000 for Application number if not yet assigned. Upload full screenshots showing error messages."
+      }
+    }
   }
 ]
