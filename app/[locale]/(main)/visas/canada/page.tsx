@@ -16,6 +16,15 @@ type PageProps = {
   params: Promise<{ locale: string }>;
 };
 
+type ProgramStatusItem = {
+  name: string;
+  url: string;
+  status?: string;
+  note?: string;
+  category?: string;
+  [key: string]: unknown;
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   return {
@@ -227,8 +236,8 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     currency: ((localeKind === "tr" ? quebecBusiness.twoStageProcess_tr : localeKind === "zh" ? quebecBusiness.twoStageProcess_zh : quebecBusiness.twoStageProcess)?.stage2_federal?.fee?.currency) ?? "CAD",
     maximumFractionDigits: 0,
   }).format(((localeKind === "tr" ? quebecBusiness.twoStageProcess_tr : localeKind === "zh" ? quebecBusiness.twoStageProcess_zh : quebecBusiness.twoStageProcess)?.stage2_federal?.fee?.from) ?? 2495);
-  const pausedPrograms = pausedClosedRegistry.paused ?? [];
-  const closedPrograms = pausedClosedRegistry.closed ?? [];
+  const pausedPrograms = (pausedClosedRegistry.paused ?? []) as ProgramStatusItem[];
+  const closedPrograms = (pausedClosedRegistry.closed ?? []) as ProgramStatusItem[];
 
   return (
     <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
