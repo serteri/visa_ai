@@ -1,0 +1,257 @@
+{
+  "country": "CA",
+  "occupationOverlay": "Medical Doctor / Physician",
+  "structuralNote": "Bu dosya tek bir vize turu DEGIL - doktor mesleginin Express Entry, PNP, Atlantic Immigration, Rural/Francophone pilotlari uzerine bindirilen meslek-ozel kurallari (immigrationPathways) + gocten tamamen ayri, paralel bir tibbi lisanslama sureci (medicalLicensingPathway) iceriyor. Bir doktorun Kanada'da pratik yapabilmesi icin HER IKISI de gerekiyor - gocmenlik statusu kazanmak, lisans almak icin yeterli degil.",
+  "lastVerified": "2026-06-27",
+  "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/health-care-providers/physicians.html",
+  "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Live%20and%20work%20as%20a%20medical%20doctor%20in%20Canada/Live%20and%20work%20as%20a%20medical%20doctor%20in%20Canada.pdf",
+  "newFor2026": [
+    "Express Entry category-based selection round specifically for physicians with 1+ year full-time Canadian MD work experience in the last 3 years",
+    "5,000 federal immigration spaces reserved through PNP to nominate physicians with a job offer or letter of support",
+    "PNP-nominated physicians get expedited work permit processing within 14 days"
+  ],
+  "sectorStatistics": {
+    "internationallyTrainedFamilyPhysiciansPercent2024": 31,
+    "source1": "Canadian Institute for Health Information",
+    "immigrantHealthcareWorkersRatio": "1 in 4",
+    "source2": "Statistics Canada 2021 Census",
+    "healthcareWorkersArrived2024ViaEconomicPrograms": "11,000+"
+  },
+  "applicantTracks": {
+    "hasCanadianMDExperience": {
+      "description": "At least 1 year full-time MD work experience in Canada within the last 3 years",
+      "availablePathways": [
+        "express_entry_physician_category",
+        "pnp"
+      ]
+    },
+    "noCanadianMDExperienceYet": {
+      "description": "Internationally-trained, no Canadian clinical MD experience yet (or Canadian experience is older than 3 years)",
+      "availablePathways": [
+        "pnp",
+        "express_entry_general",
+        "atlantic_immigration_program",
+        "rural_community_immigration_pilot",
+        "francophone_community_immigration_pilot"
+      ],
+      "prerequisite": "Must still get foreign credentials assessed and licensed by a provincial/territorial regulatory authority"
+    }
+  },
+  "immigrationPathways": [
+    {
+      "id": "express_entry_physician_category",
+      "name": "Express Entry - Physician Category (New 2026)",
+      "eligibility": [
+        "Eligible for 1 of the 3 Express Entry programs (CEC/FSW/FSTP)",
+        "At least 1 year full-time Canadian MD work experience in the last 3 years"
+      ],
+      "roundTypes": [
+        "category_based_selection_physicians (new 2026)",
+        "general_rounds",
+        "program_specific_rounds"
+      ],
+      "processSteps": [
+        "Check eligibility + prepare documents",
+        "Create/update Express Entry profile, submit to pool",
+        "Wait for invitation (extend existing work permit if in Canada; apply for work permit with job offer if outside Canada)",
+        "Apply for PR within 60 days of invitation"
+      ],
+      "includableFamilyMembers": [
+        "spouse_or_common_law_partner",
+        "dependent_child",
+        "dependent_grandchild"
+      ]
+    },
+    {
+      "id": "pnp",
+      "name": "Provincial Nominee Program (physician-reserved spaces)",
+      "eligibility": [
+        "Has a job, job offer, or letter of support to work as MD in a province/territory"
+      ],
+      "reservedSpaces": 5000,
+      "expeditedWorkPermitDays": 14,
+      "processSteps": [
+        "Select province/territory and get nominated under their physician stream",
+        "Apply for PR via Express Entry process or non-Express Entry process (whichever the province's stream uses)",
+        "Work while application processes, using expedited 14-day work permit once nominated"
+      ],
+      "provincesWithSelector": [
+        "Alberta",
+        "British Columbia",
+        "Manitoba",
+        "New Brunswick",
+        "Newfoundland and Labrador",
+        "Northwest Territories",
+        "Nova Scotia",
+        "Ontario",
+        "Prince Edward Island",
+        "Saskatchewan",
+        "Yukon"
+      ],
+      "note": "Quebec and Nunavut excluded - consistent with general PNP finding (no PNP program in either)."
+    },
+    {
+      "id": "atlantic_immigration_program",
+      "name": "Atlantic Immigration Program (AIP)",
+      "eligibility": [
+        "Work experience OR post-secondary education completed in Atlantic Canada",
+        "Job offer from a designated employer",
+        "Interested in living in Atlantic Canada"
+      ]
+    },
+    {
+      "id": "rural_community_immigration_pilot",
+      "name": "Rural Community Immigration Pilot (RCIP)",
+      "eligibility": [
+        "1+ year MD work experience in last 3 years, OR graduated from an eligible post-secondary school",
+        "Job offer from a designated employer",
+        "Interested in living in a smaller, rural community"
+      ]
+    },
+    {
+      "id": "francophone_community_immigration_pilot",
+      "name": "Francophone Community Immigration Pilot (FCIP)",
+      "eligibility": [
+        "1+ year MD work experience in last 3 years, OR graduated from an eligible post-secondary school",
+        "Job offer from a designated employer",
+        "Able to communicate in French",
+        "Interested in living in a Francophone community outside Quebec"
+      ]
+    }
+  ],
+  "medicalLicensingPathway": {
+    "note": "Bu surec IRCC/gocmenlik degil - Medical Council of Canada (MCC) ve eyalet/bolge Medical Regulatory Authority'leri (MRA) tarafindan yonetiliyor. Gocmenlik statusunden BAGIMSIZ olarak tamamlanmasi gerekiyor.",
+    "framework": {
+      "name": "IMG-L Framework",
+      "components": {
+        "I": "Immigration - valid status (work permit/PR/citizenship) required for CaRMS and some PRA routes",
+        "M": "Medical licensing - physiciansapply.ca account, MCCQE, NAC Exam, provincial/territorial pathway",
+        "G": "Gap or currency of practice - prolonged interruption makes eligibility harder; full-time med school/accredited residency/accredited internship/clinical fellowship with patient care generally NOT considered a gap; clinical research without active license, volunteer roles, medical assistant roles ARE considered gaps",
+        "L": "Language requirements - see languageRequirements below"
+      }
+    },
+    "centralPortal": {
+      "name": "physiciansapply.ca",
+      "operatedBy": "Medical Council of Canada (MCC)",
+      "funding": [
+        "Employment and Social Development Canada",
+        "Federation of Medical Regulatory Authorities of Canada and members"
+      ],
+      "services": [
+        "Source verification of medical credentials",
+        "Apply for MCCQE and NAC Examination",
+        "View/share documents and exam results (File Transfer Service for non-registered orgs)",
+        "Request ECA report (needed for e.g. Federal Skilled Worker Program)",
+        "Apply for LMCC",
+        "Apply for medical registration with MRAs"
+      ],
+      "specialNote": "Candidates targeting Ontario should contact the College of Physicians and Surgeons of Ontario directly for source verification, not MCC."
+    },
+    "exams": {
+      "MCCQE": {
+        "fullName": "Medical Council of Canada Qualifying Examination",
+        "formerName": "MCCQE Part I",
+        "format": "One-day, computer-based, 230 MCQs in 2 sections of 115 items, up to 2h40m per section",
+        "deliveredIn": "Canada + 70+ countries, 4 sessions/year, Prometric test centres, first-come-first-served",
+        "eligibility": [
+          "Graduate of a CACMS-accredited medical school",
+          "OR graduate of a school listed in World Directory of Medical Schools with a Canada Sponsor Note",
+          "OR graduate of a AOA-accredited US School of Osteopathic Medicine"
+        ],
+        "attemptLimit": {
+          "max": 4,
+          "rule": "After 3rd attempt, must wait 1 year before 4th attempt (non-negotiable). Pre-2018 attempts don't count. 'No Standing' doesn't count as attempt; fail or 'Denied Standing' do count. Cannot retake after a pass.",
+          "eligibilityWindow": "12 months to schedule/write after application acceptance"
+        },
+        "studentApplicationWindow": "Up to 15 months before expected graduation date; eligibility window begins 12 months before expected graduation"
+      },
+      "NAC": {
+        "fullName": "National Assessment Collaboration Examination",
+        "purpose": "Assesses IMG readiness to enter supervised training in Canada; required for CaRMS entry and as screening tool for some provincial PRA programs",
+        "orderFlexibility": "Can be taken before or after MCCQE, candidate's choice (for 2027 CaRMS R-1 applicants)"
+      }
+    },
+    "licensurePathwayOptions": [
+      {
+        "id": "carms_match",
+        "name": "CaRMS Match",
+        "description": "For IMGs without postgraduate training, or with postgraduate training completed outside Canada who are willing to retrain. Apply to/match with/complete a Canadian residency program via CaRMS."
+      },
+      {
+        "id": "pra_programs",
+        "name": "Practice-Ready Assessment (PRA) Programs",
+        "description": "For IMGs who completed residency and practised independently abroad. 12-week clinical workplace-based assessment."
+      },
+      {
+        "id": "approved_jurisdictions",
+        "name": "Approved Jurisdictions",
+        "description": "For IMGs from jurisdictions deemed substantially equivalent to Canadian training, per CFPC/RCPSC/CMQ criteria."
+      },
+      {
+        "id": "practice_eligibility_route",
+        "name": "Practice Eligibility Route (PER)",
+        "description": "For IMGs who completed postgraduate training outside Canada in a recognized primary specialty."
+      }
+    ],
+    "postLicensureSteps": [
+      "Apply for LMCC (Licentiate of the Medical Council of Canada) - part of the Canadian Standard",
+      "Apply for specialty certificate with RCPSC, CFPC, or CMQ",
+      "Apply for medical registration with the MRA of the province/territory of intended practice (via physiciansapply.ca for most MRAs)"
+    ],
+    "regulatoryAuthorities": [
+      "College des medecins du Quebec",
+      "College of Physicians & Surgeons of Alberta",
+      "College of Physicians and Surgeons of British Columbia",
+      "College of Physicians and Surgeons of Manitoba",
+      "College of Physicians and Surgeons of New Brunswick",
+      "College of Physicians and Surgeons of Newfoundland & Labrador",
+      "College of Physicians & Surgeons of Nova Scotia",
+      "College of Physicians and Surgeons of Ontario",
+      "College of Physicians & Surgeons of Prince Edward Island",
+      "College of Physicians and Surgeons of Saskatchewan",
+      "Government of Northwest Territories",
+      "Government of Nunavut",
+      "Yukon Medical Council"
+    ],
+    "languageRequirements": {
+      "generalRule": "English required in most provinces; New Brunswick accepts English OR French; Quebec requires French",
+      "englishTests": {
+        "IELTS_Academic": "Minimum 7.0 in each of 4 components, single sitting",
+        "OET_Medicine": "Minimum grade B in each subset, single sitting",
+        "CELPIP_General": "Minimum score 9 in each component, single sitting"
+      },
+      "frenchTestQuebec": "Pass result on OQLF (Office quebecois de la langue francaise) examination",
+      "validityWindow": "Test result must be within 24 months of application to provincial/territorial program",
+      "possibleExemption": "If undergraduate/postgraduate training completed in an English- or French-speaking country, or majority of education/patient care was in English/French - exemption decided per program"
+    },
+    "keyDeadlineExample": {
+      "context": "2027 CaRMS R-1 Main Residency Match",
+      "deadline": "2026-10-16",
+      "requirement": "Submit MCCQE application + required documents by this date to obtain Identity Validity Period (IVP) before file review opens 2026-11-26"
+    }
+  },
+  "foreignCredentialRecognition": {
+    "note": "General program, not physician-specific - relevant prerequisite for any regulated occupation/compulsory trade, mentioned in this source as applicable to physicians too.",
+    "process": "Verifies foreign education/training/experience equivalence to Canadian standards for the profession/trade in the province/territory of intended practice; varies by occupation and jurisdiction.",
+    "tool": "Foreign Credential Recognition Tool - checks if an occupation is regulated/compulsory in a given province/territory and finds the relevant regulatory authority.",
+    "loans": {
+      "minCAD": 15000,
+      "maxCAD": 30000,
+      "purpose": "Licensing/qualifying exam fees, education/training programs, related costs"
+    },
+    "supportServices": [
+      "career counseling and planning",
+      "mentorship",
+      "job readiness workshops",
+      "job search assistance"
+    ],
+    "otherNewcomerServices": [
+      "Pre-arrival services (for approved PR applicants still outside Canada)",
+      "Newcomer/settlement services (post-arrival)",
+      "Job Bank (free government job-search resource)"
+    ]
+  },
+  "otherHealthcareWorkers": {
+    "note": "Non-physician healthcare workers may be eligible for different programs; Express Entry continues to invite candidates with other healthcare work experience via general/program-specific rounds (not the new physician-specific category)."
+  }
+}
