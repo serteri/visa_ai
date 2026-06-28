@@ -1,9 +1,13 @@
 {
   "country": "CA",
   "pathwayCovered": "Quebec-selected skilled workers - FEDERAL (IRCC) stage only",
+  "pathwayCovered_tr": "Quebec seçilmiş nitelikli işçiler - yalnızca FEDERAL (IRCC) aşaması",
+  "pathwayCovered_zh": "魁北克技术工人——仅联邦（IRCC）阶段",
   "lastVerified": "2026-06-28",
   "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Quebec-selected%20skilled%20workers/Quebec-selected%20skilled%20workers.pdf",
   "CRITICAL_STRUCTURAL_WARNING": "Bu dosya Kanada'nin diger pathway dosyalarindan (Express Entry, PNP, AIP, RCIP/FCIP) koklu sekilde farkli bir uyari tasiyor: BU SADECE IKI ASAMALI SURECIN IKINCI (federal/IRCC) ASAMASI. Quebec'in KENDI secim sureci (Certificat de selection du Quebec - CSQ alma; kendi puan tablosu - CRS degil; kendi portali - Arrima; muhtemelen kendi ucretleri ve isleme suresi) BU DOSYADA YOK ve henuz hic arastirilmadi/JSON'a dokulmedi. Bu sayfayi 'Quebec'e goc etmenin tam sureci' gibi sunmak YANLIS olur - kullanici once Quebec'ten CSQ almak zorunda, bu federal 11 ay/$1,590 asamasi CSQ alindiktan SONRA basliyor. Quebec'in kendi tarafi (QSWP/PSTQ, Arrima) tamamen ayri, henuz baslanmamis bir arastirma/entegrasyon isi.",
+  "CRITICAL_STRUCTURAL_WARNING_tr": "Bu dosya Kanada'nın diğer pathway dosyalarından (Express Entry, PNP, AIP, RCIP/FCIP) köklü biçimde farklı bir uyarı taşır: BU SADECE İKİ AŞAMALI SÜRECİN İKİNCİ (federal/IRCC) AŞAMASIDIR. Quebec'in kendi seçim süreci (Certificat de selection du Quebec - CSQ alma; kendi puan tablosu - CRS değil; kendi portalı - Arrima; muhtemelen kendi ücretleri ve işlem süresi) BU DOSYADA YOK ve henüz araştırılmadı/JSON'a dökülmedi. Bu sayfayı 'Quebec'e göç etmenin tam süreci' gibi sunmak YANLIŞ olur; kullanıcı önce Quebec'ten CSQ almak zorunda, bu federal 11 ay/$1,590 aşaması ise CSQ alındıktan SONRA başlıyor. Quebec'in kendi tarafı (QSWP/PSTQ, Arrima) tamamen ayrı ve ayrıca ele alınması gereken bir araştırma/entegrasyon işidir.",
+  "CRITICAL_STRUCTURAL_WARNING_zh": "此文件与加拿大其他路径文件（Express Entry、PNP、AIP、RCIP/FCIP）有根本不同的警告：这只是两阶段流程中的第二阶段（联邦阶段/IRCC）。魁北克自己的筛选流程（获取 Certificat de selection du Quebec - CSQ；自己的积分体系——不是 CRS；自己的门户——Arrima；以及可能不同的费用与处理时间）不在本文件中，且尚未研究/结构化入 JSON。把本页当作“移民魁北克的完整流程”是错误的：用户必须先获得魁北克 CSQ，之后才进入这里的联邦 11 个月/$1,590 阶段。魁北克端（QSWP/PSTQ、Arrima）是完全独立、尚待单独集成的工作。",
   "twoStageProcess": {
     "stage1_quebec": {
       "name": "Quebec Selection (Certificat de selection du Quebec - CSQ)",
@@ -22,9 +26,53 @@
       "fee": { "currency": "CAD", "from": 1590, "lastIncreaseDate": "2026-04-30" }
     }
   },
+  "twoStageProcess_tr": {
+    "stage1_quebec": {
+      "name": "Quebec Seçimi (Certificat de selection du Quebec - CSQ)",
+      "authority": "Ministere de l'Immigration, de la Francisation et de l'Integration (MIFI), Quebec Hükümeti",
+      "status": "HENÜZ BELGELENMEDİ - ayrı araştırma görevi gerekir (kendi puan tablosu, kendi Arrima portalı, kendi ücret/işlem süresi, federal CRS'den ayrı)",
+      "knownFacts": [
+        "2018'den beri MIFI CSQ yenilemiyor",
+        "CSQ teknik olarak süresi dolmuş olsa bile IRCC karar verene kadar federal başvuru amacıyla geçerli kalır"
+      ]
+    },
+    "stage2_federal_this_document": {
+      "name": "Federal Daimi Oturum Başvurusu (IRCC)",
+      "authority": "Immigration, Refugees and Citizenship Canada (IRCC)",
+      "prerequisite": "Başvuru öncesinde Quebec'ten geçerli CSQ sahibi olunmalı",
+      "processingTime": "11 ay (yalnızca IRCC işlemi - Quebec CSQ işlem süresi dahil değildir)",
+      "fee": { "currency": "CAD", "from": 1590, "lastIncreaseDate": "2026-04-30" }
+    }
+  },
+  "twoStageProcess_zh": {
+    "stage1_quebec": {
+      "name": "魁北克筛选阶段（Certificat de selection du Quebec - CSQ）",
+      "authority": "Ministere de l'Immigration, de la Francisation et de l'Integration (MIFI)，魁北克政府",
+      "status": "尚未文档化 - 需单独研究任务（独立积分体系、独立 Arrima 门户、独立费用/处理时间，与联邦 CRS 不同）",
+      "knownFacts": [
+        "自 2018 年起，MIFI 不再续发 CSQ",
+        "即使 CSQ 技术上过期，在 IRCC 作出决定前，联邦申请用途上仍然有效"
+      ]
+    },
+    "stage2_federal_this_document": {
+      "name": "联邦永久居留申请阶段（IRCC）",
+      "authority": "Immigration, Refugees and Citizenship Canada (IRCC)",
+      "prerequisite": "申请前必须已持有魁北克有效 CSQ",
+      "processingTime": "11 个月（仅 IRCC 处理 - 不含魁北克 CSQ 处理时间）",
+      "fee": { "currency": "CAD", "from": 1590, "lastIncreaseDate": "2026-04-30" }
+    }
+  },
   "eligibility": [
     "Hold a Quebec Selection Certificate (CSQ) from the Government of Quebec",
     "Submit a complete permanent residence application, including police certificates"
+  ],
+  "eligibility_tr": [
+    "Quebec Hükümeti'nden geçerli Quebec Seçim Sertifikası (CSQ) sahibi olmak",
+    "Polis sertifikaları dahil eksiksiz daimi oturum başvurusu sunmak"
+  ],
+  "eligibility_zh": [
+    "持有魁北克政府签发的有效 CSQ",
+    "提交完整的永久居留申请（含无犯罪证明）"
   ],
   "applicationProcess": {
     "mandatoryOnlineSince": "2022-09-23",
