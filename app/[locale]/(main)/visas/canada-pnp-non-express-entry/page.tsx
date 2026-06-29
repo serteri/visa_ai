@@ -159,6 +159,60 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
         ? "本指南存储于 Vercel Blob，并映射应用使用的官方 Canada.ca 流程快照。"
         : "This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app.",
   };
+  const trMap: Record<string, string> = {
+    "Photos (taken within 12 months, both sides scanned per portal instructions)": "Fotograflar (12 ay icinde cekilmis olmali; portal talimatina gore on/arka taranmali)",
+    "Confirmation of nomination from the province/territory (approval letter or official notice)": "Eyalet/bolge adaylik onayi (onay mektubu veya resmi bildirim)",
+    "Passport/travel document copies (regular passport only — diplomatic/official/service/public-affairs passports NOT valid)": "Pasaport/seyahat belgesi kopyalari (yalnizca normal pasaport; diplomatik/resmi/hizmet/kamu iliskileri pasaportlari gecersizdir)",
+    "Birth certificates (applicant + spouse/partner)": "Dogum belgeleri (basvuru sahibi + es/partner)",
+    "Marriage certificates, divorce/annulment certificates (all marriages if more than one)": "Evlilik, bosanma/iptal belgeleri (birden fazla evlilik varsa tumu)",
+    "Death certificates for former spouses (if applicable)": "Eski eslere ait olum belgeleri (uygunsa)",
+    "National ID / family registry book (if applicable)": "Ulusal kimlik / aile kayit defteri (uygunsa)",
+    "Common-law evidence: 12+ months cohabitation proof (joint bank statements, leases, utility bills) — required if claiming common-law status": "Fiili birliktelik kaniti: 12+ ay birlikte yasam belgesi (ortak banka hesap dokumu, kira sozlesmesi, fatura) — fiili birliktelik beyaninda zorunludur",
+    "Children's documents: birth certificates showing parents' names, custody proof, adoption papers (if applicable)": "Cocuk belgeleri: ebeveyn adlarini gosteren dogum belgeleri, velayet kaniti, evlat edinme evraklari (uygunsa)",
+    "Police certificate: required for every country (excl. Canada) where applicant lived 6+ consecutive months since age 18": "Adli sicil belgesi: 18 yasindan sonra 6+ ay kesintisiz yasanan her ulke icin gereklidir (Kanada haric)",
+    "meets eligibility criteria for the program": "program uygunluk kriterlerini karsilar",
+    "has funds to support self and family on arrival": "varista kendini ve ailesini destekleyecek maddi kaynaga sahiptir",
+    "admissible (medical exam, police certificate, background checks)": "kabul edilebilir durumdadir (saglik muayenesi, adli sicil, guvenlik/arka plan kontrolleri)",
+    "A provincial nomination does NOT itself grant permission to work in Canada. A separate work permit application is required to work while the PR application is processed.": "Eyalet adayligi tek basina Kanada'da calisma izni vermez. PR basvurusu islenirken calismak icin ayri bir calisma izni basvurusu gerekir.",
+    "Faster work permit processing available for physicians/healthcare specialists (clinical lab medicine, surgery, general practice/family medicine) with a full-time offer + a support letter from the nominating province/territory.": "Tam zamanli is teklifi ve aday gosteren eyalet/bolgeden destek mektubu olan doktorlar/saglik uzmanlari icin hizli calisma izni islemi mumkundur.",
+    "Available if applicant's existing work permit is about to expire while PR application is still processing.": "Basvuru sahibinin mevcut calisma izni, PR basvurusu halen islenirken bitmek uzereyse bu secenek kullanilabilir.",
+    "An immigration representative cannot open a portal account on the applicant's behalf, sign the application electronically, or log in using the applicant's credentials. They can fill forms and communicate via their own account.": "Gocmenlik temsilcisi basvuru sahibi adina portal hesabi acamaz, elektronik imza atamaz veya basvuru sahibinin giris bilgilerini kullanamaz. Formlari kendi hesabiyla doldurup iletisim kurabilir.",
+    "Get nominated by a province or territory": "Bir eyalet veya bolgeden adaylik alin",
+    "Get your documents ready": "Belgelerinizi hazirlayin",
+    "Apply for permanent residence": "Daimi oturum icin basvurun",
+    "After you apply": "Basvurudan sonra",
+    "Settling in Canada": "Kanada'ya yerlesme"
+  };
+  const zhMap: Record<string, string> = {
+    "Photos (taken within 12 months, both sides scanned per portal instructions)": "照片（须为 12 个月内拍摄，并按门户要求扫描正反面）",
+    "Confirmation of nomination from the province/territory (approval letter or official notice)": "省/地区提名确认（批准信或官方通知）",
+    "Passport/travel document copies (regular passport only — diplomatic/official/service/public-affairs passports NOT valid)": "护照/旅行证件复印件（仅普通护照有效；外交/公务/服务/公共事务护照无效）",
+    "Birth certificates (applicant + spouse/partner)": "出生证明（申请人 + 配偶/伴侣）",
+    "Marriage certificates, divorce/annulment certificates (all marriages if more than one)": "结婚证、离婚/婚姻撤销证明（如有多段婚姻需全部提供）",
+    "Death certificates for former spouses (if applicable)": "前配偶死亡证明（如适用）",
+    "National ID / family registry book (if applicable)": "国民身份证/户籍登记簿（如适用）",
+    "Common-law evidence: 12+ months cohabitation proof (joint bank statements, leases, utility bills) — required if claiming common-law status": "事实伴侣证明：12 个月以上同居证据（联名银行流水、租约、水电账单）——如申报事实伴侣身份则必须提供",
+    "Children's documents: birth certificates showing parents' names, custody proof, adoption papers (if applicable)": "子女文件：显示父母姓名的出生证明、监护权证明、收养文件（如适用）",
+    "Police certificate: required for every country (excl. Canada) where applicant lived 6+ consecutive months since age 18": "无犯罪证明：申请人 18 岁后在每个连续居住 6 个月以上国家都需提供（加拿大除外）",
+    "meets eligibility criteria for the program": "满足该项目资格条件",
+    "has funds to support self and family on arrival": "抵达后具备支持本人及家庭的资金能力",
+    "admissible (medical exam, police certificate, background checks)": "可被接纳（体检、无犯罪证明、背景调查）",
+    "A provincial nomination does NOT itself grant permission to work in Canada. A separate work permit application is required to work while the PR application is processed.": "省提名本身并不赋予在加拿大工作的许可。永久居留申请处理中如需工作，必须另行申请工签。",
+    "Faster work permit processing available for physicians/healthcare specialists (clinical lab medicine, surgery, general practice/family medicine) with a full-time offer + a support letter from the nominating province/territory.": "对持有全职工作邀约并附提名省/地区支持信的医生/医疗专业人员，可适用更快的工签处理。",
+    "Available if applicant's existing work permit is about to expire while PR application is still processing.": "如申请人现有工签在 PR 审理期间即将到期，可使用该选项。",
+    "An immigration representative cannot open a portal account on the applicant's behalf, sign the application electronically, or log in using the applicant's credentials. They can fill forms and communicate via their own account.": "移民代表不能代申请人开设门户账户、电子签字或使用申请人凭据登录。他们只能通过自己的账户填写表格并沟通。",
+    "Get nominated by a province or territory": "获得省或地区提名",
+    "Get your documents ready": "准备申请材料",
+    "Apply for permanent residence": "申请永久居留",
+    "After you apply": "提交申请后",
+    "Settling in Canada": "在加拿大安置"
+  };
+  const l = (value?: string) => {
+    if (!value) return "";
+    if (isTr) return trMap[value] ?? value;
+    if (isZh) return zhMap[value] ?? value;
+    return value;
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
@@ -302,8 +356,8 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                       {item.step}
                     </span>
                     <span>
-                      <span className="font-semibold text-slate-900 dark:text-white">{localizedField(item, "name")}</span>
-                      {localizedField(item, "description") ? <span className="block pt-1 text-slate-600 dark:text-slate-400">{localizedField(item, "description")}</span> : null}
+                        <span className="font-semibold text-slate-900 dark:text-white">{l(localizedField(item, "name"))}</span>
+                        {localizedField(item, "description") ? <span className="block pt-1 text-slate-600 dark:text-slate-400">{l(localizedField(item, "description"))}</span> : null}
                     </span>
                   </li>
                 ))}
@@ -326,6 +380,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                     <li key={item.form} className="flex gap-2">
                       <span className="text-emerald-600">•</span>
                       <span>{item.form} - {localizedField(item, "name")}</span>
+                      
                     </li>
                   ))}
                 </ul>
@@ -361,7 +416,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                   {supportingDocuments.map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="text-emerald-600">•</span>
-                      <span>{item}</span>
+                      <span>{l(item)}</span>
                     </li>
                   ))}
                 </ul>
@@ -385,12 +440,12 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                 {(pnp.afterApply?.decisionCriteria ?? []).map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
-                    <span>{item}</span>
+                    <span>{l(item)}</span>
                   </li>
                 ))}
                 {pnp.afterApply?.misrepresentationConsequence ? (
                   <li className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100">
-                    {pnp.afterApply.misrepresentationConsequence}
+                    {l(pnp.afterApply.misrepresentationConsequence)}
                   </li>
                 ) : null}
               </ul>
@@ -409,7 +464,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                 {pnpCaveats.map((item) => (
                   <li key={item.topic} className="flex gap-2">
                     <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
-                    <span>{item.text}</span>
+                    <span>{l(item.text)}</span>
                   </li>
                 ))}
               </ul>

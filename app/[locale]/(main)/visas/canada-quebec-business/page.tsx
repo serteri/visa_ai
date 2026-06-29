@@ -215,6 +215,14 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
     "Must pay Right of Permanent Residence Fee if not already paid before finalization": "Nihai karardan once odenmediyse Right of Permanent Residence Fee odenmelidir",
     "Letter explaining reason; reconsideration requires new application + meeting eligibility + admissibility": "Gerekceyi aciklayan ret mektubu gonderilir; yeniden degerlendirme icin yeni basvuru + uygunluk + kabul edilebilirlik kosullarinin saglanmasi gerekir",
     "Possible via webform; partial fee refund depending on processing stage": "Webform uzerinden mumkundur; iade tutari basvurunun asamasina gore degisir"
+    ,"within 5 years preceding application submission": "basvuru tarihinden onceki 5 yil icinde"
+    ,"5 years": "5 yil"
+    ,"Level 7 on the Echelle quebecoise des niveaux de competence en francais": "Quebec Fransizca yeterlilik olceginde Seviye 7"
+    ,"Communaute metropolitaine de Montreal (Montreal Metropolitan Community)": "Communaute metropolitaine de Montreal (Montreal Buyuksehir Toplulugu)"
+    ,"30 days from Biometric Instruction Letter (BIL)": "Biyometri Talimat Mektubu'ndan (BIL) itibaren 30 gun"
+    ,"applicant + partner + children": "basvuru sahibi + partner/es + cocuklar"
+    ,"Unlike the previous skilled-worker file, this file includes Quebec-side selection criteria in detail; see the subStreams section below.": "Onceki skilled-worker dosyasindan farkli olarak bu dosya Quebec tarafindaki secim kriterlerini ayrintili verir; asagidaki alt-akislar bolumune bakin."
+    ,"Bu uc alt-akimin 'Show more' detaylari bu kaynakta acilmamis/kapsanmamis - ayri bir kaynaktan arastirilmasi gerekiyor.": "Bu uc alt-akisin ayrintili 'Daha fazla goster' verileri bu kaynakta acilmamis; ayri bir kaynaktan tamamlanmasi gerekir."
   };
   const zhMap: Record<string, string> = {
     "Payday loans, cheque cashing, or pledge loans": "发薪日贷款、支票兑现或质押贷款业务",
@@ -252,6 +260,14 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
     "Must pay Right of Permanent Residence Fee if not already paid before finalization": "若在最终审理前尚未支付，必须补缴永久居民权利费",
     "Letter explaining reason; reconsideration requires new application + meeting eligibility + admissibility": "会收到说明原因的拒签信；重新审理需提交新申请并满足资格与可入境要求",
     "Possible via webform; partial fee refund depending on processing stage": "可通过 webform 撤回；是否部分退费取决于处理阶段"
+    ,"within 5 years preceding application submission": "在提交申请前 5 年内"
+    ,"5 years": "5 年"
+    ,"Level 7 on the Echelle quebecoise des niveaux de competence en francais": "魁北克法语能力等级量表 7 级"
+    ,"Communaute metropolitaine de Montreal (Montreal Metropolitan Community)": "蒙特利尔都会区共同体（CMM）"
+    ,"30 days from Biometric Instruction Letter (BIL)": "自收到生物识别通知信（BIL）起 30 天内"
+    ,"applicant + partner + children": "申请人 + 伴侣/配偶 + 子女"
+    ,"Unlike the previous skilled-worker file, this file includes Quebec-side selection criteria in detail; see the subStreams section below.": "与前一个 skilled-worker 文件不同，本文件详细覆盖了魁北克侧筛选标准；请见下方子通道部分。"
+    ,"Bu uc alt-akimin 'Show more' detaylari bu kaynakta acilmamis/kapsanmamis - ayri bir kaynaktan arastirilmasi gerekiyor.": "该来源未展开这三个子通道的“更多详情”，需要从其他来源补充研究。"
   };
   const l = (value?: string) => {
     if (!value) return "";
@@ -293,7 +309,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.stage1}</p>
                     <p className="mt-1 font-semibold text-slate-900 dark:text-white">{localizedTwoStage?.stage1_quebec?.authority}</p>
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{ui.outcome}: {localizedTwoStage?.stage1_quebec?.outcome}</p>
-                    <p className="mt-1 text-xs text-slate-500">{localizedTwoStage?.stage1_quebec?.note ?? "Unlike the previous skilled-worker file, this file includes Quebec-side selection criteria in detail; see the subStreams section below."}</p>
+                    <p className="mt-1 text-xs text-slate-500">{l(localizedTwoStage?.stage1_quebec?.note ?? "Unlike the previous skilled-worker file, this file includes Quebec-side selection criteria in detail; see the subStreams section below.")}</p>
                   </div>
                   <div className="flex justify-center text-slate-400">
                     <ArrowRight className="h-5 w-5" />
@@ -338,7 +354,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
               {(data.ineligibleSectorsGeneral ?? []).map((item) => (
-                <p key={item}>- {item}</p>
+                <p key={item}>- {l(item)}</p>
               ))}
             </CardContent>
           </Card>
@@ -382,7 +398,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-amber-900 dark:text-amber-100">
               <p className="font-semibold">{ui.entrepreneurDetailsSoon}</p>
-              <p>{entrepreneur?.note}</p>
+              <p>{l(entrepreneur?.note)}</p>
               <ul className="space-y-2">
                 {(entrepreneur?.subStreamsNamedOnly_notDetailedInSource ?? []).map((stream) => (
                   <li key={stream.id}>
