@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
+import { sanitizeLocaleContent } from "@/lib/i18n/sanitize-locale-content";
 import pilotData from "@/src/data/countries/ca/rural-francophone-pilots.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -91,7 +92,7 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
   const { locale } = await params;
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
 
-  const data = pilotData as SharedData;
+  const data = sanitizeLocaleContent(pilotData as SharedData, locale) as SharedData;
   const rcip = (data.pilots ?? []).find((pilot) => pilot.id === "rural_community_immigration_pilot");
   const overlapCommunities = ["Sudbury, ON", "Timmins, ON"];
   const ui = {
