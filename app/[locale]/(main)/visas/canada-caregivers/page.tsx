@@ -160,6 +160,56 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
   const pdfUrls = data.pdfSnapshotUrls ?? [];
 
   const lang = isTr ? "tr" : isZh ? "zh-Hans" : "en";
+  const trMap: Record<string, string> = {
+    "TFWP / LMIA-based": "TFWP / LMIA tabanli",
+    "Pilot Programs Closed; TFWP (LMIA) Open": "Pilot Programlar Kapali; TFWP (LMIA) Acik",
+    "Work Permit fees vary; LMIA processing fees apply per application.": "Calisma izni ucretleri degisir; LMIA islem ucretleri her basvuru icin ayrica uygulanir.",
+    "Varies by LMIA approval and work permit stream.": "LMIA onayi ve calisma izni akimina gore degisir.",
+    "Federal caregiver pilot programs (Home Child Care Provider/Support Worker) are CLOSED as of June 2024. New caregivers must now enter through the Temporary Foreign Worker Program (TFWP) with a positive Labour Market Impact Assessment (LMIA).": "Federal bakici pilot programlari (Home Child Care Provider/Support Worker) Haziran 2024 itibariyla KAPALIDIR. Yeni bakicilar artik pozitif Labour Market Impact Assessment (LMIA) ile Temporary Foreign Worker Program (TFWP) uzerinden basvurur.",
+    "Outside Canada: Only if working in Quebec.": "Kanada disindan: Yalnizca Quebec'te calisacaksa.",
+    "Inside Canada: If you have a valid study/work permit OR are allowed to work without a permit.": "Kanada icinden: Gecerli ogrenci/calisma izniniz varsa VEYA izinsiz calisma hakkiniz varsa.",
+    "Quebec-bound workers may apply from inside Canada if eligible.": "Quebec'e gidecek calisanlar uygunluk varsa Kanada icinden basvurabilir.",
+    "Applying from outside Canada (excluding Quebec).": "Kanada disindan basvuru (Quebec haric).",
+    "Applying at a port of entry.": "Sinir giris noktasinda basvuru.",
+    "Currently in Canada as a visitor (with limited exceptions).": "Su anda Kanada'da ziyaretci statusunde olmak (sinirli istisnalar disinda).",
+    "Employer must advertise the position for 4 weeks (high-wage) or 8 weeks (low-wage) to prove no Canadians are available.": "Isveren, Kanadali aday bulunamadigini gostermek icin pozisyonu 4 hafta (yuksek ucret) veya 8 hafta (dusuk ucret) ilan etmelidir.",
+    "Must use 'LMIA Online' with a Job Bank for Employers account.": "Isveren hesabiyla Job Bank uzerinden 'LMIA Online' kullanilmalidir.",
+    "Must file simultaneously with MIFI (CAQ) and Service Canada (LMIA) for periods over 30 days.": "30 gunden uzun sureler icin MIFI (CAQ) ve Service Canada (LMIA) basvurulari es zamanli yapilmalidir.",
+    "Only for those who already submitted applications to the now-closed pilots.": "Yalnizca artik kapali olan pilotlara daha once basvuru yapmis kisiler icindir.",
+    "Schedule 19b: Home Child Care Provider or Home Support Worker – Work Experience form [IMM 5910].": "Schedule 19b: Home Child Care Provider veya Home Support Worker – Work Experience formu [IMM 5910].",
+    "T4 tax slips and Notice of Assessment (NOA) (Must mask SIN).": "T4 vergi dokumleri ve Notice of Assessment (NOA) (SIN bilgisi maskelenmelidir).",
+    "Detailed Reference Letters: Start/end dates, NOC code, duties, salary/hours, employer contact/signature/letterhead.": "Detayli referans mektuplari: baslangic/bitis tarihleri, NOC kodu, gorevler, maas/saat, isveren iletisim/imza/antet.",
+    "Proof of payment: Bank deposits, pay stubs, work contracts, ROEs.": "Odeme kaniti: banka yatirimlari, maas bordrolari, is sozlesmeleri, ROE belgeleri.",
+    "Must be sent via Web Form. Naming convention: 'Proof of experience - #'. Max size 2MB per file (3.5MB total). Use E-number (not W-number) for PR applications.": "Web Form uzerinden gonderilmelidir. Dosya adlandirmasi: 'Proof of experience - #'. Dosya basi en fazla 2MB (toplam 3.5MB). PR basvurularinda W numarasi yerine E numarasi kullanin."
+  };
+  const zhMap: Record<string, string> = {
+    "TFWP / LMIA-based": "基于 TFWP / LMIA",
+    "Pilot Programs Closed; TFWP (LMIA) Open": "试点项目已关闭；TFWP（LMIA）开放中",
+    "Work Permit fees vary; LMIA processing fees apply per application.": "工签费用因情况而异；每份申请均需支付 LMIA 处理费。",
+    "Varies by LMIA approval and work permit stream.": "取决于 LMIA 审批及工签类别。",
+    "Federal caregiver pilot programs (Home Child Care Provider/Support Worker) are CLOSED as of June 2024. New caregivers must now enter through the Temporary Foreign Worker Program (TFWP) with a positive Labour Market Impact Assessment (LMIA).": "联邦护理人员试点（家庭儿童护理提供者/家庭支持工作者）自 2024 年 6 月起已关闭。新申请人现须通过获得正面劳动力市场影响评估（LMIA）的临时外国工人计划（TFWP）进入。",
+    "Outside Canada: Only if working in Quebec.": "加拿大境外：仅限在魁北克工作的申请人。",
+    "Inside Canada: If you have a valid study/work permit OR are allowed to work without a permit.": "加拿大境内：持有有效学习/工作许可，或依法可无需许可工作。",
+    "Quebec-bound workers may apply from inside Canada if eligible.": "如符合条件，赴魁北克工作者可在加拿大境内申请。",
+    "Applying from outside Canada (excluding Quebec).": "从加拿大境外申请（魁北克除外）。",
+    "Applying at a port of entry.": "在入境口岸申请。",
+    "Currently in Canada as a visitor (with limited exceptions).": "当前以访客身份在加拿大（少数例外除外）。",
+    "Employer must advertise the position for 4 weeks (high-wage) or 8 weeks (low-wage) to prove no Canadians are available.": "雇主须发布职位广告 4 周（高薪）或 8 周（低薪），以证明无加拿大本地候选人可用。",
+    "Must use 'LMIA Online' with a Job Bank for Employers account.": "必须使用雇主 Job Bank 账户通过 'LMIA Online' 提交。",
+    "Must file simultaneously with MIFI (CAQ) and Service Canada (LMIA) for periods over 30 days.": "工作期超过 30 天时，须同时向 MIFI（CAQ）与 Service Canada（LMIA）提交申请。",
+    "Only for those who already submitted applications to the now-closed pilots.": "仅适用于已向现已关闭试点提交过申请的人士。",
+    "Schedule 19b: Home Child Care Provider or Home Support Worker – Work Experience form [IMM 5910].": "Schedule 19b：家庭儿童护理提供者或家庭支持工作者—工作经验证明表 [IMM 5910]。",
+    "T4 tax slips and Notice of Assessment (NOA) (Must mask SIN).": "T4 税单与评税通知（NOA）（须遮盖 SIN）。",
+    "Detailed Reference Letters: Start/end dates, NOC code, duties, salary/hours, employer contact/signature/letterhead.": "详细推荐信：起止日期、NOC 代码、职责、薪资/工时、雇主联系方式/签名/抬头纸。",
+    "Proof of payment: Bank deposits, pay stubs, work contracts, ROEs.": "付款证明：银行入账记录、工资单、劳动合同、ROE。",
+    "Must be sent via Web Form. Naming convention: 'Proof of experience - #'. Max size 2MB per file (3.5MB total). Use E-number (not W-number) for PR applications.": "必须通过 Web Form 提交。命名规则：'Proof of experience - #'。每个文件最大 2MB（总计 3.5MB）。PR 申请请使用 E 编号（非 W 编号）。"
+  };
+  const l = (value?: string) => {
+    if (!value) return "";
+    if (isTr) return trMap[value] ?? value;
+    if (isZh) return zhMap[value] ?? value;
+    return value;
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 pb-20 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
@@ -198,7 +248,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100">Canada</Badge>
                   <Badge className="bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-100">
-                    TFWP / LMIA-based
+                    {l("TFWP / LMIA-based")}
                   </Badge>
                 </div>
 
@@ -218,18 +268,18 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
                     <DollarSign className="h-4 w-4 text-rose-600" />
                     {isTr ? "Ücret" : isZh ? "费用" : "Fee"}
                   </div>
-                  <p className="mt-2 text-sm font-bold leading-6 text-slate-950 dark:text-white">{data.fees}</p>
+                  <p className="mt-2 text-sm font-bold leading-6 text-slate-950 dark:text-white">{l(data.fees)}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
                     <Clock3 className="h-4 w-4 text-rose-600" />
                     {isTr ? "İşlem süresi" : isZh ? "处理时间" : "Processing time"}
                   </div>
-                  <p className="mt-2 text-sm font-bold leading-6 text-slate-950 dark:text-white">{data.processing_time}</p>
+                  <p className="mt-2 text-sm font-bold leading-6 text-slate-950 dark:text-white">{l(data.processing_time)}</p>
                 </div>
               </div>
 
-              <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">{data.overview}</p>
+              <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">{l(data.overview)}</p>
 
               <div className="flex flex-wrap gap-3">
                 <Link href={`/${locale}/full-check?country=CA`}>
@@ -251,19 +301,19 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {isTr ? "Ücret" : isZh ? "费用" : "Fee"}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{data.fees}</p>
+                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.fees)}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {isTr ? "İşlem süresi" : isZh ? "处理时间" : "Processing time"}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{data.processing_time}</p>
+                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.processing_time)}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {isTr ? "Durum" : isZh ? "状态" : "Status"}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{data.status}</p>
+                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.status)}</p>
               </div>
             </CardContent>
           </Card>
@@ -274,8 +324,8 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
       <section className="mx-auto max-w-6xl px-4 pb-6 sm:px-6 lg:px-8">
         <VisaPdfDownloadCard
           pdfUrls={pdfUrls}
-          description="This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app."
-          title="Home Care Workers & Caregivers (TFWP) - Official Guide (PDF)"
+          description={isTr ? "Bu rehber Vercel Blob'da saklanir ve uygulamanin kullandigi resmi Canada.ca surec goruntusunu yansitir." : isZh ? "本指南存储在 Vercel Blob 中，并映射应用使用的官方 Canada.ca 流程快照。" : "This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app."}
+          title={isTr ? "Ev Bakim Iscileri ve Bakicilar (TFWP) - Resmi Rehber (PDF)" : isZh ? "家庭护理工作者与护理人员（TFWP）- 官方指南（PDF）" : "Home Care Workers & Caregivers (TFWP) - Official Guide (PDF)"}
           primaryLabel={isTr ? "PDF'yi Aç" : isZh ? "打开 PDF" : "Open PDF"}
           sourceLabel={visitOfficialWebsiteLabel}
         />
@@ -300,7 +350,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
                   {(requirements.who_can_apply ?? []).map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
-                      <span>{item}</span>
+                      <span>{l(item)}</span>
                     </li>
                   ))}
                 </ul>
@@ -315,7 +365,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
                   {(requirements.who_cannot_apply ?? []).map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
-                      <span>{item}</span>
+                      <span>{l(item)}</span>
                     </li>
                   ))}
                 </ul>
@@ -335,19 +385,19 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {isTr ? "Adım 1 — İlan / İşe alım" : isZh ? "步骤一 — 招聘广告" : "Step 1 — Recruitment advertising"}
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{lmiaProcess.recruitment}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{l(lmiaProcess.recruitment)}</p>
               </div>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {isTr ? "Adım 2 — Başvuru yöntemi" : isZh ? "步骤二 — 申请方式" : "Step 2 — Application method"}
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{lmiaProcess.application_method}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{l(lmiaProcess.application_method)}</p>
               </div>
               <div className="rounded-xl border border-sky-200 bg-sky-50 p-4 dark:border-sky-500/20 dark:bg-sky-500/10">
                 <p className="text-sm font-semibold text-sky-900 dark:text-sky-100">
                   {isTr ? "Quebec'e özel" : isZh ? "魁北克特别说明" : "Quebec-specific"}
                 </p>
-                <p className="mt-1 text-sm leading-6 text-sky-900 dark:text-sky-100">{lmiaProcess.quebec_specific}</p>
+                <p className="mt-1 text-sm leading-6 text-sky-900 dark:text-sky-100">{l(lmiaProcess.quebec_specific)}</p>
               </div>
             </CardContent>
           </Card>
@@ -388,7 +438,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            <p className="text-sm leading-6 text-amber-900 dark:text-amber-100">{proofOfExperience.scope}</p>
+            <p className="text-sm leading-6 text-amber-900 dark:text-amber-100">{l(proofOfExperience.scope)}</p>
 
             <div>
               <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">
@@ -398,7 +448,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
                 {(proofOfExperience.documentation ?? []).map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
-                    <span>{item}</span>
+                    <span>{l(item)}</span>
                   </li>
                 ))}
               </ul>
@@ -408,7 +458,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
               <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">
                 {isTr ? "Web Form gönderim protokolü" : isZh ? "Web Form 提交规则" : "Web Form submission protocol"}
               </p>
-              <p className="mt-2 text-sm leading-6 text-amber-900 dark:text-amber-100">{proofOfExperience.submission_protocol}</p>
+              <p className="mt-2 text-sm leading-6 text-amber-900 dark:text-amber-100">{l(proofOfExperience.submission_protocol)}</p>
             </div>
           </CardContent>
         </Card>
