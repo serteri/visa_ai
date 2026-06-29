@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
-import { sanitizeLocaleContent } from "@/lib/i18n/sanitize-locale-content";
 import quebecData from "@/src/data/countries/ca/quebec-selected-skilled-workers.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -132,7 +131,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
   const { locale } = await params;
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
   const localeKind = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh" : "en";
-  const data = sanitizeLocaleContent(quebecData as QuebecFederalData, locale) as QuebecFederalData;
+  const data = quebecData as QuebecFederalData;
   const ui = {
     back: locale === "tr" ? "Kanada vizelerine don" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
     check: locale === "tr" ? "Uygunlugunu kontrol et" : locale === "zh-Hans" ? "检查你的资格" : "Check your eligibility",

@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
-import { sanitizeLocaleContent } from "@/lib/i18n/sanitize-locale-content";
 import visaDetails from "@/src/data/visa-details.json";
 
 type PageProps = {
@@ -177,10 +176,9 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const { locale, subclass } = await params;
   const translations = await getTranslations(locale as Locale);
   const normalizedSubclass = normalizeSubclass(subclass);
-  const rawVisa = getVisaDetail(normalizedSubclass);
+  const visa = getVisaDetail(normalizedSubclass);
 
-  if (!rawVisa) notFound();
-  const visa = sanitizeLocaleContent(rawVisa, locale) as VisaDetail;
+  if (!visa) notFound();
 
   const visaName = t(translations, `visas.visa${normalizedSubclass}name`, getLocalizedVisaName(visa, locale));
   const visaDescription = t(translations, `visas.visa${normalizedSubclass}desc`, getLocalizedVisaDescription(visa, locale));

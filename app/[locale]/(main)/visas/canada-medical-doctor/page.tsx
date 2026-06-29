@@ -16,7 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
-import { sanitizeLocaleContent } from "@/lib/i18n/sanitize-locale-content";
 import physicianData from "@/src/data/countries/ca/occupation-overlays/physician.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -120,7 +119,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
   const { locale } = await params;
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
 
-  const data = sanitizeLocaleContent(physicianData as PhysicianData, locale) as PhysicianData;
+  const data = physicianData as PhysicianData;
   const ui = {
     back: locale === "tr" ? "Kanada vizelerine dön" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
     overlay: locale === "tr" ? "Meslek Overlay" : locale === "zh-Hans" ? "职业 Overlay" : "Occupation Overlay",

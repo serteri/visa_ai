@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
-import { sanitizeLocaleContent } from "@/lib/i18n/sanitize-locale-content";
 import visaDetails from "@/src/data/visa-details.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -138,7 +137,7 @@ function ProviderTable({ providers }: { providers: AipProvider[] }) {
 export default async function AtlanticImmigrationProgramPage({ params }: PageProps) {
   const { locale } = await params;
   const translations = await getTranslations(locale as Locale);
-  const aipData = sanitizeLocaleContent(rawAipData, locale) as AipData;
+  const aipData = rawAipData;
 
   const backToVisasLabel = t(translations, "visas.backToVisas", "Back to visas");
   const checkEligibilityLabel = t(translations, "visas.checkEligibility", "Check your eligibility");

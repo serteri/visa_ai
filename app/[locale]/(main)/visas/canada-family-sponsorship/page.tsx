@@ -20,7 +20,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
-import { sanitizeLocaleContent } from "@/lib/i18n/sanitize-locale-content";
 import visaDetails from "@/src/data/visa-details.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -121,7 +120,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
   const translations = await getTranslations(locale as Locale);
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
-  const data = sanitizeLocaleContent(getData(), locale) as FamilySponsorshipData;
+  const data = getData();
 
   const title = isTr
     ? "Kanada Aile Sponsorluğu (Eş, Partner veya Çocuk)"

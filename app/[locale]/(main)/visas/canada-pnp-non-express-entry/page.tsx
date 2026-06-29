@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
-import { sanitizeLocaleContent } from "@/lib/i18n/sanitize-locale-content";
 import pnpProcessData from "@/src/data/countries/ca/pnp-non-express-process.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -56,7 +55,7 @@ function t(translations: Record<string, unknown>, key: string, defaultValue?: st
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const translations = await getTranslations(locale as Locale);
-  const pnp = sanitizeLocaleContent(pnpProcessData as PnpProcessData, locale) as PnpProcessData;
+  const pnp = pnpProcessData as PnpProcessData;
   const title = `${t(translations, "visas.officialInfo", "Canada PNP Non-Express Entry")} | LogiVisa`;
 
   return {
@@ -77,7 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps) {
   const { locale } = await params;
   const translations = await getTranslations(locale as Locale);
-  const pnp = sanitizeLocaleContent(pnpProcessData as PnpProcessData, locale) as PnpProcessData;
+  const pnp = pnpProcessData as PnpProcessData;
 
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
   const isTr = locale === "tr";

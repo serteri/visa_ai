@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
-import { sanitizeLocaleContent } from "@/lib/i18n/sanitize-locale-content";
 import businessData from "@/src/data/countries/ca/quebec-investors-entrepreneurs-self-employed.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -95,7 +94,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
   const { locale } = await params;
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
-  const data = sanitizeLocaleContent(businessData as BusinessData, locale) as BusinessData;
+  const data = businessData as BusinessData;
   const ui = {
     back: locale === "tr" ? "Kanada vizelerine don" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
     check: locale === "tr" ? "Uygunlugunu kontrol et" : locale === "zh-Hans" ? "检查你的资格" : "Check your eligibility",
@@ -180,6 +179,86 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
   const investor = data.subStreams?.investor?.conditions;
   const entrepreneur = data.subStreams?.entrepreneur;
   const selfEmployed = data.subStreams?.selfEmployedPerson?.conditions;
+  const trMap: Record<string, string> = {
+    "Payday loans, cheque cashing, or pledge loans": "Maas-gunu kredileri, cek bozma veya rehin temelli kredi faaliyetleri",
+    "Production, distribution, or sale of pornographic/sexually-explicit products or sex-industry services (nude/erotic dancing, escort services, erotic massage)": "Pornografik/acik cinsel urunlerin veya seks-endustrisi hizmetlerinin (ciplak/erotik dans, eskort hizmeti, erotik masaj) uretimi, dagitimi veya satisi",
+    "Innovative business": "Yenilikci isletme",
+    "Start up an innovative business or carry out an innovative project with support of an accompanying organization": "Bir destek kurulusunun esliginde yenilikci bir isletme kurmak veya yenilikci bir proje yurütmek",
+    "Business startup": "Isletme kurulumu",
+    "Start a business or operate a business already started": "Yeni bir isletme kurmak veya daha once kurulmus bir isletmeyi isletmek",
+    "Takeover": "Devralma",
+    "Take over or operate an acquired business with assistance of a support organization": "Bir destek kurulusunun yardimiyla devralinan bir isletmeyi devralmak veya isletmek",
+    "Find NOC code via Qualifications Quebec website (French only)": "Qualifications Quebec sitesi uzerinden NOC kodunu bulun (yalnizca Fransizca)",
+    "Check if profession is on the Liste des professions reglementees (Ministere's regulated professions list, PDF)": "Meslegin Liste des professions reglementees (Bakanligin duzenlenmis meslekler listesi, PDF) icinde olup olmadigini kontrol edin",
+    "If regulated: find practice conditions via Qualifications Quebec site or the profession's Quebec regulatory body directly": "Meslek duzenlenmisse: uygulama kosullarini Qualifications Quebec sitesi veya meslegin Quebec duzenleyici kurumu uzerinden ogrenin",
+    "Obtain authorization or recognition document from the relevant regulatory authority": "Ilgili duzenleyici kurumdan yetkilendirme veya denklik/tanima belgesi alin",
+    "Generic Application Form for Canada": "Kanada Genel Basvuru Formu",
+    "Schedule A - Background/Declaration": "Schedule A - Gecmis/Beyan",
+    "Additional Family Information": "Ek Aile Bilgileri",
+    "Supplementary Information - Your travels": "Ek Bilgi - Seyahatleriniz",
+    "Declaration of Intent to Reside in Quebec - Economic Classes": "Quebec'te Ikamet Niyeti Beyani - Ekonomik Siniflar",
+    "Business Immigrants - Investors and entrepreneurs": "Is Gocmeni - Yatirimcilar ve Girisimciler",
+    "Business Immigrants - Self-employed persons": "Is Gocmeni - Serbest Meslek Sahipleri",
+    "Document Checklist - Investors and entrepreneurs": "Belge Kontrol Listesi - Yatirimcilar ve Girisimciler",
+    "Document Checklist - Self-employed persons": "Belge Kontrol Listesi - Serbest Meslek Sahipleri",
+    "Statutory Declaration of Common-law Union": "Fiili Birliktelik Yasal Beyani",
+    "Separation Declaration for Minors Travelling to Canada": "Kanada'ya Seyahat Eden Kucukler Icin Ayrilik Beyani",
+    "If common-law partner, plus 12+ months cohabitation proof": "Fiili birliktelik varsa, ek olarak 12+ ay birlikte yasam kaniti",
+    "If minor immigrating without both parents/guardians": "Kucuk, her iki ebeveyn/vasi olmadan goc ediyorsa",
+    "Non-accompanying parent/guardian must sign in front of a notary public - stricter than the standard hand-signature requirement seen elsewhere": "Eslik etmeyen ebeveyn/vasi noterde imzalamalidir - diger sayfalardaki standart islak imza kosulundan daha siktir",
+    "Travel documents/passport (regular passport only, NOT diplomatic/official/service/public-affairs) for applicant + spouse + dependent children": "Basvuru sahibi + es/partner + bagimli cocuklar icin seyahat belgesi/pasaport (yalnizca normal pasaport; diplomatik/resmi/hizmet/kamu iliskileri pasaportlari gecersiz)",
+    "Visa copy if living outside passport-issuing country": "Pasaportu veren ulke disinda yasaniyorsa vize kopyasi",
+    "Identity/civil status docs: birth certificates, name/DOB change documents, marriage/divorce/annulment certificates (all marriages if multiple), death certificate for former spouse if applicable, national ID/family registry": "Kimlik/medeni durum belgeleri: dogum belgeleri, ad/dogum tarihi degisiklik belgeleri, evlilik/bosanma/iptal belgeleri (birden fazla evlilik varsa tumu), eski es icin olum belgesi (varsa), ulusal kimlik/aile kayit defteri",
+    "Police certificate per country lived in 6+ months since age 18 (valid ~1 year from issue)": "18 yasindan sonra 6+ ay yasanan her ulke icin adli sicil belgesi (duzenleme tarihinden itibaren yaklasik 1 yil gecerli)",
+    "Photo(s) for applicant + all family members, not older than 6 months": "Basvuru sahibi + tum aile uyeleri icin fotograf(lar), 6 aydan eski olmamali",
+    "Certificat de selection du Quebec (CSQ) - issued by MIFI; remains valid for federal purposes until IRCC decision even if technically expired; MIFI stopped renewing CSQs as of 2018": "Certificat de selection du Quebec (CSQ) - MIFI tarafindan verilir; teknik olarak suresi dolsa bile IRCC kararina kadar federal asamada gecerli kalir; MIFI 2018'den beri CSQ yenilememektedir",
+    "Must pay Right of Permanent Residence Fee if not already paid before finalization": "Nihai karardan once odenmediyse Right of Permanent Residence Fee odenmelidir",
+    "Letter explaining reason; reconsideration requires new application + meeting eligibility + admissibility": "Gerekceyi aciklayan ret mektubu gonderilir; yeniden degerlendirme icin yeni basvuru + uygunluk + kabul edilebilirlik kosullarinin saglanmasi gerekir",
+    "Possible via webform; partial fee refund depending on processing stage": "Webform uzerinden mumkundur; iade tutari basvurunun asamasina gore degisir"
+  };
+  const zhMap: Record<string, string> = {
+    "Payday loans, cheque cashing, or pledge loans": "发薪日贷款、支票兑现或质押贷款业务",
+    "Production, distribution, or sale of pornographic/sexually-explicit products or sex-industry services (nude/erotic dancing, escort services, erotic massage)": "色情/露骨性内容产品或性产业服务（裸体/情色舞蹈、陪同服务、情色按摩）的生产、分发或销售",
+    "Innovative business": "创新型企业",
+    "Start up an innovative business or carry out an innovative project with support of an accompanying organization": "在支持机构协助下创建创新型企业或开展创新项目",
+    "Business startup": "企业创办",
+    "Start a business or operate a business already started": "创办新企业或运营已成立企业",
+    "Takeover": "企业接管",
+    "Take over or operate an acquired business with assistance of a support organization": "在支持机构协助下接管或运营已收购企业",
+    "Find NOC code via Qualifications Quebec website (French only)": "通过 Qualifications Quebec 网站查找 NOC 代码（仅法语）",
+    "Check if profession is on the Liste des professions reglementees (Ministere's regulated professions list, PDF)": "检查该职业是否在 Liste des professions reglementees（部委受监管职业名单，PDF）中",
+    "If regulated: find practice conditions via Qualifications Quebec site or the profession's Quebec regulatory body directly": "若为受监管职业：通过 Qualifications Quebec 网站或该职业在魁北克的监管机构查询执业条件",
+    "Obtain authorization or recognition document from the relevant regulatory authority": "从相关监管机构取得执业授权或资格认可文件",
+    "Generic Application Form for Canada": "加拿大通用申请表",
+    "Schedule A - Background/Declaration": "附表A - 背景/声明",
+    "Additional Family Information": "补充家庭信息",
+    "Supplementary Information - Your travels": "补充信息 - 您的旅行记录",
+    "Declaration of Intent to Reside in Quebec - Economic Classes": "魁北克居住意向声明 - 经济类",
+    "Business Immigrants - Investors and entrepreneurs": "商业移民 - 投资者与企业家",
+    "Business Immigrants - Self-employed persons": "商业移民 - 自雇人士",
+    "Document Checklist - Investors and entrepreneurs": "材料清单 - 投资者与企业家",
+    "Document Checklist - Self-employed persons": "材料清单 - 自雇人士",
+    "Statutory Declaration of Common-law Union": "事实同居法定声明",
+    "Separation Declaration for Minors Travelling to Canada": "未成年人赴加拿大分离声明",
+    "If common-law partner, plus 12+ months cohabitation proof": "如为事实伴侣，需额外提供 12 个月以上同居证明",
+    "If minor immigrating without both parents/guardians": "若未成年人并非由双亲/监护人同时随行移民",
+    "Non-accompanying parent/guardian must sign in front of a notary public - stricter than the standard hand-signature requirement seen elsewhere": "未随行父母/监护人须在公证人面前签字 - 比其他页面常见的手签要求更严格",
+    "Travel documents/passport (regular passport only, NOT diplomatic/official/service/public-affairs) for applicant + spouse + dependent children": "主申请人 + 配偶/伴侣 + 受抚养子女的旅行证件/护照（仅普通护照；外交/公务/服务/公共事务护照无效）",
+    "Visa copy if living outside passport-issuing country": "如居住在护照签发国之外，需提供签证复印件",
+    "Identity/civil status docs: birth certificates, name/DOB change documents, marriage/divorce/annulment certificates (all marriages if multiple), death certificate for former spouse if applicable, national ID/family registry": "身份/民事状态文件：出生证明、姓名/出生日期变更文件、结婚/离婚/婚姻撤销证明（如有多次婚姻需全部提供）、前配偶死亡证明（如适用）、国民身份证/户籍登记",
+    "Police certificate per country lived in 6+ months since age 18 (valid ~1 year from issue)": "18 岁后每个连续居住 6 个月以上国家的无犯罪证明（签发后约 1 年有效）",
+    "Photo(s) for applicant + all family members, not older than 6 months": "主申请人及全部家庭成员照片，拍摄时间不得超过 6 个月",
+    "Certificat de selection du Quebec (CSQ) - issued by MIFI; remains valid for federal purposes until IRCC decision even if technically expired; MIFI stopped renewing CSQs as of 2018": "魁北克甄选证书（CSQ）由 MIFI 签发；即使技术上过期，在 IRCC 作出决定前联邦阶段仍可使用；MIFI 自 2018 年起不再续签 CSQ",
+    "Must pay Right of Permanent Residence Fee if not already paid before finalization": "若在最终审理前尚未支付，必须补缴永久居民权利费",
+    "Letter explaining reason; reconsideration requires new application + meeting eligibility + admissibility": "会收到说明原因的拒签信；重新审理需提交新申请并满足资格与可入境要求",
+    "Possible via webform; partial fee refund depending on processing stage": "可通过 webform 撤回；是否部分退费取决于处理阶段"
+  };
+  const l = (value?: string) => {
+    if (!value) return "";
+    if (locale === "tr") return trMap[value] ?? value;
+    if (locale === "zh-Hans") return zhMap[value] ?? value;
+    return value;
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
@@ -285,12 +364,12 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
-              <p>{ui.workExperience}: {investor?.managementExperience?.minimumYears} years ({investor?.managementExperience?.window})</p>
+              <p>{ui.workExperience}: {investor?.managementExperience?.minimumYears} {locale === "tr" ? "yil" : locale === "zh-Hans" ? "年" : "years"} ({l(investor?.managementExperience?.window)})</p>
               <p>{ui.netWorthMinimum}: CAD {investor?.netWorth?.minimumCAD?.toLocaleString("en-CA")}</p>
               <p>{ui.frenchMinimum}: {investor?.frenchLanguage?.minimumLevel}</p>
-              <p>{ui.investment}: CAD {investor?.investmentAndContribution?.investmentCAD?.toLocaleString("en-CA")} for {investor?.investmentAndContribution?.investmentTerm}</p>
+              <p>{ui.investment}: CAD {investor?.investmentAndContribution?.investmentCAD?.toLocaleString("en-CA")} {locale === "tr" ? "-" : locale === "zh-Hans" ? "，期限" : "for"} {l(investor?.investmentAndContribution?.investmentTerm)}</p>
               <p>{ui.financialContribution}: CAD {investor?.investmentAndContribution?.financialContributionCAD?.toLocaleString("en-CA")}</p>
-              <p>{ui.quebecStayRequirement}: {investor?.quebecStayRequirement?.totalMonths} months within {investor?.quebecStayRequirement?.windowYears} years ({investor?.quebecStayRequirement?.minimumPersonalMonths} months personally)</p>
+              <p>{ui.quebecStayRequirement}: {investor?.quebecStayRequirement?.totalMonths} {locale === "tr" ? "ay" : locale === "zh-Hans" ? "个月" : "months"} {locale === "tr" ? "icinde" : locale === "zh-Hans" ? "需在" : "within"} {investor?.quebecStayRequirement?.windowYears} {locale === "tr" ? "yil" : locale === "zh-Hans" ? "年" : "years"} ({investor?.quebecStayRequirement?.minimumPersonalMonths} {locale === "tr" ? "ayi basvuru sahibinin bizzat tamamlamasi gerekir" : locale === "zh-Hans" ? "个月需由申请人本人完成" : "months personally"})</p>
             </CardContent>
           </Card>
 
@@ -307,8 +386,8 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
               <ul className="space-y-2">
                 {(entrepreneur?.subStreamsNamedOnly_notDetailedInSource ?? []).map((stream) => (
                   <li key={stream.id}>
-                    <p className="font-semibold">{stream.name}</p>
-                    <p>{stream.description}</p>
+                    <p className="font-semibold">{l(stream.name)}</p>
+                    <p>{l(stream.description)}</p>
                   </li>
                 ))}
               </ul>
@@ -323,7 +402,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
-              <p>{ui.workExperience}: {selfEmployed?.workExperience?.minimumYears} years ({selfEmployed?.workExperience?.window})</p>
+              <p>{ui.workExperience}: {selfEmployed?.workExperience?.minimumYears} {locale === "tr" ? "yil" : locale === "zh-Hans" ? "年" : "years"} ({l(selfEmployed?.workExperience?.window)})</p>
               <p>{ui.netWorthMinimum}: CAD {selfEmployed?.netWorth?.minimumCAD?.toLocaleString("en-CA")}</p>
               <p>{ui.startupDepositOutside}: CAD {selfEmployed?.startUpDeposit?.outsideCMM_CAD?.toLocaleString("en-CA")}</p>
               <p>{ui.startupDepositWithin}: CAD {selfEmployed?.startUpDeposit?.withinCMM_CAD?.toLocaleString("en-CA")}</p>
@@ -331,7 +410,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
               <p className="font-semibold">{ui.regulatedProfessionProcess}:</p>
               <ul className="space-y-1">
                 {(selfEmployed?.regulatedProfessionRequirement?.processSteps ?? []).map((step) => (
-                  <li key={step}>- {step}</li>
+                  <li key={step}>- {l(step)}</li>
                 ))}
               </ul>
             </CardContent>
@@ -355,7 +434,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.fillInPortal}</p>
                 <ul className="mt-1 space-y-1">
                   {(data.federalApplicationStage?.fillInPortal ?? []).map((item) => (
-                    <li key={item.form}>{item.form} - {item.name}</li>
+                    <li key={item.form}>{item.form} - {l(item.name)}</li>
                   ))}
                 </ul>
               </div>
@@ -363,7 +442,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.uploadOnlyNoSignature}</p>
                 <ul className="mt-1 space-y-1">
                   {(data.federalApplicationStage?.uploadOnly_noSignature ?? []).map((item) => (
-                    <li key={item.form}>{item.form} - {item.name}</li>
+                    <li key={item.form}>{item.form} - {l(item.name)}</li>
                   ))}
                 </ul>
               </div>
@@ -382,7 +461,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.conditionalFormsHandSigned}</p>
                 <ul className="mt-1 space-y-1">
                   {(data.federalApplicationStage?.conditionalForms_handSigned ?? []).map((item) => (
-                    <li key={item.form}>{item.form} - {item.name}{item.condition ? ` (${item.condition})` : ""}{item.note ? ` - ${item.note}` : ""}</li>
+                    <li key={item.form}>{item.form} - {l(item.name)}{item.condition ? ` (${l(item.condition)})` : ""}{item.note ? ` - ${l(item.note)}` : ""}</li>
                   ))}
                 </ul>
               </div>
@@ -390,15 +469,15 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.supportingDocuments}</p>
                 <ul className="mt-1 space-y-1">
                   {(data.federalApplicationStage?.supportingDocuments ?? []).map((item) => (
-                    <li key={item}>- {item}</li>
+                    <li key={item}>- {l(item)}</li>
                   ))}
                 </ul>
               </div>
               <p>{ui.biometrics}: {data.afterApply?.biometrics?.ageRange}, {data.afterApply?.biometrics?.deadline}</p>
               <p>{ui.medicalExamRequired}: {data.afterApply?.medicalExam?.required ? ui.yes : ui.no} ({data.afterApply?.medicalExam?.appliesTo})</p>
-              <p>{ui.approved}: {data.afterApply?.decisionOutcomes?.approved}</p>
-              <p>{ui.refused}: {data.afterApply?.decisionOutcomes?.refused}</p>
-              <p>{ui.withdrawal}: {data.afterApply?.decisionOutcomes?.withdrawal}</p>
+              <p>{ui.approved}: {l(data.afterApply?.decisionOutcomes?.approved)}</p>
+              <p>{ui.refused}: {l(data.afterApply?.decisionOutcomes?.refused)}</p>
+              <p>{ui.withdrawal}: {l(data.afterApply?.decisionOutcomes?.withdrawal)}</p>
             </CardContent>
           </Card>
         </div>
