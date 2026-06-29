@@ -55,7 +55,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     }
     return fallback ?? (obj[base] as string | undefined) ?? "";
   };
-  const localizeStatus = (obj: Record<string, unknown>) => {
+  const localizeStatus = (obj: Record<string, unknown>, defaultStatus?: "paused" | "closed") => {
     const localeSpecificStatus = localeKind === "tr"
       ? (obj.status_tr as string | undefined)
       : localeKind === "zh"
@@ -67,7 +67,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
       return (obj.status as string | undefined) ?? "";
     }
 
-    const raw = String(obj.status ?? "").toLowerCase();
+    const raw = String(obj.status ?? defaultStatus ?? "").toLowerCase();
     if (localeKind === "tr") {
       if (raw.includes("pause")) return "duraklatıldı";
       if (raw.includes("close")) return "kapatıldı";
@@ -728,7 +728,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                           {localize(item as Record<string, unknown>, "name", item.name)}
                         </a>
                         <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">
-                          {localizeStatus(item as Record<string, unknown>) ?? "paused"}
+                          {localizeStatus(item as Record<string, unknown>, "paused") ?? "paused"}
                         </span>
                       </div>
                       {(localize(item as Record<string, unknown>, "note") || item.note) ? <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{localize(item as Record<string, unknown>, "note", item.note)}</p> : null}
@@ -747,7 +747,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                           {localize(item as Record<string, unknown>, "name", item.name)}
                         </a>
                         <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-rose-900 dark:bg-rose-900/40 dark:text-rose-200">
-                          {localizeStatus(item as Record<string, unknown>) ?? "closed"}
+                          {localizeStatus(item as Record<string, unknown>, "closed") ?? "closed"}
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{localize(item as Record<string, unknown>, "category", item.category)}</p>
