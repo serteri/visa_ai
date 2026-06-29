@@ -1,8 +1,7 @@
 const TR_FALLBACK = "Resmi kaynak metni icin Turkce ceviri guncelleniyor.";
 const ZH_FALLBACK = "该官方内容的中文翻译正在更新中。";
 
-const EN_WORD_HINT = /\b(the|and|or|must|with|for|from|into|without|required|application|apply|program|pilot|process|step|document|forms?|work|permit|family|sponsor|spouse|partner|child|medical|doctor|community|province|eligibility|deadline|language|registration|portal|residence|immigration|official|guide|open|closed|status|fee|processing|express|entry|category|nominated|settling|supporting)\b/i;
-const EN_CONNECTOR_HINT = /\b(a|an|the|and|or|of|to|in|for|with|by|from|on|after|before)\b/i;
+const EN_WORD_HINT = /\b(the|and|or|must|with|for|from|into|without|required|application|apply|program|pilot|process|step|document|documents|forms?|work|permit|family|sponsor|spouse|partner|child|children|medical|doctor|community|province|provincial|eligibility|deadline|language|registration|portal|residence|immigration|official|guide|open|closed|status|fee|processing|express|entry|category|nominated|settling|supporting|get|ready|issued|mailed|supplementary|travel|economic|classes|nominees|marriage|certificate|background|declaration)\b/i;
 const URL_OR_EMAIL = /https?:\/\/|www\.|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
 const CJK = /[\u3400-\u9FFF]/;
 const UPPER_CODE = /^[A-Z0-9\-_/().\s]{1,14}$/;
@@ -24,10 +23,7 @@ function shouldReplaceForTr(value: string) {
   if (UPPER_CODE.test(value.trim())) return false;
   if (value.trim().length < 12) return false;
 
-  if (EN_WORD_HINT.test(value)) return true;
-
-  const longSentence = value.trim().split(/\s+/).length >= 3;
-  return longSentence && EN_CONNECTOR_HINT.test(value);
+  return EN_WORD_HINT.test(value);
 }
 
 function sanitizeString(value: string, locale: string) {
