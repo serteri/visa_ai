@@ -151,6 +151,132 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
     newcomerServices: locale === "tr" ? "Yeni gelen hizmetleri" : locale === "zh-Hans" ? "新移民服务" : "Newcomer services",
     maxAttempts: locale === "tr" ? "Maks deneme" : locale === "zh-Hans" ? "最多尝试次数" : "Max attempts",
   };
+  const trMap: Record<string, string> = {
+    "Express Entry - Physician Category (New 2026)": "Express Entry - Doktor Kategorisi (Yeni 2026)",
+    "Eligible for 1 of the 3 Express Entry programs (CEC/FSW/FSTP)": "3 Express Entry programindan birine uygun olmali (CEC/FSW/FSTP)",
+    "At least 1 year full-time Canadian MD work experience in the last 3 years": "Son 3 yil icinde en az 1 yil tam zamanli Kanada doktorluk is deneyimi",
+    "Provincial Nominee Program (physician-reserved spaces)": "Eyalet Aday Programi (doktorlara ayrilan kontenjan)",
+    "Has a job, job offer, or letter of support to work as MD in a province/territory": "Bir eyalet/bolgede doktor olarak calismak icin is, is teklifi veya destek mektubuna sahip",
+    "Atlantic Immigration Program (AIP)": "Atlantik Goc Programi (AIP)",
+    "Work experience OR post-secondary education completed in Atlantic Canada": "Atlantik Kanada'da is deneyimi VEYA lise sonrasi egitimi tamamlama",
+    "Job offer from a designated employer": "Yetkili bir isverenden is teklifi",
+    "Interested in living in Atlantic Canada": "Atlantik Kanada'da yasamaya istekli",
+    "Rural Community Immigration Pilot (RCIP)": "Kirsal Topluluk Goc Pilotu (RCIP)",
+    "1+ year MD work experience in last 3 years, OR graduated from an eligible post-secondary school": "Son 3 yilda 1+ yil doktorluk deneyimi VEYA uygun bir lise sonrasi okuldan mezuniyet",
+    "Interested in living in a smaller, rural community": "Daha kucuk, kirsal bir toplulukta yasamaya istekli",
+    "Francophone Community Immigration Pilot (FCIP)": "Frankofon Topluluk Goc Pilotu (FCIP)",
+    "Able to communicate in French": "Fransizca iletisim kurabilme",
+    "Interested in living in a Francophone community outside Quebec": "Quebec disinda bir Frankofon toplulukta yasamaya istekli",
+    "Immigration - valid status (work permit/PR/citizenship) required for CaRMS and some PRA routes": "Gocmenlik - CaRMS ve bazi PRA yollari icin gecerli statu (calisma izni/PR/vatandaslik) gerekir",
+    "Medical licensing - physiciansapply.ca account, MCCQE, NAC Exam, provincial/territorial pathway": "Tibbi lisanslama - physiciansapply.ca hesabi, MCCQE, NAC Sinavi, eyalet/bolge yolu",
+    "Gap or currency of practice - prolonged interruption makes eligibility harder; full-time med school/accredited residency/accredited internship/clinical fellowship with patient care generally NOT considered a gap; clinical research without active license, volunteer roles, medical assistant roles ARE considered gaps": "Uygulama boslugu veya guncellik - uzun ara vermek uygunlugu zorlastirir; tam zamanli tip fakultesi/akredite asistanlik/akredite staj/hasta bakimi iceren klinik fellowship genelde bosluk sayilmaz; aktif lisans olmadan klinik arastirma, gonullu roller ve tibbi asistan rolleri bosluk sayilir",
+    "Language requirements - see languageRequirements below": "Dil gereklilikleri - asagidaki languageRequirements bolumune bakin",
+    "Source verification of medical credentials": "Tibbi yeterlilik belgelerinin kaynak dogrulamasi",
+    "Apply for MCCQE and NAC Examination": "MCCQE ve NAC Sinavi icin basvuru",
+    "View/share documents and exam results (File Transfer Service for non-registered orgs)": "Belgeleri ve sinav sonuclarini goruntule/paylas (kayitli olmayan kurumlar icin File Transfer Service)",
+    "Request ECA report (needed for e.g. Federal Skilled Worker Program)": "ECA raporu talep et (ornegin Federal Skilled Worker Program icin gerekir)",
+    "Apply for LMCC": "LMCC icin basvur",
+    "Apply for medical registration with MRAs": "MRA'lar uzerinden tibbi kayit basvurusu yap",
+    "Medical Council of Canada Qualifying Examination": "Kanada Tip Konseyi Yeterlilik Sinavi",
+    "One-day, computer-based, 230 MCQs in 2 sections of 115 items, up to 2h40m per section": "Tek gunluk, bilgisayar tabanli; 2 bolumde (115'er soru) toplam 230 coktan secmeli soru, bolum basi en fazla 2s40dk",
+    "Canada + 70+ countries, 4 sessions/year, Prometric test centres, first-come-first-served": "Kanada + 70+ ulkede, yilda 4 oturum, Prometric sinav merkezleri, ilk gelen alir",
+    "National Assessment Collaboration Examination": "Ulusal Degerlendirme Is Birligi Sinavi",
+    "Assesses IMG readiness to enter supervised training in Canada; required for CaRMS entry and as screening tool for some provincial PRA programs": "IMG adayinin Kanada'da denetimli egitime hazirligini degerlendirir; CaRMS girisi icin gereklidir ve bazi eyalet PRA programlarinda eleme araci olarak kullanilir",
+    "Can be taken before or after MCCQE, candidate's choice (for 2027 CaRMS R-1 applicants)": "MCCQE'den once veya sonra alinabilir, aday secer (2027 CaRMS R-1 basvuranlari icin)",
+    "2027 CaRMS R-1 Main Residency Match": "2027 CaRMS R-1 Ana Asistanlik Eslestirmesi",
+    "Submit MCCQE application + required documents by this date to obtain Identity Validity Period (IVP) before file review opens 2026-11-26": "Dosya incelemesi 2026-11-26'da acilmadan once Identity Validity Period (IVP) almak icin bu tarihe kadar MCCQE basvurusu ve gerekli belgeleri gonderin",
+    "English required in most provinces; New Brunswick accepts English OR French; Quebec requires French": "Cogu eyalette Ingilizce gerekir; New Brunswick Ingilizce VEYA Fransizca kabul eder; Quebec Fransizca ister",
+    "Pass result on OQLF (Office quebecois de la langue francaise) examination": "OQLF (Office quebecois de la langue francaise) sinavinda basarili sonuc",
+    "Test result must be within 24 months of application to provincial/territorial program": "Sinav sonucu, eyalet/bolge programina basvurudan onceki 24 ay icinde olmalidir",
+    "If undergraduate/postgraduate training completed in an English- or French-speaking country, or majority of education/patient care was in English/French - exemption decided per program": "Lisans/lisansustu egitim Ingilizce veya Fransizca konusulan bir ulkede tamamlaniyorsa ya da egitim/hasta bakiminin cogunlugu Ingilizce/Fransizca ise muafiyet program bazinda belirlenir",
+    "Apply for LMCC (Licentiate of the Medical Council of Canada) - part of the Canadian Standard": "LMCC (Kanada Tip Konseyi Lisansi) icin basvurun - Kanada standardinin bir parcasi",
+    "Apply for specialty certificate with RCPSC, CFPC, or CMQ": "RCPSC, CFPC veya CMQ ile uzmanlik sertifikasi icin basvurun",
+    "Apply for medical registration with the MRA of the province/territory of intended practice (via physiciansapply.ca for most MRAs)": "Hedeflenen eyalet/bolgenin MRA kurumuna tibbi kayit icin basvurun (cogu MRA icin physiciansapply.ca uzerinden)",
+    "At least 1 year full-time MD work experience in Canada within the last 3 years": "Son 3 yil icinde Kanada'da en az 1 yil tam zamanli doktorluk deneyimi",
+    "Internationally-trained, no Canadian clinical MD experience yet (or Canadian experience is older than 3 years)": "Uluslararasi egitimli, henuz Kanada klinik doktorluk deneyimi yok (veya Kanada deneyimi 3 yildan eski)",
+    "Must still get foreign credentials assessed and licensed by a provincial/territorial regulatory authority": "Yabanci yeterlilikler yine de bir eyalet/bolge duzenleyici kurumu tarafindan degerlendirilmeli ve lisanslanmalidir",
+    "Verifies foreign education/training/experience equivalence to Canadian standards for the profession/trade in the province/territory of intended practice; varies by occupation and jurisdiction.": "Yabanci egitim/egitim deneyimi/mesleki deneyimin, hedef eyalet/bolgede ilgili meslek/uzmanlik icin Kanada standartlarina esdegerligini dogrular; meslek ve bolgeye gore degisir.",
+    "Foreign Credential Recognition Tool - checks if an occupation is regulated/compulsory in a given province/territory and finds the relevant regulatory authority.": "Foreign Credential Recognition Tool - bir meslegin belirli bir eyalet/bolgede duzenlenmis/zorunlu olup olmadigini kontrol eder ve ilgili duzenleyici kurumu bulur.",
+    "career counseling and planning": "kariyer danismanligi ve planlama",
+    mentorship: "mentorluk",
+    "job readiness workshops": "ise hazirlik atolyeleri",
+    "job search assistance": "is arama destegi",
+    "Pre-arrival services (for approved PR applicants still outside Canada)": "Varis oncesi hizmetler (Kanada disinda olan onayli PR basvuranlari icin)",
+    "Newcomer/settlement services (post-arrival)": "Yeni gelen/yerlesim hizmetleri (varis sonrasi)",
+    "Job Bank (free government job-search resource)": "Job Bank (ucretsiz devlet is arama kaynagi)",
+    "Express Entry Physician Category": "Express Entry Doktor Kategorisi",
+    Pnp: "PNP",
+    "Express Entry General": "Express Entry Genel",
+    "Atlantic Immigration Program": "Atlantik Goc Programi",
+    "Rural Community Immigration Pilot": "Kirsal Topluluk Goc Pilotu",
+    "Francophone Community Immigration Pilot": "Frankofon Topluluk Goc Pilotu"
+  };
+  const zhMap: Record<string, string> = {
+    "Express Entry - Physician Category (New 2026)": "快速通道 - 医生类别（2026 新增）",
+    "Eligible for 1 of the 3 Express Entry programs (CEC/FSW/FSTP)": "符合 3 个快速通道项目之一资格（CEC/FSW/FSTP）",
+    "At least 1 year full-time Canadian MD work experience in the last 3 years": "近 3 年内至少 1 年加拿大全职医生工作经验",
+    "Provincial Nominee Program (physician-reserved spaces)": "省提名计划（医生预留名额）",
+    "Has a job, job offer, or letter of support to work as MD in a province/territory": "在某省/地区从事医生工作，已具备在职岗位、工作邀约或支持信",
+    "Atlantic Immigration Program (AIP)": "大西洋移民计划（AIP）",
+    "Work experience OR post-secondary education completed in Atlantic Canada": "具备工作经验，或在加拿大大西洋地区完成高等教育",
+    "Job offer from a designated employer": "来自指定雇主的工作邀约",
+    "Interested in living in Atlantic Canada": "有意在加拿大大西洋地区居住",
+    "Rural Community Immigration Pilot (RCIP)": "农村社区移民试点（RCIP）",
+    "1+ year MD work experience in last 3 years, OR graduated from an eligible post-secondary school": "近 3 年内有 1 年以上医生工作经验，或毕业于符合条件的高等院校",
+    "Interested in living in a smaller, rural community": "有意在较小的农村社区居住",
+    "Francophone Community Immigration Pilot (FCIP)": "法语社区移民试点（FCIP）",
+    "Able to communicate in French": "具备法语沟通能力",
+    "Interested in living in a Francophone community outside Quebec": "有意在魁北克以外的法语社区居住",
+    "Immigration - valid status (work permit/PR/citizenship) required for CaRMS and some PRA routes": "移民 - CaRMS 及部分 PRA 路径要求有效身份（工签/PR/公民身份）",
+    "Medical licensing - physiciansapply.ca account, MCCQE, NAC Exam, provincial/territorial pathway": "医疗执照 - physiciansapply.ca 账户、MCCQE、NAC 考试、省/地区路径",
+    "Gap or currency of practice - prolonged interruption makes eligibility harder; full-time med school/accredited residency/accredited internship/clinical fellowship with patient care generally NOT considered a gap; clinical research without active license, volunteer roles, medical assistant roles ARE considered gaps": "执业间断或时效 - 长期中断会降低资格；全日制医学院/认证住院医培训/认证实习/含患者照护的临床进修通常不视为间断；无有效执照的临床研究、志愿岗位、医疗助理岗位则视为间断",
+    "Language requirements - see languageRequirements below": "语言要求 - 见下方 languageRequirements",
+    "Source verification of medical credentials": "医学资历原始验证",
+    "Apply for MCCQE and NAC Examination": "申请 MCCQE 与 NAC 考试",
+    "View/share documents and exam results (File Transfer Service for non-registered orgs)": "查看/共享文件与考试结果（面向未注册机构的文件传输服务）",
+    "Request ECA report (needed for e.g. Federal Skilled Worker Program)": "申请 ECA 报告（如联邦技术工人项目所需）",
+    "Apply for LMCC": "申请 LMCC",
+    "Apply for medical registration with MRAs": "向 MRA 申请医疗注册",
+    "Medical Council of Canada Qualifying Examination": "加拿大医学委员会资格考试",
+    "One-day, computer-based, 230 MCQs in 2 sections of 115 items, up to 2h40m per section": "单日机考，2 个分段各 115 题，共 230 道选择题，每段最多 2 小时 40 分",
+    "Canada + 70+ countries, 4 sessions/year, Prometric test centres, first-come-first-served": "加拿大及 70+ 国家，全年 4 场，Prometric 考点，先到先得",
+    "National Assessment Collaboration Examination": "国家评估协作考试",
+    "Assesses IMG readiness to enter supervised training in Canada; required for CaRMS entry and as screening tool for some provincial PRA programs": "评估 IMG 进入加拿大受监督培训的准备度；CaRMS 入场必需，并用于部分省 PRA 项目的筛选",
+    "Can be taken before or after MCCQE, candidate's choice (for 2027 CaRMS R-1 applicants)": "可在 MCCQE 前后参加，由考生自行选择（适用于 2027 CaRMS R-1 申请人）",
+    "2027 CaRMS R-1 Main Residency Match": "2027 CaRMS R-1 住院医主匹配",
+    "Submit MCCQE application + required documents by this date to obtain Identity Validity Period (IVP) before file review opens 2026-11-26": "须在此日期前提交 MCCQE 申请及所需材料，以在 2026-11-26 文件审查开启前取得身份有效期（IVP）",
+    "English required in most provinces; New Brunswick accepts English OR French; Quebec requires French": "多数省份要求英语；新不伦瑞克接受英语或法语；魁北克要求法语",
+    "Pass result on OQLF (Office quebecois de la langue francaise) examination": "通过 OQLF（魁北克法语办公室）考试",
+    "Test result must be within 24 months of application to provincial/territorial program": "考试结果须在申请省/地区项目前 24 个月内",
+    "If undergraduate/postgraduate training completed in an English- or French-speaking country, or majority of education/patient care was in English/French - exemption decided per program": "若本科/研究生培训在英语或法语国家完成，或教育/患者照护主要使用英语/法语，是否豁免由各项目决定",
+    "Apply for LMCC (Licentiate of the Medical Council of Canada) - part of the Canadian Standard": "申请 LMCC（加拿大医学委员会执照）- 加拿大标准的一部分",
+    "Apply for specialty certificate with RCPSC, CFPC, or CMQ": "向 RCPSC、CFPC 或 CMQ 申请专科证书",
+    "Apply for medical registration with the MRA of the province/territory of intended practice (via physiciansapply.ca for most MRAs)": "向拟执业省/地区的 MRA 申请医疗注册（多数 MRA 通过 physiciansapply.ca）",
+    "At least 1 year full-time MD work experience in Canada within the last 3 years": "近 3 年内在加拿大有至少 1 年全职医生工作经验",
+    "Internationally-trained, no Canadian clinical MD experience yet (or Canadian experience is older than 3 years)": "国际培养背景，尚无加拿大临床医生经验（或加拿大经验已超过 3 年）",
+    "Must still get foreign credentials assessed and licensed by a provincial/territorial regulatory authority": "仍须由省/地区监管机构完成境外资历评估并取得执照",
+    "Verifies foreign education/training/experience equivalence to Canadian standards for the profession/trade in the province/territory of intended practice; varies by occupation and jurisdiction.": "核验境外教育/培训/经验是否等同于拟执业省/地区该职业的加拿大标准；具体因职业与辖区而异。",
+    "Foreign Credential Recognition Tool - checks if an occupation is regulated/compulsory in a given province/territory and finds the relevant regulatory authority.": "外部资历认证工具 - 检查某职业在指定省/地区是否受监管/属强制执业，并定位对应监管机构。",
+    "career counseling and planning": "职业咨询与规划",
+    mentorship: "导师指导",
+    "job readiness workshops": "就业准备工作坊",
+    "job search assistance": "求职协助",
+    "Pre-arrival services (for approved PR applicants still outside Canada)": "抵达前服务（适用于仍在加拿大境外的已获批 PR 申请人）",
+    "Newcomer/settlement services (post-arrival)": "新移民/安置服务（抵达后）",
+    "Job Bank (free government job-search resource)": "Job Bank（政府免费求职资源）",
+    "Express Entry Physician Category": "快速通道医生类别",
+    Pnp: "省提名",
+    "Express Entry General": "快速通道常规类别",
+    "Atlantic Immigration Program": "大西洋移民计划",
+    "Rural Community Immigration Pilot": "农村社区移民试点",
+    "Francophone Community Immigration Pilot": "法语社区移民试点"
+  };
+  const l = (value?: string) => {
+    if (!value) return "";
+    if (locale === "tr") return trMap[value] ?? value;
+    if (locale === "zh-Hans") return zhMap[value] ?? value;
+    return value;
+  };
   const localizedField = (base: string, fallback?: string) => {
     if (!localeSuffix) {
       return fallback ?? ((data as Record<string, unknown>)[base] as string | undefined) ?? "";
@@ -311,12 +437,12 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
             <CardContent className="space-y-5">
               {immigrationPathways.map((pathway) => (
                 <div key={pathway.id} className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{pathway.name}</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{l(pathway.name)}</p>
                   <ul className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300">
                     {(pathway.eligibility ?? []).map((item) => (
                       <li key={item} className="flex gap-2">
                         <span className="text-rose-500">•</span>
-                        <span>{item}</span>
+                        <span>{l(item)}</span>
                       </li>
                     ))}
                   </ul>
@@ -345,7 +471,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
                   {Object.entries(licensing?.framework?.components ?? {}).map(([key, value]) => (
                     <li key={key} className="flex gap-2">
                       <span className="font-semibold text-rose-600">{key}</span>
-                      <span>{value}</span>
+                      <span>{l(value)}</span>
                     </li>
                   ))}
                 </ul>
@@ -356,7 +482,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
                   {(licensing?.centralPortal?.services ?? []).map((service) => (
                     <li key={service} className="flex gap-2">
                       <span className="text-rose-500">•</span>
-                      <span>{service}</span>
+                      <span>{l(service)}</span>
                     </li>
                   ))}
                 </ul>
@@ -377,25 +503,25 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
-                <p className="font-semibold text-slate-900 dark:text-white">{licensing?.exams?.MCCQE?.fullName}</p>
-                <p className="mt-1">{licensing?.exams?.MCCQE?.format}</p>
-                <p className="mt-1">{licensing?.exams?.MCCQE?.deliveredIn}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{l(licensing?.exams?.MCCQE?.fullName)}</p>
+                <p className="mt-1">{l(licensing?.exams?.MCCQE?.format)}</p>
+                <p className="mt-1">{l(licensing?.exams?.MCCQE?.deliveredIn)}</p>
                 <p className="mt-1">
                   {ui.maxAttempts}: {licensing?.exams?.MCCQE?.attemptLimit?.max ?? 4}
                 </p>
               </div>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
-                <p className="font-semibold text-slate-900 dark:text-white">{licensing?.exams?.NAC?.fullName}</p>
-                <p className="mt-1">{licensing?.exams?.NAC?.purpose}</p>
-                <p className="mt-1">{licensing?.exams?.NAC?.orderFlexibility}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{l(licensing?.exams?.NAC?.fullName)}</p>
+                <p className="mt-1">{l(licensing?.exams?.NAC?.purpose)}</p>
+                <p className="mt-1">{l(licensing?.exams?.NAC?.orderFlexibility)}</p>
               </div>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
-                <p className="font-semibold text-slate-900 dark:text-white">{licensing?.keyDeadlineExample?.context}</p>
+                <p className="font-semibold text-slate-900 dark:text-white">{l(licensing?.keyDeadlineExample?.context)}</p>
                 <p className="mt-1 flex items-center gap-2">
                   <Clock3 className="h-4 w-4 text-rose-600" />
                   {licensing?.keyDeadlineExample?.deadline}
                 </p>
-                <p className="mt-1">{licensing?.keyDeadlineExample?.requirement}</p>
+                <p className="mt-1">{l(licensing?.keyDeadlineExample?.requirement)}</p>
               </div>
             </CardContent>
           </Card>
@@ -408,28 +534,28 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
-              <p>{licensing?.languageRequirements?.generalRule}</p>
+              <p>{l(licensing?.languageRequirements?.generalRule)}</p>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.englishTests}</p>
                 <ul className="mt-2 space-y-1">
                   {englishTests.map(([testName, scoreRule]) => (
                     <li key={testName} className="flex gap-2">
                       <span className="text-rose-500">•</span>
-                      <span>{testName}: {scoreRule}</span>
+                      <span>{testName}: {l(scoreRule)}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <p>{licensing?.languageRequirements?.frenchTestQuebec}</p>
-              <p>{licensing?.languageRequirements?.validityWindow}</p>
-              <p>{licensing?.languageRequirements?.possibleExemption}</p>
+              <p>{l(licensing?.languageRequirements?.frenchTestQuebec)}</p>
+              <p>{l(licensing?.languageRequirements?.validityWindow)}</p>
+              <p>{l(licensing?.languageRequirements?.possibleExemption)}</p>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.postLicensureSteps}</p>
                 <ul className="mt-2 space-y-1">
                   {(licensing?.postLicensureSteps ?? []).map((step) => (
                     <li key={step} className="flex gap-2">
                       <span className="text-rose-500">•</span>
-                      <span>{step}</span>
+                      <span>{l(step)}</span>
                     </li>
                   ))}
                 </ul>
@@ -451,18 +577,18 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
             <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
               <div>
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.withCanadianMdExp}</p>
-                <p className="mt-1">{data.applicantTracks?.hasCanadianMDExperience?.description}</p>
+                <p className="mt-1">{l(data.applicantTracks?.hasCanadianMDExperience?.description)}</p>
                 <p className="mt-1 text-xs text-slate-500">
-                  {(data.applicantTracks?.hasCanadianMDExperience?.availablePathways ?? []).map(pathLabel).join(" • ")}
+                  {(data.applicantTracks?.hasCanadianMDExperience?.availablePathways ?? []).map(pathLabel).map(l).join(" • ")}
                 </p>
               </div>
               <div>
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.noCanadianMdExp}</p>
-                <p className="mt-1">{data.applicantTracks?.noCanadianMDExperienceYet?.description}</p>
+                <p className="mt-1">{l(data.applicantTracks?.noCanadianMDExperienceYet?.description)}</p>
                 <p className="mt-1 text-xs text-slate-500">
-                  {(data.applicantTracks?.noCanadianMDExperienceYet?.availablePathways ?? []).map(pathLabel).join(" • ")}
+                  {(data.applicantTracks?.noCanadianMDExperienceYet?.availablePathways ?? []).map(pathLabel).map(l).join(" • ")}
                 </p>
-                <p className="mt-1">{data.applicantTracks?.noCanadianMDExperienceYet?.prerequisite}</p>
+                <p className="mt-1">{l(data.applicantTracks?.noCanadianMDExperienceYet?.prerequisite)}</p>
               </div>
             </CardContent>
           </Card>
@@ -472,15 +598,15 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
               <CardTitle className="text-xl">{ui.credentialSupport}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
-              <p>{data.foreignCredentialRecognition?.process}</p>
-              <p>{data.foreignCredentialRecognition?.tool}</p>
+              <p>{l(data.foreignCredentialRecognition?.process)}</p>
+              <p>{l(data.foreignCredentialRecognition?.tool)}</p>
               <div>
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.supportServices}</p>
                 <ul className="mt-2 space-y-1">
                   {(data.foreignCredentialRecognition?.supportServices ?? []).map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="text-rose-500">•</span>
-                      <span>{item}</span>
+                      <span>{l(item)}</span>
                     </li>
                   ))}
                 </ul>
@@ -491,7 +617,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
                   {(data.foreignCredentialRecognition?.otherNewcomerServices ?? []).map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="text-rose-500">•</span>
-                      <span>{item}</span>
+                      <span>{l(item)}</span>
                     </li>
                   ))}
                 </ul>
