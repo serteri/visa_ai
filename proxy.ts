@@ -44,6 +44,23 @@ export const proxy = auth((req) => {
   const { pathname, searchParams } = req.nextUrl;
   const isEnAdminPath = pathname === "/en/admin" || pathname.startsWith("/en/admin/");
 
+  // Legacy country hub paths -> canonical visa hub paths
+  if (pathname === "/canada") {
+    const redirectUrl = new URL("/visas/canada", req.url);
+    redirectUrl.search = searchParams.toString();
+    return NextResponse.redirect(redirectUrl);
+  }
+  if (pathname === "/tr/canada") {
+    const redirectUrl = new URL("/tr/visas/canada", req.url);
+    redirectUrl.search = searchParams.toString();
+    return NextResponse.redirect(redirectUrl);
+  }
+  if (pathname === "/zh-Hans/canada") {
+    const redirectUrl = new URL("/zh-Hans/visas/canada", req.url);
+    redirectUrl.search = searchParams.toString();
+    return NextResponse.redirect(redirectUrl);
+  }
+
   if (isBlockedBot(req.headers.get("user-agent"))) {
     return new NextResponse("Forbidden", { status: 403 });
   }
