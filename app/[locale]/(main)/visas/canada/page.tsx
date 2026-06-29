@@ -48,10 +48,10 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   const localize = (obj: Record<string, unknown> | undefined, base: string, fallback?: string) => {
     if (!obj) return fallback ?? "";
     if (localeKind === "tr") {
-      return (obj[`${base}_tr`] as string | undefined) ?? (obj[base] as string | undefined) ?? fallback ?? "";
+      return (obj[`${base}_tr`] as string | undefined) ?? fallback ?? (obj[base] as string | undefined) ?? "";
     }
     if (localeKind === "zh") {
-      return (obj[`${base}_zh`] as string | undefined) ?? (obj[base] as string | undefined) ?? fallback ?? "";
+      return (obj[`${base}_zh`] as string | undefined) ?? fallback ?? (obj[base] as string | undefined) ?? "";
     }
     return fallback ?? (obj[base] as string | undefined) ?? "";
   };
