@@ -161,9 +161,9 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
     "This is not a single visa stream. It combines physician-specific immigration options and a separate medical licensing process. To practise in Canada, both tracks must be completed."
   );
   const licensingNote = locale === "tr"
-    ? (licensing?.note_tr ?? licensing?.note)
+    ? (licensing?.note_tr ?? "Bu surec IRCC/gocmenlikten ayridir; Medical Council of Canada (MCC) ve eyalet/bolge Medical Regulatory Authority'leri (MRA) tarafindan yonetilir. Gocmenlik statusunden bagimsiz tamamlanmalidir.")
     : locale === "zh-Hans"
-      ? (licensing?.note_zh ?? licensing?.note)
+      ? (licensing?.note_zh ?? "该流程独立于 IRCC 移民流程，由加拿大医学委员会（MCC）及各省/地区医学监管机构（MRA）管理，必须独立于移民身份单独完成。")
       : (licensing?.note ?? "This process is separate from IRCC immigration and managed by the Medical Council of Canada (MCC) and provincial/territorial Medical Regulatory Authorities (MRA). It must be completed independently from immigration status.");
 
   const stats = [
