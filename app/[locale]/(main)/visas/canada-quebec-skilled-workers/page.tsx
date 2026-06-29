@@ -111,11 +111,22 @@ type QuebecFederalData = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
+  const title =
+    locale === "tr"
+      ? "Quebec secilmis nitelikli isciler (yalnizca federal asama) | LogiVisa"
+      : locale === "zh-Hans"
+        ? "魁北克技术工人（仅联邦阶段）| LogiVisa"
+        : "Quebec-selected skilled workers (Federal stage only) | LogiVisa";
+  const description =
+    locale === "tr"
+      ? "Bu sayfa sadece CSQ sonrasindaki federal IRCC asamasini kapsar. Quebec'in kendi secim sureci ayri yurur ve burada tam detayli degildir."
+      : locale === "zh-Hans"
+        ? "本页仅覆盖拿到 CSQ 之后的联邦 IRCC 阶段。魁北克本地筛选流程独立进行，本文未完整展开。"
+        : "Federal IRCC stage only after CSQ for Quebec-selected skilled workers. Quebec CSQ selection stage is separate and not fully documented in this page.";
   return {
     metadataBase: new URL(BASE_URL),
-    title: "Quebec-selected skilled workers (Federal stage only) | LogiVisa",
-    description:
-      "Federal IRCC stage only after CSQ for Quebec-selected skilled workers. Quebec CSQ selection stage is separate and not fully documented in this page.",
+    title,
+    description,
     alternates: {
       canonical: `/${locale}/visas/canada-quebec-skilled-workers`,
       languages: {
@@ -206,6 +217,16 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
     "electronically sign the application": "başvuruyu elektronik olarak imzalayamaz",
     "log in using applicant's credentials": "başvuru sahibinin giriş bilgileriyle sisteme giremez",
     "Applicant must personally type their own name (exactly as shown on passport) after reading the declaration - legal definition of 'signed' under Canadian immigration law.": "Başvuru sahibi beyanı okuduktan sonra kendi adını bizzat yazmalıdır (pasaporttakiyle birebir). Kanada göç hukuku kapsamında bu, yasal 'imza' tanımıdır."
+    ,"paper": "kağıt"
+    ,"braille": "braille"
+    ,"large print": "büyük puntolu baskı"
+    ,"Permanent residence online application portal (PR Portal)": "Daimi oturum online başvuru portalı (PR Portal)"
+    ,"processing_fee": "islem_ucreti"
+    ,"right_of_permanent_residence_fee (RPRF)": "daimi_oturum_hakki_ucreti (RPRF)"
+    ,"biometrics_fee": "biyometri_ucreti"
+    ,"third_party_fees (medical exam, police certificates, ECA)": "ucuncu_taraf_ucretleri (saglik muayenesi, polis sertifikasi, ECA)"
+    ,"14-79": "14-79"
+    ,"30 days from instruction letter": "talimat mektubundan itibaren 30 gun"
   };
   const zhMap: Record<string, string> = {
     "Quebec-selected skilled workers - FEDERAL (IRCC) stage only": "魁北克技术工人——仅联邦（IRCC）阶段",
@@ -281,6 +302,16 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
     "electronically sign the application": "不得代为电子签名",
     "log in using applicant's credentials": "不得使用申请人凭据登录",
     "Applicant must personally type their own name (exactly as shown on passport) after reading the declaration - legal definition of 'signed' under Canadian immigration law.": "申请人阅读声明后必须亲自输入姓名（与护照完全一致） - 这是加拿大移民法中“已签署”的法律定义。"
+    ,"paper": "纸质"
+    ,"braille": "盲文"
+    ,"large print": "大字版"
+    ,"Permanent residence online application portal (PR Portal)": "永久居留在线申请门户（PR Portal）"
+    ,"processing_fee": "处理费"
+    ,"right_of_permanent_residence_fee (RPRF)": "永久居留权利费（RPRF）"
+    ,"biometrics_fee": "生物识别费"
+    ,"third_party_fees (medical exam, police certificates, ECA)": "第三方费用（体检、无犯罪证明、ECA）"
+    ,"14-79": "14-79"
+    ,"30 days from instruction letter": "自通知信起 30 天"
   };
   const l = (value?: string) => {
     if (!value) return "";
