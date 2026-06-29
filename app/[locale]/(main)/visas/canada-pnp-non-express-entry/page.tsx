@@ -181,7 +181,8 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
     "Get your documents ready": "Belgelerinizi hazirlayin",
     "Apply for permanent residence": "Daimi oturum icin basvurun",
     "After you apply": "Basvurudan sonra",
-    "Settling in Canada": "Kanada'ya yerlesme"
+    "Settling in Canada": "Kanada'ya yerlesme",
+    "Application refusal, inadmissibility finding, and/or 5-year bar from applying for permanent residence": "Basvurunun reddi, kabul edilemezlik karari ve/veya daimi oturum basvurusuna 5 yil yasak"
   };
   const zhMap: Record<string, string> = {
     "Photos (taken within 12 months, both sides scanned per portal instructions)": "照片（须为 12 个月内拍摄，并按门户要求扫描正反面）",
@@ -205,7 +206,8 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
     "Get your documents ready": "准备申请材料",
     "Apply for permanent residence": "申请永久居留",
     "After you apply": "提交申请后",
-    "Settling in Canada": "在加拿大安置"
+    "Settling in Canada": "在加拿大安置",
+    "Application refusal, inadmissibility finding, and/or 5-year bar from applying for permanent residence": "申请被拒、被认定不可入境，和/或 5 年内不得申请永久居留"
   };
   const l = (value?: string) => {
     if (!value) return "";
