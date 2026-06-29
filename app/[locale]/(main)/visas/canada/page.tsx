@@ -124,14 +124,32 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     viewDetails: localeKind === "tr" ? "Detayları İncele" : localeKind === "zh" ? "查看详情" : "View Details",
     communities: localeKind === "tr" ? "Topluluk" : localeKind === "zh" ? "社区" : "Communities",
     language: localeKind === "tr" ? "Dil" : localeKind === "zh" ? "语言" : "Language",
-    pilotProgram: localeKind === "tr" ? "Pilot Program" : localeKind === "zh" ? "试点项目" : "Pilot program",
+    pilotProgram: localeKind === "tr" ? "Pilot Programı" : localeKind === "zh" ? "试点项目" : "Pilot program",
     newUpdates: localeKind === "tr" ? "Yeni güncelleme" : localeKind === "zh" ? "新增更新" : "New updates",
-    tracks: localeKind === "tr" ? "Track" : localeKind === "zh" ? "路径" : "Tracks",
+    tracks: localeKind === "tr" ? "Hat" : localeKind === "zh" ? "路径" : "Tracks",
     updated2026: localeKind === "tr" ? "Güncel 2026" : localeKind === "zh" ? "2026 已更新" : "Updated for 2026",
     processSteps: localeKind === "tr" ? "Süreç adımı" : localeKind === "zh" ? "流程步骤" : "Process steps",
     supportingDocs: localeKind === "tr" ? "Destekleyici belge" : localeKind === "zh" ? "支持材料" : "Supporting docs",
     targetProvinces: localeKind === "tr" ? "Hedef eyalet" : localeKind === "zh" ? "目标省份" : "Target provinces",
     status: localeKind === "tr" ? "Durum" : localeKind === "zh" ? "状态" : "Status",
+    open: localeKind === "tr" ? "Açık" : localeKind === "zh" ? "开放" : "Open",
+    permanent: localeKind === "tr" ? "Kalıcı" : localeKind === "zh" ? "永久" : "Permanent",
+    paused: localeKind === "tr" ? "Duraklatıldı" : localeKind === "zh" ? "暂停" : "Paused",
+    closed: localeKind === "tr" ? "Kapatıldı" : localeKind === "zh" ? "已关闭" : "Closed",
+    quebecBusinessBadge: localeKind === "tr" ? "Quebec İş" : localeKind === "zh" ? "魁北克商业" : "Quebec Business",
+    streams3: localeKind === "tr" ? "3 akış" : localeKind === "zh" ? "3 个通道" : "3 streams",
+    stage2Of2: localeKind === "tr" ? "2/2 Aşama" : localeKind === "zh" ? "第 2 阶段（共 2 阶段）" : "Stage 2 of 2",
+    federalOnly: localeKind === "tr" ? "Yalnızca Federal" : localeKind === "zh" ? "仅联邦阶段" : "Federal only",
+    physicianOverlay: localeKind === "tr" ? "Doktor Overlay" : localeKind === "zh" ? "医生专属层" : "Physician Overlay",
+    dualTrack: localeKind === "tr" ? "Çift hat" : localeKind === "zh" ? "双路径" : "Dual-track",
+    expressEntryBadge: localeKind === "tr" ? "Express Entry" : localeKind === "zh" ? "快速通道" : "Express Entry",
+    pnpBadge: localeKind === "tr" ? "PNP Non-Express Entry" : localeKind === "zh" ? "省提名（非快速通道）" : "PNP Non-Express Entry",
+    atlanticBadge: localeKind === "tr" ? "Atlantik Göç Programı" : localeKind === "zh" ? "大西洋移民项目" : "Atlantic Immigration Program",
+    familyBadge: localeKind === "tr" ? "Aile Sponsorluğu" : localeKind === "zh" ? "家庭担保" : "Family Sponsorship",
+    tfwpLmiaBadge: localeKind === "tr" ? "TFWP / LMIA destekli" : localeKind === "zh" ? "TFWP / 基于 LMIA" : "TFWP / LMIA-based",
+    stage2FeeTierHigher: localeKind === "tr" ? "Aşama 2 federal ücret seviyesi (daha yüksek)" : localeKind === "zh" ? "第 2 阶段联邦费用档（较高）" : "Stage 2 federal fee tier (higher)",
+    crossReferenceWarningTitle: localeKind === "tr" ? "Çapraz referans uyarısı" : localeKind === "zh" ? "交叉核对提醒" : "Cross-reference warning",
+    lastVerified: localeKind === "tr" ? "Son doğrulama" : localeKind === "zh" ? "最近核验" : "Last verified",
     pilotsClosed: localeKind === "tr" ? "Pilot Kapandı" : localeKind === "zh" ? "试点已关闭" : "Pilots Closed",
     pausedClosedSummary: localeKind === "tr" ? "Duraklatilan veya Kapatilan Programlar (genisletmek icin tikla)" : localeKind === "zh" ? "暂停或关闭项目（点击展开）" : "Paused or Closed Programs (click to expand)",
     referenceOnly: localeKind === "tr" ? "Referans" : localeKind === "zh" ? "参考" : "Reference only",
@@ -155,33 +173,81 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     maximumFractionDigits: 0,
   }).format(pnp.fees?.processingFeeFrom ?? 1590);
 
-  const processingTimeText = localize(ee, "processingTimes", "Varies by program");
-  const pnpProcessingTimeText = localize(pnp.processingTime, "estimate", "about 13 months");
+  const processingTimeText = localize(
+    ee,
+    "processingTimes",
+    localeKind === "tr" ? "Programa göre değişir" : localeKind === "zh" ? "视具体项目而定" : "Varies by program"
+  );
+  const pnpProcessingTimeText = localize(
+    pnp.processingTime,
+    "estimate",
+    localeKind === "tr" ? "yaklaşık 13 ay" : localeKind === "zh" ? "约 13 个月" : "about 13 months"
+  );
   const pnpStepsCount = pnp.processSteps?.length ?? 0;
   const pnpDocsCount = pnp.documentsRequired?.supportingDocuments?.length ?? 0;
   const aipProvincesCount = aip?.target_provinces?.length ?? 4;
-  const aipFeeText = aip?.fees ?? "From $1,590 (Increased April 30, 2026)";
-  const aipProcessingTimeText = aip?.processing_time ?? "About 26 months (Does not include biometrics)";
-  const aipTitle = aip?.program_name ?? "Atlantic Immigration Program (AIP)";
-  const aipBody = aip?.overview ?? "A pathway to permanent residence for skilled foreign workers and international graduates who want to live and work in Atlantic Canada.";
+  const aipFeeText = localeKind === "tr"
+    ? "$1,590'dan başlar (30 Nisan 2026 artışı)"
+    : localeKind === "zh"
+      ? "$1,590 起（2026 年 4 月 30 日上涨）"
+      : (aip?.fees ?? "From $1,590 (Increased April 30, 2026)");
+  const aipProcessingTimeText = localeKind === "tr"
+    ? "Yaklaşık 26 ay (Biyometri hariç)"
+    : localeKind === "zh"
+      ? "约 26 个月（不含生物识别）"
+      : (aip?.processing_time ?? "About 26 months (Does not include biometrics)");
+  const aipTitle = localeKind === "tr"
+    ? "Atlantik Göç Programı (AIP)"
+    : localeKind === "zh"
+      ? "大西洋移民计划 (AIP)"
+      : (aip?.program_name ?? "Atlantic Immigration Program (AIP)");
+  const aipBody = localeKind === "tr"
+    ? "Kanada'nın 4 Atlantik eyaletinden birinde yaşamak ve çalışmak isteyen nitelikli yabancı işçiler ile Kanada mezunları için daimi oturum yoludur."
+    : localeKind === "zh"
+      ? "面向希望在加拿大 4 个大西洋省份之一工作和生活的技术工人与加拿大院校毕业生的永久居留通道。"
+      : (aip?.overview ?? "A pathway to permanent residence for skilled foreign workers and international graduates who want to live and work in Atlantic Canada.");
 
-  const familySponsorshipTitle = familySponsorship?.program_name ?? "Family Sponsorship (Spouse, Partner or Child)";
+  const familySponsorshipTitle = localeKind === "tr"
+    ? "Aile Sponsorluğu (Eş, Partner veya Çocuk)"
+    : localeKind === "zh"
+      ? "家庭担保（配偶、伴侣或子女）"
+      : (familySponsorship?.program_name ?? "Family Sponsorship (Spouse, Partner or Child)");
   const familySponsorshipBody = localeKind === "tr"
     ? "Eş, fiili birliktelik partneri veya bağımlı çocuğunuzu Kanada'da daimi oturma için sponsor edin. Bağlayıcı sponsorluk yükümlülüğü ve açık çalışma izni yolu dahildir."
     : localeKind === "zh"
       ? "为您的配偶、事实伴侣或受抚养子女申请加拿大永久居留担保，包含具有约束力的担保承诺与开放式工作许可路径。"
       : "Sponsor your spouse, common-law/conjugal partner, or dependent child for Canadian permanent residence, including the binding sponsorship undertaking and open work permit pathway.";
-  const familySponsorshipFee = familySponsorship?.fees ?? "From $1,260 (spouse/partner) / $180 (child)";
-  const familySponsorshipProcessingTime = familySponsorship?.processing_time ?? "Varies by complexity";
+  const familySponsorshipFee = localeKind === "tr"
+    ? "Eş/partner için $1,260'dan, çocuk için $180'den başlar (30 Nisan 2026 artışı)"
+    : localeKind === "zh"
+      ? "配偶/伴侣担保 $1,260 起；子女担保 $180 起（2026 年 4 月 30 日上涨）"
+      : (familySponsorship?.fees ?? "From $1,260 (spouse/partner) / $180 (child)");
+  const familySponsorshipProcessingTime = localeKind === "tr"
+    ? "Dosya karmaşıklığına göre değişir"
+    : localeKind === "zh"
+      ? "处理时长因个案复杂度而异"
+      : (familySponsorship?.processing_time ?? "Varies by complexity");
 
-  const caregiversTitle = caregivers?.program_name ?? "Home Care Workers & Caregivers (TFWP)";
+  const caregiversTitle = localeKind === "tr"
+    ? "Evde Bakım Çalışanları ve Bakıcılar (TFWP)"
+    : localeKind === "zh"
+      ? "家庭护理与照护人员 (TFWP)"
+      : (caregivers?.program_name ?? "Home Care Workers & Caregivers (TFWP)");
   const caregiversBody = localeKind === "tr"
     ? "Federal bakıcı pilot programları kapandı. Yeni başvurular artık LMIA destekli Geçici Yabancı İşçi Programı (TFWP) veya PNP üzerinden işleniyor."
     : localeKind === "zh"
       ? "联邦护理人员试点计划已关闭。新申请现通过获得 LMIA 支持的临时外国工人计划 (TFWP) 或省提名计划 (PNP) 处理。"
       : "Federal caregiver pilot programs are closed. New applications are now processed via the LMIA-backed Temporary Foreign Worker Program (TFWP) or a PNP.";
-  const caregiversFee = caregivers?.fees ?? "Work Permit fees vary; LMIA processing fees apply per application.";
-  const caregiversProcessingTime = caregivers?.processing_time ?? "Varies by LMIA approval and work permit stream.";
+  const caregiversFee = localeKind === "tr"
+    ? "Çalışma izni ücretleri değişir; başvuru başına LMIA işlem ücreti uygulanır."
+    : localeKind === "zh"
+      ? "工签费用因申请而异；每份申请均需支付 LMIA 处理费。"
+      : (caregivers?.fees ?? "Work Permit fees vary; LMIA processing fees apply per application.");
+  const caregiversProcessingTime = localeKind === "tr"
+    ? "LMIA onayı ve çalışma izni akışına göre değişir"
+    : localeKind === "zh"
+      ? "取决于 LMIA 审批与工签通道"
+      : (caregivers?.processing_time ?? "Varies by LMIA approval and work permit stream.");
 
   const pnpTitleFallback = localeKind === "tr"
     ? "Eyalet Adayı Programı (Non-Express Entry Süreci)"
@@ -277,9 +343,9 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block rounded-lg bg-violet-100 px-3 py-1.5 text-xs font-extrabold tracking-wider text-violet-900 dark:bg-violet-700/30 dark:text-violet-100">
-                  Quebec Business
+                  {ui.quebecBusinessBadge}
                 </span>
-                <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">3 streams</span>
+                <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">{ui.streams3}</span>
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-violet-700 transition-colors dark:text-white dark:group-hover:text-violet-300">
@@ -294,7 +360,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               <div className="flex items-center justify-between gap-2 text-xs text-violet-800 dark:text-violet-300">
                 <div className="flex items-center gap-1 min-w-0">
                   <Clock className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">Stage 2 federal fee tier (higher)</span>
+                  <span className="truncate">{ui.stage2FeeTierHigher}</span>
                 </div>
                 <div className="font-semibold">
                   <span>{quebecBusinessFeeText}</span>
@@ -315,9 +381,9 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block rounded-lg bg-amber-100 px-3 py-1.5 text-xs font-extrabold tracking-wider text-amber-900 dark:bg-amber-700/30 dark:text-amber-100">
-                  Stage 2 of 2
+                  {ui.stage2Of2}
                 </span>
-                <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">Federal only</span>
+                <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">{ui.federalOnly}</span>
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors dark:text-white dark:group-hover:text-amber-300">
@@ -367,7 +433,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                 <span className="inline-block rounded-lg bg-cyan-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-400">
                   RCIP
                 </span>
-                <span className="text-xs font-semibold text-slate-400">Open</span>
+                <span className="text-xs font-semibold text-slate-400">{ui.open}</span>
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors dark:text-white dark:group-hover:text-cyan-400">
@@ -409,7 +475,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                 <span className="inline-block rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400">
                   FCIP
                 </span>
-                <span className="text-xs font-semibold text-slate-400">Open</span>
+                <span className="text-xs font-semibold text-slate-400">{ui.open}</span>
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors dark:text-white dark:group-hover:text-indigo-400">
@@ -452,7 +518,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block rounded-lg bg-red-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-red-700 dark:bg-red-950/40 dark:text-red-400">
-                  Physician Overlay
+                  {ui.physicianOverlay}
                 </span>
                 <span className="text-xs font-semibold text-slate-400">2026</span>
               </div>
@@ -476,7 +542,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                   <span>{ui.updated2026}</span>
                 </div>
                 <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-zinc-300">
-                  <span>Dual-track</span>
+                  <span>{ui.dualTrack}</span>
                 </div>
               </div>
 
@@ -494,10 +560,10 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-rose-755 dark:bg-rose-950/40 dark:text-rose-400">
-                  Express Entry
+                  {ui.expressEntryBadge}
                 </span>
                 <span className="text-xs font-semibold text-slate-400">
-                  Permanent
+                  {ui.permanent}
                 </span>
               </div>
 
@@ -505,7 +571,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                 {localize(ee, "pathwayCovered", "Express Entry Canada")}
               </h3>
               <p className="mt-2.5 text-xs leading-relaxed text-slate-500 line-clamp-3 dark:text-slate-400">
-                {ee.pathwayCovered ?? "Express Entry only (CEC, FSW, FSTP, CRS)"}
+                {localize(ee, "pathwayCovered", "Express Entry only (CEC, FSW, FSTP, CRS)")}
               </p>
             </div>
 
@@ -534,9 +600,9 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
-                  PNP Non-Express Entry
+                  {ui.pnpBadge}
                 </span>
-                <span className="text-xs font-semibold text-slate-400">Open</span>
+                <span className="text-xs font-semibold text-slate-400">{ui.open}</span>
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors dark:text-white dark:group-hover:text-emerald-400">
@@ -579,9 +645,9 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block rounded-lg bg-sky-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-sky-700 dark:bg-sky-950/40 dark:text-sky-400">
-                  Atlantic Immigration Program
+                  {ui.atlanticBadge}
                 </span>
-                <span className="text-xs font-semibold text-slate-400">Open</span>
+                <span className="text-xs font-semibold text-slate-400">{ui.open}</span>
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-sky-600 transition-colors dark:text-white dark:group-hover:text-sky-400">
@@ -592,7 +658,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-500 dark:text-slate-400">
                 <span>{ui.targetProvinces}: {aipProvincesCount}</span>
-                <span>{ui.status}: Open</span>
+                <span>{ui.status}: {ui.open}</span>
               </div>
             </div>
 
@@ -621,9 +687,9 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-rose-700 dark:bg-rose-950/40 dark:text-rose-400">
-                  Family Sponsorship
+                  {ui.familyBadge}
                 </span>
-                <span className="text-xs font-semibold text-slate-400">Open</span>
+                <span className="text-xs font-semibold text-slate-400">{ui.open}</span>
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors dark:text-white dark:group-hover:text-rose-400">
@@ -659,7 +725,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-block rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
-                  TFWP / LMIA-based
+                  {ui.tfwpLmiaBadge}
                 </span>
                 <span className="text-xs font-semibold text-slate-400">
                   {ui.pilotsClosed}
@@ -710,7 +776,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               <p className="text-xs leading-5 text-slate-600 dark:text-slate-400">{localize(pausedClosedRegistry, "purpose")}</p>
 
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900 dark:border-amber-700/30 dark:bg-amber-950/20 dark:text-amber-100">
-                <p className="font-semibold">Cross-reference warning</p>
+                <p className="font-semibold">{ui.crossReferenceWarningTitle}</p>
                 <p className="mt-1">{localize(pausedClosedRegistry.importantCrossReference as Record<string, unknown> | undefined, "warning")}</p>
                 <p className="mt-1">{localize(pausedClosedRegistry.importantCrossReference as Record<string, unknown> | undefined, "actionNeeded")}</p>
                 <p className="mt-1">
@@ -719,7 +785,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               </div>
 
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Paused</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{ui.paused}</p>
                 <div className="space-y-2">
                   {pausedPrograms.map((item) => (
                     <div key={item.name} className="rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
@@ -738,7 +804,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               </div>
 
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Closed</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{ui.closed}</p>
                 <div className="space-y-2">
                   {closedPrograms.map((item) => (
                     <div key={item.name} className="rounded-lg border border-slate-200 bg-white p-3 text-sm opacity-85 dark:border-zinc-800 dark:bg-zinc-900">
@@ -758,7 +824,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               </div>
 
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Last verified: {pausedClosedRegistry.lastVerified}
+                {ui.lastVerified}: {pausedClosedRegistry.lastVerified}
               </p>
             </div>
           </details>
