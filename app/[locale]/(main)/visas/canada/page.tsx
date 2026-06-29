@@ -258,7 +258,11 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   const pnpBody = localize(
     pnp,
     "note",
-    "Covers federally verified process, fee, and document requirements for non-Express Entry PNP applications. Province-by-province stream eligibility is a separate layer."
+    localeKind === "tr"
+      ? "Non-Express Entry PNP başvuruları için federal olarak doğrulanmış süreç, ücret ve belge gerekliliklerini kapsar. Eyalet bazlı stream uygunluğu ayrı bir katmandır."
+      : localeKind === "zh"
+        ? "涵盖非快速通道省提名申请在联邦层面确认的流程、费用与文件要求；各省细分通道资格属于独立层面。"
+        : "Covers federally verified process, fee, and document requirements for non-Express Entry PNP applications. Province-by-province stream eligibility is a separate layer."
   );
 
   const provinceCaveat = localeKind === "tr"
@@ -271,7 +275,11 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   const physicianCardBody = localize(
     physicianOverlay,
     "structuralNote",
-    "Physician-focused 2026 pathway updates plus separate medical licensing steps in one detailed page."
+    localeKind === "tr"
+      ? "Doktorlara odaklanan 2026 pathway güncellemeleri ile ayrı tıbbi lisans adımları tek detaylı sayfada sunulur."
+      : localeKind === "zh"
+        ? "本页汇总医生专属 2026 路径更新，并单独说明医疗执照办理步骤。"
+        : "Physician-focused 2026 pathway updates plus separate medical licensing steps in one detailed page."
   );
   const physicianNewUpdatesCount = physicianOverlay.newFor2026?.length ?? 3;
   const pilotsFeeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
@@ -284,7 +292,11 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   const ruralSharedStructuralNote = localize(
     ruralFrancophone,
     "structuralNote",
-    "General pilot across 14 communities with job offer, community recommendation, and PR application steps."
+    localeKind === "tr"
+      ? "14 toplulukta iş teklifi, topluluk tavsiyesi ve PR başvuru adımlarını içeren genel pilot program."
+      : localeKind === "zh"
+        ? "覆盖 14 个社区的综合试点，包含工作聘书、社区推荐与永久居留申请步骤。"
+        : "General pilot across 14 communities with job offer, community recommendation, and PR application steps."
   );
   const rcipName = localize(
     rcip,
@@ -297,9 +309,29 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     "name",
     localeKind === "tr" ? "Frankofon Topluluk Göç Pilot Programı" : localeKind === "zh" ? "加拿大法语社区移民试点" : "Canada Francophone Community Immigration Pilot"
   );
-  const fcipPurpose = localize(fcip, "purpose", "Pilot across 6 Francophone-minority communities. Distinguishing eligibility: ability to communicate in French.");
-  const fcipNote = localize(fcip, "note", "Note: Sudbury and Timmins appear in both pilots; review both pages.");
-  const fcipLanguage = localize(fcip, "languageRequirement", "French required");
+  const fcipPurpose = localize(
+    fcip,
+    "purpose",
+    localeKind === "tr"
+      ? "Fransızca azınlık topluluklarından 6 bölgede yürütülen pilot program. Ayırt edici uygunluk koşulu: Fransızca iletişim becerisi."
+      : localeKind === "zh"
+        ? "覆盖 6 个法语少数族裔社区的试点项目，关键资格差异是具备法语沟通能力。"
+        : "Pilot across 6 Francophone-minority communities. Distinguishing eligibility: ability to communicate in French."
+  );
+  const fcipNote = localize(
+    fcip,
+    "note",
+    localeKind === "tr"
+      ? "Not: Sudbury ve Timmins her iki pilotta da yer alır; iki sayfayı birlikte inceleyin."
+      : localeKind === "zh"
+        ? "注：Sudbury 与 Timmins 同时出现在两个试点中，建议同时查看两页。"
+        : "Note: Sudbury and Timmins appear in both pilots; review both pages."
+  );
+  const fcipLanguage = localize(
+    fcip,
+    "languageRequirement",
+    localeKind === "tr" ? "Fransızca gerekli" : localeKind === "zh" ? "需具备法语能力" : "French required"
+  );
   const quebecFederalFeeText = new Intl.NumberFormat("en-CA", {
     style: "currency",
     currency: quebecFederal.fees?.currency ?? "CAD",
@@ -349,10 +381,26 @@ export default async function CanadaVisasPage({ params }: PageProps) {
               </div>
 
               <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-violet-700 transition-colors dark:text-white dark:group-hover:text-violet-300">
-                {localize(quebecBusiness, "pathwayCovered", "Quebec investors, entrepreneurs, self-employed")}
+                {localize(
+                  quebecBusiness,
+                  "pathwayCovered",
+                  localeKind === "tr"
+                    ? "Quebec yatırımcı, girişimci ve serbest meslek"
+                    : localeKind === "zh"
+                      ? "魁北克投资者、企业家与自雇人士"
+                      : "Quebec investors, entrepreneurs, self-employed"
+                )}
               </h3>
               <p className="mt-2.5 text-xs leading-relaxed text-slate-700 dark:text-slate-300 line-clamp-4">
-                {localize(quebecBusiness, "relationToOtherQuebecFile", "Three sub-streams in one page: investor, entrepreneur, and self-employed. Entrepreneur sub-stream details are marked as incomplete in source.")}
+                {localize(
+                  quebecBusiness,
+                  "relationToOtherQuebecFile",
+                  localeKind === "tr"
+                    ? "Tek sayfada üç alt-akış: yatırımcı, girişimci ve serbest meslek. Kaynakta girişimci alt-akış detayları eksik işaretlenmiştir."
+                    : localeKind === "zh"
+                      ? "单页汇总 3 个子通道：投资者、企业家与自雇人士；其中企业家子通道细节在源数据中标记为不完整。"
+                      : "Three sub-streams in one page: investor, entrepreneur, and self-employed. Entrepreneur sub-stream details are marked as incomplete in source."
+                )}
               </p>
             </div>
 
@@ -571,7 +619,15 @@ export default async function CanadaVisasPage({ params }: PageProps) {
                 {localize(ee, "pathwayCovered", "Express Entry Canada")}
               </h3>
               <p className="mt-2.5 text-xs leading-relaxed text-slate-500 line-clamp-3 dark:text-slate-400">
-                {localize(ee, "pathwayCovered", "Express Entry only (CEC, FSW, FSTP, CRS)")}
+                {localize(
+                  ee,
+                  "pathwayCovered",
+                  localeKind === "tr"
+                    ? "Yalnızca Express Entry (CEC, FSW, FSTP, CRS)"
+                    : localeKind === "zh"
+                      ? "仅限快速通道（CEC、FSW、FSTP、CRS）"
+                      : "Express Entry only (CEC, FSW, FSTP, CRS)"
+                )}
               </p>
             </div>
 
