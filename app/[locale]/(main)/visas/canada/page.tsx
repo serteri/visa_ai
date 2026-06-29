@@ -271,7 +271,15 @@ export default async function CanadaVisasPage({ params }: PageProps) {
       ? "按省份的细分通道对比将在独立模块中上线。"
       : "Detailed province-by-province stream comparison will be provided in a separate module.";
 
-  const physicianCardTitle = localize(physicianOverlay, "occupationOverlay", "Live and work as a medical doctor in Canada");
+  const physicianCardTitle = localize(
+    physicianOverlay,
+    "occupationOverlay",
+    localeKind === "tr"
+      ? "Kanada'da doktor olarak yaşa ve çalış"
+      : localeKind === "zh"
+        ? "在加拿大以医生身份生活和工作"
+        : "Live and work as a medical doctor in Canada"
+  );
   const physicianCardBody = localize(
     physicianOverlay,
     "structuralNote",
