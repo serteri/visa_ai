@@ -92,10 +92,89 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CanadaFrancophonePilotPage({ params }: PageProps) {
   const { locale } = await params;
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
+  const localeKind = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh" : "en";
 
   const data = pilotData as SharedData;
   const fcip = (data.pilots ?? []).find((pilot) => pilot.id === "francophone_community_immigration_pilot");
   const overlapCommunities = ["Sudbury, ON", "Timmins, ON"];
+  const trMap: Record<string, string> = {
+    "right_of_permanent_residence_fee": "daimi oturum hakkı ücreti",
+    "biometrics_fee": "biyometri ücreti",
+    "medical_exam": "sağlık muayenesi",
+    "police_certificate": "polis sertifikası",
+    "language_test": "dil testi",
+    "educational_credential_assessment": "eğitim denklik değerlendirmesi",
+    "Document Checklist - Francophone Community Immigration Pilot": "Belge Kontrol Listesi - Frankofon Topluluk Göç Pilot Programı",
+    "Offer of Employment to a Foreign National - FCIP": "Yabancı Uyrukluya İş Teklifi - FCIP",
+    "Schedule 1 - Francophone Community Immigration Pilot": "Ek-1 - Frankofon Topluluk Göç Pilot Programı",
+    "Recommendation from the Designated Economic Development Organization - FCIP": "Belirlenmiş Ekonomik Kalkınma Kuruluşundan Tavsiye - FCIP",
+    "Generic Application Form for Canada": "Kanada için Genel Başvuru Formu",
+    "Schedule A - Background/Declaration": "Ek A - Geçmiş/Beyan",
+    "Additional Family Information": "Ek Aile Bilgileri",
+    "Supplementary Information - Your travels": "Ek Bilgi - Seyahatleriniz",
+    "Statutory Declaration of Common-law Union": "Fiili Birliktelik Yasal Beyanı",
+    "If applicant has a common-law partner, plus 12+ months cohabitation proof": "Başvuru sahibinin fiili partneri varsa ve 12+ ay birlikte yaşama kanıtı",
+    "Separation Declaration for Minors Travelling to Canada": "Kanada'ya Seyahat Eden Küçükler için Ayrılık Beyanı",
+    "If applicable": "Uygunsa",
+    "Use of a Representative": "Temsilci Kullanımı",
+    "If using paid or unpaid representative": "Ücretli veya ücretsiz temsilci kullanılıyorsa",
+    "Authority to Release Personal Information to a Designated Individual": "Belirlenmiş Kişiye Kişisel Bilgi Açıklama Yetkisi",
+    "If releasing application info to a non-representative third party": "Başvuru bilgisi temsilci olmayan üçüncü tarafla paylaşılacaksa",
+    "Proof of language proficiency": "Dil yeterliliği kanıtı",
+    "Proof of education": "Eğitim kanıtı",
+    "Proof of settlement funds": "Yerleşim fonu kanıtı",
+    "Proof of relevant work experience": "İlgili iş deneyimi kanıtı",
+    "Valid regular passport (NOT diplomatic/official/service/public-affairs) + visa copy if residing outside passport country": "Geçerli normal pasaport (diplomatik/resmi/hizmet/kamu işleri değil) + pasaport ülkesinin dışında yaşıyorsa vize kopyası",
+    "Birth certificates (applicant + spouse/partner)": "Doğum belgeleri (başvuru sahibi + eş/partner)",
+    "Marriage/divorce/annulment certificates (all marriages if more than once)": "Evlilik/boşanma/iptal belgeleri (birden fazla evlilik varsa tümü)",
+    "Death certificate for former spouse(s) if applicable": "Eski eş(ler) için ölüm belgesi (uygunsa)",
+    "National ID / family registry book if applicable": "Ulusal kimlik / aile kayıt defteri (uygunsa)",
+    "Police certificate per country lived in 6+ months since age 18 (valid ~1 year from issue)": "18 yaşından sonra 6+ ay yaşanan her ülke için polis sertifikası (düzenlenmeden itibaren ~1 yıl geçerli)",
+    "Photo(s) for applicant + all family members (even non-accompanying), not older than 6 months": "Başvuru sahibi + tüm aile bireyleri (eşlik etmeyenler dahil) için 6 aydan eski olmayan fotoğraf(lar)",
+    "Fee payment receipt": "Ücret ödeme dekontu"
+  };
+  const zhMap: Record<string, string> = {
+    "right_of_permanent_residence_fee": "永久居留权利费",
+    "biometrics_fee": "生物识别费",
+    "medical_exam": "体检",
+    "police_certificate": "无犯罪证明",
+    "language_test": "语言测试",
+    "educational_credential_assessment": "学历认证评估",
+    "Document Checklist - Francophone Community Immigration Pilot": "文件清单 - 法语社区移民试点",
+    "Offer of Employment to a Foreign National - FCIP": "向外国公民提供就业邀约 - FCIP",
+    "Schedule 1 - Francophone Community Immigration Pilot": "附表 1 - 法语社区移民试点",
+    "Recommendation from the Designated Economic Development Organization - FCIP": "指定经济发展机构推荐信 - FCIP",
+    "Generic Application Form for Canada": "加拿大通用申请表",
+    "Schedule A - Background/Declaration": "附表 A - 背景/声明",
+    "Additional Family Information": "补充家庭信息",
+    "Supplementary Information - Your travels": "补充信息 - 您的旅行记录",
+    "Statutory Declaration of Common-law Union": "事实同居关系法定声明",
+    "If applicant has a common-law partner, plus 12+ months cohabitation proof": "如申请人有事实伴侣，需附 12 个月以上同居证明",
+    "Separation Declaration for Minors Travelling to Canada": "未成年人赴加分离声明",
+    "If applicable": "如适用",
+    "Use of a Representative": "使用代理人",
+    "If using paid or unpaid representative": "如使用收费或不收费代理人",
+    "Authority to Release Personal Information to a Designated Individual": "向指定个人披露个人信息授权",
+    "If releasing application info to a non-representative third party": "如向非代理的第三方披露申请信息",
+    "Proof of language proficiency": "语言能力证明",
+    "Proof of education": "学历证明",
+    "Proof of settlement funds": "安家资金证明",
+    "Proof of relevant work experience": "相关工作经验证明",
+    "Valid regular passport (NOT diplomatic/official/service/public-affairs) + visa copy if residing outside passport country": "有效普通护照（不接受外交/公务/服务/公共事务护照）+ 如居住在护照签发国以外需提供签证复印件",
+    "Birth certificates (applicant + spouse/partner)": "出生证明（申请人 + 配偶/伴侣）",
+    "Marriage/divorce/annulment certificates (all marriages if more than once)": "结婚/离婚/婚姻撤销证明（如有多次婚姻需全部提供）",
+    "Death certificate for former spouse(s) if applicable": "前配偶死亡证明（如适用）",
+    "National ID / family registry book if applicable": "身份证/户籍簿（如适用）",
+    "Police certificate per country lived in 6+ months since age 18 (valid ~1 year from issue)": "18 岁后每个连续居住 6 个月以上国家的无犯罪证明（签发后约 1 年有效）",
+    "Photo(s) for applicant + all family members (even non-accompanying), not older than 6 months": "申请人及全部家庭成员照片（含不随行），拍摄时间不超过 6 个月",
+    "Fee payment receipt": "费用缴纳凭证"
+  };
+  const l = (value?: string) => {
+    if (!value) return "";
+    if (localeKind === "tr") return trMap[value] ?? value;
+    if (localeKind === "zh") return zhMap[value] ?? value;
+    return value;
+  };
   const ui = {
     back: locale === "tr" ? "Kanada vizelerine don" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
     check: locale === "tr" ? "Uygunlugunu kontrol et" : locale === "zh-Hans" ? "检查你的资格" : "Check your eligibility",
@@ -150,6 +229,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
   );
   const eligibilityItems = localizedArray(data.sharedEligibilityCore, data.sharedEligibilityCore_tr, data.sharedEligibilityCore_zh);
   const processSteps = localizedArray(data.sharedProcessSteps, data.sharedProcessSteps_tr, data.sharedProcessSteps_zh);
+  const translationRule = localizedField(data.sharedDocuments as unknown as Record<string, unknown>, "translationRule", data.sharedDocuments?.translationRule);
 
   const feeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
     style: "currency",
@@ -344,12 +424,12 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
             <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
               <p>{ui.processingFeeFrom}: <span className="font-semibold">{feeText}</span></p>
               <p>{ui.lastFeeIncreaseDate}: <span className="font-semibold">{data.sharedFees?.lastIncreaseDate}</span></p>
-              <p>{ui.otherFeeCategories}: {(data.sharedFees?.otherFeeCategories ?? []).join(", ")}</p>
+              <p>{ui.otherFeeCategories}: {(data.sharedFees?.otherFeeCategories ?? []).map((item) => l(item)).join(", ")}</p>
               <div>
                 <p className="mb-2 font-semibold text-slate-900 dark:text-white">{ui.pilotSpecificForms}</p>
                 <ul className="space-y-1">
                   {(fcip?.pilotSpecificForms ?? []).map((form) => (
-                    <li key={form.form}>{form.form} - {form.name}</li>
+                    <li key={form.form}>{form.form} - {l(form.name)}</li>
                   ))}
                 </ul>
               </div>
@@ -357,7 +437,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
                 <p className="mb-2 font-semibold text-slate-900 dark:text-white">{ui.portalForms}</p>
                 <ul className="space-y-1">
                   {(data.sharedDocuments?.fillInPortal ?? []).map((form) => (
-                    <li key={form.form}>{form.form} - {form.name}</li>
+                    <li key={form.form}>{form.form} - {l(form.name)}</li>
                   ))}
                 </ul>
               </div>
@@ -376,7 +456,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
                 <p className="mb-2 font-semibold text-slate-900 dark:text-white">{ui.conditionalForms}</p>
                 <ul className="space-y-1">
                   {(data.sharedDocuments?.conditionalForms ?? []).map((form) => (
-                    <li key={form.form}>{form.form} - {form.name}{form.condition ? ` (${form.condition})` : ""}</li>
+                    <li key={form.form}>{form.form} - {l(form.name)}{form.condition ? ` (${l(form.condition)})` : ""}</li>
                   ))}
                 </ul>
               </div>
@@ -384,12 +464,12 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
                 <p className="mb-2 font-semibold text-slate-900 dark:text-white">{ui.supportingDocuments}</p>
                 <ul className="space-y-1">
                   {(data.sharedDocuments?.supportingDocuments ?? []).map((doc) => (
-                    <li key={doc}>{doc}</li>
+                    <li key={doc}>{l(doc)}</li>
                   ))}
                 </ul>
               </div>
               <div className="rounded-lg border border-slate-200 p-3 text-xs dark:border-slate-800">
-                {data.sharedDocuments?.translationRule}
+                {translationRule}
               </div>
             </CardContent>
           </Card>
