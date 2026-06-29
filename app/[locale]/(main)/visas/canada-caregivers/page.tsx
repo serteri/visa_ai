@@ -180,7 +180,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
     "T4 tax slips and Notice of Assessment (NOA) (Must mask SIN).": "T4 vergi dokumleri ve Notice of Assessment (NOA) (SIN bilgisi maskelenmelidir).",
     "Detailed Reference Letters: Start/end dates, NOC code, duties, salary/hours, employer contact/signature/letterhead.": "Detayli referans mektuplari: baslangic/bitis tarihleri, NOC kodu, gorevler, maas/saat, isveren iletisim/imza/antet.",
     "Proof of payment: Bank deposits, pay stubs, work contracts, ROEs.": "Odeme kaniti: banka yatirimlari, maas bordrolari, is sozlesmeleri, ROE belgeleri.",
-    "Must be sent via Web Form. Naming convention: 'Proof of experience - #'. Max size 2MB per file (3.5MB total). Use E-number (not W-number) for PR applications.": "Web Form uzerinden gonderilmelidir. Dosya adlandirmasi: 'Proof of experience - #'. Dosya basi en fazla 2MB (toplam 3.5MB). PR basvurularinda W numarasi yerine E numarasi kullanin."
+    "Must be sent via Web Form. Naming convention: 'Proof of experience - #'. Max size 2MB per file (3.5MB total). Use E-number (not W-number) for PR applications.": "Cevrimici form uzerinden gonderilmelidir. Dosya adlandirmasi: 'Proof of experience - #'. Dosya basi en fazla 2MB (toplam 3.5MB). PR basvurularinda W numarasi yerine E numarasi kullanin."
   };
   const zhMap: Record<string, string> = {
     "TFWP / LMIA-based": "基于 TFWP / LMIA",
@@ -202,7 +202,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
     "T4 tax slips and Notice of Assessment (NOA) (Must mask SIN).": "T4 税单与评税通知（NOA）（须遮盖 SIN）。",
     "Detailed Reference Letters: Start/end dates, NOC code, duties, salary/hours, employer contact/signature/letterhead.": "详细推荐信：起止日期、NOC 代码、职责、薪资/工时、雇主联系方式/签名/抬头纸。",
     "Proof of payment: Bank deposits, pay stubs, work contracts, ROEs.": "付款证明：银行入账记录、工资单、劳动合同、ROE。",
-    "Must be sent via Web Form. Naming convention: 'Proof of experience - #'. Max size 2MB per file (3.5MB total). Use E-number (not W-number) for PR applications.": "必须通过 Web Form 提交。命名规则：'Proof of experience - #'。每个文件最大 2MB（总计 3.5MB）。PR 申请请使用 E 编号（非 W 编号）。"
+    "Must be sent via Web Form. Naming convention: 'Proof of experience - #'. Max size 2MB per file (3.5MB total). Use E-number (not W-number) for PR applications.": "必须通过在线表单提交。命名规则：'Proof of experience - #'。每个文件最大 2MB（总计 3.5MB）。PR 申请请使用 E 编号（非 W 编号）。"
   };
   const l = (value?: string) => {
     if (!value) return "";
@@ -456,7 +456,7 @@ export default async function CanadaCaregiversPage({ params }: PageProps) {
 
             <div className="rounded-2xl border border-amber-200 bg-white p-4 dark:border-amber-500/20 dark:bg-slate-950/40">
               <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">
-                {isTr ? "Web Form gönderim protokolü" : isZh ? "Web Form 提交规则" : "Web Form submission protocol"}
+                {isTr ? "Cevrimici form gonderim protokolu" : isZh ? "在线表单提交规则" : "Web Form submission protocol"}
               </p>
               <p className="mt-2 text-sm leading-6 text-amber-900 dark:text-amber-100">{l(proofOfExperience.submission_protocol)}</p>
             </div>
