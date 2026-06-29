@@ -34,7 +34,7 @@ export function VisaPdfDownloadCard({
           </div>
           <div className="space-y-1">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700 dark:text-cyan-300">
-              Official Blob PDF
+              PDF
             </p>
             <h3 className="text-xl font-bold tracking-tight text-slate-950 dark:text-white">
               {title}
