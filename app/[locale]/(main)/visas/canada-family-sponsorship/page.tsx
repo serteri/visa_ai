@@ -146,6 +146,68 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
   const owpPolicy = data.open_work_permit_policy ?? {};
   const afterApply = data.after_apply_and_decisions ?? {};
   const pdfUrls = data.pdfSnapshotUrls ?? [];
+  const trMap: Record<string, string> = {
+    "Family Sponsorship": "Aile Sponsorlugu",
+    Open: "Acik",
+    "Sponsor a spouse or partner: from $1,260 (Increased April 30, 2026) | Sponsor a child: from $180 (Increased April 30, 2026)": "Es veya partner sponsorluğu: $1,260'dan baslar (30 Nisan 2026 artisi) | Cocuk sponsorluğu: $180'dan baslar (30 Nisan 2026 artisi)",
+    "Varies by complexity (Check tracker after receiving AOR)": "Dosya karmasikligina gore degisir (AOR sonrasi takip edin)",
+    "A comprehensive program to sponsor your spouse, common-law partner, conjugal partner or dependent child to become a permanent resident of Canada. Sponsors must commit to financially supporting the sponsored individuals so they do not require social assistance from the government.": "Esinizi, fiili partnerinizi, birliktelik partnerinizi veya bagimli cocugunuzu Kanada'da daimi oturum sahibi yapmak icin kapsamli sponsorluk programi. Sponsor, destekledigi kisilerin devletten sosyal yardim almamasi icin mali destek taahhudu verir.",
+    "A binding contract where the sponsor commits to financially support the sponsored people starting when they become permanent residents. If they receive social assistance, the sponsor must repay the government in full before sponsoring anyone else. Undertaking CANNOT be cancelled or shortened even if citizenship is gained, financial problems arise, or the relationship ends.": "Sponsorun, destekledigi kisiler daimi oturum aldigi andan itibaren mali destek vermeyi taahhut ettigi baglayici sozlesme. Sosyal yardim alinirsa sponsor yeni birine sponsor olmadan once devlete tam geri odeme yapar. Taahhut; vatandaslik kazanilsa, mali sorun ciksada veya iliski bitse de iptal edilemez ya da kisaltilamaz.",
+    "Spouse, common-law partner or conjugal partner": "Es, fiili partner veya birliktelik partneri",
+    "Dependent child 22 years of age and older": "22 yas ve uzeri bagimli cocuk",
+    "Dependent child under 22 years of age": "22 yas alti bagimli cocuk",
+    "10 years or until the child becomes 25 years of age, whichever comes first (age measured on date they become PR)": "10 yil veya cocuk 25 yasina ulasana kadar (hangisi onceyse; yas PR tarihi esas alinir)",
+    "3 years": "3 yil",
+    "Sponsors living in Quebec must sign a separate undertaking with the Government of Quebec. Do not submit the application to Quebec until instructed by IRCC, otherwise it will not be processed.": "Quebec'te yasayan sponsorlar Quebec Hukumeti ile ayri bir taahhut imzalamalidir. IRCC yonlendirmeden Quebec'e basvuru gondermeyin; aksi halde isleme alinmaz.",
+    "In most cases, there is no income requirement to sponsor a spouse, partner, or child. Income proof via Financial Evaluation Form (IMM 1283) is ONLY required if: 1) You are sponsoring a dependent child who has 1 or more dependent children of their own, OR 2) You are sponsoring a spouse/partner who has a dependent child, and that child has 1 or more dependent children of their own.": "Cogu durumda es/partner/cocuk sponsorlugunda gelir sarti yoktur. Gelir kaniti (IMM 1283) yalnizca su durumlarda gerekir: 1) Kendi bagimli cocugu olan bir bagimli cocugu sponsor ediyorsaniz, VEYA 2) Bagimli cocugu olan bir es/partneri sponsor ediyor ve o cocugun da bir veya daha fazla bagimli cocugu varsa.",
+    "Create an account or sign in to the online Permanent Residence (PR) Portal.": "Online Daimi Oturum (PR) Portalinda hesap olusturun veya giris yapin.",
+    "Get country-specific forms and instructions based on where the sponsored person lives, along with the Document Checklist.": "Sponsor edilen kisinin yasadigi ulkeye gore formlari, talimatlari ve Belge Kontrol Listesini alin.",
+    "Generic Application Form for Canada": "Kanada Genel Basvuru Formu",
+    "Schedule A – Background/Declaration": "Ek A - Gecmis/Beyan",
+    "Additional Family Information": "Ek Aile Bilgileri",
+    "Supplementary Information - Your travels": "Ek Bilgi - Seyahatleriniz",
+    "Document Checklist tailored to applicant's region": "Basvuru sahibinin bolgesine gore uyarlanmis Belge Kontrol Listesi",
+    "Use of a Representative (Required if using a paid/unpaid representative. Paid must be authorized. Representatives cannot sign or open portals for the applicant; applicant must type their own name for legal signature)": "Temsilci Kullanimi (Ucretli/ucretsiz temsilci varsa zorunlu. Ucretli temsilci yetkili olmalidir. Temsilci basvuru sahibi adina imzalayamaz veya portal acamaz; yasal imza icin adini basvuru sahibi bizzat yazar)",
+    "Authority to Release Personal Information to a Designated Individual (Required if releasing info to a non-representative)": "Belirlenmis Kisiye Kisisel Bilgi Aciklama Yetkisi (Bilgi temsilci olmayan kisiye aciklanacaksa zorunlu)",
+    "Statutory Declaration of Common-law Union (Required for common-law couples, must be hand-signed with 1-year joint proof like bank statements, leases, utility bills)": "Fiili Birliktelik Yasal Beyani (Fiili birliktelik ciftleri icin zorunlu; banka dokumu, kira sozlesmesi, fatura gibi 1 yillik ortak kanitla el yazisi imza gerekir)",
+    "Separation Declaration for Minors Travelling to Canada (Required if a minor child travels without both parents; must be hand-signed by non-accompanying parent before a notary public. Exempt if sole custody court order or death certificate is provided)": "Kanada'ya Seyahat Eden Kucukler Icin Ayrilik Beyani (Kucuk cocuk iki ebeveyn olmadan seyahat ediyorsa zorunlu; eslik etmeyen ebeveyn noterde imzalamalidir. Tek velayet karari veya olum belgesi varsa muaf)",
+    "Sponsor Your Spouse, Partner or Child - Official Guide (PDF)": "Esinizi, Partnerinizi veya Cocugunuzu Sponsor Edin - Resmi Rehber (PDF)",
+    "This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app.": "Bu rehber Vercel Blob'da saklanir ve uygulamanin kullandigi resmi Canada.ca surec anlik goruntusunu yansitir."
+  };
+  const zhMap: Record<string, string> = {
+    "Family Sponsorship": "家庭担保",
+    Open: "开放",
+    "Sponsor a spouse or partner: from $1,260 (Increased April 30, 2026) | Sponsor a child: from $180 (Increased April 30, 2026)": "担保配偶/伴侣：$1,260 起（2026-04-30 上调）| 担保子女：$180 起（2026-04-30 上调）",
+    "Varies by complexity (Check tracker after receiving AOR)": "视个案复杂度而定（收到 AOR 后查看进度）",
+    "A comprehensive program to sponsor your spouse, common-law partner, conjugal partner or dependent child to become a permanent resident of Canada. Sponsors must commit to financially supporting the sponsored individuals so they do not require social assistance from the government.": "用于担保配偶、事实伴侣、婚姻伴侣或受抚养子女成为加拿大永久居民的综合项目。担保人必须承诺提供经济支持，确保被担保人不依赖政府社会救助。",
+    "A binding contract where the sponsor commits to financially support the sponsored people starting when they become permanent residents. If they receive social assistance, the sponsor must repay the government in full before sponsoring anyone else. Undertaking CANNOT be cancelled or shortened even if citizenship is gained, financial problems arise, or the relationship ends.": "具有法律约束力的承诺：自被担保人成为永久居民起，担保人需承担其经济支持义务。若被担保人领取社会救助，担保人在再次担保他人前须全额偿还政府。该承诺即使取得国籍、发生财务问题或关系结束也不能取消或缩短。",
+    "Spouse, common-law partner or conjugal partner": "配偶、事实伴侣或婚姻伴侣",
+    "Dependent child 22 years of age and older": "22 岁及以上受抚养子女",
+    "Dependent child under 22 years of age": "22 岁以下受抚养子女",
+    "10 years or until the child becomes 25 years of age, whichever comes first (age measured on date they become PR)": "10 年或至子女满 25 岁（以先到者为准；年龄以成为 PR 当日计算）",
+    "3 years": "3 年",
+    "Sponsors living in Quebec must sign a separate undertaking with the Government of Quebec. Do not submit the application to Quebec until instructed by IRCC, otherwise it will not be processed.": "居住在魁北克的担保人必须与魁北克政府签署单独承诺。未收到 IRCC 指示前不要向魁北克提交申请，否则不会受理。",
+    "In most cases, there is no income requirement to sponsor a spouse, partner, or child. Income proof via Financial Evaluation Form (IMM 1283) is ONLY required if: 1) You are sponsoring a dependent child who has 1 or more dependent children of their own, OR 2) You are sponsoring a spouse/partner who has a dependent child, and that child has 1 or more dependent children of their own.": "多数情况下担保配偶/伴侣/子女无收入门槛。仅在以下情况需要通过 IMM 1283 提供收入证明：1）你担保的受抚养子女其本人还有 1 名或以上受抚养子女；或 2）你担保的配偶/伴侣有受抚养子女，且该子女还有 1 名或以上受抚养子女。",
+    "Create an account or sign in to the online Permanent Residence (PR) Portal.": "在永久居留（PR）在线门户创建账户或登录。",
+    "Get country-specific forms and instructions based on where the sponsored person lives, along with the Document Checklist.": "根据被担保人居住国家获取对应表格、指引及文件清单。",
+    "Generic Application Form for Canada": "加拿大通用申请表",
+    "Schedule A – Background/Declaration": "附表 A - 背景/声明",
+    "Additional Family Information": "补充家庭信息",
+    "Supplementary Information - Your travels": "补充信息 - 您的旅行记录",
+    "Document Checklist tailored to applicant's region": "按申请人地区定制的文件清单",
+    "Use of a Representative (Required if using a paid/unpaid representative. Paid must be authorized. Representatives cannot sign or open portals for the applicant; applicant must type their own name for legal signature)": "使用代理人（如使用收费/不收费代理人则必填。收费代理人必须具备授权。代理人不能代签或代开门户；申请人必须亲自输入姓名完成法律签署）",
+    "Authority to Release Personal Information to a Designated Individual (Required if releasing info to a non-representative)": "向指定个人披露个人信息授权（向非代理人披露信息时必填）",
+    "Statutory Declaration of Common-law Union (Required for common-law couples, must be hand-signed with 1-year joint proof like bank statements, leases, utility bills)": "事实同居关系法定声明（事实同居伴侣必填，须手写签字并附 1 年联名证明，如银行流水、租约、水电账单）",
+    "Separation Declaration for Minors Travelling to Canada (Required if a minor child travels without both parents; must be hand-signed by non-accompanying parent before a notary public. Exempt if sole custody court order or death certificate is provided)": "未成年人赴加分离声明（如未成年人非由双亲同行则必填；不随行父母须在公证人面前手签。若已提供单独监护法院令或死亡证明可豁免）",
+    "Sponsor Your Spouse, Partner or Child - Official Guide (PDF)": "担保您的配偶、伴侣或子女 - 官方指南（PDF）",
+    "This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app.": "本指南存储在 Vercel Blob，并映射应用使用的官方 Canada.ca 流程快照。"
+  };
+  const l = (value?: string) => {
+    if (!value) return "";
+    if (isTr) return trMap[value] ?? value;
+    if (isZh) return zhMap[value] ?? value;
+    return value;
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 pb-20 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
@@ -170,7 +232,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100">Canada</Badge>
                   <Badge className="bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-100">
-                    Family Sponsorship
+                    {l("Family Sponsorship")}
                   </Badge>
                 </div>
 
@@ -191,18 +253,18 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                     <DollarSign className="h-4 w-4 text-rose-600" />
                     {isTr ? "Ücret" : isZh ? "费用" : "Fee"}
                   </div>
-                  <p className="mt-2 text-sm font-bold leading-6 text-slate-950 dark:text-white">{data.fees}</p>
+                  <p className="mt-2 text-sm font-bold leading-6 text-slate-950 dark:text-white">{l(data.fees)}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
                     <Clock3 className="h-4 w-4 text-rose-600" />
                     {isTr ? "İşlem süresi" : isZh ? "处理时间" : "Processing time"}
                   </div>
-                  <p className="mt-2 text-sm font-bold leading-6 text-slate-950 dark:text-white">{data.processing_time}</p>
+                  <p className="mt-2 text-sm font-bold leading-6 text-slate-950 dark:text-white">{l(data.processing_time)}</p>
                 </div>
               </div>
 
-              <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">{data.overview}</p>
+              <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">{l(data.overview)}</p>
 
               {/* Binding undertaking durations */}
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-500/20 dark:bg-amber-500/10">
@@ -210,20 +272,20 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                   <Scale className="h-4 w-4" />
                   {isTr ? "Bağlayıcı Sponsorluk Yükümlülüğü" : isZh ? "具有约束力的担保承诺" : "Binding Sponsorship Undertaking"}
                 </div>
-                <p className="mt-2 text-sm leading-6 text-amber-900 dark:text-amber-100">{undertaking.definition}</p>
+                <p className="mt-2 text-sm leading-6 text-amber-900 dark:text-amber-100">{l(undertaking.definition)}</p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-3">
                   {(undertaking.durations_outside_quebec ?? []).map((row) => (
                     <div
                       key={row.person}
                       className="rounded-xl border border-amber-200 bg-white p-3 dark:border-amber-500/20 dark:bg-slate-950/40"
                     >
-                      <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">{row.person}</p>
-                      <p className="mt-1 text-sm font-bold text-slate-950 dark:text-white">{row.length}</p>
+                      <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">{l(row.person)}</p>
+                      <p className="mt-1 text-sm font-bold text-slate-950 dark:text-white">{l(row.length)}</p>
                     </div>
                   ))}
                 </div>
                 {undertaking.quebec_rule ? (
-                  <p className="mt-3 text-xs leading-5 text-amber-800 dark:text-amber-200">{undertaking.quebec_rule}</p>
+                  <p className="mt-3 text-xs leading-5 text-amber-800 dark:text-amber-200">{l(undertaking.quebec_rule)}</p>
                 ) : null}
               </div>
 
@@ -247,19 +309,19 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {isTr ? "Ücret" : isZh ? "费用" : "Fee"}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{data.fees}</p>
+                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.fees)}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {isTr ? "İşlem süresi" : isZh ? "处理时间" : "Processing time"}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{data.processing_time}</p>
+                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.processing_time)}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {isTr ? "Durum" : isZh ? "状态" : "Status"}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{data.status}</p>
+                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.status)}</p>
               </div>
             </CardContent>
           </Card>
@@ -270,8 +332,8 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
       <section className="mx-auto max-w-6xl px-4 pb-6 sm:px-6 lg:px-8">
         <VisaPdfDownloadCard
           pdfUrls={pdfUrls}
-          description="This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app."
-          title="Sponsor Your Spouse, Partner or Child - Official Guide (PDF)"
+          description={l("This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app.")}
+          title={l("Sponsor Your Spouse, Partner or Child - Official Guide (PDF)")}
           primaryLabel={isTr ? "PDF'yi Aç" : isZh ? "打开 PDF" : "Open PDF"}
           sourceLabel={visitOfficialWebsiteLabel}
         />
@@ -296,7 +358,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                   {(sponsorEligibility.positive_criteria ?? []).map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-rose-500" />
-                      <span>{item}</span>
+                      <span>{l(item)}</span>
                     </li>
                   ))}
                 </ul>
@@ -306,7 +368,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                 <p className="text-xs font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">
                   {isTr ? "Gelir şartı (çoğu durumda yok)" : isZh ? "收入要求（多数情况下无需）" : "Income requirement (not required in most cases)"}
                 </p>
-                <p className="mt-2 text-sm leading-6 text-sky-900 dark:text-sky-100">{sponsorEligibility.income_requirement}</p>
+                <p className="mt-2 text-sm leading-6 text-sky-900 dark:text-sky-100">{l(sponsorEligibility.income_requirement)}</p>
               </div>
 
               <div>
@@ -318,7 +380,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                   {(sponsorEligibility.negative_criteria ?? []).map((item) => (
                     <li key={item} className="flex gap-2">
                       <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
-                      <span>{item}</span>
+                      <span>{l(item)}</span>
                     </li>
                   ))}
                 </ul>
@@ -336,30 +398,30 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
             <CardContent className="space-y-4">
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">{isTr ? "Eş" : isZh ? "配偶" : "Spouse"}</p>
-                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{personTypes.spouse?.definition}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{l(personTypes.spouse?.definition)}</p>
               </div>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {isTr ? "Fiili Birliktelik (Common-law)" : isZh ? "事实伴侣" : "Common-law Partner"}
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{personTypes.common_law_partner?.definition}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{l(personTypes.common_law_partner?.definition)}</p>
               </div>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {isTr ? "Birliktelik Partneri (Conjugal)" : isZh ? "婚姻伴侣（Conjugal）" : "Conjugal Partner"}
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{personTypes.conjugal_partner?.definition}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{l(personTypes.conjugal_partner?.definition)}</p>
               </div>
               <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {isTr ? "Bağımlı Çocuk" : isZh ? "受抚养子女" : "Dependent Child"}
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{personTypes.dependent_child?.definition}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{l(personTypes.dependent_child?.definition)}</p>
                 <ul className="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-400">
                   {(personTypes.dependent_child?.custody_and_declaration_rules ?? []).map((item) => (
                     <li key={item} className="flex gap-2">
                       <FileWarning className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-500" />
-                      <span>{item}</span>
+                      <span>{l(item)}</span>
                     </li>
                   ))}
                 </ul>
@@ -386,7 +448,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-100 text-xs font-bold text-rose-800 dark:bg-rose-500/15 dark:text-rose-100">
                       {index + 1}
                     </span>
-                    <span>{step}</span>
+                    <span>{l(step)}</span>
                   </li>
                 ))}
               </ol>
@@ -410,7 +472,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                     <li key={item.code} className="flex gap-2">
                       <span className="text-rose-600">•</span>
                       <span>
-                        <span className="font-semibold">{item.code}</span> — {item.name}
+                        <span className="font-semibold">{item.code}</span> — {l(item.name)}
                       </span>
                     </li>
                   ))}
@@ -426,7 +488,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                     <li key={item.code} className="flex gap-2">
                       <span className="text-rose-600">•</span>
                       <span>
-                        <span className="font-semibold">{item.code}</span> — {item.name}
+                        <span className="font-semibold">{item.code}</span> — {l(item.name)}
                       </span>
                     </li>
                   ))}
@@ -455,7 +517,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                 {(owpPolicy.eligibility_criteria ?? []).map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
-                    <span>{item}</span>
+                    <span>{l(item)}</span>
                   </li>
                 ))}
               </ul>
@@ -468,13 +530,13 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                 {(owpPolicy.ineligibility ?? []).map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
-                    <span>{item}</span>
+                    <span>{l(item)}</span>
                   </li>
                 ))}
               </ul>
               {owpPolicy.visitor_visa_acceleration ? (
                 <p className="mt-4 rounded-xl border border-emerald-200 bg-white p-3 text-xs leading-5 text-emerald-900 dark:border-emerald-500/20 dark:bg-slate-950/40 dark:text-emerald-100">
-                  {owpPolicy.visitor_visa_acceleration}
+                  {l(owpPolicy.visitor_visa_acceleration)}
                 </p>
               ) : null}
             </div>
@@ -497,7 +559,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                 {(afterApply.processing_mechanisms ?? []).map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-rose-500" />
-                    <span>{item}</span>
+                    <span>{l(item)}</span>
                   </li>
                 ))}
               </ul>
@@ -516,7 +578,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                 {(afterApply.approval_and_refusal_outcomes ?? []).map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-rose-500" />
-                    <span>{item}</span>
+                    <span>{l(item)}</span>
                   </li>
                 ))}
               </ul>
@@ -524,7 +586,7 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
                 {(afterApply.withdrawal_and_refunds ?? []).map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-slate-400" />
-                    <span>{item}</span>
+                    <span>{l(item)}</span>
                   </li>
                 ))}
               </ul>
