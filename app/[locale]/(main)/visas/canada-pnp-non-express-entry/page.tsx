@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps) {
   const { locale } = await params;
   const translations = await getTranslations(locale as Locale);
-  const pnp = pnpProcessData as PnpProcessData;
+  const pnp = sanitizeLocaleContent(pnpProcessData as PnpProcessData, locale) as PnpProcessData;
 
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
   const isTr = locale === "tr";
