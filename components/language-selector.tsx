@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { ChevronDown, Globe } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { activeLocales } from "@/lib/i18n/config";
 import { languages } from "@/lib/languages";
 
 interface LanguageSelectorProps {
@@ -24,8 +25,12 @@ export function LanguageSelector({ currentLocale, compact = false }: LanguageSel
       return;
     }
 
-    // Replace the current locale in the pathname with the new locale
-    const pathWithoutLocale = pathname.replace(/^\/[A-Za-z-]+(?=\/|$)/, "") || "/";
+    // Strip locale prefix only when the first segment is actually a supported locale.
+    const segments = pathname.split("/").filter(Boolean);
+    const hasLocalePrefix = activeLocales.includes(segments[0] as (typeof activeLocales)[number]);
+    const pathWithoutLocale = hasLocalePrefix
+      ? `/${segments.slice(1).join("/")}` || "/"
+      : pathname || "/";
     const newPath = `/${languageCode}${pathWithoutLocale === "/" ? "" : pathWithoutLocale}`;
     
     router.push(newPath);
