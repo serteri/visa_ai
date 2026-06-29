@@ -56,8 +56,17 @@ export default async function CanadaVisasPage({ params }: PageProps) {
     return fallback ?? (obj[base] as string | undefined) ?? "";
   };
   const localizeStatus = (obj: Record<string, unknown>) => {
-    const localized = localize(obj, "status", "");
-    if (localized) return localized;
+    const localeSpecificStatus = localeKind === "tr"
+      ? (obj.status_tr as string | undefined)
+      : localeKind === "zh"
+        ? (obj.status_zh as string | undefined)
+        : undefined;
+    if (localeSpecificStatus) return localeSpecificStatus;
+
+    if (localeKind === "en") {
+      return (obj.status as string | undefined) ?? "";
+    }
+
     const raw = String(obj.status ?? "").toLowerCase();
     if (localeKind === "tr") {
       if (raw.includes("pause")) return "duraklatıldı";
@@ -174,7 +183,12 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   const caregiversFee = caregivers?.fees ?? "Work Permit fees vary; LMIA processing fees apply per application.";
   const caregiversProcessingTime = caregivers?.processing_time ?? "Varies by LMIA approval and work permit stream.";
 
-  const pnpTitle = localize(pnp, "pathwayCovered", "Provincial Nominee Program (Non-Express Entry Process)");
+  const pnpTitleFallback = localeKind === "tr"
+    ? "Eyalet Adayı Programı (Non-Express Entry Süreci)"
+    : localeKind === "zh"
+      ? "省提名计划（非快速通道流程）"
+      : "Provincial Nominee Program (Non-Express Entry Process)";
+  const pnpTitle = localize(pnp, "pathwayCovered", pnpTitleFallback);
   const pnpBody = localize(
     pnp,
     "note",
