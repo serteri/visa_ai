@@ -382,7 +382,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
             <CardContent className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
               <p>{ui.workExperience}: {investor?.managementExperience?.minimumYears} {locale === "tr" ? "yil" : locale === "zh-Hans" ? "年" : "years"} ({l(investor?.managementExperience?.window)})</p>
               <p>{ui.netWorthMinimum}: CAD {investor?.netWorth?.minimumCAD?.toLocaleString("en-CA")}</p>
-              <p>{ui.frenchMinimum}: {investor?.frenchLanguage?.minimumLevel}</p>
+              <p>{ui.frenchMinimum}: {l(investor?.frenchLanguage?.minimumLevel)}</p>
               <p>{ui.investment}: CAD {investor?.investmentAndContribution?.investmentCAD?.toLocaleString("en-CA")} {locale === "tr" ? "-" : locale === "zh-Hans" ? "，期限" : "for"} {l(investor?.investmentAndContribution?.investmentTerm)}</p>
               <p>{ui.financialContribution}: CAD {investor?.investmentAndContribution?.financialContributionCAD?.toLocaleString("en-CA")}</p>
               <p>{ui.quebecStayRequirement}: {investor?.quebecStayRequirement?.totalMonths} {locale === "tr" ? "ay" : locale === "zh-Hans" ? "个月" : "months"} {locale === "tr" ? "icinde" : locale === "zh-Hans" ? "需在" : "within"} {investor?.quebecStayRequirement?.windowYears} {locale === "tr" ? "yil" : locale === "zh-Hans" ? "年" : "years"} ({investor?.quebecStayRequirement?.minimumPersonalMonths} {locale === "tr" ? "ayi basvuru sahibinin bizzat tamamlamasi gerekir" : locale === "zh-Hans" ? "个月需由申请人本人完成" : "months personally"})</p>
@@ -422,7 +422,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
               <p>{ui.netWorthMinimum}: CAD {selfEmployed?.netWorth?.minimumCAD?.toLocaleString("en-CA")}</p>
               <p>{ui.startupDepositOutside}: CAD {selfEmployed?.startUpDeposit?.outsideCMM_CAD?.toLocaleString("en-CA")}</p>
               <p>{ui.startupDepositWithin}: CAD {selfEmployed?.startUpDeposit?.withinCMM_CAD?.toLocaleString("en-CA")}</p>
-              <p className="text-xs">{selfEmployed?.startUpDeposit?.CMM_meaning}</p>
+              <p className="text-xs">{l(selfEmployed?.startUpDeposit?.CMM_meaning)}</p>
               <p className="font-semibold">{ui.regulatedProfessionProcess}:</p>
               <ul className="space-y-1">
                 {(selfEmployed?.regulatedProfessionRequirement?.processSteps ?? []).map((step) => (
@@ -489,8 +489,8 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
                   ))}
                 </ul>
               </div>
-              <p>{ui.biometrics}: {data.afterApply?.biometrics?.ageRange}, {data.afterApply?.biometrics?.deadline}</p>
-              <p>{ui.medicalExamRequired}: {data.afterApply?.medicalExam?.required ? ui.yes : ui.no} ({data.afterApply?.medicalExam?.appliesTo})</p>
+              <p>{ui.biometrics}: {l(data.afterApply?.biometrics?.ageRange)}, {l(data.afterApply?.biometrics?.deadline)}</p>
+              <p>{ui.medicalExamRequired}: {data.afterApply?.medicalExam?.required ? ui.yes : ui.no} ({l(data.afterApply?.medicalExam?.appliesTo)})</p>
               <p>{ui.approved}: {l(data.afterApply?.decisionOutcomes?.approved)}</p>
               <p>{ui.refused}: {l(data.afterApply?.decisionOutcomes?.refused)}</p>
               <p>{ui.withdrawal}: {l(data.afterApply?.decisionOutcomes?.withdrawal)}</p>
