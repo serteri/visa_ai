@@ -98,8 +98,22 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
     return value ?? fallback ?? "";
   };
 
-  const title = localized("pathwayCovered", "Canada Provincial Nominee Program - Non-Express Entry");
-  const subtitle = localized("note", "See the federally verified process, fee, and document layer in one detailed card.");
+  const title = localized(
+    "pathwayCovered",
+    isTr
+      ? "Kanada Eyalet Aday Programi - Non-Express Entry"
+      : isZh
+        ? "加拿大省提名计划 - 非快速通道"
+        : "Canada Provincial Nominee Program - Non-Express Entry"
+  );
+  const subtitle = localized(
+    "note",
+    isTr
+      ? "Federal olarak dogrulanmis surec, ucret ve belge katmanini tek detay kartinda gorun."
+      : isZh
+        ? "在一个详情卡中查看联邦核验的流程、费用与文件层信息。"
+        : "See the federally verified process, fee, and document layer in one detailed card."
+  );
 
   const feeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
     style: "currency",
@@ -107,7 +121,11 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
     maximumFractionDigits: 0,
   }).format(pnp.fees?.processingFeeFrom ?? 1590);
 
-  const processingTimeText = localizedField(pnp.processingTime, "estimate", "about 13 months");
+  const processingTimeText = localizedField(
+    pnp.processingTime,
+    "estimate",
+    isTr ? "yaklasik 13 ay" : isZh ? "约 13 个月" : "about 13 months"
+  );
   const processSteps = pnp.processSteps ?? [];
   const documentsRequired = pnp.documentsRequired ?? {};
   const supportingDocuments = documentsRequired.supportingDocuments ?? [];
@@ -130,6 +148,17 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
     conditionalForms: isTr ? "Kosullu formlar" : isZh ? "条件表格" : "Conditional forms",
     afterApply: isTr ? "Basvuru Sonrasi" : isZh ? "递交后" : "After You Apply",
     caveats: isTr ? "Onemli Notlar" : isZh ? "重要注意事项" : "Important Caveats",
+    badge: isTr ? "PNP Non-Express Entry" : isZh ? "省提名（非快速通道）" : "PNP Non-Express Entry",
+    pdfTitle: isTr
+      ? "Kanada PNP Non-Express Entry Resmi Rehber (PDF)"
+      : isZh
+        ? "加拿大省提名（非快速通道）官方指南（PDF）"
+        : "Canada PNP Non-Express Entry Official Guide (PDF)",
+    pdfDescription: isTr
+      ? "Bu rehber Vercel Blob'da tutulur ve uygulamanin kullandigi resmi Canada.ca surec anlik goruntusunu yansitir."
+      : isZh
+        ? "本指南存储于 Vercel Blob，并映射应用使用的官方 Canada.ca 流程快照。"
+        : "This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app.",
   };
 
   return (
@@ -155,7 +184,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100">Canada</Badge>
                   <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-100">
-                    PNP Non-Express Entry
+                    {ui.badge}
                   </Badge>
                 </div>
 
@@ -250,8 +279,8 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
         <VisaPdfDownloadCard
           pdfUrls={pnp.sourcePdfBlobUrl ? [pnp.sourcePdfBlobUrl] : []}
           sourceUrl={pnp.sourceUrl}
-          description="This guide is stored on Vercel Blob and mirrors the official Canada.ca process snapshot used by the app."
-          title="Canada PNP Non-Express Entry Official Guide (PDF)"
+          description={ui.pdfDescription}
+          title={ui.pdfTitle}
           primaryLabel={locale === "tr" ? "PDF'yi Aç" : locale === "zh-Hans" ? "打开 PDF" : "Open PDF"}
           sourceLabel={visitOfficialWebsiteLabel}
         />
@@ -328,7 +357,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
               </div>
 
               <div>
-                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">Supporting documents</p>
+                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">{ui.supportingDocs}</p>
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                   {supportingDocuments.map((item) => (
                     <li key={item} className="flex gap-2">

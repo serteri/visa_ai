@@ -65,10 +65,20 @@ type SharedData = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
+  const title = locale === "tr"
+    ? "Kanada Frankofon Topluluk Goc Pilotu (FCIP) | LogiVisa"
+    : locale === "zh-Hans"
+      ? "加拿大法语社区移民试点（FCIP）| LogiVisa"
+      : "Canada Francophone Community Immigration Pilot (FCIP) | LogiVisa";
+  const description = locale === "tr"
+    ? "Frankofon Topluluk Goc Pilotu detaylari: Fransizca dil kosulu, topluluklar, surec adimlari, belgeler ve ucretler."
+    : locale === "zh-Hans"
+      ? "法语社区移民试点详情：法语要求、社区名单、流程步骤、材料与费用。"
+      : "Francophone Community Immigration Pilot details: French language requirement, communities, process steps, documents, and fees.";
   return {
     metadataBase: new URL(BASE_URL),
-    title: "Canada Francophone Community Immigration Pilot (FCIP) | LogiVisa",
-    description: "Francophone Community Immigration Pilot details: French language requirement, communities, process steps, documents, and fees.",
+    title,
+    description,
     alternates: {
       canonical: `/${locale}/visas/canada-francophone-pilot`,
       languages: {
@@ -171,7 +181,15 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
                 </div>
                 <div className="space-y-3">
                   <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
-                    {localizedField(fcip as unknown as Record<string, unknown>, "name", "Francophone Community Immigration Pilot (FCIP)")}
+                    {localizedField(
+                      fcip as unknown as Record<string, unknown>,
+                      "name",
+                      locale === "tr"
+                        ? "Frankofon Topluluk Goc Pilotu (FCIP)"
+                        : locale === "zh-Hans"
+                          ? "法语社区移民试点（FCIP）"
+                          : "Francophone Community Immigration Pilot (FCIP)"
+                    )}
                   </h1>
                   <p className="max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
                     {localizedField(fcip as unknown as Record<string, unknown>, "purpose")}

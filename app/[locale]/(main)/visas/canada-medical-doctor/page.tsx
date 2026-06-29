@@ -84,12 +84,21 @@ type PhysicianData = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
+  const title = locale === "tr"
+    ? "Kanada'da doktor olarak yasa ve calis | LogiVisa"
+    : locale === "zh-Hans"
+      ? "在加拿大以医生身份生活和工作 | LogiVisa"
+      : "Live and work as a medical doctor in Canada | LogiVisa";
+  const description = locale === "tr"
+    ? "Doktor odakli Kanada yolu: 2026 Express Entry physician category, PNP kontenjanlari ve MCC ile eyalet duzenleyicilerinden ayri tibbi lisanslama adimlari."
+    : locale === "zh-Hans"
+      ? "医生专属加拿大路径：2026 年医生专项快速通道、PNP 保留名额，以及通过 MCC 与各省监管机构完成的独立执照流程。"
+      : "Physician-focused Canada pathway: 2026 Express Entry physician category, PNP reserved spaces, and separate medical licensing steps through MCC and provincial regulators.";
 
   return {
     metadataBase: new URL(BASE_URL),
-    title: "Live and work as a medical doctor in Canada | LogiVisa",
-    description:
-      "Physician-focused Canada pathway: 2026 Express Entry physician category, PNP reserved spaces, and separate medical licensing steps through MCC and provincial regulators.",
+    title,
+    description,
     alternates: {
       canonical: `/${locale}/visas/canada-medical-doctor`,
       languages: {
