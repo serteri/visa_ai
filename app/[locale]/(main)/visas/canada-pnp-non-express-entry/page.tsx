@@ -79,19 +79,21 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
   const pnp = pnpProcessData as PnpProcessData;
 
   const localeSuffix = locale === "tr" ? "_tr" : locale === "zh-Hans" ? "_zh" : "";
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   const localized = (base: string, fallback?: string) => {
     if (!localeSuffix) {
       return fallback ?? ((pnp as Record<string, unknown>)[base] as string | undefined) ?? "";
     }
     const key = `${base}${localeSuffix}`;
     const source = pnp as Record<string, unknown>;
-    const value = (source[key] as string | undefined) ?? (source[base] as string | undefined);
+    const value = (source[key] as string | undefined) ?? fallback ?? (source[base] as string | undefined);
     return value ?? fallback ?? "";
   };
   const localizedField = <T extends Record<string, unknown>>(obj: T | undefined, base: string, fallback?: string) => {
     if (!obj) return fallback ?? "";
     const key = `${base}${localeSuffix}`;
-    const value = (obj[key] as string | undefined) ?? (obj[base] as string | undefined);
+    const value = (obj[key] as string | undefined) ?? fallback ?? (obj[base] as string | undefined);
     return value ?? fallback ?? "";
   };
 
@@ -114,6 +116,20 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
   const visitOfficialWebsiteLabel = t(translations, "visas.visitOfficialWebsite", "Visit official website");
   const backToVisasLabel = t(translations, "visas.backToVisas", "Back to visas");
   const officialInfoLabel = t(translations, "visas.officialInfo", "Official Information");
+  const ui = {
+    fee: isTr ? "Ucret" : isZh ? "费用" : "Fee",
+    processingTime: isTr ? "Islem suresi" : isZh ? "处理时间" : "Processing time",
+    processSteps: isTr ? "Surec adimi" : isZh ? "流程步骤" : "Process steps",
+    supportingDocs: isTr ? "Destekleyici belgeler" : isZh ? "支持文件" : "Supporting docs",
+    source: isTr ? "Kaynak" : isZh ? "来源" : "Source",
+    applicationSteps: isTr ? "Basvuru Adimlari" : isZh ? "申请步骤" : "Application Steps",
+    documentsRequired: isTr ? "Gerekli Belgeler" : isZh ? "所需文件" : "Documents Required",
+    formsFillPortal: isTr ? "Portalda doldurulacak formlar" : isZh ? "门户填写表格" : "Forms to fill in portal",
+    downloadUpload: isTr ? "Indir ve yukle" : isZh ? "下载并上传" : "Download and upload",
+    conditionalForms: isTr ? "Kosullu formlar" : isZh ? "条件表格" : "Conditional forms",
+    afterApply: isTr ? "Basvuru Sonrasi" : isZh ? "递交后" : "After You Apply",
+    caveats: isTr ? "Onemli Notlar" : isZh ? "重要注意事项" : "Important Caveats",
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
@@ -156,21 +172,21 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
                     <DollarSign className="h-4 w-4 text-emerald-600" />
-                    Fee
+                    {ui.fee}
                   </div>
                   <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{feeText}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
                     <Clock3 className="h-4 w-4 text-emerald-600" />
-                    Processing time
+                    {ui.processingTime}
                   </div>
                   <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{processingTimeText}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
                     <BadgeCheck className="h-4 w-4 text-emerald-600" />
-                    Process steps
+                    {ui.processSteps}
                   </div>
                   <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{processSteps.length}</p>
                 </div>
@@ -202,19 +218,19 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Fee</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.fee}</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{feeText}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Processing time</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.processingTime}</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{processingTimeText}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Supporting docs</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.supportingDocs}</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{supportingDocuments.length}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Source</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.source}</p>
                 <a
                   href={pnp.sourceUrl}
                   target="_blank"
@@ -246,7 +262,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <ListChecks className="h-5 w-5 text-emerald-600" />
-                Application Steps
+                {ui.applicationSteps}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -270,12 +286,12 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <ListChecks className="h-5 w-5 text-emerald-600" />
-                Documents Required
+                {ui.documentsRequired}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div>
-                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">Forms to fill in portal</p>
+                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">{ui.formsFillPortal}</p>
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                   {documentsRequired.fillInPortal?.map((item) => (
                     <li key={item.form} className="flex gap-2">
@@ -287,7 +303,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
               </div>
 
               <div>
-                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">Download and upload</p>
+                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">{ui.downloadUpload}</p>
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                   {documentsRequired.downloadAndUpload?.map((item) => (
                     <li key={item.form} className="flex gap-2">
@@ -299,7 +315,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
               </div>
 
               <div>
-                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">Conditional forms</p>
+                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">{ui.conditionalForms}</p>
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                   {documentsRequired.conditionalForms?.map((item) => (
                     <li key={item.form} className="flex gap-2">
@@ -332,7 +348,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <ListChecks className="h-5 w-5 text-emerald-600" />
-                After You Apply
+                {ui.afterApply}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -356,7 +372,7 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <ListChecks className="h-5 w-5 text-emerald-600" />
-                Important Caveats
+                {ui.caveats}
               </CardTitle>
             </CardHeader>
             <CardContent>

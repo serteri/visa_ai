@@ -98,11 +98,46 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
     back: locale === "tr" ? "Kanada vizelerine don" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
     check: locale === "tr" ? "Uygunlugunu kontrol et" : locale === "zh-Hans" ? "检查你的资格" : "Check your eligibility",
     openPdf: locale === "tr" ? "PDF Ac" : locale === "zh-Hans" ? "打开 PDF" : "Open PDF",
+    pilotBadge: locale === "tr" ? "Kirsal Topluluk Goc Pilotu" : locale === "zh-Hans" ? "农村社区移民试点" : "Rural Community Immigration Pilot",
+    fee: locale === "tr" ? "Ucret" : locale === "zh-Hans" ? "费用" : "Fee",
+    communities: locale === "tr" ? "Topluluk" : locale === "zh-Hans" ? "社区" : "Communities",
+    processSteps: locale === "tr" ? "Surec adimi" : locale === "zh-Hans" ? "流程步骤" : "Process steps",
+    viewFcip: locale === "tr" ? "FCIP sayfasini gor" : locale === "zh-Hans" ? "查看 FCIP 页面" : "View FCIP page",
+    quickFacts: locale === "tr" ? "Hizli Bilgiler" : locale === "zh-Hans" ? "快速信息" : "Quick Facts",
+    pathwayGroup: locale === "tr" ? "Pathway grubu" : locale === "zh-Hans" ? "路径组" : "Pathway group",
+    lastVerified: locale === "tr" ? "Son dogrulama" : locale === "zh-Hans" ? "最近核验" : "Last verified",
+    languageRequirement: locale === "tr" ? "Dil gereksinimi" : locale === "zh-Hans" ? "语言要求" : "Language requirement",
+    optionalWorkPermit: locale === "tr" ? "Opsiyonel calisma izni" : locale === "zh-Hans" ? "可选工作许可" : "Optional work permit",
+    yes: locale === "tr" ? "Evet" : locale === "zh-Hans" ? "是" : "Yes",
+    no: locale === "tr" ? "Hayir" : locale === "zh-Hans" ? "否" : "No",
+    pdfTitle: locale === "tr" ? "Kirsal ve Frankofon topluluk goc pilotlari (Resmi PDF)" : locale === "zh-Hans" ? "农村与法语社区移民试点（官方 PDF）" : "Rural and Francophone Community Immigration pilots (Official PDF)",
+    pdfDesc: locale === "tr" ? "Bu vize sayfasinda kullanilan resmi pilot referans PDF anlik goruntusu." : locale === "zh-Hans" ? "本签证页使用的官方试点参考 PDF 快照。" : "Official pilot reference PDF snapshot used by this visa page.",
+    eligibilityAndProcess: locale === "tr" ? "Uygunluk ve Surec" : locale === "zh-Hans" ? "资格与流程" : "Eligibility and Process",
+    coreEligibility: locale === "tr" ? "Temel uygunluk" : locale === "zh-Hans" ? "核心资格" : "Core eligibility",
+    applicationSteps: locale === "tr" ? "Basvuru adimlari" : locale === "zh-Hans" ? "申请步骤" : "Application steps",
+    communitiesOverlap: locale === "tr" ? "Topluluklar ve Kesisim" : locale === "zh-Hans" ? "社区与重叠" : "Communities and Overlap",
+    overlapAlert: locale === "tr" ? "Kesisim uyarisi" : locale === "zh-Hans" ? "重叠提醒" : "Overlap alert",
+    overlapBody: locale === "tr" ? `${overlapCommunities.join(" ve ")} hem RCIP hem FCIP icinde yer alir. Bu sehirleri sececek kullanicilar her iki pilota da bakmalidir.` : locale === "zh-Hans" ? `${overlapCommunities.join(" 和 ")} 同时出现在 RCIP 与 FCIP 中。选择这些城市的用户应同时查看两个试点。` : `${overlapCommunities.join(" and ")} are in both RCIP and FCIP. Users selecting these cities should review both pilots.`,
+    feesAfterApply: locale === "tr" ? "Ucretler ve Basvuru Sonrasi" : locale === "zh-Hans" ? "费用与递交后" : "Fees and After Apply",
+    processingFeeFrom: locale === "tr" ? "Baslangic islem ucreti" : locale === "zh-Hans" ? "处理费起" : "Processing fee from",
+    lastFeeIncreaseDate: locale === "tr" ? "Son ucret artisi tarihi" : locale === "zh-Hans" ? "最近涨价日期" : "Last fee increase date",
+    otherFeeCategories: locale === "tr" ? "Diger ucret kalemleri" : locale === "zh-Hans" ? "其他费用类别" : "Other fee categories",
+    biometrics: locale === "tr" ? "Biyometri" : locale === "zh-Hans" ? "生物识别" : "Biometrics",
+    age: locale === "tr" ? "Yas" : locale === "zh-Hans" ? "年龄" : "Age",
+    deadline: locale === "tr" ? "Son tarih" : locale === "zh-Hans" ? "截止时间" : "Deadline",
+    method: locale === "tr" ? "Yontem" : locale === "zh-Hans" ? "方式" : "Method",
+    medicalExam: locale === "tr" ? "Saglik muayenesi" : locale === "zh-Hans" ? "体检" : "Medical exam",
+    disqualifiers: locale === "tr" ? "Uygunsuzluklar" : locale === "zh-Hans" ? "不符合项" : "Disqualifiers",
+    formsDocs: locale === "tr" ? "Formlar ve Belgeler" : locale === "zh-Hans" ? "表格与文件" : "Forms and Documents",
+    pilotSpecificForms: locale === "tr" ? "Pilota ozel formlar" : locale === "zh-Hans" ? "试点专用表格" : "Pilot-specific forms",
+    portalForms: locale === "tr" ? "Portal formlari" : locale === "zh-Hans" ? "门户表格" : "Portal forms",
+    conditionalForms: locale === "tr" ? "Kosullu formlar" : locale === "zh-Hans" ? "条件表格" : "Conditional forms",
+    supportingDocuments: locale === "tr" ? "Destekleyici belgeler" : locale === "zh-Hans" ? "支持文件" : "Supporting documents",
   };
   const localizedField = <T extends Record<string, unknown>>(obj: T | undefined, base: string, fallback?: string) => {
     if (!obj) return fallback ?? "";
     const key = `${base}${localeSuffix}`;
-    const value = (obj[key] as string | undefined) ?? (obj[base] as string | undefined);
+    const value = (obj[key] as string | undefined) ?? fallback ?? (obj[base] as string | undefined);
     return value ?? fallback ?? "";
   };
   const localizedArray = <T,>(base: T[] | undefined, tr: T[] | undefined, zh: T[] | undefined) => {
@@ -149,7 +184,7 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100">Canada</Badge>
-                  <Badge className="bg-cyan-100 text-cyan-800 dark:bg-cyan-500/15 dark:text-cyan-100">Rural Community Immigration Pilot</Badge>
+                  <Badge className="bg-cyan-100 text-cyan-800 dark:bg-cyan-500/15 dark:text-cyan-100">{ui.pilotBadge}</Badge>
                 </div>
                 <div className="space-y-3">
                   <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
@@ -164,15 +199,15 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
 
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
-                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Fee</p>
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{ui.fee}</p>
                   <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{feeText}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
-                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Communities</p>
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{ui.communities}</p>
                   <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{rcip?.numberOfCommunities ?? 14}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
-                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Process steps</p>
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{ui.processSteps}</p>
                   <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{data.sharedProcessSteps?.length ?? 6}</p>
                 </div>
               </div>
@@ -188,7 +223,7 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
                   href={`/${locale}/visas/canada-francophone-pilot`}
                   className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
                 >
-                  View FCIP page
+                  {ui.viewFcip}
                   <ExternalLink className="h-4 w-4" />
                 </Link>
               </div>
@@ -197,24 +232,24 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
 
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
-              <CardTitle className="text-xl">Quick Facts</CardTitle>
+              <CardTitle className="text-xl">{ui.quickFacts}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pathway group</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.pathwayGroup}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{pathwayGroupText}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Last verified</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.lastVerified}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{data.lastVerified}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Language requirement</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.languageRequirement}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{localizedField(rcip as unknown as Record<string, unknown>, "languageRequirement")}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Optional work permit</p>
-                <p className="mt-1 font-medium text-slate-900 dark:text-white">{rcip?.optionalWorkPermit ? "Yes" : "No"}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.optionalWorkPermit}</p>
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">{rcip?.optionalWorkPermit ? ui.yes : ui.no}</p>
               </div>
             </CardContent>
           </Card>
@@ -224,8 +259,8 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
       <section className="mx-auto max-w-6xl px-4 pb-6 sm:px-6 lg:px-8">
         <VisaPdfDownloadCard
           pdfUrls={data.sourcePdfBlobUrl ? [data.sourcePdfBlobUrl] : []}
-          title="Rural and Francophone Community Immigration pilots (Official PDF)"
-          description="Official pilot reference PDF snapshot used by this visa page."
+          title={ui.pdfTitle}
+          description={ui.pdfDesc}
           primaryLabel={ui.openPdf}
         />
       </section>
@@ -236,12 +271,12 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <ListChecks className="h-5 w-5 text-cyan-600" />
-                Eligibility and Process
+                {ui.eligibilityAndProcess}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div>
-                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">Core eligibility</p>
+                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">{ui.coreEligibility}</p>
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                   {eligibilityItems.map((item) => (
                     <li key={item} className="flex gap-2">
@@ -252,7 +287,7 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
                 </ul>
               </div>
               <div>
-                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">Application steps</p>
+                <p className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">{ui.applicationSteps}</p>
                 <ol className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                   {processSteps.map((step) => (
                     <li key={step.step} className="flex gap-2">
@@ -272,7 +307,7 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <MapPinned className="h-5 w-5 text-cyan-600" />
-                Communities and Overlap
+                {ui.communitiesOverlap}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -284,10 +319,8 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
                 ))}
               </ul>
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-600/30 dark:bg-amber-950/20 dark:text-amber-100">
-                <p className="font-semibold">Overlap alert</p>
-                <p className="mt-1">
-                  {overlapCommunities.join(" and ")} are in both RCIP and FCIP. Users selecting these cities should review both pilots.
-                </p>
+                <p className="font-semibold">{ui.overlapAlert}</p>
+                <p className="mt-1">{ui.overlapBody}</p>
               </div>
             </CardContent>
           </Card>
@@ -300,24 +333,24 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <WalletCards className="h-5 w-5 text-cyan-600" />
-                Fees and After Apply
+                {ui.feesAfterApply}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-slate-700 dark:text-slate-300">
-              <p>Processing fee from: <span className="font-semibold">{feeText}</span></p>
-              <p>Last fee increase date: <span className="font-semibold">{data.sharedFees?.lastIncreaseDate}</span></p>
-              <p>Other fee categories: {(data.sharedFees?.otherFeeCategories ?? []).join(", ")}</p>
+              <p>{ui.processingFeeFrom}: <span className="font-semibold">{feeText}</span></p>
+              <p>{ui.lastFeeIncreaseDate}: <span className="font-semibold">{data.sharedFees?.lastIncreaseDate}</span></p>
+              <p>{ui.otherFeeCategories}: {(data.sharedFees?.otherFeeCategories ?? []).join(", ")}</p>
               <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                <p className="font-semibold">Biometrics</p>
-                <p>Age: {data.afterApply?.biometrics?.ageRange}</p>
-                <p>Deadline: {data.afterApply?.biometrics?.deadline}</p>
-                <p>Method: {data.afterApply?.biometrics?.method}</p>
+                <p className="font-semibold">{ui.biometrics}</p>
+                <p>{ui.age}: {data.afterApply?.biometrics?.ageRange}</p>
+                <p>{ui.deadline}: {data.afterApply?.biometrics?.deadline}</p>
+                <p>{ui.method}: {data.afterApply?.biometrics?.method}</p>
                 <p>{biometricsNote}</p>
               </div>
               <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                <p className="font-semibold">Medical exam</p>
+                <p className="font-semibold">{ui.medicalExam}</p>
                 <p>{data.afterApply?.medicalExam?.appliesTo}</p>
-                <p>Disqualifiers: {(data.afterApply?.medicalExam?.disqualifiers ?? []).join("; ")}</p>
+                <p>{ui.disqualifiers}: {(data.afterApply?.medicalExam?.disqualifiers ?? []).join("; ")}</p>
               </div>
               <p>{data.afterApply?.qualityAssuranceReview}</p>
               <p>{data.afterApply?.withdrawal}</p>
@@ -328,12 +361,12 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <Languages className="h-5 w-5 text-cyan-600" />
-                Forms and Documents
+                {ui.formsDocs}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 text-sm text-slate-700 dark:text-slate-300">
               <div>
-                <p className="mb-2 font-semibold text-slate-900 dark:text-white">Pilot-specific forms</p>
+                <p className="mb-2 font-semibold text-slate-900 dark:text-white">{ui.pilotSpecificForms}</p>
                 <ul className="space-y-1">
                   {(rcip?.pilotSpecificForms ?? []).map((form) => (
                     <li key={form.form}>{form.form} - {form.name}</li>
@@ -341,7 +374,7 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
                 </ul>
               </div>
               <div>
-                <p className="mb-2 font-semibold text-slate-900 dark:text-white">Portal forms</p>
+                <p className="mb-2 font-semibold text-slate-900 dark:text-white">{ui.portalForms}</p>
                 <ul className="space-y-1">
                   {(data.sharedDocuments?.fillInPortal ?? []).map((form) => (
                     <li key={form.form}>{form.form} - {form.name}</li>
@@ -349,7 +382,7 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
                 </ul>
               </div>
               <div>
-                <p className="mb-2 font-semibold text-slate-900 dark:text-white">Conditional forms</p>
+                <p className="mb-2 font-semibold text-slate-900 dark:text-white">{ui.conditionalForms}</p>
                 <ul className="space-y-1">
                   {(data.sharedDocuments?.conditionalForms ?? []).map((form) => (
                     <li key={form.form}>{form.form} - {form.name}{form.condition ? ` (${form.condition})` : ""}</li>
@@ -357,7 +390,7 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
                 </ul>
               </div>
               <div>
-                <p className="mb-2 font-semibold text-slate-900 dark:text-white">Supporting documents</p>
+                <p className="mb-2 font-semibold text-slate-900 dark:text-white">{ui.supportingDocuments}</p>
                 <ul className="space-y-1">
                   {(data.sharedDocuments?.supportingDocuments ?? []).map((doc) => (
                     <li key={doc}>{doc}</li>

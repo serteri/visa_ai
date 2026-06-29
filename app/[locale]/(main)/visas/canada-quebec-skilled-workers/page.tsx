@@ -136,6 +136,19 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
     back: locale === "tr" ? "Kanada vizelerine don" : locale === "zh-Hans" ? "返回加拿大签证" : "Back to Canada visas",
     check: locale === "tr" ? "Uygunlugunu kontrol et" : locale === "zh-Hans" ? "检查你的资格" : "Check your eligibility",
     openPdf: locale === "tr" ? "PDF Ac" : locale === "zh-Hans" ? "打开 PDF" : "Open PDF",
+    badgeStage2Federal: locale === "tr" ? "2/2 Asama - Yalnizca Federal" : locale === "zh-Hans" ? "第 2/2 阶段 - 仅联邦" : "Stage 2 of 2 - Federal only",
+    criticalScope: locale === "tr" ? "Kritik kapsam uyarisi" : locale === "zh-Hans" ? "关键范围提醒" : "Critical scope warning",
+    twoStageMap: locale === "tr" ? "Iki asamali surec haritasi" : locale === "zh-Hans" ? "两阶段流程图" : "Two-stage process map",
+    stage1Quebec: locale === "tr" ? "Asama 1 (Quebec)" : locale === "zh-Hans" ? "第 1 阶段（魁北克）" : "Stage 1 (Quebec)",
+    stage2Federal: locale === "tr" ? "Asama 2 (Federal IRCC)" : locale === "zh-Hans" ? "第 2 阶段（联邦 IRCC）" : "Stage 2 (Federal IRCC)",
+    separateNotDetailed: locale === "tr" ? "Ayrı süreç, burada detaylandırılmaz." : locale === "zh-Hans" ? "独立流程，此页不展开。" : "Separate process, not detailed here.",
+    detailedOnPage: locale === "tr" ? "Bu sayfada ayrintili aciklanir." : locale === "zh-Hans" ? "本页详细说明。" : "Detailed on this page.",
+    federalProcessingTime: locale === "tr" ? "Federal islem suresi" : locale === "zh-Hans" ? "联邦处理时间" : "Federal processing time",
+    federalFeeFrom: locale === "tr" ? "Federal ucret (en dusuk)" : locale === "zh-Hans" ? "联邦费用起" : "Federal fee from",
+    lastVerified: locale === "tr" ? "Son dogrulama" : locale === "zh-Hans" ? "最近核验" : "Last verified",
+    whatsMissing: locale === "tr" ? "Eksik olanlar (henüz dokümante değil)" : locale === "zh-Hans" ? "尚缺内容（尚未文档化）" : "What is missing (not documented yet)",
+    pdfTitle: locale === "tr" ? "Quebec secilmis nitelikli isciler (yalnizca federal asama) - Resmi PDF" : locale === "zh-Hans" ? "魁北克技术工人（仅联邦阶段）- 官方 PDF" : "Quebec-selected skilled workers (Federal stage only) - Official PDF",
+    pdfDescription: locale === "tr" ? "Bu PDF, CSQ sonrasi federal IRCC asamasini yansitir; Quebec'in kendi secim asamasi detaylarini icermez." : locale === "zh-Hans" ? "该 PDF 反映 CSQ 之后的联邦 IRCC 阶段，不包含魁北克本地筛选阶段细节。" : "This PDF reflects the federal IRCC stage after CSQ and does not include Quebec's own selection stage details.",
   };
   const localizedField = (base: string, fallback?: string) => {
     if (!localeSuffix) {
@@ -143,7 +156,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
     }
     const source = data as Record<string, unknown>;
     const key = `${base}${localeSuffix}`;
-    const value = (source[key] as string | undefined) ?? (source[base] as string | undefined);
+    const value = (source[key] as string | undefined) ?? fallback ?? (source[base] as string | undefined);
     return value ?? fallback ?? "";
   };
   const t = {
@@ -169,9 +182,9 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
         : "Federal Permanent Residence Application (IRCC)",
   };
   const localizedTwoStage = locale === "tr"
-    ? (data.twoStageProcess_tr ?? data.twoStageProcess)
+    ? data.twoStageProcess_tr
     : locale === "zh-Hans"
-      ? (data.twoStageProcess_zh ?? data.twoStageProcess)
+      ? data.twoStageProcess_zh
       : data.twoStageProcess;
   const localizedEligibility = locale === "tr"
     ? (data.eligibility_tr ?? data.eligibility ?? [])
@@ -195,14 +208,14 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
           >
             {ui.back}
           </Link>
-          <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-100">Stage 2 of 2 - Federal only</Badge>
+          <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-100">{ui.badgeStage2Federal}</Badge>
         </div>
 
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900 dark:border-amber-600/30 dark:bg-amber-950/20 dark:text-amber-100">
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
             <div>
-              <p className="font-semibold">Critical scope warning</p>
+              <p className="font-semibold">{ui.criticalScope}</p>
               <p className="mt-1 text-sm leading-6">
                 {localizedField(
                   "CRITICAL_STRUCTURAL_WARNING",
@@ -226,35 +239,35 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
               </div>
 
               <div className="rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
-                <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">Two-stage process map</p>
+                <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">{ui.twoStageMap}</p>
                 <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                   <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Stage 1 (Quebec)</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.stage1Quebec}</p>
                     <p className="mt-1 font-semibold text-slate-900 dark:text-white">{localizedTwoStage?.stage1_quebec?.name ?? t.stage1Name}</p>
-                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Separate process, not detailed here.</p>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{ui.separateNotDetailed}</p>
                   </div>
                   <div className="flex justify-center text-slate-400">
                     <ArrowRight className="h-5 w-5" />
                   </div>
                   <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-600/30 dark:bg-emerald-950/20">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-200">Stage 2 (Federal IRCC)</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-200">{ui.stage2Federal}</p>
                     <p className="mt-1 font-semibold text-emerald-900 dark:text-emerald-100">{localizedTwoStage?.stage2_federal_this_document?.name ?? t.stage2Name}</p>
-                    <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-200">Detailed on this page.</p>
+                    <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-200">{ui.detailedOnPage}</p>
                   </div>
                 </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
-                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Federal processing time</p>
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{ui.federalProcessingTime}</p>
                   <p className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{localizedTwoStage?.stage2_federal_this_document?.processingTime}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
-                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Federal fee from</p>
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{ui.federalFeeFrom}</p>
                   <p className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{feeText}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
-                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Last verified</p>
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{ui.lastVerified}</p>
                   <p className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{data.lastVerified}</p>
                 </div>
               </div>
@@ -272,7 +285,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
 
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
-              <CardTitle className="text-xl">What is missing (not documented yet)</CardTitle>
+              <CardTitle className="text-xl">{ui.whatsMissing}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
               {(data.missingDataFlags ?? []).map((flag) => (
@@ -289,8 +302,8 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
       <section className="mx-auto max-w-6xl px-4 pb-6 sm:px-6 lg:px-8">
         <VisaPdfDownloadCard
           pdfUrls={data.sourcePdfBlobUrl ? [data.sourcePdfBlobUrl] : []}
-          title="Quebec-selected skilled workers (Federal stage only) - Official PDF"
-          description="This PDF reflects the federal IRCC stage after CSQ and does not include Quebec's own selection stage details."
+          title={ui.pdfTitle}
+          description={ui.pdfDescription}
           primaryLabel={ui.openPdf}
         />
       </section>

@@ -165,9 +165,9 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
         : "This fills part of missingDataFlags from canada-quebec-selected-skilled-workers.json, but only for the investor/entrepreneur/self-employed business class. The general skilled-worker flow (QSWP/PSTQ, Arrima portal) remains separate and not fully documented here."
   );
   const localizedTwoStage = locale === "tr"
-    ? (data.twoStageProcess_tr ?? data.twoStageProcess)
+    ? data.twoStageProcess_tr
     : locale === "zh-Hans"
-      ? (data.twoStageProcess_zh ?? data.twoStageProcess)
+      ? data.twoStageProcess_zh
       : data.twoStageProcess;
 
   const federalFeeText = new Intl.NumberFormat(locale === "zh-Hans" ? "zh-CN" : locale === "tr" ? "tr-TR" : "en-CA", {
