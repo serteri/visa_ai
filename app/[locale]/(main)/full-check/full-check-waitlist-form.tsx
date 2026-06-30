@@ -244,6 +244,7 @@ export function FullCheckWaitlistForm({
     email?: string;
   } | null>(null);
   const reportSectionRef = useRef<HTMLElement | null>(null);
+  const budgetCurrency = selectedCountry === "CA" ? "CAD" : "AUD";
 
   const aiAnalysisSteps = isTr
     ? [
@@ -716,7 +717,11 @@ export function FullCheckWaitlistForm({
               id="waitlist-budget-range"
               name="estimatedBudgetRange"
               className={fieldClassName}
-              placeholder={txt("Orn: 10k-20k AUD", "E.g., 10k-20k AUD", "例如：10k-20k AUD")}
+              placeholder={txt(
+                `Orn: 10k-20k ${budgetCurrency}`,
+                `E.g., 10k-20k ${budgetCurrency}`,
+                `例如：10k-20k ${budgetCurrency}`
+              )}
             />
           </div>
 
