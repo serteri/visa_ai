@@ -27,10 +27,22 @@ type ProgramStatusItem = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
+  const title =
+    locale === "tr"
+      ? "Kanada Goc Vize ve Programlari | LogiVisa"
+      : locale === "zh-Hans"
+        ? "加拿大移民签证与通道 | LogiVisa"
+        : "Canada Immigration Visas and Pathways | LogiVisa";
+  const description =
+    locale === "tr"
+      ? "Kanada icin Express Entry, FSWP, CEC ve FSTP dahil guncel gocmenlik yollarini inceleyin."
+      : locale === "zh-Hans"
+        ? "查看加拿大最新移民通道，包括 Express Entry、FSWP、CEC 与 FSTP。"
+        : "Explore Canadian immigration streams under Express Entry, including FSWP, CEC, and FSTP.";
   return {
     metadataBase: new URL(BASE_URL),
-    title: "Canada Immigration Visas and Pathways | LogiVisa",
-    description: "Explore Canadian immigration streams under Express Entry, including FSWP, CEC, and FSTP.",
+    title,
+    description,
     alternates: {
       canonical: `/${locale}/visas/canada`,
       languages: {
