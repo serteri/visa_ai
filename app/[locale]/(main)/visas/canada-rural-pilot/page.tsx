@@ -72,10 +72,22 @@ type SharedData = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
+  const title =
+    locale === "tr"
+      ? "Kanada Kirsal Topluluk Goc Pilotu (RCIP) | LogiVisa"
+      : locale === "zh-Hans"
+        ? "加拿大农村社区移民试点（RCIP）| LogiVisa"
+        : "Canada Rural Community Immigration Pilot (RCIP) | LogiVisa";
+  const description =
+    locale === "tr"
+      ? "Kirsal Topluluk Goc Pilotu detaylari: uygunluk, topluluk listesi, surec adimlari, belgeler ve ucretler."
+      : locale === "zh-Hans"
+        ? "农村社区移民试点详情：资格、社区名单、流程步骤、材料与费用。"
+        : "Rural Community Immigration Pilot details: eligibility, community list, process steps, documents, and fees.";
   return {
     metadataBase: new URL(BASE_URL),
-    title: "Canada Rural Community Immigration Pilot (RCIP) | LogiVisa",
-    description: "Rural Community Immigration Pilot details: eligibility, community list, process steps, documents, and fees.",
+    title,
+    description,
     alternates: {
       canonical: `/${locale}/visas/canada-rural-pilot`,
       languages: {

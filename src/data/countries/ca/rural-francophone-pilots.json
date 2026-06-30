@@ -1,15 +1,33 @@
 {
   "country": "CA",
   "pathwayGroup": "Rural and Francophone Community Immigration Pilots",
+  "pathwayGroup_tr": "Kırsal ve Frankofon Topluluk Göç Pilotları",
+  "pathwayGroup_zh": "农村与法语社区移民试点",
   "lastVerified": "2026-06-28",
   "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Rural%20and%20Francophone%20Community%20Immigration%20pilots/Rural%20and%20Francophone%20Community%20Immigration%20pilots.pdf",
   "structuralNote": "Iki ayri ama surec olarak buyuk olcude ortusen pilot program: RCIP (genel, 14 topluluk) ve FCIP (Fransizca konusan, 6 Francophone-minority topluluk). Ayni surec/belge/ucret iskeletini paylasiyorlar, sadece topluluk listesi ve dil sarti farkli.",
+  "structuralNote_tr": "Süreç açısından büyük ölçüde örtüşen ancak ayrı iki pilot program: RCIP (genel, 14 topluluk) ve FCIP (Fransızca konuşan, 6 Frankofon azınlık topluluğu). Aynı süreç/belge/ücret iskeletini paylaşırlar; yalnızca topluluk listesi ve dil şartı farklıdır.",
+  "structuralNote_zh": "这是两个在流程上高度重叠但彼此独立的试点项目：RCIP（通用，14个社区）和 FCIP（法语，6个法语少数族裔社区）。它们共享相同的流程/材料/费用框架，只是在社区名单和语言要求上不同。",
   "sharedEligibilityCore": [
     "Valid job offer from a designated employer in a participating community",
     "At least 1 year (1,560 hours) of related work experience in the past 3 years",
     "Approved language test proving language ability",
     "Canadian educational credential or foreign equivalent",
     "Proof of sufficient funds to support self and family"
+  ],
+  "sharedEligibilityCore_tr": [
+    "Katılımcı bir topluluktaki belirlenmiş işverenden geçerli iş teklifi",
+    "Son 3 yılda en az 1 yıl (1.560 saat) ilgili iş deneyimi",
+    "Dil yeterliliğini kanıtlayan onaylı dil testi",
+    "Kanada eğitim belgesi veya yabancı dengi",
+    "Kendini ve ailesini destekleyecek yeterli fon kanıtı"
+  ],
+  "sharedEligibilityCore_zh": [
+    "来自参与社区指定雇主的有效工作邀约",
+    "过去3年至少1年（1,560小时）相关工作经验",
+    "证明语言能力的合格语言测试",
+    "加拿大教育证书或其外国等同学历",
+    "证明有足够资金支持本人及家人"
   ],
   "sharedProcessSteps": [
     { "step": 1, "name": "Check eligibility" },
@@ -18,6 +36,22 @@
     { "step": 4, "name": "Apply for permanent residence", "description": "Online via PR Portal, after community recommendation received" },
     { "step": 5, "name": "After you apply", "description": "AOR issued, biometrics + medical exam requested" },
     { "step": 6, "name": "Settling in Canada" }
+  ],
+  "sharedProcessSteps_tr": [
+    { "step": 1, "name": "Uygunluğu kontrol et" },
+    { "step": 2, "name": "İş teklifi alın", "description": "Katılımcı topluluklardan birindeki belirlenmiş işverenden" },
+    { "step": 3, "name": "Topluluk tavsiyesi alın", "description": "İşveren tavsiye başvurusunu topluluğa gönderir; topluluk işin öncelikli sektörde olduğunu, teklifin gerçek olduğunu ve başvuru sahibinin pilot şartlarını karşıladığını doğrular" },
+    { "step": 4, "name": "Daimi oturum için başvurun", "description": "Topluluk tavsiyesi alındıktan sonra PR Portal üzerinden çevrimiçi" },
+    { "step": 5, "name": "Başvurudan sonra", "description": "AOR düzenlenir, biyometri ve sağlık muayenesi istenir" },
+    { "step": 6, "name": "Kanada'ya yerleşme" }
+  ],
+  "sharedProcessSteps_zh": [
+    { "step": 1, "name": "检查资格" },
+    { "step": 2, "name": "获得工作邀约", "description": "来自参与社区之一的指定雇主" },
+    { "step": 3, "name": "获得社区推荐", "description": "雇主将推荐申请提交给社区；社区核实职位属于优先行业、邀约真实且申请人符合试点要求" },
+    { "step": 4, "name": "申请永久居留", "description": "在收到社区推荐后，通过 PR Portal 在线申请" },
+    { "step": 5, "name": "提交申请后", "description": "将发出 AOR，并要求采集生物识别信息和体检" },
+    { "step": 6, "name": "在加拿大安置" }
   ],
   "sharedFees": {
     "currency": "CAD",
@@ -59,7 +93,9 @@
       "Photo(s) for applicant + all family members (even non-accompanying), not older than 6 months",
       "Fee payment receipt"
     ],
-    "translationRule": "Any supporting document not in English/French needs: (1) a certified-translator-stamped translation OR a signed affidavit from the translator if no certified translator available, AND (2) a scan of the original or certified photocopy. Family members and the applicant's own immigration representative CANNOT serve as the translator."
+    "translationRule": "Any supporting document not in English/French needs: (1) a certified-translator-stamped translation OR a signed affidavit from the translator if no certified translator available, AND (2) a scan of the original or certified photocopy. Family members and the applicant's own immigration representative CANNOT serve as the translator.",
+    "translationRule_tr": "İngilizce/Fransızca olmayan destekleyici belgeler için: (1) onaylı tercüman kaşeli çeviri veya onaylı tercüman yoksa tercümanın imzalı beyanı ve (2) orijinalin ya da onaylı fotokopinin taraması gerekir. Aile üyeleri ve başvuru sahibinin kendi göçmenlik temsilcisi tercüman olamaz.",
+    "translationRule_zh": "任何非英语/法语的支持文件都需要：（1）带有认证译员印章的翻译，或在没有认证译员时由译员签署的宣誓书；以及（2）原件或经认证复印件的扫描件。家庭成员和申请人自己的移民代表不能担任译员。"
   },
   "representativeRules": {
     "paid": {
@@ -95,22 +131,54 @@
         "electronically sign the application"
       ]
     },
+    "canDo_tr": [
+      "kendi hesapları üzerinden form doldurup iletişim kurabilir",
+      "belgelerin hazırlanmasına yardımcı olabilir",
+      "formlarla ilgili soruları yanıtlayabilir"
+    ],
+    "canDo_zh": [
+      "通过他们自己的账户填写表格并沟通",
+      "帮助准备材料",
+      "回答有关表格的问题"
+    ],
+    "cannotDo_tr": [
+      "başvuru sahibi adına portal hesabı açamaz",
+      "başvuruyu elektronik olarak imzalayamaz",
+      "başvuru sahibinin kimlik bilgileriyle giriş yapamaz"
+    ],
+    "cannotDo_zh": [
+      "不能代申请人开设门户账户",
+      "不能电子签署申请",
+      "不能使用申请人的凭据登录"
+    ],
     "informalHelper": {
-      "note": "Someone helping without being a 'representative' doesn't need to be disclosed, AS LONG AS they don't advise on which program to apply for, complete/update the application as the applicant, or act as the applicant when dealing with IRCC."
+      "note": "Someone helping without being a 'representative' doesn't need to be disclosed, AS LONG AS they don't advise on which program to apply for, complete/update the application as the applicant, or act as the applicant when dealing with IRCC.",
+      "note_tr": "'Temsilci' olmadan yardımcı olan biri, hangi programa başvurulacağı konusunda tavsiye vermediği, başvuruyu başvuru sahibi adına doldurup güncellemediği ve IRCC ile işlem yaparken başvuru sahibi gibi davranmadığı sürece beyan edilmek zorunda değildir.",
+      "note_zh": "如果某人只是提供帮助而不属于“代表”，只要其不就申请哪个项目提供建议、不以申请人身份填写或更新申请，也不在与 IRCC 交涉时冒充申请人，则无需申报。"
     },
-    "legalSignatureRule": "Regardless of representative type, the applicant must personally type their own name after reading the declaration - this is the legal definition of 'signed' under Canadian immigration law."
+    "legalSignatureRule": "Regardless of representative type, the applicant must personally type their own name after reading the declaration - this is the legal definition of 'signed' under Canadian immigration law.",
+    "legalSignatureRule_tr": "Temsilci türü ne olursa olsun, başvuru sahibi beyanı okuduktan sonra kendi adını bizzat yazmalıdır; Kanada göçmenlik hukukunda 'imza' bunun yasal karşılığıdır.",
+    "legalSignatureRule_zh": "无论代表类型如何，申请人在阅读声明后都必须亲自输入自己的姓名——这在加拿大移民法中即构成“签名”的法律定义。"
   },
   "afterApply": {
-    "biometrics": { "ageRange": "14-79", "deadline": "30 days from instruction letter", "method": "in-person at collection sites", "note": "Required even if previously given and still valid" },
+    "biometrics": { "ageRange": "14-79", "deadline": "30 days from instruction letter", "method": "in-person at collection sites", "note": "Required even if previously given and still valid", "note_tr": "Daha önce verilmiş ve hâlâ geçerli olsa bile gerekir", "note_zh": "即使之前已采集且仍然有效，也仍然需要" },
     "medicalExam": { "required": true, "appliesTo": "applicant + partner + children, even non-accompanying", "disqualifiers": ["danger to public health/safety", "excessive demand on health/social services"] },
     "qualityAssuranceReview": "Applications may be randomly selected for special review.",
-    "withdrawal": "Can submit a webform to withdraw/cancel; partial fee refund possible depending on processing stage."
+    "qualityAssuranceReview_tr": "Başvurular rastgele özel inceleme için seçilebilir.",
+    "qualityAssuranceReview_zh": "申请可能会被随机抽查进行特殊审查。",
+    "withdrawal": "Can submit a webform to withdraw/cancel; partial fee refund possible depending on processing stage.",
+    "withdrawal_tr": "Geri çekme/iptal için cevrimici form gonderilebilir; isleme asamasina bagli olarak kismi ucret iadesi mumkundur.",
+    "withdrawal_zh": "可通过在线表单提交撤回/取消申请；是否能部分退费取决于处理阶段。"
   },
   "pilots": [
     {
       "id": "rural_community_immigration_pilot",
       "name": "Rural Community Immigration Pilot (RCIP)",
+      "name_tr": "Kırsal Topluluk Göç Pilot Programı (RCIP)",
+      "name_zh": "农村社区移民试点（RCIP）",
       "purpose": "Permanent residence for skilled workers wanting to work/settle in rural and remote communities",
+      "purpose_tr": "Kırsal ve uzak topluluklarda çalışmak/yerleşmek isteyen nitelikli işçiler için daimi oturum",
+      "purpose_zh": "面向希望在农村和偏远社区工作/定居的技术工人的永久居留项目",
       "numberOfCommunities": 14,
       "communities": [
         "Pictou County, NS",
@@ -135,12 +203,18 @@
         { "form": "IMM 0249", "name": "Recommendation from the Designated Economic Development Organization - RCIP" }
       ],
       "languageRequirement": "Approved test required, no French-specific mandate",
+      "languageRequirement_tr": "Onaylı test gerekir; Fransızca özel zorunluluk yoktur",
+      "languageRequirement_zh": "需要合格的语言测试，没有法语专门要求",
       "optionalWorkPermit": true
     },
     {
       "id": "francophone_community_immigration_pilot",
       "name": "Francophone Community Immigration Pilot (FCIP)",
+      "name_tr": "Frankofon Topluluk Göç Pilot Programı (FCIP)",
+      "name_zh": "法语社区移民试点（FCIP）",
       "purpose": "Permanent residence for skilled workers wanting to work/settle in rural Francophone-minority communities",
+      "purpose_tr": "Kırsal Frankofon azınlık topluluklarında çalışmak/yerleşmek isteyen nitelikli işçiler için daimi oturum",
+      "purpose_zh": "面向希望在农村法语少数族裔社区工作/定居的技术工人的永久居留项目",
       "numberOfCommunities": 6,
       "communities": [
         "Acadian Peninsula, NB",
@@ -157,8 +231,12 @@
         { "form": "IMM 0253", "name": "Recommendation from the Designated Economic Development Organization - FCIP" }
       ],
       "languageRequirement": "Must be able to communicate in French - distinguishing requirement vs. RCIP",
+      "languageRequirement_tr": "Fransızca iletişim kurabilmeli; RCIP'den ayıran gereklilik budur",
+      "languageRequirement_zh": "必须能够用法语交流——这是与 RCIP 区分开的要求",
       "optionalWorkPermit": true,
-      "note": "Sudbury and Timmins, ON appear in BOTH RCIP and FCIP community lists - flag for UI disambiguation."
+      "note": "Sudbury and Timmins, ON appear in BOTH RCIP and FCIP community lists - flag for UI disambiguation.",
+      "note_tr": "Sudbury ve Timmins, ON her iki pilot programın topluluk listesinde de yer alır. Size daha uygun programı belirlemek için iki sayfayı da incelemeniz önerilir.",
+      "note_zh": "Sudbury 和 Timmins（ON）同时列在两个试点项目中。建议同时查看两页内容，以判断哪一个更适合您。"
     }
   ],
   "disclaimerRequired": true
