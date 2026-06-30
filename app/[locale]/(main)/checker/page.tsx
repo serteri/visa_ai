@@ -239,9 +239,9 @@ export default function CheckerPage() {
     fullBestFor: tx("deeper preparation review", "daha derin hazırlık incelemesi", "深度准备评估"),
     fullButton: tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告"),
     fullTrustNote: tx(
-      "$29 Comprehensive Report – FREE during the limited early access period.",
-      "$29 Kapsamlı Rapor – Sınırlı erken erişim döneminde ÜCRETSİZ.",
-      "$29 综合报告 – 限时抢先体验期间免费。"
+      "$9.99 Comprehensive Report – FREE during the limited early access period.",
+      "$9.99 Kapsamlı Rapor – Sınırlı erken erişim döneminde ÜCRETSİZ.",
+      "$9.99 综合报告 – 限时抢先体验期间免费。"
     ),
     bestFor: tx("Best for:", "En uygun:", "最适合："),
     compliance: tx(

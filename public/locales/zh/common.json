@@ -25,10 +25,10 @@
   "forms.emailInvalid": "请输入有效的邮箱地址。",
   "paywall.title": "高级内容已锁定",
   "paywall.subtitle": "提交信息或完成支付后即可解锁完整报告，并自动接收 PDF。",
-  "paywall.price": "$29 单份报告",
+  "paywall.price": "$9.99 单份报告",
   "paywall.quickPreview": "快速预览",
   "paywall.premiumSections": "高级模块",
   "paywall.unlockMethod": "解锁方式",
   "paywall.method.lead": "提交线索表单解锁",
-  "paywall.method.payment": "支付解锁（$29）"
+  "paywall.method.payment": "支付解锁（$9.99）"
 }

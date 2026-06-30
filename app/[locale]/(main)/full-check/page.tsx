@@ -133,9 +133,9 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                         `🔥 抓紧：前 ${maxFree} 名用户免费。仅剩 ${remainingSpots} 个名额！`
                       )
                     : tx(
-                        "Premium Report — $29 per report.",
-                        "Premium Rapor — Rapor başına $29.",
-                        "高级报告 — 每份报告 $29。"
+                        "Premium Report — $9.99 per report.",
+                        "Premium Rapor — Rapor başına $9.99.",
+                        "高级报告 — 每份报告 $9.99。"
                       )
                   }
                 </div>

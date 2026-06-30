@@ -12,6 +12,8 @@ export function getStripeClient(): Stripe {
 }
 
 export function getPriceIdForProduct(product: StripeProductType): string {
+  // Founder reminder: Please remember to create a new $9.99 product in your Stripe Dashboard
+  // and update the STRIPE_PRICE_ID environment variable.
   const premiumPriceId =
     process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID ??
     process.env.STRIPE_PREMIUM_PRICE_ID;
