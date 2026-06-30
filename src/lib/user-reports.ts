@@ -76,7 +76,7 @@ export async function getUserReportById(reportId: string): Promise<{
       input_json: ReadinessInput;
     }>
   >(
-    `SELECT id, email, locale, report_json, input_json FROM user_reports WHERE id = $1::uuid LIMIT 1`,
+    `SELECT id, email, locale, report_json, input_json FROM user_reports WHERE id::text = $1::text LIMIT 1`,
     reportId
   );
 
@@ -110,7 +110,7 @@ export async function markUserReportUnlocked(input: {
         is_unlocked = TRUE,
         pdf_sent = $5,
         unlocked_at = NOW()
-      WHERE id = $6::uuid
+      WHERE id::text = $6::text
     `,
     input.email,
     input.phone ?? null,
