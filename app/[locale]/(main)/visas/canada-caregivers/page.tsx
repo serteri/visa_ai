@@ -66,12 +66,23 @@ function getData(): CaregiversData {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const data = getData();
-  const title = `${data.program_name ?? "Canada Home Care Workers & Caregivers"} | LogiVisa`;
+  const title =
+    locale === "tr"
+      ? "Kanada Evde Bakim Calisanlari ve Bakicilar (TFWP) | LogiVisa"
+      : locale === "zh-Hans"
+        ? "加拿大家庭护理工作者与护理人员（TFWP）| LogiVisa"
+        : `${data.program_name ?? "Canada Home Care Workers & Caregivers"} | LogiVisa`;
+  const description =
+    locale === "tr"
+      ? "Federal bakici pilotlari kapandi; yeni bakici basvurulari artik TFWP (LMIA) veya PNP uzerinden ilerler."
+      : locale === "zh-Hans"
+        ? "联邦护理人员试点已关闭；新申请现通过 TFWP（LMIA）或 PNP 进行。"
+        : data.overview ?? "Federal caregiver pilots are closed; caregivers now apply via TFWP (LMIA) or PNP.";
 
   return {
     metadataBase: new URL(BASE_URL),
     title,
-    description: data.overview ?? "Federal caregiver pilots are closed; caregivers now apply via TFWP (LMIA) or PNP.",
+    description,
     alternates: {
       canonical: `/${locale}/visas/canada-caregivers`,
       languages: {
