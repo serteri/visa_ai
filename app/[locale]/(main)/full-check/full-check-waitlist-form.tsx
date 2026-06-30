@@ -335,6 +335,7 @@ export function FullCheckWaitlistForm({
   const activeUnlockedReportState =
     unlockedReportState?.reportId === state.reportId ? unlockedReportState : null;
   const report = activeUnlockedReportState?.report ?? null;
+  const shouldHideIntakeForm = state.status === "success" && Boolean(state.reportId);
   const assistantReportData: AssistantReportData | null = report
     ? {
         country: report.country ?? "AU",
@@ -503,6 +504,7 @@ export function FullCheckWaitlistForm({
         </div>
       )}
 
+      {!shouldHideIntakeForm && (
       <form action={formAction} className="space-y-4" noValidate>
         <input type="hidden" name="routeLocale" value={locale} />
         <input type="hidden" name="locale" value={locale} />
@@ -783,6 +785,7 @@ export function FullCheckWaitlistForm({
                 )}
         </Button>
       </form>
+      )}
 
       {state.status === "success" && state.preview && state.reportId && !report && (
         <PremiumFeatureGate

@@ -261,6 +261,175 @@ function detectCanadaPathways(input: ReadinessInput): CanadaPathwayCode[] {
   return Array.from(found);
 }
 
+function hasCanadaPnpInterest(input: ReadinessInput): boolean {
+  const combined = [
+    input.mainGoal ?? "",
+    input.preferredPathway ?? "",
+    input.sponsorOrFamily ?? "",
+    input.biggestConcern ?? "",
+    input.occupation ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return hasKw(combined, [
+    "pnp",
+    "provincial nominee",
+    "province nomination",
+    "provincial nomination",
+    "oinp",
+    "bc pnp",
+    "ainp",
+  ]);
+}
+
+function buildCanadaSparseStrategy(params: {
+  locale: Locale;
+  occupation?: string;
+  pathwayCodes: CanadaPathwayCode[];
+  pointsEstimate?: number;
+  hasPnpInterest: boolean;
+}): {
+  summaryLines: string[];
+  nextSteps: string[];
+  primaryLimitingFactor: PrimaryLimitingFactor;
+} {
+  const { locale, occupation, pathwayCodes, pointsEstimate, hasPnpInterest } = params;
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const occ = (occupation ?? "").toLowerCase();
+  const isMedicalDoctor = ["doctor", "physician", "medical doctor", "hekim", "doktor", "md", "general practitioner"].some((kw) =>
+    occ.includes(kw)
+  );
+  const pathwayText = pathwayCodes.length > 0 ? pathwayCodes.join(", ") : (isTr ? "CEC/FSW/FSTP" : isZh ? "CEC/FSW/FSTP" : "CEC/FSW/FSTP");
+
+  if (isMedicalDoctor) {
+    const summaryLines = isTr
+      ? [
+          `Profil sparse olsa bile doktor mesleği için detaylı strateji uygulanır: ilk aşamada ${pathwayText} yolları, ikinci aşamada eyalet bazlı healthcare odaklı PNP sinyalleri birlikte değerlendirilir.`,
+          "Klinik pratik hedefleniyorsa göçmenlik ve lisanslama iki ayrı hat olarak planlanır: MCCQE/MCC değerlendirme akışı ile PR dosyası paralel yürütülmelidir.",
+          `CRS sinyali ${pointsEstimate ?? "hesaplanamadı"}. Puan tek başına karar verdirmez; healthcare draw türü, NOC/TEER eşleşmesi ve eyalet talebi birlikte ele alınır.`,
+        ]
+      : isZh
+        ? [
+            `即使输入较少，医生职业也会应用详细策略：第一层评估 ${pathwayText}，第二层叠加各省医疗导向PNP信号。`,
+            "若目标是临床执业，移民路径与执照路径必须并行规划：MCCQE/MCC评估流程应与PR申请同步推进。",
+            `当前CRS信号为 ${pointsEstimate ?? "未能计算"}。分数并非唯一变量；还需综合医疗类别抽选、NOC/TEER匹配和省级需求。`,
+          ]
+        : [
+            `Even with sparse inputs, a physician profile gets a detailed pathway strategy: ${pathwayText} is assessed first, then layered with province-level healthcare-focused PNP signals.`,
+            "If the goal includes clinical practice, immigration and licensing must run as parallel tracks: MCCQE/MCC licensing steps should be planned alongside PR strategy.",
+            `Current CRS signal is ${pointsEstimate ?? "not available"}. Points alone are not decisive; healthcare draw categories, NOC/TEER fit, and provincial demand must be evaluated together.`,
+          ];
+
+    const nextSteps = isTr
+      ? [
+          "NOC/TEER kodunu doktor alt uzmanlığına göre kesinleştirin ve Express Entry profilinde aynı kodu koruyun.",
+          "MCCQE/MCC lisanslama hazırlığını (sınav takvimi, belge doğrulama, credential pathway) ayrı bir iş planı olarak başlatın.",
+          "Healthcare odaklı draw'ları ve hedef eyalet PNP healthcare stream duyurularını aylık olarak takip edin.",
+          "ECA + dil testini güncel tutun; CRS optimizasyonu için CLB artış senaryolarını yeniden hesaplayın.",
+        ]
+      : isZh
+        ? [
+            "按医生细分方向确认NOC/TEER代码，并在Express Entry资料中保持一致。",
+            "将MCCQE/MCC执照准备（考试计划、材料核验、资质路径）作为独立工作流启动。",
+            "按月跟踪医疗类别抽选与目标省份PNP医疗通道公告。",
+            "保持ECA与语言成绩有效，并按CLB提升情景重算CRS优化路径。",
+          ]
+        : [
+            "Finalize the physician-specific NOC/TEER code and keep it consistent across Express Entry materials.",
+            "Run MCCQE/MCC licensing preparation as a separate workstream (exam timeline, document verification, credential pathway).",
+            "Track healthcare-category draws and target-province healthcare PNP announcements monthly.",
+            "Keep ECA and language scores current and re-model CRS scenarios for CLB upgrades.",
+          ];
+
+    const primaryLimitingFactor: PrimaryLimitingFactor = isTr
+      ? {
+          label: "Göç ve lisanslama hattının aynı anda yönetimi",
+          explanation:
+            "Doktor adaylarında ana kısıt genellikle puandan çok süreç senkronizasyonudur. PR stratejisi ile MCCQE/MCC lisanslama hazırlığı eşzamanlı ve takvimli ilerletilmelidir.",
+        }
+      : isZh
+        ? {
+            label: "移民路径与执照路径的并行管理",
+            explanation:
+              "医生档案的主要限制通常不是单一分数，而是双路径协同。PR策略与MCCQE/MCC执照准备需要并行并按时间表推进。",
+          }
+        : {
+            label: "Parallel management of immigration and licensing tracks",
+            explanation:
+              "For physician profiles, the primary constraint is often process synchronization rather than points alone. PR strategy and MCCQE/MCC licensing preparation should run in parallel against a clear timeline.",
+          };
+
+    return { summaryLines, nextSteps, primaryLimitingFactor };
+  }
+
+  const summaryLines = isTr
+    ? [
+        `Veri sparse olsa da boş rapor üretilmez: ${pathwayText} için meslek odaklı bir yol haritası oluşturulur ve kritik eksikler adım adım işlenir.`,
+        `CRS sinyali ${pointsEstimate ?? "hesaplanamadı"}. Bu değer tek başına karar değildir; meslek kodu, dil düzeyi ve eyalet/federal draw dinamiği birlikte ele alınır.`,
+        hasPnpInterest
+          ? "PNP ilgisi algılandı; eyalet bazlı stream detayları yakında genişletilecek olsa da şimdiden hedef eyalet kısa listesiyle ilerlemek gerekir."
+          : "Program seçimi net değilse CEC/FSW/FSTP karşılaştırması üzerinden en hızlı uygulanabilir rota önceliklendirilir.",
+      ]
+    : isZh
+      ? [
+          `即使信息较少，也不会生成空白报告：系统会围绕 ${pathwayText} 输出职业导向路线，并逐步标注关键缺口。`,
+          `当前CRS信号为 ${pointsEstimate ?? "未能计算"}。该值并非唯一结论，仍需结合职业代码、语言水平和联邦/省级抽选动态。`,
+          hasPnpInterest
+            ? "已识别PNP意向；即便省级细分仍在扩展，也应先建立目标省份短名单并推进可执行步骤。"
+            : "若项目偏好不明确，将基于CEC/FSW/FSTP比较优先选择最可执行路径。",
+        ]
+      : [
+          `Sparse input will not produce a blank report: the engine generates an occupation-focused pathway plan across ${pathwayText} and surfaces critical gaps step-by-step.`,
+          `Current CRS signal is ${pointsEstimate ?? "not available"}. This is not the sole decision variable; NOC fit, language level, and federal/provincial draw dynamics must be considered together.`,
+          hasPnpInterest
+            ? "PNP interest is detected; even while province-level stream detail is still expanding, a target-province shortlist should be built now."
+            : "When program preference is unclear, CEC/FSW/FSTP comparison is used to prioritize the fastest executable route.",
+        ];
+
+  const nextSteps = isTr
+    ? [
+        "Meslek için en yakın NOC/TEER kodunu kesinleştirip profilin tüm alanlarında aynı kodu kullanın.",
+        "Dil puanını CLB 9+ hedefiyle senaryolayın; puan artışının hangi programı öne taşıdığını karşılaştırın.",
+        "ECA, iş tecrübesi referansları ve fon kanıtlarını tek bir belge planında toplayın.",
+        "Hedef program için 30-60-90 günlük uygulama takvimi oluşturun (profil, davet, başvuru hazırlığı).",
+      ]
+    : isZh
+      ? [
+          "先确定最匹配的NOC/TEER代码，并在所有资料字段中保持一致。",
+          "以CLB 9+为目标进行语言分数情景测算，比较哪些项目会因此被明显强化。",
+          "将ECA、工作经验证明和资金材料整合为单一文档计划。",
+          "为目标项目建立30-60-90天执行节奏（建档、等待邀请、申请材料准备）。",
+        ]
+      : [
+          "Lock the closest-fit NOC/TEER code and keep it consistent across all profile fields.",
+          "Scenario-plan language upgrades toward CLB 9+ and compare which program gets the largest uplift.",
+          "Consolidate ECA, work-reference evidence, and proof-of-funds into one document plan.",
+          "Build a 30-60-90 day execution cadence for profile setup, invitation readiness, and application packaging.",
+        ];
+
+  const primaryLimitingFactor: PrimaryLimitingFactor = isTr
+    ? {
+        label: "Sinyal derinliği ve belge tutarlılığı",
+        explanation:
+          "Kısa girişlerde ana kısıt, programa özel sinyal derinliği ve kanıt tutarlılığıdır. Meslek kodu, dil hedefi ve belge seti netleştikçe strateji daha keskinleşir.",
+      }
+    : isZh
+      ? {
+          label: "信号深度与证据一致性",
+          explanation:
+            "在简短输入下，主要限制是项目特定信号深度和证据一致性。随着职业代码、语言目标和材料集被明确，策略会显著收敛。",
+        }
+      : {
+          label: "Signal depth and evidence consistency",
+          explanation:
+            "With sparse input, the main constraint is program-specific signal depth and evidence consistency. As NOC code, language target, and document set are clarified, strategy precision improves materially.",
+        };
+
+  return { summaryLines, nextSteps, primaryLimitingFactor };
+}
+
 const CANADA_PATHWAY_NAMES: Record<CanadaPathwayCode, { en: string; tr: string }> = {
   CEC: { en: "Canadian Experience Class", tr: "Kanada Deneyim Sınıfı (CEC)" },
   FSW: { en: "Federal Skilled Worker Program", tr: "Federal Vasıflı İşçi Programı (FSW)" },
@@ -277,28 +446,53 @@ const CANADA_PATHWAY_NAMES: Record<CanadaPathwayCode, { en: string; tr: string }
 function buildCanadaPathwayComparison(
   pathwayCodes: CanadaPathwayCode[],
   locale: Locale,
-  estimatedPoints?: number
+  estimatedPoints?: number,
+  occupation?: string
 ): PathwayComparison[] {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
 
   if (pathwayCodes.length === 0) {
+    const occText = occupation?.trim();
     return [
       {
         subclass: "general",
-        visaName: isTr ? "Genel değerlendirme" : "General assessment",
+        visaName: isTr ? "Meslek odaklı Kanada stratejisi" : isZh ? "职业导向加拿大策略" : "Occupation-focused Canada strategy",
         reason: isTr
-          ? "Mevcut bilgilerle belirli bir Express Entry programı tespit edilemedi."
-          : "No specific Express Entry program was detected from available information.",
+          ? (occText
+              ? `${occText} profili için boş yanıt verilmeden CEC/FSW/FSTP tabanlı stratejik plan üretildi.`
+              : "Belirli program sinyali yok; boş yanıt yerine CEC/FSW/FSTP tabanlı stratejik plan üretildi.")
+          : isZh
+            ? (occText
+                ? `已基于 ${occText} 档案生成CEC/FSW/FSTP策略，不返回空白结论。`
+                : "未识别到明确项目信号；系统已生成CEC/FSW/FSTP策略，而非空白结论。")
+            : (occText
+                ? `Generated a CEC/FSW/FSTP strategy for ${occText} instead of returning a blank outcome.`
+                : "No explicit program signal was detected, so a CEC/FSW/FSTP strategy was generated instead of a blank outcome."),
         relevance: "not_enough_information",
-        confidenceLevel: "low",
+        confidenceLevel: estimatedPoints !== undefined ? "medium" : "low",
         confidenceExplanation: isTr
-          ? "Mevcut sinyal seti sınırlı olduğu için güven seviyesi düşük görünmektedir."
-          : "Confidence is low because the available signal set is limited.",
+          ? "Sinyal seti sınırlı olsa da rapor boş bırakılmaz; mevcut veriden uygulanabilir rota üretilir."
+          : isZh
+            ? "即使信号有限，报告也不会留空；系统会基于现有信息生成可执行路径。"
+            : "Even with limited signals, the report is not left blank; an executable route is generated from available data.",
         difficulty: "medium",
-        requirementType: isTr ? "Genel yol sinyali" : "General pathway signal",
-        userRelativePosition: isTr ? "Daha fazla bilgi olmadan göreli konum netleşmez." : "Relative position is unclear without additional details.",
-        keyRequirements: isTr ? ["Daha ayrıntılı hedef ve meslek bağlamı"] : ["More detailed goal and occupation context"],
-        pathwaySpecificRisks: [],
+        requirementType: isTr ? "Meslek + CRS sinyali tabanlı stratejik rota" : isZh ? "基于职业+CRS信号的策略路径" : "Occupation + CRS signal-based strategic route",
+        userRelativePosition: isTr
+          ? "Ek veri geldikçe rota güçlendirilir; mevcut durumda uygulanabilir temel plan hazırdır."
+          : isZh
+            ? "随着更多数据补充可持续强化路线；当前已给出可执行基础方案。"
+            : "Route strength can be upgraded as more data arrives; a workable baseline plan is already provided.",
+        keyRequirements: isTr
+          ? ["NOC/TEER kesinleştirme", "Dil hedefi (CLB)", "ECA ve belge seti"]
+          : isZh
+            ? ["确认NOC/TEER", "语言目标（CLB）", "ECA与材料集"]
+            : ["NOC/TEER confirmation", "Language target (CLB)", "ECA and evidence set"],
+        pathwaySpecificRisks: isTr
+          ? ["Sınırlı giriş verisi, kesin program sıralamasını zayıflatabilir."]
+          : isZh
+            ? ["输入信息较少可能降低精确项目排序能力。"]
+            : ["Sparse input can reduce precision in program ranking."],
       },
     ];
   }
@@ -2526,11 +2720,58 @@ function buildPositionChangers(
 function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   const locale = input.locale;
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const hasPnpInterest = hasCanadaPnpInterest(input);
 
   const pathwayCodes = detectCanadaPathways(input);
   const pointsEstimate = buildCanadaPointsEstimate(input, locale);
   const dataCompleteness = buildDataCompleteness(input, locale);
-  const pathwayComparison = buildCanadaPathwayComparison(pathwayCodes, locale, pointsEstimate.estimatedPoints);
+  const pathwayComparison = buildCanadaPathwayComparison(pathwayCodes, locale, pointsEstimate.estimatedPoints, input.occupation);
+  if (hasPnpInterest) {
+    pathwayComparison.unshift({
+      subclass: "PNP",
+      visaName: isTr
+        ? "Provincial Nominee Program (PNP)"
+        : isZh
+          ? "省提名计划 (PNP)"
+          : "Provincial Nominee Program (PNP)",
+      reason: isTr
+        ? "Bu pathway icin eyalet-bazli detayli PNP analizi henuz aktif degil. Bu raporda gecici olarak genel CRS tabanli CEC/FSW/FSTP sinyalleri gosterilir."
+        : isZh
+          ? "该路径的省级细分PNP分析尚未启用。本报告暂时显示基于CRS的CEC/FSW/FSTP通用信号。"
+          : "Detailed province-level PNP analysis is not enabled yet for this pathway. This report is temporarily showing general CRS-based CEC/FSW/FSTP signals.",
+      relevance: "not_enough_information",
+      confidenceLevel: "low",
+      confidenceExplanation: isTr
+        ? "PNP altyapisi eyalet/bolge bazinda henuz tamamlanmadigi icin guven duzeyi dusuktur."
+        : isZh
+          ? "由于按省/地区的PNP分析尚未完成，当前置信度较低。"
+          : "Confidence is low because province/territory-level PNP analysis is not complete yet.",
+      difficulty: "high",
+      requirementType: isTr
+        ? "Eyalet/bolge bazli PNP kriterleri"
+        : isZh
+          ? "省/地区级PNP标准"
+          : "Province/territory-level PNP criteria",
+      userRelativePosition: isTr
+        ? "PNP icin goreli konum bu surumde olculmemektedir; yalnizca genel CRS sinyali sunulur."
+        : isZh
+          ? "当前版本无法评估PNP相对位置；仅提供通用CRS信号。"
+          : "Relative position for PNP is not measured in this version; only a general CRS signal is provided.",
+      keyRequirements: isTr
+        ? ["Hedef eyalet secimi", "Eyalet stream uygunluk kontrolu", "Eyalet bazli belge seti"]
+        : isZh
+          ? ["目标省份选择", "省提名通道资格核验", "省级材料清单"]
+          : ["Target province selection", "Provincial stream eligibility check", "Province-specific document set"],
+      pathwaySpecificRisks: [
+        isTr
+          ? "Bu gecici gorunum, eyalet stream kriterlerini yansitmaz."
+          : isZh
+            ? "该临时视图不代表各省具体通道标准。"
+            : "This temporary view does not represent province-specific stream criteria.",
+      ],
+    });
+  }
   const occupationIndication = buildCanadaOccupationIndication(input, locale);
 
   const riskIndicators = buildCanadaRiskIndicators({
@@ -2540,6 +2781,21 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     occupation: input.occupation,
     estimatedPoints: pointsEstimate.estimatedPoints,
   });
+  if (hasPnpInterest) {
+    riskIndicators.unshift({
+      level: "medium",
+      title: isTr
+        ? "PNP detay analizi henuz aktif degil"
+        : isZh
+          ? "PNP细分分析尚未启用"
+          : "Detailed PNP analysis not enabled yet",
+      explanation: isTr
+        ? "PNP secildiginde su an eyalet/bolge stream'lerine inen analiz yerine genel CRS tabanli CEC/FSW/FSTP sinyali gosterilir."
+        : isZh
+          ? "选择PNP时，当前不会下钻到省/地区通道，而是显示通用CRS下的CEC/FSW/FSTP信号。"
+          : "When PNP is selected, the report currently does not drill down into province/territory streams and shows a general CRS-based CEC/FSW/FSTP signal instead.",
+    });
+  }
 
   const documentChecklist = getCanadaDocumentChecklist(pathwayCodes, locale);
 
@@ -2555,6 +2811,26 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     hasEnglish: Boolean(input.englishLevel),
     hasMissingInfo: missingInformation.length > 0,
   });
+  const sparseStrategy = buildCanadaSparseStrategy({
+    locale,
+    occupation: input.occupation,
+    pathwayCodes,
+    pointsEstimate: pointsEstimate.estimatedPoints,
+    hasPnpInterest,
+  });
+  if (hasPnpInterest) {
+    suggestedNextSteps.unshift(
+      isTr
+        ? "PNP icin eyalet bazli detayli analiz yakinda eklenecektir; bu surumde yalnizca genel CRS bilgisi gosterilmektedir."
+        : isZh
+          ? "PNP的省级细分分析即将上线；当前版本仅显示通用CRS信息。"
+          : "Detailed province-level PNP analysis is coming soon; this version currently shows only general CRS information."
+    );
+  }
+
+  for (const step of [...sparseStrategy.nextSteps].reverse()) {
+    suggestedNextSteps.unshift(step);
+  }
 
   const premiumSections: PremiumSections = generatePremiumSections({
     locale,
@@ -2569,15 +2845,16 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   const keyVisaRequirements = buildKeyVisaRequirements(pathwayComparison);
 
-  const executiveSummary = [
-    isTr
-      ? pathwayCodes.length > 0
-        ? `Bu rapor ${pathwayCodes.join(", ")} programlarını CRS yapısal kriterleriyle karşılaştırır.`
-        : "Bu rapor, verilen bilgilerle görünen Express Entry sinyallerini karşılaştırır."
-      : pathwayCodes.length > 0
-        ? `This report compares the ${pathwayCodes.join(", ")} program(s) against CRS structural criteria.`
-        : "This report compares visible Express Entry signals based on the information provided.",
-  ];
+  const executiveSummary = [...sparseStrategy.summaryLines];
+  if (hasPnpInterest) {
+    executiveSummary.unshift(
+      isTr
+        ? "PNP secimi algilandi: eyalet-bazli detayli PNP modellemesi yakinda eklenecek. Su an genel CRS sinyali gosteriliyor."
+        : isZh
+          ? "已识别PNP选择：省级细分PNP建模即将上线，当前显示通用CRS信号。"
+          : "PNP selection detected: province-level detailed PNP modeling is coming soon. The current report shows a general CRS signal."
+    );
+  }
 
   const signalSnapshot: SignalSnapshot = {
     strongest: pathwayComparison[0]?.visaName ?? (isTr ? "Belirlenemedi" : "Not yet determined"),
@@ -2588,12 +2865,17 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
       : "This is based on a partial CRS estimate only.",
   };
 
-  const primaryLimitingFactor: PrimaryLimitingFactor = {
-    label: missingInformation[0] ?? (isTr ? "Ek bilgi" : "Additional information"),
-    explanation: isTr
-      ? "Eksik veri alanları, CRS ve uygunluk değerlendirmesinin tamlığını sınırlamaktadır."
-      : "Missing data fields limit the completeness of the CRS and eligibility assessment.",
-  };
+  const primaryLimitingFactor: PrimaryLimitingFactor =
+    missingInformation.length > 0
+      ? {
+          label: missingInformation[0],
+          explanation: isTr
+            ? "Eksik veri alanları, CRS ve uygunluk değerlendirmesinin tamlığını sınırlamaktadır."
+            : isZh
+              ? "缺失字段会限制CRS与资格评估的完整性。"
+              : "Missing data fields limit the completeness of CRS and eligibility assessment.",
+        }
+      : sparseStrategy.primaryLimitingFactor;
 
   return {
     country: "CA",

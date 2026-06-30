@@ -85,6 +85,49 @@ export type AdminResetState = {
   deletedCount?: number;
 };
 
+// ─── Country-specific report schema guards ───────────────────────────────────
+
+const AU_PATHWAY_SUBCLASSES = new Set(["500", "485", "482", "189", "190", "491", "820", "801", "general"]);
+const CA_PATHWAY_SUBCLASSES = new Set(["CEC", "FSW", "FSTP", "AIP", "FAMILY_SPONSORSHIP", "PNP", "general"]);
+
+function ensureCountrySpecificReportSchema(report: ReadinessReport, country: "AU" | "CA"): ReadinessReport {
+  const sanitized = enforceCountryReportScope(report, country);
+
+  if (country === "CA") {
+    const invalidPathway = (sanitized.pathwayComparison ?? []).find(
+      (item) => !CA_PATHWAY_SUBCLASSES.has(item.subclass)
+    );
+
+    if (invalidPathway) {
+      throw new Error(`Invalid Canada pathway schema key: ${invalidPathway.subclass}`);
+    }
+
+    if (sanitized.rankedPathways && sanitized.rankedPathways.length > 0) {
+      throw new Error("Invalid Canada schema: rankedPathways must be omitted for CA reports.");
+    }
+
+    if (sanitized.stateNominationTracker) {
+      throw new Error("Invalid Canada schema: stateNominationTracker must be omitted for CA reports.");
+    }
+
+    if (sanitized.lodgementReadyChecklist) {
+      throw new Error("Invalid Canada schema: lodgementReadyChecklist must be omitted for CA reports.");
+    }
+  }
+
+  if (country === "AU") {
+    const invalidPathway = (sanitized.pathwayComparison ?? []).find(
+      (item) => !AU_PATHWAY_SUBCLASSES.has(item.subclass)
+    );
+
+    if (invalidPathway) {
+      throw new Error(`Invalid Australia pathway schema key: ${invalidPathway.subclass}`);
+    }
+  }
+
+  return sanitized;
+}
+
 // ─── Feature flags ────────────────────────────────────────────────────────────
 
 type FreeBetaStatus = {
@@ -810,7 +853,7 @@ export async function submitFullCheckWaitlist(
     await updateFullCheckProgress(analysisProgressId, "scanning_occupations");
   }
 
-  const generatedReport = enforceCountryReportScope(
+  const generatedReport = ensureCountrySpecificReportSchema(
     runReadinessEngine({
     locale: resolvedLocale,
     country: targetCountry,
