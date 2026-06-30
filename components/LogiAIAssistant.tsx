@@ -71,8 +71,6 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
   const [isSending, setIsSending] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
-  const [panelPosition, setPanelPosition] = useState<{ x: number; y: number } | null>(null);
   const [messages, setMessages] = useState<AssistantMessage[]>([
     {
       id: uid(),
@@ -92,61 +90,17 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
   ]);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const dragOffsetRef = useRef({ x: 0, y: 0 });
-
-  function clampPosition(x: number, y: number) {
-    const panel = panelRef.current;
-    const panelWidth = panel?.offsetWidth ?? 420;
-    const panelHeight = panel?.offsetHeight ?? 560;
-    const maxX = Math.max(8, window.innerWidth - panelWidth - 8);
-    const maxY = Math.max(8, window.innerHeight - panelHeight - 8);
-    return {
-      x: Math.min(Math.max(8, x), maxX),
-      y: Math.min(Math.max(8, y), maxY),
-    };
-  }
-
-  function resetDesktopPosition() {
-    const panel = panelRef.current;
-    const panelWidth = panel?.offsetWidth ?? 420;
-    const panelHeight = panel?.offsetHeight ?? 560;
-    const targetX = window.innerWidth - panelWidth - 16;
-    const targetY = window.innerHeight - panelHeight - 16;
-    setPanelPosition(clampPosition(targetX, targetY));
-  }
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 640px)");
     const syncMobileState = () => {
       setIsMobile(media.matches);
-      if (media.matches) {
-        setPanelPosition(null);
-      }
     };
 
     syncMobileState();
     media.addEventListener("change", syncMobileState);
     return () => media.removeEventListener("change", syncMobileState);
   }, []);
-
-  useEffect(() => {
-    if (isMobile || !isOpen || panelPosition) return;
-    resetDesktopPosition();
-  }, [isMobile, isOpen, panelPosition]);
-
-  useEffect(() => {
-    if (isMobile || !isOpen || !panelPosition) return;
-    const handleResize = () => {
-      setPanelPosition((current) => {
-        if (!current) return current;
-        return clampPosition(current.x, current.y);
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isMobile, isOpen, panelPosition]);
 
   const suggestedPrompts = useMemo(() => {
     const ranked = Array.isArray(reportData.rankedPathways)
@@ -200,32 +154,6 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
       ),
     ];
   }, [isCanada, reportData, t]);
-
-  function handleDragStart(event: React.PointerEvent<HTMLDivElement>) {
-    if (isMobile || !panelPosition) return;
-    event.preventDefault();
-    setIsDragging(true);
-    dragOffsetRef.current = {
-      x: event.clientX - panelPosition.x,
-      y: event.clientY - panelPosition.y,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-
-  function handleDragMove(event: React.PointerEvent<HTMLDivElement>) {
-    if (!isDragging || isMobile) return;
-    const nextX = event.clientX - dragOffsetRef.current.x;
-    const nextY = event.clientY - dragOffsetRef.current.y;
-    setPanelPosition(clampPosition(nextX, nextY));
-  }
-
-  function handleDragEnd(event: React.PointerEvent<HTMLDivElement>) {
-    if (!isDragging) return;
-    setIsDragging(false);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  }
 
   function scrollToBottom() {
     requestAnimationFrame(() => {
@@ -339,21 +267,13 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
     }
   }
 
-  const panelStyle =
-    !isMobile && panelPosition
-      ? {
-          left: `${panelPosition.x}px`,
-          top: `${panelPosition.y}px`,
-        }
-      : undefined;
-
   const containerClassName = isMobile
     ? "fixed inset-x-3 bottom-3 z-50 w-auto max-w-none"
-    : "fixed bottom-4 right-4 z-50";
+    : "fixed bottom-20 right-6 z-50";
 
   const panelClassName = isMobile
     ? "border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl max-h-[70vh] overflow-hidden"
-    : "fixed w-[min(92vw,420px)] border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl max-h-[78vh] overflow-hidden";
+    : "w-[min(92vw,420px)] border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl max-h-[78vh] overflow-hidden";
 
   return (
     <div className={containerClassName}>
@@ -369,17 +289,9 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
         </Button>
       ) : (
         <Card
-          ref={panelRef}
           className={panelClassName}
-          style={panelStyle}
         >
-          <CardHeader
-            className={`pb-3 ${!isMobile ? "cursor-move select-none" : ""}`}
-            onPointerDown={handleDragStart}
-            onPointerMove={handleDragMove}
-            onPointerUp={handleDragEnd}
-            onPointerCancel={handleDragEnd}
-          >
+          <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-black">
@@ -390,7 +302,10 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsOpen(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(false);
+                }}
                 className="h-8 w-8 px-0 text-zinc-300 hover:bg-zinc-800 hover:text-white"
               >
                 <X className="size-4" />
