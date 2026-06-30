@@ -91,35 +91,74 @@ type FreeBetaStatus = {
   isFreeActive: boolean;
   freeReportsUsed: number;
   freeLimit: number;
+  usageTrackingUnavailable?: boolean;
 };
+
+function isMissingRelationError(error: unknown, relationName: string): boolean {
+  const target = relationName.toLowerCase();
+
+  const scan = (value: unknown): boolean => {
+    if (!value) return false;
+    if (typeof value === "string") {
+      return value.toLowerCase().includes(target) || value.includes("42P01");
+    }
+    if (typeof value !== "object") return false;
+
+    const record = value as Record<string, unknown>;
+    if (record.code === "42P01") return true;
+    return Object.values(record).some((entry) => scan(entry));
+  };
+
+  return scan(error);
+}
 
 async function getFreeBetaStatus(): Promise<FreeBetaStatus> {
   const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
+  const freeBetaEnabled = process.env.NEXT_PUBLIC_IS_FREE_BETA !== "false";
 
-  // Ensure singleton usage row exists for environments where seed hasn't run yet.
-  await db
-    .insert(fullCheckUsage)
-    .values({
-      id: 1,
-      free_reports_used: 0,
-      free_limit: maxFree,
-      is_free_active: true,
-    })
-    .onConflictDoNothing();
+  try {
+    // Ensure singleton usage row exists for environments where seed hasn't run yet.
+    await db
+      .insert(fullCheckUsage)
+      .values({
+        id: 1,
+        free_reports_used: 0,
+        free_limit: maxFree,
+        is_free_active: true,
+      })
+      .onConflictDoNothing();
 
-  const rows = await db
-    .select()
-    .from(fullCheckUsage)
-    .where(eq(fullCheckUsage.id, 1))
-    .limit(1);
+    const rows = await db
+      .select()
+      .from(fullCheckUsage)
+      .where(eq(fullCheckUsage.id, 1))
+      .limit(1);
 
-  const row = rows[0];
-  if (!row) return { isFreeActive: true, freeReportsUsed: 0, freeLimit: maxFree };
+    const row = rows[0];
+    if (!row) {
+      return {
+        isFreeActive: freeBetaEnabled,
+        freeReportsUsed: 0,
+        freeLimit: maxFree,
+      };
+    }
 
-  const used = row.free_reports_used ?? 0;
-  const active = row.is_free_active === true && used < maxFree;
+    const used = row.free_reports_used ?? 0;
+    const active = row.is_free_active === true && used < maxFree;
 
-  return { isFreeActive: active, freeReportsUsed: used, freeLimit: maxFree };
+    return { isFreeActive: active, freeReportsUsed: used, freeLimit: maxFree };
+  } catch (error) {
+    if (isMissingRelationError(error, "full_check_usage")) {
+      console.warn("full_check_usage table missing; falling back to env-only free beta mode.");
+      return {
+        isFreeActive: freeBetaEnabled,
+        freeReportsUsed: 0,
+        freeLimit: maxFree,
+        usageTrackingUnavailable: true,
+      };
+    }
+    throw error;
+  }
 }
 
 async function getClientIp(): Promise<string> {
@@ -608,34 +647,46 @@ export async function submitFullCheckWaitlist(
   if (isAdmin) {
     // Admin test runs bypass free quota checks and do not consume usage count.
   } else if (betaStatus.isFreeActive) {
-    // Atomically increment only when under limit
-    const atomicResult = await db.execute(sql`
-      UPDATE full_check_usage
-      SET free_reports_used = free_reports_used + 1, updated_at = NOW()
-      WHERE id = 1
-        AND is_free_active = TRUE
-        AND free_reports_used < ${betaStatus.freeLimit}
-      RETURNING free_reports_used
-    `);
+    if (betaStatus.usageTrackingUnavailable) {
+      // Degrade gracefully when production DB is missing full_check_usage.
+      console.warn("Skipping full_check_usage increment because table is unavailable.");
+    } else {
+      // Atomically increment only when under limit
+      try {
+        const atomicResult = await db.execute(sql`
+          UPDATE full_check_usage
+          SET free_reports_used = free_reports_used + 1, updated_at = NOW()
+          WHERE id = 1
+            AND is_free_active = TRUE
+            AND free_reports_used < ${betaStatus.freeLimit}
+          RETURNING free_reports_used
+        `);
 
-    if (atomicResult.rows.length === 0) {
-      // Limit just got exhausted between check and update — fall through to payment
-      if (analysisProgressId) {
-        await failFullCheckProgress(analysisProgressId, "Free access limit reached");
+        if (atomicResult.rows.length === 0) {
+          // Limit just got exhausted between check and update — fall through to payment
+          if (analysisProgressId) {
+            await failFullCheckProgress(analysisProgressId, "Free access limit reached");
+          }
+          return {
+            status: "error",
+            error: "Free access limit reached",
+            message: isTr
+              ? "Ücretsiz rapor limiti doldu. Devam etmek için ödeme yapın."
+              : isZh
+                ? "免费报告额度已用完。请付费继续。"
+                : "Free report limit reached. Please pay to continue.",
+            requirePayment: true,
+          };
+        }
+
+        revalidateTag("public-full-check-usage", "max");
+      } catch (error) {
+        if (!isMissingRelationError(error, "full_check_usage")) {
+          throw error;
+        }
+        console.warn("Skipping full_check_usage increment after missing table error.");
       }
-      return {
-        status: "error",
-        error: "Free access limit reached",
-        message: isTr
-          ? "Ücretsiz rapor limiti doldu. Devam etmek için ödeme yapın."
-          : isZh
-            ? "免费报告额度已用完。请付费继续。"
-            : "Free report limit reached. Please pay to continue.",
-        requirePayment: true,
-      };
     }
-
-    revalidateTag("public-full-check-usage", "max");
   } else {
     // Free beta is exhausted — require payment
     if (analysisProgressId) {
