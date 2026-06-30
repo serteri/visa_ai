@@ -30,10 +30,10 @@ function trackGaEvent(name: string, params?: Record<string, string | number | bo
   sendGAEvent("event", name, params ?? {});
 }
 
-function trackFbEvent(event: string) {
+function trackFbLeadEvent() {
   if (typeof window === "undefined") return;
   const w = window as Window & { fbq?: (...args: unknown[]) => void };
-  if (typeof w.fbq === "function") w.fbq("track", event);
+  if (typeof w.fbq === "function") w.fbq("track", "Lead");
 }
 
 function ErrorText({ message }: { message?: string }) {
@@ -326,7 +326,7 @@ export function FullCheckWaitlistForm({
       source: "full_check_waitlist",
     });
 
-    trackFbEvent("Lead");
+    trackFbLeadEvent();
 
     trackedReportIdRef.current = state.reportId;
   }, [locale, state.reportId, state.status]);
