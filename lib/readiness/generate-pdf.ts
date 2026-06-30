@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
-import { calculateRankedPathways } from "./ranked-pathways";
+import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { frictionBandLabel } from "@/src/lib/readiness/localization";
 import type { ReadinessReport } from "./types";
 
@@ -1340,10 +1340,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   function drawVisaViabilityRanking() {
     const rankedPathways =
       report.rankedPathways ??
-      calculateRankedPathways(report, {
-        age: userInputSummary.age,
-        currentCountry: userInputSummary.currentCountry,
-      });
+      (report.country === "CA"
+        ? buildCaRankedPathways(report)
+        : calculateRankedPathways(report, {
+            age: userInputSummary.age,
+            currentCountry: userInputSummary.currentCountry,
+          }));
     if (rankedPathways.length === 0) return;
 
     addHeading(text.visaViabilityRanking);
@@ -1649,9 +1651,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   addReportOverview();
 
   drawVisaViabilityRanking();
-  drawStateRadar();
-  drawTopRecommendedStates();
-  drawStateNominationTable();
+  // State nomination tracker is AU-specific; skip entirely for CA reports
+  if (report.country !== "CA") {
+    drawStateRadar();
+    drawTopRecommendedStates();
+    drawStateNominationTable();
+  }
   drawLodgementReadyChecklist();
 
   addPremiumKeyValueContainer(text.signalSnapshot, [

@@ -169,7 +169,7 @@ export type RankedPathwayRecommendation =
   | "⚠️ High Risk / Low Probability";
 
 export type RankedPathway = {
-  subclass: "189" | "190" | "491";
+  subclass: "189" | "190" | "491" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
   visaLabel: string;
   matchPercentage: number;
   pointsSignal: number;

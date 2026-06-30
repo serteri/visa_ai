@@ -1,4 +1,4 @@
-import type { ConfidenceLevel, RankedPathway, ReadinessReport } from "./types";
+import type { ConfidenceLevel, PathwayComparison, RankedPathway, ReadinessReport } from "./types";
 
 type RankedPathwayInput = {
   age?: string;
@@ -29,6 +29,56 @@ function confidenceToBaseScore(level?: ConfidenceLevel): number {
   if (level === "medium") return 61;
   if (level === "low") return 47;
   return 55;
+}
+
+const CA_PATHWAY_LABELS: Record<string, string> = {
+  CEC: "Canadian Experience Class (CEC)",
+  FSW: "Federal Skilled Worker (FSW)",
+  FSTP: "Federal Skilled Trades (FSTP)",
+  PNP: "Provincial Nominee Program (PNP)",
+  AIP: "Atlantic Immigration Program (AIP)",
+  FAMILY_SPONSORSHIP: "Family Sponsorship",
+};
+
+function confidenceToCaScore(level?: ConfidenceLevel): number {
+  if (level === "high") return 72;
+  if (level === "medium") return 58;
+  if (level === "low") return 38;
+  return 45;
+}
+
+export function buildCaRankedPathways(
+  report: ReadinessReport
+): RankedPathway[] {
+  const pathways: PathwayComparison[] = report.pathwayComparison ?? [];
+  if (pathways.length === 0) return [];
+
+  const crsSignal = report.pointsEstimate?.estimatedPoints ?? 0;
+
+  const raw = pathways
+    .filter((p) => p.subclass && CA_PATHWAY_LABELS[p.subclass])
+    .map((p) => {
+      const base = confidenceToCaScore(p.confidenceLevel);
+      return {
+        subclass: p.subclass as RankedPathway["subclass"],
+        visaLabel: CA_PATHWAY_LABELS[p.subclass] ?? p.visaName ?? p.subclass,
+        matchPercentage: clampPercentage(base),
+        pointsSignal: crsSignal,
+      };
+    });
+
+  if (raw.length === 0) return [];
+
+  const sorted = [...raw].sort((a, b) => b.matchPercentage - a.matchPercentage);
+  return sorted.map((item, index) => ({
+    ...item,
+    recommendationTag:
+      index === 0
+        ? "🌟 Highly Recommended Pathway"
+        : index === 1
+          ? "⚖️ Alternative Option"
+          : "⚠️ High Risk / Low Probability",
+  }));
 }
 
 export function calculateRankedPathways(

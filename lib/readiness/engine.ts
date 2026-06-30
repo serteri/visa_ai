@@ -1485,13 +1485,28 @@ function parseAgeOption(ageStr: string): AgeOption | null {
 }
 
 function parseEnglishOption(raw: string): EnglishOption | null {
-  const s = raw.toLowerCase();
+  const s = raw.toLowerCase().trim();
   if (s.includes("superior") || s.includes("高级") || s.includes("优秀") || /ielts\s*[89]/.test(s) || /pte\s*7[0-9]/.test(s) || /pte\s*8/.test(s))
     return "superior";
   if (s.includes("proficient") || s.includes("熟练") || /ielts\s*7/.test(s) || /pte\s*6[0-9]/.test(s))
     return "proficient";
   if (s.includes("competent") || s.includes("合格") || /ielts\s*6/.test(s) || /pte\s*5[0-9]/.test(s) || s.includes("functional"))
     return "competent";
+  // Handle raw numeric scores (e.g., "8", "8.5", "7.5", "6.5") treated as IELTS-band-equivalent
+  const numericScore = parseFloat(s);
+  if (!isNaN(numericScore) && numericScore >= 1 && numericScore <= 9) {
+    if (numericScore >= 7.5) return "superior";
+    if (numericScore >= 7.0) return "proficient";
+    if (numericScore >= 6.0) return "competent";
+  }
+  // Handle "level N" or "N/9" patterns
+  const levelMatch = s.match(/(?:level|lvl|band|clb)\s*(\d+(?:\.\d+)?)/);
+  if (levelMatch) {
+    const level = parseFloat(levelMatch[1]);
+    if (level >= 9) return "superior";
+    if (level >= 7) return "proficient";
+    if (level >= 5) return "competent";
+  }
   return null;
 }
 
