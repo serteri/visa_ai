@@ -111,7 +111,13 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
     return visa.type;
   };
   const localizeProcessing = (visa: AustraliaVisaCard) => {
-    const text = isTr ? visa.processingTime_tr ?? visa.processingTime : isZh ? visa.processingTime_zh ?? visa.processingTime : visa.processingTime;
+    const baseText = isTr ? visa.processingTime_tr ?? visa.processingTime : isZh ? visa.processingTime_zh ?? visa.processingTime : visa.processingTime;
+    const text =
+      isTr && baseText === "Varies (see processing time guide)"
+        ? "Degisken (islem suresi rehberine bakin)"
+        : isZh && baseText === "Varies (see processing time guide)"
+          ? "视情况而定（参见审理时间指南）"
+          : baseText;
     const unit = isTr
       ? visa.processingTimeUnit_tr ?? (visa.processingTimeUnit === "months" ? "ay" : visa.processingTimeUnit)
       : isZh
