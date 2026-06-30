@@ -256,7 +256,7 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
         body: JSON.stringify({
-          locale,
+          locale: resolvedLocale,
           reportData,
           messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
         }),
@@ -290,9 +290,15 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
               ? {
                   ...m,
                   content: t(
-                    "Şu anda yanıt üretilemedi. Lütfen tekrar deneyin. Resmi süreç için MARA danışmanı ile ilerleyin.",
-                    "I could not generate a response right now. Please try again. For official steps, work with a MARA agent.",
-                    "目前无法生成回复，请稍后重试。正式流程请与 MARA 顾问确认。"
+                    isCanada
+                      ? "Şu anda yanıt üretilemedi. Lütfen tekrar deneyin. Resmi süreç için RCIC danışmanına başvurun."
+                      : "Şu anda yanıt üretilemedi. Lütfen tekrar deneyin. Resmi süreç için MARA danışmanı ile ilerleyin.",
+                    isCanada
+                      ? "I could not generate a response right now. Please try again. For official steps, work with an RCIC."
+                      : "I could not generate a response right now. Please try again. For official steps, work with a MARA agent.",
+                    isCanada
+                      ? "目前无法生成回复，请稍后重试。正式流程请与 RCIC 顾问确认。"
+                      : "目前无法生成回复，请稍后重试。正式流程请与 MARA 顾问确认。"
                   ),
                 }
               : m
@@ -313,9 +319,15 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
             ? {
                 ...m,
                 content: t(
-                  "Bağlantı hatası oluştu. Lütfen tekrar deneyin. Resmi başvurular için MARA danışmanı ile doğrulayın.",
-                  "A connection error occurred. Please try again. For official lodgements, verify with a MARA agent.",
-                  "连接出现问题，请重试。正式递交请与 MARA 顾问核实。"
+                    isCanada
+                      ? "Bağlantı hatası oluştu. Lütfen tekrar deneyin. Resmi başvurular için RCIC danışmanıyla doğrulayın."
+                      : "Bağlantı hatası oluştu. Lütfen tekrar deneyin. Resmi başvurular için MARA danışmanı ile doğrulayın.",
+                    isCanada
+                      ? "A connection error occurred. Please try again. For official lodgements, verify with an RCIC."
+                      : "A connection error occurred. Please try again. For official lodgements, verify with a MARA agent.",
+                    isCanada
+                      ? "连接出现问题，请重试。正式递交请与 RCIC 顾问核实。"
+                      : "连接出现问题，请重试。正式递交请与 MARA 顾问核实。"
                 ),
               }
             : m
@@ -341,7 +353,7 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
 
   const panelClassName = isMobile
     ? "border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl max-h-[70vh] overflow-hidden"
-    : "border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl";
+    : "fixed w-[min(92vw,420px)] border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl max-h-[78vh] overflow-hidden";
 
   return (
     <div className={containerClassName}>

@@ -13,6 +13,8 @@ type ChatRequestBody = {
   locale?: string;
 };
 
+type SupportedAssistantLocale = "en" | "tr" | "zh-Hans";
+
 const SYSTEM_PROMPTS: Record<"AU" | "CA", string> = {
   AU: "Sen Logi AI'sın. Sadece ve sadece Avustralya göçmenlik stratejistisin. Asla yasal tavsiye verme, MARA acentesine yönlendir. Kanada göçmenlik mevzuatı, IRCC, CRS veya NOC hakkında hiçbir bilgi üretme. Kullanıcının sorduğu soruları YALNIZCA sana iletilen reportData içeriğine göre net ve profesyonelce cevapla.",
   CA: "Sen Logi AI'sın. Sadece ve sadece Kanada göçmenlik stratejistisin. Asla yasal tavsiye verme, RCIC (Regulated Canadian Immigration Consultant) danışmanına yönlendir. Avustralya göçmenlik mevzuatı, MARA, ANZSCO veya eyalet aday gösterimi (state nomination) hakkında hiçbir bilgi üretme. Kullanıcının sorduğu soruları YALNIZCA sana iletilen reportData içeriğine göre net ve profesyonelce cevapla.",
@@ -32,6 +34,22 @@ function resolveReportCountry(reportData?: AssistantReportData): "AU" | "CA" {
     if (normalized === "AUSTRALIA") return "AU";
   }
   return "AU";
+}
+
+function resolveAssistantLocale(locale?: string): SupportedAssistantLocale {
+  if (locale === "tr") return "tr";
+  if (locale === "zh" || locale === "zh-Hans") return "zh-Hans";
+  return "en";
+}
+
+function getLanguageDirective(locale: SupportedAssistantLocale): string {
+  if (locale === "tr") {
+    return "You MUST write the entire response in Turkish (tr). Do not mix with English unless quoting user-provided terms.";
+  }
+  if (locale === "zh-Hans") {
+    return "You MUST write the entire response in Simplified Chinese (zh-Hans). Do not mix with English unless quoting user-provided terms.";
+  }
+  return "You MUST write the entire response in English (en).";
 }
 
 function buildReportContext(reportData?: AssistantReportData): string {
@@ -78,26 +96,65 @@ function buildReportContext(reportData?: AssistantReportData): string {
 function createFallbackStream(
   question: string,
   reportContext: string,
-  country: "AU" | "CA"
+  country: "AU" | "CA",
+  locale: SupportedAssistantLocale
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   const safeQuestion = question.trim() || "the user's request";
 
-  const responseText = [
-    "Based on your Visa Readiness Report context, here is a focused interpretation:",
-    `Question: ${safeQuestion}`,
-    "",
-    country === "CA"
-      ? "I can explain your CRS-related pathways, point gaps, and practical next steps using only your report data."
-      : "I can explain your ranked pathways, points-related gaps, and practical next steps using only your report data.",
-    country === "CA"
-      ? "If you want, ask me to break down one pathway line-by-line (for example CEC vs FSW vs PNP) and I will map each score driver."
-      : "If you want, ask me to break down one pathway line-by-line (for example 189 vs 190 vs 491) and I will map each score driver.",
-    "",
-    COMPLIANCE_REMINDERS[country],
-    "",
-    `Report context snapshot: ${reportContext}`,
-  ].join("\n");
+  const responseText = (() => {
+    if (locale === "tr") {
+      return [
+        "Vize Hazırlık Raporu bağlamınıza göre odaklı bir yorum:",
+        `Soru: ${safeQuestion}`,
+        "",
+        country === "CA"
+          ? "Yalnızca rapor verinize dayanarak CRS odaklı yolları, puan boşluklarını ve uygulanabilir sonraki adımları açıklayabilirim."
+          : "Yalnızca rapor verinize dayanarak sıralı vize yollarınızı, puan boşluklarını ve uygulanabilir sonraki adımları açıklayabilirim.",
+        country === "CA"
+          ? "İsterseniz tek bir yolu satır satır açabilirim (ör. CEC vs FSW vs PNP)."
+          : "İsterseniz tek bir yolu satır satır açabilirim (ör. 189 vs 190 vs 491).",
+        "",
+        COMPLIANCE_REMINDERS[country],
+        "",
+        `Rapor bağlam özeti: ${reportContext}`,
+      ].join("\n");
+    }
+
+    if (locale === "zh-Hans") {
+      return [
+        "基于你的签证准备度报告，以下是聚焦解读：",
+        `问题：${safeQuestion}`,
+        "",
+        country === "CA"
+          ? "我可以仅基于你的报告数据，解释 CRS 相关路径、分数差距与可执行下一步。"
+          : "我可以仅基于你的报告数据，解释路径排序、分数差距与可执行下一步。",
+        country === "CA"
+          ? "如果你愿意，我可以逐条拆解某一条路径（例如 CEC vs FSW vs PNP）。"
+          : "如果你愿意，我可以逐条拆解某一条路径（例如 189 vs 190 vs 491）。",
+        "",
+        COMPLIANCE_REMINDERS[country],
+        "",
+        `报告上下文快照：${reportContext}`,
+      ].join("\n");
+    }
+
+    return [
+      "Based on your Visa Readiness Report context, here is a focused interpretation:",
+      `Question: ${safeQuestion}`,
+      "",
+      country === "CA"
+        ? "I can explain your CRS-related pathways, point gaps, and practical next steps using only your report data."
+        : "I can explain your ranked pathways, points-related gaps, and practical next steps using only your report data.",
+      country === "CA"
+        ? "If you want, ask me to break down one pathway line-by-line (for example CEC vs FSW vs PNP) and I will map each score driver."
+        : "If you want, ask me to break down one pathway line-by-line (for example 189 vs 190 vs 491) and I will map each score driver.",
+      "",
+      COMPLIANCE_REMINDERS[country],
+      "",
+      `Report context snapshot: ${reportContext}`,
+    ].join("\n");
+  })();
 
   return new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -117,6 +174,7 @@ function streamFromOpenAI(args: {
   messages: ChatMessage[];
   reportContext: string;
   country: "AU" | "CA";
+  locale: SupportedAssistantLocale;
 }): Promise<ReadableStream<Uint8Array>> {
   const encoder = new TextEncoder();
 
@@ -140,6 +198,10 @@ function streamFromOpenAI(args: {
                 args.country === "CA"
                   ? "Country context is Canada only. Never mention Australian pathways or visas such as 189/190/491 or MARA/state nomination programs."
                   : "Country context is Australia only. Never mention Canadian pathways or concepts such as CRS, IRCC, NOC, CEC, FSW, FSTP, or PNP.",
+            },
+            {
+              role: "system",
+              content: getLanguageDirective(args.locale),
             },
             {
               role: "system",
@@ -224,6 +286,7 @@ export async function POST(request: Request) {
 
     const reportContext = buildReportContext(body.reportData);
     const country = resolveReportCountry(body.reportData);
+    const locale = resolveAssistantLocale(body.locale);
     const question = messages.filter((m) => m.role === "user").at(-1)?.content ?? "";
     const apiKey = process.env.OPENAI_API_KEY;
     const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
@@ -235,8 +298,9 @@ export async function POST(request: Request) {
           messages,
           reportContext,
           country,
-        }).catch(() => createFallbackStream(question, reportContext, country))
-      : createFallbackStream(question, reportContext, country);
+          locale,
+        }).catch(() => createFallbackStream(question, reportContext, country, locale))
+      : createFallbackStream(question, reportContext, country, locale);
 
     return new Response(stream, {
       headers: {

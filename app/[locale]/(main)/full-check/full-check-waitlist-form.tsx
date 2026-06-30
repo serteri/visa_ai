@@ -243,6 +243,7 @@ export function FullCheckWaitlistForm({
     name?: string;
     email?: string;
   } | null>(null);
+  const reportSectionRef = useRef<HTMLElement | null>(null);
 
   const aiAnalysisSteps = isTr
     ? [
@@ -359,6 +360,15 @@ export function FullCheckWaitlistForm({
         riskIndicators: report.riskIndicators,
       }
     : null;
+
+  useEffect(() => {
+    if (state.status !== "success" || !report) return;
+    const node = reportSectionRef.current;
+    if (!node) return;
+
+    node.scrollIntoView({ behavior: "smooth", block: "start" });
+    node.focus({ preventScroll: true });
+  }, [report, state.status]);
 
   async function handleDownloadPDF() {
     if (!report) return;
@@ -494,6 +504,7 @@ export function FullCheckWaitlistForm({
       )}
 
       <form action={formAction} className="space-y-4" noValidate>
+        <input type="hidden" name="routeLocale" value={locale} />
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="preferredLanguage" value={locale} />
         <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
@@ -789,12 +800,15 @@ export function FullCheckWaitlistForm({
               email,
               name,
             });
+            window.setTimeout(() => {
+              reportSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 80);
           }}
         />
       )}
 
       {state.status === "success" && report && (
-        <section className="space-y-4">
+        <section ref={reportSectionRef} tabIndex={-1} className="space-y-4 outline-none">
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
             {txt(
               "Raporunuzun kilidi acildi. Premium detaylariniz hazir.",

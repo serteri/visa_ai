@@ -523,6 +523,92 @@ function normalizeSubmittedLocale(value: string): SupportedLocale {
   return "en";
 }
 
+function resolveTargetCountry(input: {
+  submittedCountry: string;
+  visaInterest: string;
+  mainGoal: string;
+}): "AU" | "CA" {
+  if (isSupportedCountry(input.submittedCountry)) return input.submittedCountry;
+
+  const combined = `${input.visaInterest} ${input.mainGoal}`.toLowerCase();
+  const caSignals = [
+    "canada",
+    "canadian",
+    "express entry",
+    "crs",
+    "cec",
+    "fsw",
+    "fstp",
+    "pnp",
+    "ircc",
+    "noc",
+    "teer",
+    "atlantic immigration",
+    "aip",
+    "family sponsorship",
+    "canada-",
+  ];
+  const auSignals = [
+    "australia",
+    "australian",
+    "anzsco",
+    "mara",
+    "189",
+    "190",
+    "491",
+    "state nomination",
+  ];
+
+  if (caSignals.some((signal) => combined.includes(signal))) return "CA";
+  if (auSignals.some((signal) => combined.includes(signal))) return "AU";
+
+  return defaultCountry;
+}
+
+function enforceCountryReportScope(report: ReadinessReport, country: "AU" | "CA"): ReadinessReport {
+  const sanitized: ReadinessReport = {
+    ...report,
+    country,
+  };
+
+  if (country === "CA") {
+    sanitized.rankedPathways = undefined;
+    sanitized.stateNominationTracker = undefined;
+    sanitized.lodgementReadyChecklist = undefined;
+    sanitized.pathwayComparison = (report.pathwayComparison ?? []).filter(
+      (item) => !["189", "190", "491"].includes(item.subclass)
+    );
+
+    if (sanitized.pathwayComparison.length === 0) {
+      sanitized.pathwayComparison = [
+        {
+          subclass: "general",
+          visaName: report.country === "CA" && report.pathwayComparison?.[0]?.visaName
+            ? report.pathwayComparison[0].visaName
+            : "Canada Express Entry",
+          reason: "Country scope forced to Canada. Australian subclasses were removed.",
+          relevance: "needs_more_information",
+          confidenceLevel: "low",
+          confidenceExplanation: "Country scope is Canada-only and requires more Canada-specific profile detail.",
+          difficulty: "medium",
+          requirementType: "Canada-only eligibility signals",
+          userRelativePosition: "Needs more Canada-specific information",
+          keyRequirements: ["CRS signal", "NOC/TEER alignment", "Language test profile"],
+          pathwaySpecificRisks: ["Australian pathway data is intentionally excluded."],
+        },
+      ];
+    }
+  }
+
+  if (country === "AU") {
+    sanitized.pathwayComparison = (report.pathwayComparison ?? []).filter(
+      (item) => !["CEC", "FSW", "FSTP", "AIP", "FAMILY_SPONSORSHIP", "PNP"].includes(item.subclass)
+    );
+  }
+
+  return sanitized;
+}
+
 // ─── Server actions ───────────────────────────────────────────────────────────
 
 export async function submitFullCheckWaitlist(
@@ -538,8 +624,9 @@ export async function submitFullCheckWaitlist(
   const fullName = String(formData.get("fullName") ?? "").trim();
   const visaInterest = String(formData.get("visaInterest") ?? "").trim();
   const rawTargetCountry = String(formData.get("targetCountry") ?? "").trim();
-  const targetCountry = isSupportedCountry(rawTargetCountry) ? rawTargetCountry : defaultCountry;
-  const submittedLocale = String(formData.get("locale") ?? formData.get("preferredLanguage") ?? "").trim();
+  const submittedLocale = String(
+    formData.get("routeLocale") ?? formData.get("locale") ?? formData.get("preferredLanguage") ?? ""
+  ).trim();
   const resolvedLocale = normalizeSubmittedLocale(submittedLocale);
   const preferredLanguage = resolvedLocale;
   const currentCountry = String(formData.get("currentCountry") ?? "").trim();
@@ -555,6 +642,11 @@ export async function submitFullCheckWaitlist(
   const sponsorOrFamily = String(formData.get("sponsorOrFamily") ?? "").trim();
   const biggestConcern = String(formData.get("biggestConcern") ?? "").trim();
   const source = String(formData.get("source") ?? "").trim() || "full_check";
+  const targetCountry = resolveTargetCountry({
+    submittedCountry: rawTargetCountry,
+    visaInterest,
+    mainGoal,
+  });
   const isAdmin = isAdminWhitelistedEmail(email);
 
   const isTr = resolvedLocale === "tr";
@@ -718,7 +810,8 @@ export async function submitFullCheckWaitlist(
     await updateFullCheckProgress(analysisProgressId, "scanning_occupations");
   }
 
-  const generatedReport = runReadinessEngine({
+  const generatedReport = enforceCountryReportScope(
+    runReadinessEngine({
     locale: resolvedLocale,
     country: targetCountry,
     mainGoal,
@@ -734,7 +827,9 @@ export async function submitFullCheckWaitlist(
     sponsorOrFamily: sponsorOrFamily || undefined,
     preferredPathway: visaInterest || undefined,
     biggestConcern: biggestConcern || undefined,
-  });
+    }),
+    targetCountry
+  );
 
   if (analysisProgressId) {
     await updateFullCheckProgress(analysisProgressId, "analyzing_trends");
@@ -784,6 +879,7 @@ export async function submitFullCheckWaitlist(
     ipAddress: clientIp !== "unknown" ? clientIp : undefined,
     input: {
       locale: resolvedLocale,
+      country: targetCountry,
       mainGoal,
       currentCountry: currentCountry || undefined,
       passportCountry,
