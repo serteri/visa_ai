@@ -26,10 +26,21 @@ type LogiAIAssistantProps = {
 };
 
 type SupportedAssistantLocale = "en" | "tr" | "zh-Hans";
+type ReportCountry = "AU" | "CA";
 
 function normalizeAssistantLocale(locale: string): SupportedAssistantLocale {
   if (isValidLocale(locale)) return locale;
   return defaultLocale;
+}
+
+function resolveReportCountry(country?: AssistantReportData["country"]): ReportCountry {
+  if (country === "CA") return "CA";
+  if (typeof country === "string") {
+    const normalized = country.trim().toUpperCase();
+    if (normalized === "CANADA") return "CA";
+    if (normalized === "AUSTRALIA") return "AU";
+  }
+  return "AU";
 }
 
 function TypingIndicator() {
@@ -49,40 +60,93 @@ function uid() {
 
 export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
   const resolvedLocale = normalizeAssistantLocale(locale);
+  const reportCountry = resolveReportCountry(reportData.country);
+  const isCanada = reportCountry === "CA";
   const isTr = resolvedLocale === "tr";
   const isZh = resolvedLocale === "zh-Hans";
   const t = (tr: string, en: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   const [isMobile, setIsMobile] = useState(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
   const [input, setInput] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const [panelPosition, setPanelPosition] = useState<{ x: number; y: number } | null>(null);
   const [messages, setMessages] = useState<AssistantMessage[]>([
     {
       id: uid(),
       role: "assistant",
       content: t(
-        "Merhaba, ben Logi AI. Rapor verilerinize göre stratejik bir özet sunabilirim. Resmi başvuru ve hukuki değerlendirme için MARA danışmanına başvurun.",
-        "Hi, I am Logi AI. I can explain your strategy based on your report context. For official lodgements and legal positioning, consult a MARA agent.",
-        "你好，我是 Logi AI。我可以基于你的报告数据做策略解释。正式递交和法律判断请咨询注册 MARA 顾问。"
+        isCanada
+          ? "Merhaba, ben Logi AI. Kanada rapor verilerinizi net bir stratejiye dönüştürebilirim. Resmi başvuru ve hukuki değerlendirme için RCIC danışmanına başvurun."
+          : "Merhaba, ben Logi AI. Avustralya rapor verilerinize göre stratejik bir özet sunabilirim. Resmi başvuru ve hukuki değerlendirme için MARA danışmanına başvurun.",
+        isCanada
+          ? "Hi, I am Logi AI. I can explain your Canada report context as a clear strategy. For official lodgements and legal positioning, consult an RCIC."
+          : "Hi, I am Logi AI. I can explain your Australia strategy based on your report context. For official lodgements and legal positioning, consult a MARA agent.",
+        isCanada
+          ? "你好，我是 Logi AI。我可以基于你的加拿大报告数据做策略解释。正式递交和法律判断请咨询 RCIC 顾问。"
+          : "你好，我是 Logi AI。我可以基于你的澳洲报告数据做策略解释。正式递交和法律判断请咨询注册 MARA 顾问。"
       ),
     },
   ]);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+
+  function clampPosition(x: number, y: number) {
+    const panel = panelRef.current;
+    const panelWidth = panel?.offsetWidth ?? 420;
+    const panelHeight = panel?.offsetHeight ?? 560;
+    const maxX = Math.max(8, window.innerWidth - panelWidth - 8);
+    const maxY = Math.max(8, window.innerHeight - panelHeight - 8);
+    return {
+      x: Math.min(Math.max(8, x), maxX),
+      y: Math.min(Math.max(8, y), maxY),
+    };
+  }
+
+  function resetDesktopPosition() {
+    const panel = panelRef.current;
+    const panelWidth = panel?.offsetWidth ?? 420;
+    const panelHeight = panel?.offsetHeight ?? 560;
+    const targetX = window.innerWidth - panelWidth - 16;
+    const targetY = window.innerHeight - panelHeight - 16;
+    setPanelPosition(clampPosition(targetX, targetY));
+  }
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 640px)");
     const syncMobileState = () => {
       setIsMobile(media.matches);
-      setIsOpen((current) => (media.matches ? false : current));
+      if (media.matches) {
+        setPanelPosition(null);
+      }
     };
 
     syncMobileState();
     media.addEventListener("change", syncMobileState);
     return () => media.removeEventListener("change", syncMobileState);
   }, []);
+
+  useEffect(() => {
+    if (isMobile || !isOpen || panelPosition) return;
+    resetDesktopPosition();
+  }, [isMobile, isOpen, panelPosition]);
+
+  useEffect(() => {
+    if (isMobile || !isOpen || !panelPosition) return;
+    const handleResize = () => {
+      setPanelPosition((current) => {
+        if (!current) return current;
+        return clampPosition(current.x, current.y);
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMobile, isOpen, panelPosition]);
 
   const suggestedPrompts = useMemo(() => {
     const ranked = Array.isArray(reportData.rankedPathways)
@@ -97,6 +161,26 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
     const occupationLabel = occupation === "my occupation"
       ? t("mesleğim", "my occupation", "我的职业")
       : occupation;
+
+    if (isCanada) {
+      return [
+        t(
+          "CRS puanımı artırmak için en etkili adımlar neler?",
+          "How can I improve my CRS score?",
+          "我该如何提高 CRS 分数？"
+        ),
+        t(
+          `${occupationLabel} için PNP sürecini açıkla.`,
+          `Explain the PNP process for ${occupationLabel}.`,
+          `请解释 ${occupationLabel} 的省提名流程。`
+        ),
+        t(
+          "CEC mi FSW mi bana daha uygun?",
+          "Is CEC or FSW better for me?",
+          "CEC 和 FSW 哪个更适合我？"
+        ),
+      ];
+    }
 
     return [
       t(
@@ -115,7 +199,33 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
         `请解释 ${occupationLabel} 的州担保情况。`
       ),
     ];
-  }, [reportData, t]);
+  }, [isCanada, reportData, t]);
+
+  function handleDragStart(event: React.PointerEvent<HTMLDivElement>) {
+    if (isMobile || !panelPosition) return;
+    event.preventDefault();
+    setIsDragging(true);
+    dragOffsetRef.current = {
+      x: event.clientX - panelPosition.x,
+      y: event.clientY - panelPosition.y,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function handleDragMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (!isDragging || isMobile) return;
+    const nextX = event.clientX - dragOffsetRef.current.x;
+    const nextY = event.clientY - dragOffsetRef.current.y;
+    setPanelPosition(clampPosition(nextX, nextY));
+  }
+
+  function handleDragEnd(event: React.PointerEvent<HTMLDivElement>) {
+    if (!isDragging) return;
+    setIsDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }
 
   function scrollToBottom() {
     requestAnimationFrame(() => {
@@ -217,9 +327,17 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
     }
   }
 
+  const panelStyle =
+    !isMobile && panelPosition
+      ? {
+          left: `${panelPosition.x}px`,
+          top: `${panelPosition.y}px`,
+        }
+      : undefined;
+
   const containerClassName = isMobile
     ? "fixed inset-x-3 bottom-3 z-50 w-auto max-w-none"
-    : "fixed bottom-4 right-4 z-50 w-[min(96vw,420px)]";
+    : "fixed bottom-4 right-4 z-50";
 
   const panelClassName = isMobile
     ? "border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl max-h-[70vh] overflow-hidden"
@@ -232,15 +350,24 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
           onClick={() => setIsOpen(true)}
           className={isMobile
             ? "h-12 w-12 rounded-full bg-black p-0 text-white shadow-xl hover:bg-zinc-800"
-            : "h-11 w-full justify-center gap-2 rounded-full bg-black text-white hover:bg-zinc-800"}
+            : "h-12 w-12 rounded-full bg-black p-0 text-white shadow-xl hover:bg-zinc-800"}
           aria-label="Open Logi AI Assistant"
         >
           <MessageSquare className="size-4" />
-          {!isMobile && "Logi AI Assistant"}
         </Button>
       ) : (
-        <Card className={panelClassName}>
-          <CardHeader className="pb-3">
+        <Card
+          ref={panelRef}
+          className={panelClassName}
+          style={panelStyle}
+        >
+          <CardHeader
+            className={`pb-3 ${!isMobile ? "cursor-move select-none" : ""}`}
+            onPointerDown={handleDragStart}
+            onPointerMove={handleDragMove}
+            onPointerUp={handleDragEnd}
+            onPointerCancel={handleDragEnd}
+          >
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-black">
@@ -259,9 +386,15 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
             </div>
             <p className="text-xs text-zinc-400">
               {t(
-                "Rapor bağlamı ile yanıtlar. Resmi süreç için MARA danışmanı ile ilerleyin.",
-                "Answers with your report context. For official lodgements, consult a MARA agent.",
-                "基于报告上下文回答。正式递交请咨询 MARA 顾问。"
+                isCanada
+                  ? "Rapor bağlamı ile yanıtlar. Resmi süreç için RCIC danışmanına başvurun."
+                  : "Rapor bağlamı ile yanıtlar. Resmi süreç için MARA danışmanı ile ilerleyin.",
+                isCanada
+                  ? "Answers with your report context. For official lodgements, consult an RCIC."
+                  : "Answers with your report context. For official lodgements, consult a MARA agent.",
+                isCanada
+                  ? "基于报告上下文回答。正式递交请咨询 RCIC 顾问。"
+                  : "基于报告上下文回答。正式递交请咨询 MARA 顾问。"
               )}
             </p>
           </CardHeader>

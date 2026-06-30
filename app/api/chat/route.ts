@@ -24,7 +24,14 @@ const COMPLIANCE_REMINDERS: Record<"AU" | "CA", string> = {
 };
 
 function resolveReportCountry(reportData?: AssistantReportData): "AU" | "CA" {
-  return reportData?.country === "CA" ? "CA" : "AU";
+  const rawCountry = (reportData as { country?: unknown } | undefined)?.country;
+  if (rawCountry === "CA") return "CA";
+  if (typeof rawCountry === "string") {
+    const normalized = rawCountry.trim().toUpperCase();
+    if (normalized === "CANADA") return "CA";
+    if (normalized === "AUSTRALIA") return "AU";
+  }
+  return "AU";
 }
 
 function buildReportContext(reportData?: AssistantReportData): string {
@@ -127,6 +134,13 @@ function streamFromOpenAI(args: {
           temperature: 0.2,
           messages: [
             { role: "system", content: SYSTEM_PROMPTS[args.country] },
+            {
+              role: "system",
+              content:
+                args.country === "CA"
+                  ? "Country context is Canada only. Never mention Australian pathways or visas such as 189/190/491 or MARA/state nomination programs."
+                  : "Country context is Australia only. Never mention Canadian pathways or concepts such as CRS, IRCC, NOC, CEC, FSW, FSTP, or PNP.",
+            },
             {
               role: "system",
               content: `Use only this report context as your factual basis:\n${args.reportContext}`,
