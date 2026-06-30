@@ -1676,7 +1676,7 @@ function buildCanadaOccupationIndication(
   const isTr = locale === "tr";
   if (!input.occupation) return undefined;
 
-  const result = checkNocOccupation({ occupation: input.occupation });
+  const result = checkNocOccupation({ occupation: input.occupation, nocCode: input.nocCode });
 
   if (result.partialCoverageGap) {
     return {

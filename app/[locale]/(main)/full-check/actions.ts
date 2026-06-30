@@ -686,6 +686,9 @@ export async function submitFullCheckWaitlist(
   const timeline = String(formData.get("timeline") ?? "").trim();
   const sponsorOrFamily = String(formData.get("sponsorOrFamily") ?? "").trim();
   const biggestConcern = String(formData.get("biggestConcern") ?? "").trim();
+  const nocCode = String(formData.get("nocCode") ?? "").trim() || undefined;
+  const nocTeerRaw = String(formData.get("nocTeer") ?? "").trim();
+  const nocTeer = nocTeerRaw ? parseInt(nocTeerRaw, 10) : undefined;
   const source = String(formData.get("source") ?? "").trim() || "full_check";
   const targetCountry = resolveTargetCountry({
     submittedCountry: rawTargetCountry,
@@ -872,6 +875,8 @@ export async function submitFullCheckWaitlist(
     sponsorOrFamily: sponsorOrFamily || undefined,
     preferredPathway: visaInterest || undefined,
     biggestConcern: biggestConcern || undefined,
+    nocCode: nocCode || undefined,
+    nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
     }),
     targetCountry
   );

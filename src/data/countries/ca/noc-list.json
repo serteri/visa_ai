@@ -5,350 +5,559 @@
     "teer": 0,
     "majorGroup": "00",
     "minorGroup": "000",
-    "duties": [
-      "Participates in the development and passage of legislation at the federal, provincial, territorial or municipal level.",
-      "Represents constituents and communicates their concerns within government processes.",
-      "Reviews and debates policy proposals, budgets and government programs.",
-      "Sits on committees and councils to oversee public administration and resource allocation."
-    ]
+    "duties": []
   },
   {
     "code": "00011",
-    "title": "Senior Government Managers and Officials",
+    "title": "Senior government managers and officials",
     "teer": 0,
     "majorGroup": "00",
     "minorGroup": "000",
-    "duties": [
-      "Plans and coordinates senior-level government department or agency operations.",
-      "Assesses operational requirements and translates them into practical service outcomes.",
-      "Prepares and maintains accurate records, reports and documentation for compliance.",
-      "Collaborates with officials and stakeholders to improve delivery standards and policy outcomes."
-    ]
+    "duties": []
   },
   {
     "code": "00012",
-    "title": "Senior Managers - Financial, Communications and Other Business Services",
+    "title": "Senior managers – financial, communications and other business services",
     "teer": 0,
     "majorGroup": "00",
     "minorGroup": "000",
-    "duties": [
-      "Directs the overall strategy and operations of financial, communications or other business services.",
-      "Evaluates risks, controls and compliance against corporate governance and regulatory frameworks.",
-      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
-      "Maintains records and communicates findings to stakeholders, boards and external authorities."
-    ]
+    "duties": []
   },
   {
     "code": "00013",
-    "title": "Senior Managers - Health, Education, Social and Community Services and Membership Organizations",
+    "title": "Senior managers – health, education, social and community services and membership organizations",
     "teer": 0,
     "majorGroup": "00",
     "minorGroup": "000",
-    "duties": [
-      "Directs strategic planning and operations across health, education or community service organizations.",
-      "Assesses stakeholder and operational requirements and translates them into practical service outcomes.",
-      "Prepares and maintains accurate records, reports and documentation for compliance.",
-      "Collaborates with multidisciplinary teams to improve delivery standards and risk controls."
-    ]
+    "duties": []
   },
   {
     "code": "00014",
-    "title": "Senior Managers - Trade, Broadcasting and Other Services, n.e.c.",
+    "title": "Senior managers – trade, broadcasting and other services",
     "teer": 0,
     "majorGroup": "00",
     "minorGroup": "000",
-    "duties": [
-      "Directs overall strategy and operations for trade, broadcasting or other service-sector organizations.",
-      "Evaluates risks, controls and compliance against corporate governance frameworks.",
-      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
-      "Maintains records and communicates findings to stakeholders and boards."
-    ]
+    "duties": []
   },
   {
     "code": "00015",
-    "title": "Senior Managers - Construction, Transportation, Production and Utilities",
+    "title": "Senior managers – construction, transportation, production and utilities",
     "teer": 0,
     "majorGroup": "00",
     "minorGroup": "000",
-    "duties": [
-      "Directs overall strategy and operations across construction, transportation, production or utility organizations.",
-      "Evaluates risks, controls and compliance against safety and operational frameworks.",
-      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
-      "Maintains records and communicates findings to stakeholders and boards."
-    ]
+    "duties": []
   },
   {
     "code": "10010",
-    "title": "Financial Managers",
+    "title": "Financial managers",
     "teer": 0,
     "majorGroup": "10",
     "minorGroup": "100",
-    "duties": [
-      "Prepares and analyses financial data relevant to organizational reporting obligations.",
-      "Evaluates risks, controls and compliance against accounting standards and regulatory frameworks.",
-      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
-      "Maintains records and communicates findings to stakeholders, management and external authorities."
-    ]
+    "duties": []
   },
   {
     "code": "10011",
-    "title": "Human Resources Managers",
+    "title": "Human resources managers",
     "teer": 0,
     "majorGroup": "10",
     "minorGroup": "100",
-    "duties": [
-      "Plans and coordinates human resources strategy, staffing and employee relations activities.",
-      "Assesses workforce and operational requirements and translates them into HR programs.",
-      "Prepares and maintains accurate employment records and compliance documentation.",
-      "Collaborates with management to improve recruitment, retention and labour relations."
-    ]
+    "duties": []
   },
   {
     "code": "10012",
-    "title": "Purchasing Managers",
+    "title": "Purchasing managers",
     "teer": 0,
     "majorGroup": "10",
     "minorGroup": "100",
-    "duties": [
-      "Plans and coordinates procurement strategy and supplier relationship management.",
-      "Assesses supplier, cost and operational requirements and translates them into purchasing decisions.",
-      "Prepares and maintains accurate procurement records, contracts and reports.",
-      "Collaborates with internal departments to ensure timely supply of goods and services."
-    ]
+    "duties": []
   },
   {
     "code": "10019",
-    "title": "Other Administrative Services Managers",
+    "title": "Other administrative services managers",
     "teer": 0,
     "majorGroup": "10",
     "minorGroup": "100",
-    "duties": [
-      "Plans and coordinates administrative service operations in line with organizational policy.",
-      "Assesses operational requirements and translates them into practical work outcomes.",
-      "Prepares and maintains accurate records, reports and documentation for compliance.",
-      "Collaborates with multidisciplinary teams to improve delivery standards and efficiency."
-    ]
+    "duties": []
   },
   {
     "code": "10020",
-    "title": "Insurance, Banking and Other Financial Managers",
+    "title": "Insurance, real estate and financial brokerage managers",
     "teer": 0,
     "majorGroup": "10",
     "minorGroup": "100",
-    "duties": [
-      "Directs the operations and strategy of insurance, banking or other financial services branches.",
-      "Evaluates risks, controls and compliance against financial regulatory frameworks.",
-      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
-      "Maintains records and communicates findings to stakeholders and management."
-    ]
+    "duties": []
+  },
+  {
+    "code": "10021",
+    "title": "Banking, credit and other investment managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": []
+  },
+  {
+    "code": "10022",
+    "title": "Advertising, marketing and public relations managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": []
+  },
+  {
+    "code": "10029",
+    "title": "Other business services managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": []
+  },
+  {
+    "code": "10030",
+    "title": "Telecommunication carriers managers",
+    "teer": 0,
+    "majorGroup": "10",
+    "minorGroup": "100",
+    "duties": []
+  },
+  {
+    "code": "11100",
+    "title": "Financial auditors and accountants",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "111",
+    "duties": []
+  },
+  {
+    "code": "11101",
+    "title": "Financial and investment analysts",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "111",
+    "duties": []
+  },
+  {
+    "code": "11102",
+    "title": "Financial advisors",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "111",
+    "duties": []
+  },
+  {
+    "code": "11103",
+    "title": "Securities agents, investment dealers and brokers",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "111",
+    "duties": []
+  },
+  {
+    "code": "11109",
+    "title": "Other financial officers",
+    "teer": 1,
+    "majorGroup": "11",
+    "minorGroup": "111",
+    "duties": []
   },
   {
     "code": "11200",
-    "title": "Professional Occupations in Business",
+    "title": "Human resources professionals",
     "teer": 1,
     "majorGroup": "11",
     "minorGroup": "112",
-    "duties": [
-      "Analyses organizational, operational and management problems and develops practical recommendations.",
-      "Conducts research, data analysis and benchmarking to support client engagements.",
-      "Prepares reports and presentations communicating findings to clients and stakeholders.",
-      "Advises on the implementation of process, structural or strategic improvements."
-    ]
+    "duties": []
   },
   {
     "code": "11201",
-    "title": "Financial Auditors and Accountants",
+    "title": "Professional occupations in business management consulting",
     "teer": 1,
     "majorGroup": "11",
     "minorGroup": "112",
-    "duties": [
-      "Examines financial statements, records and transactions to ensure accuracy and compliance.",
-      "Prepares audit reports, tax filings and financial statements for clients or organizations.",
-      "Advises on accounting systems, internal controls and regulatory requirements.",
-      "Maintains professional standards and documentation in accordance with accounting bodies."
-    ]
+    "duties": []
   },
   {
     "code": "11202",
-    "title": "Financial and Investment Analysts",
+    "title": "Professional occupations in advertising, marketing and public relations",
     "teer": 1,
     "majorGroup": "11",
     "minorGroup": "112",
-    "duties": [
-      "Analyses financial data, market trends and investment opportunities for clients or employers.",
-      "Prepares reports, forecasts and recommendations on securities, portfolios or financial strategies.",
-      "Monitors economic, industry and company-level developments affecting investment decisions.",
-      "Communicates findings and recommendations to management, clients or investment committees."
-    ]
+    "duties": []
   },
   {
-    "code": "11203",
-    "title": "Securities Agents, Investment Dealers and Brokers",
-    "teer": 1,
-    "majorGroup": "11",
-    "minorGroup": "112",
-    "duties": [
-      "Buys and sells securities on behalf of clients or institutions in compliance with regulations.",
-      "Advises clients on investment strategies, risk tolerance and portfolio composition.",
-      "Monitors market conditions and communicates relevant developments to clients.",
-      "Maintains accurate trading records and client account documentation."
-    ]
+    "code": "12010",
+    "title": "Supervisors, general office and administrative support workers",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "120",
+    "duties": []
   },
   {
-    "code": "11204",
-    "title": "Other Financial Officers",
-    "teer": 1,
-    "majorGroup": "11",
-    "minorGroup": "112",
-    "duties": [
-      "Performs specialized financial analysis, budgeting or risk assessment functions for organizations.",
-      "Evaluates risks, controls and compliance against accounting standards and regulatory frameworks.",
-      "Develops forecasts, recommendations and performance insights to support strategic decisions.",
-      "Maintains records and communicates findings to stakeholders and management."
-    ]
+    "code": "12011",
+    "title": "Supervisors, finance and insurance office workers",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "120",
+    "duties": []
   },
   {
-    "code": "11209",
-    "title": "Loan Officers",
-    "teer": 1,
-    "majorGroup": "11",
-    "minorGroup": "112",
-    "duties": [
-      "Assesses loan applications and creditworthiness of individuals or businesses.",
-      "Prepares documentation and recommendations regarding the approval or denial of credit.",
-      "Advises clients on lending products, terms and repayment options.",
-      "Monitors loan portfolios and ensures compliance with lending regulations."
-    ]
+    "code": "12012",
+    "title": "Supervisors, library, correspondence and related information workers",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "120",
+    "duties": []
   },
   {
-    "code": "11210",
-    "title": "Human Resources Professionals",
-    "teer": 1,
-    "majorGroup": "11",
-    "minorGroup": "112",
-    "duties": [
-      "Develops and administers recruitment, compensation and employee relations programs.",
-      "Advises management on human resources policies, labour relations and compliance matters.",
-      "Prepares job descriptions, performance management frameworks and training programs.",
-      "Maintains employee records and ensures adherence to employment legislation."
-    ]
+    "code": "12013",
+    "title": "Supervisors, supply chain, tracking and scheduling coordination occupations",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "120",
+    "duties": []
   },
   {
-    "code": "11211",
-    "title": "Professional Occupations in Advertising, Marketing and Public Relations",
-    "teer": 1,
-    "majorGroup": "11",
-    "minorGroup": "112",
-    "duties": [
-      "Develops advertising, marketing or public relations strategies and campaigns.",
-      "Conducts market research and analyses consumer trends to inform strategy.",
-      "Prepares content, presentations and reports for clients or internal stakeholders.",
-      "Coordinates with media, creative teams and clients to execute campaigns."
-    ]
+    "code": "12100",
+    "title": "Executive assistants",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12101",
+    "title": "Human resources and recruitment officers",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12102",
+    "title": "Procurement and purchasing agents and officers",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12103",
+    "title": "Conference and event planners",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12104",
+    "title": "Employment insurance and revenue officers",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12110",
+    "title": "Court reporters, medical transcriptionists and related occupations",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12111",
+    "title": "Health information management occupations",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12112",
+    "title": "Records management technicians",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12113",
+    "title": "Statistical officers and related research support occupations",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "121",
+    "duties": []
+  },
+  {
+    "code": "12200",
+    "title": "Accounting technicians and bookkeepers",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "122",
+    "duties": []
+  },
+  {
+    "code": "12201",
+    "title": "Insurance adjusters and claims examiners",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "122",
+    "duties": []
+  },
+  {
+    "code": "12202",
+    "title": "Insurance underwriters",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "122",
+    "duties": []
+  },
+  {
+    "code": "12203",
+    "title": "Assessors, business valuators and appraisers",
+    "teer": 2,
+    "majorGroup": "12",
+    "minorGroup": "122",
+    "duties": []
   },
   {
     "code": "13100",
-    "title": "Administrative Officers",
-    "teer": 1,
+    "title": "Administrative officers",
+    "teer": 2,
     "majorGroup": "13",
     "minorGroup": "131",
-    "duties": [
-      "Coordinates office administrative procedures and reviews, evaluates and implements new procedures.",
-      "Establishes work priorities, delegates work to office support staff and ensures deadlines are met.",
-      "Prepares correspondence, reports, statistical data and other information.",
-      "Assists in preparing operating budgets and maintaining inventory and financial control records."
-    ]
+    "duties": []
   },
   {
     "code": "13101",
-    "title": "Property Administrators",
-    "teer": 1,
+    "title": "Property administrators",
+    "teer": 2,
     "majorGroup": "13",
     "minorGroup": "131",
-    "duties": [
-      "Coordinates leasing, maintenance and financial administration of residential or commercial properties.",
-      "Negotiates lease agreements and resolves tenant or owner concerns.",
-      "Prepares budgets, financial statements and reports related to property operations.",
-      "Arranges and oversees maintenance, renovation and service contracts."
-    ]
+    "duties": []
   },
   {
     "code": "13102",
-    "title": "Human Resources and Recruitment Officers",
-    "teer": 1,
+    "title": "Payroll administrators",
+    "teer": 2,
     "majorGroup": "13",
     "minorGroup": "131",
-    "duties": [
-      "Identifies staffing needs and coordinates recruitment, screening and selection processes.",
-      "Advises managers and employees on human resources policies and procedures.",
-      "Coordinates training, performance review and employee relations programs.",
-      "Maintains accurate employee records and ensures compliance with employment standards."
-    ]
+    "duties": []
   },
   {
     "code": "13110",
-    "title": "Procurement and Supply Chain Management Specialists",
-    "teer": 1,
+    "title": "Administrative assistants",
+    "teer": 2,
     "majorGroup": "13",
     "minorGroup": "131",
-    "duties": [
-      "Identifies sourcing requirements and negotiates contracts with suppliers and vendors.",
-      "Analyses supply chain processes to improve cost, quality and delivery performance.",
-      "Prepares purchase orders, tender documents and supplier performance reports.",
-      "Coordinates with internal departments to ensure timely procurement of goods and services."
-    ]
+    "duties": []
+  },
+  {
+    "code": "13111",
+    "title": "Legal administrative assistants",
+    "teer": 2,
+    "majorGroup": "13",
+    "minorGroup": "131",
+    "duties": []
+  },
+  {
+    "code": "13112",
+    "title": "Medical administrative assistants",
+    "teer": 2,
+    "majorGroup": "13",
+    "minorGroup": "131",
+    "duties": []
+  },
+  {
+    "code": "13200",
+    "title": "Customs, ship and other brokers",
+    "teer": 2,
+    "majorGroup": "13",
+    "minorGroup": "132",
+    "duties": []
+  },
+  {
+    "code": "13201",
+    "title": "Production and transportation logistics coordinators",
+    "teer": 2,
+    "majorGroup": "13",
+    "minorGroup": "132",
+    "duties": []
+  },
+  {
+    "code": "14100",
+    "title": "General office support workers",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "141",
+    "duties": []
+  },
+  {
+    "code": "14101",
+    "title": "Receptionists",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "141",
+    "duties": []
+  },
+  {
+    "code": "14102",
+    "title": "Personnel clerks",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "141",
+    "duties": []
+  },
+  {
+    "code": "14103",
+    "title": "Court clerks and related court services occupations",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "141",
+    "duties": []
+  },
+  {
+    "code": "14110",
+    "title": "Survey interviewers and statistical clerks",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "141",
+    "duties": []
+  },
+  {
+    "code": "14111",
+    "title": "Data entry clerks",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "141",
+    "duties": []
+  },
+  {
+    "code": "14112",
+    "title": "Desktop publishing operators and related occupations",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "141",
+    "duties": []
+  },
+  {
+    "code": "14200",
+    "title": "Accounting and related clerks",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "142",
+    "duties": []
+  },
+  {
+    "code": "14201",
+    "title": "Banking, insurance and other financial clerks",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "142",
+    "duties": []
+  },
+  {
+    "code": "14202",
+    "title": "Collection clerks",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "142",
+    "duties": []
+  },
+  {
+    "code": "14300",
+    "title": "Library assistants and clerks",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "143",
+    "duties": []
+  },
+  {
+    "code": "14301",
+    "title": "Correspondence, publication and regulatory clerks",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "143",
+    "duties": []
+  },
+  {
+    "code": "14400",
+    "title": "Shippers and receivers",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "144",
+    "duties": []
+  },
+  {
+    "code": "14401",
+    "title": "Storekeepers and partspersons",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "144",
+    "duties": []
+  },
+  {
+    "code": "14402",
+    "title": "Production logistics workers",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "144",
+    "duties": []
+  },
+  {
+    "code": "14403",
+    "title": "Purchasing and inventory control workers",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "144",
+    "duties": []
+  },
+  {
+    "code": "14404",
+    "title": "Dispatchers",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "144",
+    "duties": []
+  },
+  {
+    "code": "14405",
+    "title": "Transportation route and crew schedulers",
+    "teer": 4,
+    "majorGroup": "14",
+    "minorGroup": "144",
+    "duties": []
   },
   {
     "code": "20010",
-    "title": "Engineering Managers",
+    "title": "Engineering managers",
     "teer": 0,
     "majorGroup": "20",
     "minorGroup": "200",
-    "duties": [
-      "Plans and directs engineering projects, teams and resources to meet organizational goals.",
-      "Reviews engineering designs, specifications and project plans for technical accuracy and compliance.",
-      "Allocates budgets, schedules and staffing for engineering activities.",
-      "Liaises with clients, regulators and senior management on engineering matters."
-    ]
+    "duties": []
   },
   {
     "code": "20011",
-    "title": "Architecture and Science Managers",
+    "title": "Architecture and science managers",
     "teer": 0,
     "majorGroup": "20",
     "minorGroup": "200",
-    "duties": [
-      "Plans and directs architectural or scientific projects, teams and resources.",
-      "Reviews designs, research plans and technical specifications for accuracy and compliance.",
-      "Allocates budgets, schedules and staffing for architecture or science activities.",
-      "Liaises with clients, regulators and senior management on technical matters."
-    ]
+    "duties": []
   },
   {
     "code": "20012",
-    "title": "Computer and Information Systems Managers",
+    "title": "Computer and information systems managers",
     "teer": 0,
     "majorGroup": "20",
     "minorGroup": "200",
-    "duties": [
-      "Plans, organizes and directs the design, development and operation of information systems.",
-      "Manages IT budgets, staffing and vendor relationships.",
-      "Develops and enforces information technology policies and security standards.",
-      "Liaises with departments to align technology strategy with business objectives."
-    ]
+    "duties": []
   },
   {
     "code": "21100",
-    "title": "Physicists and Astronomers",
+    "title": "Physicists and astronomers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "211",
-    "duties": [
-      "Conducts research into the properties and behaviour of matter, energy and the physical universe.",
-      "Designs and conducts experiments and analyses data using specialized instruments and models.",
-      "Prepares scientific papers, reports and presentations on research findings.",
-      "Collaborates with other scientists and institutions on research projects."
-    ]
+    "duties": []
   },
   {
     "code": "21101",
@@ -356,435 +565,1663 @@
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "211",
-    "duties": [
-      "Conducts chemical analyses, tests and experiments on materials and substances.",
-      "Develops and improves chemical processes, products and formulations.",
-      "Prepares technical reports documenting methods, results and conclusions.",
-      "Ensures laboratory work complies with safety and regulatory standards."
-    ]
+    "duties": []
   },
   {
     "code": "21102",
-    "title": "Geoscientists and Oceanographers",
+    "title": "Geoscientists and oceanographers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "211",
-    "duties": [
-      "Conducts surveys and research into the Earth's structure, composition or oceans.",
-      "Analyses geological, geophysical or oceanographic data using specialized equipment.",
-      "Prepares maps, models and technical reports on findings.",
-      "Advises on resource exploration, environmental and engineering projects."
-    ]
+    "duties": []
   },
   {
     "code": "21103",
-    "title": "Meteorologists and Climatologists",
+    "title": "Meteorologists and climatologists",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "211",
-    "duties": [
-      "Analyses atmospheric data to forecast weather and study climate patterns.",
-      "Develops and applies models to predict weather events and climate change impacts.",
-      "Prepares reports, forecasts and warnings for public, government or industry use.",
-      "Collaborates with researchers and agencies on climate and weather studies."
-    ]
+    "duties": []
   },
   {
     "code": "21109",
-    "title": "Other Professional Occupations in Physical Sciences",
+    "title": "Other professional occupations in physical sciences",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "211",
-    "duties": [
-      "Conducts research and analysis within specialized physical science disciplines.",
-      "Designs and conducts experiments and analyses results using scientific methods.",
-      "Prepares technical reports and presentations on research findings.",
-      "Collaborates with other scientists and institutions on research projects."
-    ]
+    "duties": []
+  },
+  {
+    "code": "21110",
+    "title": "Biologists and related scientists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": []
+  },
+  {
+    "code": "21111",
+    "title": "Forestry professionals",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": []
+  },
+  {
+    "code": "21112",
+    "title": "Agricultural representatives, consultants and specialists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "211",
+    "duties": []
   },
   {
     "code": "21120",
-    "title": "Biologists and Related Scientists",
+    "title": "Public and environmental health and safety professionals",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "211",
-    "duties": [
-      "Conducts research into living organisms, ecosystems and biological processes.",
-      "Designs and conducts experiments and field studies, collecting and analysing data.",
-      "Prepares scientific reports, papers and presentations on research findings.",
-      "Advises on conservation, environmental management or biotechnology applications."
-    ]
-  },
-  {
-    "code": "21121",
-    "title": "Forestry Professionals",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "211",
-    "duties": [
-      "Plans and manages forest resources, harvesting and reforestation activities.",
-      "Conducts surveys and research into forest health, growth and sustainability.",
-      "Prepares management plans and reports for forestry operations.",
-      "Advises on conservation, regulatory compliance and land-use practices."
-    ]
+    "duties": []
   },
   {
     "code": "21200",
-    "title": "Civil Engineers",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Designs and oversees construction of infrastructure such as roads, bridges and buildings.",
-      "Conducts site investigations, feasibility studies and structural analyses.",
-      "Prepares engineering drawings, specifications and cost estimates.",
-      "Ensures projects comply with codes, safety standards and regulations."
-    ]
-  },
-  {
-    "code": "21201",
-    "title": "Mechanical Engineers",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Designs, develops and tests mechanical systems, equipment and components.",
-      "Conducts engineering analyses and prepares specifications and drawings.",
-      "Oversees installation, commissioning and maintenance of mechanical systems.",
-      "Ensures designs comply with safety standards and regulatory requirements."
-    ]
-  },
-  {
-    "code": "21210",
-    "title": "Industrial and Manufacturing Engineers",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Designs and improves production processes, layouts and systems for efficiency.",
-      "Conducts time and process studies and analyses production data.",
-      "Prepares specifications, reports and recommendations for process improvements.",
-      "Coordinates with operations and quality teams to implement engineering solutions."
-    ]
-  },
-  {
-    "code": "21211",
-    "title": "Metallurgical and Materials Engineers",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Develops and tests materials and metallurgical processes for industrial applications.",
-      "Conducts failure analyses and recommends material or process improvements.",
-      "Prepares technical specifications and reports on material properties.",
-      "Ensures processes comply with quality and safety standards."
-    ]
-  },
-  {
-    "code": "21211b",
-    "title": "REMOVE",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "x"
-    ]
-  },
-  {
-    "code": "21220",
-    "title": "Chemical Engineers",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Designs and oversees chemical processes and production systems.",
-      "Conducts research and testing to improve process efficiency and safety.",
-      "Prepares process specifications, flow diagrams and technical reports.",
-      "Ensures compliance with environmental and safety regulations."
-    ]
-  },
-  {
-    "code": "21220a",
     "title": "Architects",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Designs buildings and structures, preparing drawings and specifications for clients.",
-      "Coordinates with engineers, contractors and authorities throughout project lifecycles.",
-      "Ensures designs comply with building codes, zoning and safety standards.",
-      "Oversees construction administration to confirm alignment with approved plans."
-    ]
+    "duties": []
+  },
+  {
+    "code": "21201",
+    "title": "Landscape architects",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": []
+  },
+  {
+    "code": "21202",
+    "title": "Urban and land use planners",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": []
+  },
+  {
+    "code": "21203",
+    "title": "Land surveyors",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": []
+  },
+  {
+    "code": "21210",
+    "title": "Mathematicians, statisticians and actuaries",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": []
+  },
+  {
+    "code": "21211",
+    "title": "Data scientists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": []
+  },
+  {
+    "code": "21220",
+    "title": "Cybersecurity specialists",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "212",
+    "duties": []
   },
   {
     "code": "21221",
-    "title": "Mathematicians, Statisticians and Actuaries",
+    "title": "Business systems specialists",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Applies mathematical and statistical methods to analyse data and solve problems.",
-      "Develops models to assess risk, forecast trends or evaluate financial outcomes.",
-      "Prepares reports and presentations communicating analytical findings.",
-      "Advises organizations on the application of quantitative methods to business decisions."
-    ]
+    "duties": []
   },
   {
     "code": "21222",
-    "title": "Data Scientists",
+    "title": "Information systems specialists",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Analyses large and complex datasets to identify trends and insights.",
-      "Develops statistical models and machine learning algorithms.",
-      "Prepares visualizations and reports to communicate findings to stakeholders.",
-      "Collaborates with technical and business teams to apply data-driven solutions."
-    ]
+    "duties": []
   },
   {
     "code": "21223",
-    "title": "Database Analysts and Data Administrators",
+    "title": "Database analysts and data administrators",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Designs, implements and maintains database systems and structures.",
-      "Monitors database performance and ensures data integrity and security.",
-      "Develops backup, recovery and access control procedures.",
-      "Collaborates with developers and analysts to support data requirements."
-    ]
-  },
-  {
-    "code": "21224",
-    "title": "Software Developers and Programmers",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Designs, codes and tests software applications according to specifications.",
-      "Debugs and resolves software defects throughout the development lifecycle.",
-      "Collaborates with analysts and stakeholders to refine requirements.",
-      "Documents code and maintains version control across development projects."
-    ]
-  },
-  {
-    "code": "21225",
-    "title": "Cybersecurity Specialists",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Monitors and protects information systems against security threats and breaches.",
-      "Conducts vulnerability assessments and penetration testing.",
-      "Develops and implements security policies, protocols and incident response plans.",
-      "Prepares reports on security risks and recommends mitigation measures."
-    ]
-  },
-  {
-    "code": "21226",
-    "title": "Information Systems Business Analysts and Consultants",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Analyses business processes and information needs to recommend system solutions.",
-      "Prepares functional specifications and liaises between business and technical teams.",
-      "Tests and validates information systems against business requirements.",
-      "Provides ongoing advice on system improvements and technology adoption."
-    ]
-  },
-  {
-    "code": "21227",
-    "title": "Information Systems Specialists",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Plans, develops and implements information systems to meet organizational needs.",
-      "Evaluates system performance and recommends upgrades or modifications.",
-      "Coordinates with users and technical staff to resolve systems issues.",
-      "Documents systems architecture, processes and procedures."
-    ]
+    "duties": []
   },
   {
     "code": "21230",
-    "title": "Mining Engineers",
+    "title": "Computer systems developers and programmers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Designs and oversees mine development, extraction and safety systems.",
-      "Conducts feasibility studies and analyses geological and engineering data.",
-      "Prepares mine plans, specifications and technical reports.",
-      "Ensures operations comply with safety and environmental regulations."
-    ]
-  },
-  {
-    "code": "21230b",
-    "title": "Database Analysts and Data Administrators (Alt)",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "x"
-    ]
+    "duties": []
   },
   {
     "code": "21231",
-    "title": "Geological Engineers",
+    "title": "Software engineers and designers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Conducts geological and geotechnical assessments for engineering and resource projects.",
-      "Analyses soil, rock and groundwater conditions to inform design decisions.",
-      "Prepares technical reports and recommendations for construction or extraction projects.",
-      "Ensures compliance with engineering and environmental standards."
-    ]
+    "duties": []
   },
   {
     "code": "21232",
-    "title": "Petroleum Engineers",
+    "title": "Software developers and programmers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Designs and oversees methods for extracting oil and gas from reservoirs.",
-      "Analyses reservoir data and develops production optimization strategies.",
-      "Prepares technical reports, well plans and cost estimates.",
-      "Ensures operations comply with safety and environmental regulations."
-    ]
-  },
-  {
-    "code": "21232a",
-    "title": "Software Engineers and Designers",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "212",
-    "duties": [
-      "Designs, develops and tests software applications, systems and architectures.",
-      "Analyses user requirements and translates them into technical specifications.",
-      "Collaborates with cross-functional teams to deliver and maintain software products.",
-      "Ensures software meets performance, security and quality standards."
-    ]
+    "duties": []
   },
   {
     "code": "21233",
-    "title": "Computer Programmers and Interactive Media Developers",
+    "title": "Web designers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Writes, tests and maintains computer programs and interactive media applications.",
-      "Translates technical specifications into functioning code.",
-      "Debugs and troubleshoots software defects and performance issues.",
-      "Documents code and collaborates with designers and engineers on product development."
-    ]
+    "duties": []
   },
   {
     "code": "21234",
-    "title": "Web Designers and Developers",
+    "title": "Web developers and programmers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "212",
-    "duties": [
-      "Designs, builds and maintains websites and web applications.",
-      "Writes and tests front-end and back-end code to implement website features.",
-      "Collaborates with clients and designers to translate requirements into functional sites.",
-      "Optimizes websites for performance, accessibility and search visibility."
-    ]
+    "duties": []
   },
   {
     "code": "21300",
-    "title": "Electrical and Electronics Engineers",
+    "title": "Civil engineers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "213",
-    "duties": [
-      "Designs and tests electrical and electronic systems, equipment and components.",
-      "Conducts engineering analyses and prepares specifications and drawings.",
-      "Oversees installation, commissioning and maintenance of electrical systems.",
-      "Ensures designs comply with safety standards and regulatory requirements."
-    ]
+    "duties": []
   },
   {
     "code": "21301",
-    "title": "Computer Engineers (except software engineers and designers)",
+    "title": "Mechanical engineers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "213",
-    "duties": [
-      "Designs, develops and tests computer hardware, networks and embedded systems.",
-      "Conducts engineering analyses and prepares technical specifications.",
-      "Oversees installation, integration and testing of computer systems.",
-      "Ensures designs comply with performance, safety and security standards."
-    ]
+    "duties": []
   },
   {
     "code": "21310",
-    "title": "Petroleum Engineers",
+    "title": "Electrical and electronics engineers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "213",
-    "duties": [
-      "Designs systems for hydrocarbon extraction and production optimization.",
-      "Analyses reservoir and production data to improve recovery rates.",
-      "Prepares technical reports, plans and cost estimates for projects.",
-      "Ensures compliance with safety and environmental regulations."
-    ]
+    "duties": []
+  },
+  {
+    "code": "21311",
+    "title": "Computer engineers (except software engineers and designers)",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": []
   },
   {
     "code": "21320",
-    "title": "Aerospace Engineers",
+    "title": "Chemical engineers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "213",
-    "duties": [
-      "Designs, develops and tests aircraft, spacecraft and related systems.",
-      "Conducts engineering analyses on aerodynamics, structures and propulsion.",
-      "Prepares technical specifications, drawings and certification documentation.",
-      "Ensures designs comply with aviation safety standards and regulations."
-    ]
+    "duties": []
+  },
+  {
+    "code": "21321",
+    "title": "Industrial and manufacturing engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": []
+  },
+  {
+    "code": "21322",
+    "title": "Metallurgical and materials engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": []
+  },
+  {
+    "code": "21330",
+    "title": "Mining engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": []
+  },
+  {
+    "code": "21331",
+    "title": "Geological engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": []
+  },
+  {
+    "code": "21332",
+    "title": "Petroleum engineers",
+    "teer": 1,
+    "majorGroup": "21",
+    "minorGroup": "213",
+    "duties": []
   },
   {
     "code": "21390",
-    "title": "Land Surveyors",
+    "title": "Aerospace engineers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "213",
-    "duties": [
-      "Conducts land surveys to determine boundaries, elevations and property dimensions.",
-      "Prepares legal survey plans, maps and reports for clients and authorities.",
-      "Operates surveying instruments and geographic information systems.",
-      "Ensures surveys comply with legal and regulatory standards."
-    ]
-  },
-  {
-    "code": "21391",
-    "title": "Urban and Land Use Planners",
-    "teer": 1,
-    "majorGroup": "21",
-    "minorGroup": "213",
-    "duties": [
-      "Develops land use plans, zoning policies and community development strategies.",
-      "Conducts research and analysis on demographic, environmental and economic factors.",
-      "Prepares reports and presentations for councils, developers and the public.",
-      "Reviews development applications for compliance with planning regulations."
-    ]
+    "duties": []
   },
   {
     "code": "21399",
-    "title": "Other Professional Engineers, n.e.c.",
+    "title": "Other professional engineers",
     "teer": 1,
     "majorGroup": "21",
     "minorGroup": "213",
-    "duties": [
-      "Applies engineering principles to specialized technical projects and systems.",
-      "Conducts analyses, testing and design work within a specific engineering discipline.",
-      "Prepares technical specifications, drawings and reports.",
-      "Ensures designs comply with applicable codes and safety standards."
-    ]
+    "duties": []
+  },
+  {
+    "code": "22100",
+    "title": "Chemical technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "221",
+    "duties": []
+  },
+  {
+    "code": "22101",
+    "title": "Geological and mineral technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "221",
+    "duties": []
+  },
+  {
+    "code": "22110",
+    "title": "Biological technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "221",
+    "duties": []
+  },
+  {
+    "code": "22111",
+    "title": "Agricultural and fish products inspectors",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "221",
+    "duties": []
+  },
+  {
+    "code": "22112",
+    "title": "Forestry technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "221",
+    "duties": []
+  },
+  {
+    "code": "22113",
+    "title": "Conservation and fishery officers",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "221",
+    "duties": []
+  },
+  {
+    "code": "22114",
+    "title": "Landscape and horticulture technicians and specialists",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "221",
+    "duties": []
+  },
+  {
+    "code": "22210",
+    "title": "Architectural technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22211",
+    "title": "Industrial designers",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22212",
+    "title": "Drafting technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22213",
+    "title": "Land survey technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22214",
+    "title": "Technical occupations in geomatics and meteorology",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22220",
+    "title": "Computer network and web technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22221",
+    "title": "User support technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22222",
+    "title": "Information systems testing technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22230",
+    "title": "Non-destructive testers and inspectors",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22231",
+    "title": "Engineering inspectors and regulatory officers",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22232",
+    "title": "Occupational health and safety specialists",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22233",
+    "title": "Construction inspectors",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "222",
+    "duties": []
+  },
+  {
+    "code": "22300",
+    "title": "Civil engineering technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "223",
+    "duties": []
+  },
+  {
+    "code": "22301",
+    "title": "Mechanical engineering technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "223",
+    "duties": []
+  },
+  {
+    "code": "22302",
+    "title": "Industrial engineering and manufacturing technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "223",
+    "duties": []
+  },
+  {
+    "code": "22303",
+    "title": "Construction estimators",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "223",
+    "duties": []
+  },
+  {
+    "code": "22310",
+    "title": "Electrical and electronics engineering technologists and technicians",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "223",
+    "duties": []
+  },
+  {
+    "code": "22311",
+    "title": "Electronic service technicians (household and business equipment)",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "223",
+    "duties": []
+  },
+  {
+    "code": "22312",
+    "title": "Industrial instrument technicians and mechanics",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "223",
+    "duties": []
+  },
+  {
+    "code": "22313",
+    "title": "Aircraft instrument, electrical and avionics mechanics, technicians and inspectors",
+    "teer": 2,
+    "majorGroup": "22",
+    "minorGroup": "223",
+    "duties": []
+  },
+  {
+    "code": "30010",
+    "title": "Managers in health care",
+    "teer": 0,
+    "majorGroup": "30",
+    "minorGroup": "300",
+    "duties": []
+  },
+  {
+    "code": "31100",
+    "title": "Specialists in clinical and laboratory medicine",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31101",
+    "title": "Specialists in surgery",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31102",
+    "title": "General practitioners and family physicians",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31103",
+    "title": "Veterinarians",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31110",
+    "title": "Dentists",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31111",
+    "title": "Optometrists",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31112",
+    "title": "Audiologists and speech-language pathologists",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31120",
+    "title": "Pharmacists",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31121",
+    "title": "Dietitians and nutritionists",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "311",
+    "duties": []
+  },
+  {
+    "code": "31200",
+    "title": "Psychologists",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "312",
+    "duties": []
+  },
+  {
+    "code": "31201",
+    "title": "Chiropractors",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "312",
+    "duties": []
+  },
+  {
+    "code": "31202",
+    "title": "Physiotherapists",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "312",
+    "duties": []
+  },
+  {
+    "code": "31203",
+    "title": "Occupational therapists",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "312",
+    "duties": []
+  },
+  {
+    "code": "31204",
+    "title": "Kinesiologists and other professional occupations in therapy and assessment",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "312",
+    "duties": []
+  },
+  {
+    "code": "31209",
+    "title": "Other professional occupations in health diagnosing and treating",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "312",
+    "duties": []
+  },
+  {
+    "code": "31300",
+    "title": "Nursing coordinators and supervisors",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "313",
+    "duties": []
+  },
+  {
+    "code": "31301",
+    "title": "Registered nurses and registered psychiatric nurses",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "313",
+    "duties": []
+  },
+  {
+    "code": "31302",
+    "title": "Nurse practitioners",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "313",
+    "duties": []
+  },
+  {
+    "code": "31303",
+    "title": "Physician assistants, midwives and allied health professionals",
+    "teer": 1,
+    "majorGroup": "31",
+    "minorGroup": "313",
+    "duties": []
+  },
+  {
+    "code": "32100",
+    "title": "Opticians",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32101",
+    "title": "Licensed practical nurses",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32102",
+    "title": "Paramedical occupations",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32103",
+    "title": "Respiratory therapists, clinical perfusionists and cardiopulmonary technologists",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32104",
+    "title": "Animal health technologists and veterinary technicians",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32109",
+    "title": "Other technical occupations in therapy and assessment",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32110",
+    "title": "Denturists",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32111",
+    "title": "Dental hygienists and dental therapists",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32112",
+    "title": "Dental technologists and technicians",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32120",
+    "title": "Medical laboratory technologists",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32121",
+    "title": "Medical radiation technologists",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32122",
+    "title": "Medical sonographers",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32123",
+    "title": "Cardiology technologists and electrophysiological diagnostic technologists",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32124",
+    "title": "Pharmacy technicians",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32129",
+    "title": "Other medical technologists and technicians",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "321",
+    "duties": []
+  },
+  {
+    "code": "32200",
+    "title": "Traditional Chinese medicine practitioners and acupuncturists",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "322",
+    "duties": []
+  },
+  {
+    "code": "32201",
+    "title": "Massage therapists",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "322",
+    "duties": []
+  },
+  {
+    "code": "32209",
+    "title": "Other practitioners of natural healing",
+    "teer": 2,
+    "majorGroup": "32",
+    "minorGroup": "322",
+    "duties": []
+  },
+  {
+    "code": "33100",
+    "title": "Dental assistants and dental laboratory assistants",
+    "teer": 3,
+    "majorGroup": "33",
+    "minorGroup": "331",
+    "duties": []
+  },
+  {
+    "code": "33101",
+    "title": "Medical laboratory assistants and related technical occupations",
+    "teer": 3,
+    "majorGroup": "33",
+    "minorGroup": "331",
+    "duties": []
+  },
+  {
+    "code": "33102",
+    "title": "Nurse aides, orderlies and patient service associates",
+    "teer": 3,
+    "majorGroup": "33",
+    "minorGroup": "331",
+    "duties": []
+  },
+  {
+    "code": "33103",
+    "title": "Pharmacy technical assistants and pharmacy assistants",
+    "teer": 3,
+    "majorGroup": "33",
+    "minorGroup": "331",
+    "duties": []
+  },
+  {
+    "code": "33109",
+    "title": "Other assisting occupations in support of health services",
+    "teer": 3,
+    "majorGroup": "33",
+    "minorGroup": "331",
+    "duties": []
+  },
+  {
+    "code": "40010",
+    "title": "Government managers – health and social policy development and program administration",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40011",
+    "title": "Government managers – economic analysis, policy development and program administration",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40012",
+    "title": "Government managers – education policy development and program administration",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40019",
+    "title": "Other managers in public administration",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40020",
+    "title": "Administrators – post-secondary education and vocational training",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40021",
+    "title": "School principals and administrators of elementary and secondary education",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40030",
+    "title": "Managers in social, community and correctional services",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40040",
+    "title": "Commissioned police officers and related occupations in public protection services",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40041",
+    "title": "Fire chiefs and senior firefighting officers",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "40042",
+    "title": "Commissioned officers of the Canadian Armed Forces",
+    "teer": 0,
+    "majorGroup": "40",
+    "minorGroup": "400",
+    "duties": []
+  },
+  {
+    "code": "41100",
+    "title": "Judges",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "411",
+    "duties": []
+  },
+  {
+    "code": "41101",
+    "title": "Lawyers and Quebec notaries",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "411",
+    "duties": []
+  },
+  {
+    "code": "41200",
+    "title": "University professors and lecturers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "412",
+    "duties": []
+  },
+  {
+    "code": "41201",
+    "title": "Post-secondary teaching and research assistants",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "412",
+    "duties": []
+  },
+  {
+    "code": "41210",
+    "title": "College and other vocational instructors",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "412",
+    "duties": []
+  },
+  {
+    "code": "41220",
+    "title": "Secondary school teachers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "412",
+    "duties": []
+  },
+  {
+    "code": "41221",
+    "title": "Elementary school and kindergarten teachers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "412",
+    "duties": []
+  },
+  {
+    "code": "41300",
+    "title": "Social workers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "413",
+    "duties": []
+  },
+  {
+    "code": "41301",
+    "title": "Therapists in counselling and related specialized therapies",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "413",
+    "duties": []
+  },
+  {
+    "code": "41302",
+    "title": "Religious leaders",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "413",
+    "duties": []
+  },
+  {
+    "code": "41310",
+    "title": "Police investigators and other investigative occupations",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "413",
+    "duties": []
+  },
+  {
+    "code": "41311",
+    "title": "Probation and parole officers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "413",
+    "duties": []
+  },
+  {
+    "code": "41320",
+    "title": "Educational counsellors",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "413",
+    "duties": []
+  },
+  {
+    "code": "41321",
+    "title": "Career development practitioners and career counsellors (except education)",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "413",
+    "duties": []
+  },
+  {
+    "code": "41400",
+    "title": "Natural and applied science policy researchers, consultants and program officers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "41401",
+    "title": "Economists and economic policy researchers and analysts",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "41402",
+    "title": "Business development officers and market researchers and analysts",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "41403",
+    "title": "Social policy researchers, consultants and program officers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "41404",
+    "title": "Health policy researchers, consultants and program officers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "41405",
+    "title": "Education policy researchers, consultants and program officers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "41406",
+    "title": "Recreation, sports and fitness policy researchers, consultants and program officers",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "41407",
+    "title": "Program officers unique to government",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "41409",
+    "title": "Other professional occupations in social science",
+    "teer": 1,
+    "majorGroup": "41",
+    "minorGroup": "414",
+    "duties": []
+  },
+  {
+    "code": "42100",
+    "title": "Police officers (except commissioned)",
+    "teer": 2,
+    "majorGroup": "42",
+    "minorGroup": "421",
+    "duties": []
+  },
+  {
+    "code": "42101",
+    "title": "Firefighters",
+    "teer": 2,
+    "majorGroup": "42",
+    "minorGroup": "421",
+    "duties": []
+  },
+  {
+    "code": "42102",
+    "title": "Specialized members of the Canadian Armed Forces",
+    "teer": 2,
+    "majorGroup": "42",
+    "minorGroup": "421",
+    "duties": []
+  },
+  {
+    "code": "42200",
+    "title": "Paralegals and related occupations",
+    "teer": 2,
+    "majorGroup": "42",
+    "minorGroup": "422",
+    "duties": []
+  },
+  {
+    "code": "42201",
+    "title": "Social and community service workers",
+    "teer": 2,
+    "majorGroup": "42",
+    "minorGroup": "422",
+    "duties": []
+  },
+  {
+    "code": "42202",
+    "title": "Early childhood educators and assistants",
+    "teer": 2,
+    "majorGroup": "42",
+    "minorGroup": "422",
+    "duties": []
+  },
+  {
+    "code": "42203",
+    "title": "Instructors of persons with disabilities",
+    "teer": 2,
+    "majorGroup": "42",
+    "minorGroup": "422",
+    "duties": []
+  },
+  {
+    "code": "42204",
+    "title": "Religion workers",
+    "teer": 2,
+    "majorGroup": "42",
+    "minorGroup": "422",
+    "duties": []
+  },
+  {
+    "code": "43100",
+    "title": "Elementary and secondary school teacher assistants",
+    "teer": 1,
+    "majorGroup": "43",
+    "minorGroup": "431",
+    "duties": []
+  },
+  {
+    "code": "43109",
+    "title": "Other instructors",
+    "teer": 1,
+    "majorGroup": "43",
+    "minorGroup": "431",
+    "duties": []
+  },
+  {
+    "code": "43200",
+    "title": "Sheriffs and bailiffs",
+    "teer": 1,
+    "majorGroup": "43",
+    "minorGroup": "432",
+    "duties": []
+  },
+  {
+    "code": "43201",
+    "title": "Correctional service officers",
+    "teer": 1,
+    "majorGroup": "43",
+    "minorGroup": "432",
+    "duties": []
+  },
+  {
+    "code": "43202",
+    "title": "By-law enforcement and other regulatory officers",
+    "teer": 1,
+    "majorGroup": "43",
+    "minorGroup": "432",
+    "duties": []
+  },
+  {
+    "code": "43203",
+    "title": "Border services, customs, and immigration officers",
+    "teer": 1,
+    "majorGroup": "43",
+    "minorGroup": "432",
+    "duties": []
+  },
+  {
+    "code": "43204",
+    "title": "Operations Members of the Canadian Armed Forces",
+    "teer": 1,
+    "majorGroup": "43",
+    "minorGroup": "432",
+    "duties": []
+  },
+  {
+    "code": "44100",
+    "title": "Home child care providers",
+    "teer": 4,
+    "majorGroup": "44",
+    "minorGroup": "441",
+    "duties": []
+  },
+  {
+    "code": "44101",
+    "title": "Home support workers, caregivers and related occupations",
+    "teer": 4,
+    "majorGroup": "44",
+    "minorGroup": "441",
+    "duties": []
+  },
+  {
+    "code": "44200",
+    "title": "Primary combat members of the Canadian Armed Forces",
+    "teer": 4,
+    "majorGroup": "44",
+    "minorGroup": "442",
+    "duties": []
+  },
+  {
+    "code": "45100",
+    "title": "Student monitors, crossing guards and related occupations",
+    "teer": 5,
+    "majorGroup": "45",
+    "minorGroup": "451",
+    "duties": []
+  },
+  {
+    "code": "50010",
+    "title": "Library, archive, museum and art gallery managers",
+    "teer": 0,
+    "majorGroup": "50",
+    "minorGroup": "500",
+    "duties": []
+  },
+  {
+    "code": "50011",
+    "title": "Managers – publishing, motion pictures, broadcasting and performing arts",
+    "teer": 0,
+    "majorGroup": "50",
+    "minorGroup": "500",
+    "duties": []
+  },
+  {
+    "code": "50012",
+    "title": "Recreation, sports and fitness program and service directors",
+    "teer": 0,
+    "majorGroup": "50",
+    "minorGroup": "500",
+    "duties": []
+  },
+  {
+    "code": "51100",
+    "title": "Librarians",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51101",
+    "title": "Conservators and curators",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51102",
+    "title": "Archivists",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51110",
+    "title": "Editors",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51111",
+    "title": "Authors and writers (except technical)",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51112",
+    "title": "Technical writers",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51113",
+    "title": "Journalists",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51114",
+    "title": "Translators, terminologists and interpreters",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51120",
+    "title": "Producers, directors, choreographers and related occupations",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51121",
+    "title": "Conductors, composers and arrangers",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "51122",
+    "title": "Musicians and singers",
+    "teer": 1,
+    "majorGroup": "51",
+    "minorGroup": "511",
+    "duties": []
+  },
+  {
+    "code": "52100",
+    "title": "Library and public archive technicians",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "52110",
+    "title": "Film and video camera operators",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "52111",
+    "title": "Graphic arts technicians",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "52112",
+    "title": "Broadcast technicians",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "52113",
+    "title": "Audio and video recording technicians",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "52114",
+    "title": "Announcers and other broadcasters",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "52119",
+    "title": "Other technical and coordinating occupations in motion pictures, broadcasting and the performing arts",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "52120",
+    "title": "Graphic designers and illustrators",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "52121",
+    "title": "Interior designers and interior decorators",
+    "teer": 2,
+    "majorGroup": "52",
+    "minorGroup": "521",
+    "duties": []
+  },
+  {
+    "code": "53100",
+    "title": "Registrars, restorers, interpreters and other occupations related to museum and art galleries",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53110",
+    "title": "Photographers",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53111",
+    "title": "Motion pictures, broadcasting, photography and performing arts assistants and operators",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53120",
+    "title": "Dancers",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53121",
+    "title": "Actors, comedians and circus performers",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53122",
+    "title": "Painters, sculptors and other visual artists",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53123",
+    "title": "Theatre, fashion, exhibit and other creative designers",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53124",
+    "title": "Artisans and craftspersons",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53125",
+    "title": "Patternmakers – textile, leather and fur products",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "531",
+    "duties": []
+  },
+  {
+    "code": "53200",
+    "title": "Athletes",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "532",
+    "duties": []
+  },
+  {
+    "code": "53201",
+    "title": "Coaches",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "532",
+    "duties": []
+  },
+  {
+    "code": "53202",
+    "title": "Sports officials and referees",
+    "teer": 3,
+    "majorGroup": "53",
+    "minorGroup": "532",
+    "duties": []
+  },
+  {
+    "code": "54100",
+    "title": "Program leaders and instructors in recreation, sport and fitness",
+    "teer": 4,
+    "majorGroup": "54",
+    "minorGroup": "541",
+    "duties": []
+  },
+  {
+    "code": "55109",
+    "title": "Other performers",
+    "teer": 5,
+    "majorGroup": "55",
+    "minorGroup": "551",
+    "duties": []
+  },
+  {
+    "code": "60010",
+    "title": "Corporate sales managers",
+    "teer": 0,
+    "majorGroup": "60",
+    "minorGroup": "600",
+    "duties": []
+  },
+  {
+    "code": "60020",
+    "title": "Retail and wholesale trade managers",
+    "teer": 0,
+    "majorGroup": "60",
+    "minorGroup": "600",
+    "duties": []
+  },
+  {
+    "code": "60030",
+    "title": "Restaurant and food service managers",
+    "teer": 0,
+    "majorGroup": "60",
+    "minorGroup": "600",
+    "duties": []
+  },
+  {
+    "code": "60031",
+    "title": "Accommodation service managers",
+    "teer": 0,
+    "majorGroup": "60",
+    "minorGroup": "600",
+    "duties": []
+  },
+  {
+    "code": "60040",
+    "title": "Managers in customer and personal services",
+    "teer": 0,
+    "majorGroup": "60",
+    "minorGroup": "600",
+    "duties": []
+  },
+  {
+    "code": "62010",
+    "title": "Retail sales supervisors",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "620",
+    "duties": []
+  },
+  {
+    "code": "62020",
+    "title": "Food service supervisors",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "620",
+    "duties": []
+  },
+  {
+    "code": "62021",
+    "title": "Executive housekeepers",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "620",
+    "duties": []
+  },
+  {
+    "code": "62022",
+    "title": "Accommodation, travel, tourism and related services supervisors",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "620",
+    "duties": []
+  },
+  {
+    "code": "62023",
+    "title": "Customer and information services supervisors",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "620",
+    "duties": []
+  },
+  {
+    "code": "62024",
+    "title": "Cleaning supervisors",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "620",
+    "duties": []
+  },
+  {
+    "code": "62029",
+    "title": "Other services supervisors",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "620",
+    "duties": []
+  },
+  {
+    "code": "62100",
+    "title": "Technical sales specialists – wholesale trade",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "621",
+    "duties": []
+  },
+  {
+    "code": "62101",
+    "title": "Retail and wholesale buyers",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "621",
+    "duties": []
   },
   {
     "code": "62200",
@@ -792,12 +2229,47 @@
     "teer": 2,
     "majorGroup": "62",
     "minorGroup": "622",
-    "duties": [
-      "Performs skilled trade duties related to chefs.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
+  },
+  {
+    "code": "62201",
+    "title": "Funeral directors and embalmers",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "622",
+    "duties": []
+  },
+  {
+    "code": "62202",
+    "title": "Jewellers, jewellery and watch repairers and related occupations",
+    "teer": 2,
+    "majorGroup": "62",
+    "minorGroup": "622",
+    "duties": []
+  },
+  {
+    "code": "63100",
+    "title": "Insurance agents and brokers",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "631",
+    "duties": []
+  },
+  {
+    "code": "63101",
+    "title": "Real estate agents and salespersons",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "631",
+    "duties": []
+  },
+  {
+    "code": "63102",
+    "title": "Financial sales representatives",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "631",
+    "duties": []
   },
   {
     "code": "63200",
@@ -805,25 +2277,15 @@
     "teer": 3,
     "majorGroup": "63",
     "minorGroup": "632",
-    "duties": [
-      "Performs skilled trade duties related to cooks.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "63201",
-    "title": "Butchers - Retail And Wholesale",
+    "title": "Butchers – retail and wholesale",
     "teer": 3,
     "majorGroup": "63",
     "minorGroup": "632",
-    "duties": [
-      "Performs skilled trade duties related to butchers - retail and wholesale.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "63202",
@@ -831,194 +2293,463 @@
     "teer": 3,
     "majorGroup": "63",
     "minorGroup": "632",
-    "duties": [
-      "Performs skilled trade duties related to bakers.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
+  },
+  {
+    "code": "63210",
+    "title": "Hairstylists and barbers",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "632",
+    "duties": []
+  },
+  {
+    "code": "63211",
+    "title": "Estheticians, electrologists and related occupations",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "632",
+    "duties": []
+  },
+  {
+    "code": "63220",
+    "title": "Shoe repairers and shoemakers",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "632",
+    "duties": []
+  },
+  {
+    "code": "63221",
+    "title": "Upholsterers",
+    "teer": 3,
+    "majorGroup": "63",
+    "minorGroup": "632",
+    "duties": []
+  },
+  {
+    "code": "64100",
+    "title": "Retail salespersons and visual merchandisers",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "641",
+    "duties": []
+  },
+  {
+    "code": "64101",
+    "title": "Sales and account representatives – wholesale trade (non-technical)",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "641",
+    "duties": []
+  },
+  {
+    "code": "64200",
+    "title": "Tailors, dressmakers, furriers and milliners",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "642",
+    "duties": []
+  },
+  {
+    "code": "64201",
+    "title": "Image, social and other personal consultants",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "642",
+    "duties": []
+  },
+  {
+    "code": "64300",
+    "title": "Maîtres d'hôtel and hosts/hostesses",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64301",
+    "title": "Bartenders",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64310",
+    "title": "Travel counsellors",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64311",
+    "title": "Pursers and flight attendants",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64312",
+    "title": "Airline ticket and service agents",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64313",
+    "title": "Ground and water transport ticket agents, cargo service representatives and related clerks",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64314",
+    "title": "Hotel front desk clerks",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64320",
+    "title": "Tour and travel guides",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64321",
+    "title": "Casino workers",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64322",
+    "title": "Outdoor sport and recreational guides",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "643",
+    "duties": []
+  },
+  {
+    "code": "64400",
+    "title": "Customer services representatives – financial institutions",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "644",
+    "duties": []
+  },
+  {
+    "code": "64401",
+    "title": "Postal services representatives",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "644",
+    "duties": []
+  },
+  {
+    "code": "64409",
+    "title": "Other customer and information services representatives",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "644",
+    "duties": []
+  },
+  {
+    "code": "64410",
+    "title": "Security guards and related security service occupations",
+    "teer": 4,
+    "majorGroup": "64",
+    "minorGroup": "644",
+    "duties": []
+  },
+  {
+    "code": "65100",
+    "title": "Cashiers",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "651",
+    "duties": []
+  },
+  {
+    "code": "65101",
+    "title": "Service station attendants",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "651",
+    "duties": []
+  },
+  {
+    "code": "65102",
+    "title": "Store shelf stockers, clerks and order fillers",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "651",
+    "duties": []
+  },
+  {
+    "code": "65109",
+    "title": "Other sales related occupations",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "651",
+    "duties": []
+  },
+  {
+    "code": "65200",
+    "title": "Food and beverage servers",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "652",
+    "duties": []
+  },
+  {
+    "code": "65201",
+    "title": "Food counter attendants, kitchen helpers and related support occupations",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "652",
+    "duties": []
+  },
+  {
+    "code": "65202",
+    "title": "Meat cutters and fishmongers – retail and wholesale",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "652",
+    "duties": []
+  },
+  {
+    "code": "65210",
+    "title": "Support occupations in accommodation, travel and facilities set-up services",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "652",
+    "duties": []
+  },
+  {
+    "code": "65211",
+    "title": "Operators and attendants in amusement, recreation and sport",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "652",
+    "duties": []
+  },
+  {
+    "code": "65220",
+    "title": "Pet groomers and animal care workers",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "652",
+    "duties": []
+  },
+  {
+    "code": "65229",
+    "title": "Other support occupations in personal services",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "652",
+    "duties": []
+  },
+  {
+    "code": "65310",
+    "title": "Light duty cleaners",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "653",
+    "duties": []
+  },
+  {
+    "code": "65311",
+    "title": "Specialized cleaners",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "653",
+    "duties": []
+  },
+  {
+    "code": "65312",
+    "title": "Janitors, caretakers and heavy-duty cleaners",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "653",
+    "duties": []
+  },
+  {
+    "code": "65320",
+    "title": "Dry cleaning, laundry and related occupations",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "653",
+    "duties": []
+  },
+  {
+    "code": "65329",
+    "title": "Other service support occupations",
+    "teer": 4,
+    "majorGroup": "65",
+    "minorGroup": "653",
+    "duties": []
+  },
+  {
+    "code": "70010",
+    "title": "Construction managers",
+    "teer": 0,
+    "majorGroup": "70",
+    "minorGroup": "700",
+    "duties": []
+  },
+  {
+    "code": "70011",
+    "title": "Home building and renovation managers",
+    "teer": 0,
+    "majorGroup": "70",
+    "minorGroup": "700",
+    "duties": []
+  },
+  {
+    "code": "70012",
+    "title": "Facility operation and maintenance managers",
+    "teer": 0,
+    "majorGroup": "70",
+    "minorGroup": "700",
+    "duties": []
+  },
+  {
+    "code": "70020",
+    "title": "Managers in transportation",
+    "teer": 0,
+    "majorGroup": "70",
+    "minorGroup": "700",
+    "duties": []
+  },
+  {
+    "code": "70021",
+    "title": "Postal and courier services managers",
+    "teer": 0,
+    "majorGroup": "70",
+    "minorGroup": "700",
+    "duties": []
   },
   {
     "code": "72010",
-    "title": "Contractors And Supervisors, Machining, Metal Forming, Shaping And Erecting Trades And Related Occupations",
+    "title": "Contractors and supervisors, machining, metal forming, shaping and erecting trades and related occupations",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Supervises and coordinates workers performing machining, metal forming, shaping and erecting trades and related occupations duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "72011",
-    "title": "Contractors And Supervisors, Electrical Trades And Telecommunications Occupations",
+    "title": "Contractors and supervisors, electrical trades and telecommunications occupations",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to contractors and supervisors, electrical trades and telecommunications occupations work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72012",
-    "title": "Contractors And Supervisors, Pipefitting Trades",
+    "title": "Contractors and supervisors, pipefitting trades",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Installs, maintains and repairs piping, fixtures and systems associated with contractors and supervisors, pipefitting trades work.",
-      "Interprets blueprints and specifications to plan layout of pipe systems.",
-      "Tests systems for leaks, pressure and code compliance.",
-      "Follows plumbing and gas-fitting codes and workplace safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72013",
-    "title": "Contractors And Supervisors, Carpentry Trades",
+    "title": "Contractors and supervisors, carpentry trades",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Supervises and coordinates workers performing carpentry trades duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "72014",
-    "title": "Contractors And Supervisors, Other Construction Trades, Installers, Repairers And Servicers",
+    "title": "Contractors and supervisors, other construction trades, installers, repairers and servicers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to contractors and supervisors, other construction trades, installers, repairers and servicers work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72020",
-    "title": "Contractors And Supervisors, Mechanic Trades",
+    "title": "Contractors and supervisors, mechanic trades",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to contractors and supervisors, mechanic trades work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72021",
-    "title": "Contractors And Supervisors, Heavy Equipment Operator Crews",
+    "title": "Contractors and supervisors, heavy equipment operator crews",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Operates heavy equipment or machinery to perform contractors and supervisors, heavy equipment operator crews tasks at a worksite.",
-      "Inspects equipment before and after operation to confirm safe working condition.",
-      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
-      "Follows site safety procedures and equipment operating regulations."
-    ]
+    "duties": []
   },
   {
     "code": "72022",
-    "title": "Supervisors, Printing And Related Occupations",
+    "title": "Supervisors, printing and related occupations",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Supervises and coordinates workers performing printing and related occupations duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "72023",
-    "title": "Supervisors, Railway Transport Operations",
+    "title": "Supervisors, railway transport operations",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Supervises and coordinates workers performing railway transport operations duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "72024",
-    "title": "Supervisors, Motor Transport And Other Ground Transit Operators",
+    "title": "Supervisors, motor transport and other ground transit operators",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Supervises and coordinates workers performing motor transport and other ground transit operators duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "72025",
-    "title": "Supervisors, Mail And Message Distribution Occupations",
+    "title": "Supervisors, mail and message distribution occupations",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "720",
-    "duties": [
-      "Supervises and coordinates workers performing mail and message distribution occupations duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "72100",
-    "title": "Machinists And Machining And Tooling Inspectors",
+    "title": "Machinists and machining and tooling inspectors",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "721",
-    "duties": [
-      "Fabricates, machines or assembles metal components related to machinists and machining and tooling inspectors work.",
-      "Reads technical drawings and specifications to plan production or fabrication steps.",
-      "Operates machine tools, welding or fabrication equipment to required tolerances.",
-      "Inspects finished work for dimensional accuracy and quality standards."
-    ]
+    "duties": []
   },
   {
     "code": "72101",
-    "title": "Tool And Die Makers",
+    "title": "Tool and die makers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "721",
-    "duties": [
-      "Fabricates, machines or assembles metal components related to tool and die makers work.",
-      "Reads technical drawings and specifications to plan production or fabrication steps.",
-      "Operates machine tools, welding or fabrication equipment to required tolerances.",
-      "Inspects finished work for dimensional accuracy and quality standards."
-    ]
+    "duties": []
   },
   {
     "code": "72102",
-    "title": "Sheet Metal Workers",
+    "title": "Sheet metal workers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "721",
-    "duties": [
-      "Fabricates, machines or assembles metal components related to sheet metal workers work.",
-      "Reads technical drawings and specifications to plan production or fabrication steps.",
-      "Operates machine tools, welding or fabrication equipment to required tolerances.",
-      "Inspects finished work for dimensional accuracy and quality standards."
-    ]
+    "duties": []
   },
   {
     "code": "72103",
@@ -1026,25 +2757,15 @@
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "721",
-    "duties": [
-      "Fabricates, machines or assembles metal components related to boilermakers work.",
-      "Reads technical drawings and specifications to plan production or fabrication steps.",
-      "Operates machine tools, welding or fabrication equipment to required tolerances.",
-      "Inspects finished work for dimensional accuracy and quality standards."
-    ]
+    "duties": []
   },
   {
     "code": "72104",
-    "title": "Structural Metal And Platework Fabricators And Fitters",
+    "title": "Structural metal and platework fabricators and fitters",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "721",
-    "duties": [
-      "Fabricates, machines or assembles metal components related to structural metal and platework fabricators and fitters work.",
-      "Reads technical drawings and specifications to plan production or fabrication steps.",
-      "Operates machine tools, welding or fabrication equipment to required tolerances.",
-      "Inspects finished work for dimensional accuracy and quality standards."
-    ]
+    "duties": []
   },
   {
     "code": "72105",
@@ -1052,103 +2773,63 @@
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "721",
-    "duties": [
-      "Fabricates, machines or assembles metal components related to ironworkers work.",
-      "Reads technical drawings and specifications to plan production or fabrication steps.",
-      "Operates machine tools, welding or fabrication equipment to required tolerances.",
-      "Inspects finished work for dimensional accuracy and quality standards."
-    ]
+    "duties": []
   },
   {
     "code": "72106",
-    "title": "Welders And Related Machine Operators",
+    "title": "Welders and related machine operators",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "721",
-    "duties": [
-      "Fabricates, machines or assembles metal components related to welders and related machine operators work.",
-      "Reads technical drawings and specifications to plan production or fabrication steps.",
-      "Operates machine tools, welding or fabrication equipment to required tolerances.",
-      "Inspects finished work for dimensional accuracy and quality standards."
-    ]
+    "duties": []
   },
   {
     "code": "72200",
-    "title": "Electricians (except Industrial And Power System)",
+    "title": "Electricians (except industrial and power system)",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "722",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to electricians (except industrial and power system) work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72201",
-    "title": "Industrial Electricians",
+    "title": "Industrial electricians",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "722",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to industrial electricians work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72202",
-    "title": "Power System Electricians",
+    "title": "Power system electricians",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "722",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to power system electricians work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72203",
-    "title": "Electrical Power Line And Cable Workers",
+    "title": "Electrical power line and cable workers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "722",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to electrical power line and cable workers work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72204",
-    "title": "Telecommunications Line And Cable Installers And Repairers",
+    "title": "Telecommunications line and cable installers and repairers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "722",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to telecommunications line and cable installers and repairers work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72205",
-    "title": "Telecommunications Equipment Installation And Cable Television Service Technicians",
+    "title": "Telecommunications equipment installation and cable television service technicians",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "722",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to telecommunications equipment installation and cable television service technicians work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72300",
@@ -1156,38 +2837,23 @@
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "723",
-    "duties": [
-      "Installs, maintains and repairs piping, fixtures and systems associated with plumbers work.",
-      "Interprets blueprints and specifications to plan layout of pipe systems.",
-      "Tests systems for leaks, pressure and code compliance.",
-      "Follows plumbing and gas-fitting codes and workplace safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72301",
-    "title": "Steamfitters, Pipefitters And Sprinkler System Installers",
+    "title": "Steamfitters, pipefitters and sprinkler system installers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "723",
-    "duties": [
-      "Installs, maintains and repairs piping, fixtures and systems associated with steamfitters, pipefitters and sprinkler system installers work.",
-      "Interprets blueprints and specifications to plan layout of pipe systems.",
-      "Tests systems for leaks, pressure and code compliance.",
-      "Follows plumbing and gas-fitting codes and workplace safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72302",
-    "title": "Gas Fitters",
+    "title": "Gas fitters",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "723",
-    "duties": [
-      "Installs, maintains and repairs piping, fixtures and systems associated with gas fitters work.",
-      "Interprets blueprints and specifications to plan layout of pipe systems.",
-      "Tests systems for leaks, pressure and code compliance.",
-      "Follows plumbing and gas-fitting codes and workplace safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72310",
@@ -1195,12 +2861,7 @@
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "723",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to carpenters work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72311",
@@ -1208,12 +2869,7 @@
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "723",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to cabinetmakers work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72320",
@@ -1221,12 +2877,7 @@
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "723",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to bricklayers work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72321",
@@ -1234,246 +2885,191 @@
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "723",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to insulators work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72400",
-    "title": "Construction Millwrights And Industrial Mechanics",
+    "title": "Construction millwrights and industrial mechanics",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to construction millwrights and industrial mechanics work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72401",
-    "title": "Heavy-duty Equipment Mechanics",
+    "title": "Heavy-duty equipment mechanics",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to heavy-duty equipment mechanics work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72402",
-    "title": "Heating, Refrigeration And Air Conditioning Mechanics",
+    "title": "Heating, refrigeration and air conditioning mechanics",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to heating, refrigeration and air conditioning mechanics work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72403",
-    "title": "Railway Carmen/women",
+    "title": "Railway carmen/women",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Performs skilled trade duties related to railway carmen/women.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "72404",
-    "title": "Aircraft Mechanics And Aircraft Inspectors",
+    "title": "Aircraft mechanics and aircraft inspectors",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to aircraft mechanics and aircraft inspectors work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72405",
-    "title": "Machine Fitters",
+    "title": "Machine fitters",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to machine fitters work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72406",
-    "title": "Elevator Constructors And Mechanics",
+    "title": "Elevator constructors and mechanics",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to elevator constructors and mechanics work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72410",
-    "title": "Automotive Service Technicians, Truck And Bus Mechanics And Mechanical Repairers",
+    "title": "Automotive service technicians, truck and bus mechanics and mechanical repairers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to automotive service technicians, truck and bus mechanics and mechanical repairers work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72411",
-    "title": "Auto Body Collision, Refinishing And Glass Technicians And Damage Repair Estimators",
+    "title": "Auto body collision, refinishing and glass technicians and damage repair estimators",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Performs skilled trade duties related to auto body collision, refinishing and glass technicians and damage repair estimators.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "72420",
-    "title": "Oil And Solid Fuel Heating Mechanics",
+    "title": "Oil and solid fuel heating mechanics",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to oil and solid fuel heating mechanics work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72421",
-    "title": "Appliance Servicers And Repairers",
+    "title": "Appliance servicers and repairers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to appliance servicers and repairers work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72422",
-    "title": "Electrical Mechanics",
+    "title": "Electrical mechanics",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to electrical mechanics work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "72423",
-    "title": "Motorcycle, All-terrain Vehicle And Other Related Mechanics",
+    "title": "Motorcycle, all-terrain vehicle and other related mechanics",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to motorcycle, all-terrain vehicle and other related mechanics work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72429",
-    "title": "Other Small Engine And Small Equipment Repairers",
+    "title": "Other small engine and small equipment repairers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "724",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to other small engine and small equipment repairers work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "72500",
-    "title": "Crane Operators",
+    "title": "Crane operators",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "725",
-    "duties": [
-      "Operates heavy equipment or machinery to perform crane operators tasks at a worksite.",
-      "Inspects equipment before and after operation to confirm safe working condition.",
-      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
-      "Follows site safety procedures and equipment operating regulations."
-    ]
+    "duties": []
   },
   {
     "code": "72501",
-    "title": "Water Well Drillers",
+    "title": "Water well drillers",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "725",
-    "duties": [
-      "Operates heavy equipment or machinery to perform water well drillers tasks at a worksite.",
-      "Inspects equipment before and after operation to confirm safe working condition.",
-      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
-      "Follows site safety procedures and equipment operating regulations."
-    ]
+    "duties": []
+  },
+  {
+    "code": "72600",
+    "title": "Air pilots, flight engineers and flying instructors",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "726",
+    "duties": []
+  },
+  {
+    "code": "72601",
+    "title": "Air traffic controllers and related occupations",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "726",
+    "duties": []
+  },
+  {
+    "code": "72602",
+    "title": "Deck officers, water transport",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "726",
+    "duties": []
+  },
+  {
+    "code": "72603",
+    "title": "Engineer officers, water transport",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "726",
+    "duties": []
+  },
+  {
+    "code": "72604",
+    "title": "Railway traffic controllers and marine traffic regulators",
+    "teer": 2,
+    "majorGroup": "72",
+    "minorGroup": "726",
+    "duties": []
   },
   {
     "code": "72999",
-    "title": "Other Technical Trades And Related Occupations",
+    "title": "Other technical trades and related occupations",
     "teer": 2,
     "majorGroup": "72",
     "minorGroup": "729",
-    "duties": [
-      "Performs skilled trade duties related to other technical trades and related occupations.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "73100",
-    "title": "Concrete Finishers",
+    "title": "Concrete finishers",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "731",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to concrete finishers work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "73101",
@@ -1481,38 +3077,23 @@
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "731",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to tilesetters work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "73102",
-    "title": "Plasterers, Drywall Installers And Finishers And Lathers",
+    "title": "Plasterers, drywall installers and finishers and lathers",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "731",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to plasterers, drywall installers and finishers and lathers work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "73110",
-    "title": "Roofers And Shinglers",
+    "title": "Roofers and shinglers",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "731",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to roofers and shinglers work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "73111",
@@ -1520,298 +3101,359 @@
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "731",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to glaziers work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "73112",
-    "title": "Painters And Decorators (except Interior Decorators)",
+    "title": "Painters and decorators (except interior decorators)",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "731",
-    "duties": [
-      "Performs skilled trade duties related to painters and decorators (except interior decorators).",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "73113",
-    "title": "Floor Covering Installers",
+    "title": "Floor covering installers",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "731",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to floor covering installers work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "73200",
-    "title": "Residential And Commercial Installers And Servicers",
+    "title": "Residential and commercial installers and servicers",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "732",
-    "duties": [
-      "Performs skilled trade duties related to residential and commercial installers and servicers.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "73201",
-    "title": "General Building Maintenance Workers And Building Superintendents",
+    "title": "General building maintenance workers and building superintendents",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "732",
-    "duties": [
-      "Performs skilled trade duties related to general building maintenance workers and building superintendents.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "73202",
-    "title": "Pest Controllers And Fumigators",
+    "title": "Pest controllers and fumigators",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "732",
-    "duties": [
-      "Performs skilled trade duties related to pest controllers and fumigators.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "73209",
-    "title": "Other Repairers And Servicers",
+    "title": "Other repairers and servicers",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "732",
-    "duties": [
-      "Performs skilled trade duties related to other repairers and servicers.",
-      "Reads specifications, plans or work orders to determine job requirements.",
-      "Uses trade-specific tools and equipment to complete assigned work to standard.",
-      "Follows workplace health and safety procedures and maintains required records."
-    ]
+    "duties": []
   },
   {
     "code": "73300",
-    "title": "Transport Truck Drivers",
+    "title": "Transport truck drivers",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "733",
-    "duties": [
-      "Operates vehicles or rolling stock to perform transport truck drivers duties.",
-      "Conducts pre-trip and post-trip inspections to confirm vehicle safety.",
-      "Follows scheduling, routing and regulatory requirements for the mode of transport.",
-      "Maintains operating logs and reports mechanical or safety issues."
-    ]
+    "duties": []
   },
   {
     "code": "73301",
-    "title": "Bus Drivers, Subway Operators And Other Transit Operators",
+    "title": "Bus drivers, subway operators and other transit operators",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "733",
-    "duties": [
-      "Operates vehicles or rolling stock to perform bus drivers, subway operators and other transit operators duties.",
-      "Conducts pre-trip and post-trip inspections to confirm vehicle safety.",
-      "Follows scheduling, routing and regulatory requirements for the mode of transport.",
-      "Maintains operating logs and reports mechanical or safety issues."
-    ]
+    "duties": []
   },
   {
     "code": "73310",
-    "title": "Railway And Yard Locomotive Engineers",
+    "title": "Railway and yard locomotive engineers",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "733",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to railway and yard locomotive engineers work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "73311",
-    "title": "Railway Conductors And Brakemen/women",
+    "title": "Railway conductors and brakemen/women",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "733",
-    "duties": [
-      "Operates vehicles or rolling stock to perform railway conductors and brakemen/women duties.",
-      "Conducts pre-trip and post-trip inspections to confirm vehicle safety.",
-      "Follows scheduling, routing and regulatory requirements for the mode of transport.",
-      "Maintains operating logs and reports mechanical or safety issues."
-    ]
+    "duties": []
   },
   {
     "code": "73400",
-    "title": "Heavy Equipment Operators",
+    "title": "Heavy equipment operators",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "734",
-    "duties": [
-      "Operates heavy equipment or machinery to perform heavy equipment operators tasks at a worksite.",
-      "Inspects equipment before and after operation to confirm safe working condition.",
-      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
-      "Follows site safety procedures and equipment operating regulations."
-    ]
+    "duties": []
   },
   {
     "code": "73401",
-    "title": "Printing Press Operators",
+    "title": "Printing press operators",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "734",
-    "duties": [
-      "Sets up, operates and maintains printing press equipment to produce printed materials.",
-      "Inspects print quality and adjusts equipment settings to meet specifications.",
-      "Performs routine maintenance and troubleshoots press malfunctions.",
-      "Follows production schedules and workplace safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "73402",
-    "title": "Drillers And Blasters - Surface Mining, Quarrying And Construction",
+    "title": "Drillers and blasters – surface mining, quarrying and construction",
     "teer": 3,
     "majorGroup": "73",
     "minorGroup": "734",
-    "duties": [
-      "Builds, installs or finishes structures and materials related to drillers and blasters - surface mining, quarrying and construction work.",
-      "Reads blueprints and specifications to plan layout and material requirements.",
-      "Operates hand and power tools to construct, repair or finish work to specification.",
-      "Inspects completed work for quality and compliance with building codes and safety standards."
-    ]
+    "duties": []
+  },
+  {
+    "code": "74100",
+    "title": "Mail and parcel sorters and related occupations",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "741",
+    "duties": []
+  },
+  {
+    "code": "74101",
+    "title": "Letter carriers",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "741",
+    "duties": []
+  },
+  {
+    "code": "74102",
+    "title": "Couriers and messengers",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "741",
+    "duties": []
+  },
+  {
+    "code": "74200",
+    "title": "Railway yard and track maintenance workers",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "742",
+    "duties": []
+  },
+  {
+    "code": "74201",
+    "title": "Water transport deck and engine room crew",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "742",
+    "duties": []
+  },
+  {
+    "code": "74202",
+    "title": "Air transport ramp attendants",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "742",
+    "duties": []
+  },
+  {
+    "code": "74203",
+    "title": "Automotive and heavy truck and equipment parts installers and servicers",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "742",
+    "duties": []
+  },
+  {
+    "code": "74204",
+    "title": "Utility maintenance workers",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "742",
+    "duties": []
+  },
+  {
+    "code": "74205",
+    "title": "Public works maintenance equipment operators and related workers",
+    "teer": 4,
+    "majorGroup": "74",
+    "minorGroup": "742",
+    "duties": []
+  },
+  {
+    "code": "75100",
+    "title": "Longshore workers",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "751",
+    "duties": []
+  },
+  {
+    "code": "75101",
+    "title": "Material handlers",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "751",
+    "duties": []
+  },
+  {
+    "code": "75110",
+    "title": "Construction trades helpers and labourers",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "751",
+    "duties": []
+  },
+  {
+    "code": "75119",
+    "title": "Other trades helpers and labourers",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "751",
+    "duties": []
+  },
+  {
+    "code": "75200",
+    "title": "Taxi and limousine drivers and chauffeurs",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "752",
+    "duties": []
+  },
+  {
+    "code": "75201",
+    "title": "Delivery service drivers and door-to-door distributors",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "752",
+    "duties": []
+  },
+  {
+    "code": "75210",
+    "title": "Boat and cable ferry operators and related occupations",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "752",
+    "duties": []
+  },
+  {
+    "code": "75211",
+    "title": "Railway and motor transport labourers",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "752",
+    "duties": []
+  },
+  {
+    "code": "75212",
+    "title": "Public works and maintenance labourers",
+    "teer": 4,
+    "majorGroup": "75",
+    "minorGroup": "752",
+    "duties": []
+  },
+  {
+    "code": "80010",
+    "title": "Managers in natural resources production and fishing",
+    "teer": 0,
+    "majorGroup": "80",
+    "minorGroup": "800",
+    "duties": []
+  },
+  {
+    "code": "80020",
+    "title": "Managers in agriculture",
+    "teer": 0,
+    "majorGroup": "80",
+    "minorGroup": "800",
+    "duties": []
+  },
+  {
+    "code": "80021",
+    "title": "Managers in horticulture",
+    "teer": 0,
+    "majorGroup": "80",
+    "minorGroup": "800",
+    "duties": []
+  },
+  {
+    "code": "80022",
+    "title": "Managers in aquaculture",
+    "teer": 0,
+    "majorGroup": "80",
+    "minorGroup": "800",
+    "duties": []
   },
   {
     "code": "82010",
-    "title": "Supervisors, Logging And Forestry",
+    "title": "Supervisors, logging and forestry",
     "teer": 2,
     "majorGroup": "82",
     "minorGroup": "820",
-    "duties": [
-      "Supervises and coordinates workers performing logging and forestry duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "82020",
-    "title": "Supervisors, Mining And Quarrying",
+    "title": "Supervisors, mining and quarrying",
     "teer": 2,
     "majorGroup": "82",
     "minorGroup": "820",
-    "duties": [
-      "Supervises and coordinates workers performing mining and quarrying duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "82021",
-    "title": "Contractors And Supervisors, Oil And Gas Drilling And Services",
+    "title": "Contractors and supervisors, oil and gas drilling and services",
     "teer": 2,
     "majorGroup": "82",
     "minorGroup": "820",
-    "duties": [
-      "Supervises and coordinates workers performing oil and gas drilling and services duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "82030",
-    "title": "Agricultural Service Contractors And Farm Supervisors",
+    "title": "Agricultural service contractors and farm supervisors",
     "teer": 2,
     "majorGroup": "82",
     "minorGroup": "820",
-    "duties": [
-      "Supervises and coordinates workers performing agricultural service contractors and farm supervisors duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "82031",
-    "title": "Contractors And Supervisors, Landscaping, Grounds Maintenance And Horticulture Services",
+    "title": "Contractors and supervisors, landscaping, grounds maintenance and horticulture services",
     "teer": 2,
     "majorGroup": "82",
     "minorGroup": "820",
-    "duties": [
-      "Supervises and coordinates workers performing landscaping, grounds maintenance and horticulture services duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "83100",
-    "title": "Underground Production And Development Miners",
+    "title": "Underground production and development miners",
     "teer": 3,
     "majorGroup": "83",
     "minorGroup": "831",
-    "duties": [
-      "Performs extraction, drilling or production duties related to underground production and development miners work.",
-      "Operates equipment and follows technical procedures specific to the resource sector.",
-      "Monitors site conditions and equipment for safety and operational issues.",
-      "Maintains production and safety records as required by site procedures."
-    ]
+    "duties": []
   },
   {
     "code": "83101",
-    "title": "Oil And Gas Well Drillers, Servicers, Testers And Related Workers",
+    "title": "Oil and gas well drillers, servicers, testers and related workers",
     "teer": 3,
     "majorGroup": "83",
     "minorGroup": "831",
-    "duties": [
-      "Operates heavy equipment or machinery to perform oil and gas well drillers, servicers, testers and related workers tasks at a worksite.",
-      "Inspects equipment before and after operation to confirm safe working condition.",
-      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
-      "Follows site safety procedures and equipment operating regulations."
-    ]
+    "duties": []
   },
   {
     "code": "83110",
-    "title": "Logging Machinery Operators",
+    "title": "Logging machinery operators",
     "teer": 3,
     "majorGroup": "83",
     "minorGroup": "831",
-    "duties": [
-      "Operates heavy equipment or machinery to perform logging machinery operators tasks at a worksite.",
-      "Inspects equipment before and after operation to confirm safe working condition.",
-      "Coordinates with site supervisors and crew to sequence work safely and efficiently.",
-      "Follows site safety procedures and equipment operating regulations."
-    ]
+    "duties": []
   },
   {
     "code": "83120",
-    "title": "Fishing Masters And Officers",
+    "title": "Fishing masters and officers",
     "teer": 3,
     "majorGroup": "83",
     "minorGroup": "831",
-    "duties": [
-      "Performs extraction, drilling or production duties related to fishing masters and officers work.",
-      "Operates equipment and follows technical procedures specific to the resource sector.",
-      "Monitors site conditions and equipment for safety and operational issues.",
-      "Maintains production and safety records as required by site procedures."
-    ]
+    "duties": []
   },
   {
     "code": "83121",
@@ -1819,219 +3461,670 @@
     "teer": 3,
     "majorGroup": "83",
     "minorGroup": "831",
-    "duties": [
-      "Performs extraction, drilling or production duties related to fishermen/women work.",
-      "Operates equipment and follows technical procedures specific to the resource sector.",
-      "Monitors site conditions and equipment for safety and operational issues.",
-      "Maintains production and safety records as required by site procedures."
-    ]
+    "duties": []
+  },
+  {
+    "code": "84100",
+    "title": "Underground mine service and support workers",
+    "teer": 4,
+    "majorGroup": "84",
+    "minorGroup": "841",
+    "duties": []
+  },
+  {
+    "code": "84101",
+    "title": "Oil and gas well drilling and related workers and services operators",
+    "teer": 4,
+    "majorGroup": "84",
+    "minorGroup": "841",
+    "duties": []
+  },
+  {
+    "code": "84110",
+    "title": "Chain saw and skidder operators",
+    "teer": 4,
+    "majorGroup": "84",
+    "minorGroup": "841",
+    "duties": []
+  },
+  {
+    "code": "84111",
+    "title": "Silviculture and forestry workers",
+    "teer": 4,
+    "majorGroup": "84",
+    "minorGroup": "841",
+    "duties": []
+  },
+  {
+    "code": "84120",
+    "title": "Specialized livestock workers and farm machinery operators",
+    "teer": 4,
+    "majorGroup": "84",
+    "minorGroup": "841",
+    "duties": []
+  },
+  {
+    "code": "84121",
+    "title": "Fishing vessel deckhands",
+    "teer": 4,
+    "majorGroup": "84",
+    "minorGroup": "841",
+    "duties": []
+  },
+  {
+    "code": "85100",
+    "title": "Livestock labourers",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "85101",
+    "title": "Harvesting labourers",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "85102",
+    "title": "Aquaculture and marine harvest labourers",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "85103",
+    "title": "Nursery and greenhouse labourers",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "85104",
+    "title": "Trappers and hunters",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "85110",
+    "title": "Mine labourers",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "85111",
+    "title": "Oil and gas drilling, servicing and related labourers",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "85120",
+    "title": "Logging and forestry labourers",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "85121",
+    "title": "Landscaping and grounds maintenance labourers",
+    "teer": 5,
+    "majorGroup": "85",
+    "minorGroup": "851",
+    "duties": []
+  },
+  {
+    "code": "90010",
+    "title": "Manufacturing managers",
+    "teer": 0,
+    "majorGroup": "90",
+    "minorGroup": "900",
+    "duties": []
+  },
+  {
+    "code": "90011",
+    "title": "Utilities managers",
+    "teer": 0,
+    "majorGroup": "90",
+    "minorGroup": "900",
+    "duties": []
   },
   {
     "code": "92010",
-    "title": "Supervisors, Mineral And Metal Processing",
+    "title": "Supervisors, mineral and metal processing",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing mineral and metal processing duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92011",
-    "title": "Supervisors, Petroleum, Gas And Chemical Processing And Utilities",
+    "title": "Supervisors, petroleum, gas and chemical processing and utilities",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing petroleum, gas and chemical processing and utilities duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92012",
-    "title": "Supervisors, Food And Beverage Processing",
+    "title": "Supervisors, food and beverage processing",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing food and beverage processing duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92013",
-    "title": "Supervisors, Plastic And Rubber Products Manufacturing",
+    "title": "Supervisors, plastic and rubber products manufacturing",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing plastic and rubber products manufacturing duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92014",
-    "title": "Supervisors, Forest Products Processing",
+    "title": "Supervisors, forest products processing",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing forest products processing duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92015",
-    "title": "Supervisors, Textile, Fabric, Fur And Leather Products Processing And Manufacturing",
+    "title": "Supervisors, textile, fabric, fur and leather products processing and manufacturing",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing textile, fabric, fur and leather products processing and manufacturing duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92020",
-    "title": "Supervisors, Motor Vehicle Assembling",
+    "title": "Supervisors, motor vehicle assembling",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing motor vehicle assembling duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92021",
-    "title": "Supervisors, Electronics And Electrical Products Manufacturing",
+    "title": "Supervisors, electronics and electrical products manufacturing",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Installs, inspects, tests and maintains electrical or telecommunications systems related to supervisors, electronics and electrical products manufacturing work.",
-      "Reads blueprints, schematics and technical specifications to plan installation or repair work.",
-      "Diagnoses faults, troubleshoots equipment and carries out repairs to restore safe operation.",
-      "Follows electrical codes, safety regulations and workplace health and safety procedures."
-    ]
+    "duties": []
   },
   {
     "code": "92022",
-    "title": "Supervisors, Furniture And Fixtures Manufacturing",
+    "title": "Supervisors, furniture and fixtures manufacturing",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing furniture and fixtures manufacturing duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92023",
-    "title": "Supervisors, Other Mechanical And Metal Products Manufacturing",
+    "title": "Supervisors, other mechanical and metal products manufacturing",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to supervisors, other mechanical and metal products manufacturing work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "92024",
-    "title": "Supervisors, Other Products Manufacturing And Assembly",
+    "title": "Supervisors, other products manufacturing and assembly",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "920",
-    "duties": [
-      "Supervises and coordinates workers performing other products manufacturing and assembly duties.",
-      "Assigns work schedules, monitors progress and ensures quality and safety standards are met.",
-      "Resolves workplace problems and reports on production, material and labour requirements.",
-      "Trains workers and enforces compliance with safety regulations and codes."
-    ]
+    "duties": []
   },
   {
     "code": "92100",
-    "title": "Power Engineers And Power Systems Operators",
+    "title": "Power engineers and power systems operators",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "921",
-    "duties": [
-      "Diagnoses, services and repairs equipment or machinery related to power engineers and power systems operators work.",
-      "Performs scheduled maintenance and inspections to prevent equipment failure.",
-      "Uses diagnostic tools and technical manuals to identify and resolve mechanical faults.",
-      "Maintains service records and follows manufacturer and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "92101",
-    "title": "Water And Waste Treatment Plant Operators",
+    "title": "Water and waste treatment plant operators",
     "teer": 2,
     "majorGroup": "92",
     "minorGroup": "921",
-    "duties": [
-      "Operates and monitors plant systems and equipment related to water and waste treatment plant operators work.",
-      "Inspects equipment, gauges and instruments to confirm safe and efficient operation.",
-      "Performs preventive maintenance and responds to operational alarms or faults.",
-      "Maintains logs and complies with regulatory and safety standards."
-    ]
+    "duties": []
   },
   {
     "code": "93100",
-    "title": "Central Control And Process Operators, Mineral And Metal Processing",
+    "title": "Central control and process operators, mineral and metal processing",
     "teer": 3,
     "majorGroup": "93",
     "minorGroup": "931",
-    "duties": [
-      "Performs extraction, drilling or production duties related to central control and process operators, mineral and metal processing work.",
-      "Operates equipment and follows technical procedures specific to the resource sector.",
-      "Monitors site conditions and equipment for safety and operational issues.",
-      "Maintains production and safety records as required by site procedures."
-    ]
+    "duties": []
   },
   {
     "code": "93101",
-    "title": "Central Control And Process Operators, Petroleum, Gas And Chemical Processing",
+    "title": "Central control and process operators, petroleum, gas and chemical processing",
     "teer": 3,
     "majorGroup": "93",
     "minorGroup": "931",
-    "duties": [
-      "Monitors and controls automated processing or assembly equipment related to central control and process operators, petroleum, gas and chemical processing work.",
-      "Adjusts process controls and equipment settings to maintain product specifications.",
-      "Inspects output and equipment to identify and correct faults.",
-      "Maintains production records and follows safety and quality procedures."
-    ]
+    "duties": []
   },
   {
     "code": "93102",
-    "title": "Pulping, Papermaking And Coating Control Operators",
+    "title": "Pulping, papermaking and coating control operators",
     "teer": 3,
     "majorGroup": "93",
     "minorGroup": "931",
-    "duties": [
-      "Monitors and controls automated processing or assembly equipment related to pulping, papermaking and coating control operators work.",
-      "Adjusts process controls and equipment settings to maintain product specifications.",
-      "Inspects output and equipment to identify and correct faults.",
-      "Maintains production records and follows safety and quality procedures."
-    ]
+    "duties": []
+  },
+  {
+    "code": "93200",
+    "title": "Aircraft assemblers and aircraft assembly inspectors",
+    "teer": 3,
+    "majorGroup": "93",
+    "minorGroup": "932",
+    "duties": []
+  },
+  {
+    "code": "94100",
+    "title": "Machine operators, mineral and metal processing",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94101",
+    "title": "Foundry workers",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94102",
+    "title": "Glass forming and finishing machine operators and glass cutters",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94103",
+    "title": "Concrete, clay and stone forming operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94104",
+    "title": "Inspectors and testers, mineral and metal processing",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94105",
+    "title": "Metalworking and forging machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94106",
+    "title": "Machining tool operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94107",
+    "title": "Machine operators of other metal products",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94110",
+    "title": "Chemical plant machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94111",
+    "title": "Plastics processing machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94112",
+    "title": "Rubber processing machine operators and related workers",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94120",
+    "title": "Sawmill machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94121",
+    "title": "Pulp mill, papermaking and finishing machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94122",
+    "title": "Paper converting machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94123",
+    "title": "Lumber graders and other wood processing inspectors and graders",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94124",
+    "title": "Woodworking machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94129",
+    "title": "Other wood processing machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94130",
+    "title": "Textile fibre and yarn, hide and pelt processing machine operators and workers",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94131",
+    "title": "Weavers, knitters and other fabric making occupations",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94132",
+    "title": "Industrial sewing machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94133",
+    "title": "Inspectors and graders, textile, fabric, fur and leather products manufacturing",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94140",
+    "title": "Process control and machine operators, food and beverage processing",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94141",
+    "title": "Industrial butchers and meat cutters, poultry preparers and related workers",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94142",
+    "title": "Fish and seafood plant workers",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94143",
+    "title": "Testers and graders, food and beverage processing",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94150",
+    "title": "Plateless printing equipment operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94151",
+    "title": "Camera, platemaking and other prepress occupations",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94152",
+    "title": "Binding and finishing machine operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94153",
+    "title": "Photographic and film processors",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "941",
+    "duties": []
+  },
+  {
+    "code": "94200",
+    "title": "Motor vehicle assemblers, inspectors and testers",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94201",
+    "title": "Electronics assemblers, fabricators, inspectors and testers",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94202",
+    "title": "Assemblers and inspectors, electrical appliance, apparatus and equipment manufacturing",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94203",
+    "title": "Assemblers, fabricators and inspectors, industrial electrical motors and transformers",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94204",
+    "title": "Mechanical assemblers and inspectors",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94205",
+    "title": "Machine operators and inspectors, electrical apparatus manufacturing",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94210",
+    "title": "Furniture and fixture assemblers, finishers, refinishers and inspectors",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94211",
+    "title": "Assemblers and inspectors of other wood products",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94212",
+    "title": "Plastic products assemblers, finishers and inspectors",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94213",
+    "title": "Industrial painters, coaters and metal finishing process operators",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "94219",
+    "title": "Other products assemblers, finishers and inspectors",
+    "teer": 4,
+    "majorGroup": "94",
+    "minorGroup": "942",
+    "duties": []
+  },
+  {
+    "code": "95100",
+    "title": "Labourers in mineral and metal processing",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
+  },
+  {
+    "code": "95101",
+    "title": "Labourers in metal fabrication",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
+  },
+  {
+    "code": "95102",
+    "title": "Labourers in chemical products processing and utilities",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
+  },
+  {
+    "code": "95103",
+    "title": "Labourers in wood, pulp and paper processing",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
+  },
+  {
+    "code": "95104",
+    "title": "Labourers in rubber and plastic products manufacturing",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
+  },
+  {
+    "code": "95105",
+    "title": "Labourers in textile processing and cutting",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
+  },
+  {
+    "code": "95106",
+    "title": "Labourers in food and beverage processing",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
+  },
+  {
+    "code": "95107",
+    "title": "Labourers in fish and seafood processing",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
+  },
+  {
+    "code": "95109",
+    "title": "Other labourers in processing, manufacturing and utilities",
+    "teer": 5,
+    "majorGroup": "95",
+    "minorGroup": "951",
+    "duties": []
   }
 ]

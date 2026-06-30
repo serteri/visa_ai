@@ -23,6 +23,10 @@ export type ReadinessInput = {
   onshoreExperienceYears?: number;
   regionalWilling?: boolean;
   educationRelevance?: "relevant" | "non_relevant" | "unknown";
+  /** Official NOC 2021 V1.0 unit group code (5 digits), set when user picks from autocomplete. */
+  nocCode?: string;
+  /** TEER level (0–5) derived from the selected NOC code. */
+  nocTeer?: number;
 };
 
 export type PathwayRelevance =

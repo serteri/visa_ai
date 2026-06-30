@@ -20,6 +20,10 @@ import { ActionChecklist } from "@/components/ActionChecklist";
 import { StateHeatmap } from "@/components/StateHeatmap";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
+import nocListRaw from "@/src/data/countries/ca/noc-list.json";
+
+type NocEntry = { code: string; title: string; teer: number };
+const NOC_LIST = nocListRaw as NocEntry[];
 
 function trackGaEvent(name: string, params?: Record<string, string | number | boolean | null | undefined>) {
   if (typeof window === "undefined") return;
@@ -245,6 +249,20 @@ export function FullCheckWaitlistForm({
   } | null>(null);
   const reportSectionRef = useRef<HTMLElement | null>(null);
   const budgetCurrency = selectedCountry === "CA" ? "CAD" : "AUD";
+
+  const [nocSearch, setNocSearch] = useState(initialValues.occupation ?? "");
+  const [nocCode, setNocCode] = useState("");
+  const [nocTeer, setNocTeer] = useState<number | null>(null);
+  const [nocResults, setNocResults] = useState<NocEntry[]>([]);
+  const [nocOpen, setNocOpen] = useState(false);
+
+  function filterNoc(query: string): NocEntry[] {
+    if (!query || query.length < 2) return [];
+    const q = query.toLowerCase();
+    return NOC_LIST.filter(
+      (e) => e.title.toLowerCase().includes(q) || e.code.startsWith(q)
+    ).slice(0, 12);
+  }
 
   const aiAnalysisSteps = isTr
     ? [
@@ -634,14 +652,80 @@ export function FullCheckWaitlistForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-occupation">{txt("Meslek", "Occupation", "职业")}</Label>
-          <Input
-            id="waitlist-occupation"
-            name="occupation"
-            defaultValue={initialValues.occupation ?? ""}
-            className={fieldClassName}
-            placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
-          />
+          <Label htmlFor="waitlist-occupation">
+            {txt("Meslek", "Occupation", "职业")}
+            {selectedCountry === "CA" && (
+              <span className="ml-1.5 text-xs text-muted-foreground font-normal">
+                {txt("(NOC 2021 araması)", "(NOC 2021 search)", "（NOC 2021 搜索）")}
+              </span>
+            )}
+          </Label>
+          {selectedCountry === "CA" ? (
+            <div className="relative">
+              <input
+                id="waitlist-occupation"
+                type="text"
+                value={nocSearch}
+                autoComplete="off"
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setNocSearch(v);
+                  setNocCode("");
+                  setNocTeer(null);
+                  setNocResults(filterNoc(v));
+                  setNocOpen(true);
+                }}
+                onBlur={() => setTimeout(() => setNocOpen(false), 150)}
+                onFocus={() => {
+                  if (nocSearch.length >= 2) {
+                    setNocResults(filterNoc(nocSearch));
+                    setNocOpen(true);
+                  }
+                }}
+                className={fieldClassName + " w-full"}
+                placeholder={txt("Örn: Yazılım Mühendisi veya NOC kodu", "E.g., Software Engineer or NOC code", "例如：软件工程师或 NOC 代码")}
+              />
+              <input type="hidden" name="occupation" value={nocSearch} />
+              {nocCode && <input type="hidden" name="nocCode" value={nocCode} />}
+              {nocTeer !== null && <input type="hidden" name="nocTeer" value={String(nocTeer)} />}
+              {nocCode && (
+                <p className="mt-1 text-xs text-emerald-700">
+                  {txt("Seçildi:", "Selected:", "已选：")} {nocCode} · TEER {nocTeer}
+                </p>
+              )}
+              {nocOpen && nocResults.length > 0 && (
+                <ul className="absolute z-50 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg text-sm">
+                  {nocResults.map((entry) => (
+                    <li
+                      key={entry.code}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setNocSearch(entry.title);
+                        setNocCode(entry.code);
+                        setNocTeer(entry.teer);
+                        setNocOpen(false);
+                        setNocResults([]);
+                      }}
+                      className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted"
+                    >
+                      <span>{entry.title}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {entry.code} · TEER {entry.teer}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : (
+            <Input
+              id="waitlist-occupation"
+              name="occupation"
+              defaultValue={initialValues.occupation ?? ""}
+              className={fieldClassName}
+              placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
+            />
+          )}
         </div>
 
         <div className="space-y-2">

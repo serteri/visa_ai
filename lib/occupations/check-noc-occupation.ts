@@ -36,7 +36,19 @@ function isFstpGroup(entry: NocEntry): boolean {
   return FSTP_MAJOR_GROUPS.includes(entry.majorGroup) || FSTP_EXTRA_CODES.includes(entry.code);
 }
 
-export function checkNocOccupation(input: { occupation: string }): NocCheckResult {
+export function checkNocOccupation(input: { occupation: string; nocCode?: string }): NocCheckResult {
+  // Exact code match from autocomplete selection — skip fuzzy search entirely.
+  if (input.nocCode) {
+    const direct = NOC_LIST.find((e) => e.code === input.nocCode);
+    if (direct) {
+      return {
+        query: input.occupation || direct.title,
+        matches: [{ code: direct.code, title: direct.title, teer: direct.teer, isFstpEligibleGroup: isFstpGroup(direct) }],
+        partialCoverageGap: false,
+      };
+    }
+  }
+
   const query = input.occupation.trim();
   const normalisedQuery = query.toLowerCase();
 
