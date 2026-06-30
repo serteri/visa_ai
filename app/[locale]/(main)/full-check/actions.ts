@@ -79,6 +79,12 @@ export type PremiumUnlockState = {
   };
 };
 
+export type AdminResetState = {
+  status: "idle" | "success" | "error";
+  message: string;
+  deletedCount?: number;
+};
+
 // ─── Feature flags ────────────────────────────────────────────────────────────
 
 type FreeBetaStatus = {
@@ -129,6 +135,21 @@ async function getClientIp(): Promise<string> {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function getAdminEmailSet(): Set<string> {
+  return new Set(
+    (process.env.ADMIN_EMAILS ?? "")
+      .split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean)
+  );
+}
+
+function isAdminWhitelistedEmail(email: string): boolean {
+  const normalized = email.trim().toLowerCase();
+  if (!normalized) return false;
+  return getAdminEmailSet().has(normalized);
 }
 
 function isEmailDeliveryEnabled(): boolean {
@@ -487,6 +508,7 @@ export async function submitFullCheckWaitlist(
   const sponsorOrFamily = String(formData.get("sponsorOrFamily") ?? "").trim();
   const biggestConcern = String(formData.get("biggestConcern") ?? "").trim();
   const source = String(formData.get("source") ?? "").trim() || "full_check";
+  const isAdmin = isAdminWhitelistedEmail(email);
 
   const isTr = resolvedLocale === "tr";
   const isZh = resolvedLocale === "zh-Hans";
@@ -518,27 +540,29 @@ export async function submitFullCheckWaitlist(
   }
 
   // ── Anti-Abuse: Email duplicate check ──────────────────────────────────────
-  const existingReport = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
-    `SELECT id FROM user_reports WHERE email = $1 LIMIT 1`,
-    email
-  );
-  if (existingReport.length > 0) {
-    if (analysisProgressId) {
-      await failFullCheckProgress(analysisProgressId, "Duplicate email");
+  if (!isAdmin) {
+    const existingReport = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
+      `SELECT id FROM user_reports WHERE email = $1 LIMIT 1`,
+      email
+    );
+    if (existingReport.length > 0) {
+      if (analysisProgressId) {
+        await failFullCheckProgress(analysisProgressId, "Duplicate email");
+      }
+      return {
+        status: "error",
+        message: isTr
+          ? "Bu e-posta ile daha önce rapor oluşturulmuş. E-postanızı kontrol edin."
+          : isZh
+            ? "该邮箱已生成过报告，请检查您的邮箱。"
+            : "You have already generated a report. Check your email.",
+      };
     }
-    return {
-      status: "error",
-      message: isTr
-        ? "Bu e-posta ile daha önce rapor oluşturulmuş. E-postanızı kontrol edin."
-        : isZh
-          ? "该邮箱已生成过报告，请检查您的邮箱。"
-          : "You have already generated a report. Check your email.",
-    };
   }
 
   // ── Anti-Abuse: IP rate limit (1 per 24 hours) ────────────────────────────
   const clientIp = await getClientIp();
-  if (clientIp !== "unknown") {
+  if (!isAdmin && clientIp !== "unknown") {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const recentIpReports = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
       `SELECT id FROM user_reports WHERE ip_address = $1 AND created_at > $2 LIMIT 2`,
@@ -581,7 +605,9 @@ export async function submitFullCheckWaitlist(
   const betaStatus = await getFreeBetaStatus();
 
   // ── Atomic usage counter ──────────────────────────────────────────────────
-  if (betaStatus.isFreeActive) {
+  if (isAdmin) {
+    // Admin test runs bypass free quota checks and do not consume usage count.
+  } else if (betaStatus.isFreeActive) {
     // Atomically increment only when under limit
     const atomicResult = await db.execute(sql`
       UPDATE full_check_usage
@@ -825,12 +851,14 @@ export async function unlockPremiumReport(
     return { status: "error", message: "Report could not be found. Please submit the form again." };
   }
 
+  const isAdmin = isAdminWhitelistedEmail(email);
+
   const betaStatus = await getFreeBetaStatus();
   const freeBeta = betaStatus.isFreeActive;
 
   // ── Stripe gate ───────────────────────────────────────────────────────────
   // Active when free limit is exhausted OR user explicitly chooses payment
-  if (!freeBeta || unlockMethod === "payment") {
+  if (!isAdmin && (!freeBeta || unlockMethod === "payment")) {
     if (unlockMethod === "payment" || !freeBeta) {
       try {
         const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
@@ -850,7 +878,7 @@ export async function unlockPremiumReport(
   }
 
   // ── Effective unlock method ───────────────────────────────────────────────
-  const effectiveUnlockMethod: UnlockMethod = freeBeta ? "beta_free" : "lead_capture";
+  const effectiveUnlockMethod: UnlockMethod = isAdmin || freeBeta ? "beta_free" : "lead_capture";
 
   // ── PDF generation & email delivery ──────────────────────────────────────
   const emailEnabled = isEmailDeliveryEnabled();
@@ -933,4 +961,58 @@ export async function unlockPremiumReport(
       biggestConcern: record.input.biggestConcern,
     },
   };
+}
+
+export async function resetUserReportLimit(email: string, adminSecret: string): Promise<AdminResetState> {
+  const normalizedEmail = email.trim().toLowerCase();
+  const providedSecret = adminSecret.trim();
+  const expectedSecret = process.env.ADMIN_SECRET?.trim() ?? "";
+
+  if (!normalizedEmail || !isValidEmail(normalizedEmail)) {
+    return {
+      status: "error",
+      message: "Enter a valid email address.",
+    };
+  }
+
+  if (!expectedSecret) {
+    return {
+      status: "error",
+      message: "ADMIN_SECRET is not configured.",
+    };
+  }
+
+  if (providedSecret !== expectedSecret) {
+    return {
+      status: "error",
+      message: "Invalid admin secret.",
+    };
+  }
+
+  const deleted = await prisma.userReport.deleteMany({
+    where: {
+      email: {
+        equals: normalizedEmail,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  return {
+    status: "success",
+    message:
+      deleted.count > 0
+        ? `Reset complete. Deleted ${deleted.count} report record(s).`
+        : "No report record found for this email.",
+    deletedCount: deleted.count,
+  };
+}
+
+export async function resetUserReportLimitFromForm(
+  _prevState: AdminResetState,
+  formData: FormData
+): Promise<AdminResetState> {
+  const email = String(formData.get("email") ?? "");
+  const adminSecret = String(formData.get("adminSecret") ?? "");
+  return resetUserReportLimit(email, adminSecret);
 }
