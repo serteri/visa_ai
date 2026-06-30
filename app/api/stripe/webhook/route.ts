@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           input_json: ReadinessInput;
         }>
       >(
-        `SELECT id, email, locale, full_name, report_json, input_json FROM user_reports WHERE id = $1::uuid LIMIT 1`,
+        `SELECT id, email, locale, full_name, report_json, input_json FROM user_reports WHERE id::text = $1::text LIMIT 1`,
         reportId
       );
 
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
             is_unlocked = TRUE,
             pdf_sent = FALSE,
             unlocked_at = NOW()
-          WHERE id = $2::uuid
+          WHERE id::text = $2::text
         `,
         email,
         reportId
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
 
           // Mark PDF as sent
           await prisma.$executeRawUnsafe(
-            `UPDATE user_reports SET pdf_sent = TRUE WHERE id = $1::uuid`,
+            `UPDATE user_reports SET pdf_sent = TRUE WHERE id::text = $1::text`,
             reportId
           );
 
