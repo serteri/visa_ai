@@ -265,7 +265,7 @@ export type FrictionAnalysisItem = {
 };
 
 export type PremiumInvitationTrendEstimate = {
-  subclass: "189" | "190" | "491";
+  subclass: "189" | "190" | "491" | "CEC" | "FSW" | "FSTP" | "PNP";
   estimatedPoints: number;
   estimatedWait: string;
 };
@@ -275,8 +275,6 @@ export type PremiumInvitationTrendSection = {
   anzscoCode: string;
   estimates: PremiumInvitationTrendEstimate[];
   note: string;
-  /** True when this section has no real data yet for the report's country (e.g. CA draw history). */
-  comingSoon?: boolean;
 };
 
 export type PremiumLivingCostSection = {
@@ -290,7 +288,6 @@ export type PremiumLivingCostSection = {
     total: number;
   };
   note: string;
-  comingSoon?: boolean;
 };
 
 export type PremiumGanttStep = {
@@ -305,10 +302,23 @@ export type PremiumGanttSection = {
   steps: PremiumGanttStep[];
 };
 
+export type PremiumScenarioBasedInsights = {
+  pathwayStrengthComparison: PathwayStrengthComparison[];
+  evidenceReadiness: EvidenceReadinessItem[];
+  pointsBoosterSimulator?: PointsBoosterSimulator;
+  financialRoadmap: FinancialRoadmapItem[];
+  progressionPathways: ProgressionPathway[];
+  pathwayFriction: PathwayFriction[];
+  frictionAnalysis: FrictionAnalysisItem[];
+  documentChecklist: DocumentCategory[];
+  suggestedNextSteps: string[];
+};
+
 export type PremiumSections = {
   historicalInvitationTrends: PremiumInvitationTrendSection;
   livingCostProjection: PremiumLivingCostSection;
   strategicGanttChart: PremiumGanttSection;
+  scenarioBasedInsights: PremiumScenarioBasedInsights;
 };
 
 export type ReadinessReport = {

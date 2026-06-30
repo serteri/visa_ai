@@ -1825,45 +1825,37 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSectionHeading("", text.premiumSections);
 
     addBody(text.invitationTrends);
-    if (report.premiumSections.historicalInvitationTrends.comingSoon) {
-      addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
-    } else {
-      addSmallText(
-        `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
-        2
-      );
-      drawTable(
-        [text.subclass, text.estimatedPoints, text.estimatedWait],
-        report.premiumSections.historicalInvitationTrends.estimates.map((item) => [
-          item.subclass,
-          `${item.estimatedPoints}`,
-          item.estimatedWait,
-        ]),
-        [0.2, 0.3, 0.5]
-      );
-      addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
-    }
+    addSmallText(
+      `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
+      2
+    );
+    drawTable(
+      [text.subclass, text.estimatedPoints, text.estimatedWait],
+      report.premiumSections.historicalInvitationTrends.estimates.map((item) => [
+        item.subclass,
+        `${item.estimatedPoints}`,
+        item.estimatedWait,
+      ]),
+      [0.2, 0.3, 0.5]
+    );
+    addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
 
     addBody(text.livingCostProjection);
-    if (report.premiumSections.livingCostProjection.comingSoon) {
-      addSmallText(report.premiumSections.livingCostProjection.note, 2);
-    } else {
-      addSmallText(
-        `${report.premiumSections.livingCostProjection.city} - ${report.premiumSections.livingCostProjection.familyProfile} (${report.premiumSections.livingCostProjection.currency})`,
-        2
-      );
-      drawTable(
-        [text.monthlyRent, text.monthlyGroceries, text.monthlyTransport, text.monthlyTotal],
-        [[
-          `${report.premiumSections.livingCostProjection.monthly.rent}`,
-          `${report.premiumSections.livingCostProjection.monthly.groceries}`,
-          `${report.premiumSections.livingCostProjection.monthly.transport}`,
-          `${report.premiumSections.livingCostProjection.monthly.total}`,
-        ]],
-        [0.25, 0.25, 0.25, 0.25]
-      );
-      addSmallText(report.premiumSections.livingCostProjection.note, 2);
-    }
+    addSmallText(
+      `${report.premiumSections.livingCostProjection.city} - ${report.premiumSections.livingCostProjection.familyProfile} (${report.premiumSections.livingCostProjection.currency})`,
+      2
+    );
+    drawTable(
+      [text.monthlyRent, text.monthlyGroceries, text.monthlyTransport, text.monthlyTotal],
+      [[
+        `${report.premiumSections.livingCostProjection.monthly.rent}`,
+        `${report.premiumSections.livingCostProjection.monthly.groceries}`,
+        `${report.premiumSections.livingCostProjection.monthly.transport}`,
+        `${report.premiumSections.livingCostProjection.monthly.total}`,
+      ]],
+      [0.25, 0.25, 0.25, 0.25]
+    );
+    addSmallText(report.premiumSections.livingCostProjection.note, 2);
 
     drawGanttTimeline();
   }

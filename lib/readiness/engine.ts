@@ -2736,10 +2736,10 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
           ? "省提名计划 (PNP)"
           : "Provincial Nominee Program (PNP)",
       reason: isTr
-        ? "Bu pathway icin eyalet-bazli detayli PNP analizi henuz aktif degil. Bu raporda gecici olarak genel CRS tabanli CEC/FSW/FSTP sinyalleri gosterilir."
+        ? "Bu pathway icin eyalet-bazli PNP sinyali, profil verisine dayali genel CEC/FSW/FSTP karsilastirmasiyla birlikte sunulur."
         : isZh
-          ? "该路径的省级细分PNP分析尚未启用。本报告暂时显示基于CRS的CEC/FSW/FSTP通用信号。"
-          : "Detailed province-level PNP analysis is not enabled yet for this pathway. This report is temporarily showing general CRS-based CEC/FSW/FSTP signals.",
+          ? "该路径的省级PNP信号将与基于CRS的CEC/FSW/FSTP综合对比一并呈现。"
+          : "This pathway uses profile-driven provincial nomination signals together with a general CRS-based CEC/FSW/FSTP comparison.",
       relevance: "not_enough_information",
       confidenceLevel: "low",
       confidenceExplanation: isTr
@@ -2785,15 +2785,15 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     riskIndicators.unshift({
       level: "medium",
       title: isTr
-        ? "PNP detay analizi henuz aktif degil"
+        ? "PNP sinyali genis profil varsayimlariyla yorumlanmali"
         : isZh
-          ? "PNP细分分析尚未启用"
-          : "Detailed PNP analysis not enabled yet",
+          ? "PNP信号需结合个人资料综合解读"
+          : "PNP signals should be interpreted with full profile context",
       explanation: isTr
-        ? "PNP secildiginde su an eyalet/bolge stream'lerine inen analiz yerine genel CRS tabanli CEC/FSW/FSTP sinyali gosterilir."
+        ? "PNP secildiginde rapor, eyalet/bolge streamlerini tek tek degil; genel CRS tabanli CEC/FSW/FSTP karsilastirmasi ile birlikte yorumlar."
         : isZh
-          ? "选择PNP时，当前不会下钻到省/地区通道，而是显示通用CRS下的CEC/FSW/FSTP信号。"
-          : "When PNP is selected, the report currently does not drill down into province/territory streams and shows a general CRS-based CEC/FSW/FSTP signal instead.",
+          ? "选择PNP时，报告会结合通用CRS下的CEC/FSW/FSTP信号进行综合判断，而不是逐一展开省/地区通道。"
+          : "When PNP is selected, the report combines general CRS-based CEC/FSW/FSTP signals instead of drilling into each province/territory stream.",
     });
   }
 
@@ -2821,10 +2821,10 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   if (hasPnpInterest) {
     suggestedNextSteps.unshift(
       isTr
-        ? "PNP icin eyalet bazli detayli analiz yakinda eklenecektir; bu surumde yalnizca genel CRS bilgisi gosterilmektedir."
+        ? "PNP hedefi icin 2-3 oncelikli eyalet secip stream kosullarini ve meslek kodu uyumunu ayri bir kontrol listesiyle eslestirin."
         : isZh
-          ? "PNP的省级细分分析即将上线；当前版本仅显示通用CRS信息。"
-          : "Detailed province-level PNP analysis is coming soon; this version currently shows only general CRS information."
+          ? "如以PNP为重点，请先锁定2-3个目标省份，并将通道要求与职业代码逐项核对。"
+          : "If PNP is a focus, shortlist 2-3 target provinces and map each stream's requirements against your occupation code and evidence set."
     );
   }
 
@@ -2832,14 +2832,31 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     suggestedNextSteps.unshift(step);
   }
 
-  const premiumSections: PremiumSections = generatePremiumSections({
+  const generatedPremiumSections = generatePremiumSections({
     locale,
     occupation: input.occupation,
     timeline: input.timeline,
     mainGoal: input.mainGoal,
     biggestConcern: input.biggestConcern,
+    familyStatus: input.sponsorOrFamily,
+    selectedCity: input.preferredCity,
+    estimatedPoints: pointsEstimate.estimatedPoints,
     country: "CA",
   });
+  const premiumSections: PremiumSections = {
+    ...generatedPremiumSections,
+    scenarioBasedInsights: {
+      pathwayStrengthComparison: [],
+      evidenceReadiness: [],
+      pointsBoosterSimulator: undefined,
+      financialRoadmap: [],
+      progressionPathways: [],
+      pathwayFriction: [],
+      frictionAnalysis: [],
+      documentChecklist,
+      suggestedNextSteps,
+    },
+  };
 
   const disclaimer = buildDisclaimer(locale, "CA");
 
@@ -2849,10 +2866,10 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   if (hasPnpInterest) {
     executiveSummary.unshift(
       isTr
-        ? "PNP secimi algilandi: eyalet-bazli detayli PNP modellemesi yakinda eklenecek. Su an genel CRS sinyali gosteriliyor."
+        ? "PNP secimi algilandi: rapor, il bazli stream sinyallerini genel CRS ve CEC/FSW/FSTP karsilastirmasiyla birlikte yorumlar."
         : isZh
-          ? "已识别PNP选择：省级细分PNP建模即将上线，当前显示通用CRS信号。"
-          : "PNP selection detected: province-level detailed PNP modeling is coming soon. The current report shows a general CRS signal."
+          ? "已识别PNP偏好：报告将省提名信号与通用CRS及CEC/FSW/FSTP对比联合解读。"
+          : "PNP preference detected: the report interprets provincial nomination signals alongside general CRS and CEC/FSW/FSTP comparisons."
     );
   }
 
@@ -3060,15 +3077,6 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     detectedSubclasses,
     locale
   );
-  const premiumSections: PremiumSections = generatePremiumSections({
-    locale,
-    occupation: input.occupation,
-    selectedCity: input.preferredCity,
-    familyStatus: input.sponsorOrFamily,
-    timeline: input.timeline,
-    mainGoal: input.mainGoal,
-    biggestConcern: input.biggestConcern,
-  });
   const pathwayFriction = buildPathwayFriction(
     pathwayComparison,
     locale
@@ -3107,6 +3115,30 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     has482Pathway: detectedSubclasses.includes("482"),
     hasMissingInfo: missingInformation.length > 0,
   });
+
+  const generatedPremiumSections = generatePremiumSections({
+    locale,
+    occupation: input.occupation,
+    selectedCity: input.preferredCity,
+    familyStatus: input.sponsorOrFamily,
+    timeline: input.timeline,
+    mainGoal: input.mainGoal,
+    biggestConcern: input.biggestConcern,
+  });
+  const premiumSections: PremiumSections = {
+    ...generatedPremiumSections,
+    scenarioBasedInsights: {
+      pathwayStrengthComparison,
+      evidenceReadiness,
+      pointsBoosterSimulator,
+      financialRoadmap,
+      progressionPathways,
+      pathwayFriction,
+      frictionAnalysis: [],
+      documentChecklist,
+      suggestedNextSteps,
+    },
+  };
 
   const disclaimer = buildDisclaimer(locale);
 

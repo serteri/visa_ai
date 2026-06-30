@@ -59,10 +59,10 @@ function main() {
   console.log(`Gantt contains "ITA"? ${ganttText.includes("ITA")}`);
   console.log(`Gantt contains standalone "EOI"? ${/\bEOI\b/.test(ganttText)}`);
 
-  console.log("\n=== HISTORICAL INVITATION TRENDS (should be a clear 'coming soon' placeholder) ===");
+  console.log("\n=== HISTORICAL INVITATION TRENDS (should be dynamic Canada-specific scenario data) ===");
   console.log(JSON.stringify(report.premiumSections.historicalInvitationTrends, null, 2));
 
-  console.log("\n=== LIVING COST PROJECTION (should be a clear 'coming soon' placeholder) ===");
+  console.log("\n=== LIVING COST PROJECTION (should be dynamic Canada city cost data) ===");
   console.log(JSON.stringify(report.premiumSections.livingCostProjection, null, 2));
 }
 

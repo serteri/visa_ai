@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/readiness/types";
 export type FamilyProfile = "Single" | "Couple" | "Family of 4";
 
 export type InvitationTrendEstimate = {
-  subclass: "189" | "190" | "491";
+  subclass: "189" | "190" | "491" | "CEC" | "FSW" | "FSTP" | "PNP";
   estimatedPoints: number;
   estimatedWait: string;
 };
@@ -16,7 +16,6 @@ export type InvitationTrendSection = {
   anzscoCode: string;
   estimates: InvitationTrendEstimate[];
   note: string;
-  comingSoon?: boolean;
 };
 
 export type LivingCostSection = {
@@ -30,7 +29,6 @@ export type LivingCostSection = {
     total: number;
   };
   note: string;
-  comingSoon?: boolean;
 };
 
 export type GanttStep = {
@@ -49,6 +47,7 @@ export type PremiumSections = {
   historicalInvitationTrends: InvitationTrendSection;
   livingCostProjection: LivingCostSection;
   strategicGanttChart: GanttSection;
+  scenarioBasedInsights?: unknown;
 };
 
 type TrendRecord = {
@@ -92,6 +91,35 @@ const TREND_DATA = visaTrendsData as {
 const LIVING_DATA = livingCostsData as LivingCostDataset;
 
 const SUPPORTED_CITIES = ["Sydney", "Melbourne", "Brisbane", "Adelaide", "Perth"];
+const SUPPORTED_CA_CITIES = ["Toronto", "Vancouver", "Calgary", "Montreal", "Ottawa"];
+
+const CA_LIVING_COSTS: Record<string, Record<FamilyProfile, { rent: number; groceries: number; transport: number; total: number }>> = {
+  Toronto: {
+    Single: { rent: 2200, groceries: 520, transport: 170, total: 2890 },
+    Couple: { rent: 2800, groceries: 860, transport: 300, total: 3960 },
+    "Family of 4": { rent: 3600, groceries: 1320, transport: 420, total: 5340 },
+  },
+  Vancouver: {
+    Single: { rent: 2350, groceries: 540, transport: 180, total: 3070 },
+    Couple: { rent: 3000, groceries: 900, transport: 310, total: 4210 },
+    "Family of 4": { rent: 3900, groceries: 1380, transport: 430, total: 5710 },
+  },
+  Calgary: {
+    Single: { rent: 1750, groceries: 500, transport: 150, total: 2400 },
+    Couple: { rent: 2300, groceries: 820, transport: 260, total: 3380 },
+    "Family of 4": { rent: 3000, groceries: 1260, transport: 380, total: 4640 },
+  },
+  Montreal: {
+    Single: { rent: 1600, groceries: 470, transport: 125, total: 2195 },
+    Couple: { rent: 2100, groceries: 780, transport: 230, total: 3110 },
+    "Family of 4": { rent: 2800, groceries: 1180, transport: 340, total: 4320 },
+  },
+  Ottawa: {
+    Single: { rent: 1800, groceries: 490, transport: 145, total: 2435 },
+    Couple: { rent: 2350, groceries: 810, transport: 250, total: 3410 },
+    "Family of 4": { rent: 3050, groceries: 1240, transport: 360, total: 4650 },
+  },
+};
 
 function normalize(text?: string): string {
   return (text ?? "").trim().toLowerCase();
@@ -135,6 +163,91 @@ function inferCity(input: {
   const combined = `${input.mainGoal ?? ""} ${input.biggestConcern ?? ""}`.toLowerCase();
   const matched = SUPPORTED_CITIES.find((city) => combined.includes(city.toLowerCase()));
   return matched ?? LIVING_DATA.fallback_city;
+}
+
+function inferCanadaCity(input: {
+  selectedCity?: string;
+  mainGoal?: string;
+  biggestConcern?: string;
+}): string {
+  const direct = input.selectedCity?.trim();
+  if (direct && SUPPORTED_CA_CITIES.includes(direct)) return direct;
+
+  const combined = `${input.mainGoal ?? ""} ${input.biggestConcern ?? ""}`.toLowerCase();
+  const matched = SUPPORTED_CA_CITIES.find((city) => combined.includes(city.toLowerCase()));
+  return matched ?? "Toronto";
+}
+
+function extractNocCode(occupation?: string): string {
+  const match = (occupation ?? "").match(/\b\d{4,5}\b/);
+  return match?.[0] ?? "NOC not specified";
+}
+
+function inferCanadaOccupationGroup(occupation?: string): string {
+  const q = normalize(occupation);
+  if (!q) return "Express Entry profile";
+  if (q.includes("software") || q.includes("developer") || q.includes("engineer") || q.includes("it")) return "Technology occupations";
+  if (q.includes("nurse") || q.includes("doctor") || q.includes("physician") || q.includes("medical")) return "Healthcare occupations";
+  if (q.includes("electrician") || q.includes("welder") || q.includes("plumber") || q.includes("mechanic")) return "Skilled trades occupations";
+  if (q.includes("teacher") || q.includes("professor")) return "Education occupations";
+  return occupation ?? "Express Entry profile";
+}
+
+function inferCanadaTrendEstimates(input: {
+  locale: Locale;
+  estimatedPoints?: number;
+  timeline?: string;
+  occupation?: string;
+}): InvitationTrendEstimate[] {
+  const base = input.estimatedPoints ?? 470;
+  const normalizedTimeline = normalize(input.timeline);
+  const fasterWindow = normalizedTimeline.includes("0-6") || normalizedTimeline.includes("6 month");
+  const occ = normalize(input.occupation);
+  const tradeBoost = occ.includes("electrician") || occ.includes("welder") || occ.includes("plumber") || occ.includes("carpenter") ? 6 : 0;
+  const healthcareBoost = occ.includes("nurse") || occ.includes("doctor") || occ.includes("physician") ? 4 : 0;
+
+  return [
+    {
+      subclass: "CEC",
+      estimatedPoints: Math.max(360, base - 5 + healthcareBoost),
+      estimatedWait: localizeWaitWindow(input.locale, fasterWindow ? "1-3 months" : "3-6 months"),
+    },
+    {
+      subclass: "FSW",
+      estimatedPoints: Math.max(370, base + tradeBoost),
+      estimatedWait: localizeWaitWindow(input.locale, fasterWindow ? "2-4 months" : "4-7 months"),
+    },
+    {
+      subclass: "FSTP",
+      estimatedPoints: Math.max(300, base - 35 + tradeBoost * 2),
+      estimatedWait: localizeWaitWindow(input.locale, fasterWindow ? "2-5 months" : "4-8 months"),
+    },
+    {
+      subclass: "PNP",
+      estimatedPoints: Math.min(1200, base + 600),
+      estimatedWait: localizeWaitWindow(input.locale, fasterWindow ? "1-4 months" : "3-8 months"),
+    },
+  ];
+}
+
+function inferCanadaActionTrack(locale: Locale, occupation?: string): { title: string; description: string } {
+  const q = normalize(occupation);
+  if (q.includes("doctor") || q.includes("physician") || q.includes("nurse") || q.includes("medical")) {
+    return {
+      title: localizeText(locale, "Credential and licensing alignment window"),
+      description: localizeText(locale, "Prioritize ECA + healthcare credential checks, then align language and licensing milestones with Express Entry profile timing."),
+    };
+  }
+  if (q.includes("electrician") || q.includes("welder") || q.includes("plumber") || q.includes("mechanic") || q.includes("trades")) {
+    return {
+      title: localizeText(locale, "Trade pathway documentation window"),
+      description: localizeText(locale, "Prioritize employer letters, task logs, and trade qualification evidence to strengthen FSTP and PNP pathway signals."),
+    };
+  }
+  return {
+    title: localizeText(locale, "CRS optimization and evidence window"),
+    description: localizeText(locale, "Prioritize language score optimization, ECA readiness, and work-evidence consistency before ITA-sensitive windows."),
+  };
 }
 
 function matchTrendByOccupation(occupation?: string): TrendRecord {
@@ -300,30 +413,6 @@ function applyCanadaTerminology(text: string): string {
   return CA_TERMINOLOGY_SWAP.reduce((acc, [pattern, replacement]) => acc.replace(pattern, replacement), text);
 }
 
-function comingSoonInvitationTrends(locale: Locale): InvitationTrendSection {
-  return {
-    matchedOccupationGroup: "-",
-    anzscoCode: "-",
-    estimates: [],
-    note: localizeText(
-      locale,
-      "Historical Express Entry draw and CRS cutoff trends for Canada are coming soon."
-    ),
-    comingSoon: true,
-  };
-}
-
-function comingSoonLivingCost(locale: Locale): LivingCostSection {
-  return {
-    city: "-",
-    familyProfile: "-",
-    currency: "CAD",
-    monthly: { rent: 0, groceries: 0, transport: 0, total: 0 },
-    note: localizeText(locale, "Living cost projections for Canadian cities are coming soon."),
-    comingSoon: true,
-  };
-}
-
 export function generatePremiumSections(input: {
   locale?: Locale;
   occupation?: string;
@@ -332,23 +421,65 @@ export function generatePremiumSections(input: {
   timeline?: string;
   mainGoal?: string;
   biggestConcern?: string;
+  estimatedPoints?: number;
   country?: "AU" | "CA";
 }): PremiumSections {
   const locale = input.locale ?? "en";
 
   if (input.country === "CA") {
     const gantt = buildGanttByTimeline(input.timeline);
+    const canadaTrack = inferCanadaActionTrack(locale, input.occupation);
+    const city = inferCanadaCity({
+      selectedCity: input.selectedCity,
+      mainGoal: input.mainGoal,
+      biggestConcern: input.biggestConcern,
+    });
+    const familyProfile = inferFamilyProfile(input.familyStatus);
+    const monthly = CA_LIVING_COSTS[city]?.[familyProfile] ?? CA_LIVING_COSTS.Toronto.Single;
+
     return {
-      historicalInvitationTrends: comingSoonInvitationTrends(locale),
-      livingCostProjection: comingSoonLivingCost(locale),
+      historicalInvitationTrends: {
+        matchedOccupationGroup: localizeText(locale, inferCanadaOccupationGroup(input.occupation)),
+        anzscoCode: extractNocCode(input.occupation),
+        estimates: inferCanadaTrendEstimates({
+          locale,
+          estimatedPoints: input.estimatedPoints,
+          timeline: input.timeline,
+          occupation: input.occupation,
+        }),
+        note: localizeText(
+          locale,
+          "Express Entry and PNP trend estimates are scenario-based planning references derived from profile signals and timeline assumptions; they are not invitation guarantees."
+        ),
+      },
+      livingCostProjection: {
+        city: localizeText(locale, city),
+        familyProfile: localizeText(locale, familyProfile),
+        currency: "CAD",
+        monthly,
+        note: localizeText(
+          locale,
+          "Canadian monthly cost projection reflects city-level baseline assumptions for rent, groceries, and transport and should be adjusted for neighborhood and lifestyle."
+        ),
+      },
       strategicGanttChart: {
         ...gantt,
-        steps: gantt.steps.map((step) => ({
+        steps: gantt.steps.map((step, index) => {
+          if (index === 1) {
+            return {
+              ...step,
+              title: applyCanadaTerminology(canadaTrack.title),
+              window: localizeWaitWindow(locale, step.window),
+              description: applyCanadaTerminology(canadaTrack.description),
+            };
+          }
+          return {
           ...step,
           title: applyCanadaTerminology(localizeText(locale, step.title)),
           window: localizeWaitWindow(locale, step.window),
           description: applyCanadaTerminology(localizeText(locale, step.description)),
-        })),
+          };
+        }),
         timelineBand: localizeWaitWindow(locale, gantt.timelineBand),
       },
     };
