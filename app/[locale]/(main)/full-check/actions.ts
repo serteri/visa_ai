@@ -199,19 +199,27 @@ function isEmailDeliveryEnabled(): boolean {
 
 async function hasRecentSubmission(email: string, source: string): Promise<boolean> {
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-  const rows = await db
-    .select({ id: fullCheckWaitlist.id })
-    .from(fullCheckWaitlist)
-    .where(
-      and(
-        eq(fullCheckWaitlist.email, email),
-        eq(fullCheckWaitlist.source, source),
-        gte(fullCheckWaitlist.created_at, fiveMinutesAgo)
+  try {
+    const rows = await db
+      .select({ id: fullCheckWaitlist.id })
+      .from(fullCheckWaitlist)
+      .where(
+        and(
+          eq(fullCheckWaitlist.email, email),
+          eq(fullCheckWaitlist.source, source),
+          gte(fullCheckWaitlist.created_at, fiveMinutesAgo)
+        )
       )
-    )
-    .limit(1);
+      .limit(1);
 
-  return rows.length > 0;
+    return rows.length > 0;
+  } catch (error) {
+    if (isMissingRelationError(error, "full_check_waitlist")) {
+      console.warn("full_check_waitlist table missing; skipping recent-submission dedupe check.");
+      return false;
+    }
+    throw error;
+  }
 }
 
 // ─── Email senders ────────────────────────────────────────────────────────────
@@ -732,27 +740,34 @@ export async function submitFullCheckWaitlist(
     await updateFullCheckProgress(analysisProgressId, "analyzing_trends");
   }
 
-  await db.insert(fullCheckWaitlist).values({
-    email,
-    full_name: fullName || null,
-    visa_interest: visaInterest || null,
-    preferred_language: preferredLanguage || null,
-    current_country: currentCountry || null,
-    passport_country: passportCountry,
-    age,
-    occupation: occupation || null,
-    english_level: englishLevel || null,
-    english_test_taken: englishTestTaken || null,
-    occupation_confirmed: occupationConfirmed || null,
-    estimated_budget_range: estimatedBudgetRange || null,
-    timeline: timeline || null,
-    sponsor_or_family: sponsorOrFamily || null,
-    biggest_concern: biggestConcern || null,
-    main_goal: mainGoal,
-    lead_score: leadQuality.leadScore,
-    lead_tier: leadQuality.leadTier,
-    source,
-  });
+  try {
+    await db.insert(fullCheckWaitlist).values({
+      email,
+      full_name: fullName || null,
+      visa_interest: visaInterest || null,
+      preferred_language: preferredLanguage || null,
+      current_country: currentCountry || null,
+      passport_country: passportCountry,
+      age,
+      occupation: occupation || null,
+      english_level: englishLevel || null,
+      english_test_taken: englishTestTaken || null,
+      occupation_confirmed: occupationConfirmed || null,
+      estimated_budget_range: estimatedBudgetRange || null,
+      timeline: timeline || null,
+      sponsor_or_family: sponsorOrFamily || null,
+      biggest_concern: biggestConcern || null,
+      main_goal: mainGoal,
+      lead_score: leadQuality.leadScore,
+      lead_tier: leadQuality.leadTier,
+      source,
+    });
+  } catch (error) {
+    if (!isMissingRelationError(error, "full_check_waitlist")) {
+      throw error;
+    }
+    console.warn("full_check_waitlist table missing; skipping waitlist persistence.");
+  }
   if (analysisProgressId) {
     await updateFullCheckProgress(analysisProgressId, "applying_deductions");
   }
@@ -785,33 +800,40 @@ export async function submitFullCheckWaitlist(
     },
   });
 
-  await db.insert(leads).values({
-    source,
-    full_name: fullName || null,
-    email,
-    preferred_language: preferredLanguage || null,
-    current_country: currentCountry || null,
-    passport_country: passportCountry,
-    age,
-    occupation: occupation || null,
-    english_level: englishLevel || null,
-    english_test_taken: englishTestTaken || null,
-    occupation_confirmed: occupationConfirmed || null,
-    estimated_budget_range: estimatedBudgetRange || null,
-    timeline: timeline || null,
-    sponsor_or_family: sponsorOrFamily || null,
-    biggest_concern: biggestConcern || null,
-    main_goal: mainGoal,
-    selected_visa:
-      ((generatedReport.rankedPathways?.[0]?.subclass ??
-        generatedReport.pathwayComparison[0]?.subclass ??
-        visaInterest) || null),
-    system_score: generatedReport.rankedPathways?.[0]?.matchPercentage ?? null,
-    lead_score: leadQuality.leadScore,
-    lead_tier: leadQuality.leadTier,
-    report_id: reportRecord.id,
-    report_locale: resolvedLocale,
-  });
+  try {
+    await db.insert(leads).values({
+      source,
+      full_name: fullName || null,
+      email,
+      preferred_language: preferredLanguage || null,
+      current_country: currentCountry || null,
+      passport_country: passportCountry,
+      age,
+      occupation: occupation || null,
+      english_level: englishLevel || null,
+      english_test_taken: englishTestTaken || null,
+      occupation_confirmed: occupationConfirmed || null,
+      estimated_budget_range: estimatedBudgetRange || null,
+      timeline: timeline || null,
+      sponsor_or_family: sponsorOrFamily || null,
+      biggest_concern: biggestConcern || null,
+      main_goal: mainGoal,
+      selected_visa:
+        ((generatedReport.rankedPathways?.[0]?.subclass ??
+          generatedReport.pathwayComparison[0]?.subclass ??
+          visaInterest) || null),
+      system_score: generatedReport.rankedPathways?.[0]?.matchPercentage ?? null,
+      lead_score: leadQuality.leadScore,
+      lead_tier: leadQuality.leadTier,
+      report_id: reportRecord.id,
+      report_locale: resolvedLocale,
+    });
+  } catch (error) {
+    if (!isMissingRelationError(error, "leads")) {
+      throw error;
+    }
+    console.warn("leads table missing; skipping lead persistence.");
+  }
 
   if (analysisProgressId) {
     await updateFullCheckProgress(analysisProgressId, "generating_report");
