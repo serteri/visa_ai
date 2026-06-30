@@ -23,9 +23,12 @@ function paymentStatusForMethod(method: UnlockMethod): string {
 }
 
 export async function createUserReport(input: CreateUserReportInput): Promise<{ id: string }> {
+  const reportId = crypto.randomUUID();
+
   const row = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
     `
       INSERT INTO user_reports (
+        id,
         full_name,
         email,
         preferred_path,
@@ -38,9 +41,10 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
         input_json,
         ip_address
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,'pending',$8::jsonb,$9::jsonb,$10)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'pending',$9::jsonb,$10::jsonb,$11)
       RETURNING id
     `,
+    reportId,
     input.fullName ?? null,
     input.email,
     input.preferredPath ?? null,
