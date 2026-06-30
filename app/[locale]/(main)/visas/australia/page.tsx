@@ -19,16 +19,34 @@ type AustraliaVisaCard = {
   description_zh?: string;
   fee: number;
   type: string;
+  type_tr?: string;
+  type_zh?: string;
   processingTime: string;
+  processingTime_tr?: string;
+  processingTime_zh?: string;
   processingTimeUnit: string;
+  processingTimeUnit_tr?: string;
+  processingTimeUnit_zh?: string;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
+  const title =
+    locale === "tr"
+      ? "Avustralya Vizeleri ve Nitelikli Goc Yollari | LogiVisa"
+      : locale === "zh-Hans"
+        ? "澳大利亚签证与技术移民通道 | LogiVisa"
+        : "Australia Visas and Skilled Pathways | LogiVisa";
+  const description =
+    locale === "tr"
+      ? "189, 190, 491, 482, 485 ve partner vize yollari dahil baslica Avustralya vizelerini kesfedin."
+      : locale === "zh-Hans"
+        ? "查看澳大利亚主要签证通道，包括 189、190、491、482、485 及配偶签证路径。"
+        : "Explore all major Australian visas including subclass 189, 190, 491, 482, 485, and partner visa pathways.";
   return {
     metadataBase: new URL(BASE_URL),
-    title: "Australia Visas and Skilled Pathways | LogiVisa",
-    description: "Explore all major Australian visas including subclass 189, 190, 491, 482, 485, and partner visa pathways.",
+    title,
+    description,
     alternates: {
       canonical: `/${locale}/visas/australia`,
       languages: {
@@ -59,13 +77,55 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
     : "Explore up-to-date visa options to study, work, or settle in Australia.";
 
   const viewDetailsLabel = isTr ? "Detayları İncele" : isZh ? "查看详情" : "View Details";
+  const fromLabel = isTr ? "Baslangic" : isZh ? "起" : "From";
+  const countryBadge = isTr ? "AVUSTRALYA" : isZh ? "澳大利亚" : "AUSTRALIA";
+  const localizeType = (visa: AustraliaVisaCard) => {
+    if (isTr) {
+      return (
+        visa.type_tr ??
+        ({
+          Permanent: "Kalici",
+          Temporary: "Gecici",
+          "Provisional (5 years)": "Gecici (5 yil)",
+          "Temporary (2-6 years)": "Gecici (2-6 yil)",
+          "Temporary (course duration)": "Gecici (kurs suresi)",
+          "Temporary (up to 4 years; up to 5 for some Hong Kong passport holders)": "Gecici (4 yila kadar; bazi Hong Kong pasaportlulari icin 5 yil)",
+        } as Record<string, string>)[visa.type] ??
+        visa.type
+      );
+    }
+    if (isZh) {
+      return (
+        visa.type_zh ??
+        ({
+          Permanent: "永久",
+          Temporary: "临时",
+          "Provisional (5 years)": "临时（5年）",
+          "Temporary (2-6 years)": "临时（2-6年）",
+          "Temporary (course duration)": "临时（课程期间）",
+          "Temporary (up to 4 years; up to 5 for some Hong Kong passport holders)": "临时（最长4年；部分香港护照持有人最长5年）",
+        } as Record<string, string>)[visa.type] ??
+        visa.type
+      );
+    }
+    return visa.type;
+  };
+  const localizeProcessing = (visa: AustraliaVisaCard) => {
+    const text = isTr ? visa.processingTime_tr ?? visa.processingTime : isZh ? visa.processingTime_zh ?? visa.processingTime : visa.processingTime;
+    const unit = isTr
+      ? visa.processingTimeUnit_tr ?? (visa.processingTimeUnit === "months" ? "ay" : visa.processingTimeUnit)
+      : isZh
+        ? visa.processingTimeUnit_zh ?? (visa.processingTimeUnit === "months" ? "个月" : visa.processingTimeUnit)
+        : visa.processingTimeUnit;
+    return `${text}${unit ? ` ${unit}` : ""}`;
+  };
 
   return (
     <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
           <span className="inline-block rounded-full border border-blue-200 bg-blue-50 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-600 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-blue-400">
-            AUSTRALIA
+            {countryBadge}
           </span>
           <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl dark:text-white">{title}</h1>
           <p className="mx-auto mt-3 max-w-xl text-base text-slate-500 dark:text-slate-400">{subtitle}</p>
@@ -95,7 +155,7 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
                     <span className="inline-block rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400">
                       Subclass {v.subclass.replace("_", "/")}
                     </span>
-                    <span className="text-xs font-semibold text-slate-400">{v.type}</span>
+                    <span className="text-xs font-semibold text-slate-400">{localizeType(v)}</span>
                   </div>
 
                   <h3 className="mt-4 text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors dark:text-white dark:group-hover:text-indigo-400">{visaName}</h3>
@@ -106,9 +166,9 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <div className="flex items-center gap-1">
                       <Clock className="h-3.5 w-3.5 text-slate-400" />
-                      <span>{v.processingTime} {v.processingTimeUnit}</span>
+                      <span>{localizeProcessing(v)}</span>
                     </div>
-                    <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-zinc-300"><span>From {feeText}</span></div>
+                    <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-zinc-300"><span>{fromLabel} {feeText}</span></div>
                   </div>
 
                   <div className="mt-4 flex items-center justify-end text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition-transform dark:text-indigo-400">
