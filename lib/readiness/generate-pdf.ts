@@ -648,6 +648,548 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
   }
 
+  // ════════════════════════════════════════════════════════════════════════════
+  // APPENDIX ARCHITECTURE
+  // Modular 3-appendix system added after the main report body (CA only).
+  // Each appendix begins with a full-page divider then detailed content pages.
+  // addGlobalFooters() runs after all content, so page numbers are correct.
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // ── Shared helpers ────────────────────────────────────────────────────────
+
+  /** Full-page divider card that opens each appendix. */
+  function drawAppendixDividerPage(letter: string, titleEn: string, subtitleEn: string, titleTr: string, titleZh: string) {
+    doc.addPage();
+    // Navy full-page background
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, pageHeight, "F");
+    // Subtle accent stripe (left edge)
+    doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.rect(0, 0, 6, pageHeight, "F");
+    // Giant letter watermark
+    setBoldFont();
+    doc.setFontSize(160);
+    doc.setTextColor(30, 41, 59);
+    doc.text(letter, pageWidth - margin - 5, pageHeight / 2 + 40, { align: "right" });
+    // "APPENDIX X" label
+    setBoldFont();
+    doc.setFontSize(11);
+    doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    const appendixLabel = effectiveLocale === "tr" ? `EK ${letter}` : effectiveLocale === "zh-Hans" ? `附录 ${letter}` : `APPENDIX ${letter}`;
+    doc.text(safeText(appendixLabel), margin + 10, pageHeight / 2 - 30);
+    // Title
+    setBoldFont();
+    doc.setFontSize(28);
+    doc.setTextColor(248, 250, 252);
+    const title = effectiveLocale === "tr" ? titleTr : effectiveLocale === "zh-Hans" ? titleZh : titleEn;
+    const titleLines = doc.splitTextToSize(safeText(title), contentWidth - 20);
+    titleLines.forEach((line: string, i: number) => {
+      doc.text(line, margin + 10, pageHeight / 2 - 16 + i * 14);
+    });
+    // Subtitle (English regulatory note)
+    setBaseFont();
+    doc.setFontSize(10);
+    doc.setTextColor(148, 163, 184);
+    const subLines = doc.splitTextToSize(safeText(subtitleEn), contentWidth - 20);
+    subLines.forEach((line: string, i: number) => {
+      doc.text(line, margin + 10, pageHeight / 2 + 14 + i * 7);
+    });
+    // Regulatory notice (always English for legal accuracy)
+    setBaseFont();
+    doc.setFontSize(7.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text(safeText("Regulatory content is provided in English as the official language of IRCC and provincial bodies."), margin + 10, pageHeight - 30);
+    // LogiVisa brand
+    setBoldFont();
+    doc.setFontSize(9);
+    doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.text("LogiVisa", pageWidth - margin - 10, pageHeight - 30, { align: "right" });
+    doc.addPage();
+    yPosition = 20;
+  }
+
+  /** Section heading styled for appendix pages. */
+  function appendixH1(t: string) {
+    ensurePageSpace(18);
+    setBoldFont();
+    doc.setFontSize(14);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(t), margin, yPosition);
+    yPosition += 9;
+    doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.setLineWidth(1.2);
+    doc.line(margin, yPosition, margin + 40, yPosition);
+    doc.setLineWidth(0.3);
+    yPosition += 5;
+  }
+
+  /** Sub-heading for categories inside an appendix section. */
+  function appendixH2(t: string) {
+    ensurePageSpace(12);
+    setBoldFont();
+    doc.setFontSize(10.5);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(t), margin, yPosition);
+    yPosition += 7;
+  }
+
+  /** Body paragraph with auto-wrap. */
+  function appendixBody(t: string, indent = 0) {
+    ensurePageSpace(8);
+    setBaseFont();
+    doc.setFontSize(8.5);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    const lines = doc.splitTextToSize(safeText(t), contentWidth - indent);
+    lines.forEach((line: string) => {
+      ensurePageSpace(5);
+      doc.text(line, margin + indent, yPosition);
+      yPosition += 4.8;
+    });
+    yPosition += 1;
+  }
+
+  /** Bullet point. */
+  function appendixBullet(t: string, indent = 4, bold = false) {
+    ensurePageSpace(7);
+    if (bold) setBoldFont(); else setBaseFont();
+    doc.setFontSize(8.3);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    const lines = doc.splitTextToSize(safeText(t), contentWidth - indent - 6);
+    doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.circle(margin + indent, yPosition - 1.2, 0.9, "F");
+    doc.text(lines[0] ?? "", margin + indent + 3, yPosition);
+    yPosition += 4.8;
+    if (lines.length > 1) {
+      setBaseFont();
+      lines.slice(1).forEach((l: string) => {
+        ensurePageSpace(5);
+        doc.text(l, margin + indent + 3, yPosition);
+        yPosition += 4.8;
+      });
+    }
+  }
+
+  /** Amber "pro-tip" callout box. */
+  function appendixProTip(t: string) {
+    ensurePageSpace(22);
+    const lines = doc.splitTextToSize(safeText(t), contentWidth - 16);
+    const boxH = 10 + lines.length * 4.8;
+    doc.setFillColor(255, 251, 235);
+    doc.setDrawColor(217, 119, 6);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(margin, yPosition, contentWidth, boxH, 1.5, 1.5, "FD");
+    setBoldFont();
+    doc.setFontSize(7.5);
+    doc.setTextColor(146, 64, 14);
+    doc.text(safeText("PRO TIP"), margin + 4, yPosition + 6);
+    setBaseFont();
+    doc.setFontSize(7.8);
+    doc.setTextColor(92, 40, 8);
+    lines.forEach((line: string, i: number) => {
+      doc.text(line, margin + 4, yPosition + 11 + i * 4.8);
+    });
+    yPosition += boxH + 4;
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.setLineWidth(0.3);
+  }
+
+  /** Coloured info row (key → value). */
+  function appendixInfoRow(key: string, value: string) {
+    ensurePageSpace(8);
+    const rowH = 8;
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(margin, yPosition, contentWidth, rowH, 1, 1, "FD");
+    setBoldFont();
+    doc.setFontSize(7.8);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(key), margin + 3, yPosition + 5.2);
+    setBaseFont();
+    doc.setFontSize(7.8);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.text(safeText(value), margin + 55, yPosition + 5.2);
+    yPosition += rowH + 2;
+  }
+
+  /** Checklist item with a checkbox visual. */
+  function appendixCheckItem(label: string, detail: string, priority: "critical" | "important" | "recommended" = "important") {
+    ensurePageSpace(14);
+    const accent = priority === "critical" ? { r: 220, g: 38, b: 38 } : priority === "important" ? { r: 245, g: 158, b: 11 } : { r: 22, g: 163, b: 74 };
+    // Checkbox
+    doc.setDrawColor(accent.r, accent.g, accent.b);
+    doc.setLineWidth(0.6);
+    doc.roundedRect(margin, yPosition - 0.5, 5, 5, 0.8, 0.8, "S");
+    // Label
+    setBoldFont();
+    doc.setFontSize(8.5);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(label), margin + 8, yPosition + 3.8);
+    yPosition += 6;
+    // Detail
+    setBaseFont();
+    doc.setFontSize(7.5);
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    const detailLines = doc.splitTextToSize(safeText(detail), contentWidth - 10);
+    detailLines.forEach((line: string) => {
+      ensurePageSpace(5);
+      doc.text(line, margin + 8, yPosition);
+      yPosition += 4.2;
+    });
+    yPosition += 2;
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.setLineWidth(0.3);
+  }
+
+  /** Category banner for checklist sections. */
+  function appendixCategoryBanner(title: string, icon: string) {
+    ensurePageSpace(14);
+    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.roundedRect(margin, yPosition, contentWidth, 12, 2, 2, "F");
+    setBoldFont();
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.text(safeText(`${icon}  ${title}`), margin + 5, yPosition + 8.2);
+    yPosition += 16;
+  }
+
+  /** Licensing milestone row (numbered step). */
+  function appendixMilestone(step: number, title: string, body: string, duration: string) {
+    ensurePageSpace(22);
+    // Step circle
+    doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.circle(margin + 4, yPosition + 3, 4.5, "F");
+    setBoldFont();
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text(String(step), margin + 4, yPosition + 5.5, { align: "center" });
+    // Title
+    setBoldFont();
+    doc.setFontSize(9);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(title), margin + 12, yPosition + 4.5);
+    // Duration badge
+    setBaseFont();
+    doc.setFontSize(7);
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    doc.text(safeText(`[${duration}]`), pageWidth - margin - 2, yPosition + 4.5, { align: "right" });
+    yPosition += 9;
+    // Body
+    setBaseFont();
+    doc.setFontSize(7.8);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    const bodyLines = doc.splitTextToSize(safeText(body), contentWidth - 14);
+    bodyLines.forEach((line: string) => {
+      ensurePageSpace(5);
+      doc.text(line, margin + 12, yPosition);
+      yPosition += 4.5;
+    });
+    yPosition += 4;
+  }
+
+  // ── Appendix A: Provincial Deep-Dives ────────────────────────────────────
+
+  function drawAppendixA_ProvincialDeepDives() {
+    drawAppendixDividerPage(
+      "A",
+      "Provincial Deep-Dives: Ontario, British Columbia, Alberta & Saskatchewan",
+      "Detailed stream guides, in-demand occupations, regulatory bodies, and application intelligence for Canada's four key PNP provinces.",
+      "Eyalet Derinlemesine İncelemeleri: ON, BC, AB ve SK",
+      "省份深度解析：安大略、不列颠哥伦比亚、阿尔伯塔和萨斯喀彻温"
+    );
+
+    // ── ONTARIO ────────────────────────────────────────────────────────────
+    appendixH1("Ontario (ON) — Provincial Nominee Program Deep-Dive");
+    appendixInfoRow("Program Name", "Ontario Immigrant Nominee Program (OINP)");
+    appendixInfoRow("Program Website", "ontario.ca/oinp");
+    appendixInfoRow("Key Contact", "Immigration Ontario: 1-866-214-6820");
+    appendixInfoRow("Processing Time", "Nomination: 30–90 days (stream-dependent)");
+    yPosition += 3;
+    appendixBody("Ontario is Canada's most populous province and the top destination for skilled workers, with a diversified economy anchored by finance (Bay Street), technology (MaRS Discovery District), healthcare, and advanced manufacturing. The OINP operates multiple streams aligned with the federal Express Entry system and labour market needs.");
+    yPosition += 2;
+    appendixH2("Key OINP Streams");
+    appendixBullet("Human Capital Priorities (HCP) Stream — EE-linked. Requires an active EE profile with a CRS score typically above 400. OINP proactively selects candidates from the federal pool. No job offer required. Covers NOC TEER 0, 1, 2, 3.");
+    appendixBullet("Skilled Trades Stream — For workers in specific skilled trades (NOC TEER 2/3). Requires a valid job offer from an Ontario employer and 2 years of relevant experience in the past 5 years.");
+    appendixBullet("French-Speaking Skilled Worker Stream — For francophone workers outside Quebec. No job offer needed; must demonstrate CLB 7+ in French and CLB 6+ in English.");
+    appendixBullet("Employer Job Offer — International Skilled Worker — For workers with a full-time, non-seasonal job offer from an Ontario employer in NOC TEER 0, 1, 2, or 3.");
+    appendixBullet("International Student streams — Ontario PG Work Permit, Masters Graduate, PhD Graduate streams available for graduates of Ontario institutions.");
+    yPosition += 2;
+    appendixH2("In-Demand Sectors (Ontario)");
+    appendixBullet("Financial Services & FinTech — Toronto is Canada's financial capital; CPA designation strongly valued");
+    appendixBullet("Information Technology — Software engineers, data scientists, cybersecurity specialists (TEER 1)");
+    appendixBullet("Healthcare — Registered Nurses (31301), Physicians (31102), PSWs — chronic high demand");
+    appendixBullet("Advanced Manufacturing — Automotive sector; CNC machinists, industrial engineers");
+    appendixBullet("Construction — Electricians, plumbers, carpenters — provincial trades licensing via OCOT");
+    yPosition += 2;
+    appendixH2("Regulatory Bodies (Ontario)");
+    appendixInfoRow("Physicians", "College of Physicians & Surgeons of Ontario (CPSO) — cpso.on.ca");
+    appendixInfoRow("Nurses", "College of Nurses of Ontario (CNO) — cno.org");
+    appendixInfoRow("Engineers", "Professional Engineers Ontario (PEO) — peo.on.ca");
+    appendixInfoRow("Accountants", "CPA Ontario — cpaontario.ca");
+    appendixInfoRow("Trades", "Ontario College of Trades (OCOT) — tradesecrets.ontario.ca");
+    yPosition += 2;
+    appendixProTip("Ontario's HCP stream is purely profile-driven — OINP staff proactively send Notifications of Interest (NOI) to qualifying EE candidates. Maximize your CRS before Ontario selection windows open (typically quarterly). A NOI from Ontario adds 600 CRS points — effectively guaranteeing an ITA at the next federal draw.");
+    yPosition += 4;
+
+    // ── BRITISH COLUMBIA ──────────────────────────────────────────────────
+    appendixH1("British Columbia (BC) — Provincial Nominee Program Deep-Dive");
+    appendixInfoRow("Program Name", "BC Provincial Nominee Program (BC PNP)");
+    appendixInfoRow("Program Website", "welcomebc.ca/immigrate-to-bc");
+    appendixInfoRow("Skills Immigration Registration System", "Regular weekly draws; registration score-based");
+    appendixInfoRow("Processing Time", "BC PNP nomination: 2–3 months | Full PR: ~6 months additional");
+    yPosition += 3;
+    appendixBody("British Columbia is Canada's gateway to Asia-Pacific trade and home to a rapidly expanding tech sector anchored in Vancouver. The BC PNP operates through a points-based \"Skills Immigration Registration of Interest\" (ROI) system — weekly draws select top candidates. BC's BCTECH Pilot targets tech workers specifically, often waiving job offer requirements for high-skill occupations.");
+    yPosition += 2;
+    appendixH2("Key BC PNP Streams");
+    appendixBullet("Skilled Worker stream — For workers with a full-time job offer from a BC employer. Wage and NOC TEER requirements apply. Points-based registration score.");
+    appendixBullet("Health Authority stream — Specifically for healthcare workers employed by one of BC's six health authorities. Expedited processing for nurses, physicians, allied health.");
+    appendixBullet("Express Entry BC — Skilled Worker & International Graduate — EE-linked streams. Candidates need active EE profile. Nomination adds 600 CRS.");
+    appendixBullet("BCTECH Pilot — Tech workers in 29 eligible tech NOC codes can apply with or without a job offer if they meet salary thresholds (typically CAD 72,000+ base salary).");
+    appendixBullet("International Graduate streams — BC graduates from accredited institutions; lower wage threshold; EE and non-EE pathways.");
+    yPosition += 2;
+    appendixH2("In-Demand Sectors (British Columbia)");
+    appendixBullet("Technology — Software engineers, data scientists, product managers; Vancouver is home to Amazon, Microsoft, EA, Hootsuite");
+    appendixBullet("Healthcare — RNs and allied health professionals chronic shortage across all health regions");
+    appendixBullet("Film & Entertainment — VFX artists, animators, producers (specialized NOC codes)");
+    appendixBullet("Construction & Trades — Extreme housing demand; residential electricians, carpenters, plumbers in very high demand");
+    appendixBullet("Forestry & Natural Resources — Geoscientists, forest managers, environmental technicians");
+    yPosition += 2;
+    appendixH2("Regulatory Bodies (British Columbia)");
+    appendixInfoRow("Physicians", "College of Physicians & Surgeons of BC (CPSBC) — cpsbc.ca");
+    appendixInfoRow("Nurses", "BC College of Nurses & Midwives (BCCNM) — bccnm.ca");
+    appendixInfoRow("Engineers", "Engineers & Geoscientists BC (EGBC) — egbc.ca");
+    appendixInfoRow("Accountants", "CPA British Columbia — bccpa.ca");
+    appendixInfoRow("Trades", "SkilledTradesBC — skilledtradesbc.ca");
+    yPosition += 2;
+    appendixProTip("The BCTECH Pilot is one of the only provincial streams where you can achieve nomination without a job offer. If your NOC code is in the eligible tech list and your annual salary exceeds the threshold, you can submit a registration and receive a draw invitation entirely based on merit. Check bcpnptech.gov.bc.ca for the current eligible occupation list, which is updated quarterly.");
+    yPosition += 4;
+
+    // ── ALBERTA ──────────────────────────────────────────────────────────
+    appendixH1("Alberta (AB) — Provincial Nominee Program Deep-Dive");
+    appendixInfoRow("Program Name", "Alberta Advantage Immigration Program (AAIP)");
+    appendixInfoRow("Program Website", "alberta.ca/aaip");
+    appendixInfoRow("Processing Time", "Alberta nomination: 3–6 months | Full PR: additional 6 months");
+    appendixInfoRow("Cost of Living", "No provincial income tax; lower housing costs than ON/BC");
+    yPosition += 3;
+    appendixBody("Alberta is the economic engine of Western Canada, driven by the energy sector (oil & gas, renewable energy), agriculture, and a growing diversified economy in Calgary and Edmonton. Alberta has no provincial income tax, making it the highest-effective-wage province for skilled workers. The AAIP (formerly the Alberta Immigrant Nominee Program, AINP) runs several targeted streams.");
+    yPosition += 2;
+    appendixH2("Key AAIP Streams");
+    appendixBullet("Alberta Express Entry Stream — EE-linked. AAIP proactively selects from the federal EE pool. Focus areas include healthcare, tech, engineering, skilled trades. No job offer required for some priority sectors.");
+    appendixBullet("Alberta Opportunity Stream — For workers already living and working in Alberta on a valid work permit in an eligible NOC. Pathway to permanent residence without re-entering the federal pool.");
+    appendixBullet("Rural Renewal Stream — For workers settling in designated rural Alberta communities. Lower language and income thresholds in exchange for commitment to rural residence.");
+    appendixBullet("Dedicated Healthcare Pathway — Fast-track stream for physicians, nurses, and allied health professionals. Targets critical shortage occupations; often operates with accelerated timelines.");
+    appendixBullet("Self-Employed Farmer Stream — For experienced farmers with the intention and financial ability to purchase and operate an Alberta farm.");
+    yPosition += 2;
+    appendixH2("In-Demand Sectors (Alberta)");
+    appendixBullet("Energy & Resources — Petroleum engineers, geoscientists, heavy equipment operators, pipeline workers (NOC 72xxx)");
+    appendixBullet("Healthcare — Physicians, nurses, healthcare aides — province-wide shortage, especially rural areas");
+    appendixBullet("Skilled Trades — Welders, electricians, industrial mechanics; oil sands operations require large trade workforces");
+    appendixBullet("Technology — Calgary's growing tech corridor; software developers, cybersecurity, cloud architects");
+    appendixBullet("Agriculture & Agri-food — Livestock managers, grain farmers, food processing workers");
+    yPosition += 2;
+    appendixH2("Regulatory Bodies (Alberta)");
+    appendixInfoRow("Physicians", "College of Physicians & Surgeons of Alberta (CPSA) — cpsa.ca");
+    appendixInfoRow("Nurses", "College of Registered Nurses of Alberta (CARNA) — nurses.ab.ca");
+    appendixInfoRow("Engineers", "Association of Professional Engineers & Geoscientists of Alberta (APEGA) — apega.ca");
+    appendixInfoRow("Accountants", "CPA Alberta — cpaalberta.ca");
+    appendixInfoRow("Trades", "Alberta Apprenticeship & Industry Training — alberta.ca/apprenticeship");
+    yPosition += 2;
+    appendixProTip("Alberta has no provincial income tax. A software engineer earning CAD 110,000 in Alberta takes home approximately CAD 12,000–15,000 more per year than the same salary in Ontario or BC after provincial tax. Factor this into your city selection analysis — Calgary's lower housing costs plus tax savings can significantly accelerate your financial settlement.");
+    yPosition += 4;
+
+    // ── SASKATCHEWAN ────────────────────────────────────────────────────
+    appendixH1("Saskatchewan (SK) — Provincial Nominee Program Deep-Dive");
+    appendixInfoRow("Program Name", "Saskatchewan Immigrant Nominee Program (SINP)");
+    appendixInfoRow("Program Website", "saskatchewan.ca/sinp");
+    appendixInfoRow("Expression of Interest System", "EOI pool with points-based draws");
+    appendixInfoRow("Processing Time", "Nomination: 2–4 months | Full PR: additional 6 months");
+    yPosition += 3;
+    appendixBody("Saskatchewan is a prairie province with one of Canada's fastest-growing immigrant populations. Its economy is driven by agriculture, mining (potash — world's largest exporter), oil & gas, and healthcare. The SINP is one of the most accessible PNP programs — it does not require candidates to have an active federal Express Entry profile, meaning workers can pursue provincial nomination independently.");
+    yPosition += 2;
+    appendixH2("Key SINP Streams");
+    appendixBullet("International Skilled Worker — Express Entry — EE-linked. Saskatchewan targets candidates in the federal pool whose occupation is on Saskatchewan's In-Demand Occupations List.");
+    appendixBullet("International Skilled Worker — Occupations In-Demand — Does NOT require an EE profile. Candidates with Saskatchewan work experience or a valid job offer in a qualifying occupation can apply directly. A critical pathway for workers outside the EE pool.");
+    appendixBullet("Entrepreneurs & Farm — Farm owners, business investors, and entrepreneurs with a qualifying business plan and net worth.");
+    appendixBullet("International Graduate — For graduates of Saskatchewan post-secondary institutions with a job offer in their field of study.");
+    appendixBullet("Health Professionals — Targeted recruitment of physicians and nurses to address critical provincial shortages.");
+    yPosition += 2;
+    appendixH2("In-Demand Sectors (Saskatchewan)");
+    appendixBullet("Agriculture — Farm managers, agricultural technicians, food processing supervisors; some of the best per-acre farmland on earth");
+    appendixBullet("Mining & Resources — Mining engineers, geoscientists, heavy equipment operators (potash, uranium, lithium)");
+    appendixBullet("Healthcare — Physicians (critical shortage in rural areas), RNs, LPNs");
+    appendixBullet("Skilled Trades — Heavy duty equipment mechanics, welders, power engineers — oil patch and mining support");
+    appendixBullet("Education — K-12 teachers, especially French immersion and STEM subjects");
+    yPosition += 2;
+    appendixH2("Regulatory Bodies (Saskatchewan)");
+    appendixInfoRow("Physicians", "College of Physicians & Surgeons of Saskatchewan (CPSS) — cps.sk.ca");
+    appendixInfoRow("Nurses", "Saskatchewan Registered Nurses Association (SRNA) — srna.ca");
+    appendixInfoRow("Engineers", "Association of Professional Engineers & Geoscientists of Saskatchewan (APEGS) — apegs.ca");
+    appendixInfoRow("Accountants", "CPA Saskatchewan — cpask.ca");
+    appendixInfoRow("Trades", "Saskatchewan Apprenticeship & Trade Certification Commission (SATCC) — saskapprenticeship.ca");
+    yPosition += 2;
+    appendixProTip("Saskatchewan's \"Occupations In-Demand\" stream is unique in not requiring an active Express Entry profile. This is a significant advantage for applicants with job experience in SK but lower CRS scores. If you have a Canadian employer willing to provide a job offer letter on company letterhead, you may be able to bypass the federal pool entirely and obtain a provincial nomination — then apply for PR directly through the paper-based or online IRPR process.");
+    yPosition += 4;
+  }
+
+  // ── Appendix B: Documentation Checklist ──────────────────────────────────
+
+  function drawAppendixB_DocumentationChecklist() {
+    drawAppendixDividerPage(
+      "B",
+      "Comprehensive Documentation Checklist",
+      "A category-by-category checklist covering every document required for Express Entry and PNP applications, with pro-tips on formatting, certification, and submission.",
+      "Kapsamlı Belge Kontrol Listesi",
+      "综合材料清单"
+    );
+
+    appendixH1("How to Use This Checklist");
+    appendixBody("Each item is categorized by priority: CRITICAL (application cannot proceed without it), IMPORTANT (major supporting evidence), and RECOMMENDED (strengthens your file). Begin collecting documents in parallel — many have 3–12 month lead times (especially police checks, ECA assessments, and language tests).");
+    appendixBody("All documents must be either originals, certified true copies, or officially translated by a certified translator. Photocopies, screenshots, and unofficial translations are NOT accepted by IRCC.");
+    yPosition += 4;
+
+    // CATEGORY 1: IDENTITY
+    appendixCategoryBanner("Category 1: Identity & Civil Status Documents", "ID");
+    appendixCheckItem("Valid Passport (all pages)", "Must be valid for at least 6 months beyond your intended entry date. Upload all pages including blanks. If you have prior passports, include them too — they document your travel history.", "critical");
+    appendixCheckItem("Birth Certificate", "Official government-issued birth certificate. Must be translated if not in English or French by a certified translator.", "critical");
+    appendixCheckItem("Marriage Certificate (if applicable)", "Required for spousal/common-law sponsorship. If divorced, provide divorce decree. If widowed, provide death certificate of prior spouse.", "important");
+    appendixCheckItem("National Identity Card", "For applicants from countries where national ID is the primary travel document.", "important");
+    appendixCheckItem("Change of Name Document (if applicable)", "Court order or marriage certificate showing name change. Every name on every document must be reconciled.", "important");
+    appendixCheckItem("Children's Birth Certificates (if applicable)", "For each dependent child included in the application. Include adoption orders if relevant.", "critical");
+    appendixProTip("Ensure your name appears IDENTICALLY across all documents — passport, language test, ECA, and IRCC account. Even minor differences (e.g., middle name present on one document but absent on another) can trigger processing delays or Procedural Fairness Letters. If names differ, provide an affidavit explaining the discrepancy.");
+    yPosition += 2;
+
+    // CATEGORY 2: LANGUAGE
+    appendixCategoryBanner("Category 2: Language Proficiency Evidence", "EN");
+    appendixCheckItem("IELTS General Training test results (English)", "IRCC-approved test. Valid for 2 years from test date. Minimum CLB 7 = IELTS 6.0 in each band. Higher scores add significant CRS points — CLB 9+ in all 4 skills is the gold standard for competitive CRS.", "critical");
+    appendixCheckItem("CELPIP General test results (alternate to IELTS)", "Canadian English Language Proficiency Index Program — computer-based, results in 8 business days. Valid 2 years. Accepted by IRCC as equivalent to IELTS.", "critical");
+    appendixCheckItem("TEF Canada / TCF Canada (French — if bilingual)", "Required to claim bilingual CRS bonus (+50 pts) or French category-based draw eligibility. Results valid 2 years. CLB 7 in French + NCLC 7 minimum.", "important");
+    appendixCheckItem("PTE Academic (alternate English test)", "Pearson Test of English — accepted by IRCC. Computer-marked, faster results than IELTS.", "important");
+    appendixProTip("Book your language test at least 8–12 weeks before you plan to create your EE profile. Test centers have limited seats and results take up to 13 days (IELTS paper) or 2–8 days (IELTS computer / CELPIP). You CAN retake the test and use your best results — IRCC only sees what you submit. Budget CAD 300–350 per test attempt.");
+    yPosition += 2;
+
+    // CATEGORY 3: ECA
+    appendixCategoryBanner("Category 3: Educational Credential Assessment (ECA)", "ECA");
+    appendixCheckItem("ECA Report from designated organization (WES, IQAS, etc.)", "Required for all foreign credentials used to claim CRS education points. Must be from an IRCC-designated ECA body. Results valid 5 years.", "critical");
+    appendixCheckItem("All post-secondary transcripts (official, sealed)", "Required to support the ECA application. Usually sent directly from your institution to the ECA body by mail or secure electronic transfer.", "critical");
+    appendixCheckItem("All post-secondary degree certificates / diplomas", "Originals or certified copies. Some ECA bodies require originals to be submitted.", "critical");
+    appendixCheckItem("Professional license documentation (if applicable)", "Doctors: ECFMG or MCC. Nurses: NNAS. Engineers: Engineers Canada. See Appendix C for the full licensing roadmap.", "important");
+    appendixProTip("WES (World Education Services) is the most widely accepted ECA body for Express Entry. Process takes 7–14 weeks (standard) or 5 business days (priority service — CAD 100 surcharge). Order early. For physicians, the Medical Council of Canada (MCC) and ECFMG (USA-based but accepted) are the mandatory ECA bodies — NOT WES.");
+    yPosition += 2;
+
+    // CATEGORY 4: WORK EXPERIENCE
+    appendixCategoryBanner("Category 4: Work Experience Evidence", "WX");
+    appendixCheckItem("Reference letters from all employers (paid work in the last 10 years)", "Must be on company letterhead, signed by a supervisor or HR director, and state: (1) company name/address, (2) your job title, (3) your NOC code, (4) your duties, (5) your hours per week, (6) your start and end dates, (7) your salary.", "critical");
+    appendixCheckItem("Pay stubs or salary deposits (3–6 months minimum)", "Bank statements or payroll records showing regular salary deposits. Use these to corroborate the dates and salary in your reference letters.", "critical");
+    appendixCheckItem("Employment contracts (all relevant positions)", "Original contract or letter of appointment. Supports the start date and job title claim.", "important");
+    appendixCheckItem("T4 slips or equivalent tax records (for Canadian experience)", "CRA-issued T4s confirm your Canadian work history. Critical for CEC applicants.", "critical");
+    appendixCheckItem("Corporate registration (if self-employed)", "Business registration, CRA business number, Notice of Assessment — required if claiming self-employment experience.", "important");
+    appendixCheckItem("Promotion letters / performance reviews (if available)", "Not mandatory but significantly strengthens borderline applications showing career progression.", "recommended");
+    appendixProTip("The most common cause of Express Entry refusals is inadequate reference letters. Your reference letter must explicitly list your main job duties in enough detail for an officer to map them to your NOC code. Generic letters that say 'performed duties as required' are routinely refused. Request a specific template from your employer and provide them a draft if needed — your application depends on this document.");
+    appendixProTip("If your employer refuses to provide a reference letter (common in some industries), supplement with: tax records, LinkedIn profile history, professional certifications, awards, published work, or a statutory declaration explaining why a traditional reference letter is unavailable. The more corroborating evidence, the better.");
+    yPosition += 2;
+
+    // CATEGORY 5: PROOF OF FUNDS
+    appendixCategoryBanner("Category 5: Proof of Funds", "POF");
+    appendixBody("Proof of Funds (POF) is required for FSW and FSTP applicants (not required if you have valid Canadian work authorization or a valid Canadian job offer). Funds must be unencumbered — not borrowed, not a line of credit.");
+    appendixCheckItem("Bank statements (last 6 months for primary account)", "Must show your name, account number, institution name, and transaction history for the last 6 months. Account balance must consistently meet the minimum threshold (not just on the last day).", "critical");
+    appendixCheckItem("Fixed deposit / term deposit certificates", "Must be clearly linked to your name with maturity dates. Cannot be pledged as collateral elsewhere.", "important");
+    appendixCheckItem("Investment account statements (mutual funds, GICs, stocks)", "Liquid assets accepted. Must show current balance and be accessible without penalty.", "recommended");
+    appendixCheckItem("Property valuation + outstanding mortgage (if claiming property)", "Some officers accept property equity, but this is discretionary. Liquid assets are far more reliable.", "recommended");
+    appendixProTip("IRCC 2025 POF minimums (CAD): 1 person = CAD 14,690 | 2 persons = CAD 18,288 | 3 persons = CAD 22,483 | 4 persons = CAD 27,297 | Each additional person = +CAD 3,812. These figures are updated annually every January. Bank statements must be recent — no older than 6 months from your application date. If funds are in a foreign currency, use the Bank of Canada daily exchange rate on the date of the statement.");
+    yPosition += 2;
+
+    // CATEGORY 6: ADDITIONAL
+    appendixCategoryBanner("Category 6: Police Certificates & Health Records", "PC");
+    appendixCheckItem("Police certificate from country of citizenship", "Required from every country you have lived in for 6+ months since age 18. Must be from the national police authority (not local). Valid for 1 year.", "critical");
+    appendixCheckItem("RCMP criminal record check (if you lived in Canada)", "Required if you have been in Canada on any status. Request via local police service or through an accredited fingerprinting agency. RCMP processing: 3–8 weeks.", "critical");
+    appendixCheckItem("FBI Identity History Summary (if lived in USA 6+ months)", "Request online via fbi.gov/services/cjis/identity-history-summary-checks. Processing: 8–12 weeks. Allow ample time.", "critical");
+    appendixCheckItem("Medical examination by IRCC panel physician", "Required for all PR applicants. Examination must be done by an approved panel physician. Results transmitted directly to IRCC — you receive a copy. Costs approximately CAD 200–450 per person.", "critical");
+    appendixCheckItem("Vaccination records (required for some applicants)", "Certain vaccine records may be requested. Ensure records are in English or French or have certified translation.", "important");
+    appendixProTip("Police certificates are the #1 cause of delays. Order them the moment you decide to apply — before your EE profile is even created. Some countries (India, Nigeria, Philippines, Pakistan, China, Brazil) have processing times of 4–16 weeks. The FBI check alone takes 8–12 weeks. Build this timeline into your plan. Note: Upwork/online fingerprinting services are NOT accepted; you must use a certified live-scan fingerprinting service.");
+    yPosition += 4;
+  }
+
+  // ── Appendix C: Professional Licensing Roadmap ────────────────────────────
+
+  function drawAppendixC_CredentialLicensing() {
+    drawAppendixDividerPage(
+      "C",
+      "Credential Assessment & Professional Licensing Roadmap",
+      "Step-by-step licensing pathways for Physicians, Registered Nurses, and Professional Engineers — from foreign degree to Canadian practising licence.",
+      "Mesleki Akreditasyon ve Lisanslama Yol Haritası",
+      "学历认证与职业执照路线图"
+    );
+
+    appendixH1("Why Licensing Matters for Immigration");
+    appendixBody("For regulated professions, your immigration application and your licensing process run in PARALLEL — not sequentially. Many skilled professionals make the mistake of waiting until they land in Canada to begin licensing. In reality, beginning your ECA and preliminary registration steps before you receive your PR visa can save 6–24 months of delay after arrival.");
+    appendixBody("This appendix covers the three most in-demand regulated professions: Physicians (NOC 31102), Registered Nurses (NOC 31301), and Professional Engineers (NOC 21300). Each pathway has three phases: Assessment, Registration, and Licensing.");
+    yPosition += 4;
+
+    // PHYSICIANS
+    appendixH1("Pathway 1: Physicians & Surgeons (NOC 31102)");
+    appendixInfoRow("Governing Body (Federal)", "Medical Council of Canada (MCC) — mcc.ca");
+    appendixInfoRow("Total Typical Timeline", "3–7 years from Canadian arrival to independent practice");
+    appendixInfoRow("Estimated Assessment Costs", "CAD 2,000–5,000 (exams) + CAD 1,000–3,000 (registration)");
+    appendixInfoRow("NOC TEER Level", "TEER 0 — highest skill level");
+    yPosition += 2;
+    appendixBody("Canada faces a severe physician shortage — over 6.5 million Canadians do not have a regular family doctor. This creates enormous demand for internationally educated physicians (IEPs), but the licensing pathway is rigorous and multi-stage.");
+    yPosition += 2;
+    appendixMilestone(1, "MCC Evaluating Examination (MCCQE Part I)", "Computer-based multiple-choice and clinical decision-making exam. Tests biomedical and clinical sciences. Administered in October and April at Prometric centres globally. Fee: CAD 1,455. A passing score is required before any Canadian residency application.", "Prep: 3–6 months");
+    appendixMilestone(2, "National Assessment Collaboration (NAC) Examination", "Objective Structured Clinical Examination (OSCE) testing clinical and communication skills. Administered in February and September. Fee: CAD 2,875. Required by most provincial licensing bodies as proof of clinical competence.", "Feb or Sep annually");
+    appendixMilestone(3, "Canadian Resident Matching Service (CaRMS) — or Direct Licensing", "Most IEPs must match to a Canadian residency program through CaRMS (carms.ca). Alternatively, some provinces offer \"practice-ready assessments\" (PRA) for direct entry to supervised practice, particularly in underserved regions. AB, SK, and MB are most accessible for direct-entry PRAs.", "Applications: Sep–Nov");
+    appendixMilestone(4, "Provincial Regulatory Body Registration", "Apply to your provincial college (CPSO in Ontario, CPSBC in BC, CPSA in Alberta, etc.). Submit: MCC exam scores, NAC scores, medical degree, reference letters from supervisors, and good standing certificate from home regulatory body. Obtain a Postgraduate Education Certificate or Independent Practice Licence.", "4–8 weeks processing");
+    appendixMilestone(5, "Continuing Medical Education (CME) & Fellowship (optional)", "Consider Royal College of Physicians and Surgeons of Canada (RCPSC) Fellowship for specialist recognition. Fellowship requires additional residency in specialty (2–5 years post-MD).", "2–5 years (optional)");
+    yPosition += 2;
+    appendixProTip("Apply for the MCC Physician Credentials Repository (MCCPCR) immediately after deciding to immigrate to Canada. This credential repository stores your verified documents and is required by all provincial colleges. Starting this process before you leave your home country saves 6–12 months on arrival. Budget: The full licensing journey from MCCQE registration to independent practice costs approximately CAD 8,000–18,000 in fees, exam prep, and registration costs.");
+    yPosition += 4;
+
+    // NURSES
+    appendixH1("Pathway 2: Registered Nurses (NOC 31301)");
+    appendixInfoRow("Governing Body (National Assessor)", "National Nursing Assessment Service (NNAS) — nnas.ca");
+    appendixInfoRow("Provincial Licensing Bodies", "CNO (ON), BCCNM (BC), CARNA (AB), SRNA (SK)");
+    appendixInfoRow("Total Typical Timeline", "9–24 months from initial application to practising registration");
+    appendixInfoRow("Estimated Assessment Costs", "CAD 650 (NNAS) + CAD 360 (NCLEX) + CAD 300–550 (provincial registration)");
+    yPosition += 2;
+    appendixBody("Nursing is one of the most in-demand professions in all of Canada. All provinces have extended eligibility criteria and created expedited pathways for internationally educated nurses (IENs). Canada registered over 19,000 new nurses in 2023 — a significant proportion from the Philippines, India, Nigeria, and Kenya.");
+    yPosition += 2;
+    appendixMilestone(1, "NNAS Application & Document Submission", "Submit application at nnas.ca. NNAS collects and verifies your foreign nursing credentials including nursing diploma/degree, registration history, nursing council validation, language test results, and references. Fee: CAD 650 application + CAD 200–400 credential source fees.", "6–16 weeks");
+    appendixMilestone(2, "NNAS Advisory Report Issued", "NNAS issues an Advisory Report summarizing your education and experience against Canadian standards. This report is then submitted to your target provincial regulatory body. It identifies any gaps (missing clinical hours, additional coursework requirements).", "4–8 weeks after docs");
+    appendixMilestone(3, "Provincial Regulatory Body Assessment", "Submit the NNAS Advisory Report to your target province's nursing college. The college may require: additional bridging education, supervised clinical hours, or English language upgrading depending on identified gaps. Apply for registration status.", "8–16 weeks");
+    appendixMilestone(4, "NCLEX-RN Licensing Examination", "The National Council Licensure Examination (NCLEX-RN) is the standardized exam used across Canada (except Quebec). Computer-adaptive test: 85–145 questions. Fee: USD 200 (approximately CAD 270). You must receive ATT (Authorization to Test) from your provincial college before booking.", "After college approval");
+    appendixMilestone(5, "Full Registration & First Job", "Once you pass NCLEX-RN, your provincial college issues your full General Class RN registration. You can now practise independently anywhere in Canada (except Quebec which uses OIIQ and its own exam).", "Within 2–4 weeks");
+    yPosition += 2;
+    appendixProTip("Saskatchewan (SRNA) and Manitoba (CRNM) currently offer the fastest IEN registration pathways — typically 9–14 months total versus 18–24 months in Ontario or BC. If you are flexible about your first province of practice, consider Saskatchewan as your landing province, obtain your registration, gain 1–2 years of Canadian nursing experience, and then apply for transfer registration in Ontario or BC under the mutual recognition arrangements.");
+    yPosition += 4;
+
+    // ENGINEERS
+    appendixH1("Pathway 3: Professional Engineers / Engineers (NOC 21300)");
+    appendixInfoRow("Governing Body (National Framework)", "Engineers Canada — engineerscanada.ca");
+    appendixInfoRow("Provincial Associations", "PEO (ON), EGBC (BC), APEGA (AB), APEGS (SK)");
+    appendixInfoRow("Total Typical Timeline", "3–6 years from Canadian arrival to full P.Eng. licence");
+    appendixInfoRow("Annual Licensing Fee", "CAD 200–500 per year depending on province and registration level");
+    yPosition += 2;
+    appendixBody("Professional Engineering licensure in Canada is a provincial responsibility administered by self-governing associations. The P.Eng. (Professional Engineer) designation grants legal authority to sign engineering drawings and take professional responsibility for engineering work in Canada. It is legally required for many senior engineering roles.");
+    yPosition += 2;
+    appendixMilestone(1, "Educational Credential Assessment (ECA)", "Apply to Engineers Canada (National Examination Program — NExT) or an equivalent provincial body. Submit transcripts, course descriptions, syllabus documents, and degree certificates. The association assesses equivalency of your foreign engineering degree to a CEAB-accredited Canadian degree. Non-CEAB degrees require additional technical exams.", "3–8 months");
+    appendixMilestone(2, "Provisional / Engineering-in-Training (EIT) Registration", "Register with your provincial association as an EIT or Provisional Member immediately upon landing. EIT status allows you to practise engineering under the supervision of a P.Eng. Begin accumulating supervised engineering experience. Fee: CAD 100–250 initial registration.", "Apply upon arrival");
+    appendixMilestone(3, "Canadian Work Experience (48 months minimum)", "Accumulate a minimum of 48 months (4 years) of acceptable engineering experience. At least 12 months must be in Canada under Canadian Professional Supervision. Document experience using the association's Experience Record System (ERS) or equivalent.", "4 years supervised");
+    appendixMilestone(4, "Professional Practice Exam (PPE) / NPPE", "National Professional Practice Exam (NPPE) tests knowledge of Canadian law, engineering ethics, and professional responsibility. Fee: CAD 200. Pass mark is 65%. EGBC (BC) administers a slightly different exam (NPPE). Available multiple times per year.", "Study: 2–4 weeks");
+    appendixMilestone(5, "P.Eng. Licence Application & Peer Assessment", "Apply for full P.Eng. licensure through your provincial association. The application includes: 5 engineering references (at least 3 must be P.Engs), your completed ERS log, NExT results, NPPE pass certificate, and fee (CAD 300–600). An interview may be required for borderline applications.", "8–16 weeks review");
+    yPosition += 2;
+    appendixProTip("If your ECA identifies technical exam requirements (typically 1–8 exams depending on your degree), begin studying immediately. These are university-level exams in subjects like Thermodynamics, Structural Analysis, or Electrical Circuits. Many applicants take 1–2 years to complete all required exams. PEO's PEAK program (Professional Experience and Assessment for Engineers) offers bridge-to-licensure support including mentorship. Budget 1–3 years to address technical exam requirements before even starting the 48-month experience clock.");
+    appendixProTip("Engineering disciplines with critical shortage in Canada (2025): Civil/Structural (major infrastructure investment), Electrical/Power (EV transition, grid modernization), Software (qualifies under a separate Computer Engineering stream in some provinces), and Petroleum (AB/SK resource extraction). Consider targeting a province whose in-demand list aligns with your engineering specialty — this improves both immigration prospects and job placement speed.");
+    yPosition += 4;
+  }
+
+  // ── Master orchestrator ───────────────────────────────────────────────────
+
+  function drawAppendixSection() {
+    if (report.country !== "CA") return;
+    drawAppendixA_ProvincialDeepDives();
+    drawAppendixB_DocumentationChecklist();
+    drawAppendixC_CredentialLicensing();
+  }
+
   function addViralCTABanner() {
     const cta = PDF_VIRAL_CTA[effectiveLocale];
     const bannerHeight = 28;
@@ -2510,6 +3052,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     url: "mailto:hello@logivisa.com?subject=Beta%20Feedback%20-%20Visa%20Readiness%20Report",
   });
   yPosition += 5;
+
+  // ── Appendix Architecture (CA only) ─────────────────────────────────────
+  if (report.country === "CA") drawAppendixSection();
 
   // Viral CTA banner on final page
   addViralCTABanner();
