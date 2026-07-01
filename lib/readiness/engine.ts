@@ -1696,19 +1696,33 @@ function buildCanadaOccupationIndication(
   if (isDirectSelection && topMatch) {
     const duties = topMatch.duties ?? [];
     const dutiesText = duties.length
-      ? (isTr
-          ? ` ECA/IRCC değerlendirmesinde doğrulanması gereken temel görevler: ${duties.map((d, i) => `(${i + 1}) ${d}`).join("; ")}.`
-          : ` Key duties the ECA/IRCC assessment must verify: ${duties.map((d, i) => `(${i + 1}) ${d}`).join("; ")}.`)
+      ? ` ECA valuation strategy — your reference letters must explicitly document these NOC-defined duties: ${duties.map((d, i) => `(${i + 1}) ${d}`).join("; ")}.`
       : "";
-    const skillLabel = topMatch.teer <= 1 ? (isTr ? "Yüksek Vasıflı" : "High-Skilled") : topMatch.teer <= 3 ? (isTr ? "Orta Vasıflı" : "Mid-Skilled") : (isTr ? "Düşük Vasıflı" : "Lower-Skilled");
+    const skillLabel = topMatch.teer <= 1 ? "High-Skilled (TEER 0–1)" : topMatch.teer <= 3 ? "Mid-Skilled (TEER 2–3)" : "Lower-Skilled (TEER 4–5)";
     const pathways = `CEC/FSW${topMatch.isFstpEligibleGroup ? "/FSTP" : ""}`;
+    // ECA body recommendation based on major group / NOC code prefix
+    const mg = topMatch.code.slice(0, 2);
+    let ecaBody: string;
+    if (mg === "31" || mg === "32" || mg === "33" || topMatch.code.startsWith("301") || topMatch.code.startsWith("302")) {
+      ecaBody = "IRCC-designated ECA body: Medical Council of Canada (MCC) for physicians (NOC 31100); National Nursing Assessment Service (NNAS) for nurses; relevant regulatory body per profession (e.g., Canadian Dental Association for dentists). Note: healthcare professionals may be required to obtain provincial licensure in addition to the federal ECA.";
+    } else if (mg === "21" || mg === "22") {
+      ecaBody = "IRCC-designated ECA body: Engineers Canada (for professional engineers, P.Eng. pathway) or World Education Services (WES) for general engineering technology credentials. Note: Canadian provincial engineering associations (e.g., PEO in Ontario, APEGA in Alberta) govern licensure separately from the federal ECA — budget 6–18 months for full professional engineering recognition.";
+    } else if (mg === "11" || mg === "12" || mg === "13") {
+      ecaBody = "IRCC-designated ECA body: CPA Canada (Chartered Professional Accountants) for accounting credentials; WES or ICAS for general business/finance credentials. CPA Canada's Prior Learning Assessment (PLA) may require additional bridging modules depending on your home country's accounting framework.";
+    } else if (mg === "21" || topMatch.code.startsWith("211") || topMatch.code.startsWith("212") || topMatch.code.startsWith("213")) {
+      ecaBody = "IRCC-designated ECA body: World Education Services (WES) for most IT/computer science credentials; ICAS also accepted. WES standard report costs CAD $239–$285 (7–20 business days). For ACS-style assessments, note that Canada and Australia use different bodies — WES is the correct choice for Canadian Express Entry, not ACS.";
+    } else if (mg === "51" || mg === "52" || mg === "53" || mg === "54" || mg === "55") {
+      ecaBody = "IRCC-designated ECA body: World Education Services (WES) for arts, education, and social science credentials. Some education credentials (teachers) may additionally require provincial teacher certification, which is separate from the federal ECA and managed by provincial bodies such as the Ontario College of Teachers (OCT).";
+    } else {
+      ecaBody = "IRCC-designated ECA body: World Education Services (WES) is accepted for most occupations under FSW/CEC; ICAS (International Credential Assessment Service of Canada) is also an approved IRCC ECA provider. Cost: WES CAD $239–$285 (standard, 7–20 business days); ICAS CAD $200–$300. ECA validity: 5 years from report date.";
+    }
     note = isTr
-      ? `NOC Kodu doğrulandı: ${topMatch.code} — ${topMatch.title} (TEER ${topMatch.teer} / ${skillLabel}). ${pathways} başvurularına uygun olabilir.${dutiesText} Resmi ECA değerlendirmesi ayrı bir adımdır.`
-      : `NOC Code confirmed: ${topMatch.code} — ${topMatch.title} (TEER ${topMatch.teer} / ${skillLabel}). May qualify for ${pathways}.${dutiesText} A formal ECA assessment is a separate step.`;
+      ? `NOC Kodu doğrulandı: ${topMatch.code} — ${topMatch.title} (TEER ${topMatch.teer} / ${skillLabel}). ${pathways} yollarına uygun olabilir.${dutiesText} ECA değerlendirme kurumu: ${ecaBody}`
+      : `NOC Code confirmed: ${topMatch.code} — ${topMatch.title} (TEER ${topMatch.teer} / ${skillLabel}). May qualify for ${pathways}.${dutiesText} ${ecaBody}`;
   } else {
     note = isTr
       ? `NOC verilerinde ${result.matches.length} olasi meslek eslesmesi bulundu (TEER ${topMatch?.teer ?? "?"}). Bu yalnizca genel bilgi amaclidir; resmi bir ECA veya NOC dogrulamasi ayri bir suractir.`
-      : `${result.matches.length} possible NOC match(es) found (TEER ${topMatch?.teer ?? "?"}). This is general information only; an official ECA or NOC verification is a separate step.`;
+      : `${result.matches.length} possible NOC match(es) found in NOC 2021 V1.0 (TEER ${topMatch?.teer ?? "?"}). This is general information only; the confirmed NOC code, ECA body selection, and duty-matching strategy require verification against your specific credentials and IRCC's current requirements.`;
   }
 
   return {
@@ -2232,7 +2246,7 @@ function buildPointsBoosterSimulator(
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 20,
       explanation: isTr
         ? "Avustralya puan tablosunda Competent (6.0) yerine Superior (8.0+) İngilizce, tüm dört bantta elde edildiğinde +20 puan ekler. IELTS 8.0+ her bantta Superior ile eşleşir. Bu, noktaların artırılması için en yüksek getirili tek senaryodur."
-        : "In the Australian points test, upgrading from Competent English (IELTS 6.0) to Superior English (IELTS 8.0+ in all bands) adds exactly +20 points. This is the highest single-factor gain available and is cost-effective given that a single IELTS attempt already covers the language requirement.",
+        : "Under Schedule 6A of the Migration Regulations 1994, English proficiency points are: Competent (IELTS 6.0 in all four bands) = 0 bonus points; Proficient (IELTS 7.0) = +10 points; Superior (IELTS 8.0+ in all four bands) = +20 points. Upgrading from Competent to Superior adds exactly +20 points — the largest single-factor improvement in the entire Australian points test. A single low band score (e.g., Speaking 7.5) means you miss Superior and receive only Proficient points, so target all four bands at 8.0+. PTE Academic 79+ across all communicative skills or OET Grade B in all sections also qualifies as Superior. Superior English also provides priority ranking in several state 190 nomination programs.",
     });
   } else if (englishOption === "proficient") {
     scenarios.push({
@@ -2243,7 +2257,7 @@ function buildPointsBoosterSimulator(
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 10,
       explanation: isTr
         ? "Proficient'ten (IELTS 7.0) Superior'a (IELTS 8.0+) geçiş +10 puan ekler. Dört bantta 8.0+ elde etmek zor olabilir; ancak bazı yollar için birikimsel olarak puan avantajı sağlar."
-        : "Moving from Proficient English (IELTS 7.0 in all bands) to Superior (IELTS 8.0+ in all bands) adds exactly +10 points to the Australian points test. Achieving 8.0+ across all four skills is demanding but valuable for competitive occupations.",
+        : "Moving from Proficient English (+10 points at IELTS 7.0 in all bands) to Superior (+20 points at IELTS 8.0+ in all bands) adds exactly +10 points. Achieving 8.0+ simultaneously in all four bands is demanding, particularly Writing and Speaking. Targeted preparation with IELTS coaches is advisable. PTE Academic 79+ in all communicative skills also qualifies as Superior. A single successful IELTS resit (~AUD $385) that achieves 8.0+ across all bands returns +10 points at zero ongoing cost — high ROI.",
     });
   }
 
@@ -2256,7 +2270,7 @@ function buildPointsBoosterSimulator(
     resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
     explanation: isTr
       ? "NAATI Toplum Dili Sertifikası (CCL), nitelikli kişilere +5 bonus puan sağlar. Bu sınav, adayların bir toplum dilini (örn. Türkçe, Mandarin, Arapça) yeterli bir düzeyde kullanabildiğini kanıtlamasını gerektirir. Sınavda iki 300 kelimelik diyalogun çevirisi yapılır."
-      : "The NAATI Community Languages Credential (CCL) awards +5 bonus points to eligible applicants. It tests the ability to translate a dialogue between English and a specified community language (e.g., Mandarin, Arabic, Vietnamese, Turkish) at a functional level. Two 300-word dialogues must be translated in the exam.",
+      : "The NAATI Community Languages Credential (CCL), if obtained on or after 8 July 2019, awards exactly +5 bonus points (Schedule 6A). The exam tests oral translation of two 300-word dialogues between English and a specified community language (e.g., Mandarin, Cantonese, Turkish, Arabic, Vietnamese, Hindi, Korean). Pass rate is approximately 50%, so structured preparation with a CCL coach is strongly recommended. Cost: ~AUD $700–$800 per attempt. The credential is valid for 3 years. For candidates whose first language appears on the supported list, the CCL is one of the fastest +5 points available — typical preparation time is 4–8 weeks.",
   });
 
   // Professional Year: +5 points
@@ -2268,7 +2282,19 @@ function buildPointsBoosterSimulator(
     resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
     explanation: isTr
       ? "Avustralya'da muhasebe, BT veya mühendislik alanında tamamlanan Mesleki Yıl programı +5 bonus puan ekler. Program genellikle 12 ay sürer ve yaklaşık AUD 7,000–10,000 maliyeti vardır. Yalnızca Avustralya'daki son mezunlar veya uluslararası mezunlar için geçerlidir."
-      : "Completing an Australian Professional Year program in accounting, IT, or engineering adds +5 bonus points. The program is 12 months long (~AUD 7,000–10,000 cost) and is open to recent graduates in Australia. It also develops Australian workplace skills and a local network, which can assist employment in the 189/190/491 pathways.",
+      : "Completing an Australian Professional Year (PY) program in accounting, IT, or engineering adds exactly +5 bonus points. The program runs for 44 weeks: 36 weeks structured training + 8 weeks workplace internship. Cost: ~AUD $7,000–$10,000 depending on provider. Open to international graduates currently in Australia on a valid visa. Approved providers: IT → ACS-approved institutions; Accounting → FPA, CPA Australia, or ICAA-affiliated programs; Engineering → Engineers Australia-approved providers. The 8-week internship must be with a registered Australian employer in the relevant field. The PY also satisfies the '12 months Australian study' criterion some state 190 programs require for onshore applicants. It additionally builds a local professional network and Australian workplace references — both valuable for post-visa employment.",
+  });
+
+  // Partner/single applicant factor: +10 points
+  scenarios.push({
+    label: isTr
+      ? "Tek başvurucu veya becerili partner (partner faktörü) — +10 puan"
+      : "Single applicant or partner with skilled qualifications + Competent English — +10 points",
+    estimatedChange: 10,
+    resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 10,
+    explanation: isTr
+      ? "Partner faktörü Schedule 6A altında iki durumda +10 puan verir: (1) Başvurucu bekar veya partneri Avustralya vatandaşı/PR sahibiyse; (2) Partnerin hem pozitif beceri değerlendirmesi hem de Competent İngilizce (IELTS 6.0+) koşullarını sağlaması. Eş adaylarınızı optimize edin: partner şartları karşılayamazsa, onu başvuruya dahil etmemek puan avantajı sağlayabilir."
+      : "The 'partner factor' in Schedule 6A awards +10 points in two scenarios: (1) the applicant is single, OR their partner is an Australian citizen or permanent resident; (2) the partner holds a valid positive skills assessment from an Australian assessing authority AND meets Competent English (IELTS 6.0 in all four bands). If the partner cannot satisfy both criteria, the partner factor score is 0 — including a non-qualifying partner costs 10 points compared to applying as single. Strategic decision: if your partner cannot obtain a skills assessment or pass IELTS in time, it may be more point-efficient to apply as a de-facto single (not including them in the application). Confirm with a Registered Migration Agent before lodging.",
   });
 
   // 190 State nomination: +5 points
@@ -2281,7 +2307,7 @@ function buildPointsBoosterSimulator(
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
       explanation: isTr
         ? "190 eyalet/bölge adaylığı +5 puan ekler. Bazı eyaletlerde (örn. Victoria, NSW) mevcut çekilişlerin 75-80 puan bandında olduğu bildirilmiştir; adaylık bu eşiği aşmak için belirleyici olabilir. Her eyalet kendi meslek listesini yönetir."
-        : "State or Territory nomination for subclass 190 adds +5 points. Recent 190 draws in competitive states like NSW and Victoria have landed between 75–80 points. The nomination can be the deciding factor that makes a profile competitive. Each state manages its own occupation-specific invitation rounds (SOL-based or targeted).",
+        : "State or Territory nomination for subclass 190 adds exactly +5 points to the points test and is a mandatory visa requirement. It also carries a 2-year obligation to live and work in the nominating state. Recent 190 invitation thresholds: NSW 75–80 points; Victoria 75–80 points; Queensland 70–75 points; South Australia 65+ points; Western Australia 65+ points. Each state maintains its own Skilled Occupation List (SOL) which changes periodically. Smaller states (South Australia, Tasmania) typically operate with lower demand thresholds and faster turnaround times (4–8 weeks vs 12–16 weeks for NSW/VIC). Submit your EOI in SkillSelect then apply for state nomination — never pay third parties for 'guaranteed' state nomination.",
     });
   }
 
@@ -2295,7 +2321,7 @@ function buildPointsBoosterSimulator(
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 15,
       explanation: isTr
         ? "491 adaylığı (eyalet/bölge) veya uygun bir akraba sponsoru (Kategori 2-3 posta kodunda yaşayan) +15 puan ekler. Bu, mevcut puana eklenir ve çoğu meslek için rekabetçi bir konuma taşıyabilir. 491 vizesi 5 yıl sürelidir; sahipler PR'a geçmek için bölgede oturmalı ve çalışmalıdır."
-        : "491 nomination (state/territory pathway) or sponsorship by an eligible relative living in a Specified Regional Area adds +15 points to the points test. This is the largest single bonus available in the SkillSelect system and can transform a borderline 189 profile into a competitive 491 candidate. Post-491 PR pathway is via subclass 191 after 3 years.",
+        : "491 nomination (state/territory pathway) or sponsorship by an eligible relative living in a Specified Regional Area adds exactly +15 points — the largest single bonus in the SkillSelect points test. This can transform a borderline 65-point 189 profile into a competitive 80-point 491 candidate. The 491 is a provisional visa valid for 5 years; holders must live and work in a regional area for at least 3 years and meet an income threshold (~AUD $53,900/year) before applying for PR via Subclass 191. Active 491-nominating states include New South Wales (occupations outside Sydney), South Australia, Tasmania, and Northern Territory. Regional postcode categories 2 and 3 include cities such as Newcastle, Wollongong, Geelong, the Gold Coast hinterland, and all of regional Western Australia.",
     });
   }
 
@@ -2308,7 +2334,7 @@ function buildPointsBoosterSimulator(
     resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
     explanation: isTr
       ? "Avustralya'nın bölgesel bir bölgesinde (Kategori 2 veya Kategori 3 posta kodu) en az 2 yıllık kayıtlı öğrenim tamamlanması +5 bonus puan sağlar. Yalnızca 1 Ocak 2018 veya sonrasında başlayan öğrenim için geçerlidir."
-      : "Completing at least 2 years of registered study in a regional area of Australia (Category 2 or Category 3 postcode under the ABS classification) adds +5 bonus points. This only applies to study that commenced on or after 1 January 2018 and does not apply to online study.",
+      : "Completing at least 2 years of registered full-time study at an institution in a Category 2 or Category 3 postcode (ABS geographic classification) adds exactly +5 bonus points, provided study commenced on or after 1 January 2018. This excludes Sydney, Melbourne, Brisbane, Perth, and Adelaide campuses. Eligible regional universities include University of Wollongong, University of Newcastle, Deakin University (Waurn Ponds), Charles Sturt University, University of Southern Queensland, and others. Both bachelor's and postgraduate (master's or PhD) degrees qualify. Study undertaken entirely online does not qualify, even if the institution is regionally based.",
   });
 
   if (ageOption === "18_24") {
@@ -2382,60 +2408,78 @@ function buildFinancialRoadmap(
 
   const items: FinancialRoadmapItem[] = [
     {
-      category: isTr ? "Devlet başvuru ücreti" : "Government application charge",
+      category: isTr ? "Devlet başvuru ücreti (Visa Application Charge)" : "Government Visa Application Charge (VAC)",
       estimateType: "official_fee",
       amountLabel: govFeeLabel,
       explanation: isTr
-        ? "Resmi devlet ücretleri ve tahmini üçüncü taraf maliyet kategorileri. Ücretler değişebilir; resmi kaynaklar incelenmelidir."
-        : "Official government fees and estimated third-party cost categories. Fees may change; official sources should be reviewed.",
+        ? "Avustralya Ev İdaresi'ne ödenen resmi başvuru ücreti, geçici veya kalıcı vize türüne göre değişir. 189/190/491 ücretleri kişi başıdır: ana başvurucu (AUD 4,910), 18 yaş ve üzeri bağımlılar (AUD 4,910 her biri), 18 yaş altı çocuklar (AUD 1,230 her biri). Bu ücretler Avustralya hükümeti tarafından düzenli olarak güncellenir. Ödeme, başvuru ImmiAccount'a sunulduğunda banka kartı veya kredi kartıyla yapılabilir."
+        : "The official charge paid to the Australian Department of Home Affairs. For skilled independent (189), state-nominated (190), and regional (491) visas, the main applicant fee is AUD $4,910; each secondary applicant aged 18+ also pays AUD $4,910; dependants under 18 pay AUD $1,230 each. These charges are indexed periodically by the Australian government and must be verified before lodgement. Payment is made via credit/debit card at the time of online application through ImmiAccount.",
     },
     {
-      category: isTr ? "İngilizce test maliyet kategorisi" : "English test cost category",
+      category: isTr ? "İngilizce Dil Testi (IELTS / PTE / OET)" : "English Language Test (IELTS / PTE / OET)",
       estimateType: "third_party_estimate",
-      amountLabel: variable,
+      amountLabel: isTr
+        ? "AUD 385–590 (teste ve lokasyona göre)"
+        : "AUD $385–$590 (varies by test and location)",
       explanation: isTr
-        ? "Test sağlayıcısı, lokasyon ve tekrar sayısı maliyeti etkileyebilir."
-        : "Provider, location, and repeat attempts can affect this cost category.",
+        ? "Avustralya göçü için kabul edilen testler şunlardır: IELTS Academic veya General Training (~AUD 385–405), PTE Academic (~AUD 375–395), OET (Occupational English Test, sağlık meslekleri için, ~AUD 587), TOEFL iBT (~AUD 340–390, bazı akışlar için kabul edilir). Competent English için genel eşikler: IELTS her bantta minimum 6.0, PTE her bantta minimum 50. Superior English (IELTS 8.0+) puan tablosunda +20 ek puan sağlar. Sınavlar 2 yıldan uzun süre önce alınmışsa yenilenmesi gerekir."
+        : "Tests accepted for Australian migration include: IELTS Academic or General Training (~AUD $385–$405 per attempt), PTE Academic (~AUD $375–$395), OET (Occupational English Test, used by healthcare occupations, ~AUD $587), and TOEFL iBT (~AUD $340–$390, accepted for some streams). Minimum Competent English thresholds: IELTS 6.0 in all four bands, PTE 50 in all bands. Achieving Superior English (IELTS 8.0+ in all four bands or PTE 79+) unlocks +20 additional points in the Australian points test — a significant investment if retesting is needed. Scores must be no more than 3 years old at time of visa grant.",
     },
   ];
 
   if (hasSkilled || has482) {
     items.push({
-      category: isTr ? "Beceri değerlendirmesi (assessing authority'ye göre)" : "Skills assessment (by assessing authority)",
+      category: isTr ? "Beceri Değerlendirmesi (Assessing Authority'ye göre)" : "Skills Assessment (by Assessing Authority)",
       estimateType: "third_party_estimate",
       amountLabel: isTr
-        ? "AUD 530–1,000+ (kuruma ve mesleğe göre)"
-        : "AUD $530–$1,000+ (varies by authority and occupation)",
+        ? "AUD 530–900+ (kuruma ve mesleğe göre)"
+        : "AUD $530–$900+ (varies by authority and occupation)",
       explanation: isTr
-        ? "Değerlendirme kurumu mesleğe göre değişir. BT/ICT: ACS (AUD 530–665); İnşaat/Mühendislik: Engineers Australia (AUD 735–900); Sağlık: AHPRA (AUD 890+); Muhasebe: CPA Australia / CAANZ (AUD 600–800); Genel meslekler: VETASSESS (AUD 850). Değerlendirme genellikle 4–12 hafta sürer ve eğitim + iş deneyimi belgelerini kapsar."
-        : "The assessing authority depends on the occupation: IT/ICT roles → ACS (AUD $530–$665); Engineering → Engineers Australia (AUD $735–$900); Healthcare → AHPRA (AUD $890+); Accounting → CPA Australia / CAANZ / IPA (AUD $600–$800); General professional occupations → VETASSESS (AUD $850). The assessment typically takes 4–12 weeks and requires certified copies of qualifications and employment evidence.",
+        ? "Değerlendirme kurumu ANZSCO meslek koduna göre belirlenir: BT/ICT rolleri (ANZSCO Major Group 26) → ACS (AUD 530–665, 6–12 hafta); Mühendislik → Engineers Australia (AUD 735–900, 4–10 hafta); Sağlık meslekleri → AHPRA (AUD 890+, lisans gereklidir); Muhasebe → CPA Australia, CAANZ veya IPA (AUD 600–800); Genel meslekler → VETASSESS (AUD 850, 10–16 hafta). Değerlendirme genellikle noterli belge kopyaları, iş referans mektupları ve resmi transkriptleri kapsar. ACS değerlendirmeleri için, son 8 yıl içinde en az 1 yıl BT ile ilgili iş deneyimi zorunludur. Bazı değerlendirme kurumları tekrar başvuru için indirimli ücret uygular."
+        : "The assessing authority is determined by your ANZSCO occupation code: IT/ICT roles (ANZSCO Major Group 26) → ACS (AUD $530–$665, 6–12 weeks); Engineering → Engineers Australia (AUD $735–$900, 4–10 weeks); Healthcare professions → AHPRA (AUD $890+, requires registration); Accounting → CPA Australia, CAANZ, or IPA (AUD $600–$800); General professional and trade occupations → VETASSESS (AUD $850, 10–16 weeks). All assessments require certified copies of qualifications, official transcripts, and detailed employment reference letters specifying duties, dates, and hours worked. ACS requires a minimum of 1 year of relevant IT work experience in the past 8 years. Negative assessment outcomes can be challenged or a re-assessment sought, which incurs additional fees (typically 50–80% of the original charge).",
     });
   }
 
   items.push(
     {
-      category: isTr ? "Sağlık kontrolleri / polis belgeleri" : "Health checks / police certificates",
-      estimateType: "variable",
-      amountLabel: isTr ? "Değişken / ülke ve sağlayıcıya bağlı" : "Variable / depends on country and provider",
+      category: isTr ? "Sağlık Muayenesi (eMedical)" : "Health Examination (eMedical)",
+      estimateType: "third_party_estimate",
+      amountLabel: isTr
+        ? "AUD 300–500+ (yaşa ve ülkeye göre, kişi başı)"
+        : "AUD $300–$500+ (per person, varies by age and country of residence)",
       explanation: isTr
-        ? "Kişisel geçmiş ve başvuru yeri maliyet kategorisini değiştirebilir."
-        : "Personal history and application location may change this cost category.",
+        ? "Her başvurucu IRCC tarafından onaylı bir Göçmen Sağlık Hizmeti (IHS) kliniğinde eMedical muayenesi yaptırmalıdır. Çocuklar ve gençler daha düşük ücretle muayene olabilir. Muayene akciğer röntgeni, kan testi ve genel fizik muayeneyi kapsar. Geçerlilik süresi 12 aydır. Mevcut TB salgını olan ülkelerden gelenler ek testlerden geçebilir."
+        : "Every applicant must complete a medical examination at an IRCC-approved Immigration Health Services (IHS) panel physician clinic. Indicative costs: adults AUD $300–$400; children under 15 approximately AUD $150–$250. The examination includes a chest X-ray (for applicants 11+), blood tests, and a general physical assessment. Medical results are electronically transmitted to the Department of Home Affairs via the eMedical system — there is no paper report to submit. Results are valid for 12 months. Applicants from tuberculosis-prevalent countries may require additional chest monitoring, extending the process by 6–12 months.",
     },
     {
-      category: isTr ? "Çeviri / belge hazırlığı" : "Translation / document preparation",
-      estimateType: "variable",
-      amountLabel: isTr ? "Değişken / belge sayısına bağlı" : "Variable / depends on document volume",
+      category: isTr ? "Polis Belgesi / Karakter Belgeleri" : "Police Clearance Certificates",
+      estimateType: "third_party_estimate",
+      amountLabel: isTr
+        ? "AUD 42–200+ (ülkeye göre, kişi başı)"
+        : "AUD $42–$200+ (per person, varies by country)",
       explanation: isTr
-        ? "İngilizce olmayan belgeler ve belge sayısı maliyeti etkileyebilir."
-        : "Non-English documents and document volume can affect this cost category.",
+        ? "18 yaş ve üzeri her başvurucu, son 12 ayda ikamet ettiği ve 12 ayı aşan süreyle yaşadığı her ülke için polis belgesi sunmalıdır. Avustralya Federal Polis (AFP) belgesi: AUD 42 (online). Her ülkenin kendi belgesi, süreç ve maliyeti vardır; bazı ülkelerde noterlendirme ve resmi çeviri gerekebilir. Bazı ülkeler için belgeler haftalar içinde hazırlanırken, diğerleri için 3–6 ay sürebilir. Mümkün olduğunca erken başlatılması önerilir."
+        : "Every applicant aged 18+ must provide police clearance certificates for every country where they have lived for 12 months or more in the past 10 years (for skilled visas). The Australian Federal Police (AFP) check costs AUD $42 and is processed online within 15 business days. International certificates vary widely: United Kingdom (ACPO check, ~GBP 25), United States (FBI Identity History, ~USD 18 + fingerprint costs), India (state-level, ~INR 500–2,000 plus notarisation), China (~CNY 80–100 via local public security bureau). Non-English certificates must be translated by a NAATI-certified translator. Plan for 4–12 weeks lead time for overseas police clearances — start these before lodging your EOI.",
     },
     {
-      category: isTr ? "Danışman / profesyonel inceleme" : "Agent / professional review",
-      estimateType: "variable",
-      amountLabel: variable,
+      category: isTr ? "NAATI Onaylı Çeviri" : "NAATI-Certified Translation",
+      estimateType: "third_party_estimate",
+      amountLabel: isTr
+        ? "AUD 80–200 sayfa başına (NAATI onaylı çevirmen)"
+        : "AUD $80–$200 per page (NAATI-certified translator)",
       explanation: isTr
-        ? "Kayıtlı bir göç danışmanı veya avukat ile çalışmayı seçen başvurucular için bu maliyet kategorisi bireysel koşullara ve sağlayıcıya göre değişebilir."
-        : "For those who choose to seek input from a registered migration agent or legal practitioner, this cost category varies by individual circumstances and provider.",
+        ? "İngilizce olmayan tüm belgeler (diplom, transkript, kimlik, polis belgesi, doğum/evlilik cüzdanı) NAATI onaylı bir çevirmen tarafından çevrilmelidir. NAATI onaylı çevirmenler belirterek aranabilir. Karmaşık teknik belgeler için sayfa başı AUD 150–200 uygulanabilir. Çeviri maliyetleri, sunulan belge sayısına göre AUD 500–3,000 arasında değişebilir."
+        : "All documents not in English must be translated by a NAATI-certified translator (National Accreditation Authority for Translators and Interpreters). Rates range from AUD $80 per page for simple personal documents to AUD $150–$200 per page for technical or legal documents. For a typical visa application with 8–12 documents (transcripts, employment certificates, marriage certificate, police clearances), translation costs commonly total AUD $800–$2,500. NAATI-certified translators can be located via the NAATI online register — never use uncertified translations as they will be rejected by the Department of Home Affairs.",
+    },
+    {
+      category: isTr ? "Kayıtlı Göçmenlik Danışmanı (RMA) veya Göçmenlik Avukatı" : "Registered Migration Agent (RMA) or Immigration Lawyer",
+      estimateType: "variable",
+      amountLabel: isTr
+        ? "AUD 3,000–10,000+ (visa türü ve dosyanın karmaşıklığına göre)"
+        : "AUD $3,000–$10,000+ (varies by visa type and case complexity)",
+      explanation: isTr
+        ? "Kayıtlı bir göçmenlik danışmanı (RMA) veya göçmenlik avukatı ile çalışmak zorunlu değildir, ancak karmaşık durumlarda (ret geçmişi, eksik belgeler, çift uyruk sorunu) önemli avantaj sağlar. Tipik maliyetler: 189/190/491 EOI ve tam başvuru için AUD 3,000–8,000; PY/eğitim başvuruları için AUD 1,500–4,000. MARA (Migration Agents Registration Authority) web sitesinden kayıtlı bir ajan doğrulanabilir. Kayıtlı olmayan danışmanlardan kaçının."
+        : "Engaging a Registered Migration Agent (RMA) or immigration lawyer is not mandatory, but is strongly recommended for applications involving prior visa refusals, complex employment histories, or family members with health or character issues. Typical fee ranges: full EOI + 189/190/491 skilled application: AUD $3,000–$8,000; state nomination assistance only: AUD $1,000–$2,500; 482 employer-sponsored nomination and visa: AUD $5,000–$10,000+. Verify any agent's registration via the MARA (Migration Agents Registration Authority) public register at mara.gov.au. Never pay upfront in full before the work commences.",
     }
   );
 
@@ -2926,9 +2970,24 @@ function buildCanadaFinancialRoadmap(
       "多伦多约CAD $2,890/月（单人）· 温哥华约CAD $3,100/月 · 卡尔加里约CAD $2,400/月"
     ),
     explanation: t(
-      "Indicative monthly baseline: rent (1BR), groceries, and transit. Toronto and Vancouver carry the highest rental premiums in Canada. Calgary and Ottawa are generally more affordable. Costs vary significantly by neighborhood and lifestyle.",
+      "Monthly cost breakdown by city (single adult, approximate 2024 figures): TORONTO — 1BR rent (downtown) CAD $2,400–$2,800/mo; groceries CAD $400–$550; transit (Presto monthly pass) CAD $156; utilities CAD $120–$180. Total: ~CAD $3,100–$3,700/mo. VANCOUVER — 1BR rent (downtown) CAD $2,600–$3,200/mo; groceries CAD $400–$550; transit (CompassCard monthly) CAD $109; utilities CAD $80–$140. Total: ~CAD $3,200–$4,000/mo. CALGARY — 1BR rent CAD $1,800–$2,300/mo; groceries CAD $380–$500; transit (monthly pass) CAD $112; utilities CAD $100–$170. Total: ~CAD $2,400–$3,100/mo. OTTAWA — 1BR rent CAD $1,900–$2,400/mo; groceries CAD $380–$500; transit (OC Transpo monthly) CAD $124; utilities CAD $100–$160. Total: ~CAD $2,500–$3,200/mo. Note: Provincial and federal taxes on income range from 20–33% depending on salary and province. Ontario adds a 13% HST; Alberta has no provincial sales tax (0% PST).",
       "Gösterge niteliğinde aylık taban: kira (1BR), market ve ulaşım. Toronto ve Vancouver, Kanada'nın en yüksek kira primlerine sahiptir.",
       "参考月度基准费用：租金（1居室）、食品杂货和交通。多伦多和温哥华租金溢价最高。卡尔加里和渥太华总体更实惠。费用因社区和生活方式差异较大。"
+    ),
+  });
+
+  items.push({
+    category: t(
+      "Regulated Canadian Immigration Consultant (RCIC) or Immigration Lawyer",
+      "Kanada Göçmenlik Danışmanı (RCIC) veya Göçmenlik Avukatı",
+      "加拿大注册移民顾问（RCIC）或移民律师"
+    ),
+    estimateType: "variable",
+    amountLabel: t("CAD $3,000–$10,000+ (application type and complexity)", "CAD 3.000–10.000+ (başvuru türü ve karmaşıklığına göre)", "CAD $3,000–$10,000+（申请类型及复杂程度）"),
+    explanation: t(
+      "Hiring an RCIC (Regulated Canadian Immigration Consultant) or Canadian immigration lawyer is not mandatory for Express Entry applications, but is strongly recommended for profiles with prior refusals, complex employment histories, gaps in documentation, or dual citizenship considerations. Typical fee ranges: EOI creation + full FSW/CEC/FSTP application (PR stage only) = CAD $3,000–$6,000; PNP nomination + PR application combined = CAD $5,000–$10,000; consultation-only services (EOI review, strategy session) = CAD $300–$700. Verify any consultant's registration via the ICCRC (Immigration Consultants of Canada Regulatory Council) public register at iccrc-crcic.ca. Never pay a flat 'success fee' upfront — a legitimate RCIC will provide a written service agreement. Unauthorized representatives who charge fees are prohibited under IRPA s.91.",
+      "RCIC veya Kanada göçmenlik avukatı tutmak Express Entry başvuruları için zorunlu değildir, ancak karmaşık dosyalarda önerilir. Tipik ücretler: EOI + tam FSW/CEC başvurusu = CAD 3.000–6.000; PNP + PR = CAD 5.000–10.000. ICCRC kaydını iccrc-crcic.ca üzerinden doğrulayın.",
+      "聘请RCIC（注册加拿大移民顾问）或移民律师并非必须，但对于有拒签记录、复杂就业史或文件缺失的申请人强烈推荐。典型费用：EOI+完整FSW/CEC申请 = CAD $3,000–$6,000；PNP+PR = CAD $5,000–$10,000。通过iccrc-crcic.ca验证顾问注册状态。"
     ),
   });
 
@@ -2958,7 +3017,7 @@ function buildCanadaPointsBoosterSimulator(
       estimatedChange: langGain,
       resultingEstimate: currentEstimate !== undefined ? currentEstimate + langGain : undefined,
       explanation: t(
-        `Achieving CLB 9 across all four language skills (reading, writing, listening, speaking) unlocks the maximum first-official-language band. Estimated CRS gain: approximately +${langGain} points from current language score. IELTS 7.0 in all bands typically maps to CLB 9; IELTS 8.0+ maps to CLB 10.`,
+        `Achieving CLB 9 across all four language skills (reading, writing, listening, speaking) unlocks the maximum first-official-language CRS band. Estimated CRS gain from your current English level: approximately +${langGain} points. CLB-to-IELTS mapping: CLB 7 = IELTS 6.0; CLB 8 = IELTS 6.5; CLB 9 = IELTS 7.0 (in all four bands); CLB 10 = IELTS 8.0; CLB 11 = IELTS 8.5; CLB 12 = IELTS 9.0. For a single applicant with no spouse, maximum CRS first-language points are 124 (achieved at CLB 10+ equivalent). CELPIP-General is also IRCC-accepted and uses the same CLB mapping. French speakers who achieve NCLC 7+ in all skills AND maintain CLB 7+ English receive a Bilingual Advantage bonus of +50 CRS on top of language points.`,
         `Dört dil becerisinin tamamında CLB 9 elde etmek (okuma, yazma, dinleme, konuşma) maksimum birinci resmi dil bandını açar. Tahmini CRS kazancı: mevcut dil puanından yaklaşık +${langGain} puan.`,
         `四项语言技能（阅读、写作、听力、口语）均达CLB 9可解锁最高第一官方语言分值。预计CRS增益：约+${langGain}分。IELTS各科7.0通常对应CLB 9；IELTS 8.0+对应CLB 10。`
       ),
@@ -2971,7 +3030,7 @@ function buildCanadaPointsBoosterSimulator(
     estimatedChange: 50,
     resultingEstimate: currentEstimate !== undefined ? currentEstimate + 50 : undefined,
     explanation: t(
-      "A valid LMIA-supported job offer in a NOC TEER 0/1/2/3 occupation adds exactly +50 CRS points. Senior management roles (TEER 0) or some specific NOC codes may qualify for +200 points. The LMIA must be positive, current, and issued to the employer.",
+      "A valid LMIA-supported job offer in a NOC TEER 0/1/2/3 occupation adds exactly +50 CRS points. Senior management roles classified as TEER 0 (e.g., NOC 00011 Senior managers – financial / communications / other business services) qualify for +200 points instead. The LMIA (Labour Market Impact Assessment) must be positive, issued to the specific employer, and must correspond to the exact NOC code and TEER level of the offer. The employer receives the LMIA from Employment and Social Development Canada (ESDC); IRCC does not issue LMIAs. LMIA-exempt job offers (e.g., under CUSMA/USMCA, intra-company transfers, or International Agreements) do not attract CRS job offer points. Note: LMIA-exempt offers under the C-10, C-11, or C-12 exemption codes may still qualify for +0, +50, or +200 depending on specific circumstances — verify with a Regulated Canadian Immigration Consultant (RCIC).",
       "NOC TEER 0/1/2/3 mesleklerde geçerli bir LMIA destekli iş teklifi tam olarak +50 CRS puanı ekler. Üst düzey yönetim rolleri (TEER 0) veya bazı spesifik NOC kodları için +200 puan uygulanabilir.",
       "NOC TEER 0/1/2/3职业的有效LMIA支持工作邀约可精确增加+50 CRS分。高管职位（TEER 0）或特定NOC代码可能获+200分。LMIA必须为正面、有效且由雇主持有。"
     ),
@@ -2983,7 +3042,7 @@ function buildCanadaPointsBoosterSimulator(
     estimatedChange: 600,
     resultingEstimate: currentEstimate !== undefined ? currentEstimate + 600 : undefined,
     explanation: t(
-      "A valid provincial/territorial nomination under Express Entry adds +600 CRS points, which effectively guarantees an Invitation to Apply (ITA) in the next draw. Relevant streams by occupation include: Ontario OINP Human Capital Priorities (TEER 0-3), BC PNP Tech Pilot (select NOC codes in tech), Alberta AAIP (occupation-specific streams). Processing time: 2-6 months after receiving an OINP or BC PNP notification of interest.",
+      "A valid provincial/territorial nomination under Express Entry adds exactly +600 CRS points — effectively guaranteeing an Invitation to Apply (ITA) in the next general draw regardless of base CRS score. Key PNP streams by profile: (1) Ontario OINP Human Capital Priorities (HCP): targets TEER 0–3 candidates with an active Express Entry profile; IRCC sends the OINP a data-share of profiles meeting the score threshold, then OINP issues Notifications of Interest (NOIs) — you cannot apply directly. Typical HCP CRS threshold: 450–490. (2) BC PNP Tech Pilot: 29 specific NOC codes in tech/digital economy; registration fee ~CAD $300; BC PNP receives your EOI and invites based on a separate BC score; strong alignment with Express Entry required. (3) Alberta AAIP (Accelerated Tech Pathway / Express Entry Stream): targets tech workers and healthcare workers; CAD $500 fee; draws held approximately monthly. (4) Saskatchewan SINP: tech, healthcare, and trades workers; draws every 2–4 weeks. Category-based selection draws introduced in 2023 target specific NOC groups (French-speaking, healthcare, STEM, trades) and have lower CRS thresholds than general draws — healthcare draws have cleared at 430–480 CRS.",
       "Express Entry kapsamında geçerli bir eyalet/bölge adaylığı +600 CRS puanı ekler; bu da bir sonraki çekilişte ITA'yı neredeyse garanti eder. Meslekle ilgili akışlar şunlardır: Ontario OINP İnsan Sermayesi Öncelikleri (TEER 0-3), BC PNP Tech Pilot (teknoloji alanındaki seçili NOC kodları), Alberta AAIP.",
       "Express Entry下的有效省/地区提名可获+600 CRS分，实际上保证在下次抽签中获得ITA。按职业相关通道：安大略省OINP人力资本优先（TEER 0-3）、BC省PNP科技试点（科技领域特定NOC代码）、阿尔伯塔省AAIP。"
     ),
@@ -2997,7 +3056,7 @@ function buildCanadaPointsBoosterSimulator(
       estimatedChange: 30,
       resultingEstimate: currentEstimate !== undefined ? currentEstimate + 30 : undefined,
       explanation: t(
-        "A Canadian bachelor's degree or a foreign credential assessed as equivalent by an ECA-designated body (WES/ICAS) adds approximately +120 education CRS points for a single applicant; the gain shown here reflects movement from a lower education band. A Canadian or foreign master's degree adds +135 points; PhD adds +150 points.",
+        "Education CRS points for a single applicant (no spouse): Two or more Canadian degrees (one at bachelor's level or higher) = +128 points; Canadian bachelor's degree or foreign credential equivalent (ECA required) = +120 points; Canadian two-year diploma or certificate = +98 points; less than secondary school = +28 points. The gain shown here reflects improvement from your current education band to a bachelor's equivalent. A Canadian or foreign master's degree assessed as equivalent = +135 points; PhD = +150 points. ECA providers: WES (World Education Services) processes most academic credentials in 7–20 business days for ~CAD $239–$285; ICAS (International Credential Assessment Service of Canada) is accepted for FSW/CEC at ~CAD $200–$300. ECA validity is 5 years from the date of the assessment report.",
         "Bir Kanada lisans derecesi veya ECA tarafından denkliği onaylanmış yabancı belge, tek başvurucu için yaklaşık +120 eğitim CRS puanı ekler. Kanada veya yabancı yüksek lisans derecesi +135 puan; doktora +150 puan ekler.",
         "加拿大学士学位或经ECA指定机构（WES/ICAS）评估等效的外国资历，单身申请人约可获+120教育CRS分；显示的增益反映从较低学历段的提升。加拿大或外国硕士学位+135分；博士+150分。"
       ),
@@ -3010,7 +3069,7 @@ function buildCanadaPointsBoosterSimulator(
     estimatedChange: 50,
     resultingEstimate: currentEstimate !== undefined ? currentEstimate + 50 : undefined,
     explanation: t(
-      "Bilingual candidates with CLB 7+ in English AND NCLC 7+ in French receive a +50 CRS bonus (Bilingual Advantage). If only French is used as the first official language (without CLB 7+ English), additional bonus points do not apply but high French scores still generate strong CRS language points. French speakers may also access Francophone Mobility streams and certain PNP streams.",
+      "Bilingual candidates who score CLB 7+ in English AND NCLC 7+ in French receive a +50 CRS Bilingual Advantage bonus. This is independent of and in addition to the core language points. If French is used as the first official language (CLB 7+ French, but English below CLB 7), the bilingual bonus does not apply — but strong French scores alone still generate competitive CRS language points. NCLC is measured via TEF Canada or TCF Canada. French-speaking candidates also unlock category-based draws specifically for Francophone immigration, which have historically drawn candidates at lower CRS scores (400–450 range) — a major strategic advantage for French speakers regardless of their base CRS.",
       "CLB 7+ İngilizce VE NCLC 7+ Fransızca olan iki dilli adaylar +50 CRS bonusu alır (İki Dilli Avantaj). Yalnızca Fransızca ilk resmi dil olarak kullanıldığında ek bonus uygulanmaz, ancak yüksek Fransızca puanları güçlü CRS dil puanları oluşturur.",
       "英语CLB 7+且法语NCLC 7+的双语候选人可获+50 CRS奖励（双语优势）。若仅以法语作为第一官方语言（英语未达CLB 7+），不适用额外奖励，但高分法语仍能产生较强的CRS语言分。法语使用者还可访问法语流动通道和特定PNP通道。"
     ),
@@ -3018,16 +3077,17 @@ function buildCanadaPointsBoosterSimulator(
 
   // Estimated CRS draw targets
   const teer = input.nocTeer;
+  const baseScore = currentEstimate ?? 0;
   const crsDrawNote = teer !== undefined && teer <= 1
     ? t(
-        `For your TEER ${teer} occupation, recent STEM/general Express Entry draws have ranged from approximately 470–520 CRS. Healthcare-specific draws can be lower (430–480). PNP-only draws target nominees with any CRS, but general pool cutoffs have been trending upward since mid-2023.`,
-        `TEER ${teer} mesleğiniz için, son STEM/genel Express Entry çekimleri yaklaşık 470–520 CRS aralığında olmuştur. Sağlık sektörüne özgü çekimler daha düşük olabilir (430–480).`,
-        `对于您的TEER ${teer}职业，近期STEM/综合Express Entry抽签CRS约在470–520之间。医疗类专项抽签可能更低（430–480）。`
+        `CRS Draw Targets for TEER ${teer} occupations — General pool draws: 470–520 CRS (STEM/most occupations). Category-based draws (introduced May 2023): Healthcare workers 430–480 CRS; French-language proficiency 375–425 CRS; Agriculture/Agri-food 300–360 CRS; Trade occupations 350–390 CRS. PNP nomination: +600 CRS points, effectively guarantees ITA in any draw. Itemized CRS buildup from your profile (estimated): Base score ${baseScore} CRS → +Language upgrade (if applicable) → +Education (ECA assessed) → +Experience → +Job offer (LMIA: +50/+200) → +PNP nomination (+600) = Total. Gap-to-invite analysis: the simplest path to a general draw invitation is typically: (1) optimise language to CLB 9+ (~+12–28 pts), then (2) pursue PNP stream matching your NOC code and province of interest.`,
+        `TEER ${teer} meslekler için CRS çekim hedefleri — Genel havuz: 470–520 CRS. Kategori bazlı çekimler (2023'ten itibaren): Sağlık 430–480; Fransızca 375–425; Tarım 300–360; Meslekler 350–390. PNP adaylığı: +600 CRS.`,
+        `TEER ${teer}职业CRS抽签目标——综合池：470–520。类别专项抽签（2023年起）：医疗430–480；法语375–425；农业300–360；技术工种350–390。省提名+600分。`
       )
     : t(
-        "Recent general Express Entry draws have ranged from approximately 470–520 CRS. Specific occupation-based draws (French language, healthcare) have lower cutoffs. A PNP nomination eliminates the points competition entirely (+600 points).",
-        "Son genel Express Entry çekimleri yaklaşık 470–520 CRS aralığında olmuştur. Spesifik meslek bazlı çekimler (Fransızca, sağlık) daha düşük kesme noktalarına sahiptir.",
-        "近期综合Express Entry抽签CRS约在470–520之间。特定职业专项抽签（法语、医疗）门槛更低。省提名可完全绕过积分竞争（+600分）。"
+        `CRS Draw Targets — General pool draws: 470–520 CRS (most occupations). Category-based draws (May 2023+): French-language 375–425 CRS; Healthcare workers 430–480 CRS; Agriculture/Agri-food 300–360 CRS; Trade occupations 350–390 CRS. A PNP nomination adds +600 CRS, effectively eliminating the points competition. Itemized CRS buildup from your profile (estimated): Base score ${baseScore} CRS → +Language upgrade → +Education (ECA) → +Work experience → +Job offer (LMIA: +50/+200) → +PNP nomination (+600) = Total. The fastest realistic path to a general draw invitation typically combines language optimization (CLB 9+) with either a targeted PNP stream or category-based draw alignment.`,
+        `CRS çekim hedefleri — Genel havuz: 470–520. Kategori çekimleri: Fransızca 375–425; Sağlık 430–480; Tarım 300–360; Meslekler 350–390. PNP adaylığı +600 CRS puan ekler.`,
+        `CRS抽签目标——综合池470–520；类别专项：法语375–425，医疗430–480，农业300–360，技术工种350–390。省提名+600分，实际消除积分竞争。`
       );
 
   return {
