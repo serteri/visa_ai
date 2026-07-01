@@ -264,25 +264,46 @@ export function FullCheckWaitlistForm({
     ).slice(0, 12);
   }
 
-  const aiAnalysisSteps = isTr
+  const aiAnalysisSteps = selectedCountry === "CA"
+    ? isTr
+      ? [
+          "516 NOC 2021 meslek kodu taranıyor...",
+          "Express Entry CRS çizimi eğilimleri analiz ediliyor...",
+          "PNP akışları ve eyalet talep sinyalleri işleniyor...",
+          "Kanada stratejik hazırlık raporu oluşturuluyor...",
+        ]
+      : isZh
+      ? [
+          "正在扫描 516 个 NOC 2021 职业代码...",
+          "正在分析 Express Entry CRS 抽签趋势...",
+          "正在处理 PNP 通道与省级需求信号...",
+          "正在生成加拿大战略准备度报告...",
+        ]
+      : [
+          "Scanning 516 NOC 2021 occupation codes...",
+          "Analyzing Express Entry CRS draw trends...",
+          "Processing PNP streams and provincial demand signals...",
+          "Generating Canada strategic readiness report...",
+        ]
+    : isTr
     ? [
-        "691 meslek kodu taranıyor...",
+        "691 ANZSCO meslek kodu taranıyor...",
         "Tarihsel davet trendleri analiz ediliyor...",
         "Değerlendirme kurumu kesinti kuralları uygulanıyor...",
-        "Stratejik hazırlık raporu oluşturuluyor...",
+        "Avustralya stratejik hazırlık raporu oluşturuluyor...",
       ]
     : isZh
     ? [
-        "正在扫描 691 个职业代码...",
+        "正在扫描 691 个 ANZSCO 职业代码...",
         "正在分析历史邀请趋势...",
         "正在应用评估机构扣减规则...",
-        "正在生成战略准备度报告...",
+        "正在生成澳大利亚战略准备度报告...",
       ]
     : [
-        "Scanning 691 occupation codes...",
+        "Scanning 691 ANZSCO occupation codes...",
         "Analyzing historical invitation trends...",
         "Applying assessing authority deduction rules...",
-        "Generating strategic readiness report...",
+        "Generating Australia strategic readiness report...",
       ];
 
   const milestoneToIndex: Record<string, number> = {

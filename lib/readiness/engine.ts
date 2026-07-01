@@ -190,7 +190,7 @@ function detectSubclasses(input: ReadinessInput): string[] {
   return Array.from(found);
 }
 
-export type CanadaPathwayCode = "CEC" | "FSW" | "FSTP" | "AIP" | "FAMILY_SPONSORSHIP";
+export type CanadaPathwayCode = "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
 
 function detectCanadaPathways(input: ReadinessInput): CanadaPathwayCode[] {
   const combined = [
@@ -434,6 +434,7 @@ const CANADA_PATHWAY_NAMES: Record<CanadaPathwayCode, { en: string; tr: string }
   CEC: { en: "Canadian Experience Class", tr: "Kanada Deneyim Sınıfı (CEC)" },
   FSW: { en: "Federal Skilled Worker Program", tr: "Federal Vasıflı İşçi Programı (FSW)" },
   FSTP: { en: "Federal Skilled Trades Program", tr: "Federal Vasıflı Esnaf Programı (FSTP)" },
+  PNP: { en: "Provincial Nominee Program", tr: "Eyalet Aday Programı (PNP)" },
   AIP: { en: "Atlantic Immigration Program", tr: "Atlantic Immigration Program (AIP)" },
   FAMILY_SPONSORSHIP: { en: "Family Sponsorship", tr: "Aile Sponsorluğu" },
 };
@@ -1688,6 +1689,28 @@ function buildCanadaOccupationIndication(
     };
   }
 
+  const topMatch = result.matches[0];
+  const isDirectSelection = !!input.nocCode && result.matches.length === 1;
+
+  let note: string;
+  if (isDirectSelection && topMatch) {
+    const duties = topMatch.duties ?? [];
+    const dutiesText = duties.length
+      ? (isTr
+          ? ` ECA/IRCC değerlendirmesinde doğrulanması gereken temel görevler: ${duties.map((d, i) => `(${i + 1}) ${d}`).join("; ")}.`
+          : ` Key duties the ECA/IRCC assessment must verify: ${duties.map((d, i) => `(${i + 1}) ${d}`).join("; ")}.`)
+      : "";
+    const skillLabel = topMatch.teer <= 1 ? (isTr ? "Yüksek Vasıflı" : "High-Skilled") : topMatch.teer <= 3 ? (isTr ? "Orta Vasıflı" : "Mid-Skilled") : (isTr ? "Düşük Vasıflı" : "Lower-Skilled");
+    const pathways = `CEC/FSW${topMatch.isFstpEligibleGroup ? "/FSTP" : ""}`;
+    note = isTr
+      ? `NOC Kodu doğrulandı: ${topMatch.code} — ${topMatch.title} (TEER ${topMatch.teer} / ${skillLabel}). ${pathways} başvurularına uygun olabilir.${dutiesText} Resmi ECA değerlendirmesi ayrı bir adımdır.`
+      : `NOC Code confirmed: ${topMatch.code} — ${topMatch.title} (TEER ${topMatch.teer} / ${skillLabel}). May qualify for ${pathways}.${dutiesText} A formal ECA assessment is a separate step.`;
+  } else {
+    note = isTr
+      ? `NOC verilerinde ${result.matches.length} olasi meslek eslesmesi bulundu (TEER ${topMatch?.teer ?? "?"}). Bu yalnizca genel bilgi amaclidir; resmi bir ECA veya NOC dogrulamasi ayri bir suractir.`
+      : `${result.matches.length} possible NOC match(es) found (TEER ${topMatch?.teer ?? "?"}). This is general information only; an official ECA or NOC verification is a separate step.`;
+  }
+
   return {
     occupation: result.query,
     matches: result.matches.map((m) => ({
@@ -1698,9 +1721,7 @@ function buildCanadaOccupationIndication(
         ...(m.isFstpEligibleGroup ? ["FSTP"] : []),
       ],
     })),
-    note: isTr
-      ? `NOC verilerinde ${result.matches.length} olasi meslek eslesmesi bulundu (TEER ${result.matches[0]?.teer}). Bu yalnizca genel bilgi amaclidir; resmi bir ECA veya NOC dogrulamasi ayri bir suractir.`
-      : `${result.matches.length} possible NOC match(es) found (TEER ${result.matches[0]?.teer}). This is general information only; an official ECA or NOC verification is a separate step.`,
+    note,
   };
 }
 
@@ -2200,48 +2221,104 @@ function buildPointsBoosterSimulator(
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
   const ageOption = input.age ? parseAgeOption(input.age) : null;
 
-  if (englishOption === "competent" || englishOption === "proficient") {
+  // Superior English: +20 points vs Proficient, +10 vs Competent
+  // (Schedule 6A of the Migration Regulations 1994: Competent=0, Proficient=10, Superior=20)
+  if (englishOption === "competent") {
     scenarios.push({
-      label: isTr ? "İngilizce seviyesi senaryosu" : "English level scenario",
+      label: isTr
+        ? "Superior İngilizce (IELTS 8.0+ / PTE 79+) — +20 puan"
+        : "Superior English (IELTS 8.0+ / PTE 79+) — +20 points",
+      estimatedChange: 20,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 20,
+      explanation: isTr
+        ? "Avustralya puan tablosunda Competent (6.0) yerine Superior (8.0+) İngilizce, tüm dört bantta elde edildiğinde +20 puan ekler. IELTS 8.0+ her bantta Superior ile eşleşir. Bu, noktaların artırılması için en yüksek getirili tek senaryodur."
+        : "In the Australian points test, upgrading from Competent English (IELTS 6.0) to Superior English (IELTS 8.0+ in all bands) adds exactly +20 points. This is the highest single-factor gain available and is cost-effective given that a single IELTS attempt already covers the language requirement.",
+    });
+  } else if (englishOption === "proficient") {
+    scenarios.push({
+      label: isTr
+        ? "Superior İngilizce'ye yükseltme (IELTS 8.0+ / PTE 79+) — +10 puan"
+        : "Upgrade to Superior English (IELTS 8.0+ / PTE 79+) — +10 points",
       estimatedChange: 10,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 10,
       explanation: isTr
-        ? `İngilizce faktörü ${englishOption === "competent" ? "proficient" : "superior"} düzeye değişirse matematiksel puan konumu +10 değişebilir.`
-        : `If the English factor changes to ${englishOption === "competent" ? "proficient" : "superior"}, the mathematical score position may change by +10.`,
+        ? "Proficient'ten (IELTS 7.0) Superior'a (IELTS 8.0+) geçiş +10 puan ekler. Dört bantta 8.0+ elde etmek zor olabilir; ancak bazı yollar için birikimsel olarak puan avantajı sağlar."
+        : "Moving from Proficient English (IELTS 7.0 in all bands) to Superior (IELTS 8.0+ in all bands) adds exactly +10 points to the Australian points test. Achieving 8.0+ across all four skills is demanding but valuable for competitive occupations.",
     });
   }
 
+  // NAATI CCL: +5 points (Community Languages credential)
+  scenarios.push({
+    label: isTr
+      ? "NAATI CCL (Toplum Dili Sertifikası) — +5 puan"
+      : "NAATI CCL Community Languages credential — +5 points",
+    estimatedChange: 5,
+    resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
+    explanation: isTr
+      ? "NAATI Toplum Dili Sertifikası (CCL), nitelikli kişilere +5 bonus puan sağlar. Bu sınav, adayların bir toplum dilini (örn. Türkçe, Mandarin, Arapça) yeterli bir düzeyde kullanabildiğini kanıtlamasını gerektirir. Sınavda iki 300 kelimelik diyalogun çevirisi yapılır."
+      : "The NAATI Community Languages Credential (CCL) awards +5 bonus points to eligible applicants. It tests the ability to translate a dialogue between English and a specified community language (e.g., Mandarin, Arabic, Vietnamese, Turkish) at a functional level. Two 300-word dialogues must be translated in the exam.",
+  });
+
+  // Professional Year: +5 points
+  scenarios.push({
+    label: isTr
+      ? "Avustralya'da Mesleki Yıl (Professional Year) — +5 puan"
+      : "Australian Professional Year program — +5 points",
+    estimatedChange: 5,
+    resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
+    explanation: isTr
+      ? "Avustralya'da muhasebe, BT veya mühendislik alanında tamamlanan Mesleki Yıl programı +5 bonus puan ekler. Program genellikle 12 ay sürer ve yaklaşık AUD 7,000–10,000 maliyeti vardır. Yalnızca Avustralya'daki son mezunlar veya uluslararası mezunlar için geçerlidir."
+      : "Completing an Australian Professional Year program in accounting, IT, or engineering adds +5 bonus points. The program is 12 months long (~AUD 7,000–10,000 cost) and is open to recent graduates in Australia. It also develops Australian workplace skills and a local network, which can assist employment in the 189/190/491 pathways.",
+  });
+
+  // 190 State nomination: +5 points
   if (subclasses.includes("190")) {
     scenarios.push({
-      label: isTr ? "190 adaylık puanı senaryosu" : "190 nomination points scenario",
+      label: isTr
+        ? "190 Eyalet/Bölge Adaylığı — +5 puan"
+        : "190 State or Territory Nomination — +5 points",
       estimatedChange: 5,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
       explanation: isTr
-        ? "190 eyalet/bölge adaylığı faktörü mevcut olursa matematiksel puan konumu +5 değişebilir."
-        : "If the 190 state or territory nomination factor is present, the mathematical score position may change by +5.",
+        ? "190 eyalet/bölge adaylığı +5 puan ekler. Bazı eyaletlerde (örn. Victoria, NSW) mevcut çekilişlerin 75-80 puan bandında olduğu bildirilmiştir; adaylık bu eşiği aşmak için belirleyici olabilir. Her eyalet kendi meslek listesini yönetir."
+        : "State or Territory nomination for subclass 190 adds +5 points. Recent 190 draws in competitive states like NSW and Victoria have landed between 75–80 points. The nomination can be the deciding factor that makes a profile competitive. Each state manages its own occupation-specific invitation rounds (SOL-based or targeted).",
     });
   }
 
+  // 491 Regional nomination/sponsorship: +15 points
   if (subclasses.includes("491")) {
     scenarios.push({
-      label: isTr ? "491 adaylık/sponsorluk puanı senaryosu" : "491 nomination/sponsorship points scenario",
+      label: isTr
+        ? "491 Bölgesel Adaylık veya Sponsorluk — +15 puan"
+        : "491 Regional Nomination or Eligible Relative Sponsorship — +15 points",
       estimatedChange: 15,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 15,
       explanation: isTr
-        ? "491 adaylık veya uygun akraba sponsorluğu faktörü mevcut olursa matematiksel puan konumu +15 değişebilir."
-        : "If the 491 nomination or relative sponsorship factor is present, the mathematical score position may change by +15.",
+        ? "491 adaylığı (eyalet/bölge) veya uygun bir akraba sponsoru (Kategori 2-3 posta kodunda yaşayan) +15 puan ekler. Bu, mevcut puana eklenir ve çoğu meslek için rekabetçi bir konuma taşıyabilir. 491 vizesi 5 yıl sürelidir; sahipler PR'a geçmek için bölgede oturmalı ve çalışmalıdır."
+        : "491 nomination (state/territory pathway) or sponsorship by an eligible relative living in a Specified Regional Area adds +15 points to the points test. This is the largest single bonus available in the SkillSelect system and can transform a borderline 189 profile into a competitive 491 candidate. Post-491 PR pathway is via subclass 191 after 3 years.",
     });
   }
 
-  if (ageOption === "18_24" || ageOption === "40_44") {
-    const estimatedChange = ageOption === "18_24" ? 5 : -10;
+  // Study in regional Australia: +5 points
+  scenarios.push({
+    label: isTr
+      ? "Avustralya bölgesel bölgesinde öğrenim — +5 puan"
+      : "Study in a regional area of Australia — +5 points",
+    estimatedChange: 5,
+    resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
+    explanation: isTr
+      ? "Avustralya'nın bölgesel bir bölgesinde (Kategori 2 veya Kategori 3 posta kodu) en az 2 yıllık kayıtlı öğrenim tamamlanması +5 bonus puan sağlar. Yalnızca 1 Ocak 2018 veya sonrasında başlayan öğrenim için geçerlidir."
+      : "Completing at least 2 years of registered study in a regional area of Australia (Category 2 or Category 3 postcode under the ABS classification) adds +5 bonus points. This only applies to study that commenced on or after 1 January 2018 and does not apply to online study.",
+  });
+
+  if (ageOption === "18_24") {
     scenarios.push({
-      label: isTr ? "Yaş bandı senaryosu" : "Age band scenario",
-      estimatedChange,
-      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + estimatedChange,
+      label: isTr ? "Yaş bandı (18–24): şu anki maksimum puan" : "Age band (18–24): current maximum points",
+      estimatedChange: 0,
+      resultingEstimate: currentEstimate,
       explanation: isTr
-        ? "Yaş bandı değişirse puan tablosundaki matematiksel konum da değişebilir."
-        : "If the age band changes, the mathematical position in the points table may also change.",
+        ? "18–24 yaş bandı puan tablosunda maksimum yaş puanı (25 puan) sağlar. Bu avantaj 25 yaşından itibaren azalmaya başlar."
+        : "The 18–24 age band attracts the maximum age points (25 points) in the Australian points test. This advantage begins to decrease at age 25 and disappears after 44.",
     });
   }
 
@@ -2260,8 +2337,8 @@ function buildPointsBoosterSimulator(
     currentEstimate,
     scenarios,
     note: isTr
-      ? "Bir puan tablosu faktörü değişirse matematiksel puan konumu aşağıdaki gibi değişebilir."
-      : "If a points-table factor changes, the mathematical score position may change as follows.",
+      ? "Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır."
+      : "The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.",
   };
 }
 
@@ -2324,12 +2401,14 @@ function buildFinancialRoadmap(
 
   if (hasSkilled || has482) {
     items.push({
-      category: isTr ? "Beceri değerlendirmesi maliyet kategorisi" : "Skills assessment cost category",
+      category: isTr ? "Beceri değerlendirmesi (assessing authority'ye göre)" : "Skills assessment (by assessing authority)",
       estimateType: "third_party_estimate",
-      amountLabel: isTr ? "Değişken / değerlendirme kurumuna bağlı" : "Variable / depends on assessing authority",
+      amountLabel: isTr
+        ? "AUD 530–1,000+ (kuruma ve mesleğe göre)"
+        : "AUD $530–$1,000+ (varies by authority and occupation)",
       explanation: isTr
-        ? "Meslek ve değerlendirme kurumu maliyet aralığını etkileyebilir."
-        : "Occupation and assessing authority can affect the cost range.",
+        ? "Değerlendirme kurumu mesleğe göre değişir. BT/ICT: ACS (AUD 530–665); İnşaat/Mühendislik: Engineers Australia (AUD 735–900); Sağlık: AHPRA (AUD 890+); Muhasebe: CPA Australia / CAANZ (AUD 600–800); Genel meslekler: VETASSESS (AUD 850). Değerlendirme genellikle 4–12 hafta sürer ve eğitim + iş deneyimi belgelerini kapsar."
+        : "The assessing authority depends on the occupation: IT/ICT roles → ACS (AUD $530–$665); Engineering → Engineers Australia (AUD $735–$900); Healthcare → AHPRA (AUD $890+); Accounting → CPA Australia / CAANZ / IPA (AUD $600–$800); General professional occupations → VETASSESS (AUD $850). The assessment typically takes 4–12 weeks and requires certified copies of qualifications and employment evidence.",
     });
   }
 
@@ -2724,6 +2803,240 @@ function buildPositionChangers(
   return items.slice(0, 3);
 }
 
+// ─── Canada financial roadmap ──────────────────────────────────────────────────
+// Hard costs sourced from IRCC official fee schedule (2024) and published
+// WES/ICAS pricing. Amounts in CAD.
+function buildCanadaFinancialRoadmap(
+  pathwayCodes: CanadaPathwayCode[],
+  input: ReadinessInput,
+  locale: Locale
+): FinancialRoadmapItem[] {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const t = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
+
+  const items: FinancialRoadmapItem[] = [
+    {
+      category: t("IRCC PR Processing Fee (main applicant)", "IRCC PR İşlem Ücreti (ana başvurucu)", "IRCC PR 审核费（主申请人）"),
+      estimateType: "official_fee",
+      amountLabel: "CAD $1,525",
+      explanation: t(
+        "Official IRCC fee for the permanent residence application. Spouse/common-law partner adds CAD $825; each dependent child adds CAD $225. Payable when the application is submitted.",
+        "Daimi ikamet başvurusu için resmi IRCC ücreti. Eş/birlikte yaşanan partner +CAD 825; her bağımlı çocuk +CAD 225 ekler. Başvuru sunulduğunda ödenir.",
+        "永久居留申请的官方IRCC费用。配偶/同居伴侣加收CAD $825；每位受养子女加收CAD $225。提交申请时支付。"
+      ),
+    },
+    {
+      category: t("Right of Permanent Residence Fee (RPRF)", "Daimi İkamet Hakkı Ücreti (RPRF)", "永久居留权费（RPRF）"),
+      estimateType: "official_fee",
+      amountLabel: "CAD $515",
+      explanation: t(
+        "Payable by the principal applicant and any accompanying spouse or common-law partner upon approval of PR. Not payable by dependent children.",
+        "PR onaylanınca ana başvurucu ve eşi/birlikte yaşanan partneri tarafından ödenir. Bağımlı çocuklar için ödenmez.",
+        "PR批准后，主申请人及随行配偶/同居伴侣需支付。受养子女无需支付。"
+      ),
+    },
+    {
+      category: t("Biometrics", "Biyometrik", "生物特征采集"),
+      estimateType: "official_fee",
+      amountLabel: t("CAD $85 (individual) / CAD $170 (family group)", "CAD 85 (bireysel) / CAD 170 (aile grubu)", "CAD $85（个人）/ CAD $170（家庭组）"),
+      explanation: t(
+        "Fingerprints and photo collection at a biometrics collection point. A family group sharing a single application pays a flat CAD $170.",
+        "Biyometrik toplama noktasında parmak izi ve fotoğraf. Tek bir başvuruda aile grubu için toplam CAD 170 ödenir.",
+        "在生物特征采集点采集指纹和照片。共用同一申请的家庭组统一收取CAD $170。"
+      ),
+    },
+    {
+      category: t(
+        "Educational Credential Assessment (ECA) — WES or ICAS",
+        "Eğitim Belgesi Değerlendirmesi (ECA) — WES veya ICAS",
+        "教育资历评估（ECA）— WES 或 ICAS"
+      ),
+      estimateType: "third_party_estimate",
+      amountLabel: t("CAD $239–$285 (WES) · CAD $200–$300 (ICAS)", "CAD 239–285 (WES) · CAD 200–300 (ICAS)", "CAD $239–$285（WES）· CAD $200–$300（ICAS）"),
+      explanation: t(
+        "WES (World Education Services) is the most common IRCC-designated ECA provider. ICAS (International Credential Assessment Service) is accepted for FSW/CEC. ECA validity is 5 years. Allow 7–20 business days for standard processing.",
+        "WES (Dünya Eğitim Hizmetleri), en yaygın IRCC tarafından belirlenmiş ECA sağlayıcısıdır. ICAS (Uluslararası Belge Değerlendirme Servisi) FSW/CEC için kabul edilir. ECA geçerlilik süresi 5 yıldır.",
+        "WES（世界教育服务）是最常见的IRCC指定ECA提供机构。ICAS（国际资历评估服务）适用于FSW/CEC。ECA有效期5年，标准处理需7-20个工作日。"
+      ),
+    },
+    {
+      category: t("Language Test (IELTS / CELPIP)", "Dil Testi (IELTS / CELPIP)", "语言考试（IELTS / CELPIP）"),
+      estimateType: "third_party_estimate",
+      amountLabel: t("CAD $300–$370 per attempt", "CAD 300–370 (deneme başına)", "每次CAD $300–$370"),
+      explanation: t(
+        "IELTS General Training and CELPIP-General are the two IRCC-accepted English tests. Scores must be valid (within 2 years). CLB 9+ in all four skills maximises CRS language points (~124 points for primary applicant).",
+        "IELTS Genel Eğitim ve CELPIP-General, IRCC tarafından kabul edilen iki İngilizce testidir. CLB 9+ tüm dört beceride CRS dil puanını maksimize eder (~124 puan).",
+        "IELTS普通培训和CELPIP-General是IRCC认可的两项英语考试。四项技能均达CLB 9+可最大化CRS语言分（主申请人约124分）。"
+      ),
+    },
+    {
+      category: t("Medical Examination", "Sağlık Muayenesi", "体检"),
+      estimateType: "third_party_estimate",
+      amountLabel: t("CAD $225–$450 (varies by IRCC panel physician)", "CAD 225–450 (IRCC panel hekimine göre değişir)", "CAD $225–$450（因IRCC指定医生而异）"),
+      explanation: t(
+        "Must be completed by an IRCC-designated Panel Physician. Validity is 12 months. Additional charges may apply for required vaccinations or X-rays.",
+        "IRCC tarafından belirlenmiş bir Panel Hekimi tarafından tamamlanmalıdır. Geçerlilik süresi 12 aydır.",
+        "必须由IRCC指定的体检医生完成。有效期12个月。如需接种疫苗或X光检查，可能有额外费用。"
+      ),
+    },
+    {
+      category: t(
+        "Proof of Funds (if required for FSW/FSTP)",
+        "Fon Kanıtı (FSW/FSTP için gerekiyorsa)",
+        "资金证明（FSW/FSTP如需要）"
+      ),
+      estimateType: "official_fee",
+      amountLabel: t(
+        "CAD $13,757 (1 person) · $17,127 (2) · $21,055 (3) · $25,564 (4)",
+        "CAD 13.757 (1 kişi) · 17.127 (2) · 21.055 (3) · 25.564 (4)",
+        "CAD $13,757（1人）· $17,127（2人）· $21,055（3人）· $25,564（4人）"
+      ),
+      explanation: t(
+        "Settlement funds required for FSW and FSTP applicants (not required for CEC applicants or those with a valid LMIA job offer). Funds must be unencumbered, liquid, and accessible. IRCC validates via bank statements — typically 3–6 months of statements showing consistent balance.",
+        "FSW ve FSTP başvurucular için gerekli yerleşim fonları (CEC başvurucuları veya geçerli LMIA iş teklifleri olanlar için gerekli değildir). Fonlar serbest, likit ve erişilebilir olmalıdır.",
+        "FSW和FSTP申请人所需的定居资金（CEC申请人或持有有效LMIA工作邀约者无需提供）。资金必须无抵押、流动且可随时支取。IRCC通过银行流水验证，通常需提供3-6个月的对账单。"
+      ),
+    },
+  ];
+
+  if (pathwayCodes.includes("PNP") || pathwayCodes.includes("CEC")) {
+    items.push({
+      category: t(
+        "Provincial Nominee Program (PNP) stream — if applicable",
+        "Eyalet Aday Programı (PNP) akışı — geçerliyse",
+        "省提名计划（PNP）通道（如适用）"
+      ),
+      estimateType: "variable",
+      amountLabel: t("CAD $0–$2,000 (varies by province)", "CAD 0–2.000 (eyalete göre değişir)", "CAD $0–$2,000（因省份而异）"),
+      explanation: t(
+        "Some PNP streams have their own application fees: Ontario OINP (no fee for Tech Draw, EOI-based), BC PNP Tech Pilot (~CAD $300 registration), Alberta AAIP (~CAD $500). A PNP nomination adds +600 CRS points, effectively guaranteeing an ITA in the next Express Entry draw.",
+        "Bazı PNP akışlarının kendi başvuru ücretleri vardır: Ontario OINP (Tech Draw için ücretsiz), BC PNP Tech Pilot (~CAD 300 kayıt), Alberta AAIP (~CAD 500). PNP adaylığı +600 CRS puanı ekleyerek sonraki Express Entry çekilişinde ITA'yı neredeyse garanti eder.",
+        "部分PNP通道有独立申请费：安大略省OINP（科技抽签免费，基于EOI），BC省PNP科技试点（约CAD $300注册费），阿尔伯塔AAIP（约CAD $500）。省提名可获+600 CRS分，实际上可保证在下次Express Entry抽签中获得ITA。"
+      ),
+    });
+  }
+
+  items.push({
+    category: t("Living Cost Projection — Major Cities", "Yaşam Maliyeti Tahmini — Büyük Şehirler", "生活成本预测——主要城市"),
+    estimateType: "variable",
+    amountLabel: t(
+      "Toronto ~CAD $2,890/mo (single) · Vancouver ~CAD $3,100/mo · Calgary ~CAD $2,400/mo",
+      "Toronto ~CAD 2.890/ay (tek kişi) · Vancouver ~CAD 3.100/ay · Calgary ~CAD 2.400/ay",
+      "多伦多约CAD $2,890/月（单人）· 温哥华约CAD $3,100/月 · 卡尔加里约CAD $2,400/月"
+    ),
+    explanation: t(
+      "Indicative monthly baseline: rent (1BR), groceries, and transit. Toronto and Vancouver carry the highest rental premiums in Canada. Calgary and Ottawa are generally more affordable. Costs vary significantly by neighborhood and lifestyle.",
+      "Gösterge niteliğinde aylık taban: kira (1BR), market ve ulaşım. Toronto ve Vancouver, Kanada'nın en yüksek kira primlerine sahiptir.",
+      "参考月度基准费用：租金（1居室）、食品杂货和交通。多伦多和温哥华租金溢价最高。卡尔加里和渥太华总体更实惠。费用因社区和生活方式差异较大。"
+    ),
+  });
+
+  return items;
+}
+
+// ─── Canada points booster simulator ─────────────────────────────────────────
+// Exact CRS point gains per IRCC published scoring tables (2024).
+function buildCanadaPointsBoosterSimulator(
+  input: ReadinessInput,
+  pointsEstimate: PointsEstimate | undefined,
+  locale: Locale
+): PointsBoosterSimulator {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const t = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
+
+  const currentEstimate = pointsEstimate?.estimatedPoints;
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const scenarios: PointsBoosterSimulator["scenarios"] = [];
+
+  // Language boost — CLB 9+ in all skills
+  if (englishOption !== "superior") {
+    const langGain = englishOption === "proficient" ? 12 : englishOption === "competent" ? 24 : 28;
+    scenarios.push({
+      label: t("CLB 9+ in all four skills (IELTS 7.0+ / CELPIP 9+)", "Dört becerinin tamamında CLB 9+ (IELTS 7.0+ / CELPIP 9+)", "四项技能均达CLB 9+（IELTS 7.0+ / CELPIP 9+）"),
+      estimatedChange: langGain,
+      resultingEstimate: currentEstimate !== undefined ? currentEstimate + langGain : undefined,
+      explanation: t(
+        `Achieving CLB 9 across all four language skills (reading, writing, listening, speaking) unlocks the maximum first-official-language band. Estimated CRS gain: approximately +${langGain} points from current language score. IELTS 7.0 in all bands typically maps to CLB 9; IELTS 8.0+ maps to CLB 10.`,
+        `Dört dil becerisinin tamamında CLB 9 elde etmek (okuma, yazma, dinleme, konuşma) maksimum birinci resmi dil bandını açar. Tahmini CRS kazancı: mevcut dil puanından yaklaşık +${langGain} puan.`,
+        `四项语言技能（阅读、写作、听力、口语）均达CLB 9可解锁最高第一官方语言分值。预计CRS增益：约+${langGain}分。IELTS各科7.0通常对应CLB 9；IELTS 8.0+对应CLB 10。`
+      ),
+    });
+  }
+
+  // LMIA job offer
+  scenarios.push({
+    label: t("Valid LMIA-backed job offer (NOC TEER 0/1/2/3)", "Geçerli LMIA destekli iş teklifi (NOC TEER 0/1/2/3)", "有效的LMIA担保工作邀约（NOC TEER 0/1/2/3）"),
+    estimatedChange: 50,
+    resultingEstimate: currentEstimate !== undefined ? currentEstimate + 50 : undefined,
+    explanation: t(
+      "A valid LMIA-supported job offer in a NOC TEER 0/1/2/3 occupation adds exactly +50 CRS points. Senior management roles (TEER 0) or some specific NOC codes may qualify for +200 points. The LMIA must be positive, current, and issued to the employer.",
+      "NOC TEER 0/1/2/3 mesleklerde geçerli bir LMIA destekli iş teklifi tam olarak +50 CRS puanı ekler. Üst düzey yönetim rolleri (TEER 0) veya bazı spesifik NOC kodları için +200 puan uygulanabilir.",
+      "NOC TEER 0/1/2/3职业的有效LMIA支持工作邀约可精确增加+50 CRS分。高管职位（TEER 0）或特定NOC代码可能获+200分。LMIA必须为正面、有效且由雇主持有。"
+    ),
+  });
+
+  // Provincial nomination
+  scenarios.push({
+    label: t("Provincial Nominee Program (PNP) nomination", "Eyalet Aday Programı (PNP) adaylığı", "省提名计划（PNP）提名"),
+    estimatedChange: 600,
+    resultingEstimate: currentEstimate !== undefined ? currentEstimate + 600 : undefined,
+    explanation: t(
+      "A valid provincial/territorial nomination under Express Entry adds +600 CRS points, which effectively guarantees an Invitation to Apply (ITA) in the next draw. Relevant streams by occupation include: Ontario OINP Human Capital Priorities (TEER 0-3), BC PNP Tech Pilot (select NOC codes in tech), Alberta AAIP (occupation-specific streams). Processing time: 2-6 months after receiving an OINP or BC PNP notification of interest.",
+      "Express Entry kapsamında geçerli bir eyalet/bölge adaylığı +600 CRS puanı ekler; bu da bir sonraki çekilişte ITA'yı neredeyse garanti eder. Meslekle ilgili akışlar şunlardır: Ontario OINP İnsan Sermayesi Öncelikleri (TEER 0-3), BC PNP Tech Pilot (teknoloji alanındaki seçili NOC kodları), Alberta AAIP.",
+      "Express Entry下的有效省/地区提名可获+600 CRS分，实际上保证在下次抽签中获得ITA。按职业相关通道：安大略省OINP人力资本优先（TEER 0-3）、BC省PNP科技试点（科技领域特定NOC代码）、阿尔伯塔省AAIP。"
+    ),
+  });
+
+  // Education upgrade
+  const hasHighEd = input.qualificationLevel === "PhD" || input.qualificationLevel === "Bachelor";
+  if (!hasHighEd) {
+    scenarios.push({
+      label: t("Canadian bachelor's degree (or foreign equivalent ECA)", "Kanada lisans derecesi (veya yabancı denklik ECA'sı)", "加拿大学士学位（或外国同等ECA）"),
+      estimatedChange: 30,
+      resultingEstimate: currentEstimate !== undefined ? currentEstimate + 30 : undefined,
+      explanation: t(
+        "A Canadian bachelor's degree or a foreign credential assessed as equivalent by an ECA-designated body (WES/ICAS) adds approximately +120 education CRS points for a single applicant; the gain shown here reflects movement from a lower education band. A Canadian or foreign master's degree adds +135 points; PhD adds +150 points.",
+        "Bir Kanada lisans derecesi veya ECA tarafından denkliği onaylanmış yabancı belge, tek başvurucu için yaklaşık +120 eğitim CRS puanı ekler. Kanada veya yabancı yüksek lisans derecesi +135 puan; doktora +150 puan ekler.",
+        "加拿大学士学位或经ECA指定机构（WES/ICAS）评估等效的外国资历，单身申请人约可获+120教育CRS分；显示的增益反映从较低学历段的提升。加拿大或外国硕士学位+135分；博士+150分。"
+      ),
+    });
+  }
+
+  // French language bonus
+  scenarios.push({
+    label: t("French language ability (NCLC 7+ in all skills)", "Fransızca dil yeteneği (tüm becerilerde NCLC 7+)", "法语能力（四项技能均达NCLC 7+）"),
+    estimatedChange: 50,
+    resultingEstimate: currentEstimate !== undefined ? currentEstimate + 50 : undefined,
+    explanation: t(
+      "Bilingual candidates with CLB 7+ in English AND NCLC 7+ in French receive a +50 CRS bonus (Bilingual Advantage). If only French is used as the first official language (without CLB 7+ English), additional bonus points do not apply but high French scores still generate strong CRS language points. French speakers may also access Francophone Mobility streams and certain PNP streams.",
+      "CLB 7+ İngilizce VE NCLC 7+ Fransızca olan iki dilli adaylar +50 CRS bonusu alır (İki Dilli Avantaj). Yalnızca Fransızca ilk resmi dil olarak kullanıldığında ek bonus uygulanmaz, ancak yüksek Fransızca puanları güçlü CRS dil puanları oluşturur.",
+      "英语CLB 7+且法语NCLC 7+的双语候选人可获+50 CRS奖励（双语优势）。若仅以法语作为第一官方语言（英语未达CLB 7+），不适用额外奖励，但高分法语仍能产生较强的CRS语言分。法语使用者还可访问法语流动通道和特定PNP通道。"
+    ),
+  });
+
+  // Estimated CRS draw targets
+  const teer = input.nocTeer;
+  const crsDrawNote = teer !== undefined && teer <= 1
+    ? t(
+        `For your TEER ${teer} occupation, recent STEM/general Express Entry draws have ranged from approximately 470–520 CRS. Healthcare-specific draws can be lower (430–480). PNP-only draws target nominees with any CRS, but general pool cutoffs have been trending upward since mid-2023.`,
+        `TEER ${teer} mesleğiniz için, son STEM/genel Express Entry çekimleri yaklaşık 470–520 CRS aralığında olmuştur. Sağlık sektörüne özgü çekimler daha düşük olabilir (430–480).`,
+        `对于您的TEER ${teer}职业，近期STEM/综合Express Entry抽签CRS约在470–520之间。医疗类专项抽签可能更低（430–480）。`
+      )
+    : t(
+        "Recent general Express Entry draws have ranged from approximately 470–520 CRS. Specific occupation-based draws (French language, healthcare) have lower cutoffs. A PNP nomination eliminates the points competition entirely (+600 points).",
+        "Son genel Express Entry çekimleri yaklaşık 470–520 CRS aralığında olmuştur. Spesifik meslek bazlı çekimler (Fransızca, sağlık) daha düşük kesme noktalarına sahiptir.",
+        "近期综合Express Entry抽签CRS约在470–520之间。特定职业专项抽签（法语、医疗）门槛更低。省提名可完全绕过积分竞争（+600分）。"
+      );
+
+  return {
+    currentEstimate,
+    scenarios,
+    note: crsDrawNote,
+  };
+}
+
 // Covers the 8 sections activated for Canada in this pass (points, roadmap,
 // risk, partial skill mapping, document checklist, gantt, PDF footer,
 // disclaimer). Fields below not in that scope (pathwayStrengthComparison,
@@ -2858,13 +3171,16 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     estimatedPoints: pointsEstimate.estimatedPoints,
     country: "CA",
   });
+  const caFinancialRoadmap = buildCanadaFinancialRoadmap(pathwayCodes, input, locale);
+  const caPointsBooster = buildCanadaPointsBoosterSimulator(input, pointsEstimate, locale);
+
   const premiumSections: PremiumSections = {
     ...generatedPremiumSections,
     scenarioBasedInsights: {
       pathwayStrengthComparison: [],
       evidenceReadiness: [],
-      pointsBoosterSimulator: undefined,
-      financialRoadmap: [],
+      pointsBoosterSimulator: caPointsBooster,
+      financialRoadmap: caFinancialRoadmap,
       progressionPathways: [],
       pathwayFriction: [],
       frictionAnalysis: [],
@@ -2918,7 +3234,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     pathwayComparison,
     pathwayStrengthComparison: [],
     evidenceReadiness: [],
-    financialRoadmap: [],
+    financialRoadmap: caFinancialRoadmap,
     progressionPathways: [],
     pathwayFriction: [],
     confidenceExplanation: signalSnapshot.confidenceExplanation,
@@ -2936,6 +3252,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     keyVisaRequirements,
     factorsAffectingPathways: [],
     pointsEstimate,
+    pointsBoosterSimulator: caPointsBooster,
     occupationIndication,
     riskIndicators,
     documentChecklist,

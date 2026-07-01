@@ -23,6 +23,8 @@ export type NocMatch = {
   title: string;
   teer: number;
   isFstpEligibleGroup: boolean;
+  /** Up to 3 key duties from the official NOC 2021 unit group definition. */
+  duties: string[];
 };
 
 export type NocCheckResult = {
@@ -43,7 +45,7 @@ export function checkNocOccupation(input: { occupation: string; nocCode?: string
     if (direct) {
       return {
         query: input.occupation || direct.title,
-        matches: [{ code: direct.code, title: direct.title, teer: direct.teer, isFstpEligibleGroup: isFstpGroup(direct) }],
+        matches: [{ code: direct.code, title: direct.title, teer: direct.teer, isFstpEligibleGroup: isFstpGroup(direct), duties: direct.duties.slice(0, 3) }],
         partialCoverageGap: false,
       };
     }
@@ -67,6 +69,7 @@ export function checkNocOccupation(input: { occupation: string; nocCode?: string
     title: e.title,
     teer: e.teer,
     isFstpEligibleGroup: isFstpGroup(e),
+    duties: e.duties.slice(0, 3),
   }));
 
   return {

@@ -158,8 +158,11 @@ export function getCanadaDocumentChecklist(
   categories.push({
     category: t3(locale, "Identity and passport", "Kimlik ve pasaport", "身份与护照"),
     items: localizedItems(locale, [
-      ["Passport or travel document", "Pasaport veya seyahat belgesi", "护照或旅行证件"],
+      ["Passport or travel document (valid; copy of all used pages)", "Pasaport veya seyahat belgesi (gecerli; kullanilan tum sayfalarin kopyasi)", "护照或旅行证件（有效；全部已用页面的复印件）"],
       ["Police certificates (applicant + family 18+, every country resided in 6+ months in last 10 years)", "Sabika kaydi (basvuru sahibi ve 18+ aile uyeleri, son 10 yilda 6+ ay yasanan her ulke icin)", "无犯罪记录证明（申请人及18岁以上家庭成员，过去10年内居住6个月以上的每个国家）"],
+      ["IMM 0008 — Generic Application Form for Canada (principal applicant)", "IMM 0008 — Kanada Genel Basvuru Formu (ana basvurucu)", "IMM 0008 — 加拿大通用申请表（主申请人）"],
+      ["IMM 5669 — Schedule A Background/Declaration (all applicants 18+)", "IMM 5669 — Ek A Arkaplan/Beyan (18+ tum basvurucular)", "IMM 5669 — 附表A 背景/声明（所有18岁以上申请人）"],
+      ["IMM 5406 — Additional Family Information (all applicants 18+)", "IMM 5406 — Ek Aile Bilgileri (18+ tum basvurucular)", "IMM 5406 — 附加家庭信息（所有18岁以上申请人）"],
     ]),
   });
 
@@ -180,12 +183,27 @@ export function getCanadaDocumentChecklist(
   });
 
   categories.push({
-    category: t3(locale, "Education", "Egitim", "教育"),
+    category: t3(locale, "Education (ECA)", "Egitim (ECA)", "教育（ECA）"),
     items: localizedItems(locale, [
       [
-        "Educational Credential Assessment (ECA) for foreign education, valid within 5 years",
-        "Yurt disi egitim icin Egitim Belgesi Degerlendirmesi (ECA), 5 yil gecerlilik suresi icinde",
-        "境外教育的教育资格评估（ECA），有效期5年内",
+        "Educational Credential Assessment (ECA) — IRCC-designated body required (WES, ICAS, IQAS, WES, PEBC, etc.) — valid within 5 years",
+        "Egitim Belgesi Degerlendirmesi (ECA) — IRCC tarafindan belirlenmis kurum gereklidir (WES, ICAS, IQAS, vb.) — 5 yil icinde gecerli",
+        "教育资历评估（ECA）——须由IRCC指定机构评估（WES、ICAS、IQAS等），有效期5年内",
+      ],
+      [
+        "WES (World Education Services) — most common for FSW/CEC/FSTP; accepts transcripts + degree certificate; standard processing ~7–20 business days (AUD $239–$285)",
+        "WES (Dunya Egitim Hizmetleri) — FSW/CEC/FSTP icin en yaygin; transkript + derece belgesi kabul eder; standart islem ~7–20 is gunu",
+        "WES（世界教育服务）——最常用于FSW/CEC/FSTP；接受成绩单+学位证书；标准处理约7-20个工作日",
+      ],
+      [
+        "ICAS (International Credential Assessment Service) — accepted for most Express Entry streams; often faster than WES for some countries",
+        "ICAS (Uluslararasi Belge Degerlendirme Servisi) — cogu Express Entry akisi icin kabul edilir; bazi ulkeler icin WES'ten daha hizli olabilir",
+        "ICAS（国际资历评估服务）——适用于大多数Express Entry通道；部分国家评估比WES更快",
+      ],
+      [
+        "Original transcripts and degree certificates (notarized/certified translations if not in English or French)",
+        "Orijinal transkriptler ve derece belgeleri (Ingilizce veya Fransizca degilse noter/sertifikayli ceviriler)",
+        "原版成绩单和学位证书（非英语或法语须经公证/认证翻译）",
       ],
     ]),
   });
@@ -213,8 +231,8 @@ export function getCanadaDocumentChecklist(
     categories.push({
       category: t3(locale, "FSW: work experience and funds", "FSW: is tecrubesi ve fonlar", "FSW：工作经验与资金"),
       items: localizedItems(locale, [
-        ["Evidence of skilled work experience (1 year continuous within last 10 years, NOC TEER 0-3)", "Vasifli is tecrubesi kaniti (son 10 yilda 1 yil surekli, NOC TEER 0-3)", "技术工作经验证明（过去10年内连续1年，NOC TEER 0-3）"],
-        ["Proof of funds (unless applying under CEC or with a valid job offer)", "Fon kaniti (CEC kapsaminda veya gecerli is teklifiyle basvurmadiginiz takdirde)", "资金证明（除非以CEC身份申请或持有有效工作邀约）"],
+        ["Evidence of skilled work experience (1 year continuous within last 10 years, NOC TEER 0-3) — employer letters on company letterhead with hours, salary, duties, dates", "Vasifli is tecrubesi kaniti (son 10 yilda 1 yil surekli, NOC TEER 0-3) — saat, maas, gorevler ve tarihler iceren sirket antetli kagidinda isveren mektuplari", "技术工作经验证明（过去10年内连续1年，NOC TEER 0-3）——含工作时间、薪资、职责、日期的公司抬头雇主信"],
+        ["Proof of funds — bank statements showing consistent balance for 3–6 months. Required amounts (2024 IRCC): 1 person CAD $13,757 · 2 persons $17,127 · 3 persons $21,055 · 4 persons $25,564 · 5+ persons $28,994+. Funds must be unencumbered and transferable to Canada.", "Fon kaniti — 3-6 aylik tutarli bakiye gosteren banka ekstresi. Gerekli tutarlar (2024 IRCC): 1 kisi CAD 13.757 · 2 kisi 17.127 · 3 kisi 21.055 · 4 kisi 25.564 · 5+ kisi 28.994+. Fonlar serbest ve Kanada'ya transfer edilebilir olmalidir.", "资金证明——3-6个月余额稳定的银行流水。所需金额（2024年IRCC）：1人CAD $13,757·2人$17,127·3人$21,055·4人$25,564·5人以上$28,994+。资金须无抵押且可转入加拿大。"],
       ]),
     });
   }
@@ -222,8 +240,10 @@ export function getCanadaDocumentChecklist(
   categories.push({
     category: t3(locale, "If applicable", "Uygunsa", "如适用"),
     items: localizedItems(locale, [
-      ["Provincial nomination certificate, if applying with a PNP nomination", "PNP adaylik sertifikasi, varsa", "省提名证书（如适用）"],
-      ["Written job offer, if claiming job-offer-related requirements", "Yazili is teklifi, ilgili gereksinimler icin", "书面工作邀约（如适用）"],
+      ["Provincial nomination certificate (PNP), if applying with a nomination — must match the name and information in your Express Entry profile", "PNP adaylik sertifikasi — Express Entry profilinizdeki ad ve bilgilerle eslesmesi gerekir", "省提名证书（PNP）——须与Express Entry档案中的姓名和信息一致"],
+      ["Written job offer (IMM 5802) — only required if claiming job-offer CRS points; must be LMIA-supported unless LMIA-exempt under R204/R205", "Yazili is teklifi (IMM 5802) — yalnizca is teklifi CRS puanlari talep ediliyorsa gereklidir; R204/R205 kapsaminda muaf degilse LMIA destekli olmalidir", "书面工作邀约（IMM 5802）——仅在申领工作邀约CRS分时须提供；除R204/R205豁免外须有LMIA支持"],
+      ["Medical examination results (valid 12 months) — completed by IRCC-designated Panel Physician only", "Saglik muayenesi sonuclari (12 ay gecerli) — yalnizca IRCC tarafindan belirlenmis Panel Hekimi tarafindan yapilmalidir", "体检结果（有效期12个月）——须由IRCC指定的体检医生完成"],
+      ["Biometric enrolment receipt (if biometrics previously collected and still valid)", "Biyometrik kayit makbuzu (daha once toplandi ve hala gecerliyse)", "生物特征采集凭证（如之前已采集且仍在有效期内）"],
     ]),
   });
 
