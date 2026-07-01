@@ -46,15 +46,48 @@ export function HomeContent() {
             {t("hero.subheadline")}
           </p>
           
-          <div className="mt-10 flex w-full max-w-md flex-col gap-4 sm:flex-row sm:justify-center">
-            <Button asChild size="lg" className="h-14 px-8 text-base bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/50 border-0">
-              <Link href={`/${locale}/reports`}>
-                {locale === "tr" ? "Hemen Başla" : locale === "zh-Hans" ? "立即开始" : "Get Free Report"}
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-slate-100 dark:bg-zinc-900/50 dark:border-zinc-800 dark:hover:bg-zinc-800">
-              <Link href={`/${locale}/assistant`}>{t("hero.secondary")}</Link>
-            </Button>
+          {/* Country Selector Cards */}
+          <div className="mt-10 flex w-full max-w-2xl flex-col gap-4 sm:flex-row sm:justify-center">
+            {/* Australia Card */}
+            <Link
+              href={`/${locale}/reports`}
+              className="group relative flex flex-1 flex-col items-center gap-3 rounded-2xl border-2 border-indigo-200 bg-white/80 px-6 py-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-indigo-400 hover:shadow-indigo-200/60 hover:shadow-xl hover:scale-105 dark:border-indigo-800/60 dark:bg-zinc-900/70 dark:hover:border-indigo-600"
+            >
+              <span className="text-4xl">🇦🇺</span>
+              <div className="text-center">
+                <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
+                  {locale === "tr" ? "Ülke" : locale === "zh-Hans" ? "目的地" : "Destination"}
+                </p>
+                <p className="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">
+                  {locale === "tr" ? "Avustralya" : locale === "zh-Hans" ? "澳大利亚" : "Australia"}
+                </p>
+              </div>
+              <span className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 text-center text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all group-hover:shadow-indigo-500/50">
+                {locale === "tr" ? "Rapor Al →" : locale === "zh-Hans" ? "获取报告 →" : "Get My Report →"}
+              </span>
+            </Link>
+
+            {/* Canada Card */}
+            <Link
+              href={`/${locale}/full-check`}
+              className="group relative flex flex-1 flex-col items-center gap-3 rounded-2xl border-2 border-red-200 bg-white/80 px-6 py-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-red-400 hover:shadow-red-200/60 hover:shadow-xl hover:scale-105 dark:border-red-800/60 dark:bg-zinc-900/70 dark:hover:border-red-600"
+            >
+              <span className="absolute -top-3 right-4 rounded-full bg-red-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow">
+                {locale === "tr" ? "YENİ" : locale === "zh-Hans" ? "新" : "NEW"}
+              </span>
+              <span className="text-4xl">🇨🇦</span>
+              <div className="text-center">
+                <p className="text-xs font-semibold uppercase tracking-widest text-red-500 dark:text-red-400">
+                  {locale === "tr" ? "Ülke" : locale === "zh-Hans" ? "目的地" : "Destination"}
+                </p>
+                <p className="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">
+                  {locale === "tr" ? "Kanada" : locale === "zh-Hans" ? "加拿大" : "Canada"}
+                </p>
+              </div>
+              <span className="w-full rounded-xl bg-gradient-to-r from-red-500 to-rose-600 py-2.5 text-center text-sm font-bold text-white shadow-lg shadow-red-500/30 transition-all group-hover:shadow-red-500/50">
+                {locale === "tr" ? "Rapor Al →" : locale === "zh-Hans" ? "获取报告 →" : "Get My Report →"}
+              </span>
+            </Link>
           </div>
 
           {/* Secondary micro-tool CTA */}
@@ -95,7 +128,6 @@ export function HomeContent() {
       {/* PDF Download Banner */}
       <section className="section-shell">
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-700 px-8 py-10 text-white shadow-xl">
-          {/* decorative blur */}
           <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
           <div className="absolute -left-10 bottom-0 h-48 w-48 rounded-full bg-purple-400/20 blur-2xl pointer-events-none" />
 
@@ -109,26 +141,26 @@ export function HomeContent() {
               </div>
               <h2 className="text-2xl font-extrabold sm:text-3xl">
                 {locale === "tr"
-                  ? "Avustralya PR Rehberi 2026"
+                  ? "PR Rehberi 2026 — AU & CA"
                   : locale === "zh-Hans"
-                    ? "澳大利亚 PR 指南 2026"
-                    : "Australia PR Guide 2026"}
+                    ? "PR 指南 2026 — 澳大利亚 & 加拿大"
+                    : "PR Guide 2026 — AU & CA"}
               </h2>
               <p className="max-w-lg text-indigo-100 text-sm sm:text-base">
                 {locale === "tr" ? (
                   <>
-                    Kalici oturma izni basvuru surecini adim adim anlatan ucretsiz
-                    Turkce rehberimizi indirin. Ilk 20 indirme <strong>bedava</strong>, sonrasi <strong>$20</strong>.
+                    Avustralya ve Kanada kalıcı oturma izni süreçlerini adım adım anlatan
+                    ücretsiz Türkçe rehberimizi indirin. İlk 20 indirme <strong>bedava</strong>, sonrası <strong>$20</strong>.
                   </>
                 ) : locale === "zh-Hans" ? (
                   <>
-                    下载这份免费的土耳其语指南，逐步了解永久居留申请流程。前 20 次下载
+                    下载这份免费的土耳其语指南，逐步了解澳大利亚和加拿大的永久居留申请流程。前 20 次下载
                     <strong>免费</strong>，之后 <strong>$20</strong>。
                   </>
                 ) : (
                   <>
-                    Download our free Turkish guide that explains the permanent
-                    residency process step by step. First 20 downloads are
+                    Download our free Turkish guide covering the permanent residency process
+                    for both Australia and Canada, step by step. First 20 downloads are
                     <strong> free</strong>, then <strong>$20</strong>.
                   </>
                 )}
@@ -140,7 +172,7 @@ export function HomeContent() {
               className="shrink-0 bg-white text-indigo-700 font-bold hover:bg-indigo-50 border-0 shadow-lg"
             >
               {locale === "tr"
-                ? "📥 Ucretsiz Indir"
+                ? "📥 Ücretsiz İndir"
                 : locale === "zh-Hans"
                   ? "📥 免费下载"
                   : "📥 Free Download"}
@@ -176,11 +208,11 @@ export function HomeContent() {
               {locale === "tr" ? "Puan Hesaplayıcı" : locale === "zh-Hans" ? "积分计算器" : "Points Calculator"}
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
-              {locale === "tr" 
-                ? "DHA kurallarına göre tahmini puanınızı ve potansiyel ek puan fırsatlarını anında hesaplayın." 
-                : locale === "zh-Hans" 
-                ? "根据DHA规则，即刻计算您的预估分数以及潜在的加分机会。" 
-                : "Instantly calculate your estimated points and potential bonus point opportunities based on DHA rules."}
+              {locale === "tr"
+                ? "Tahmini puanınızı ve potansiyel ek puan fırsatlarını gerçek göç kurallarına göre anında hesaplayın."
+                : locale === "zh-Hans"
+                ? "根据移民规则即刻计算您的预估分数以及潜在的加分机会。"
+                : "Instantly calculate your estimated points and potential bonus point opportunities based on real immigration rules."}
             </p>
             <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-indigo-500/10 blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
           </div>

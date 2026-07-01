@@ -119,19 +119,24 @@ export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
     if (isCanada) {
       return [
         t(
-          "CRS puanımı artırmak için en etkili adımlar neler?",
-          "How can I improve my CRS score?",
-          "我该如何提高 CRS 分数？"
+          "Kanada'ya taşınmak için nereden başlamalıyım?",
+          "Move to Canada: where do I start?",
+          "移民加拿大：我该从哪里开始？"
         ),
         t(
-          `${occupationLabel} için PNP sürecini açıkla.`,
-          `Explain the PNP process for ${occupationLabel}.`,
-          `请解释 ${occupationLabel} 的省提名流程。`
+          "Express Entry yolu benim için ne anlama geliyor?",
+          "What does the Express Entry pathway mean for me?",
+          "快速通道对我意味着什么？"
         ),
         t(
-          "CEC mi FSW mi bana daha uygun?",
-          "Is CEC or FSW better for me?",
-          "CEC 和 FSW 哪个更适合我？"
+          `${occupationLabel} için PNP adaylığımı kontrol et.`,
+          `Check my PNP nomination eligibility for ${occupationLabel}.`,
+          `帮我检查 ${occupationLabel} 的省提名资格。`
+        ),
+        t(
+          "Kanada finansal yol haritamı özetle.",
+          "Summarize my Canada financial roadmap.",
+          "总结我的加拿大财务路线图。"
         ),
       ];
     }
