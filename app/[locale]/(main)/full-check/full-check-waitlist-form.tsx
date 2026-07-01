@@ -21,9 +21,138 @@ import { StateHeatmap } from "@/components/StateHeatmap";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
+import Fuse from "fuse.js";
+
+// ── NOC Fuzzy Search Setup ────────────────────────────────────────────────────
+// Built once at module level so every keystroke hits a pre-built index.
 
 type NocEntry = { code: string; title: string; teer: number };
-const NOC_LIST = nocListRaw as NocEntry[];
+
+// Maps official NOC title keywords → everyday synonyms used by applicants.
+// Merged into the search index so "doctor" → "physician", "dev" → "software", etc.
+const NOC_ALIAS_MAP_STATIC: Record<string, string[]> = {
+  physician: ["doctor", "medical doctor", "doc", "gp", "surgeon", "pediatrician", "psychiatrist", "internist", "specialist", "md", "family doctor"],
+  nursing: ["nurse", "rn", "lpn", "registered nurse", "practitioner", "midwife", "midwifery"],
+  care: ["caregiver", "psw", "support worker", "elder care", "nanny", "personal support", "health aide"],
+  pharmacy: ["pharmacist", "chemist", "dispenser", "pharmacy technician"],
+  dental: ["dentist", "dental hygienist", "orthodontist", "dental assistant", "oral health"],
+  physiotherapy: ["physio", "physiotherapist", "physical therapist", "pt", "rehab therapist"],
+  optometry: ["optometrist", "eye doctor", "optician"],
+  veterinary: ["vet", "veterinarian", "animal doctor"],
+  radiology: ["radiologist", "x-ray technician", "mri", "ultrasound technologist"],
+  laboratory: ["lab technician", "medical lab", "pathologist", "lab tech", "clinical lab"],
+  software: ["programmer", "coder", "software engineer", "developer", "dev", "frontend", "backend", "fullstack", "ui developer", "ux developer", "web developer", "app developer", "mobile developer", "ios", "android", "react", "node", "python developer", "java developer"],
+  data: ["data scientist", "data analyst", "machine learning", "ml engineer", "ai", "artificial intelligence", "database", "data engineer", "bi analyst", "business intelligence", "etl"],
+  systems: ["sysadmin", "system administrator", "it support", "helpdesk", "help desk", "network engineer", "cybersecurity", "security analyst", "devops", "cloud engineer", "aws", "azure", "infrastructure"],
+  "information technology": ["it manager", "it director", "cto", "chief technology", "it consultant", "technology manager"],
+  civil: ["civil engineer", "structural engineer", "geotechnical", "site engineer", "construction engineer"],
+  mechanical: ["mechanical engineer", "hvac engineer", "hvac", "manufacturing engineer", "production engineer"],
+  electrical: ["electrical engineer", "electronics engineer", "power engineer", "instrumentation engineer"],
+  chemical: ["chemical engineer", "process engineer", "materials engineer", "metallurgist"],
+  aerospace: ["aerospace engineer", "aeronautical engineer", "aviation engineer"],
+  accounting: ["accountant", "cpa", "bookkeeper", "auditor", "comptroller", "controller", "tax specialist", "forensic accountant", "payroll"],
+  "human resources": ["hr", "recruiter", "talent acquisition", "people ops", "compensation", "benefits specialist", "hr generalist", "hr manager"],
+  marketing: ["marketer", "seo", "digital marketing", "social media", "growth hacker", "brand manager", "content manager", "campaign manager", "communications"],
+  sales: ["sales rep", "account executive", "b2b sales", "retail", "cashier", "sales manager", "business development", "bdr", "sdr", "account manager"],
+  management: ["manager", "ceo", "director", "supervisor", "executive", "vp", "vice president", "coo", "cfo", "operations manager", "general manager"],
+  administrative: ["admin", "secretary", "receptionist", "assistant", "clerk", "office manager", "data entry", "coordinator"],
+  finance: ["financial analyst", "investment", "portfolio manager", "banker", "loan officer", "credit analyst", "underwriter", "insurance"],
+  legal: ["lawyer", "attorney", "paralegal", "notary", "barrister", "solicitor", "legal assistant"],
+  "electrical trades": ["electrician", "sparky", "wireman", "journeyman electrician", "master electrician"],
+  plumbing: ["plumber", "pipefitter", "steamfitter", "gasfitter"],
+  carpentry: ["carpenter", "cabinetmaker", "framer", "joiner", "woodworker", "trim carpenter"],
+  mechanic: ["auto mechanic", "technician", "automotive technician", "service technician", "diesel mechanic", "heavy equipment mechanic"],
+  welding: ["welder", "fabricator", "fitter", "boilermaker"],
+  driving: ["driver", "truck driver", "trucker", "delivery driver", "courier", "logistics", "transport operator", "bus driver", "transit operator", "cdl"],
+  construction: ["construction worker", "labourer", "laborer", "ironworker", "rebar", "concrete", "mason", "bricklayer", "tile setter", "plasterer"],
+  culinary: ["chef", "cook", "baker", "sous chef", "pastry chef", "head chef", "line cook", "prep cook"],
+  "food service": ["waiter", "waitress", "server", "bartender", "barista", "host", "hostess", "busser", "food counter attendant"],
+  cleaning: ["cleaner", "janitor", "housekeeper", "maid", "custodian", "sanitation worker", "building cleaner"],
+  hotel: ["hotel manager", "front desk", "concierge", "guest services", "hospitality manager"],
+  educator: ["teacher", "prof", "professor", "tutor", "lecturer", "instructor", "elementary teacher", "high school teacher", "kindergarten", "early childhood educator", "ece", "daycare"],
+  biology: ["biologist", "biochemist", "microbiologist", "research scientist", "life sciences"],
+  geology: ["geologist", "geoscientist", "environmental scientist", "hydrogeologist"],
+  psychology: ["psychologist", "therapist", "counsellor", "counselor", "mental health", "social worker", "behaviour analyst"],
+  agriculture: ["farmer", "agricultural worker", "greenhouse worker", "farm worker", "horticulturist", "livestock", "agri"],
+};
+
+// Build augmented index: each NOC entry gains an `aliasText` field containing
+// all alias synonyms whose NOC keyword appears in the entry's title.
+// This lets Fuse index "doctor coder trucker" etc. as searchable text.
+type NocIndexEntry = NocEntry & { aliasText: string };
+const NOC_INDEX: NocIndexEntry[] = (nocListRaw as NocEntry[]).map((entry) => {
+  const titleLower = entry.title.toLowerCase();
+  const aliasTerms: string[] = [];
+  for (const [nocKeyword, aliases] of Object.entries(NOC_ALIAS_MAP_STATIC)) {
+    if (titleLower.includes(nocKeyword.toLowerCase())) {
+      aliasTerms.push(...aliases);
+    }
+  }
+  return { ...entry, aliasText: aliasTerms.join(" ") };
+});
+
+const NOC_FUSE = new Fuse<NocIndexEntry>(NOC_INDEX, {
+  keys: [
+    { name: "title", weight: 1.0 },
+    { name: "aliasText", weight: 0.7 },
+    { name: "code", weight: 0.3 },
+  ],
+  threshold: 0.38,        // 0 = exact, 1 = match anything; 0.38 catches "doc"→"doctor"
+  distance: 200,          // search within entire string, not just prefix
+  minMatchCharLength: 2,
+  includeScore: true,
+  ignoreLocation: true,   // don't penalise matches at end of string
+  useExtendedSearch: false,
+});
+
+/**
+ * Two-phase fuzzy NOC search:
+ * 1. Fuse.js fuzzy search on title + aliasText (catches typos, partials, synonyms)
+ * 2. If the raw query exactly hits an alias map key's aliases, inject those NOC
+ *    titles at the top (highest semantic precision — e.g. "doctor" → physician NOCs)
+ */
+function searchNoc(query: string): NocEntry[] {
+  if (!query || query.length < 2) return [];
+  const q = query.toLowerCase().trim();
+
+  // Phase 1 — alias-expansion pre-pass: collect NOC keywords whose alias list
+  // contains the query (whole-word or prefix match on individual alias terms).
+  const expandedKeywords = new Set<string>();
+  for (const [nocKeyword, aliases] of Object.entries(NOC_ALIAS_MAP_STATIC)) {
+    const hit = aliases.some(
+      (alias) => alias.toLowerCase().startsWith(q) || alias.toLowerCase() === q || q.startsWith(alias.toLowerCase())
+    );
+    if (hit) expandedKeywords.add(nocKeyword.toLowerCase());
+  }
+
+  // Phase 2 — run Fuse fuzzy search on the raw query
+  const fuseResults = NOC_FUSE.search(q, { limit: 30 });
+
+  // Phase 3 — also run Fuse on each expanded keyword so alias hits get scored
+  type FuseResult = ReturnType<typeof NOC_FUSE.search>[number];
+  const aliasResults: FuseResult[] = [];
+  for (const kw of expandedKeywords) {
+    const kwResults = NOC_FUSE.search(kw, { limit: 10 });
+    aliasResults.push(...kwResults);
+  }
+
+  // Merge: alias results first (higher semantic confidence), then fuzzy results
+  const seen = new Set<string>();
+  const merged: NocEntry[] = [];
+
+  const addEntry = (entry: NocIndexEntry) => {
+    if (!seen.has(entry.code)) {
+      seen.add(entry.code);
+      merged.push({ code: entry.code, title: entry.title, teer: entry.teer });
+    }
+  };
+
+  for (const r of aliasResults) addEntry(r.item);
+  for (const r of fuseResults) addEntry(r.item);
+
+  return merged.slice(0, 14);
+}
+
 
 function trackGaEvent(name: string, params?: Record<string, string | number | boolean | null | undefined>) {
   if (typeof window === "undefined") return;
@@ -256,91 +385,8 @@ export function FullCheckWaitlistForm({
   const [nocResults, setNocResults] = useState<NocEntry[]>([]);
   const [nocOpen, setNocOpen] = useState(false);
 
-  const NOC_ALIAS_MAP: Record<string, string[]> = {
-    // Healthcare
-    physician: ["doctor", "medical doctor", "doc", "gp", "surgeon", "pediatrician", "psychiatrist", "internist", "specialist", "md", "family doctor"],
-    nursing: ["nurse", "rn", "lpn", "registered nurse", "practitioner", "midwife", "midwifery"],
-    care: ["caregiver", "psw", "support worker", "elder care", "nanny", "personal support", "health aide"],
-    pharmacy: ["pharmacist", "chemist", "dispenser", "pharmacy technician"],
-    dental: ["dentist", "dental hygienist", "orthodontist", "dental assistant", "oral health"],
-    physiotherapy: ["physio", "physiotherapist", "physical therapist", "pt", "rehab therapist"],
-    optometry: ["optometrist", "eye doctor", "optician"],
-    veterinary: ["vet", "veterinarian", "animal doctor"],
-    radiology: ["radiologist", "x-ray technician", "mri", "ultrasound technologist"],
-    laboratory: ["lab technician", "medical lab", "pathologist", "lab tech", "clinical lab"],
-    // Tech & IT
-    software: ["programmer", "coder", "software engineer", "developer", "dev", "frontend", "backend", "fullstack", "ui developer", "ux developer", "web developer", "app developer", "mobile developer", "ios", "android", "react", "node", "python developer", "java developer"],
-    data: ["data scientist", "data analyst", "machine learning", "ml engineer", "ai", "artificial intelligence", "database", "data engineer", "bi analyst", "business intelligence", "etl"],
-    systems: ["sysadmin", "system administrator", "it support", "helpdesk", "help desk", "network engineer", "cybersecurity", "security analyst", "devops", "cloud engineer", "aws", "azure", "infrastructure"],
-    "information technology": ["it manager", "it director", "cto", "chief technology", "it consultant", "technology manager"],
-    // Engineering
-    civil: ["civil engineer", "structural engineer", "geotechnical", "site engineer", "construction engineer"],
-    mechanical: ["mechanical engineer", "hvac engineer", "hvac", "manufacturing engineer", "production engineer"],
-    electrical: ["electrical engineer", "electronics engineer", "power engineer", "instrumentation engineer"],
-    chemical: ["chemical engineer", "process engineer", "materials engineer", "metallurgist"],
-    aerospace: ["aerospace engineer", "aeronautical engineer", "aviation engineer"],
-    // Business, Finance & Admin
-    accounting: ["accountant", "cpa", "bookkeeper", "auditor", "comptroller", "controller", "tax specialist", "forensic accountant", "payroll"],
-    "human resources": ["hr", "recruiter", "talent acquisition", "people ops", "compensation", "benefits specialist", "hr generalist", "hr manager"],
-    marketing: ["marketer", "seo", "digital marketing", "social media", "growth hacker", "brand manager", "content manager", "campaign manager", "communications"],
-    sales: ["sales rep", "account executive", "b2b sales", "retail", "cashier", "sales manager", "business development", "bdr", "sdr", "account manager"],
-    management: ["manager", "ceo", "director", "supervisor", "executive", "vp", "vice president", "coo", "cfo", "operations manager", "general manager"],
-    administrative: ["admin", "secretary", "receptionist", "assistant", "clerk", "office manager", "data entry", "coordinator"],
-    finance: ["financial analyst", "investment", "portfolio manager", "banker", "loan officer", "credit analyst", "underwriter", "insurance"],
-    legal: ["lawyer", "attorney", "paralegal", "notary", "barrister", "solicitor", "legal assistant"],
-    // Trades & Blue Collar
-    "electrical trades": ["electrician", "sparky", "wireman", "journeyman electrician", "master electrician"],
-    plumbing: ["plumber", "pipefitter", "steamfitter", "gasfitter"],
-    carpentry: ["carpenter", "cabinetmaker", "framer", "joiner", "woodworker", "trim carpenter"],
-    mechanic: ["auto mechanic", "technician", "automotive technician", "service technician", "diesel mechanic", "heavy equipment mechanic"],
-    welding: ["welder", "fabricator", "fitter", "boilermaker"],
-    driving: ["driver", "truck driver", "trucker", "delivery driver", "courier", "logistics", "transport operator", "bus driver", "transit operator", "cdl"],
-    construction: ["construction worker", "labourer", "laborer", "ironworker", "rebar", "concrete", "mason", "bricklayer", "tile setter", "plasterer"],
-    // Hospitality & Food
-    culinary: ["chef", "cook", "baker", "sous chef", "pastry chef", "head chef", "line cook", "prep cook"],
-    "food service": ["waiter", "waitress", "server", "bartender", "barista", "host", "hostess", "busser", "food counter attendant"],
-    cleaning: ["cleaner", "janitor", "housekeeper", "maid", "custodian", "sanitation worker", "building cleaner"],
-    hotel: ["hotel manager", "front desk", "concierge", "guest services", "hospitality manager"],
-    // Education
-    educator: ["teacher", "prof", "professor", "tutor", "lecturer", "instructor", "elementary teacher", "high school teacher", "kindergarten", "early childhood educator", "ece", "daycare"],
-    // Science & Research
-    biology: ["biologist", "biochemist", "microbiologist", "research scientist", "life sciences"],
-    geology: ["geologist", "geoscientist", "environmental scientist", "hydrogeologist"],
-    psychology: ["psychologist", "therapist", "counsellor", "counselor", "mental health", "social worker", "behaviour analyst"],
-    // Skilled Agriculture
-    agriculture: ["farmer", "agricultural worker", "greenhouse worker", "farm worker", "horticulturist", "livestock", "agri"],
-  };
-
-  function filterNoc(query: string): NocEntry[] {
-    if (!query || query.length < 2) return [];
-    const q = query.toLowerCase().trim();
-    const seen = new Set<string>();
-    const results: NocEntry[] = [];
-
-    // Helper that adds matches by NOC title keyword, deduplicated
-    const addByKeyword = (keyword: string) => {
-      const kw = keyword.toLowerCase();
-      for (const e of NOC_LIST) {
-        if (!seen.has(e.code) && (e.title.toLowerCase().includes(kw) || e.code.startsWith(q))) {
-          seen.add(e.code);
-          results.push(e);
-        }
-      }
-    };
-
-    // A) Direct title / code match first (highest relevance)
-    addByKeyword(q);
-
-    // B) Alias map: find every NOC keyword whose alias list contains the query
-    for (const [nocKeyword, aliases] of Object.entries(NOC_ALIAS_MAP)) {
-      const aliasHit = aliases.some((alias) => alias.toLowerCase().includes(q) || q.includes(alias.toLowerCase()));
-      if (aliasHit) {
-        addByKeyword(nocKeyword);
-      }
-    }
-
-    return results.slice(0, 14);
-  }
+  // NOC_ALIAS_MAP and filterNoc replaced by module-level NOC_ALIAS_MAP_STATIC
+  // and searchNoc() which uses Fuse.js — see top of file.
 
   const aiAnalysisSteps = selectedCountry === "CA"
     ? isTr
@@ -771,13 +817,13 @@ export function FullCheckWaitlistForm({
                   setNocSearch(v);
                   setNocCode("");
                   setNocTeer(null);
-                  setNocResults(filterNoc(v));
+                  setNocResults(searchNoc(v));
                   setNocOpen(true);
                 }}
                 onBlur={() => setTimeout(() => setNocOpen(false), 150)}
                 onFocus={() => {
                   if (nocSearch.length >= 2) {
-                    setNocResults(filterNoc(nocSearch));
+                    setNocResults(searchNoc(nocSearch));
                     setNocOpen(true);
                   }
                 }}
