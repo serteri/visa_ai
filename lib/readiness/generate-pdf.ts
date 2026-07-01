@@ -543,6 +543,23 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return value.replace(/[^\x00-\x7F]/g, "?");
   }
 
+  /**
+   * Strip characters that jsPDF/jsPDF-autotable can misparse as LaTeX math or
+   * special markup. Applied to all dynamic numeric strings (amounts, labels,
+   * points deltas) before they reach doc.text() or drawTable().
+   * – CAD/AUD $ signs in amounts are replaced with the word equivalent to
+   *   avoid the renderer interpreting them as math delimiters.
+   * – Leading + on point gains is removed (e.g. "+50" → "50 pts gain").
+   */
+  function cleanNum(value: string): string {
+    return value
+      .replace(/\+(\d)/g, "$1") // "+50" → "50"
+      .replace(/\$(\d)/g, "$1") // "$1,525" → "1,525"
+      .replace(/~\$(\d)/g, "~$1") // "~$300" → "~300"
+      .replace(/CAD \$/g, "CAD ") // "CAD $300" → "CAD 300"
+      .replace(/AUD \$/g, "AUD "); // "AUD $300" → "AUD 300"
+  }
+
   let yPosition = 20;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -1286,9 +1303,68 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
   }
 
+  function drawMissingInfoBox() {
+    if (!report.missingInformation || report.missingInformation.length === 0) return;
+    ensurePageSpace(30);
+    const boxX = margin;
+    const lineH = 5;
+    const introLine = effectiveLocale === "tr"
+      ? "Bu rapor standart varsayımlarla oluşturulmuştur. Kişiselleştirilmiş bir değerlendirme için lütfen başvuru formunuzu güncelleyin."
+      : effectiveLocale === "zh-Hans"
+      ? "本报告基于标准假设生成。如需个性化评估，请更新您的申请表。"
+      : "This report was generated using standard assumptions. Please update your intake form for a personalized assessment.";
+    const heading = effectiveLocale === "tr" ? "Eksik Bilgiler ve Varsayımlar" : effectiveLocale === "zh-Hans" ? "缺失信息与假设" : "Missing Information & Assumptions";
+    const wrappedIntro = doc.splitTextToSize(safeText(introLine), contentWidth - 10);
+    const totalLines = 1 + wrappedIntro.length + report.missingInformation.length;
+    const boxHeight = 6 + totalLines * lineH + 4;
+    doc.setDrawColor(220, 38, 38);
+    doc.setLineWidth(0.8);
+    doc.setFillColor(254, 242, 242);
+    doc.roundedRect(boxX, yPosition, contentWidth, boxHeight, 2, 2, "FD");
+    yPosition += 5;
+    setBoldFont();
+    doc.setFontSize(FONTS.body);
+    doc.setTextColor(185, 28, 28);
+    doc.text(safeText(heading), boxX + 4, yPosition);
+    yPosition += lineH;
+    setBaseFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    wrappedIntro.forEach((line: string) => {
+      doc.text(safeText(line), boxX + 4, yPosition);
+      yPosition += lineH;
+    });
+    report.missingInformation.forEach((item) => {
+      ensurePageSpace(lineH);
+      doc.text(safeText(`• ${item}`), boxX + 6, yPosition);
+      yPosition += lineH;
+    });
+    yPosition += 4;
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.setLineWidth(0.3);
+  }
+
   function drawNocEcaSection() {
-    if (!report.occupationIndication) return;
     const occ = report.occupationIndication;
+    if (!occ) {
+      addSectionHeading("", text.nocEcaSection);
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      ensurePageSpace(8);
+      const placeholder = effectiveLocale === "tr"
+        ? "Meslek: [Seçim Bekleniyor] — Detaylı NOC görev tanımları ve ECA gereksinimlerini görüntülemek için lütfen başvuru formundaki NOC aramasını tamamlayın."
+        : effectiveLocale === "zh-Hans"
+        ? "职业：[待选] — 请在申请表中完成 NOC 查找，以解锁详细的 NOC 职责说明和 ECA 要求。"
+        : "Occupation: [Pending Selection] — Please complete the NOC lookup in the intake form to unlock detailed NOC-specific duties and ECA requirements.";
+      const wrapped = doc.splitTextToSize(safeText(placeholder), contentWidth);
+      wrapped.forEach((line: string) => {
+        doc.text(line, margin, yPosition);
+        yPosition += 4.5;
+      });
+      yPosition += 3;
+      return;
+    }
     addSectionHeading("", text.nocEcaSection);
     if (occ.occupation) {
       setBoldFont();
@@ -1333,7 +1409,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   function drawCrsDrawTrendsSection() {
     if (report.country !== "CA" || !report.pointsBoosterSimulator) return;
     addSectionHeading("", text.crsDrawTrends);
-    addSmallText(report.pointsBoosterSimulator.note, 2);
+    addSmallText(cleanNum(report.pointsBoosterSimulator.note), 2);
     yPosition += 3;
   }
 
@@ -1349,19 +1425,19 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (single) {
       rows.push([
         text.livingCostSingle,
-        `${single.currency} $${single.monthly.rent}`,
-        `${single.currency} $${single.monthly.groceries}`,
-        `${single.currency} $${single.monthly.transport}`,
-        `${single.currency} $${single.monthly.total}`,
+        cleanNum(`${single.currency} ${single.monthly.rent}`),
+        cleanNum(`${single.currency} ${single.monthly.groceries}`),
+        cleanNum(`${single.currency} ${single.monthly.transport}`),
+        cleanNum(`${single.currency} ${single.monthly.total}`),
       ]);
     }
     if (family) {
       rows.push([
         text.livingCostFamily,
-        `${family.currency} $${family.monthly.rent}`,
-        `${family.currency} $${family.monthly.groceries}`,
-        `${family.currency} $${family.monthly.transport}`,
-        `${family.currency} $${family.monthly.total}`,
+        cleanNum(`${family.currency} ${family.monthly.rent}`),
+        cleanNum(`${family.currency} ${family.monthly.groceries}`),
+        cleanNum(`${family.currency} ${family.monthly.transport}`),
+        cleanNum(`${family.currency} ${family.monthly.total}`),
       ]);
     }
     const headers = [
@@ -1791,6 +1867,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   addReportOverview();
 
+  drawMissingInfoBox();
+
   drawVisaViabilityRanking();
   // State nomination tracker is AU-specific; skip entirely for CA reports
   if (report.country !== "CA") {
@@ -1921,13 +1999,14 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         : "This scenario reflects a mathematical change only and does not represent eligibility or outcome.",
       0
     );
-    addSmallText(report.pointsBoosterSimulator.note, 0);
+    addSmallText(cleanNum(report.pointsBoosterSimulator.note), 0);
     report.pointsBoosterSimulator.scenarios.forEach((scenario) => {
-      addBody(`${scenario.label}: ${scenario.estimatedChange >= 0 ? "+" : ""}${scenario.estimatedChange}`);
+      const delta = scenario.estimatedChange >= 0 ? `+${scenario.estimatedChange} pts` : `${scenario.estimatedChange} pts`;
+      addBody(cleanNum(`${scenario.label}: ${delta}`));
       if (scenario.resultingEstimate !== undefined) {
-        addSmallText(`${effectiveLocale === "tr" ? "Sonraki matematiksel tahmin" : effectiveLocale === "zh-Hans" ? "调整后估算分" : "Resulting mathematical estimate"}: ${scenario.resultingEstimate}`, 4);
+        addSmallText(cleanNum(`${effectiveLocale === "tr" ? "Sonraki matematiksel tahmin" : effectiveLocale === "zh-Hans" ? "调整后估算分" : "Resulting estimate"}: ${scenario.resultingEstimate} pts`), 4);
       }
-      addSmallText(scenario.explanation, 4);
+      addSmallText(cleanNum(scenario.explanation), 4);
     });
     yPosition += 3;
   }
@@ -1936,7 +2015,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSectionHeading("", text.financialRoadmap);
     drawTable(
       [effectiveLocale === "tr" ? "Kategori" : text.category, effectiveLocale === "tr" ? "Tutar" : text.amount, effectiveLocale === "tr" ? "Not" : text.note],
-      report.financialRoadmap.map((item) => [item.category, item.amountLabel, item.explanation]),
+      report.financialRoadmap.map((item) => [cleanNum(item.category), cleanNum(item.amountLabel), cleanNum(item.explanation)]),
       [0.28, 0.2, 0.52]
     );
   }
@@ -1981,13 +2060,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     drawTable(
       [text.subclass, text.estimatedPoints, text.estimatedWait],
       report.premiumSections.historicalInvitationTrends.estimates.map((item) => [
-        item.subclass,
-        `${item.estimatedPoints}`,
-        item.estimatedWait,
+        cleanNum(item.subclass),
+        cleanNum(`${item.estimatedPoints}`),
+        cleanNum(item.estimatedWait),
       ]),
       [0.2, 0.3, 0.5]
     );
-    addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
+    addSmallText(cleanNum(report.premiumSections.historicalInvitationTrends.note), 2);
 
     // CA: use the dual-row living cost table; AU: single-row as before
     if (report.country === "CA") {
@@ -2015,7 +2094,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   // NOC / TEER / ECA section (CA only — surfaces occupation indication with ECA body and duties)
-  drawNocEcaSection();
+  if (report.country === "CA") drawNocEcaSection();
 
   // PNP Advantage Mapping (CA only)
   drawPnpAdvantageSection();
@@ -2045,12 +2124,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   addSmallText(text.downloadablePdfDescription, 0);
   yPosition += 3;
 
-  // Missing information
-  if (report.missingInformation.length > 0) {
-    addHeading(text.missingInformation);
-    addBulletPoints(report.missingInformation);
-    yPosition += 3;
-  }
+
 
   // Beta feedback note on final page
   ensurePageSpace(14);
