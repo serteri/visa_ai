@@ -357,4 +357,12 @@ export type ReadinessReport = {
   suggestedNextSteps: string[];
   missingInformation: string[];
   disclaimer: string;
+  /** Prepended to financial roadmap, points booster, and checklist sections when key input fields were absent. */
+  sparseDataDisclaimer?: string;
+  /** Family-of-3 living cost alongside single-adult for CA reports. */
+  livingCostFamily?: {
+    city: string;
+    currency: "AUD" | "CAD";
+    monthly: { rent: number; groceries: number; transport: number; total: number };
+  };
 };

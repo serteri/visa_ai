@@ -191,6 +191,15 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       pathwayTableIntro: "Asagidaki karsilastirma, olasi vize yollarini guven, rekabet ve pratik uygunluk sinyalleriyle birlikte gosterir.",
       riskBoxIntro: "Bu gostergeler kesin sonuc degil, daha dikkatli incelenmesi gerekebilecek alanlardir.",
       nextStepBoxIntro: "Asagidaki noktalar, basvuru hazirligi dusunulurken dikkate alinabilecek egitimsel onceliklerdir.",
+      sparseDataDisclaimerLabel: "Eksik Veri Uyarısı",
+      nocEcaSection: "NOC / TEER Kodu & ECA Değerlendirme Stratejisi",
+      pnpAdvantageSection: "Eyalet Adaylığı (PNP) Avantaj Haritası",
+      auditReadyChecklist: "Denetim Hazırlığı Kanıt Kontrol Listesi",
+      auditReadyChecklistIntro: "IMM portal yüklemeleri, fon doğrulama kuralları ve test geçerlilik kısıtlamaları dahil olmak üzere hazırlanması gereken belgeler.",
+      livingCostSingle: "Tekil Yetişkin (aylık tahmini)",
+      livingCostFamily: "3 Kişilik Aile (aylık tahmini)",
+      livingCostBothNote: "CAD cinsinden göstergeler: kira, market ve toplu taşıma dahil. Bölgeye ve yaşam tarzına göre önemli farklılıklar görülebilir.",
+      crsDrawTrends: "CRS Çekim Trendleri & Kategori Bazlı Seçim",
     };
   }
 
@@ -298,6 +307,15 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       pathwayTableIntro: "\u4e0b\u8868\u5c06\u53ef\u80fd\u7684\u7b7e\u8bc1\u8def\u5f84\u4e0e\u7f6e\u4fe1\u5ea6\u3001\u7ade\u4e89\u5f3a\u5ea6\u548c\u5b9e\u9645\u5339\u914d\u4fe1\u53f7\u5bf9\u7167\u3002",
       riskBoxIntro: "\u8fd9\u4e9b\u6307\u6807\u4e0d\u662f\u7ed3\u8bba\uff0c\u800c\u662f\u53ef\u80fd\u9700\u8981\u8fdb\u4e00\u6b65\u5ba1\u9605\u7684\u533a\u57df\u3002",
       nextStepBoxIntro: "\u4ee5\u4e0b\u5185\u5bb9\u662f\u8003\u8651\u7533\u8bf7\u51c6\u5907\u65f6\u53ef\u53c2\u8003\u7684\u6559\u80b2\u6027\u4f18\u5148\u9879\u3002",
+      sparseDataDisclaimerLabel: "\u6570\u636e\u7f3a\u5931\u8bf4\u660e",
+      nocEcaSection: "NOC / TEER \u4ee3\u7801\u53ca ECA \u8bc4\u4f30\u7b56\u7565",
+      pnpAdvantageSection: "\u7701\u63d0\u540d\u8ba1\u5212\uff08PNP\uff09\u4f18\u52bf\u5206\u6790",
+      auditReadyChecklist: "\u5ba1\u8ba1\u5c31\u7eea\u6750\u6599\u6838\u67e5\u6e05\u5355",
+      auditReadyChecklistIntro: "\u5305\u62ec IMM \u95e8\u6237\u4e0a\u4f20\u8981\u6c42\u3001\u8d44\u91d1\u9a8c\u8bc1\u89c4\u5219\u53ca\u8bed\u8a00\u8003\u8bd5\u6709\u6548\u671f\u9650\u5236\u5728\u5185\u7684\u6587\u4ef6\u6e05\u5355\u3002",
+      livingCostSingle: "\u5355\u8eab\u6210\u4eba\uff08\u6bcf\u6708\u4f30\u7b97\uff09",
+      livingCostFamily: "\u4e09\u53e3\u4e4b\u5bb6\uff08\u6bcf\u6708\u4f30\u7b97\uff09",
+      livingCostBothNote: "\u4ee5 CAD \u4e3a\u5355\u4f4d\u7684\u53c2\u8003\u6307\u6807\uff0c\u542b\u79df\u91d1\u3001\u98df\u54c1\u6742\u8d27\u53ca\u4ea4\u901a\u8d39\u7528\u3002\u5b9e\u9645\u8d39\u7528\u56e0\u793e\u533a\u53ca\u751f\u6d3b\u65b9\u5f0f\u5dee\u5f02\u8f83\u5927\u3002",
+      crsDrawTrends: "CRS \u62bd\u7b7e\u8d8b\u52bf\u4e0e\u7c7b\u522b\u4e13\u9879\u9009\u62d4",
     };
   }
 
@@ -404,6 +422,15 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     pathwayTableIntro: "The following comparison places each possible pathway beside its confidence, friction, and practical readiness signals.",
     riskBoxIntro: "These indicators are not determinations; they highlight areas that may need closer review before relying on a pathway.",
     nextStepBoxIntro: "The following items are educational priorities to consider while assessing application readiness.",
+    sparseDataDisclaimerLabel: "Sparse Data Disclaimer",
+    nocEcaSection: "NOC / TEER Code Mapping & ECA Valuation Strategy",
+    pnpAdvantageSection: "Provincial Nominee Program (PNP) Advantage Mapping",
+    auditReadyChecklist: "Audit-Ready Proof Checklist",
+    auditReadyChecklistIntro: "Documents required for submission including IMM digital portal uploads, proof-of-funds validation rules, and language test timeline constraints.",
+    livingCostSingle: "Single Adult (monthly estimate)",
+    livingCostFamily: "Family of 3 (monthly estimate)",
+    livingCostBothNote: "CAD indicative figures: rent, groceries, and transit included. Costs vary significantly by neighbourhood and lifestyle.",
+    crsDrawTrends: "CRS Draw Trends & Category-Based Selection",
   };
 }
 
@@ -1197,7 +1224,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   function drawAuditChecklistBox() {
     if (!report.documentChecklist?.length) return;
 
-    addSectionHeading("", text.documentLevelSpecificity);
+    addSectionHeading("", text.auditReadyChecklist);
+    addSmallText(text.auditReadyChecklistIntro, 0);
+    yPosition += 2;
 
     report.documentChecklist.forEach((category) => {
       const isCritical = category.category.toUpperCase() === "CRITICAL";
@@ -1233,6 +1262,118 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
       yPosition += boxHeight + 4;
     });
+  }
+
+  function drawSparseDataDisclaimer() {
+    if (!report.sparseDataDisclaimer) return;
+    ensurePageSpace(20);
+    doc.setFillColor(255, 251, 235); // warm yellow background
+    doc.setDrawColor(217, 119, 6);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(margin, yPosition, contentWidth, 14, 1.5, 1.5, "FD");
+    setBoldFont();
+    doc.setFontSize(FONTS.body);
+    doc.setTextColor(146, 64, 14);
+    doc.text(safeText(`⚠ ${text.sparseDataDisclaimerLabel}`), margin + 3, yPosition + 5.5);
+    setBaseFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(92, 40, 8);
+    const lines = doc.splitTextToSize(safeText(report.sparseDataDisclaimer), contentWidth - 6);
+    lines.slice(0, 3).forEach((line: string, i: number) => {
+      doc.text(line, margin + 3, yPosition + 10 + i * 4);
+    });
+    yPosition += 14 + lines.length * 4 + 2;
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+  }
+
+  function drawNocEcaSection() {
+    if (!report.occupationIndication) return;
+    const occ = report.occupationIndication;
+    addSectionHeading("", text.nocEcaSection);
+    if (occ.occupation) {
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      ensurePageSpace(8);
+      doc.text(safeText(occ.occupation), margin, yPosition);
+      yPosition += 5;
+    }
+    if (occ.matches.length > 0) {
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      occ.matches.forEach((m) => {
+        ensurePageSpace(5);
+        doc.text(safeText(`• ${m.title} — ${effectiveLocale === "tr" ? "Uygun yollar" : "Eligible pathways"}: ${m.relevantVisas.join(", ")}`), margin + 2, yPosition);
+        yPosition += 4.5;
+      });
+    }
+    addSmallText(occ.note, 2);
+    yPosition += 3;
+  }
+
+  function drawPnpAdvantageSection() {
+    if (report.country !== "CA" || !report.pointsBoosterSimulator) return;
+    const pnpScenario = report.pointsBoosterSimulator.scenarios.find(
+      (s) => s.estimatedChange === 600 || s.label.toLowerCase().includes("pnp") || s.label.toLowerCase().includes("provincial")
+    );
+    if (!pnpScenario) return;
+    addSectionHeading("", text.pnpAdvantageSection);
+    addBody(`${pnpScenario.label}: +${pnpScenario.estimatedChange} CRS`);
+    if (pnpScenario.resultingEstimate !== undefined) {
+      addSmallText(
+        `${effectiveLocale === "tr" ? "PNP sonrası tahmini CRS" : effectiveLocale === "zh-Hans" ? "省提名后预计CRS" : "Projected CRS after PNP nomination"}: ${pnpScenario.resultingEstimate}`,
+        4
+      );
+    }
+    addSmallText(pnpScenario.explanation, 4);
+    yPosition += 3;
+  }
+
+  function drawCrsDrawTrendsSection() {
+    if (report.country !== "CA" || !report.pointsBoosterSimulator) return;
+    addSectionHeading("", text.crsDrawTrends);
+    addSmallText(report.pointsBoosterSimulator.note, 2);
+    yPosition += 3;
+  }
+
+  function drawFamilyLivingCosts() {
+    if (report.country !== "CA") return;
+    const single = report.premiumSections?.livingCostProjection;
+    const family = report.livingCostFamily;
+    if (!single && !family) return;
+
+    addSectionHeading("", text.livingCostProjection);
+
+    const rows: string[][] = [];
+    if (single) {
+      rows.push([
+        text.livingCostSingle,
+        `${single.currency} $${single.monthly.rent}`,
+        `${single.currency} $${single.monthly.groceries}`,
+        `${single.currency} $${single.monthly.transport}`,
+        `${single.currency} $${single.monthly.total}`,
+      ]);
+    }
+    if (family) {
+      rows.push([
+        text.livingCostFamily,
+        `${family.currency} $${family.monthly.rent}`,
+        `${family.currency} $${family.monthly.groceries}`,
+        `${family.currency} $${family.monthly.transport}`,
+        `${family.currency} $${family.monthly.total}`,
+      ]);
+    }
+    const headers = [
+      effectiveLocale === "tr" ? "Profil" : effectiveLocale === "zh-Hans" ? "家庭类型" : "Profile",
+      text.monthlyRent,
+      text.monthlyGroceries,
+      text.monthlyTransport,
+      text.monthlyTotal,
+    ];
+    drawTable(headers, rows, [0.22, 0.19, 0.19, 0.19, 0.21]);
+    addSmallText(text.livingCostBothNote, 2);
+    yPosition += 3;
   }
 
   function drawImmediateActionPlan() {
@@ -1826,6 +1967,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 3;
   }
 
+  // Sparse data disclaimer — shown before data-sensitive sections
+  drawSparseDataDisclaimer();
+
   if (report.premiumSections) {
     addSectionHeading("", text.premiumSections);
 
@@ -1845,25 +1989,39 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     );
     addSmallText(report.premiumSections.historicalInvitationTrends.note, 2);
 
-    addBody(text.livingCostProjection);
-    addSmallText(
-      `${report.premiumSections.livingCostProjection.city} - ${report.premiumSections.livingCostProjection.familyProfile} (${report.premiumSections.livingCostProjection.currency})`,
-      2
-    );
-    drawTable(
-      [text.monthlyRent, text.monthlyGroceries, text.monthlyTransport, text.monthlyTotal],
-      [[
-        `${report.premiumSections.livingCostProjection.monthly.rent}`,
-        `${report.premiumSections.livingCostProjection.monthly.groceries}`,
-        `${report.premiumSections.livingCostProjection.monthly.transport}`,
-        `${report.premiumSections.livingCostProjection.monthly.total}`,
-      ]],
-      [0.25, 0.25, 0.25, 0.25]
-    );
-    addSmallText(report.premiumSections.livingCostProjection.note, 2);
+    // CA: use the dual-row living cost table; AU: single-row as before
+    if (report.country === "CA") {
+      drawFamilyLivingCosts();
+    } else {
+      addBody(text.livingCostProjection);
+      addSmallText(
+        `${report.premiumSections.livingCostProjection.city} - ${report.premiumSections.livingCostProjection.familyProfile} (${report.premiumSections.livingCostProjection.currency})`,
+        2
+      );
+      drawTable(
+        [text.monthlyRent, text.monthlyGroceries, text.monthlyTransport, text.monthlyTotal],
+        [[
+          `${report.premiumSections.livingCostProjection.monthly.rent}`,
+          `${report.premiumSections.livingCostProjection.monthly.groceries}`,
+          `${report.premiumSections.livingCostProjection.monthly.transport}`,
+          `${report.premiumSections.livingCostProjection.monthly.total}`,
+        ]],
+        [0.25, 0.25, 0.25, 0.25]
+      );
+      addSmallText(report.premiumSections.livingCostProjection.note, 2);
+    }
 
     drawGanttTimeline();
   }
+
+  // NOC / TEER / ECA section (CA only — surfaces occupation indication with ECA body and duties)
+  drawNocEcaSection();
+
+  // PNP Advantage Mapping (CA only)
+  drawPnpAdvantageSection();
+
+  // CRS Draw Trends & Category-Based Selection (CA only)
+  drawCrsDrawTrendsSection();
 
   // Risk indicators
   if (report.riskIndicators.length > 0) {
@@ -1879,6 +2037,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     );
   }
 
+  // Audit-Ready Proof Checklist — dedicated section (was "Document-Level Specificity")
   drawAuditChecklistBox();
   drawImmediateActionPlan();
 

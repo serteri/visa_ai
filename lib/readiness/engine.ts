@@ -3285,6 +3285,44 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
         }
       : sparseStrategy.primaryLimitingFactor;
 
+  // ── Sparse Data Disclaimer ────────────────────────────────────────────────
+  // Build an explicit disclaimer if key input fields were absent so the PDF
+  // clearly states which assumptions were applied.
+  const missingFields: string[] = [];
+  if (!input.sponsorOrFamily) missingFields.push(isTr ? "medeni durum" : "marital status");
+  if (!input.qualificationLevel) missingFields.push(isTr ? "eğitim düzeyi" : "education level");
+  if (!input.englishLevel) missingFields.push(isTr ? "dil sınav skoru" : "language test score");
+  if (!input.offshoreExperienceYears && !input.onshoreExperienceYears) missingFields.push(isTr ? "iş deneyimi yılı" : "years of work experience");
+
+  const sparseDataDisclaimer: string | undefined = missingFields.length > 0
+    ? (isTr
+        ? `Not: Başvuru formunuzda belirli bilgiler (${missingFields.join(", ")}) sağlanmadığından, bu bölümler standart genelleştirilmiş varsayımlar kullanılarak oluşturulmuştur (ör. bekar bir yetişkin, lisans derecesi, CLB 7 dil seviyesi, 3 yıl iş deneyimi). Bu varsayımlar gerçek durumunuzla örtüşmeyebilir — sonuçların doğruluğunu artırmak için formu yeniden doldurun.`
+        : isZh
+          ? `注意：由于您的申请表中未提供某些具体信息（${missingFields.join("、")}），本报告部分内容基于标准通用假设生成（例如：单身成年人、本科学历、CLB 7语言水平、3年工作经验）。这些假设可能与您的实际情况不符——请重新填写表单以获得更准确的分析。`
+          : `Note: Because specific details (${missingFields.join(", ")}) were not provided in your intake form, this report has been generated using standard generalized assumptions (e.g., applying as a single adult with a bachelor's degree, CLB 7 language proficiency, and 3 years of work experience). These assumptions may not reflect your actual situation — resubmit the form with complete data to improve accuracy.`)
+    : undefined;
+
+  // ── Family-of-3 living cost (CA) ──────────────────────────────────────────
+  // Always include family-of-3 costs for the target city alongside single costs.
+  const CA_FAMILY_COSTS: Record<string, { rent: number; groceries: number; transport: number; total: number }> = {
+    Toronto:  { rent: 3800, groceries: 1100, transport: 280, total: 5180 },
+    Vancouver:{ rent: 4200, groceries: 1150, transport: 250, total: 5600 },
+    Calgary:  { rent: 3100, groceries: 1050, transport: 200, total: 4350 },
+    Ottawa:   { rent: 3200, groceries: 1050, transport: 200, total: 4450 },
+    Montreal: { rent: 2800, groceries: 1000, transport: 210, total: 4010 },
+  };
+  // Infer city from premium sections (already computed above)
+  const caCity = generatedPremiumSections.livingCostProjection.city
+    .replace(/多伦多/g, "Toronto")
+    .replace(/温哥华/g, "Vancouver")
+    .replace(/卡尔加里/g, "Calgary");
+  const familyCostRow = CA_FAMILY_COSTS[caCity] ?? CA_FAMILY_COSTS.Toronto;
+  const livingCostFamily = {
+    city: generatedPremiumSections.livingCostProjection.city,
+    currency: "CAD" as const,
+    monthly: familyCostRow,
+  };
+
   return {
     country: "CA",
     executiveSummary,
@@ -3321,6 +3359,8 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     suggestedNextSteps,
     missingInformation,
     disclaimer,
+    sparseDataDisclaimer,
+    livingCostFamily,
   };
 }
 
