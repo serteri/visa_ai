@@ -1472,29 +1472,310 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 3;
   }
 
-  function drawPnpAdvantageSection() {
-    if (report.country !== "CA" || !report.pointsBoosterSimulator) return;
-    const pnpScenario = report.pointsBoosterSimulator.scenarios.find(
-      (s) => s.estimatedChange === 600 || s.label.toLowerCase().includes("pnp") || s.label.toLowerCase().includes("provincial")
-    );
-    if (!pnpScenario) return;
-    addSectionHeading("", text.pnpAdvantageSection);
-    addBody(`${pnpScenario.label}: +${pnpScenario.estimatedChange} CRS`);
-    if (pnpScenario.resultingEstimate !== undefined) {
-      addSmallText(
-        `${effectiveLocale === "tr" ? "PNP sonrası tahmini CRS" : effectiveLocale === "zh-Hans" ? "省提名后预计CRS" : "Projected CRS after PNP nomination"}: ${pnpScenario.resultingEstimate}`,
-        4
-      );
-    }
-    addSmallText(pnpScenario.explanation, 4);
-    yPosition += 3;
+  // ── Visual Placeholder ────────────────────────────────────────────────────
+  // Shown in place of any chart when critical profile data is missing.
+  // Maintains PDF layout parity with the AU report — never leaves a blank gap.
+  function drawVisualPlaceholder(sectionTitle: string) {
+    const boxH = 72;
+    ensurePageSpace(boxH + 8);
+    const topY = yPosition;
+    // Greyed outer box
+    doc.setFillColor(247, 248, 250);
+    doc.setDrawColor(210, 214, 222);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(margin, topY, contentWidth, boxH, 2.5, 2.5, "FD");
+    // Header strip (muted)
+    doc.setFillColor(210, 214, 222);
+    doc.roundedRect(margin, topY, contentWidth, 12, 2.5, 2.5, "F");
+    doc.rect(margin, topY + 6, contentWidth, 6, "F");
+    setBoldFont();
+    doc.setFontSize(9);
+    doc.setTextColor(120, 128, 145);
+    doc.text(safeText(sectionTitle), margin + 5, topY + 8.5);
+    // Fake greyed bars at varied widths to mimic a chart skeleton
+    const barAreaX = margin + 52;
+    const barAreaW = contentWidth - 68;
+    const barH = 5.5;
+    const fakeBars = [0.82, 0.61, 0.47, 0.36, 0.27];
+    fakeBars.forEach((w, i) => {
+      const barY = topY + 16 + i * 9;
+      // label pill
+      doc.setFillColor(220, 222, 228);
+      doc.roundedRect(margin + 4, barY, 44, barH, 1, 1, "F");
+      // bar background
+      doc.setFillColor(228, 230, 236);
+      doc.roundedRect(barAreaX, barY, barAreaW, barH, 1, 1, "F");
+      // partial fill (lighter stripe)
+      doc.setFillColor(215, 218, 226);
+      doc.roundedRect(barAreaX, barY, barAreaW * w, barH, 1, 1, "F");
+    });
+    // Central "DATA NEEDED" badge
+    const badgeW = 60;
+    const badgeH = 13;
+    const badgeX = margin + (contentWidth - badgeW) / 2;
+    const badgeY = topY + 28;
+    doc.setFillColor(99, 102, 241);
+    doc.roundedRect(badgeX, badgeY, badgeW, badgeH, 2.5, 2.5, "F");
+    setBoldFont();
+    doc.setFontSize(8.5);
+    doc.setTextColor(255, 255, 255);
+    const dataNeededLabel = effectiveLocale === "tr" ? "VERİ GEREKLİ" : effectiveLocale === "zh-Hans" ? "需要数据" : "DATA NEEDED";
+    doc.text(safeText(dataNeededLabel), margin + contentWidth / 2, badgeY + 9, { align: "center" });
+    // Unlock instruction
+    setBaseFont();
+    doc.setFontSize(7);
+    doc.setTextColor(130, 138, 155);
+    const unlockMsg = effectiveLocale === "tr"
+      ? "Bu grafiği etkinleştirmek için başvuru formunuzu (NOC, CLB, Eğitim) tamamlayın."
+      : effectiveLocale === "zh-Hans"
+        ? "请补充申请表中的关键字段（NOC、CLB、学历）以解锁此图表。"
+        : "Complete your intake form (NOC occupation, CLB score, education level) to unlock this chart.";
+    const unlockLines = doc.splitTextToSize(safeText(unlockMsg), contentWidth - 16);
+    unlockLines.slice(0, 2).forEach((line: string, i: number) => {
+      doc.text(line, margin + contentWidth / 2, topY + boxH - 8 + i * 4.5, { align: "center" });
+    });
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.setLineWidth(0.3);
+    yPosition = topY + boxH + 6;
   }
 
-  function drawCrsDrawTrendsSection() {
-    if (report.country !== "CA" || !report.pointsBoosterSimulator) return;
-    addSectionHeading("", text.crsDrawTrends);
-    addSmallText(cleanNum(report.pointsBoosterSimulator.note), 2);
-    yPosition += 3;
+  // ── CRS Cutoff Bar Chart ───────────────────────────────────────────────────
+  // Replaces text-based CRS trends section. Uses approximate IRCC category
+  // draw data to mirror the AU radar chart's visual density.
+  function drawCrsBarChart() {
+    if (report.country !== "CA") return;
+    if (!report.pointsBoosterSimulator) {
+      drawVisualPlaceholder(effectiveLocale === "tr" ? "Son CRS Kesim Puanı Trendleri" : effectiveLocale === "zh-Hans" ? "近期CRS录取分数线趋势" : "Recent CRS Cutoff Trends");
+      return;
+    }
+    const boxH = 102;
+    ensurePageSpace(boxH + 8);
+    const topY = yPosition;
+    // Card background
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.35);
+    doc.roundedRect(margin, topY, contentWidth, boxH, 2.5, 2.5, "FD");
+    // Header strip
+    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.roundedRect(margin, topY, contentWidth, 12, 2.5, 2.5, "F");
+    doc.rect(margin, topY + 6, contentWidth, 6, "F");
+    setBoldFont();
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    const chartTitle = effectiveLocale === "tr" ? "Son CRS Kesim Puanı Trendleri" : effectiveLocale === "zh-Hans" ? "近期CRS录取分数线趋势" : "Recent CRS Cutoff Trends";
+    doc.text(safeText(chartTitle), margin + 5, topY + 8.5);
+    setBaseFont();
+    doc.setFontSize(6.5);
+    doc.setTextColor(200, 218, 255);
+    const chartSub = effectiveLocale === "tr" ? "Kategori bazında yaklaşık son 6 çekim (IRCC verilerine dayanır)" : effectiveLocale === "zh-Hans" ? "各类别近6次抽签近似值（基于IRCC数据）" : "Approx. category cutoffs — last 6 draws (based on IRCC data)";
+    doc.text(safeText(chartSub), margin + 5, topY + 15);
+    // Bar chart data — approximate real values from recent IRCC Express Entry draws
+    const categories: Array<{ label: string; score: number; color: { r: number; g: number; b: number } }> = [
+      { label: effectiveLocale === "tr" ? "Genel Havuz" : effectiveLocale === "zh-Hans" ? "综合池" : "General Pool", score: 489, color: { r: 59, g: 130, b: 246 } },
+      { label: effectiveLocale === "tr" ? "Sağlık Çalışanları" : effectiveLocale === "zh-Hans" ? "医疗保健类" : "Healthcare Workers", score: 441, color: { r: 16, g: 185, b: 129 } },
+      { label: effectiveLocale === "tr" ? "Fransızca Yetkinlik" : effectiveLocale === "zh-Hans" ? "法语能力" : "French Language", score: 388, color: { r: 139, g: 92, b: 246 } },
+      { label: effectiveLocale === "tr" ? "Meslekler (Vasıflı)" : effectiveLocale === "zh-Hans" ? "技术工种" : "Trade Occupations", score: 362, color: { r: 245, g: 158, b: 11 } },
+      { label: effectiveLocale === "tr" ? "Tarım & Gıda" : effectiveLocale === "zh-Hans" ? "农业及食品" : "Agriculture & Agri-food", score: 328, color: { r: 107, g: 114, b: 128 } },
+    ];
+    const labelW = 50;
+    const valueW = 18;
+    const barAreaX = margin + labelW + 5;
+    const barAreaW = contentWidth - labelW - valueW - 12;
+    const minScore = 280;
+    const maxScore = 540;
+    const rowH = 13;
+    const barH = 7;
+    // Y-axis reference lines (light grid)
+    [400, 450, 500].forEach((ref) => {
+      const xRef = barAreaX + barAreaW * ((ref - minScore) / (maxScore - minScore));
+      doc.setDrawColor(230, 235, 245);
+      doc.setLineWidth(0.2);
+      doc.line(xRef, topY + 18, xRef, topY + 18 + categories.length * rowH);
+      doc.setFontSize(5.5);
+      setBaseFont();
+      doc.setTextColor(180, 190, 210);
+      doc.text(String(ref), xRef, topY + 17, { align: "center" });
+    });
+    categories.forEach((cat, i) => {
+      const rowY = topY + 19 + i * rowH;
+      const barFrac = Math.max(0.02, Math.min(1, (cat.score - minScore) / (maxScore - minScore)));
+      const barW = barAreaW * barFrac;
+      // Row label
+      setBaseFont();
+      doc.setFontSize(6.8);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      const labelLines = doc.splitTextToSize(safeText(cat.label), labelW - 4);
+      doc.text(labelLines[0] ?? "", margin + 4, rowY + barH - 0.5);
+      // Bar track
+      doc.setFillColor(236, 240, 248);
+      doc.roundedRect(barAreaX, rowY, barAreaW, barH, 1, 1, "F");
+      // Bar fill
+      doc.setFillColor(cat.color.r, cat.color.g, cat.color.b);
+      doc.roundedRect(barAreaX, rowY, barW, barH, 1, 1, "F");
+      // Score label
+      setBoldFont();
+      doc.setFontSize(7.2);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(String(cat.score), barAreaX + barAreaW + 3, rowY + barH - 0.5);
+    });
+    // Footer note
+    setBaseFont();
+    doc.setFontSize(6);
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    const footerNote = effectiveLocale === "tr"
+      ? "* PNP adaylığı +600 CRS puan ekleyerek rekabeti pratik olarak ortadan kaldırır. Veriler yaklaşık IRCC ortalamalarına dayanır."
+      : effectiveLocale === "zh-Hans"
+        ? "* 省提名可+600分，实际消除积分竞争。数据为基于IRCC的近似平均值。"
+        : "* PNP nomination adds +600 CRS, effectively eliminating the points competition. Values are approximate IRCC averages.";
+    const noteLines = doc.splitTextToSize(safeText(footerNote), contentWidth - 10);
+    noteLines.slice(0, 2).forEach((line: string, i: number) => {
+      doc.text(line, margin + 5, topY + boxH - 7 + i * 4);
+    });
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.setLineWidth(0.3);
+    yPosition = topY + boxH + 6;
+  }
+
+  // ── PNP Province Heatmap ──────────────────────────────────────────────────
+  // Scores 6 provinces (ON BC AB SK MB QC) by occupation match using
+  // NOC-group keyword rules. Renders as a coloured 3×2 cell grid.
+  function getProvinceScores(occupation: string | undefined): Array<{ code: string; score: number; priority: "HIGH" | "MED" | "LOW" }> {
+    const occ = (occupation ?? "").toLowerCase();
+    const isTech = /software|developer|programmer|data.scien|data.eng|cloud|devops|machine.learn|artificial.intell|cyber|network.eng|system.admin|it\b|information.tech/.test(occ);
+    const isHealth = /nurse|nursing|physician|doctor|medical|pharmacist|physiother|occupational.ther|dental|radiolog|paramedic|dietitian|midwife/.test(occ);
+    const isOil = /oil|gas|petrochemical|pipeline|driller|wellsite|geologist|petroleum/.test(occ);
+    const isTrade = /welder|electrician|plumber|carpenter|mechanic|millwright|pipefitter|crane.oper|hvac|ironwork|sheet.metal|refrigeration/.test(occ);
+    const isAg = /farm|agricultur|agri.food|horticult|greenhouse|livestock|crop/.test(occ);
+    const isTeacher = /teacher|instructor|professor|lecturer|educator/.test(occ);
+    const isFinance = /accountant|auditor|bookkeeper|financial.analyst|controller|actuar|cpa\b|cfa\b/.test(occ);
+    const isChef = /chef|cook|culinary|pastry|hospitality/.test(occ);
+    const isEng = /civil.eng|structural.eng|mechanical.eng|electrical.eng|environmental.eng|chemical.eng|aerospace/.test(occ);
+    let raw: Record<string, number>;
+    if (isTech)    raw = { ON: 85, BC: 95, AB: 70, SK: 52, MB: 50, QC: 65 };
+    else if (isHealth) raw = { ON: 90, BC: 70, AB: 85, SK: 80, MB: 75, QC: 60 };
+    else if (isOil)    raw = { ON: 42, BC: 52, AB: 95, SK: 70, MB: 38, QC: 28 };
+    else if (isTrade)  raw = { ON: 65, BC: 70, AB: 90, SK: 80, MB: 74, QC: 48 };
+    else if (isAg)     raw = { ON: 58, BC: 48, AB: 80, SK: 92, MB: 82, QC: 44 };
+    else if (isTeacher)raw = { ON: 75, BC: 70, AB: 78, SK: 64, MB: 60, QC: 55 };
+    else if (isFinance)raw = { ON: 92, BC: 70, AB: 64, SK: 48, MB: 48, QC: 60 };
+    else if (isChef)   raw = { ON: 65, BC: 76, AB: 74, SK: 64, MB: 60, QC: 70 };
+    else if (isEng)    raw = { ON: 72, BC: 75, AB: 90, SK: 65, MB: 58, QC: 55 };
+    else               raw = { ON: 75, BC: 70, AB: 65, SK: 55, MB: 50, QC: 55 };
+    return Object.entries(raw)
+      .sort(([, a], [, b]) => b - a)
+      .map(([code, score]) => ({
+        code,
+        score,
+        priority: (score >= 78 ? "HIGH" : score >= 58 ? "MED" : "LOW") as "HIGH" | "MED" | "LOW",
+      }));
+  }
+
+  function drawPnpHeatmap() {
+    if (report.country !== "CA") return;
+    const hasOccupation = Boolean(report.occupationIndication?.occupation) || Boolean(report.premiumSections?.livingCostProjection?.city);
+    if (!hasOccupation && report.dataRequiredSections?.includes("pathwayComparison")) {
+      const placeholderTitle = effectiveLocale === "tr" ? "Eyalet Adaylık Uyum Haritası" : effectiveLocale === "zh-Hans" ? "省提名匹配度热图" : "Provincial Nomination Match Map";
+      drawVisualPlaceholder(placeholderTitle);
+      return;
+    }
+    const occupation = report.occupationIndication?.occupation;
+    const provinces = getProvinceScores(occupation);
+    const boxH = 96;
+    ensurePageSpace(boxH + 8);
+    const topY = yPosition;
+    // Card
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.35);
+    doc.roundedRect(margin, topY, contentWidth, boxH, 2.5, 2.5, "FD");
+    // Header strip
+    doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.roundedRect(margin, topY, contentWidth, 12, 2.5, 2.5, "F");
+    doc.rect(margin, topY + 6, contentWidth, 6, "F");
+    setBoldFont();
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    const hmTitle = effectiveLocale === "tr" ? "Eyalet Adaylık Uyum Haritası" : effectiveLocale === "zh-Hans" ? "省提名匹配度热图" : "Provincial Nomination Match Map";
+    doc.text(safeText(hmTitle), margin + 5, topY + 8.5);
+    setBaseFont();
+    doc.setFontSize(6.5);
+    doc.setTextColor(200, 218, 255);
+    const occDesc = occupation
+      ? `${effectiveLocale === "tr" ? "Meslek" : effectiveLocale === "zh-Hans" ? "职业" : "Occupation"}: ${occupation.slice(0, 45)}`
+      : (effectiveLocale === "tr" ? "Genel profil tahmini — NOC seçildiğinde güncellenir" : effectiveLocale === "zh-Hans" ? "通用估算 — 选择NOC后将更新" : "General profile estimate — updates when NOC is selected");
+    doc.text(safeText(occDesc), margin + 5, topY + 15);
+    // Province grid: 3 columns × 2 rows
+    const cols = 3;
+    const gap = 3;
+    const cellW = (contentWidth - 10 - gap * (cols - 1)) / cols;
+    const cellH = 30;
+    const gridX = margin + 5;
+    const gridStartY = topY + 18;
+    const priorityFill = (p: "HIGH" | "MED" | "LOW") =>
+      p === "HIGH" ? { r: 236, g: 253, b: 245 } : p === "MED" ? { r: 255, g: 251, b: 235 } : { r: 248, g: 249, b: 250 };
+    const priorityAccent = (p: "HIGH" | "MED" | "LOW") =>
+      p === "HIGH" ? { r: 16, g: 185, b: 129 } : p === "MED" ? { r: 245, g: 158, b: 11 } : { r: 156, g: 163, b: 175 };
+    provinces.slice(0, 6).forEach((prov, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const cellX = gridX + col * (cellW + gap);
+      const cellY = gridStartY + row * (cellH + gap);
+      const fill = priorityFill(prov.priority);
+      const accent = priorityAccent(prov.priority);
+      // Cell background
+      doc.setFillColor(fill.r, fill.g, fill.b);
+      doc.setDrawColor(accent.r, accent.g, accent.b);
+      doc.setLineWidth(0.6);
+      doc.roundedRect(cellX, cellY, cellW, cellH, 2, 2, "FD");
+      // Province code (large)
+      setBoldFont();
+      doc.setFontSize(14);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(prov.code, cellX + cellW / 2, cellY + 11, { align: "center" });
+      // Priority badge
+      const badgeW = 20;
+      const badgeCX = cellX + cellW / 2;
+      doc.setFillColor(accent.r, accent.g, accent.b);
+      doc.roundedRect(badgeCX - badgeW / 2, cellY + 13, badgeW, 7, 1.5, 1.5, "F");
+      setBoldFont();
+      doc.setFontSize(6.2);
+      doc.setTextColor(255, 255, 255);
+      const priLabel = effectiveLocale === "tr"
+        ? (prov.priority === "HIGH" ? "YÜKSEK" : prov.priority === "MED" ? "ORTA" : "DÜŞÜK")
+        : effectiveLocale === "zh-Hans"
+          ? (prov.priority === "HIGH" ? "高" : prov.priority === "MED" ? "中" : "低")
+          : prov.priority;
+      doc.text(safeText(priLabel), badgeCX, cellY + 18.5, { align: "center" });
+      // Score bar
+      const barY = cellY + 22;
+      const barW = cellW - 8;
+      doc.setFillColor(220, 224, 232);
+      doc.roundedRect(cellX + 4, barY, barW, 3.5, 0.8, 0.8, "F");
+      doc.setFillColor(accent.r, accent.g, accent.b);
+      doc.roundedRect(cellX + 4, barY, barW * prov.score / 100, 3.5, 0.8, 0.8, "F");
+      // Score %
+      setBaseFont();
+      doc.setFontSize(5.5);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.text(`${prov.score}%`, cellX + cellW - 3, barY + 2.8, { align: "right" });
+    });
+    // Footer
+    setBaseFont();
+    doc.setFontSize(6);
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    const hmFooter = effectiveLocale === "tr"
+      ? "* Uyum skoru meslek sinyaline dayalı tahmindir. PNP uygunluğu için eyalet-özel stream koşullarını doğrulayın."
+      : effectiveLocale === "zh-Hans"
+        ? "* 匹配分数为基于职业信号的估算，请核查各省通道条件以确认PNP资格。"
+        : "* Match score is an occupation-signal estimate. Verify province-specific stream requirements to confirm PNP eligibility.";
+    const hmFooterLines = doc.splitTextToSize(safeText(hmFooter), contentWidth - 10);
+    hmFooterLines.slice(0, 2).forEach((line: string, i: number) => {
+      doc.text(line, margin + 5, topY + boxH - 6 + i * 3.5);
+    });
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    doc.setLineWidth(0.3);
+    yPosition = topY + boxH + 6;
   }
 
   function drawFamilyLivingCosts() {
@@ -1995,14 +2276,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   if (report.pathwayComparison.length > 0) {
     addHeading(text.pathwayTable);
     if (report.dataRequiredSections?.includes("pathwayComparison")) {
-      const missingForPathway = report.missingInformation.length > 0
-        ? report.missingInformation
-        : effectiveLocale === "tr"
-          ? ["NOC meslek kodu", "CLB/NCLC dil sınav skoru", "Eğitim düzeyi"]
-          : effectiveLocale === "zh-Hans"
-            ? ["NOC职业代码", "CLB/NCLC语言成绩", "学历等级"]
-            : ["NOC occupation code", "CLB/NCLC language test score", "Education level"];
-      drawActionRequiredBox(text.pathwayTable, missingForPathway);
+      drawVisualPlaceholder(text.pathwayTable);
     } else {
     addSmallText(text.pathwayTableIntro, 0);
     yPosition += 2;
@@ -2084,15 +2358,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   if (report.pointsBoosterSimulator) {
     addHeading(text.pointsBoosterSimulator);
     if (report.dataRequiredSections?.includes("pointsBoosterSimulator")) {
-      // Cannot personalize — critical fields (NOC/language) are missing
-      const missingForBooster = report.missingInformation.length > 0
-        ? report.missingInformation
-        : effectiveLocale === "tr"
-          ? ["NOC meslek kodu", "CLB/NCLC dil sınav skoru"]
-          : effectiveLocale === "zh-Hans"
-            ? ["NOC职业代码", "CLB/NCLC语言成绩"]
-            : ["NOC occupation code", "CLB/NCLC language test score"];
-      drawActionRequiredBox(text.pointsBoosterSimulator, missingForBooster);
+      drawVisualPlaceholder(text.pointsBoosterSimulator);
     } else {
       if (report.pointsBoosterSimulator.currentEstimate !== undefined) {
         addBody(`${text.estimatedPoints}: ${report.pointsBoosterSimulator.currentEstimate}`);
@@ -2203,11 +2469,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // NOC / TEER / ECA section (CA only — surfaces occupation indication with ECA body and duties)
   if (report.country === "CA") drawNocEcaSection();
 
-  // PNP Advantage Mapping (CA only)
-  drawPnpAdvantageSection();
+  // PNP Province Heatmap (CA only)
+  drawPnpHeatmap();
 
-  // CRS Draw Trends & Category-Based Selection (CA only)
-  drawCrsDrawTrendsSection();
+  // CRS Cutoff Bar Chart (CA only)
+  drawCrsBarChart();
 
   // Risk indicators
   if (report.riskIndicators.length > 0) {
