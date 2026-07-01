@@ -50,7 +50,7 @@ export function HomeContent() {
           <div className="mt-10 flex w-full max-w-2xl flex-col gap-4 sm:flex-row sm:justify-center">
             {/* Australia Card */}
             <Link
-              href={`/${locale}/reports`}
+              href={`/${locale}/full-check?country=AU`}
               className="group relative flex flex-1 flex-col items-center gap-3 rounded-2xl border-2 border-indigo-200 bg-white/80 px-6 py-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-indigo-400 hover:shadow-indigo-200/60 hover:shadow-xl hover:scale-105 dark:border-indigo-800/60 dark:bg-zinc-900/70 dark:hover:border-indigo-600"
             >
               <span className="text-4xl">🇦🇺</span>
@@ -69,7 +69,7 @@ export function HomeContent() {
 
             {/* Canada Card */}
             <Link
-              href={`/${locale}/full-check`}
+              href={`/${locale}/full-check?country=CA`}
               className="group relative flex flex-1 flex-col items-center gap-3 rounded-2xl border-2 border-red-200 bg-white/80 px-6 py-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-red-400 hover:shadow-red-200/60 hover:shadow-xl hover:scale-105 dark:border-red-800/60 dark:bg-zinc-900/70 dark:hover:border-red-600"
             >
               <span className="absolute -top-3 right-4 rounded-full bg-red-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow">
