@@ -256,12 +256,90 @@ export function FullCheckWaitlistForm({
   const [nocResults, setNocResults] = useState<NocEntry[]>([]);
   const [nocOpen, setNocOpen] = useState(false);
 
+  const NOC_ALIAS_MAP: Record<string, string[]> = {
+    // Healthcare
+    physician: ["doctor", "medical doctor", "doc", "gp", "surgeon", "pediatrician", "psychiatrist", "internist", "specialist", "md", "family doctor"],
+    nursing: ["nurse", "rn", "lpn", "registered nurse", "practitioner", "midwife", "midwifery"],
+    care: ["caregiver", "psw", "support worker", "elder care", "nanny", "personal support", "health aide"],
+    pharmacy: ["pharmacist", "chemist", "dispenser", "pharmacy technician"],
+    dental: ["dentist", "dental hygienist", "orthodontist", "dental assistant", "oral health"],
+    physiotherapy: ["physio", "physiotherapist", "physical therapist", "pt", "rehab therapist"],
+    optometry: ["optometrist", "eye doctor", "optician"],
+    veterinary: ["vet", "veterinarian", "animal doctor"],
+    radiology: ["radiologist", "x-ray technician", "mri", "ultrasound technologist"],
+    laboratory: ["lab technician", "medical lab", "pathologist", "lab tech", "clinical lab"],
+    // Tech & IT
+    software: ["programmer", "coder", "software engineer", "developer", "dev", "frontend", "backend", "fullstack", "ui developer", "ux developer", "web developer", "app developer", "mobile developer", "ios", "android", "react", "node", "python developer", "java developer"],
+    data: ["data scientist", "data analyst", "machine learning", "ml engineer", "ai", "artificial intelligence", "database", "data engineer", "bi analyst", "business intelligence", "etl"],
+    systems: ["sysadmin", "system administrator", "it support", "helpdesk", "help desk", "network engineer", "cybersecurity", "security analyst", "devops", "cloud engineer", "aws", "azure", "infrastructure"],
+    "information technology": ["it manager", "it director", "cto", "chief technology", "it consultant", "technology manager"],
+    // Engineering
+    civil: ["civil engineer", "structural engineer", "geotechnical", "site engineer", "construction engineer"],
+    mechanical: ["mechanical engineer", "hvac engineer", "hvac", "manufacturing engineer", "production engineer"],
+    electrical: ["electrical engineer", "electronics engineer", "power engineer", "instrumentation engineer"],
+    chemical: ["chemical engineer", "process engineer", "materials engineer", "metallurgist"],
+    aerospace: ["aerospace engineer", "aeronautical engineer", "aviation engineer"],
+    // Business, Finance & Admin
+    accounting: ["accountant", "cpa", "bookkeeper", "auditor", "comptroller", "controller", "tax specialist", "forensic accountant", "payroll"],
+    "human resources": ["hr", "recruiter", "talent acquisition", "people ops", "compensation", "benefits specialist", "hr generalist", "hr manager"],
+    marketing: ["marketer", "seo", "digital marketing", "social media", "growth hacker", "brand manager", "content manager", "campaign manager", "communications"],
+    sales: ["sales rep", "account executive", "b2b sales", "retail", "cashier", "sales manager", "business development", "bdr", "sdr", "account manager"],
+    management: ["manager", "ceo", "director", "supervisor", "executive", "vp", "vice president", "coo", "cfo", "operations manager", "general manager"],
+    administrative: ["admin", "secretary", "receptionist", "assistant", "clerk", "office manager", "data entry", "coordinator"],
+    finance: ["financial analyst", "investment", "portfolio manager", "banker", "loan officer", "credit analyst", "underwriter", "insurance"],
+    legal: ["lawyer", "attorney", "paralegal", "notary", "barrister", "solicitor", "legal assistant"],
+    // Trades & Blue Collar
+    "electrical trades": ["electrician", "sparky", "wireman", "journeyman electrician", "master electrician"],
+    plumbing: ["plumber", "pipefitter", "steamfitter", "gasfitter"],
+    carpentry: ["carpenter", "cabinetmaker", "framer", "joiner", "woodworker", "trim carpenter"],
+    mechanic: ["auto mechanic", "technician", "automotive technician", "service technician", "diesel mechanic", "heavy equipment mechanic"],
+    welding: ["welder", "fabricator", "fitter", "boilermaker"],
+    driving: ["driver", "truck driver", "trucker", "delivery driver", "courier", "logistics", "transport operator", "bus driver", "transit operator", "cdl"],
+    construction: ["construction worker", "labourer", "laborer", "ironworker", "rebar", "concrete", "mason", "bricklayer", "tile setter", "plasterer"],
+    // Hospitality & Food
+    culinary: ["chef", "cook", "baker", "sous chef", "pastry chef", "head chef", "line cook", "prep cook"],
+    "food service": ["waiter", "waitress", "server", "bartender", "barista", "host", "hostess", "busser", "food counter attendant"],
+    cleaning: ["cleaner", "janitor", "housekeeper", "maid", "custodian", "sanitation worker", "building cleaner"],
+    hotel: ["hotel manager", "front desk", "concierge", "guest services", "hospitality manager"],
+    // Education
+    educator: ["teacher", "prof", "professor", "tutor", "lecturer", "instructor", "elementary teacher", "high school teacher", "kindergarten", "early childhood educator", "ece", "daycare"],
+    // Science & Research
+    biology: ["biologist", "biochemist", "microbiologist", "research scientist", "life sciences"],
+    geology: ["geologist", "geoscientist", "environmental scientist", "hydrogeologist"],
+    psychology: ["psychologist", "therapist", "counsellor", "counselor", "mental health", "social worker", "behaviour analyst"],
+    // Skilled Agriculture
+    agriculture: ["farmer", "agricultural worker", "greenhouse worker", "farm worker", "horticulturist", "livestock", "agri"],
+  };
+
   function filterNoc(query: string): NocEntry[] {
     if (!query || query.length < 2) return [];
-    const q = query.toLowerCase();
-    return NOC_LIST.filter(
-      (e) => e.title.toLowerCase().includes(q) || e.code.startsWith(q)
-    ).slice(0, 12);
+    const q = query.toLowerCase().trim();
+    const seen = new Set<string>();
+    const results: NocEntry[] = [];
+
+    // Helper that adds matches by NOC title keyword, deduplicated
+    const addByKeyword = (keyword: string) => {
+      const kw = keyword.toLowerCase();
+      for (const e of NOC_LIST) {
+        if (!seen.has(e.code) && (e.title.toLowerCase().includes(kw) || e.code.startsWith(q))) {
+          seen.add(e.code);
+          results.push(e);
+        }
+      }
+    };
+
+    // A) Direct title / code match first (highest relevance)
+    addByKeyword(q);
+
+    // B) Alias map: find every NOC keyword whose alias list contains the query
+    for (const [nocKeyword, aliases] of Object.entries(NOC_ALIAS_MAP)) {
+      const aliasHit = aliases.some((alias) => alias.toLowerCase().includes(q) || q.includes(alias.toLowerCase()));
+      if (aliasHit) {
+        addByKeyword(nocKeyword);
+      }
+    }
+
+    return results.slice(0, 14);
   }
 
   const aiAnalysisSteps = selectedCountry === "CA"
