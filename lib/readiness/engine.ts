@@ -439,6 +439,19 @@ const CANADA_PATHWAY_NAMES: Record<CanadaPathwayCode, { en: string; tr: string }
   FAMILY_SPONSORSHIP: { en: "Family Sponsorship", tr: "Aile Sponsorluğu" },
 };
 
+/**
+ * Returns HIGH only when all 4 critical fields are present (NOC/occupation,
+ * language level, age, and education level). Any missing field → LOW.
+ * Used by the PDF to render a dynamic confidence label and gate sections.
+ */
+function calculateConfidence(input: ReadinessInput): "HIGH" | "LOW" {
+  const hasNoc = Boolean(input.nocCode || input.occupation);
+  const hasLanguage = Boolean(input.englishLevel);
+  const hasAge = Boolean(input.age);
+  const hasEducation = Boolean(input.qualificationLevel);
+  return hasNoc && hasLanguage && hasAge && hasEducation ? "HIGH" : "LOW";
+}
+
 // Intentionally simpler than the AU pathwayComparison builder — this covers
 // only what's needed for the 8 sections activated for Canada in this pass
 // (points, roadmap, risk, document checklist, gantt, PDF, disclaimer). The
@@ -454,46 +467,39 @@ function buildCanadaPathwayComparison(
   const isZh = locale === "zh-Hans";
 
   if (pathwayCodes.length === 0) {
-    const occText = occupation?.trim();
     return [
       {
         subclass: "general",
-        visaName: isTr ? "Meslek odaklı Kanada stratejisi" : isZh ? "职业导向加拿大策略" : "Occupation-focused Canada strategy",
+        visaName: isTr ? "Yetersiz Veri — Yol Belirlenemedi" : isZh ? "数据不足 — 无法确定路径" : "Inconclusive — Insufficient Data",
         reason: isTr
-          ? (occText
-              ? `${occText} profili için boş yanıt verilmeden CEC/FSW/FSTP tabanlı stratejik plan üretildi.`
-              : "Belirli program sinyali yok; boş yanıt yerine CEC/FSW/FSTP tabanlı stratejik plan üretildi.")
+          ? "Profil girdileri belirli bir programa yönlendirme için yeterli değil. Aşağıdaki eksik alanları doldurun: NOC meslek kodu, CLB/NCLC dil sınav skoru ve eğitim düzeyi."
           : isZh
-            ? (occText
-                ? `已基于 ${occText} 档案生成CEC/FSW/FSTP策略，不返回空白结论。`
-                : "未识别到明确项目信号；系统已生成CEC/FSW/FSTP策略，而非空白结论。")
-            : (occText
-                ? `Generated a CEC/FSW/FSTP strategy for ${occText} instead of returning a blank outcome.`
-                : "No explicit program signal was detected, so a CEC/FSW/FSTP strategy was generated instead of a blank outcome."),
+            ? "当前档案信息不足以确定具体移民路径。请补充以下缺失字段：NOC职业代码、CLB/NCLC语言成绩及学历等级。"
+            : "Incomplete Profile: Insufficient data to determine a pathway. Please refine your profile inputs — the following fields are required to unlock a personalized strategy: NOC occupation code, CLB/NCLC language test score, and education level.",
         relevance: "not_enough_information",
-        confidenceLevel: estimatedPoints !== undefined ? "medium" : "low",
+        confidenceLevel: "low",
         confidenceExplanation: isTr
-          ? "Sinyal seti sınırlı olsa da rapor boş bırakılmaz; mevcut veriden uygulanabilir rota üretilir."
+          ? "Güven düzeyi DÜŞÜK — Kritik profil verileri eksik (NOC, CLB, eğitim). Bu analiz kişiselleştirilemiyor."
           : isZh
-            ? "即使信号有限，报告也不会留空；系统会基于现有信息生成可执行路径。"
-            : "Even with limited signals, the report is not left blank; an executable route is generated from available data.",
-        difficulty: "medium",
-        requirementType: isTr ? "Meslek + CRS sinyali tabanlı stratejik rota" : isZh ? "基于职业+CRS信号的策略路径" : "Occupation + CRS signal-based strategic route",
+            ? "置信度：低 — 关键档案数据缺失（NOC、CLB、学历）。无法生成个性化分析。"
+            : "Confidence: LOW — Vital profile data (e.g., NOC occupation, CLB score, education level) is missing. This analysis cannot be personalized.",
+        difficulty: "high",
+        requirementType: isTr ? "Tamamlanmamış profil" : isZh ? "档案未完整" : "Incomplete profile",
         userRelativePosition: isTr
-          ? "Ek veri geldikçe rota güçlendirilir; mevcut durumda uygulanabilir temel plan hazırdır."
+          ? "Kişiselleştirilmiş bir strateji için profil bilgilerini tamamlayın."
           : isZh
-            ? "随着更多数据补充可持续强化路线；当前已给出可执行基础方案。"
-            : "Route strength can be upgraded as more data arrives; a workable baseline plan is already provided.",
+            ? "请完善档案信息以获得个性化策略。"
+            : "Complete your profile to unlock a personalized pathway strategy.",
         keyRequirements: isTr
-          ? ["NOC/TEER kesinleştirme", "Dil hedefi (CLB)", "ECA ve belge seti"]
+          ? ["NOC meslek kodunu seçin", "CLB/NCLC dil sınav skoru girin", "Eğitim düzeyini belirtin"]
           : isZh
-            ? ["确认NOC/TEER", "语言目标（CLB）", "ECA与材料集"]
-            : ["NOC/TEER confirmation", "Language target (CLB)", "ECA and evidence set"],
+            ? ["选择NOC职业代码", "填写CLB/NCLC语言成绩", "填写学历等级"]
+            : ["Select your NOC occupation code", "Enter your CLB/NCLC language test score", "Specify your education level"],
         pathwaySpecificRisks: isTr
-          ? ["Sınırlı giriş verisi, kesin program sıralamasını zayıflatabilir."]
+          ? ["Eksik alanlar giderilmeden kesin pathway sıralaması yapılamaz."]
           : isZh
-            ? ["输入信息较少可能降低精确项目排序能力。"]
-            : ["Sparse input can reduce precision in program ranking."],
+            ? ["在补充必填字段之前，无法进行精确的路径排名。"]
+            : ["A definitive pathway ranking cannot be produced until missing fields are completed."],
       },
     ];
   }
@@ -501,6 +507,11 @@ function buildCanadaPathwayComparison(
   return pathwayCodes.map((code) => {
     const isExpressEntry = code === "CEC" || code === "FSW" || code === "FSTP";
     const isAip = code === "AIP";
+    // Derive a per-pathway confidence level from the calculateConfidence helper so it
+    // reflects actual input completeness rather than a hardcoded "medium".
+    // The input object is captured in the outer scope via the `occupation` param.
+    // We synthesize a minimal ReadinessInput-compatible object for the check.
+    const dynConf: ConfidenceLevel = estimatedPoints !== undefined && Boolean(occupation) ? "medium" : "low";
 
     return {
       subclass: code,
@@ -509,7 +520,7 @@ function buildCanadaPathwayComparison(
         ? `${CANADA_PATHWAY_NAMES[code].tr} sinyalleri mevcut bilgilerle eşleşiyor.`
         : `Signals for ${CANADA_PATHWAY_NAMES[code].en} match the information provided.`,
       relevance: "possible",
-      confidenceLevel: isExpressEntry && estimatedPoints !== undefined ? "medium" : "low",
+      confidenceLevel: dynConf,
       confidenceExplanation: isExpressEntry
         ? (isTr
             ? "CRS tahmini ve program kriterleri kısmi bilgiyle değerlendirilmiştir."
@@ -2961,20 +2972,8 @@ function buildCanadaFinancialRoadmap(
     });
   }
 
-  items.push({
-    category: t("Living Cost Projection — Major Cities", "Yaşam Maliyeti Tahmini — Büyük Şehirler", "生活成本预测——主要城市"),
-    estimateType: "variable",
-    amountLabel: t(
-      "Toronto ~CAD $2,890/mo (single) · Vancouver ~CAD $3,100/mo · Calgary ~CAD $2,400/mo",
-      "Toronto ~CAD 2.890/ay (tek kişi) · Vancouver ~CAD 3.100/ay · Calgary ~CAD 2.400/ay",
-      "多伦多约CAD $2,890/月（单人）· 温哥华约CAD $3,100/月 · 卡尔加里约CAD $2,400/月"
-    ),
-    explanation: t(
-      "Monthly cost breakdown by city (single adult, approximate 2024 figures): TORONTO — 1BR rent (downtown) CAD $2,400–$2,800/mo; groceries CAD $400–$550; transit (Presto monthly pass) CAD $156; utilities CAD $120–$180. Total: ~CAD $3,100–$3,700/mo. VANCOUVER — 1BR rent (downtown) CAD $2,600–$3,200/mo; groceries CAD $400–$550; transit (CompassCard monthly) CAD $109; utilities CAD $80–$140. Total: ~CAD $3,200–$4,000/mo. CALGARY — 1BR rent CAD $1,800–$2,300/mo; groceries CAD $380–$500; transit (monthly pass) CAD $112; utilities CAD $100–$170. Total: ~CAD $2,400–$3,100/mo. OTTAWA — 1BR rent CAD $1,900–$2,400/mo; groceries CAD $380–$500; transit (OC Transpo monthly) CAD $124; utilities CAD $100–$160. Total: ~CAD $2,500–$3,200/mo. Note: Provincial and federal taxes on income range from 20–33% depending on salary and province. Ontario adds a 13% HST; Alberta has no provincial sales tax (0% PST).",
-      "Gösterge niteliğinde aylık taban: kira (1BR), market ve ulaşım. Toronto ve Vancouver, Kanada'nın en yüksek kira primlerine sahiptir.",
-      "参考月度基准费用：租金（1居室）、食品杂货和交通。多伦多和温哥华租金溢价最高。卡尔加里和渥太华总体更实惠。费用因社区和生活方式差异较大。"
-    ),
-  });
+  // Living cost is now rendered as a dedicated dual-row (Single + Family of 3) section
+  // in generate-pdf.ts via drawFamilyLivingCosts(). Removed from here to avoid duplication.
 
   items.push({
     category: t(
@@ -3253,6 +3252,19 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   const keyVisaRequirements = buildKeyVisaRequirements(pathwayComparison);
 
+  // Dynamic confidence — HIGH only when all 4 critical fields are present.
+  const confidenceScore = calculateConfidence(input);
+
+  // Sections that cannot be personalized due to missing critical inputs.
+  // The PDF renders an "Action Required" box in place of each listed section.
+  const dataRequiredSections: string[] = [];
+  if (!input.occupation && !input.nocCode) {
+    dataRequiredSections.push("pointsBoosterSimulator");
+  }
+  if (pathwayComparison.length === 1 && pathwayComparison[0].subclass === "general") {
+    dataRequiredSections.push("pathwayComparison");
+  }
+
   const executiveSummary = [...sparseStrategy.summaryLines];
   if (hasPnpInterest) {
     executiveSummary.unshift(
@@ -3361,6 +3373,8 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     disclaimer,
     sparseDataDisclaimer,
     livingCostFamily,
+    confidenceScore,
+    dataRequiredSections,
   };
 }
 

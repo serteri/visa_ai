@@ -1010,6 +1010,43 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     });
 
     yPosition = cardY + boxHeight + 8;
+
+    // Dynamic confidence badge — HIGH (green) or LOW (red) based on critical field presence
+    if (report.confidenceScore) {
+      const isHigh = report.confidenceScore === "HIGH";
+      const confLabel = effectiveLocale === "tr"
+        ? (isHigh ? "Güven: YÜKSEK" : "Güven: DÜŞÜK")
+        : effectiveLocale === "zh-Hans"
+          ? (isHigh ? "置信度：高" : "置信度：低")
+          : (isHigh ? "Confidence: HIGH" : "Confidence: LOW");
+      const confDesc = effectiveLocale === "tr"
+        ? (isHigh
+            ? "Tüm kritik profil alanları (NOC, CLB, Yaş, Eğitim) sağlandı. Bu analiz kişiselleştirilmiştir."
+            : "Güven: DÜŞÜK — Kritik profil verileri (ör. NOC, CLB) eksik. Bu analiz kişiselleştirilemiyor.")
+        : effectiveLocale === "zh-Hans"
+          ? (isHigh
+              ? "所有关键档案字段（NOC、CLB、年龄、学历）均已提供。此分析已个性化。"
+              : "置信度：低 — 关键档案数据（如NOC、CLB）缺失。此分析无法个性化。")
+          : (isHigh
+              ? "All critical profile fields (NOC, CLB, Age, Education) are present. This analysis is personalized."
+              : "Confidence: LOW — Vital profile data (e.g., NOC, CLB) is missing. This analysis cannot be personalized.");
+      ensurePageSpace(12);
+      doc.setFillColor(isHigh ? 240 : 254, isHigh ? 253 : 242, isHigh ? 244 : 242);
+      doc.setDrawColor(isHigh ? 22 : 220, isHigh ? 163 : 38, isHigh ? 74 : 38);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(margin, yPosition, contentWidth, 10, 1.5, 1.5, "FD");
+      setBoldFont();
+      doc.setFontSize(8.5);
+      doc.setTextColor(isHigh ? 21 : 185, isHigh ? 128 : 28, isHigh ? 61 : 28);
+      doc.text(safeText(confLabel), margin + 4, yPosition + 4);
+      setBaseFont();
+      doc.setFontSize(7.5);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(safeText(confDesc), margin + 50, yPosition + 4);
+      yPosition += 13;
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.setLineWidth(0.3);
+    }
   }
 
   function drawAlertCollection(
@@ -1279,6 +1316,53 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
       yPosition += boxHeight + 4;
     });
+  }
+
+  /**
+   * Renders a red "Action Required" blocking box when a section cannot be
+   * personalized due to missing critical profile fields.
+   */
+  function drawActionRequiredBox(sectionLabel: string, requiredFields: string[]) {
+    ensurePageSpace(35);
+    const boxX = margin;
+    const lineH = 5;
+    const heading = effectiveLocale === "tr"
+      ? "Eylem Gerekli — Bu Bölüm Kişiselleştirilemiyor"
+      : effectiveLocale === "zh-Hans"
+      ? "需要操作 — 此部分无法个性化"
+      : "Action Required — This Section Cannot Be Personalized";
+    const intro = effectiveLocale === "tr"
+      ? `"${sectionLabel}" bölümü aşağıdaki eksik alanlar nedeniyle oluşturulamadı. Lütfen başvuru formunu güncelleyin:`
+      : effectiveLocale === "zh-Hans"
+      ? `由于以下字段缺失，"${sectionLabel}"部分无法生成。请更新申请表：`
+      : `The "${sectionLabel}" section cannot be generated because the following required form fields are missing. Please update your intake form to unlock this section:`;
+    const wrappedIntro = doc.splitTextToSize(safeText(intro), contentWidth - 10);
+    const totalH = 6 + lineH + wrappedIntro.length * lineH + requiredFields.length * lineH + 4;
+    doc.setDrawColor(220, 38, 38);
+    doc.setLineWidth(1);
+    doc.setFillColor(254, 242, 242);
+    doc.roundedRect(boxX, yPosition, contentWidth, totalH, 2, 2, "FD");
+    yPosition += 5;
+    setBoldFont();
+    doc.setFontSize(FONTS.body);
+    doc.setTextColor(185, 28, 28);
+    doc.text(safeText(heading), boxX + 4, yPosition);
+    yPosition += lineH;
+    setBaseFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    wrappedIntro.forEach((line: string) => {
+      doc.text(safeText(line), boxX + 4, yPosition);
+      yPosition += lineH;
+    });
+    requiredFields.forEach((f) => {
+      ensurePageSpace(lineH);
+      doc.text(safeText(`• ${f}`), boxX + 6, yPosition);
+      yPosition += lineH;
+    });
+    yPosition += 4;
+    doc.setLineWidth(0.3);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
   }
 
   function drawSparseDataDisclaimer() {
@@ -1910,6 +1994,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.pathwayComparison.length > 0) {
     addHeading(text.pathwayTable);
+    if (report.dataRequiredSections?.includes("pathwayComparison")) {
+      const missingForPathway = report.missingInformation.length > 0
+        ? report.missingInformation
+        : effectiveLocale === "tr"
+          ? ["NOC meslek kodu", "CLB/NCLC dil sınav skoru", "Eğitim düzeyi"]
+          : effectiveLocale === "zh-Hans"
+            ? ["NOC职业代码", "CLB/NCLC语言成绩", "学历等级"]
+            : ["NOC occupation code", "CLB/NCLC language test score", "Education level"];
+      drawActionRequiredBox(text.pathwayTable, missingForPathway);
+    } else {
     addSmallText(text.pathwayTableIntro, 0);
     yPosition += 2;
     const pathwayRows = report.pathwayComparison.map((item) => {
@@ -1940,6 +2034,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       addSmallText(`${row.visa} - ${text.realityCheck}: ${row.realityCheck}`, 4);
     });
     yPosition += 3;
+    } // end else (data available)
   }
 
   if (report.pathwayStrengthComparison.length > 0) {
@@ -1988,26 +2083,38 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.pointsBoosterSimulator) {
     addHeading(text.pointsBoosterSimulator);
-    if (report.pointsBoosterSimulator.currentEstimate !== undefined) {
-      addBody(`${text.estimatedPoints}: ${report.pointsBoosterSimulator.currentEstimate}`);
-    }
-    addSmallText(
-      effectiveLocale === "tr"
-        ? "Bu senaryolar yalnızca matematiksel puan değişimini gösterir; uygunluk veya sonuç anlamına gelmez."
-        : effectiveLocale === "zh-Hans"
-          ? "该模拟仅表示数学分数变化，不代表资格结论或结果保证。"
-        : "This scenario reflects a mathematical change only and does not represent eligibility or outcome.",
-      0
-    );
-    addSmallText(cleanNum(report.pointsBoosterSimulator.note), 0);
-    report.pointsBoosterSimulator.scenarios.forEach((scenario) => {
-      const delta = scenario.estimatedChange >= 0 ? `+${scenario.estimatedChange} pts` : `${scenario.estimatedChange} pts`;
-      addBody(cleanNum(`${scenario.label}: ${delta}`));
-      if (scenario.resultingEstimate !== undefined) {
-        addSmallText(cleanNum(`${effectiveLocale === "tr" ? "Sonraki matematiksel tahmin" : effectiveLocale === "zh-Hans" ? "调整后估算分" : "Resulting estimate"}: ${scenario.resultingEstimate} pts`), 4);
+    if (report.dataRequiredSections?.includes("pointsBoosterSimulator")) {
+      // Cannot personalize — critical fields (NOC/language) are missing
+      const missingForBooster = report.missingInformation.length > 0
+        ? report.missingInformation
+        : effectiveLocale === "tr"
+          ? ["NOC meslek kodu", "CLB/NCLC dil sınav skoru"]
+          : effectiveLocale === "zh-Hans"
+            ? ["NOC职业代码", "CLB/NCLC语言成绩"]
+            : ["NOC occupation code", "CLB/NCLC language test score"];
+      drawActionRequiredBox(text.pointsBoosterSimulator, missingForBooster);
+    } else {
+      if (report.pointsBoosterSimulator.currentEstimate !== undefined) {
+        addBody(`${text.estimatedPoints}: ${report.pointsBoosterSimulator.currentEstimate}`);
       }
-      addSmallText(cleanNum(scenario.explanation), 4);
-    });
+      addSmallText(
+        effectiveLocale === "tr"
+          ? "Bu senaryolar yalnızca matematiksel puan değişimini gösterir; uygunluk veya sonuç anlamına gelmez."
+          : effectiveLocale === "zh-Hans"
+            ? "该模拟仅表示数学分数变化，不代表资格结论或结果保证。"
+          : "This scenario reflects a mathematical change only and does not represent eligibility or outcome.",
+        0
+      );
+      addSmallText(cleanNum(report.pointsBoosterSimulator.note), 0);
+      report.pointsBoosterSimulator.scenarios.forEach((scenario) => {
+        const delta = scenario.estimatedChange >= 0 ? `+${scenario.estimatedChange} pts` : `${scenario.estimatedChange} pts`;
+        addBody(cleanNum(`${scenario.label}: ${delta}`));
+        if (scenario.resultingEstimate !== undefined) {
+          addSmallText(cleanNum(`${effectiveLocale === "tr" ? "Sonraki matematiksel tahmin" : effectiveLocale === "zh-Hans" ? "调整后估算分" : "Resulting estimate"}: ${scenario.resultingEstimate} pts`), 4);
+        }
+        addSmallText(cleanNum(scenario.explanation), 4);
+      });
+    }
     yPosition += 3;
   }
 

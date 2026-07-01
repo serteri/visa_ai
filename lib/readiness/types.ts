@@ -359,6 +359,18 @@ export type ReadinessReport = {
   disclaimer: string;
   /** Prepended to financial roadmap, points booster, and checklist sections when key input fields were absent. */
   sparseDataDisclaimer?: string;
+  /**
+   * HIGH = all 4 critical fields (NOC, language, age, education) are present.
+   * LOW  = one or more critical fields are missing.
+   * Used by the PDF to render a dynamic confidence label and drive "Action Required" blocking.
+   */
+  confidenceScore?: "HIGH" | "LOW";
+  /**
+   * Section identifiers that cannot be personalized due to missing critical data.
+   * The PDF renders an "Action Required" box in place of each listed section.
+   * Known values: "pointsBoosterSimulator" | "pathwayComparison"
+   */
+  dataRequiredSections?: string[];
   /** Family-of-3 living cost alongside single-adult for CA reports. */
   livingCostFamily?: {
     city: string;
