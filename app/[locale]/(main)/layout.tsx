@@ -8,17 +8,27 @@ import { GlobalDisclaimerFooter } from "@/components/global-disclaimer-footer";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
 
-const SITE_NAME = "Logivisa";
+const SITE_NAME = "LogiVisa";
 const BASE_URL = "https://www.logivisa.com";
+
+function getLocaleTitle(locale: string) {
+  if (locale === "tr") {
+    return "LogiVisa — Avustralya Skilled Migration ve PR Rehberi";
+  }
+  if (locale === "zh-Hans") {
+    return "LogiVisa — 澳大利亚技术移民与永居指南";
+  }
+  return "LogiVisa — Australia Skilled Migration & PR Guide";
+}
 
 function getLocaleDescription(locale: string) {
   if (locale === "tr") {
-    return "Avustralya vize yollari icin yapilandirilmis analiz ve hazirlik raporlari.";
+    return "Avustralya Skilled Migration (189/190/491) icin ucretsiz puan hesaplayici, ANZSCO kod bulucu ve hazirlik raporlari. Turkce ve Global Ingilizce PDF PR rehberleri $9.99'dan basliyor.";
   }
   if (locale === "zh-Hans") {
-    return "面向澳大利亚签证路径的结构化分析与准备度报告。";
+    return "免费的澳大利亚技术移民（189/190/491）积分计算器、ANZSCO 职业代码查找工具和准备度报告。土耳其语和全球英语 PDF 永居指南起价 $9.99。";
   }
-  return "Structured visa pathway analysis and readiness reports for Australia.";
+  return "Free Australia Skilled Migration (189/190/491) points calculator, ANZSCO finder, and readiness reports. Turkish and Global English PDF PR guides from $9.99.";
 }
 
 function getOgLocale(locale: string) {
@@ -27,31 +37,52 @@ function getOgLocale(locale: string) {
   return "en_AU";
 }
 
+// English is served prefixless (proxy.ts redirects /en -> / and rewrites
+// / -> /en internally) — /tr and /zh-Hans keep their locale prefix. Every
+// canonical/hreflang/OG URL must reflect the REAL public URL, not the
+// internal route path, or Google indexes a URL that just redirects away.
+function getPublicPath(locale: string): string {
+  return locale === "en" ? "/" : `/${locale}`;
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const title = getLocaleTitle(locale);
   const description = getLocaleDescription(locale);
   const siteUrl = new URL(BASE_URL);
-  const canonicalPath = `/${locale}`;
+  const canonicalPath = getPublicPath(locale);
 
   return {
     metadataBase: siteUrl,
     title: {
-      default: SITE_NAME,
+      default: title,
       template: `%s | ${SITE_NAME}`,
     },
     description,
+    keywords: [
+      "Australia skilled migration",
+      "Australia PR points calculator",
+      "Subclass 189",
+      "Subclass 190",
+      "Subclass 491",
+      "Australia student visa",
+      "Subclass 500",
+      "ANZSCO code finder",
+    ],
     alternates: {
-      // Relative canonical keeps the current path and drops query params like ?dpl=.
+      // Relative canonical keeps the current path and drops query params like
+      // ?dpl=. It correctly resolves to "/" for English (rewritten, URL bar
+      // stays at "/") and "/tr/" or "/zh-Hans/" for the other locales.
       canonical: "./",
       languages: {
-        en: "https://www.logivisa.com/en",
-        tr: "https://www.logivisa.com/tr",
-        "zh-Hans": "https://www.logivisa.com/zh-Hans",
-        "x-default": "https://www.logivisa.com/en",
+        en: BASE_URL,
+        tr: `${BASE_URL}/tr`,
+        "zh-Hans": `${BASE_URL}/zh-Hans`,
+        "x-default": BASE_URL,
       },
     },
     openGraph: {
@@ -59,14 +90,14 @@ export async function generateMetadata({
       locale: getOgLocale(locale),
       url: canonicalPath,
       siteName: SITE_NAME,
-      title: SITE_NAME,
+      title,
       description,
       images: [
         {
           url: "/og/default-og.png",
           width: 1200,
           height: 630,
-          alt: "Logivisa",
+          alt: SITE_NAME,
         },
       ],
     },

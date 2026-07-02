@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Noto_Sans } from "next/font/google";
 import Script from "next/script";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
@@ -14,23 +14,79 @@ const notoSans = Noto_Sans({
   subsets: ["latin"],
 });
 
+const SITE_NAME = "LogiVisa";
+const BASE_URL = "https://www.logivisa.com";
+const SITE_DESCRIPTION =
+  "Australia Skilled Migration (Subclass 189/190/491) points calculator, ANZSCO finder, and readiness reports — plus complete PDF migration guides from $9.99.";
+
+// This root layout wraps every locale. It sets the site-wide English default;
+// per-locale title/description/OpenGraph is generated in
+// app/[locale]/(main)/layout.tsx, which is what Google actually indexes.
+//
+// IMPORTANT: proxy.ts serves English prefixless — "/en" redirects to "/",
+// while "/tr" and "/zh-Hans" keep their prefix. So the canonical English
+// URL is the bare domain root, NOT "/en". Every URL below reflects that.
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.logivisa.com"),
-  title: "Logivisa",
-  description:
-    "Structured visa pathway analysis and readiness reports for Australia.",
+  metadataBase: new URL(BASE_URL),
+  // Plain string, no template — the locale layout (app/[locale]/(main)/layout.tsx)
+  // owns the actual title.template for every real page. Defining a template at
+  // both levels causes Next.js to compound them (e.g. "X | LogiVisa | LogiVisa").
+  title: `${SITE_NAME} — Australia Skilled Migration & PR Guide`,
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "Australia skilled migration",
+    "Australia PR points calculator",
+    "Subclass 189",
+    "Subclass 190",
+    "Subclass 491",
+    "Australia student visa",
+    "Subclass 500",
+    "ANZSCO code finder",
+  ],
   alternates: {
-    canonical: "https://www.logivisa.com/en",
+    canonical: BASE_URL,
     languages: {
-      en: "https://www.logivisa.com/en",
-      tr: "https://www.logivisa.com/tr",
-      "zh-Hans": "https://www.logivisa.com/zh-Hans",
-      "x-default": "https://www.logivisa.com/en",
+      en: BASE_URL,
+      tr: `${BASE_URL}/tr`,
+      "zh-Hans": `${BASE_URL}/zh-Hans`,
+      "x-default": BASE_URL,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_AU",
+    url: BASE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Australia Skilled Migration & PR Guide`,
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/og/default-og.png",
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   verification: {
     google: "foOddNGs8xqNCNQ74vzcc0AheCIMssYqDONHUOkWgCk",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#132844",
 };
 
 export default function RootLayout({
@@ -39,7 +95,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
+    <html lang="en" className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <SessionProviderWrapper>
           {children}

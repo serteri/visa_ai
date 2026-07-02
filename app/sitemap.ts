@@ -11,11 +11,19 @@ function toUrl(path: string) {
   return `${BASE_URL}${path}`;
 }
 
+// proxy.ts serves English prefixless ("/en" 307-redirects to "/", and
+// "/en/x" redirects to "/x"), while "/tr" and "/zh-Hans" keep their prefix.
+// The sitemap must submit the URLs that actually resolve with a 200, not
+// the "/en/..." internal route paths — submitting a redirecting URL in the
+// sitemap is a real Search Console issue ("Page with redirect"), and is
+// part of what confuses Google's indexing of this site.
+function localePath(locale: string, path: string): string {
+  return locale === "en" ? path || "/" : `/${locale}${path}`;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const routes = new Set<string>();
-
-  routes.add("/");
 
   const localeStaticRoutes = [
     "",
@@ -27,7 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const locale of activeLocales) {
     for (const staticRoute of localeStaticRoutes) {
-      routes.add(`/${locale}${staticRoute}`);
+      routes.add(localePath(locale, staticRoute));
     }
   }
 
@@ -41,14 +49,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const locale of activeLocales) {
     for (const subclass of activeVisaSubclasses) {
-      routes.add(`/${locale}/visas/${subclass}`);
+      routes.add(localePath(locale, `/visas/${subclass}`));
     }
   }
 
   const occupations = await getCachedSeoOccupations();
   for (const locale of activeLocales) {
     for (const occupation of occupations) {
-      routes.add(`/${locale}/occupations/${buildOccupationSlug(occupation)}`);
+      routes.add(localePath(locale, `/occupations/${buildOccupationSlug(occupation)}`));
     }
   }
 
