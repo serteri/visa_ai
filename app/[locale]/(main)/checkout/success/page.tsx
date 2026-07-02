@@ -19,7 +19,9 @@ export default function CheckoutSuccessPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && typeof window.fbq === "function") {
-      const value = product === "pdf_book" ? 20 : 9.99;
+      // All current products (premium, pdf_book, pdf_book_global) are priced at $9.99.
+      // If pricing ever diverges by product again, branch on `product` here.
+      const value = 9.99;
       window.fbq("track", "Purchase", {
         value,
         currency: "USD",

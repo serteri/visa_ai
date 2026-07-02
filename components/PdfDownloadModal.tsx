@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +12,18 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+
+export type PdfProduct = "turkish" | "global";
+
+const PDF_SLUGS: Record<PdfProduct, string> = {
+  turkish: "avustralya-pr-rehberi-2026",
+  global: "australia-guide-2026",
+};
+
+const PDF_FILENAMES: Record<PdfProduct, string> = {
+  turkish: "Avustralya-PR-Rehberi-2026.pdf",
+  global: "Australia-Migration-Blueprint-2026.pdf",
+};
 
 interface PdfStatus {
   isFree: boolean;
@@ -23,9 +36,17 @@ interface Props {
   locale: string;
   open: boolean;
   onClose: () => void;
+  /** Which guide this modal instance is downloading. Defaults to the Turkish edition. */
+  product?: PdfProduct;
 }
 
-export function PdfDownloadModal({ locale, open, onClose }: Props) {
+export function PdfDownloadModal({
+  locale,
+  open,
+  onClose,
+  product = "turkish",
+}: Props) {
+  const slug = PDF_SLUGS[product];
   const [status, setStatus] = useState<PdfStatus | null>(null);
   const [form, setForm] = useState({ full_name: "", email: "", phone: "" });
   const [loading, setLoading] = useState(false);
@@ -40,12 +61,12 @@ export function PdfDownloadModal({ locale, open, onClose }: Props) {
 
   useEffect(() => {
     if (open) {
-      fetch("/api/pdf-download")
+      fetch(`/api/pdf-download?slug=${slug}`)
         .then((r) => r.json())
         .then(setStatus)
         .catch(() => setStatus(null));
     }
-  }, [open]);
+  }, [open, slug]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -61,7 +82,7 @@ export function PdfDownloadModal({ locale, open, onClose }: Props) {
       const res = await fetch("/api/pdf-download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, slug }),
       });
       const data = await res.json();
 
@@ -94,7 +115,7 @@ export function PdfDownloadModal({ locale, open, onClose }: Props) {
       // Trigger download
       const a = document.createElement("a");
       a.href = data.downloadUrl;
-      a.download = "Avustralya-PR-Rehberi-2026.pdf";
+      a.download = PDF_FILENAMES[product];
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -113,22 +134,38 @@ export function PdfDownloadModal({ locale, open, onClose }: Props) {
   }
 
   const isFree = status?.isFree ?? true;
-  const freeRemaining = status?.freeRemaining ?? 20;
+  const freeRemaining = status?.freeRemaining ?? 18;
   const alreadyDownloaded = status?.alreadyDownloaded ?? false;
+
+  const titleText =
+    product === "global"
+      ? tx(
+          "🌏 The Ultimate Australia Migration Blueprint",
+          "🌏 The Ultimate Australia Migration Blueprint",
+          "🌏 终极澳大利亚移民蓝图"
+        )
+      : tx("📘 Avustralya PR Rehberi 2026", "📘 Australia PR Guide 2026", "📘 澳大利亚 PR 指南 2026");
+
+  const descriptionText =
+    product === "global"
+      ? tx(
+          "Skilled migration ve öğrenci vizesi (Subclass 500) yol haritasını, 2026 yaşam maliyeti verileriyle birlikte indirin.",
+          "Download the global English guide covering skilled migration and the Student Visa (Subclass 500) bridge, with 2026 cost-of-living data.",
+          "下载涵盖技术移民和学生签证（500 类别）路径的全球英文指南，附 2026 年生活成本数据。"
+        )
+      : tx(
+          "Ucretsiz Turkce PDF rehberini indirin. Gercek verilerle hazirlanmis kapsamli kalici oturma izni kilavuzu.",
+          "Download the free Turkish PDF guide. A comprehensive permanent residency guide built on real data.",
+          "下载免费的土耳其语 PDF 指南。基于真实数据整理的永久居留申请全流程指南。"
+        );
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            {tx("📘 Avustralya PR Rehberi 2026", "📘 Australia PR Guide 2026", "📘 澳大利亚 PR 指南 2026")}
-          </DialogTitle>
+          <DialogTitle className="text-xl font-bold">{titleText}</DialogTitle>
           <DialogDescription className="text-slate-600 dark:text-slate-400">
-            {tx(
-              "Ucretsiz Turkce PDF rehberini indirin. Gercek verilerle hazirlanmis kapsamli kalici oturma izni kilavuzu.",
-              "Download the free Turkish PDF guide. A comprehensive permanent residency guide built on real data.",
-              "下载免费的土耳其语 PDF 指南。基于真实数据整理的永久居留申请全流程指南。"
-            )}
+            {descriptionText}
           </DialogDescription>
         </DialogHeader>
 
@@ -144,9 +181,9 @@ export function PdfDownloadModal({ locale, open, onClose }: Props) {
             {isFree ? (
               <>
                 {tx(
-                  "✅ Ilk 20 indirme ",
-                  "✅ First 20 downloads are ",
-                  "✅ 前 20 次下载"
+                  "✅ Ilk 18 indirme ",
+                  "✅ The first 18 downloads are ",
+                  "✅ 前 18 次下载"
                 )}
                 <strong>{tx("ucretsiz", "free", "免费")}</strong>
                 {tx(" — ", " - ", "，还剩 ")}
@@ -156,9 +193,7 @@ export function PdfDownloadModal({ locale, open, onClose }: Props) {
             ) : (
               <>
                 {tx("💳 Ucretsiz kota doldu. Fiyat: ", "💳 Free quota is full. Price: ", "💳 免费名额已满。价格：")}
-                <strong>$20</strong>
-                {tx(" — ", " - ", " - ")}
-                info@logivisa.com
+                <strong>$9.99</strong>
               </>
             )}
           </div>
@@ -259,14 +294,17 @@ export function PdfDownloadModal({ locale, open, onClose }: Props) {
                   : tx("📥 Ucretsiz Indir", "📥 Free Download", "📥 免费下载")}
               </Button>
             ) : (
-              <Button
-                type="button"
-                className="w-full"
-                variant="outline"
-                onClick={onClose}
-              >
-                {tx("Kapat", "Close", "关闭")}
-              </Button>
+              <StripeCheckoutButton
+                productType={product === "global" ? "pdf_book_global" : "pdf_book"}
+                locale={locale}
+                email={form.email || undefined}
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0"
+                label={tx(
+                  "💳 Şimdi Satın Al — $9.99",
+                  "💳 Buy Now — $9.99",
+                  "💳 立即购买 — $9.99"
+                )}
+              />
             )}
 
             <p className="text-xs text-slate-400 text-center">

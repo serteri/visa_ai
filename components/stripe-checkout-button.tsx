@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-type ProductType = "premium" | "pdf_book";
+type ProductType = "premium" | "pdf_book" | "pdf_book_global";
 
 type Props = {
   productType: ProductType;
@@ -13,6 +13,14 @@ type Props = {
   userId?: string;
   reportId?: string;
   className?: string;
+  /** Optional override for the button label (e.g. to reflect a scarcity-driven CTA copy). */
+  label?: string;
+};
+
+const DEFAULT_LABEL: Record<ProductType, string> = {
+  premium: "Upgrade to Premium",
+  pdf_book: "Buy Now — $9.99",
+  pdf_book_global: "Buy Now — $9.99",
 };
 
 export function StripeCheckoutButton({
@@ -22,12 +30,12 @@ export function StripeCheckoutButton({
   userId,
   reportId,
   className,
+  label,
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const buttonText =
-    productType === "premium" ? "Upgrade to Premium" : "Buy Turkish PDF E-Book";
+  const buttonText = label ?? DEFAULT_LABEL[productType];
 
   async function startCheckout() {
     try {

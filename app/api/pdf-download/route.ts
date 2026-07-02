@@ -2,12 +2,26 @@ import { NextRequest } from "next/server";
 import { revalidateTag } from "next/cache";
 import { db } from "@/db";
 import { pdfDownloads } from "@/db/schema";
-import { eq, count } from "drizzle-orm";
+import { eq, and, inArray, count } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
-const FREE_LIMIT = 20;
-const PDF_SLUG = "avustralya-pr-rehberi-2026";
+// Both the Turkish and Global English guides draw from a single shared free-download pool.
+const FREE_LIMIT = 18;
+
+export const PDF_SLUGS = {
+  turkish: "avustralya-pr-rehberi-2026",
+  global: "australia-guide-2026",
+} as const;
+
+export type PdfProduct = keyof typeof PDF_SLUGS;
+
+const ALL_SLUGS = Object.values(PDF_SLUGS);
+
+function resolveSlug(value: string | null): string {
+  if (value === PDF_SLUGS.global) return PDF_SLUGS.global;
+  return PDF_SLUGS.turkish;
+}
 
 function getClientIp(req: NextRequest): string {
   return (
@@ -17,24 +31,29 @@ function getClientIp(req: NextRequest): string {
   );
 }
 
-// GET: check current status (free slots remaining, already downloaded from this IP)
+// GET: check current status (shared free slots remaining, already downloaded THIS slug from this IP)
 export async function GET(req: NextRequest) {
   try {
     const ip = getClientIp(req);
+    const slug = resolveSlug(req.nextUrl.searchParams.get("slug"));
 
+    // Shared pool: count downloads across BOTH guides against the combined free limit.
     const [totalRow] = await db
       .select({ value: count() })
       .from(pdfDownloads)
-      .where(eq(pdfDownloads.pdf_slug, PDF_SLUG));
+      .where(inArray(pdfDownloads.pdf_slug, ALL_SLUGS));
 
     const totalDownloads = Number(totalRow?.value ?? 0);
     const freeRemaining = Math.max(0, FREE_LIMIT - totalDownloads);
     const isFree = totalDownloads < FREE_LIMIT;
 
+    // Per-slug dedup: a visitor can grab each guide once, not just one guide ever.
     const [ipRow] = await db
       .select({ value: count() })
       .from(pdfDownloads)
-      .where(eq(pdfDownloads.ip_address, ip));
+      .where(
+        and(eq(pdfDownloads.ip_address, ip), eq(pdfDownloads.pdf_slug, slug))
+      );
 
     const alreadyDownloaded = Number(ipRow?.value ?? 0) > 0;
 
@@ -43,6 +62,7 @@ export async function GET(req: NextRequest) {
       freeRemaining,
       totalDownloads,
       alreadyDownloaded,
+      slug,
     });
   } catch (err) {
     console.error("[pdf-download GET]", err);
@@ -56,11 +76,13 @@ export async function POST(req: NextRequest) {
     const ip = getClientIp(req);
     const body = await req.json();
 
-    const { full_name, email, phone } = body as {
+    const { full_name, email, phone, slug: rawSlug } = body as {
       full_name?: string;
       email?: string;
       phone?: string;
+      slug?: string;
     };
+    const slug = resolveSlug(rawSlug ?? null);
 
     // Validate inputs
     if (!full_name?.trim() || !email?.trim() || !phone?.trim()) {
@@ -75,11 +97,13 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Geçerli bir e-posta girin." }, { status: 400 });
     }
 
-    // Block duplicate IPs
+    // Block duplicate IPs — scoped per guide, so a visitor can claim each guide once.
     const [ipRow] = await db
       .select({ value: count() })
       .from(pdfDownloads)
-      .where(eq(pdfDownloads.ip_address, ip));
+      .where(
+        and(eq(pdfDownloads.ip_address, ip), eq(pdfDownloads.pdf_slug, slug))
+      );
 
     if (Number(ipRow?.value ?? 0) > 0) {
       return Response.json(
@@ -88,11 +112,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check free limit
+    // Check free limit — shared pool across both guides.
     const [totalRow] = await db
       .select({ value: count() })
       .from(pdfDownloads)
-      .where(eq(pdfDownloads.pdf_slug, PDF_SLUG));
+      .where(inArray(pdfDownloads.pdf_slug, ALL_SLUGS));
 
     const totalDownloads = Number(totalRow?.value ?? 0);
     const isFree = totalDownloads < FREE_LIMIT;
@@ -110,7 +134,7 @@ export async function POST(req: NextRequest) {
       email: email.trim().toLowerCase(),
       phone: phone.trim(),
       ip_address: ip,
-      pdf_slug: PDF_SLUG,
+      pdf_slug: slug,
       is_paid: false,
     });
 
@@ -118,7 +142,7 @@ export async function POST(req: NextRequest) {
 
     return Response.json({
       success: true,
-      downloadUrl: `/${PDF_SLUG}.pdf`,
+      downloadUrl: `/${slug}.pdf`,
     });
   } catch (err) {
     console.error("[pdf-download POST]", err);

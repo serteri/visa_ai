@@ -1,22 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/contexts/language-context";
-import { PdfDownloadModal } from "@/components/PdfDownloadModal";
+import { PdfDownloadModal, type PdfProduct } from "@/components/PdfDownloadModal";
+import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
 import { activeCountries, countryComplianceBadge } from "@/lib/countries";
 
-
+const FREE_DOWNLOADS_FALLBACK = 18;
 
 export function HomeContent() {
   const params = useParams();
   const locale = params.locale as string;
   const { t } = useTranslation();
-  const [pdfModalOpen, setPdfModalOpen] = useState(false);
+
+  // Shared free-download counter — drives the CTA copy on BOTH product cards below.
+  // Seeded with the known fallback, then reconciled against the real shared quota
+  // (both guides draw from one combined pool — see /api/pdf-download).
+  const [freeDownloadsLeft, setFreeDownloadsLeft] = useState(FREE_DOWNLOADS_FALLBACK);
+  const [activePdfModal, setActivePdfModal] = useState<PdfProduct | null>(null);
+
+  useEffect(() => {
+    fetch("/api/pdf-download")
+      .then((r) => r.json())
+      .then((data: { freeRemaining?: number }) => {
+        if (typeof data.freeRemaining === "number") {
+          setFreeDownloadsLeft(data.freeRemaining);
+        }
+      })
+      .catch(() => {
+        // Keep the fallback value — the CTA still works, it just won't reflect
+        // real-time quota until the next successful fetch.
+      });
+  }, []);
+
+  const hasFreeSlots = freeDownloadsLeft > 0;
 
   return (
     <section className="space-y-24 pb-24">
@@ -125,66 +147,254 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* PDF Download Banner */}
+      {/* Dual-Product Guide Grid */}
       <section className="section-shell">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-700 px-8 py-10 text-white shadow-xl">
-          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-          <div className="absolute -left-10 bottom-0 h-48 w-48 rounded-full bg-purple-400/20 blur-2xl pointer-events-none" />
+        {/* Scarcity alert banner — total remaining slots across BOTH editions */}
+        <div
+          className={`mb-6 flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-center text-sm font-semibold shadow-sm ${
+            hasFreeSlots
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800/50 dark:bg-emerald-900/20 dark:text-emerald-300"
+              : "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-300"
+          }`}
+        >
+          {hasFreeSlots ? (
+            <span>
+              🔥{" "}
+              {locale === "tr" ? (
+                <>
+                  Her iki rehberde de geçerli — sadece{" "}
+                  <strong>{freeDownloadsLeft}</strong> ücretsiz indirme hakkı kaldı!
+                </>
+              ) : locale === "zh-Hans" ? (
+                <>
+                  两本指南通用 — 仅剩 <strong>{freeDownloadsLeft}</strong> 个免费下载名额！
+                </>
+              ) : (
+                <>
+                  Shared across both editions — only{" "}
+                  <strong>{freeDownloadsLeft}</strong> free download slots left!
+                </>
+              )}
+            </span>
+          ) : (
+            <span>
+              💳{" "}
+              {locale === "tr"
+                ? "Ücretsiz kota doldu — her iki rehber de artık $9.99."
+                : locale === "zh-Hans"
+                  ? "免费名额已满 — 两本指南现价 $9.99。"
+                  : "Free quota is full — both guides are now $9.99."}
+            </span>
+          )}
+        </div>
 
-          <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Product 1 — Turkish Edition */}
+          <div className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-blue-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-200/50 dark:border-blue-800/60 dark:bg-zinc-900/70 dark:hover:border-blue-600">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl pointer-events-none transition-all group-hover:bg-blue-500/20" />
+
+            <div className="relative flex flex-1 flex-col gap-4 p-8">
               <div className="flex items-center gap-2">
-                <span className="text-3xl">📘</span>
-                <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-                  Turkish PDF · 2026
+                <span className="text-3xl">🇹🇷</span>
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                  {locale === "tr"
+                    ? "Türkçe Baskı · 2026"
+                    : locale === "zh-Hans"
+                      ? "土耳其语版 · 2026"
+                      : "Turkish Edition · 2026"}
                 </span>
               </div>
-              <h2 className="text-2xl font-extrabold sm:text-3xl">
-                {locale === "tr"
-                  ? "PR Rehberi 2026 — AU & CA"
-                  : locale === "zh-Hans"
-                    ? "PR 指南 2026 — 澳大利亚 & 加拿大"
-                    : "PR Guide 2026 — AU & CA"}
+
+              <h2 className="text-3xl font-black leading-tight text-slate-900 dark:text-white">
+                Avustralya PR Başvuru Rehberi
               </h2>
-              <p className="max-w-lg text-indigo-100 text-sm sm:text-base">
+
+              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
                 {locale === "tr" ? (
                   <>
-                    Avustralya ve Kanada kalıcı oturma izni süreçlerini adım adım anlatan
-                    ücretsiz Türkçe rehberimizi indirin. İlk 20 indirme <strong>bedava</strong>, sonrası <strong>$20</strong>.
+                    Türk profesyoneller için hazırlanmış, yetenekli göç (skilled
+                    migration) süreçlerini adım adım anlatan <strong>80+ sayfalık</strong>{" "}
+                    kapsamlı Türkçe rehber.
                   </>
                 ) : locale === "zh-Hans" ? (
                   <>
-                    下载这份免费的土耳其语指南，逐步了解澳大利亚和加拿大的永久居留申请流程。前 20 次下载
-                    <strong>免费</strong>，之后 <strong>$20</strong>。
+                    专为土耳其专业人士打造，逐步讲解技术移民流程的
+                    <strong>80+ 页</strong>土耳其语综合指南。
                   </>
                 ) : (
                   <>
-                    Download our free Turkish guide covering the permanent residency process
-                    for both Australia and Canada, step by step. First 20 downloads are
-                    <strong> free</strong>, then <strong>$20</strong>.
+                    A comprehensive <strong>80+ page</strong> Turkish-language guide
+                    walking skilled migration candidates through the entire pathway,
+                    built specifically for Turkish professionals.
                   </>
                 )}
               </p>
+
+              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-blue-500">✓</span>
+                  {locale === "tr"
+                    ? "80+ sayfa, 13 bölüm, 2026 güncel verileri"
+                    : locale === "zh-Hans"
+                      ? "80+ 页，13 章，2026 最新数据"
+                      : "80+ pages across 13 chapters, 2026 data"}
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-blue-500">✓</span>
+                  {locale === "tr"
+                    ? "189 / 190 / 491 puan testi ve ANZSCO kod rehberi"
+                    : locale === "zh-Hans"
+                      ? "189 / 190 / 491 打分测试与 ANZSCO 职业代码指南"
+                      : "189 / 190 / 491 points test and ANZSCO code guide"}
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-blue-500">✓</span>
+                  {locale === "tr"
+                    ? "Türk başvurucular için özelleştirilmiş belge rehberi"
+                    : locale === "zh-Hans"
+                      ? "为土耳其申请人定制的材料清单"
+                      : "Document checklist tailored to Turkish applicants"}
+                </li>
+              </ul>
+
+              <div className="mt-auto pt-4">
+                {hasFreeSlots ? (
+                  <Button
+                    size="lg"
+                    onClick={() => setActivePdfModal("turkish")}
+                    className="w-full bg-blue-600 font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-700"
+                  >
+                    {locale === "tr"
+                      ? "📥 Ücretsiz İndir"
+                      : locale === "zh-Hans"
+                        ? "📥 免费下载"
+                        : "📥 Free Download"}
+                  </Button>
+                ) : (
+                  <StripeCheckoutButton
+                    productType="pdf_book"
+                    locale={locale}
+                    className="w-full bg-blue-600 font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-700"
+                    label={
+                      locale === "tr"
+                        ? "💳 Şimdi Satın Al — $9.99"
+                        : locale === "zh-Hans"
+                          ? "💳 立即购买 — $9.99"
+                          : "💳 Buy Now — $9.99"
+                    }
+                  />
+                )}
+              </div>
             </div>
-            <Button
-              size="lg"
-              onClick={() => setPdfModalOpen(true)}
-              className="shrink-0 bg-white text-indigo-700 font-bold hover:bg-indigo-50 border-0 shadow-lg"
-            >
-              {locale === "tr"
-                ? "📥 Ücretsiz İndir"
-                : locale === "zh-Hans"
-                  ? "📥 免费下载"
-                  : "📥 Free Download"}
-            </Button>
+          </div>
+
+          {/* Product 2 — Global English Edition */}
+          <div className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-emerald-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-200/50 dark:border-emerald-800/60 dark:bg-zinc-900/70 dark:hover:border-emerald-600">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none transition-all group-hover:bg-emerald-500/20" />
+
+            <div className="relative flex flex-1 flex-col gap-4 p-8">
+              <div className="flex items-center gap-2">
+                <span className="text-3xl">🌏</span>
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                  {locale === "tr"
+                    ? "Global İngilizce Baskı · 2026"
+                    : locale === "zh-Hans"
+                      ? "全球英文版 · 2026"
+                      : "Global English Edition · 2026"}
+                </span>
+              </div>
+
+              <h2 className="text-3xl font-black leading-tight text-slate-900 dark:text-white">
+                The Ultimate Australia Migration &amp; Living Blueprint
+              </h2>
+
+              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
+                {locale === "tr" ? (
+                  <>
+                    Uluslararası profesyoneller için: Skilled Migration yol
+                    haritası, Öğrenci Vizesi (Subclass 500) köprüsü ve{" "}
+                    <strong>2026 yaşam maliyeti</strong> verileri tek rehberde.
+                  </>
+                ) : locale === "zh-Hans" ? (
+                  <>
+                    面向国际专业人士：技术移民路径、学生签证（500 类别）过渡方案，以及
+                    <strong>2026 年生活成本</strong>数据，全部收录于一册。
+                  </>
+                ) : (
+                  <>
+                    Built for an international audience: the full Skilled
+                    Migration pathway, the Student Visa (Subclass 500) bridge to
+                    PR, and <strong>2026 cost of living</strong> data in one
+                    guide.
+                  </>
+                )}
+              </p>
+
+              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-emerald-500">✓</span>
+                  {locale === "tr"
+                    ? "Skilled Migration (189/190/491) — puan testi ve strateji"
+                    : locale === "zh-Hans"
+                      ? "技术移民（189/190/491）— 打分测试与策略"
+                      : "Skilled Migration (189/190/491) — points test & strategy"}
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-emerald-500">✓</span>
+                  {locale === "tr"
+                    ? "Öğrenci Vizesi (Subclass 500) → PR köprü stratejisi"
+                    : locale === "zh-Hans"
+                      ? "学生签证（500 类别）→ PR 过渡策略"
+                      : "Student Visa (Subclass 500) → PR bridge strategy"}
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-emerald-500">✓</span>
+                  {locale === "tr"
+                    ? "Sydney, Melbourne, Brisbane, Adelaide için 2026 yaşam maliyeti"
+                    : locale === "zh-Hans"
+                      ? "悉尼、墨尔本、布里斯班、阿德莱德 2026 年生活成本"
+                      : "2026 cost of living for Sydney, Melbourne, Brisbane, Adelaide"}
+                </li>
+              </ul>
+
+              <div className="mt-auto pt-4">
+                {hasFreeSlots ? (
+                  <Button
+                    size="lg"
+                    onClick={() => setActivePdfModal("global")}
+                    className="w-full bg-emerald-600 font-bold text-white shadow-lg shadow-emerald-500/30 hover:bg-emerald-700"
+                  >
+                    {locale === "tr"
+                      ? "📥 Ücretsiz İndir"
+                      : locale === "zh-Hans"
+                        ? "📥 免费下载"
+                        : "📥 Free Download"}
+                  </Button>
+                ) : (
+                  <StripeCheckoutButton
+                    productType="pdf_book_global"
+                    locale={locale}
+                    className="w-full bg-emerald-600 font-bold text-white shadow-lg shadow-emerald-500/30 hover:bg-emerald-700"
+                    label={
+                      locale === "tr"
+                        ? "💳 Şimdi Satın Al — $9.99"
+                        : locale === "zh-Hans"
+                          ? "💳 立即购买 — $9.99"
+                          : "💳 Buy Now — $9.99"
+                    }
+                  />
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <PdfDownloadModal
         locale={locale}
-        open={pdfModalOpen}
-        onClose={() => setPdfModalOpen(false)}
+        product={activePdfModal ?? "turkish"}
+        open={activePdfModal !== null}
+        onClose={() => setActivePdfModal(null)}
       />
 
       {/* Features Bento Box */}

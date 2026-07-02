@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Ultimate Australia Migration, Education & Living Blueprint 2026</title>
+<meta name="description" content="LogiVisa — The Ultimate Australia Migration, Education & Living Blueprint 2026">
+<style>
+  :root{
+    --navy:#132844;
+    --navy-2:#1c3a5e;
+    --blue:#2f6fed;
+    --blue-light:#eaf1ff;
+    --green:#0f9d58;
+    --green-light:#e8f7ef;
+    --amber:#b8790a;
+    --amber-light:#fff4e0;
+    --red:#c0392b;
+    --red-light:#fdeceb;
+    --ink:#1b2430;
+    --muted:#5b6b7d;
+    --line:#dfe6ee;
+    --paper:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    background:#eef2f7;
+    line-height:1.7;
+    font-size:15.5px;
+  }
+  .page{
+    background:var(--paper);
+    width:210mm;
+    min-height:297mm;
+    margin:14px auto;
+    padding:22mm 20mm;
+    box-shadow:0 0 14px rgba(0,0,0,.12);
+    position:relative;
+  }
+  .page.no-shadow{box-shadow:none;}
+
+  /* ---------- COVER PAGE ---------- */
+  .cover{
+    background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 55%,#0d1c30 100%);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:20mm 18mm;
+  }
+  .cover .brand{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid rgba(255,255,255,.25);
+    padding-bottom:14px;
+  }
+  .cover .brand-name{font-size:22px;font-weight:800;letter-spacing:.5px;}
+  .cover .brand-url{font-size:13px;opacity:.85;}
+  .cover .cover-mid{margin-top:60px;}
+  .cover .eyebrow{
+    display:inline-block;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.35);
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:12.5px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-bottom:22px;
+  }
+  .cover h1{
+    font-size:42px;
+    line-height:1.15;
+    margin:0 0 14px 0;
+    font-weight:800;
+    max-width:520px;
+  }
+  .cover h2{
+    color:#fff;
+    font-size:18px;
+    font-weight:400;
+    opacity:.9;
+    max-width:480px;
+    margin:0 0 30px 0;
+  }
+  .badge-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+  .badge{
+    background:var(--blue);
+    color:#fff;
+    padding:9px 16px;
+    border-radius:6px;
+    font-size:12.5px;
+    font-weight:700;
+    letter-spacing:.3px;
+  }
+  .cover .footer-note{
+    font-size:11.5px;
+    opacity:.75;
+    border-top:1px solid rgba(255,255,255,.25);
+    padding-top:14px;
+    display:flex;
+    justify-content:space-between;
+  }
+
+  /* ---------- GENERIC CONTENT ---------- */
+  .kicker{
+    color:var(--blue);
+    font-weight:800;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h1.ch-title{
+    font-size:27px;
+    color:var(--navy);
+    margin:0 0 4px 0;
+    font-weight:800;
+    border-bottom:3px solid var(--blue);
+    padding-bottom:14px;
+  }
+  .ch-sub{color:var(--muted);font-size:15px;margin:12px 0 28px 0;font-style:italic;}
+  h2{
+    font-size:19px;
+    color:var(--navy);
+    margin:34px 0 14px 0;
+    font-weight:700;
+    border-left:4px solid var(--blue);
+    padding-left:12px;
+  }
+  h3{font-size:16px;color:var(--navy-2);margin:22px 0 10px 0;font-weight:700;}
+  p{margin:11px 0;color:var(--ink);}
+  ul,ol{margin:11px 0;padding-left:22px;}
+  li{margin:7px 0;}
+  strong{color:var(--navy);}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:16px 0 24px 0;
+    font-size:13.5px;
+  }
+  thead{display:table-header-group;}
+  tr{page-break-inside:avoid;page-break-after:auto;}
+  thead th{
+    background:var(--navy);
+    color:#fff;
+    text-align:left;
+    padding:12px 14px;
+    font-weight:700;
+    font-size:13px;
+  }
+  tbody td{
+    padding:11px 14px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  tbody tr:nth-child(even){background:#f6f9fc;}
+  tbody tr:last-child td{border-bottom:2px solid var(--navy);}
+  td.num,th.num{white-space:nowrap;}
+
+  .callout{
+    border-radius:8px;
+    padding:14px 16px;
+    margin:16px 0;
+    font-size:13px;
+    border:1px solid;
+  }
+  .callout .c-title{font-weight:800;font-size:12px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;display:block;}
+  .callout.tip{background:var(--green-light);border-color:#bfe6cf;}
+  .callout.tip .c-title{color:var(--green);}
+  .callout.warn{background:var(--amber-light);border-color:#f0d9a8;}
+  .callout.warn .c-title{color:var(--amber);}
+  .callout.info{background:var(--blue-light);border-color:#c6d9fb;}
+  .callout.info .c-title{color:var(--blue);}
+  .callout.critical{background:var(--red-light);border-color:#f2c6c1;}
+  .callout.critical .c-title{color:var(--red);}
+
+  .stat-row{display:flex;gap:12px;margin:18px 0;flex-wrap:wrap;}
+  .stat-box{
+    flex:1;
+    min-width:110px;
+    background:var(--blue-light);
+    border:1px solid #c6d9fb;
+    border-radius:8px;
+    padding:12px;
+    text-align:center;
+  }
+  .stat-box .num{font-size:22px;font-weight:800;color:var(--navy);}
+  .stat-box .lbl{font-size:10.5px;color:var(--muted);margin-top:2px;}
+
+  .two-col{display:flex;gap:16px;}
+  .two-col .col{flex:1;}
+  .card{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 14px;
+    margin:10px 0;
+  }
+  .card.good{border-left:4px solid var(--green);}
+  .card.bad{border-left:4px solid var(--red);}
+  .card-title{font-weight:800;font-size:13px;color:var(--navy);margin-bottom:6px;}
+
+  .toc-list{list-style:none;padding:0;margin:0;}
+  .toc-list li{
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px dotted var(--line);
+    padding:10px 4px;
+    font-size:14px;
+  }
+  .toc-list .toc-num{color:var(--blue);font-weight:800;width:34px;display:inline-block;}
+  .toc-list .toc-desc{color:var(--muted);font-size:11.5px;display:block;margin-top:2px;font-style:italic;}
+
+  .page-footer{
+    position:absolute;
+    bottom:10mm;
+    left:16mm;
+    right:16mm;
+    display:flex;
+    justify-content:space-between;
+    font-size:10px;
+    color:var(--muted);
+    border-top:1px solid var(--line);
+    padding-top:6px;
+  }
+
+  .close-cta{
+    background:var(--navy);
+    color:#fff;
+    border-radius:10px;
+    padding:20px;
+    margin-top:20px;
+  }
+  .close-cta h3{color:#fff;margin-top:0;}
+  .close-cta .url{color:#9cc2ff;font-weight:700;}
+
+  /* ---------- CHAPTER DIVIDER PAGES ---------- */
+  .page.divider{
+    background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 55%,#0d1c30 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .divider-inner{
+    text-align:center;
+    color:#fff;
+    max-width:140mm;
+  }
+  .divider-num{
+    display:inline-block;
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:4px;
+    color:#9cc2ff;
+    text-transform:uppercase;
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:30px;
+    padding:8px 22px;
+    margin-bottom:26px;
+  }
+  .divider-num::before{content:"CHAPTER ";}
+  .divider-title{
+    font-size:34px;
+    font-weight:800;
+    line-height:1.25;
+    margin:0 0 18px 0;
+    color:#fff;
+  }
+  .divider-sub{
+    font-size:16px;
+    font-weight:400;
+    color:#dbe6f7;
+    opacity:.9;
+    line-height:1.6;
+  }
+  .divider-inner::after{
+    content:"";
+    display:block;
+    width:60px;
+    height:3px;
+    background:var(--blue);
+    margin:30px auto 0 auto;
+    border-radius:2px;
+  }
+
+  /* ---------- PRINT RULES ---------- */
+  @media print{
+    body{background:#fff;}
+    .page{
+      box-shadow:none;
+      margin:0;
+      width:auto;
+      min-height:0;
+      padding:22mm 20mm;
+    }
+    .page-break{page-break-before:always;}
+    .no-print{display:none;}
+    h2{page-break-after:avoid;}
+    @page{size:A4;margin:0;}
+  }
+  .print-bar{
+    max-width:210mm;
+    margin:0 auto 0 auto;
+    text-align:center;
+    padding:10px;
+  }
+  .print-bar button{
+    background:var(--blue);
+    color:#fff;
+    border:none;
+    padding:10px 22px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+  <button onclick="window.print()">Print / Save as PDF</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- COVER PAGE -->
+<!-- ============================================================ -->
+<div class="page cover">
+  <div class="brand">
+    <div class="brand-name">LogiVisa</div>
+    <div class="brand-url">logivisa.com</div>
+  </div>
+  <div class="cover-mid">
+    <span class="eyebrow">🌏 Global Edition · 2026 Data</span>
+    <h1>The Ultimate Australia Migration, Education &amp; Living Blueprint</h1>
+    <h2>The complete, data-backed playbook for Skilled Migration (189/190/491) and the Student Visa (500 → 485) pathway to Permanent Residency — built for applicants from every country.</h2>
+    <div class="badge-row">
+      <div class="badge">7 Core Chapters</div>
+      <div class="badge">Points Test Breakdown</div>
+      <div class="badge">Student Visa Playbook</div>
+      <div class="badge">2026 Cost-of-Living Data</div>
+    </div>
+  </div>
+  <div class="footer-note">
+    <span>This guide is for general information purposes only and does not constitute registered migration advice.</span>
+    <span>© 2026 LogiVisa</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DISCLAIMER PAGE -->
+<!-- ============================================================ -->
+<div class="page page-break">
+  <div class="kicker">Before You Begin</div>
+  <h1 class="ch-title">Legal Notice &amp; How to Use This Guide</h1>
+
+  <div class="callout critical">
+    <span class="c-title">⚠ Important</span>
+    This guide is for general information purposes only and does not constitute registered migration advice under any national regulatory framework (including Australia's Migration Agents Registration Authority, MARA). Australian immigration law changes frequently, and every applicant's circumstances differ. For advice specific to your situation, consult a MARA-registered migration agent or a qualified immigration lawyer. LogiVisa is not liable for outcomes resulting from decisions based on this guide.
+  </div>
+
+  <div class="callout info">
+    <span class="c-title">ℹ Data Currency</span>
+    All points values, fees, processing times, and nomination figures in this guide reflect published figures as of the most recent update cycle (2025–2026). Immigration settings — visa fees, occupation lists, financial-capacity thresholds, and visa stream durations — are revised by the Australian government multiple times per year. Always verify current figures on the official Department of Home Affairs website or via LogiVisa's free tools before submitting any application.
+  </div>
+
+  <h2>How This Guide Is Organized</h2>
+  <p>This is a <strong>global edition</strong>, built for applicants of any nationality. Every reference to country-specific bureaucracy (national ID portals, domestic apostille offices, local social-insurance systems) has been generalized to apply regardless of your passport. Where a process genuinely varies by country of origin — such as apostille issuance or reciprocal healthcare eligibility — this guide tells you explicitly to check your own country's specific procedure, rather than assuming one path fits everyone.</p>
+
+  <h2>A Note on Strategy</h2>
+  <p>Two pathways run through this entire guide: <strong>direct Skilled Migration</strong> (Subclass 189/190/491) for applicants who already clear a competitive points threshold, and the <strong>Student Visa bridge</strong> (Subclass 500 → 485 → skilled visa) for applicants who need to build points, Australian work experience, or English proficiency first. Chapter 2 will help you choose between them.</p>
+
+  <div class="page-footer">
+    <span>LogiVisa · Australia Migration Blueprint 2026</span>
+    <span>Page 2</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE OF CONTENTS -->
+<!-- ============================================================ -->
+<div class="page page-break">
+  <div class="kicker">Contents</div>
+  <h1 class="ch-title">Table of Contents</h1>
+  <ul class="toc-list">
+    <li><span><span class="toc-num">01</span>Introduction to Australia<span class="toc-desc">Salaries, lifestyle, healthcare, and the rights that come with each visa type</span></span><span>5</span></li>
+    <li><span><span class="toc-num">02</span>Choosing Your Path: Skilled Migration vs. Student Visa<span class="toc-desc">A decision framework for which route fits your current profile</span></span><span>9</span></li>
+    <li><span><span class="toc-num">03</span>The Student Visa (Subclass 500) Playbook<span class="toc-desc">Course selection, financial capacity, the Genuine Student requirement</span></span><span>13</span></li>
+    <li><span><span class="toc-num">04</span>From Graduate Visa (Subclass 485) to PR Strategy<span class="toc-desc">Converting study into skilled points and a competitive EOI</span></span><span>19</span></li>
+    <li><span><span class="toc-num">05</span>The Points Test &amp; Skilled Visas (189 / 190 / 491)<span class="toc-desc">Full scoring breakdown, ANZSCO codes, skills assessment, state nomination</span></span><span>23</span></li>
+    <li><span><span class="toc-num">06</span>Cost of Living &amp; Detailed Monthly Budgets<span class="toc-desc">Sydney, Melbourne, Brisbane, Adelaide — real numbers, real comparisons</span></span><span>31</span></li>
+    <li><span><span class="toc-num">07</span>The First 90 Days Setup Guide<span class="toc-desc">Bank account, Tax File Number, Medicare, accommodation, driving</span></span><span>35</span></li>
+    <li><span><span class="toc-num">08</span>Points Optimization Strategy<span class="toc-desc">Engineering your way from eligible to competitive</span></span><span>39</span></li>
+    <li><span><span class="toc-num">09</span>EOI Strategy &amp; SkillSelect Mastery<span class="toc-desc">Maximizing invitation chances and the 60-day countdown</span></span><span>45</span></li>
+    <li><span><span class="toc-num">10</span>Document Preparation &amp; Global Certification Guide<span class="toc-desc">Apostille, certified translation, and police clearances for any country</span></span><span>51</span></li>
+    <li><span><span class="toc-num">11</span>After PR Approval: Settling In &amp; the Path to Citizenship<span class="toc-desc">Pre-departure checklist and the 4-year citizenship timeline</span></span><span>57</span></li>
+    <li><span><span class="toc-num">12</span>Sector-Specific Migration Guide<span class="toc-desc">IT, engineering, healthcare, and accounting demand data</span></span><span>61</span></li>
+    <li><span><span class="toc-num">13</span>The 12-Month Strategic Preparation Plan<span class="toc-desc">Month-by-month execution timeline</span></span><span>67</span></li>
+    <li><span><span class="toc-num">14</span>Regional Australia Guide<span class="toc-desc">Turning the 491 regional requirement into an advantage</span></span><span>71</span></li>
+    <li><span><span class="toc-num">15</span>Cultural &amp; Workplace Adjustment Notes<span class="toc-desc">What's genuinely different, for migrants of any background</span></span><span>75</span></li>
+    <li><span><span class="toc-num">16</span>Real Application Scenarios<span class="toc-desc">Five fully worked points-test case studies</span></span><span>79</span></li>
+    <li><span><span class="toc-num">17</span>Frequently Asked Questions<span class="toc-desc">The 18 questions every applicant eventually asks</span></span><span>85</span></li>
+    <li><span><span class="toc-num">18</span>The Master Application Checklist<span class="toc-desc">Every stage of the journey, condensed into one printable document</span></span><span>88</span></li>
+    <li><span><span class="toc-num">19</span>Points Test Worksheet<span class="toc-desc">A printable, fill-in version of the Chapter 5 scoring framework</span></span><span>90</span></li>
+    <li><span><span class="toc-num">—</span>Glossary of Immigration Terms<span class="toc-desc">Every acronym in this guide, defined</span></span><span>92</span></li>
+    <li><span><span class="toc-num">—</span>Official Resources &amp; Tools<span class="toc-desc">Government links, assessing bodies, and job platforms</span></span><span>95</span></li>
+  </ul>
+
+  <div class="callout tip" style="margin-top:30px;">
+    <span class="c-title">✓ How to Use the Checklists</span>
+    Every chapter ends with an action list. Treat this guide as a working document — print it, mark it up, and revisit the points-test chapter every time your English score, work experience, or state nomination status changes.
+  </div>
+
+  <div class="page-footer">
+    <span>LogiVisa · Australia Migration Blueprint 2026</span>
+    <span>Page 3</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 1 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">01</span>
+    <h1 class="divider-title">Introduction to Australia</h1>
+    <p class="divider-sub">Salaries, lifestyle, healthcare, and what each visa type actually entitles you to</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 01</div>
+  <h1 class="ch-title">Introduction to Australia</h1>
+  <p class="ch-sub">Salaries, lifestyle, healthcare, and what each visa type actually entitles you to</p>
+
+  <h2>Why Australia, By the Numbers</h2>
+  <p>Australia consistently ranks near the top of the UN Human Development Index, and its migration system is unusual in one specific way: it is <strong>transparent and points-based</strong>. Who gets invited is determined by published, objective criteria — which means an applicant who understands the system can predict and plan around it, rather than simply hoping.</p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="num">185,000</div><div class="lbl">Annual permanent migration planning level</div></div>
+    <div class="stat-box"><div class="num">132,000</div><div class="lbl">Skilled stream places</div></div>
+    <div class="stat-box"><div class="num">65+</div><div class="lbl">Minimum Points Test score</div></div>
+    <div class="stat-box"><div class="num">80+</div><div class="lbl">Realistically competitive score</div></div>
+  </div>
+
+  <h2>Salary Benchmarks by Field</h2>
+  <table>
+    <thead><tr><th>Field</th><th>Typical Salary Range (AUD)</th></tr></thead>
+    <tbody>
+      <tr><td>Statutory minimum wage</td><td>$23.23/hour (2025 rate — indexed annually)</td></tr>
+      <tr><td>Software Engineers</td><td>$110,000 – $150,000</td></tr>
+      <tr><td>Registered Nurses</td><td>$70,000 – $95,000</td></tr>
+      <tr><td>Engineers (general)</td><td>$90,000 – $130,000</td></tr>
+    </tbody>
+  </table>
+
+  <h2>The Draw Factors</h2>
+  <table>
+    <thead><tr><th>Factor</th><th>What It Means for You</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Universal healthcare (Medicare)</strong></td><td>Permanent residents gain access to free public hospital treatment and subsidized GP visits. Coverage extends to your spouse and children.</td></tr>
+      <tr><td><strong>Education system</strong></td><td>43 universities, many ranked globally in the top tier. Public schooling is free for PR holders' children; tertiary fees are domestic-rate rather than international-rate.</td></tr>
+      <tr><td><strong>Quality of life</strong></td><td>Melbourne and Sydney routinely rank among the world's most liveable cities — clean air, low crime, extensive green space.</td></tr>
+      <tr><td><strong>Multicultural population</strong></td><td>Roughly 30% of Australia's population was born overseas. Migrant communities are well-established across every major city.</td></tr>
+      <tr><td><strong>Family reunification</strong></td><td>PR holders can bring a spouse and dependent children, and the spouse gains full work rights immediately.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What Each Visa Status Actually Entitles You To</h2>
+  <table>
+    <thead><tr><th>Right</th><th>Student (500)</th><th>Graduate (485)</th><th>Permanent Resident</th><th>Citizen</th></tr></thead>
+    <tbody>
+      <tr><td>Work rights</td><td>48 hrs/fortnight (unlimited on breaks)</td><td>Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Medicare</td><td>No (OSHC required instead)</td><td>Generally no, unless RHCA applies</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Public school (children)</td><td>Fee-paying</td><td>Fee-paying</td><td>Free</td><td>Free</td></tr>
+      <tr><td>Bring family</td><td>Limited</td><td>Limited</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Vote</td><td>No</td><td>No</td><td>No</td><td>Compulsory</td></tr>
+      <tr><td>Path to citizenship</td><td>No</td><td>No</td><td>4 years' residence</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="c-title">✓ Strategic Takeaway</span>
+    The gap between "Graduate visa" and "Permanent Resident" in the table above is the entire reason Chapters 3 and 4 exist. Closing that gap efficiently — with the right course, the right work experience, and a competitive points total — is the single highest-leverage decision in your entire migration journey.
+  </div>
+
+  <h2>The Full Visa Landscape at a Glance</h2>
+  <p>This guide focuses on the routes most relevant to skilled professionals and students, but it helps to see where each one sits in the broader system before diving into the detail chapters.</p>
+  <table>
+    <thead><tr><th>Subclass</th><th>Name</th><th>Type</th><th>Core Requirement</th></tr></thead>
+    <tbody>
+      <tr><td>500</td><td>Student Visa</td><td>Temporary</td><td>CRICOS enrolment, financial capacity, Genuine Student requirement</td></tr>
+      <tr><td>485</td><td>Temporary Graduate Visa</td><td>Temporary</td><td>Recent graduation from an Australian CRICOS institution</td></tr>
+      <tr><td>482</td><td>Skills in Demand Visa</td><td>Temporary</td><td>Employer sponsorship, no points test</td></tr>
+      <tr><td>189</td><td>Skilled Independent Visa</td><td>Permanent</td><td>Points test, no sponsorship, 80+ competitive</td></tr>
+      <tr><td>190</td><td>Skilled Nominated Visa</td><td>Permanent</td><td>Points test + state nomination, 75+ competitive</td></tr>
+      <tr><td>491</td><td>Skilled Work Regional Visa</td><td>Temporary (5 yrs)</td><td>Points test + state/family nomination + regional residence</td></tr>
+      <tr><td>186</td><td>Employer Nomination Scheme</td><td>Permanent</td><td>Typically follows a qualifying period on a 482</td></tr>
+      <tr><td>191</td><td>Permanent Residence (Regional)</td><td>Permanent</td><td>3 years' regional residence on a 491 (or equivalent)</td></tr>
+      <tr><td>Citizenship</td><td>Australian Citizenship by Conferral</td><td>—</td><td>4 years' residence, final 12 months as PR</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 5</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 2 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">02</span>
+    <h1 class="divider-title">Choosing Your Path: Skilled Migration vs. Student Visa</h1>
+    <p class="divider-sub">Two routes to the same destination — which one fits your current profile?</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 02</div>
+  <h1 class="ch-title">Choosing Your Path: Skilled Migration vs. Student Visa</h1>
+  <p class="ch-sub">Two routes to the same destination — which one fits your current profile?</p>
+
+  <p>Every applicant reading this guide falls into one of two categories: those who can realistically clear a competitive points score <em>today</em>, and those who need to build toward it. Neither path is objectively "better" — they solve different starting positions.</p>
+
+  <h2>The Two Routes at a Glance</h2>
+  <table>
+    <thead><tr><th>Factor</th><th>Direct Skilled Migration</th><th>Student Visa Bridge</th></tr></thead>
+    <tbody>
+      <tr><td>Best for</td><td>Applicants already scoring 65+ points with a positive skills assessment achievable now</td><td>Applicants currently scoring 45–65 points, or without Australian-recognized qualifications/experience</td></tr>
+      <tr><td>Typical total cost</td><td>$6,500 – $7,500 (single applicant, no agent)</td><td>$25,000 – $55,000+ (course fees dominate, varies enormously by institution)</td></tr>
+      <tr><td>Typical timeline to PR</td><td>18 – 24 months</td><td>3.5 – 5 years (2-year course + 485 period + skilled visa processing)</td></tr>
+      <tr><td>Points advantage gained</td><td>None built in — you need the score now</td><td>+5 (Australian study) and up to +20 (Australian work experience via 485) stacked over time</td></tr>
+      <tr><td>Risk profile</td><td>Lower financial risk, higher rejection risk if points are marginal</td><td>Higher financial commitment, but each stage (enrolment, graduation, 485, EOI) de-risks the next</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Decision Framework</h2>
+  <div class="two-col">
+    <div class="col card good">
+      <div class="card-title">Choose Direct Skilled Migration If:</div>
+      <ul>
+        <li>Your ANZSCO-matched degree and work experience are already strong (5+ years in-field)</li>
+        <li>You can realistically reach Proficient or Superior English within 6 months</li>
+        <li>You are within the 25–39 age bracket, where points remain high</li>
+        <li>You want to minimize total spend and timeline</li>
+      </ul>
+    </div>
+    <div class="col card bad">
+      <div class="card-title">Choose the Student Visa Bridge If:</div>
+      <ul>
+        <li>Your current points total sits below 65 and no single lever (English, state nomination) closes the gap alone</li>
+        <li>Your degree or field has no clear skills-assessment pathway from your home country</li>
+        <li>You are under 35 and can absorb 3–5 years of runway</li>
+        <li>You can fund tuition without derailing your finances (see Chapter 3)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <span class="c-title">⚠ A Third Option: Do Both in Parallel</span>
+    Nothing prevents you from lodging a skilled-migration EOI at your current score while simultaneously researching student visa options as a fallback. If your EOI produces an invitation before you commit to tuition, you save years and tens of thousands of dollars. Treat Chapter 5's points calculation as step one, regardless of which path you ultimately choose.
+  </div>
+
+  <h2>A Third Path: Employer Sponsorship (Subclass 482)</h2>
+  <p>If you already have — or can secure — a job offer from an Australian employer willing to sponsor you, Subclass 482 (Skills in Demand visa) bypasses the points test entirely. It's not a points-tested visa; the employer's nomination is the qualifying event.</p>
+  <table>
+    <thead><tr><th>Feature</th><th>Subclass 482 (Employer Sponsored)</th></tr></thead>
+    <tbody>
+      <tr><td>Points test required</td><td>No</td></tr>
+      <tr><td>Visa type</td><td>Temporary (typically 1–4 years, occupation-dependent)</td></tr>
+      <tr><td>Who applies</td><td>The employer lodges the nomination; you lodge the visa application</td></tr>
+      <tr><td>Path to PR</td><td>Often eligible for Subclass 186 (Employer Nomination Scheme) after a qualifying period</td></tr>
+      <tr><td>Best for</td><td>Applicants already working in Australia, or with a firm offer from an Australian employer in an in-demand occupation</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Quick Decision Tree</h2>
+  <table>
+    <thead><tr><th>Your Situation</th><th>Recommended Route</th></tr></thead>
+    <tbody>
+      <tr><td>Your occupation is on the MLTSSL and you can realistically score 80+</td><td>Subclass 189 — no sponsorship needed, direct PR</td></tr>
+      <tr><td>You score 70–79 and can secure a state nomination</td><td>Subclass 190 (+5 points closes the gap)</td></tr>
+      <tr><td>You score 60–74 and can accept living in a regional area</td><td>Subclass 491 (+15 points is the largest single lever available)</td></tr>
+      <tr><td>An Australian employer wants to hire and sponsor you</td><td>Subclass 482, with 186 as the follow-on PR step</td></tr>
+      <tr><td>You want to study in Australia and build experience first</td><td>Subclass 500 → 485 → skilled visa (see Chapters 3–4)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 9</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 3 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">03</span>
+    <h1 class="divider-title">The Student Visa (Subclass 500) Playbook</h1>
+    <p class="divider-sub">Course selection, financial capacity, and the Genuine Student requirement</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 03</div>
+  <h1 class="ch-title">The Student Visa (Subclass 500) Playbook</h1>
+  <p class="ch-sub">Course selection, financial capacity, and the Genuine Student requirement</p>
+
+  <h2>Step 1: Choose the ANZSCO Code First, the Course Second</h2>
+  <p>Every course you study on a Subclass 500 visa must be <strong>CRICOS-registered</strong> (listed on the Commonwealth Register of Institutions and Courses for Overseas Students). But CRICOS registration is the minimum bar, not the selection criterion. The course that actually advances your migration outcome is one where:</p>
+  <ol>
+    <li>The resulting qualification maps to an occupation on the <strong>MLTSSL</strong> (Medium and Long-term Strategic Skills List) — not the more restrictive STSOL.</li>
+    <li>The institution and program are recognized by the relevant skills-assessment body for that occupation (verify this <em>before</em> enrolling, using Chapter 5's assessing-body table).</li>
+    <li>The course length supports Subclass 485 eligibility — generally a minimum two-academic-year, in-person, CRICOS-registered qualification.</li>
+  </ol>
+
+  <div class="callout warn">
+    <span class="c-title">⚠ The Most Expensive Mistake in This Entire Guide</span>
+    Choosing a course based on interest or institution prestige alone — without first confirming it feeds into an MLTSSL-listed ANZSCO code — is the single most common and costly sequencing error in the student pathway. It can mean two years and tens of thousands of dollars spent on a qualification that does not meaningfully advance a migration outcome.
+  </div>
+
+  <h2>Step 2: The Confirmation of Enrolment (CoE) Process</h2>
+  <table>
+    <thead><tr><th>#</th><th>Step</th><th>Typical Timeframe</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Receive a Letter of Offer from your chosen institution</td><td>1–4 weeks</td></tr>
+      <tr><td>2</td><td>Accept the offer and pay the required deposit / first instalment</td><td>Institution-dependent</td></tr>
+      <tr><td>3</td><td>Institution issues your Confirmation of Enrolment (CoE)</td><td>1–2 weeks after payment</td></tr>
+      <tr><td>4</td><td>Lodge your Subclass 500 application via ImmiAccount with your CoE number</td><td>Same day as CoE issue</td></tr>
+      <tr><td>5</td><td>Visa decision</td><td>4–8 weeks (varies by passport country and institution risk rating)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <span class="c-title">ℹ Your Passport Determines Your Evidentiary Level</span>
+    Under the Simplified Student Visa Framework (SSVF), your country of passport determines how much financial and English documentation you must provide. Requirements are not identical across nationalities — confirm your specific evidentiary category before assuming a "standard" checklist applies to you.
+  </div>
+
+  <h2>Step 3: Satisfying the Genuine Student (GS) Requirement</h2>
+  <p>The former Genuine Temporary Entrant (GTE) test was replaced by the <strong>Genuine Student (GS)</strong> requirement in March 2024. It is a holistic assessment, and case officers specifically weigh:</p>
+  <ul>
+    <li>Your current circumstances — ties, career stage, and financial situation in your home country</li>
+    <li>Why this <em>specific</em> course, at this <em>specific</em> level, fits your career trajectory — vague answers are the leading cause of GS flags</li>
+    <li>Your understanding of the genuine value of studying in Australia specifically</li>
+    <li>Any prior visa refusals, overstays, or breaches, anywhere in the world</li>
+    <li>Your plans after the course concludes — you no longer need to prove an intent to <em>leave</em> Australia (a key change from GTE), but you must show a coherent plan</li>
+  </ul>
+
+  <div class="callout tip">
+    <span class="c-title">✓ You Can Now State a PR Intention Openly</span>
+    Under GS, you may explicitly state an intention to pursue permanent residency via skilled migration after graduating — this is no longer treated as a red flag, provided your course-to-career logic is coherent and well-documented.
+  </div>
+
+  <h2>Financial Capacity Requirements</h2>
+  <table>
+    <thead><tr><th>Requirement</th><th>Approximate Figure*</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Annual living costs (single applicant)</td><td>~AUD 29,710</td><td>Indexed annually — this figure moves most years</td></tr>
+      <tr><td>Annual living costs (with a partner)</td><td>~AUD 10,394 additional</td><td>Per accompanying adult</td></tr>
+      <tr><td>Per accompanying child</td><td>~AUD 4,449 additional</td><td></td></tr>
+      <tr><td>First-year course fees</td><td>Actual fee per your CoE</td><td>Shown in full, not estimated</td></tr>
+      <tr><td>Return travel costs</td><td>~AUD 2,000 – 2,500</td><td>Varies by home country</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11.5px;color:var(--muted);">*Verify the current threshold on the official Department of Home Affairs site before applying — these figures are indexed and change most years.</p>
+
+  <h3>Acceptable Evidence of Funds</h3>
+  <ul>
+    <li>12+ months of bank statements showing the required balance held consistently — a lump-sum deposit made shortly before applying is a common rejection trigger</li>
+    <li>An education loan from a recognized financial institution</li>
+    <li>Government or institutional scholarship confirmation</li>
+    <li>A genuine sponsor's financial documents (parent, spouse) with a clear relationship declaration</li>
+  </ul>
+
+  <h2>Work Rights During Study</h2>
+  <table>
+    <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Standard work cap</td><td>48 hours per fortnight while your course is in session</td></tr>
+      <tr><td>During scheduled course breaks</td><td>Unlimited hours</td></tr>
+      <tr><td>Aged care sector</td><td>Unlimited under current settings (subject to periodic review — confirm before relying on it)</td></tr>
+      <tr><td>Enforcement</td><td>Exceeding your cap is a visa condition breach and risks cancellation — this is enforced via payroll data matching, not just spot checks</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout critical">
+    <span class="c-title">⚠ Mandatory Health Cover</span>
+    Overseas Student Health Cover (OSHC) is mandatory for the full duration of your student visa. It is checked at visa lodgement and is not optional, regardless of your home country's own healthcare arrangements.
+  </div>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 13</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 4 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">04</span>
+    <h1 class="divider-title">From Graduate Visa (Subclass 485) to PR Strategy</h1>
+    <p class="divider-sub">Converting a study investment into skilled-migration points</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 04</div>
+  <h1 class="ch-title">From Graduate Visa (Subclass 485) to PR Strategy</h1>
+  <p class="ch-sub">Converting a study investment into skilled-migration points</p>
+
+  <p>Two years of Australian study adds 5 points on its own. But the real value of the student pathway is what comes next: the Temporary Graduate visa, which converts into 1–2+ years of Australian work experience — worth up to <strong>20 points</strong>, and virtually impossible to accumulate any other way without first working in Australia.</p>
+
+  <h2>Subclass 485 — The Two Streams</h2>
+  <table>
+    <thead><tr><th>Stream</th><th>Who It's For</th><th>Typical Duration*</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Post-Study Work stream</strong></td><td>Graduates of a CRICOS-registered Bachelor's, Master's, or Doctoral degree completed in Australia</td><td>Generally 2 years for a Bachelor's or Master's Coursework degree; longer for Master's Research and PhD graduates</td></tr>
+      <tr><td><strong>Graduate Work stream</strong></td><td>Graduates whose qualification and skills align with an occupation on the eligible skills list</td><td>18 months</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11.5px;color:var(--muted);">*Duration settings have been amended multiple times in recent reform cycles — confirm the current figures at application time rather than relying on this table alone.</p>
+
+  <div class="callout critical">
+    <span class="c-title">⚠ Two Hard Deadlines</span>
+    <strong>1)</strong> Applications must generally be lodged within <strong>6 months</strong> of course completion — missing this window can forfeit the entire strategy. <strong>2)</strong> An age limit applies (generally under 35 under current settings) — confirm the current threshold, as it has shifted in recent policy rounds.
+  </div>
+
+  <h2>How to Use the 485 Period Correctly</h2>
+  <p>The 485 visa is not a rest period — it is your points-accumulation window. During it, run these four workstreams simultaneously:</p>
+
+  <table>
+    <thead><tr><th>Workstream</th><th>Why It Matters</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1. Work in your ANZSCO-matched occupation</strong></td><td>This is what converts into the 5–20 point Australian work experience bracket. Work outside your assessed occupation does not count toward points.</td></tr>
+      <tr><td><strong>2. Complete your skills assessment</strong></td><td>If not already finalized, this must be positive before your EOI is valid (see Chapter 5 for body-by-body requirements).</td></tr>
+      <tr><td><strong>3. Target Superior English</strong></td><td>The jump from Proficient to Superior (IELTS 8.0 / PTE 79+) is worth +10 points on its own — the single fastest lever available, and you have time on a 485 to prepare properly.</td></tr>
+      <tr><td><strong>4. Lodge your EOI early</strong></td><td>Submit the moment your points total is competitive rather than waiting for your 485 to near expiry — the tie-break date rewards earlier lodgement at an equal score.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Common Mistakes on the Student-to-PR Pathway</h2>
+  <ul>
+    <li><strong>Choosing a course before choosing an ANZSCO code</strong> — the most expensive sequencing error in this entire guide.</li>
+    <li><strong>Working over the 48-hour cap</strong> during study — this directly risks visa cancellation, not just a fine.</li>
+    <li><strong>Missing the 485 application window</strong> — calendar this the day you receive your final results.</li>
+    <li><strong>Treating the GS statement as a formality</strong> — generic, copy-pasted statements are a common refusal trigger.</li>
+    <li><strong>Working outside your assessed occupation during 485</strong> — it feels productive but earns zero migration points.</li>
+  </ul>
+
+  <div class="callout tip">
+    <span class="c-title">✓ The Full Sequence, End to End</span>
+    Student visa (2 years) → Graduate visa (18–24+ months, working in-field) → Skills assessment finalized → Superior English achieved → EOI submitted at 80+ points → Invitation → Skilled visa grant. Total realistic timeline: 3.5–5 years from enrolment to PR — but every stage de-risks the next, unlike a single high-stakes direct application.
+  </div>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 19</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 5 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">05</span>
+    <h1 class="divider-title">The Points Test &amp; Skilled Visas (189 / 190 / 491)</h1>
+    <p class="divider-sub">Full scoring breakdown, ANZSCO codes, skills assessment, and state nomination</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 05</div>
+  <h1 class="ch-title">The Points Test &amp; Skilled Visas (189 / 190 / 491)</h1>
+  <p class="ch-sub">Full scoring breakdown, ANZSCO codes, skills assessment, and state nomination</p>
+
+  <h2>The Points Test — Applies Identically Regardless of Nationality</h2>
+  <p>This is the official Department of Home Affairs framework. It does not vary by country of origin — a foreign degree, foreign work experience, and any passport are assessed on the same scale. What varies by country is the <em>documentation pathway</em> to prove each factor, addressed later in this chapter.</p>
+
+  <table>
+    <thead><tr><th>Criterion</th><th>Max Points</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Age (25–32 is the peak bracket)</td><td>30</td><td>No applications accepted at 45+</td></tr>
+      <tr><td>English language proficiency</td><td>20</td><td>Superior: IELTS 8.0+ / PTE 79+</td></tr>
+      <tr><td>Overseas skilled work experience</td><td>15</td><td>Full points at 8+ years</td></tr>
+      <tr><td>Australian skilled work experience</td><td>20</td><td>Full points at 8+ years</td></tr>
+      <tr><td>Educational qualification</td><td>20</td><td>PhD or two degrees</td></tr>
+      <tr><td>Australian study requirement</td><td>5</td><td>2 years at a CRICOS-registered institution</td></tr>
+      <tr><td>Partner skill &amp; English points</td><td>10</td><td>If partner is also skilled and English-proficient</td></tr>
+      <tr><td>State/territory nomination</td><td>5–15</td><td>190: +5, 491: +15</td></tr>
+      <tr><td>NAATI Credentialed Community Language (CCL)</td><td>5</td><td>Any recognized native language — see below</td></tr>
+      <tr><td>Regional work experience</td><td>5</td><td>2+ years in a designated regional area</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Age Brackets in Detail</h3>
+  <table>
+    <thead><tr><th>Age</th><th>Points</th></tr></thead>
+    <tbody>
+      <tr><td>18 – 24</td><td>25</td></tr>
+      <tr><td>25 – 32</td><td><strong>30 (maximum)</strong></td></tr>
+      <tr><td>33 – 39</td><td>25</td></tr>
+      <tr><td>40 – 44</td><td>15</td></tr>
+      <tr><td>45+</td><td>Ineligible to apply</td></tr>
+    </tbody>
+  </table>
+
+  <h3>English Test Scoring by Provider</h3>
+  <table>
+    <thead><tr><th>Level</th><th>IELTS (each band)</th><th>PTE (each section)</th><th>TOEFL iBT</th><th>OET</th><th>Points</th></tr></thead>
+    <tbody>
+      <tr><td>Competent</td><td>6.0</td><td>50</td><td>12/13/21/18</td><td>B</td><td>0 (minimum threshold)</td></tr>
+      <tr><td>Proficient</td><td>7.0</td><td>65</td><td>24/24/27/23</td><td>B+</td><td>+10</td></tr>
+      <tr><td>Superior</td><td>8.0</td><td>79</td><td>28/29/30/26</td><td>A</td><td>+20</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="c-title">✓ Why PTE Often Outperforms IELTS for Non-Native Speakers</span>
+    PTE is computer-marked (removing human accent bias), results return in 2–5 days versus IELTS's 13, and its format rewards structured technique over raw fluency — making it a highly trainable test. Applicants across nationalities routinely score higher on PTE than IELTS for the same underlying English ability.
+  </div>
+
+  <h3>Work Experience — Overseas and Australian, Scored Separately</h3>
+  <table>
+    <thead><tr><th>Overseas Experience</th><th>Points</th><th>Australian Experience</th><th>Points</th></tr></thead>
+    <tbody>
+      <tr><td>1–2 years</td><td>0</td><td>1–2 years</td><td>5</td></tr>
+      <tr><td>3–4 years</td><td>5</td><td>3–4 years</td><td>10</td></tr>
+      <tr><td>5–7 years</td><td>10</td><td>5–7 years</td><td>15</td></tr>
+      <tr><td>8+ years</td><td>15</td><td>8+ years</td><td>20</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <span class="c-title">⚠ The Rule That Applies to Every Nationality</span>
+    Work experience only counts if performed in the <em>same occupation as your assessed ANZSCO code</em>. Ten years as a mechanical engineer earns zero points on a civil engineering EOI. This is checked rigorously and is a leading global rejection cause.
+  </div>
+
+  <h3>Educational Qualification</h3>
+  <table>
+    <thead><tr><th>Qualification</th><th>Points</th></tr></thead>
+    <tbody>
+      <tr><td>Trade certificate/diploma (recognized by relevant Australian authority)</td><td>10</td></tr>
+      <tr><td>Bachelor's degree (recognized 4-year equivalent)</td><td>15</td></tr>
+      <tr><td>PhD</td><td>20</td></tr>
+      <tr><td>Two or more degrees</td><td>15</td></tr>
+      <tr><td>Australian-earned degree, min. 2 years at a CRICOS institution</td><td>+5 additional</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="page-break">Foreign Degree Recognition — What "Recognition" Actually Means</h2>
+  <p>There is no universal equivalency chart. Recognition happens at the assessing-body level, occupation by occupation:</p>
+  <ul>
+    <li><strong>Engineering degrees</strong> from institutions accredited under the <strong>Washington Accord</strong> (an international agreement covering accredited programs across dozens of countries) generally receive faster assessment from Engineers Australia. Confirm your specific university and program are listed before assuming smooth processing.</li>
+    <li><strong>ICT degrees</strong> assessed by ACS are evaluated on subject-matter content, not country of origin — but the ACS Deduction Rule (below) affects any degree, from any country, that isn't sufficiently ICT-major-focused.</li>
+    <li><strong>Nursing, medical, and allied health qualifications</strong> are assessed by ANMAC or AHPRA directly against Australian competency standards, regardless of issuing country.</li>
+  </ul>
+
+  <h3>The ACS Deduction Rule (Applies Globally)</h3>
+  <table>
+    <thead><tr><th>Your Degree</th><th>Assessment Path</th><th>Consequence</th></tr></thead>
+    <tbody>
+      <tr><td>ICT-major degree (25%+ ICT content)</td><td>Direct assessment</td><td>Bachelor's + 2 years' experience typically sufficient</td></tr>
+      <tr><td>Non-ICT-major degree</td><td>5 years' relevant experience required</td><td>ACS deducts 2 years from claimed experience — an 8-year applicant is assessed as having 6</td></tr>
+    </tbody>
+  </table>
+
+  <h2>ANZSCO Code Selection — The Highest-Leverage Decision You'll Make</h2>
+  <p>Your ANZSCO code determines which body assesses you, which occupation list governs your visa eligibility, whether your work experience counts, and whether your EOI is even valid. Getting it wrong doesn't slow the process — it invalidates it.</p>
+
+  <table>
+    <thead><tr><th>ANZSCO Code</th><th>Occupation</th><th>Assessing Body</th><th>List</th></tr></thead>
+    <tbody>
+      <tr><td>261313</td><td>Software Engineer</td><td>ACS</td><td>MLTSSL</td></tr>
+      <tr><td>261111</td><td>ICT Business Analyst</td><td>ACS</td><td>MLTSSL</td></tr>
+      <tr><td>261312</td><td>Developer Programmer</td><td>ACS</td><td>MLTSSL</td></tr>
+      <tr><td>261211</td><td>ICT Systems Analyst</td><td>ACS</td><td>MLTSSL</td></tr>
+      <tr><td>262111</td><td>Database Administrator</td><td>ACS</td><td>MLTSSL</td></tr>
+      <tr><td>263111</td><td>Computer Network Engineer</td><td>ACS</td><td>MLTSSL</td></tr>
+      <tr><td>233211</td><td>Civil Engineer</td><td>Engineers Australia</td><td>MLTSSL</td></tr>
+      <tr><td>233514</td><td>Electrical Engineer</td><td>Engineers Australia</td><td>MLTSSL</td></tr>
+      <tr><td>233512</td><td>Mechanical Engineer</td><td>Engineers Australia</td><td>MLTSSL</td></tr>
+      <tr><td>221111</td><td>Accountant (General)</td><td>CPAA / ICAA</td><td>MLTSSL</td></tr>
+      <tr><td>254411</td><td>Registered Nurse (General)</td><td>ANMAC</td><td>MLTSSL</td></tr>
+      <tr><td>253111</td><td>General Practitioner</td><td>AMC / AHPRA</td><td>MLTSSL</td></tr>
+      <tr><td>241311</td><td>Secondary School Teacher</td><td>AITSL</td><td>MLTSSL</td></tr>
+      <tr><td>272511</td><td>Social Worker</td><td>AASW</td><td>MLTSSL</td></tr>
+      <tr><td>341111</td><td>Electrician (General)</td><td>TRA</td><td>MLTSSL</td></tr>
+      <tr><td>334111</td><td>Plumber (General)</td><td>TRA</td><td>MLTSSL</td></tr>
+      <tr><td>351311</td><td>Chef</td><td>VETASSESS</td><td>STSOL</td></tr>
+      <tr><td>132111</td><td>Construction Project Manager</td><td>AIPM</td><td>STSOL</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <span class="c-title">⚠ Naming Traps</span>
+    "Software Developer" (261312) is not "Software Engineer" (261313). "IT Manager" (135111) is not "ICT Project Manager" (135112). "Accountant (General)" (221111) is not "Management Accountant" (221112). Read the full duty description for each code — match your actual responsibilities, not your job title.
+  </div>
+
+  <h2 class="page-break">Skills Assessment Bodies — Costs, Timeframes, Documentation</h2>
+  <table>
+    <thead><tr><th>Body</th><th>Occupation Coverage</th><th>Fee (AUD)</th><th>Avg. Processing Time</th></tr></thead>
+    <tbody>
+      <tr><td>ACS</td><td>All ICT/technology occupations</td><td>$530</td><td>4–8 weeks</td></tr>
+      <tr><td>Engineers Australia</td><td>All engineering disciplines</td><td>$790</td><td>3–6 months</td></tr>
+      <tr><td>VETASSESS</td><td>Broad professional occupations</td><td>$600–800</td><td>6–16 weeks</td></tr>
+      <tr><td>ANMAC</td><td>Nursing and midwifery</td><td>$450</td><td>4–12 weeks</td></tr>
+      <tr><td>AHPRA</td><td>Medicine, dentistry, pharmacy, physiotherapy</td><td>Variable</td><td>3–6 months</td></tr>
+      <tr><td>TRA</td><td>Trade occupations</td><td>$550</td><td>8–16 weeks</td></tr>
+      <tr><td>CPAA/ICAA/IPA</td><td>Accounting occupations</td><td>$550–800</td><td>4–10 weeks</td></tr>
+      <tr><td>AITSL</td><td>Teachers</td><td>$100–200</td><td>4–8 weeks</td></tr>
+      <tr><td>AASW</td><td>Social work</td><td>$490</td><td>6–10 weeks</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Engineers Australia — Two Pathways for International Applicants</h3>
+  <ol>
+    <li><strong>CDR (Competency Demonstration Report) pathway</strong> — the standard global route. Three Career Episodes (1,000–2,500 words each) plus a Summary Statement mapping your experience to EA's competency standards. 3–6 months.</li>
+    <li><strong>Washington Accord recognition pathway</strong> — faster, if your degree-granting university is on the accredited-institution list under this international agreement, spanning dozens of signatory countries.</li>
+  </ol>
+
+  <h2>State &amp; Territory Nomination — 2025–26 Data</h2>
+  <table>
+    <thead><tr><th>State</th><th>Capital</th><th>190 Nominations</th><th>491 Nominations</th><th>Competition</th></tr></thead>
+    <tbody>
+      <tr><td>NSW</td><td>Sydney</td><td>1,894</td><td>1,049</td><td>Very High</td></tr>
+      <tr><td>VIC</td><td>Melbourne</td><td>2,237</td><td>656</td><td>High</td></tr>
+      <tr><td>WA</td><td>Perth</td><td>1,443</td><td>1,067</td><td>Medium</td></tr>
+      <tr><td>QLD</td><td>Brisbane</td><td>1,254</td><td>630</td><td>Medium-High</td></tr>
+      <tr><td>SA</td><td>Adelaide</td><td>911</td><td>594</td><td>Medium-Low</td></tr>
+      <tr><td>TAS</td><td>Hobart</td><td>988</td><td>367</td><td>Low</td></tr>
+      <tr><td>NT</td><td>Darwin</td><td>741</td><td>438</td><td>Very Low</td></tr>
+      <tr><td>ACT</td><td>Canberra</td><td>604</td><td>653</td><td>Medium</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11.5px;color:var(--muted);">Source period: DoHA, 1 July 2025 – 30 April 2026. State nomination programs run independently of national invitation rounds and can open with little notice — set up an alert regardless of your target state.</p>
+
+  <h2>The Global NAATI Credentialed Community Language (CCL) Framework</h2>
+  <p>The NAATI CCL exam awards <strong>+5 points</strong> for a two-way spoken interpretation test (~45 minutes, native language ↔ English), and it is <strong>not limited to any single language</strong>. NAATI maintains accreditation across dozens of community languages — confirm your native language is currently covered at naati.com.au. Fee is approximately AUD 800, preparation typically takes 2–4 months, and the credential is valid for <strong>5 years</strong>.</p>
+
+  <h2>189 vs. 190 vs. 491 — Side by Side</h2>
+  <table>
+    <thead><tr><th>Feature</th><th>Subclass 189</th><th>Subclass 190</th><th>Subclass 491</th></tr></thead>
+    <tbody>
+      <tr><td>Visa type</td><td>Permanent</td><td>Permanent</td><td>Temporary (5 years)</td></tr>
+      <tr><td>Sponsorship required</td><td>No</td><td>State/territory</td><td>State/territory or family</td></tr>
+      <tr><td>Points bonus</td><td>—</td><td>+5</td><td>+15</td></tr>
+      <tr><td>Residency restriction</td><td>None</td><td>None</td><td>Regional area mandatory</td></tr>
+      <tr><td>Competitive score</td><td>80+</td><td>75+</td><td>65–70+</td></tr>
+      <tr><td>Path to PR</td><td>Direct</td><td>Direct</td><td>3 years → Subclass 191</td></tr>
+    </tbody>
+  </table>
+
+  <h2>15 Costly Mistakes That Apply to Every Applicant</h2>
+  <ol>
+    <li>Choosing the wrong ANZSCO code — mismatched duty descriptions cause outright rejection</li>
+    <li>Declaring points you cannot document — this constitutes visa fraud, not a paperwork gap</li>
+    <li>Weak or incomplete employer reference letters — missing dates, hours, or duties get letters rejected outright</li>
+    <li>Using a non-accredited translator for any non-English document — informal or machine translation invalidates it</li>
+    <li>Letting your skills assessment expire — most are valid 3 years</li>
+    <li>Letting your English test expire — IELTS/PTE: 3 years; TOEFL/OET: 2 years</li>
+    <li>Applying to only one visa subclass or state — select multiple in your EOI</li>
+    <li>Missing state nomination opening windows — some fill within hours</li>
+    <li>Letting your passport lapse below the 12-month validity threshold</li>
+    <li>Getting the health exam too early — valid 12 months; do it after invitation</li>
+    <li>Forgetting to include family members at application stage</li>
+    <li>Paying an unregistered migration agent — verify via mara.gov.au</li>
+    <li>Under-documenting overseas work experience — get detailed reference letters plus any official home-country employment records</li>
+    <li>Failing to update your EOI when your points change</li>
+    <li>Missing the 60-day window after invitation — it lapses permanently</li>
+  </ol>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 23</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 6 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">06</span>
+    <h1 class="divider-title">Cost of Living &amp; Detailed Monthly Budgets</h1>
+    <p class="divider-sub">Sydney, Melbourne, Brisbane, and Adelaide — real numbers, real comparisons</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 06</div>
+  <h1 class="ch-title">Cost of Living &amp; Detailed Monthly Budgets</h1>
+  <p class="ch-sub">Sydney, Melbourne, Brisbane, and Adelaide — real numbers, real comparisons</p>
+
+  <h2>City-by-City Comparison</h2>
+  <table>
+    <thead><tr><th>City</th><th>State</th><th>Population</th><th>Avg. Rent (1BD, City)</th><th>Avg. Salary (AUD)</th><th>Climate</th></tr></thead>
+    <tbody>
+      <tr><td>Sydney</td><td>NSW</td><td>5.3M</td><td>$2,800–3,500/mo</td><td>$85,000</td><td>Temperate</td></tr>
+      <tr><td>Melbourne</td><td>VIC</td><td>5.1M</td><td>$2,200–2,800/mo</td><td>$82,000</td><td>Four distinct seasons</td></tr>
+      <tr><td>Brisbane</td><td>QLD</td><td>2.6M</td><td>$1,800–2,300/mo</td><td>$78,000</td><td>Subtropical, hot</td></tr>
+      <tr><td>Perth</td><td>WA</td><td>2.1M</td><td>$1,700–2,200/mo</td><td>$90,000</td><td>Sunny, dry</td></tr>
+      <tr><td>Adelaide</td><td>SA</td><td>1.3M</td><td>$1,400–1,900/mo</td><td>$75,000</td><td>Temperate</td></tr>
+      <tr><td>Canberra</td><td>ACT</td><td>0.5M</td><td>$1,900–2,400/mo</td><td>$100,000</td><td>Cold winters</td></tr>
+      <tr><td>Hobart</td><td>TAS</td><td>0.25M</td><td>$1,500–2,000/mo</td><td>$72,000</td><td>Cool</td></tr>
+      <tr><td>Darwin</td><td>NT</td><td>0.15M</td><td>$1,600–2,100/mo</td><td>$85,000</td><td>Tropical</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Monthly Budget Breakdown — Four Major Hubs</h2>
+  <table>
+    <thead><tr><th>Expense Category</th><th>Sydney</th><th>Melbourne</th><th>Brisbane</th><th>Adelaide</th></tr></thead>
+    <tbody>
+      <tr><td>Rent, 1BD, city centre</td><td>$2,800–3,500</td><td>$2,200–2,800</td><td>$1,800–2,300</td><td>$1,400–1,900</td></tr>
+      <tr><td>Rent, 1BD, suburbs</td><td>$2,000–2,500</td><td>$1,700–2,200</td><td>$1,450–1,850</td><td>$1,100–1,500</td></tr>
+      <tr><td>Groceries (per person)</td><td>$400–600</td><td>$380–550</td><td>$360–520</td><td>$320–480</td></tr>
+      <tr><td>Public transport (monthly pass)</td><td>$180</td><td>$120</td><td>$155</td><td>$90</td></tr>
+      <tr><td>Internet</td><td>$70–100</td><td>$70–100</td><td>$65–95</td><td>$60–90</td></tr>
+      <tr><td>Electricity/gas</td><td>$150–250</td><td>$180–280</td><td>$160–260</td><td>$130–200</td></tr>
+      <tr><td>Dining out (8 meals)</td><td>$250–400</td><td>$220–380</td><td>$210–350</td><td>$180–300</td></tr>
+      <tr><td><strong>Total, single person</strong></td><td><strong>$3,850–5,350</strong></td><td><strong>$3,070–4,430</strong></td><td><strong>$2,880–4,190</strong></td><td><strong>$2,280–3,460</strong></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11.5px;color:var(--muted);">Brisbane figures are estimated proportionally from published rent and salary benchmarks; confirm current local pricing via domain.com.au or realestate.com.au before budgeting precisely.</p>
+
+  <h2>Secondary Hubs: Perth, Canberra, Darwin, Hobart</h2>
+  <table>
+    <thead><tr><th>Expense Category</th><th>Perth</th><th>Canberra</th><th>Darwin</th><th>Hobart</th></tr></thead>
+    <tbody>
+      <tr><td>Rent, 1BD, city centre</td><td>$1,700–2,200</td><td>$1,900–2,400</td><td>$1,600–2,100</td><td>$1,500–2,000</td></tr>
+      <tr><td>Groceries (per person)</td><td>$350–500</td><td>$390–560</td><td>$420–600</td><td>$340–500</td></tr>
+      <tr><td>Public transport (monthly pass)</td><td>$120</td><td>$110</td><td>$150</td><td>$100</td></tr>
+      <tr><td>Dining out (8 meals)</td><td>$200–330</td><td>$240–390</td><td>$230–380</td><td>$190–310</td></tr>
+      <tr><td><strong>Total, single person</strong></td><td><strong>$2,900–4,100</strong></td><td><strong>$3,350–4,650</strong></td><td><strong>$3,150–4,550</strong></td><td><strong>$2,750–3,950</strong></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11.5px;color:var(--muted);">Darwin and Hobart carry higher grocery and freight costs due to remoteness from major distribution hubs — factor this in even though rent looks comparatively low.</p>
+
+  <div class="callout tip">
+    <span class="c-title">✓ Rule of Thumb</span>
+    Arrive with a minimum of <strong>3 months' living expenses</strong> in liquid cash. This covers your job-search runway plus a standard rental bond (typically 4 weeks' rent upfront).
+  </div>
+
+  <h2>Skilled Migration Cost Summary (Single Applicant, No Agent)</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Cost (AUD)</th></tr></thead>
+    <tbody>
+      <tr><td>Skills assessment</td><td>$530–800</td></tr>
+      <tr><td>English test</td><td>$380–540</td></tr>
+      <tr><td>Visa application (189/190/491)</td><td>$4,640</td></tr>
+      <tr><td>Health exam</td><td>$300–500</td></tr>
+      <tr><td>Police certificates + apostille/certification</td><td>$150–400</td></tr>
+      <tr><td>Certified translations</td><td>$200–400</td></tr>
+      <tr><td><strong>Total (approximate minimum)</strong></td><td><strong>$6,500–7,500</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 31</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 7 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">07</span>
+    <h1 class="divider-title">The First 90 Days Setup Guide</h1>
+    <p class="divider-sub">Bank account, Tax File Number, Medicare, accommodation, and driving</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 07</div>
+  <h1 class="ch-title">The First 90 Days Setup Guide</h1>
+  <p class="ch-sub">Bank account, Tax File Number, Medicare, accommodation, and driving</p>
+
+  <h2>Immediately on Arrival</h2>
+  <table>
+    <thead><tr><th>#</th><th>Task</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Immigration processing</td><td>Present your passport and visa grant confirmation at the border</td></tr>
+      <tr><td>2</td><td>Local SIM card</td><td>Telstra, Optus, and Vodafone offer airport and shopping-centre kiosks; expect $30–50/month</td></tr>
+      <tr><td>3</td><td>Short-term accommodation</td><td>Book a serviced apartment or short lease for 1–2 weeks before committing to a long lease</td></tr>
+      <tr><td>4</td><td>Bank account</td><td>CommBank, ANZ, NAB, and Westpac all allow account opening with just a passport</td></tr>
+      <tr><td>5</td><td>Medicare registration</td><td>Eligibility depends on your visa subclass — see below</td></tr>
+      <tr><td>6</td><td>Tax File Number (TFN)</td><td>Apply online via ato.gov.au; typically issued within 28 days and required to be paid correctly</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Medicare Eligibility — It Depends on Your Country, Not Just Your Visa</h2>
+  <p>Permanent residents qualify for Medicare immediately upon registration. If you're on a temporary visa, check whether your country of citizenship holds a <strong>Reciprocal Health Care Agreement (RHCA)</strong> with Australia — this can grant partial Medicare access even before PR is granted.</p>
+  <div class="callout info">
+    <span class="c-title">ℹ Countries With Reciprocal Health Care Agreements (Confirm Current Status)</span>
+    United Kingdom, Ireland, New Zealand, Italy, Malta, the Netherlands, Sweden, Norway, Belgium, and Slovenia, among others. RHCA terms and the country list are reviewed periodically — verify your specific country's current agreement and its scope of coverage before assuming you're covered or excluded.
+  </div>
+
+  <h2>Driving in Australia</h2>
+  <p>Conversion rules for a foreign driver's licence vary significantly by <strong>state</strong> and by your <strong>country of issue</strong>. Some countries have direct licence-conversion agreements with specific Australian states (no test required); others require a written and/or practical test. Confirm the rule for your specific licence-issuing country with the road transport authority of the state you're settling in — do not assume the rule that applied to a friend from a different country applies to you.</p>
+
+  <div class="callout critical">
+    <span class="c-title">⚠ Drive on the Left</span>
+    Vehicles in Australia drive on the <strong>left</strong> side of the road with the steering wheel on the right. This is the most common cause of early-arrival driving incidents for newcomers — take particular care at roundabouts and when exiting car parks in your first weeks.
+  </div>
+
+  <h2>Within the First Month</h2>
+  <table>
+    <thead><tr><th>Task</th><th>Detail</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr><td>Long-term housing</td><td>domain.com.au, realestate.com.au</td><td>High</td></tr>
+      <tr><td>Update LinkedIn</td><td>Reflect your Australia location and visa work rights</td><td>High</td></tr>
+      <tr><td>Build a local-format CV</td><td>1–2 pages, no photo, no date of birth, include 2–3 references</td><td>High</td></tr>
+      <tr><td>Register on job platforms</td><td>seek.com.au, linkedin.com, indeed.com.au</td><td>High</td></tr>
+      <tr><td>Enrol children in school</td><td>Apply to the local public school for your registered address</td><td>High (if applicable)</td></tr>
+      <tr><td>Professional networking</td><td>Industry meetups, LinkedIn groups, alumni networks</td><td>Medium</td></tr>
+      <tr><td>Superannuation setup</td><td>Confirm your employer is contributing to a super fund from your first payslip</td><td>Medium</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Building a CV That Works in the Australian Market</h3>
+  <ul>
+    <li><strong>No photo</strong> — including one raises discrimination concerns for employers and is generally not used</li>
+    <li><strong>No date of birth</strong> — age disclosure isn't required and isn't expected</li>
+    <li><strong>1–2 pages</strong> — even experienced candidates rarely exceed two pages</li>
+    <li><strong>Include 2–3 references</strong> with names and contact details</li>
+    <li><strong>Lead with Australian experience</strong> if you have any, even from a working holiday or internship</li>
+    <li><strong>Mirror ANZSCO duty language</strong> in your role descriptions where accurate</li>
+    <li><strong>Write a tailored cover letter</strong> for every application — generic letters are noticed and discounted</li>
+  </ul>
+
+  <div class="callout tip">
+    <span class="c-title">✓ Interview Culture Note</span>
+    Australian workplaces place significant weight on "cultural fit" alongside technical skill — communication style and team compatibility are explicitly assessed alongside your résumé. Research a company's stated values before interviewing, regardless of how technically strong your application is.
+  </div>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 35</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 8 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">08</span>
+    <h1 class="divider-title">Points Optimization Strategy</h1>
+    <p class="divider-sub">Engineering your way from an eligible score to a competitive one</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 08</div>
+  <h1 class="ch-title">Points Optimization Strategy</h1>
+  <p class="ch-sub">Engineering your way from an eligible score to a competitive one</p>
+
+  <p>Most applicants calculate their score once, conclude "I have X points," and treat it as fixed. It isn't. Every factor in Chapter 5's points table except age is at least partially within your control on a realistic timeline. This chapter ranks the available levers by return on effort.</p>
+
+  <h2>Priority Actions, Ranked by Effort-to-Points Ratio</h2>
+  <table>
+    <thead><tr><th>Action</th><th>Points Gained</th><th>Timeframe</th><th>Cost (AUD)</th><th>Difficulty</th></tr></thead>
+    <tbody>
+      <tr><td>English: Competent → Proficient</td><td>+10</td><td>3–6 months</td><td>$380–540</td><td>Medium</td></tr>
+      <tr><td>English: Proficient → Superior</td><td>+10</td><td>6–12 months</td><td>$380–540</td><td>Hard</td></tr>
+      <tr><td>NAATI CCL accreditation</td><td>+5</td><td>2–4 months</td><td>~$800</td><td>Easy</td></tr>
+      <tr><td>Partner skills assessment + English</td><td>+5 to +10</td><td>3–6 months</td><td>$500–800</td><td>Medium</td></tr>
+      <tr><td>1–2 years' Australian work experience</td><td>+5</td><td>1–2 years</td><td>—</td><td>Long-term</td></tr>
+      <tr><td>State nomination (Subclass 190)</td><td>+5</td><td>Variable, application-dependent</td><td>—</td><td>Medium</td></tr>
+      <tr><td>Regional nomination (Subclass 491)</td><td>+15</td><td>Variable, application-dependent</td><td>—</td><td>Medium</td></tr>
+      <tr><td>Additional postgraduate qualification (PhD)</td><td>+5 extra</td><td>2–4 years</td><td>High</td><td>Very long</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="c-title">✓ Read the Table as a Sequence, Not a Menu</span>
+    NAATI CCL and an English retest are the two fastest, cheapest levers on this table — most applicants should attempt both before considering anything else. A regional (491) nomination is the single largest points swing available to anyone, at any stage, regardless of how long you've been in the process.
+  </div>
+
+  <h2>Age-Based Urgency Plan</h2>
+
+  <h3>Ages 25–32: The Golden Window</h3>
+  <ul>
+    <li>You already hold the maximum 30 age points — this is your structural advantage over every other bracket</li>
+    <li>Take the time to push English to Superior rather than rushing a Proficient-level application</li>
+    <li>Consider a Subclass 485 stint if you want to bank Australian work experience points before your age bracket shifts</li>
+  </ul>
+
+  <h3>Ages 33–39: Balanced Strategy</h3>
+  <ul>
+    <li>You're still at 25 age points — strong, but the clock is now a genuine factor in your planning</li>
+    <li>Prioritize English and NAATI CCL — both are faster than waiting for Australian work experience to accrue</li>
+    <li>Accelerate with a state or regional nomination rather than waiting for a 189 invitation at a marginal score</li>
+    <li>Aim to have your visa <em>granted</em>, not just applied for, before your age bracket drops at 40</li>
+  </ul>
+
+  <h3>Ages 40–44: Urgent Action</h3>
+  <ul>
+    <li>Age points drop to 15 — every other factor now carries disproportionate weight</li>
+    <li>Superior English (+20) is close to mandatory at this stage — it's the largest score swing still fully within your control</li>
+    <li>A Subclass 491 regional nomination (+15) is frequently the difference between an eligible score and an invited one</li>
+    <li>There is no time for a multi-year study pathway — apply your existing qualifications and experience directly</li>
+  </ul>
+
+  <h2>The NAATI CCL Pathway in Detail</h2>
+  <p>The Credentialed Community Language (CCL) test is administered by NAATI and is available across dozens of recognized community languages — it is not restricted to any single nationality. If your native language is on NAATI's current list, this is very often the fastest 5 points in the entire points test.</p>
+  <table>
+    <thead><tr><th>Element</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Format</td><td>Two-way spoken dialogue interpretation, native language ↔ English, ~45 minutes</td></tr>
+      <tr><td>Required level</td><td>Everyday conversational proficiency — not a formal interpreting qualification</td></tr>
+      <tr><td>Preparation</td><td>2–4 months of structured practice is typically sufficient for a native speaker</td></tr>
+      <tr><td>Registration</td><td>naati.com.au — confirm your language is currently listed before committing</td></tr>
+      <tr><td>Fee</td><td>~AUD 800</td></tr>
+      <tr><td>Validity</td><td>5 years — track this alongside your other document expiry dates</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 39</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 9 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">09</span>
+    <h1 class="divider-title">EOI Strategy &amp; SkillSelect Mastery</h1>
+    <p class="divider-sub">Maximizing your invitation chances and surviving the 60-day countdown</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 09</div>
+  <h1 class="ch-title">EOI Strategy &amp; SkillSelect Mastery</h1>
+  <p class="ch-sub">Maximizing your invitation chances and surviving the 60-day countdown</p>
+
+  <h2>EOI vs. Visa Application — Know the Difference</h2>
+  <table>
+    <thead><tr><th>Expression of Interest (EOI)</th><th>Visa Application</th></tr></thead>
+    <tbody>
+      <tr><td>Free</td><td>Paid ($4,640+)</td></tr>
+      <tr><td>Lodged via SkillSelect</td><td>Lodged via ImmiAccount</td></tr>
+      <tr><td>A pre-invitation expression, not a formal claim</td><td>Must be lodged within 60 days of invitation</td></tr>
+      <tr><td>Editable at any time</td><td>Very difficult to amend once submitted</td></tr>
+      <tr><td>Ranked against other EOIs by points</td><td>Assessed on documentary evidence</td></tr>
+      <tr><td>Can be withdrawn and resubmitted freely</td><td>Withdrawal is tightly restricted</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What to Get Right Before You Submit</h2>
+  <ul>
+    <li><strong>ANZSCO code</strong> — must be identical to the code on your positive skills assessment. Any mismatch invalidates the EOI.</li>
+    <li><strong>Only claim points you can document.</strong> An unsupported claim discovered later isn't a minor correction — it can be treated as fraud.</li>
+    <li><strong>Experience dates</strong> — enter day/month/year precisely; overlapping or inconsistent dates trigger manual review delays.</li>
+    <li><strong>Education details</strong> — qualification name, institution, and completion date must match your certificates exactly.</li>
+    <li><strong>English test details</strong> — test type, score, and test date, cross-checked against validity windows.</li>
+    <li><strong>Select multiple subclasses</strong> — 189, 190, and 491 can all be ticked simultaneously; whichever produces an invitation first is the one you act on.</li>
+    <li><strong>Keep your state preferences broad</strong> — restricting yourself to one or two states narrows your nomination pool for no real benefit.</li>
+  </ul>
+
+  <div class="callout info">
+    <span class="c-title">ℹ Illustrative Invitation Round Data</span>
+    In a recent monthly round, Subclass 189 issued roughly 10,000 invitations — the largest single round of that year — while family-sponsored regional (491) rounds issued only a few hundred, reflecting a much narrower, targeted pool. These figures move every round; treat this as an illustration of scale, not a number to plan against. Subclass 190 and 491 state-nominated places are <em>not</em> part of the monthly national rounds at all — states run their own independent nomination programs on their own schedule.
+  </div>
+
+  <h2>Timing Strategy</h2>
+  <table>
+    <thead><tr><th>Principle</th><th>Why It Matters</th></tr></thead>
+    <tbody>
+      <tr><td>Don't submit before you're ready</td><td>Wait until your English result, skills assessment, and supporting documents are all finalized</td></tr>
+      <tr><td>Select every eligible subclass</td><td>Maximizes the number of pathways that can produce an invitation</td></tr>
+      <tr><td>Keep state preferences wide</td><td>You can always decline a nomination — you can't receive one you didn't make yourself eligible for</td></tr>
+      <tr><td>Update immediately on any score change</td><td>A stale EOI holds a stale, lower-ranked score</td></tr>
+      <tr><td>Submit the moment you hit your target score</td><td>Among equally-scored applicants, the tie-break date rewards whoever lodged first</td></tr>
+    </tbody>
+  </table>
+
+  <h2>The 60-Day Countdown After Invitation</h2>
+  <table>
+    <thead><tr><th>Timeframe</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>Day 1–3</td><td>Confirm the invitation, calculate and calendar your exact 60-day deadline, open your ImmiAccount visa application</td></tr>
+      <tr><td>Day 3–7</td><td>Review every document for completeness; book your health examination</td></tr>
+      <tr><td>Day 7–20</td><td>Complete the health exam (HAP ID required, generated from ImmiAccount); refresh police clearance certificates if needed</td></tr>
+      <tr><td>Day 20–40</td><td>Upload all documents to ImmiAccount; pay the visa fee; add spouse/dependent documentation</td></tr>
+      <tr><td>Day 40–55</td><td>Respond promptly to any request for additional documents; check application status regularly</td></tr>
+      <tr><td>Day 60</td><td>Absolute deadline — the application must be fully lodged by this date or the invitation lapses permanently</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 45</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 10 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">10</span>
+    <h1 class="divider-title">Document Preparation &amp; Global Certification Guide</h1>
+    <p class="divider-sub">Apostille, certified translation, and police clearances — for applicants of any nationality</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 10</div>
+  <h1 class="ch-title">Document Preparation &amp; Global Certification Guide</h1>
+  <p class="ch-sub">Apostille, certified translation, and police clearances — for applicants of any nationality</p>
+
+  <h2>The Apostille Requirement, Explained Globally</h2>
+  <p>Most official documents issued outside Australia — diplomas, transcripts, birth and marriage certificates, police clearances — need to be authenticated before an Australian institution will accept them. How that authentication works depends entirely on whether your issuing country is party to the <strong>Hague Apostille Convention</strong>.</p>
+  <table>
+    <thead><tr><th>Your Document's Country of Issue</th><th>Authentication Path</th></tr></thead>
+    <tbody>
+      <tr><td>Hague Convention member country (120+ countries, including most of Europe, the Americas, and a large share of Asia-Pacific)</td><td>Obtain an <strong>Apostille</strong> from the designated competent authority in that country — typically the Ministry of Foreign Affairs, a Secretary of State equivalent, or a designated notarial body</td></tr>
+      <tr><td>Non-member country</td><td>Use <strong>consular/embassy legalization</strong> instead — the document is authenticated by your country's foreign ministry, then legalized by the Australian embassy or consulate in that country</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <span class="c-title">⚠ Check the Notarization Order</span>
+    Many countries require a document to be notarized <em>before</em> it can receive an Apostille — issuing this in the wrong order means redoing the entire process. Confirm the exact sequence required by your specific country's competent authority before starting.
+  </div>
+
+  <h2>Document Checklist by Category</h2>
+  <table>
+    <thead><tr><th>Category</th><th>Documents</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Identity</strong></td><td>Valid passport (all pages), prior passports if relevant, national ID, birth certificate, marriage/divorce certificates if applicable — all with certified translation if not in English</td></tr>
+      <tr><td><strong>Education</strong></td><td>Degree certificates (certified copy), full transcripts, graduation confirmation letters, course syllabi (required by some assessing bodies, e.g. ACS)</td></tr>
+      <tr><td><strong>Employment</strong></td><td>Reference letters on company letterhead for every employer, stating dates, weekly hours, and ANZSCO-matched duties; payslips (minimum 3 months per role); employment contracts; national insurance/social security records where obtainable</td></tr>
+      <tr><td><strong>English test</strong></td><td>Official test report/scorecard, either physical or via the test provider's online verification link</td></tr>
+      <tr><td><strong>Skills assessment</strong></td><td>Positive outcome letter, reference number, and assessed validity date</td></tr>
+      <tr><td><strong>Character</strong></td><td>Police clearance certificate from every country you've lived in for 12+ months since age 16, dated within the last 3–6 months</td></tr>
+      <tr><td><strong>Family</strong></td><td>Spouse's passport, ID, qualifications, and English evidence; children's passports and birth certificates</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Certified Translation — The Rule That Trips Up the Most Applicants</h2>
+  <p>Any document not originally issued in English must be translated by a <strong>NAATI-certified translator</strong> (or an equivalent translator recognized under DHA's accepted-translator framework in your country of residence, where a local NAATI-certified option isn't available). This is a hard requirement, not a formality:</p>
+  <ul>
+    <li>Machine translation (Google Translate or similar) is never accepted</li>
+    <li>An uncertified freelance or "generalist" translator's work is not accepted</li>
+    <li>NAATI maintains a searchable directory ("Find a Practitioner") covering dozens of language pairs — search by your specific language to find both Australia-based and overseas-based accredited translators</li>
+  </ul>
+  <table>
+    <thead><tr><th>Translator Location</th><th>Advantage</th><th>Typical Cost (AUD, per page)</th></tr></thead>
+    <tbody>
+      <tr><td>Australia-based NAATI translator</td><td>Fast turnaround, familiar with DHA requirements</td><td>$80–150</td></tr>
+      <tr><td>Home-country NAATI-recognized translator</td><td>In-person document handling, often lower cost</td><td>$50–100</td></tr>
+      <tr><td>Online NAATI translation service</td><td>Convenient, fast digital delivery</td><td>$80–120</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Police Clearance Certificates</h2>
+  <ul>
+    <li><strong>Recency:</strong> most certificates must be dated within 3–6 months of your visa application — obtaining one too early wastes the window</li>
+    <li><strong>Scope:</strong> required for every country you've resided in for a cumulative 12 months or more since turning 16, not just your current country of residence</li>
+    <li><strong>Source:</strong> your national police agency, the relevant federal law-enforcement body, or — if you're currently abroad — the consulate/embassy of the issuing country</li>
+    <li><strong>Certification:</strong> like every other foreign-language document, it requires Apostille (or consular legalization) plus certified translation if not issued in English</li>
+  </ul>
+
+  <h2>Document Validity Windows — Quick Reference</h2>
+  <table>
+    <thead><tr><th>Document</th><th>Validity Period</th></tr></thead>
+    <tbody>
+      <tr><td>Skills assessment</td><td>Typically 3 years</td></tr>
+      <tr><td>IELTS / PTE</td><td>3 years</td></tr>
+      <tr><td>TOEFL / OET</td><td>2 years</td></tr>
+      <tr><td>NAATI CCL</td><td>5 years</td></tr>
+      <tr><td>Health examination</td><td>12 months</td></tr>
+      <tr><td>Police clearance certificate</td><td>3–6 months (varies by issuing country's own certificate format)</td></tr>
+      <tr><td>Passport</td><td>Minimum 12 months' remaining validity at application</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 51</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 11 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">11</span>
+    <h1 class="divider-title">After PR Approval: Settling In &amp; the Path to Citizenship</h1>
+    <p class="divider-sub">What to finish before you fly, and the four-year road to citizenship</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 11</div>
+  <h1 class="ch-title">After PR Approval: Settling In &amp; the Path to Citizenship</h1>
+  <p class="ch-sub">What to finish before you fly, and the four-year road to citizenship</p>
+
+  <h2>Before You Leave Your Current Country</h2>
+  <ul>
+    <li>Note your visa grant date and the deadline for your first entry to Australia (commonly within 5 years of grant, but confirm your specific visa condition)</li>
+    <li>Save digital and physical copies of every document used in your application</li>
+    <li>Research which Australian banks allow account opening before arrival (several major banks support this)</li>
+    <li>Plan your Medicare registration timeline — as a PR holder, you're eligible immediately on arrival</li>
+    <li>If bringing children, research school zones and enrolment timelines for your intended suburb in advance</li>
+  </ul>
+
+  <h2>Permanent Resident vs. Citizen — What Actually Changes</h2>
+  <table>
+    <thead><tr><th>Right</th><th>Permanent Resident</th><th>Citizen</th></tr></thead>
+    <tbody>
+      <tr><td>Work rights</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Medicare</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Some government welfare payments</td><td>2–4 year waiting period applies</td><td>Full access</td></tr>
+      <tr><td>Voting</td><td>Not permitted</td><td>Compulsory</td></tr>
+      <tr><td>Passport</td><td>Travel on your home country's passport</td><td>Australian passport, visa-free access to 180+ countries</td></tr>
+      <tr><td>Re-entry to Australia after travel</td><td>Subject to a Resident Return Visa condition</td><td>Unrestricted</td></tr>
+      <tr><td>Compulsory obligations in your home country</td><td>May continue depending on your country's own laws (e.g., national service) — this is entirely outside Australia's jurisdiction</td><td>Same — check your home country's specific position on dual citizenship and its obligations</td></tr>
+    </tbody>
+  </table>
+
+  <h2>The Citizenship Pathway</h2>
+  <ul>
+    <li>Generally requires <strong>4 years</strong> of Australian residence, with the final <strong>12 months</strong> held as a permanent resident</li>
+    <li>A character and values assessment applies, alongside standard security checks</li>
+    <li>An English language requirement applies (generally assessed at a functional/conversational standard, not an exam score)</li>
+    <li>Becoming an Australian citizen does <strong>not</strong> automatically revoke your original citizenship — Australia permits dual citizenship. Whether <em>your home country</em> permits you to retain its citizenship alongside an Australian one depends entirely on that country's own laws — confirm this before applying, as the answer varies enormously by country</li>
+  </ul>
+
+  <div class="callout tip">
+    <span class="c-title">✓ Why Citizenship Is Worth Planning For, Even If PR Feels Like "Enough"</span>
+    An Australian passport substantially outperforms most passports for visa-free travel, and citizenship removes the re-entry conditions that apply to PR holders after extended time abroad. If your home country allows dual citizenship, there's very little downside to eventually pursuing it.
+  </div>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 57</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 12 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">12</span>
+    <h1 class="divider-title">Sector-Specific Migration Guide</h1>
+    <p class="divider-sub">Real demand, salary, and assessment data for the four largest applicant pools</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 12</div>
+  <h1 class="ch-title">Sector-Specific Migration Guide</h1>
+  <p class="ch-sub">Real demand, salary, and assessment data for the four largest applicant pools</p>
+
+  <h2>Information Technology</h2>
+  <table>
+    <thead><tr><th>Role</th><th>Avg. Salary (AUD)</th><th>ANZSCO Code</th><th>Assessing Body</th></tr></thead>
+    <tbody>
+      <tr><td>Software Engineer</td><td>$110,000–145,000</td><td>261313</td><td>ACS</td></tr>
+      <tr><td>Senior Developer</td><td>$120,000–160,000</td><td>261312</td><td>ACS</td></tr>
+      <tr><td>Data Scientist</td><td>$100,000–140,000</td><td>262111</td><td>ACS</td></tr>
+      <tr><td>Cyber Security Specialist</td><td>$110,000–150,000</td><td>262112</td><td>ACS</td></tr>
+      <tr><td>Cloud Architect</td><td>$130,000–170,000</td><td>263111</td><td>ACS</td></tr>
+      <tr><td>IT Project Manager</td><td>$110,000–145,000</td><td>135112</td><td>ACS</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;">Most in-demand skills: Python, AWS/Azure, React/Angular, Kubernetes, DevOps, applied AI/ML. A strong GitHub profile and verifiable certifications materially shorten the job search.</p>
+
+  <h2>Engineering</h2>
+  <table>
+    <thead><tr><th>Role</th><th>Avg. Salary (AUD)</th><th>Demand Level</th><th>Leading States</th></tr></thead>
+    <tbody>
+      <tr><td>Civil Engineer</td><td>$90,000–120,000</td><td>High</td><td>NSW, VIC, QLD</td></tr>
+      <tr><td>Structural Engineer</td><td>$95,000–125,000</td><td>High</td><td>NSW, VIC</td></tr>
+      <tr><td>Mechanical Engineer</td><td>$90,000–120,000</td><td>Medium</td><td>WA, QLD</td></tr>
+      <tr><td>Electrical Engineer</td><td>$95,000–130,000</td><td>Very High</td><td>WA, QLD, NT</td></tr>
+      <tr><td>Mining Engineer</td><td>$120,000–180,000</td><td>Very High</td><td>WA, QLD, NT</td></tr>
+      <tr><td>Environmental Engineer</td><td>$80,000–110,000</td><td>Medium</td><td>NSW, VIC</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Healthcare</h2>
+  <table>
+    <thead><tr><th>Role</th><th>Avg. Salary (AUD)</th><th>AHPRA/Assessment Required</th><th>Where Demand Is Highest</th></tr></thead>
+    <tbody>
+      <tr><td>General Practitioner</td><td>$150,000–250,000</td><td>Yes, AHPRA</td><td>Regional areas</td></tr>
+      <tr><td>Registered Nurse</td><td>$70,000–95,000</td><td>Yes, ANMAC/AHPRA</td><td>Nationwide</td></tr>
+      <tr><td>Physiotherapist</td><td>$70,000–90,000</td><td>Yes, AHPRA</td><td>Nationwide</td></tr>
+      <tr><td>Pharmacist</td><td>$80,000–100,000</td><td>Yes, AHPRA</td><td>Nationwide</td></tr>
+      <tr><td>Medical Imaging Technologist</td><td>$75,000–95,000</td><td>Yes, AHPRA</td><td>Metro + regional</td></tr>
+    </tbody>
+  </table>
+  <div class="callout info">
+    <span class="c-title">ℹ Regional Healthcare Incentives</span>
+    Healthcare professionals working in designated regional areas can access additional incentives — rent subsidies, loan repayment support, and salary loading — on top of the +15 point advantage a regional (491) nomination already provides.
+  </div>
+
+  <h2>Accounting &amp; Finance</h2>
+  <table>
+    <thead><tr><th>Role</th><th>Avg. Salary (AUD)</th><th>Preferred Certification</th><th>Demand</th></tr></thead>
+    <tbody>
+      <tr><td>Accountant (General)</td><td>$65,000–90,000</td><td>CPA/CA</td><td>High</td></tr>
+      <tr><td>Management Accountant</td><td>$80,000–110,000</td><td>CPA/CA</td><td>Medium</td></tr>
+      <tr><td>Tax Specialist</td><td>$85,000–120,000</td><td>CPA/CA (required)</td><td>High</td></tr>
+      <tr><td>Financial Analyst</td><td>$80,000–115,000</td><td>CPA/CFA</td><td>Medium-High</td></tr>
+      <tr><td>Auditor</td><td>$75,000–105,000</td><td>CA (required)</td><td>Medium</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Trades &amp; Hospitality</h2>
+  <p>Trade occupations are consistently under-supplied relative to demand, particularly outside the largest cities, and assessment via TRA is generally faster and cheaper than the professional pathways above.</p>
+  <table>
+    <thead><tr><th>Role</th><th>Avg. Salary (AUD)</th><th>ANZSCO Code</th><th>Assessing Body</th></tr></thead>
+    <tbody>
+      <tr><td>Electrician (General)</td><td>$75,000–100,000</td><td>341111</td><td>TRA</td></tr>
+      <tr><td>Plumber (General)</td><td>$75,000–105,000</td><td>334111</td><td>TRA</td></tr>
+      <tr><td>Motor Mechanic (General)</td><td>$65,000–90,000</td><td>321211</td><td>TRA</td></tr>
+      <tr><td>Chef</td><td>$60,000–85,000</td><td>351311</td><td>VETASSESS</td></tr>
+      <tr><td>Construction Project Manager</td><td>$110,000–150,000</td><td>132111</td><td>AIPM</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <span class="c-title">⚠ Trade Licensing Is Separate From Skills Assessment</span>
+    A positive TRA assessment confirms your qualification is recognized — it does not automatically grant you a licence to practice. Electricians, plumbers, and several other trades require a separate state-issued licence before you can legally work, and requirements differ by state. Confirm your target state's specific licensing body before assuming a positive assessment alone is enough to start working.
+  </div>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 61</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 13 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">13</span>
+    <h1 class="divider-title">The 12-Month Strategic Preparation Plan</h1>
+    <p class="divider-sub">A month-by-month execution timeline — adapt it to your own starting point</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 13</div>
+  <h1 class="ch-title">The 12-Month Strategic Preparation Plan</h1>
+  <p class="ch-sub">A month-by-month execution timeline — adapt it to your own starting point</p>
+
+  <table>
+    <thead><tr><th>Timeframe</th><th>Focus</th><th>Actions</th></tr></thead>
+    <tbody>
+      <tr><td>Months 1–2</td><td>Research &amp; Planning</td><td>Determine your ANZSCO code, calculate your current points, identify eligible visa subclasses, decide on an English test strategy, build a realistic budget</td></tr>
+      <tr><td>Months 2–4</td><td>Document Collection</td><td>Gather diplomas and transcripts, request employer reference letters, begin Apostille and certified-translation processes, confirm passport validity</td></tr>
+      <tr><td>Months 3–6</td><td>Skills Assessment</td><td>Lodge your application with the correct assessing body; respond quickly to any evidentiary requests; study for your English test in parallel</td></tr>
+      <tr><td>Months 4–7</td><td>English Testing</td><td>Sit IELTS or PTE; target Proficient at minimum, Superior if the timeline allows; retest if the first attempt falls short</td></tr>
+      <tr><td>Months 6–8</td><td>EOI Submission</td><td>Create your SkillSelect account, enter all information precisely, select multiple subclasses and states, submit and record your points total</td></tr>
+      <tr><td>Months 8–18</td><td>Invitation &amp; State Nomination</td><td>Keep your EOI updated with any score changes; monitor state nomination openings continuously; research Australian job opportunities in parallel</td></tr>
+      <tr><td>Post-invitation</td><td>Visa Application</td><td>Complete the 60-day countdown from Chapter 9; lodge, pay, and upload all documentation; plan your relocation logistics</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="c-title">✓ This Is a Framework, Not a Fixed Schedule</span>
+    If your English test is already done, start at Month 3. If you're targeting a fast-processing assessing body (ACS: 4–8 weeks) versus a slow one (Engineers Australia: 3–6 months), your own timeline will compress or stretch accordingly. The one rule that doesn't bend: never let a completed step sit idle before starting the next one.
+  </div>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 67</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 14 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">14</span>
+    <h1 class="divider-title">Regional Australia Guide</h1>
+    <p class="divider-sub">Turning the Subclass 491 requirement into a genuine advantage</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 14</div>
+  <h1 class="ch-title">Regional Australia Guide</h1>
+  <p class="ch-sub">Turning the Subclass 491 requirement into a genuine advantage</p>
+
+  <p>"Regional" in Australian migration terms is a much broader category than most applicants expect. Sydney, Melbourne, and Brisbane's inner-city areas are excluded — but a surprising number of substantial, well-connected cities qualify.</p>
+
+  <h2>Cities That Count as Regional</h2>
+  <table>
+    <thead><tr><th>City</th><th>State</th><th>Population</th><th>Distance from Nearest Major Metro</th></tr></thead>
+    <tbody>
+      <tr><td>Wollongong</td><td>NSW</td><td>320,000</td><td>85 km from Sydney</td></tr>
+      <tr><td>Newcastle</td><td>NSW</td><td>500,000</td><td>160 km from Sydney</td></tr>
+      <tr><td>Geelong</td><td>VIC</td><td>280,000</td><td>75 km from Melbourne</td></tr>
+      <tr><td>Ballarat</td><td>VIC</td><td>120,000</td><td>115 km from Melbourne</td></tr>
+      <tr><td>Gold Coast</td><td>QLD</td><td>700,000</td><td>80 km from Brisbane</td></tr>
+      <tr><td>Sunshine Coast</td><td>QLD</td><td>380,000</td><td>100 km from Brisbane</td></tr>
+      <tr><td>Perth</td><td>WA</td><td>2.1M</td><td>Regional in most of its metro area under current settings</td></tr>
+      <tr><td>Adelaide</td><td>SA</td><td>1.3M</td><td>Regional in parts of its metro area</td></tr>
+      <tr><td>Canberra</td><td>ACT</td><td>450,000</td><td>Regional-eligible</td></tr>
+      <tr><td>Hobart</td><td>TAS</td><td>250,000</td><td>Regional-eligible</td></tr>
+    </tbody>
+  </table>
+  <div class="callout info">
+    <span class="c-title">ℹ Confirm Before You Commit</span>
+    Regional classifications are reviewed periodically. Check the specific address you're considering against the current official regional postcode list before finalizing a 491 strategy — don't assume a city keeps the same status indefinitely.
+  </div>
+
+  <h2>Regional Living — Pros and Cons</h2>
+  <div class="two-col">
+    <div class="col card good">
+      <div class="card-title">Advantages</div>
+      <ul>
+        <li>Rent typically 30–50% lower than capital-city equivalents</li>
+        <li>Minimal commute times, less traffic</li>
+        <li>A large points advantage (+15) unmatched by any other single lever</li>
+        <li>3 years of regional residence unlocks Subclass 191 permanent residency</li>
+      </ul>
+    </div>
+    <div class="col card bad">
+      <div class="card-title">Trade-offs</div>
+      <ul>
+        <li>A narrower job market than a capital city, particularly outside healthcare and trades</li>
+        <li>Smaller expatriate and cultural-community networks</li>
+        <li>Fewer direct international flight connections</li>
+        <li>A binding 3-year residency commitment before your next visa transition</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Making the Most of a Regional Strategy</h2>
+  <ul>
+    <li><strong>Healthcare is the easiest sector to place into regionally</strong> — nurses, GPs, and allied health professionals are in consistent, structural demand outside major cities, often with additional incentives layered on top.</li>
+    <li><strong>Remote-work arbitrage</strong> — many ICT professionals live in a regional area while working remotely for a Sydney- or Melbourne-based employer, combining lower cost of living with a metro salary.</li>
+    <li><strong>Use the 3-year window deliberately</strong> — it's enough time to accumulate meaningful Australian work experience points, build savings, and prepare a strong case for the transition to permanent Subclass 191 residency.</li>
+  </ul>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 71</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 15 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">15</span>
+    <h1 class="divider-title">Cultural &amp; Workplace Adjustment Notes</h1>
+    <p class="divider-sub">What's genuinely different in Australia — for migrants of any background</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 15</div>
+  <h1 class="ch-title">Cultural &amp; Workplace Adjustment Notes</h1>
+  <p class="ch-sub">What's genuinely different in Australia — for migrants of any background</p>
+
+  <h2>Workplace Culture</h2>
+  <table>
+    <thead><tr><th>Aspect</th><th>What to Expect</th></tr></thead>
+    <tbody>
+      <tr><td>Hierarchy</td><td>Notably flat compared to many countries — addressing managers by first name is standard, and direct feedback flows in both directions</td></tr>
+      <tr><td>Punctuality</td><td>Arriving 5 minutes early to meetings is the norm; punctuality is read as a signal of professionalism</td></tr>
+      <tr><td>Work-life balance</td><td>Standard hours are roughly 9–5; weekend work is genuinely uncommon, and annual leave is used, not stockpiled</td></tr>
+      <tr><td>Communication style</td><td>Direct but informal — disagreement is usually voiced plainly rather than implied</td></tr>
+      <tr><td>Tipping</td><td>Not obligatory; 10–15% is appreciated at sit-down restaurants but far less embedded than in many other countries</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Practical Differences Worth Knowing in Advance</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Australia</th></tr></thead>
+    <tbody>
+      <tr><td>Currency</td><td>Australian Dollar (AUD)</td></tr>
+      <tr><td>Electrical standard</td><td>230V, Type I plug — bring or buy an adapter appropriate to your home country's plug type</td></tr>
+      <tr><td>Driving side</td><td>Left-hand side of the road, right-hand drive vehicles (see Chapter 7)</td></tr>
+      <tr><td>Emergency number</td><td>000</td></tr>
+      <tr><td>Tax year</td><td>1 July – 30 June (not the calendar year)</td></tr>
+      <tr><td>Typical pay frequency</td><td>Weekly or fortnightly, rather than monthly</td></tr>
+      <tr><td>Shopping hours</td><td>Sunday trading hours are restricted in some states — check local hours before assuming 7-day full access</td></tr>
+      <tr><td>Seasons</td><td>Reversed from the Northern Hemisphere — December to February is summer</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Staying Connected to Your Own Culture</h2>
+  <p>Every major Australian city hosts active migrant communities, cultural associations, and places of worship spanning a very wide range of backgrounds — this is one of the more consistently underrated aspects of settling in Australia. Practical starting points:</p>
+  <ul>
+    <li>Search Meetup.com and Facebook Groups for nationality- or language-specific community groups in your city</li>
+    <li>Most capital cities have at least one dedicated grocery store or supplier for South Asian, Middle Eastern, East Asian, African, and Latin American ingredients — often clustered in specific, well-known suburbs</li>
+    <li>Professional networking groups frequently form along shared-background lines (e.g., "[Nationality] Professionals in Australia" LinkedIn groups) and are a genuinely useful job-search channel, not just a social one</li>
+  </ul>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 75</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 16 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">16</span>
+    <h1 class="divider-title">Real Application Scenarios</h1>
+    <p class="divider-sub">Five fully worked points-test case studies</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 16</div>
+  <h1 class="ch-title">Real Application Scenarios</h1>
+  <p class="ch-sub">Five fully worked points-test case studies</p>
+
+  <h3>Applicant A — Junior Software Developer</h3>
+  <table>
+    <thead><tr><th>Profile</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Age 27, Backend Developer, 4 years' experience, Bachelor's in Computer Science, IELTS 7.0</td><td>Age(30) + English(10) + Experience(5) + Education(15) + Single(10) = <strong>70 points</strong></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Strategy:</strong> apply for a 190 nomination for +5 (75 total), or a 491 nomination for +15 (85 total — a very strong position). If PTE Superior is achievable, 80+10 = 90 points makes even a direct 189 realistic.</p>
+
+  <h3>Applicant B — Mid-Career Civil Engineer</h3>
+  <table>
+    <thead><tr><th>Profile</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Age 38, Civil Engineer, 12 years' experience, Bachelor's, IELTS 6.5</td><td>Age(25) + English(0) + Experience(15) + Education(15) + Partner(5) = <strong>60 points</strong></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Problem:</strong> Competent-level English contributes zero points and is dragging the total down. <strong>Fix:</strong> IELTS 7.0 (Proficient) → 70 points; with a 491 nomination, 70+15 = 85. Adding NAATI CCL pushes it further to 75 baseline. English is the clear first move here.</p>
+
+  <h3>Applicant C — Registered Nurse, Migrating With Family</h3>
+  <table>
+    <thead><tr><th>Profile</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Age 31, Registered Nurse, 7 years' experience, Bachelor's, IELTS 7.5, skilled partner</td><td>Age(30) + English(10) + Experience(10) + Education(15) + Partner skilled(10) = <strong>75 points</strong></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Strategy:</strong> a strong candidate for state nomination given consistently high healthcare demand across most states. 75+5 = 80 with a 190 nomination. If English reaches Superior (8.0), the total climbs to 85 — strong enough for 189 consideration too.</p>
+
+  <h3>Applicant D — Self-Employed Accountant</h3>
+  <table>
+    <thead><tr><th>Profile</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Age 35, Accountant, 8 years' self-employed experience, Bachelor's + MBA, PTE 65</td><td>Age(25) + English(10) + Experience(15) + Education(15) + NAATI(5) = <strong>70 points</strong></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Challenge:</strong> self-employment experience requires stronger documentation — client contracts, tax filings, bank statements — since assessing bodies scrutinize it more closely than salaried employment. <strong>Strategy:</strong> target lower-competition states for nomination; professional-body membership (e.g., CPA equivalent) accelerates job placement after arrival.</p>
+
+  <h3>Applicant E — Experienced Chef</h3>
+  <table>
+    <thead><tr><th>Profile</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Age 42, Chef, 15 years' experience, trade diploma, IELTS 6.0</td><td>Age(15) + English(0) + Experience(10) + Education(10) + 491 nomination(+15) = <strong>50 points</strong></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Problem:</strong> low age bracket and Competent-only English are both dragging the score down, and the 45+ cutoff is close. <strong>Fix:</strong> English to Proficient (+10) and NAATI CCL (+5) bring the base to 65 before any nomination; combined with a 491 regional nomination, this clears the realistic threshold. <strong>Urgency:</strong> at 42, the visa must be <em>granted</em>, not just applied for, before age 45 — every month of delay matters here more than for any other profile in this chapter.</p>
+
+  <h3>Applicant F — The Student Visa Bridge</h3>
+  <table>
+    <thead><tr><th>Profile</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Age 24, Bachelor's in a non-priority field from a home-country university, 1 year of unrelated work experience, IELTS 6.5. Direct-application points total: <strong>50</strong></td><td>Age(30) + English(0) + Experience(0) + Education(15) + Single(10) − no matching ANZSCO occupation = well below any competitive threshold, and no skills assessment pathway is currently available</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Diagnosis:</strong> this profile has strong age points but no qualification that maps cleanly to an in-demand ANZSCO code — a direct skilled-migration attempt would stall immediately. <strong>Strategy:</strong> apply for Subclass 500 in a two-year Master's program in an MLTSSL-aligned field (e.g., an ICT or engineering master's with a recognized professional accreditation), maintaining Proficient English throughout.</p>
+  <p><strong>Projected outcome after the bridge:</strong> two years later — Australian study (+5), an 18–24 month Subclass 485 period spent working in the matched occupation (+5 for 1–2 years' Australian experience), and English pushed to Superior during the 485 window (+20 vs. the original 0). Recalculated: Age(30, now 26) + English(20) + Australian Experience(5) + Education(15) + Study(5) = <strong>75 points</strong> before any state or regional nomination — a complete turnaround from an unworkable direct application to a genuinely competitive one, achieved specifically through the sequencing in Chapters 3 and 4.</p>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 79</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 17 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">17</span>
+    <h1 class="divider-title">Frequently Asked Questions</h1>
+    <p class="divider-sub">The 18 questions every applicant eventually asks</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 17</div>
+  <h1 class="ch-title">Frequently Asked Questions</h1>
+  <p class="ch-sub">The 18 questions every applicant eventually asks</p>
+
+  <h3>Q: Does my work experience from my home country count?</h3>
+  <p>Yes. Overseas experience is scored up to 15 points at the 8+ year mark. The requirement is that it matches your assessed ANZSCO occupation and that you can document it thoroughly.</p>
+
+  <h3>Q: Can I migrate without a job offer in Australia?</h3>
+  <p>Yes — Subclasses 189, 190, and 491 are all points-based and require no job offer whatsoever. A job offer is only mandatory for the employer-sponsored Subclass 482 pathway.</p>
+
+  <h3>Q: Can my spouse be included in the application?</h3>
+  <p>Yes. Spouses and dependent children can be included on any of the skilled visas. If your spouse has their own skills and English proficiency, you can also claim an additional 5–10 partner points.</p>
+
+  <h3>Q: How much should I have saved before relocating?</h3>
+  <p>A minimum of AUD 10,000–15,000 for a single applicant, covering a rental bond, first month's costs, and a buffer while job-searching. Scale this up meaningfully for a family.</p>
+
+  <h3>Q: Is using a registered migration agent mandatory?</h3>
+  <p>No. Many applicants manage the entire process independently. An agent becomes genuinely valuable for complex cases — prior visa refusals, character issues, or unusually complicated ANZSCO matching.</p>
+
+  <h3>Q: How does dual taxation work?</h3>
+  <p>Australia holds Double Taxation Agreements (DTAs) with a large number of countries. Once you're an Australian tax resident, worldwide income must be declared, but DTA provisions generally prevent the same income being taxed twice. Consult a tax advisor familiar with both jurisdictions.</p>
+
+  <h3>Q: What are the current Australian income tax brackets?</h3>
+  <table>
+    <thead><tr><th>Taxable Income (AUD)</th><th>Rate</th></tr></thead>
+    <tbody>
+      <tr><td>$0 – 18,200</td><td>0%</td></tr>
+      <tr><td>$18,201 – 45,000</td><td>19%</td></tr>
+      <tr><td>$45,001 – 120,000</td><td>32.5%</td></tr>
+      <tr><td>$120,001 – 180,000</td><td>37%</td></tr>
+      <tr><td>$180,000+</td><td>45%</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11.5px;color:var(--muted);">Plus a 2% Medicare Levy for most residents. Effective tax rates typically land around 25–30% for a median skilled-migrant salary.</p>
+
+  <h3>Q: Can I keep practicing/observing my home country's compulsory civic obligations abroad?</h3>
+  <p>Australia has no involvement in or awareness of any home-country civic obligations (national service, conscription, etc.) — this is entirely a matter between you and your country of citizenship, and it does not factor into your Australian visa decision in any way. Confirm your specific obligations directly with your home country's relevant authority.</p>
+
+  <h3>Q: Was I previously refused a visa — can I still apply?</h3>
+  <p>Generally yes. A tourist-visa refusal doesn't automatically affect a skilled-migration application. A refusal on fraud or character grounds is far more serious and warrants professional advice before reapplying.</p>
+
+  <h3>Q: What happens if my skills assessment is refused?</h3>
+  <p>Every assessing body has a formal review or appeal process. You can submit additional evidence, or in some cases pivot to a more accurately matched ANZSCO code. Understanding the specific reason for refusal — request written feedback — is the first step either way.</p>
+
+  <h3>Q: Where will my children go to school?</h3>
+  <p>PR-holder families can enrol children in public schools free of charge, assigned by residential zone. Private and faith-based schools charge fees, generally well below international-student rates. Instruction is in English, with dedicated English-as-an-Additional-Language (EAL) support commonly available for newly arrived students.</p>
+
+  <h3>Q: Does part-time work experience count toward points?</h3>
+  <p>Yes, on a pro-rata basis. 20 hours/week for one year is generally counted as roughly 0.5 years of full-time-equivalent experience. Reference letters must clearly state weekly hours.</p>
+
+  <h3>Q: Does self-employment experience count?</h3>
+  <p>Yes, with stronger evidentiary requirements — tax records, client contracts, invoicing history, and business registration documents. Reference letters can be sourced from major clients in lieu of an employer.</p>
+
+  <h3>Q: How long does the entire process realistically take?</h3>
+  <p>18–24 months for a direct skilled-migration applicant with a strong starting score; 3.5–5 years for the student-visa bridge pathway described in Chapters 3–4.</p>
+
+  <h3>Q: Can I work while my visa application is being processed?</h3>
+  <p>If you're already in Australia on a Bridging Visa while your application is decided, work rights depend on your prior visa's conditions — this is assessed case by case at the bridging stage.</p>
+
+  <h3>Q: Is there a minimum salary requirement for skilled visas?</h3>
+  <p>Not for the points-tested visas (189/190/491) — these are assessed on points, not a salary threshold. Employer-sponsored visas (482) do carry a minimum salary requirement set by the government.</p>
+
+  <h3>Q: What's the realistic total cost, all-in, for a single applicant?</h3>
+  <p>Approximately AUD 6,500–7,500 without an agent, covering skills assessment, English testing, the visa application fee, health checks, and document certification/translation. See Chapter 6 for the full breakdown.</p>
+
+  <h3>Q: Do I need to already speak fluent English to succeed on this pathway?</h3>
+  <p>No — Competent-level English (IELTS 6.0 equivalent) is the minimum eligibility bar for most skilled visas, and it's genuinely achievable with focused study for most applicants regardless of starting level. Reaching Proficient or Superior is a strategic points decision, not a strict eligibility requirement.</p>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 85</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 18 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">18</span>
+    <h1 class="divider-title">The Master Application Checklist</h1>
+    <p class="divider-sub">Every stage of the journey, condensed into one printable working document</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 18</div>
+  <h1 class="ch-title">The Master Application Checklist</h1>
+  <p class="ch-sub">Print this chapter and work through it stage by stage</p>
+
+  <h2>Stage 1 — Research &amp; Planning</h2>
+  <ul>
+    <li>☐ Determined my ANZSCO code and confirmed its duty description matches my actual role</li>
+    <li>☐ Confirmed whether my occupation sits on the MLTSSL, STSOL, or ROL</li>
+    <li>☐ Identified which visa subclass(es) I'm eligible for (189 / 190 / 491 / 482 / 500)</li>
+    <li>☐ Calculated my current points total</li>
+    <li>☐ Identified my highest-value point-improvement opportunities (Chapter 8)</li>
+    <li>☐ Researched which states are realistic nomination targets for my occupation</li>
+    <li>☐ Built a realistic budget and timeline</li>
+  </ul>
+
+  <h2>Stage 2 — Skills Assessment</h2>
+  <ul>
+    <li>☐ Identified my correct assessing body</li>
+    <li>☐ Collected diplomas, transcripts, and employer reference letters</li>
+    <li>☐ Obtained Apostille/consular legalization for all required documents</li>
+    <li>☐ Arranged NAATI-certified translation for any non-English documents</li>
+    <li>☐ Submitted my assessment application — Date: _____________</li>
+    <li>☐ Received a positive outcome — Date: _____________</li>
+    <li>☐ Logged the assessment's expiry date on my calendar: _____________</li>
+  </ul>
+
+  <h2>Stage 3 — English Test</h2>
+  <ul>
+    <li>☐ Chosen my test (IELTS / PTE / TOEFL / OET)</li>
+    <li>☐ Built and followed a structured study plan</li>
+    <li>☐ Completed practice/mock tests</li>
+    <li>☐ Sat the exam — Date: _____________</li>
+    <li>☐ Reached my target score — Score: _____________</li>
+    <li>☐ Logged the result's expiry date on my calendar: _____________</li>
+  </ul>
+
+  <h2>Stage 4 — EOI Submission</h2>
+  <ul>
+    <li>☐ Created my SkillSelect account</li>
+    <li>☐ Entered and double-checked every point-scoring detail</li>
+    <li>☐ Selected every eligible visa subclass</li>
+    <li>☐ Selected a wide range of state preferences</li>
+    <li>☐ Submitted my EOI — Date: _____________ — Points at submission: _____________</li>
+    <li>☐ Set a reminder to update the EOI whenever my points change</li>
+  </ul>
+
+  <h2>Stage 5 — State Nomination (if applicable)</h2>
+  <ul>
+    <li>☐ Identified my target state(s)</li>
+    <li>☐ Set an alert for nomination window openings</li>
+    <li>☐ Submitted a state nomination application — Date: _____________</li>
+    <li>☐ Received nomination approval — Date: _____________</li>
+    <li>☐ Updated my EOI to reflect the additional points</li>
+  </ul>
+
+  <h2>Stage 6 — Invitation &amp; Visa Application</h2>
+  <ul>
+    <li>☐ Received an invitation to apply — Date: _____________</li>
+    <li>☐ Calculated and logged my 60-day deadline: _____________</li>
+    <li>☐ Booked and completed my health examination</li>
+    <li>☐ Obtained current police clearance certificates for every required country</li>
+    <li>☐ Uploaded all documents to ImmiAccount</li>
+    <li>☐ Paid the visa application fee</li>
+    <li>☐ Added all family members to the application</li>
+    <li>☐ Submitted the completed visa application — Date: _____________</li>
+  </ul>
+
+  <h2>Stage 7 — After Grant</h2>
+  <ul>
+    <li>☐ Received the visa grant — Date: _____________</li>
+    <li>☐ Recorded my grant number: _____________</li>
+    <li>☐ Confirmed my mandatory first-entry deadline: _____________</li>
+    <li>☐ Planned relocation logistics and initial accommodation</li>
+    <li>☐ Prepared for Medicare registration, TFN application, and bank account setup on arrival</li>
+  </ul>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 88</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 19 -->
+<!-- ============================================================ -->
+<div class="page page-break divider">
+  <div class="divider-inner">
+    <span class="divider-num">19</span>
+    <h1 class="divider-title">Points Test Worksheet</h1>
+    <p class="divider-sub">A printable, fill-in version of Chapter 5's scoring framework</p>
+  </div>
+</div>
+
+<div class="page page-break">
+  <div class="kicker">Chapter 19</div>
+  <h1 class="ch-title">Points Test Worksheet</h1>
+  <p class="ch-sub">Work through this once now, and again every time a factor changes</p>
+
+  <table>
+    <thead><tr><th>Factor</th><th>Your Detail</th><th>Points Claimed</th></tr></thead>
+    <tbody>
+      <tr><td>Age</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>English test &amp; score</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>Overseas skilled work experience</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>Australian skilled work experience</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>Educational qualification</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>Australian study requirement</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>Partner skill &amp; English points</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>State/territory nomination</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>NAATI CCL</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td>Regional work experience</td><td>_________________________</td><td>_________</td></tr>
+      <tr><td><strong>TOTAL</strong></td><td></td><td><strong>_________</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="c-title">✓ Now Compare Against Realistic Thresholds</span>
+    Subclass 189: 80+ competitive · Subclass 190: 75+ competitive (before the state's +5) · Subclass 491: 65–70+ competitive (before the region's +15). If your total sits below all three, return to Chapter 8 and select your next highest-leverage action.
+  </div>
+
+  <h2>Notes &amp; Next Actions</h2>
+  <p>_______________________________________________________________________</p>
+  <p>_______________________________________________________________________</p>
+  <p>_______________________________________________________________________</p>
+  <p>_______________________________________________________________________</p>
+  <p>_______________________________________________________________________</p>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 90</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GLOSSARY -->
+<!-- ============================================================ -->
+<div class="page page-break">
+  <div class="kicker">Reference</div>
+  <h1 class="ch-title">Glossary of Immigration Terms</h1>
+  <p class="ch-sub">Every acronym in this guide, defined in one place</p>
+
+  <table>
+    <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+    <tbody>
+      <tr><td><strong>ANZSCO</strong></td><td>Australian and New Zealand Standard Classification of Occupations — the 6-digit occupation code system underpinning the entire skilled migration process</td></tr>
+      <tr><td><strong>EOI</strong></td><td>Expression of Interest — the pre-visa declaration submitted via SkillSelect</td></tr>
+      <tr><td><strong>SkillSelect</strong></td><td>The online platform where EOIs are created and managed</td></tr>
+      <tr><td><strong>PR</strong></td><td>Permanent Residence — unrestricted right to live and work in Australia indefinitely</td></tr>
+      <tr><td><strong>Skills Assessment</strong></td><td>Formal confirmation that your qualifications and experience meet Australian standards for your occupation</td></tr>
+      <tr><td><strong>MLTSSL</strong></td><td>Medium and Long-term Strategic Skills List — the broadest occupation list, valid for 189/190/491/482</td></tr>
+      <tr><td><strong>STSOL</strong></td><td>Short-term Skilled Occupation List — narrower visa eligibility, no access to Subclass 189</td></tr>
+      <tr><td><strong>ROL</strong></td><td>Regional Occupation List — valid only for the regional Subclass 491</td></tr>
+      <tr><td><strong>Tie-Break Date</strong></td><td>The date your EOI reached its current points total — used to rank equally-scored applicants</td></tr>
+      <tr><td><strong>ImmiAccount</strong></td><td>The Department of Home Affairs' online portal used to lodge visa applications</td></tr>
+      <tr><td><strong>HAP ID</strong></td><td>Health Appointment Portal ID — required to book your immigration health examination</td></tr>
+      <tr><td><strong>NAATI</strong></td><td>National Accreditation Authority for Translators and Interpreters — accredits both certified translators and the CCL community-language exam</td></tr>
+      <tr><td><strong>TFN</strong></td><td>Tax File Number — required before you can be paid correctly by any Australian employer</td></tr>
+      <tr><td><strong>Medicare</strong></td><td>Australia's universal public health scheme, free to PR holders and citizens upon registration</td></tr>
+      <tr><td><strong>OSHC</strong></td><td>Overseas Student Health Cover — mandatory health insurance for the duration of a student visa</td></tr>
+      <tr><td><strong>Grant</strong></td><td>Formal visa approval — "the visa was granted" means the application succeeded</td></tr>
+      <tr><td><strong>Nomination</strong></td><td>A state or territory government's formal support of your application (190: +5 points, 491: +15 points)</td></tr>
+      <tr><td><strong>Bridging Visa</strong></td><td>Temporary status granted while a substantive visa application is being decided, if you're already in Australia</td></tr>
+      <tr><td><strong>Points Test</strong></td><td>The scoring framework for skilled migration — minimum 65, competitively 80+</td></tr>
+      <tr><td><strong>CRICOS</strong></td><td>Commonwealth Register of Institutions and Courses for Overseas Students — the mandatory registration for any course a student-visa holder can study</td></tr>
+      <tr><td><strong>CDR</strong></td><td>Competency Demonstration Report — the standard report format for an Engineers Australia skills assessment</td></tr>
+      <tr><td><strong>AHPRA</strong></td><td>Australian Health Practitioner Regulation Agency — regulates medicine, dentistry, pharmacy, and physiotherapy</td></tr>
+      <tr><td><strong>ACS</strong></td><td>Australian Computer Society — the skills-assessing body for ICT occupations</td></tr>
+      <tr><td><strong>TRA</strong></td><td>Trades Recognition Australia — assesses trade occupations (electrician, plumber, mechanic, etc.)</td></tr>
+      <tr><td><strong>GS</strong></td><td>Genuine Student requirement — the holistic assessment applied to student visa applicants since March 2024, replacing the former GTE test</td></tr>
+      <tr><td><strong>CoE</strong></td><td>Confirmation of Enrolment — the document your institution issues once you've accepted an offer, required to lodge a student visa</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 91</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- RESOURCES -->
+<!-- ============================================================ -->
+<div class="page page-break">
+  <div class="kicker">Reference</div>
+  <h1 class="ch-title">Official Resources &amp; Tools</h1>
+  <p class="ch-sub">Government links, assessing bodies, and job platforms in one place</p>
+
+  <h2>Official Government &amp; Assessment Bodies</h2>
+  <table>
+    <thead><tr><th>Resource</th><th>URL</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Department of Home Affairs</td><td>immi.homeaffairs.gov.au</td><td>Official visa information and applications</td></tr>
+      <tr><td>SkillSelect / ImmiAccount</td><td>immi.homeaffairs.gov.au</td><td>EOI and visa application lodgement</td></tr>
+      <tr><td>ACS</td><td>acs.org.au/msa</td><td>ICT occupation assessment</td></tr>
+      <tr><td>Engineers Australia</td><td>engineersaustralia.org.au</td><td>Engineering occupation assessment</td></tr>
+      <tr><td>VETASSESS</td><td>vetassess.com.au</td><td>Broad professional occupation assessment</td></tr>
+      <tr><td>ANMAC</td><td>anmac.org.au</td><td>Nursing assessment</td></tr>
+      <tr><td>AHPRA</td><td>ahpra.gov.au</td><td>Health profession registration</td></tr>
+      <tr><td>TRA</td><td>tradesrecognitionaustralia.gov.au</td><td>Trade occupation assessment</td></tr>
+      <tr><td>NAATI</td><td>naati.com.au</td><td>Certified translators and CCL exam</td></tr>
+      <tr><td>MARA agent verification</td><td>mara.gov.au</td><td>Confirm a migration agent's registration status</td></tr>
+      <tr><td>ATO</td><td>ato.gov.au</td><td>Tax File Number applications</td></tr>
+    </tbody>
+  </table>
+
+  <h2>LogiVisa Free Tools</h2>
+  <table>
+    <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Points Calculator</td><td>Calculate your current points total in real time</td></tr>
+      <tr><td>ANZSCO Finder</td><td>Search 600+ occupation codes by role and duties</td></tr>
+      <tr><td>Skills Assessment Finder</td><td>Identify the correct assessing body for your occupation</td></tr>
+      <tr><td>State Nomination Matcher</td><td>Compare live nomination data across all 8 states/territories</td></tr>
+      <tr><td>Invitation Round Tracker</td><td>Monitor EOI invitation rounds and set score-threshold alerts</td></tr>
+      <tr><td>Full Readiness Check</td><td>A personalized, comprehensive migration-readiness report</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Job Search Platforms</h2>
+  <table>
+    <thead><tr><th>Platform</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td>Seek (seek.com.au)</td><td>Australia's largest general job board</td></tr>
+      <tr><td>LinkedIn</td><td>Professional networking and recruiter outreach</td></tr>
+      <tr><td>Indeed Australia</td><td>Broad job-listing aggregation</td></tr>
+      <tr><td>Hays Australia</td><td>Specialized recruitment across most professional fields</td></tr>
+      <tr><td>Michael Page</td><td>Mid-to-senior level professional placements</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026</span><span>Page 94</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FINAL WORD -->
+<!-- ============================================================ -->
+<div class="page page-break">
+  <div class="kicker">Closing</div>
+  <h1 class="ch-title">A Final Word</h1>
+  <p class="ch-sub">You've read the whole blueprint — that already puts you ahead</p>
+
+  <p>Most people who consider migrating to Australia never get past scattered research. They read a forum thread, watch a video, open a government page, and close it twelve minutes later feeling more confused than when they started. You've now read a structured, sequential playbook covering the points test, every major visa pathway, document certification, cost of living, and the first 90 days on the ground. That alone puts you meaningfully ahead of most applicants.</p>
+
+  <p>The process is genuinely long — 18 months at the fast end, several years at the other. But it is also transparent and mechanical in a way most immigration systems are not: the criteria are published, the math is knowable, and every lever in this guide is something you can act on this month, not someday.</p>
+
+  <div class="callout tip">
+    <span class="c-title">✓ Start Today, Not "When Everything Is Ready"</span>
+    Determine your ANZSCO code today. Research your assessing body tomorrow. Calculate your points this week. The perfect starting moment never arrives — small, sequential actions compound into a finished application.
+  </div>
+
+  <div class="close-cta">
+    <h3>Keep Your Blueprint Current</h3>
+    <p>Immigration settings shift multiple times a year. Use LogiVisa's free tools to keep every number in this guide current for your specific profile: Points Calculator, ANZSCO Finder, State Nomination Matcher, and Invitation Round Tracker.</p>
+    <p class="url">logivisa.com</p>
+  </div>
+
+  <div class="page-footer"><span>LogiVisa · Australia Migration Blueprint 2026 — Global Edition</span><span>Page 97</span></div>
+</div>
+
+</body>
+</html>

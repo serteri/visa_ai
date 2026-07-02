@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-export type StripeProductType = "premium" | "pdf_book";
+export type StripeProductType = "premium" | "pdf_book" | "pdf_book_global";
 
 export function getStripeClient(): Stripe {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -12,14 +12,15 @@ export function getStripeClient(): Stripe {
 }
 
 export function getPriceIdForProduct(product: StripeProductType): string {
-  // Founder reminder: Please remember to create a new $9.99 product in your Stripe Dashboard
-  // and update the STRIPE_PRICE_ID environment variable.
   const premiumPriceId =
     process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID ??
     process.env.STRIPE_PREMIUM_PRICE_ID;
-  const pdfBookPriceId =
+  const pdfBookTurkishPriceId =
     process.env.NEXT_PUBLIC_STRIPE_PDFBOOKTURKISH_PRICE_ID ??
     process.env.STRIPE_PDFBOOKTURKISH_PRICE_ID;
+  const pdfBookEnglishPriceId =
+    process.env.NEXT_PUBLIC_STRIPE_PDFBOOKENGLISH_PRICE_ID ??
+    process.env.STRIPE_PDFBOOKENGLISH_PRICE_ID;
 
   if (product === "premium") {
     if (!premiumPriceId) {
@@ -28,11 +29,18 @@ export function getPriceIdForProduct(product: StripeProductType): string {
     return premiumPriceId;
   }
 
-  if (!pdfBookPriceId) {
-    throw new Error("PDF book price id is not configured.");
+  if (product === "pdf_book_global") {
+    if (!pdfBookEnglishPriceId) {
+      throw new Error("Global English PDF book price id is not configured.");
+    }
+    return pdfBookEnglishPriceId;
   }
 
-  return pdfBookPriceId;
+  if (!pdfBookTurkishPriceId) {
+    throw new Error("Turkish PDF book price id is not configured.");
+  }
+
+  return pdfBookTurkishPriceId;
 }
 
 export function getStripeBaseUrl(): string {

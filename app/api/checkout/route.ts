@@ -17,7 +17,11 @@ type CheckoutPayload = {
   reportId?: string;
 };
 
-const SUPPORTED_PRODUCTS = new Set<StripeProductType>(["premium", "pdf_book"]);
+const SUPPORTED_PRODUCTS = new Set<StripeProductType>([
+  "premium",
+  "pdf_book",
+  "pdf_book_global",
+]);
 
 function normalizeLocale(value?: string): string {
   if (value === "tr") return "tr";
@@ -33,7 +37,10 @@ export async function POST(request: NextRequest) {
     const productType = body.productType;
     if (!productType || !SUPPORTED_PRODUCTS.has(productType)) {
       return NextResponse.json(
-        { error: "Invalid productType. Use 'premium' or 'pdf_book'." },
+        {
+          error:
+            "Invalid productType. Use 'premium', 'pdf_book', or 'pdf_book_global'.",
+        },
         { status: 400 }
       );
     }
