@@ -284,6 +284,19 @@ export function HomeContent() {
                     }
                   />
                 )}
+                <p className="mt-2 text-center text-xs font-medium text-slate-500 dark:text-slate-400">
+                  {hasFreeSlots
+                    ? locale === "tr"
+                      ? <>Normal fiyatı <strong className="text-slate-700 dark:text-slate-300">$9.99</strong> — ücretsiz kota bitince bu fiyata geçer</>
+                      : locale === "zh-Hans"
+                        ? <>原价 <strong className="text-slate-700 dark:text-slate-300">$9.99</strong> — 免费名额用完后恢复该价格</>
+                        : <>Normally <strong className="text-slate-700 dark:text-slate-300">$9.99</strong> — reverts to this price once free slots run out</>
+                    : locale === "tr"
+                      ? "Ücretsiz kota doldu — anında indirme bağlantısı e-postanıza gönderilir"
+                      : locale === "zh-Hans"
+                        ? "免费名额已满 — 下载链接将立即发送到您的邮箱"
+                        : "Free quota reached — instant download link sent to your email"}
+                </p>
               </div>
             </div>
           </div>
@@ -384,6 +397,19 @@ export function HomeContent() {
                     }
                   />
                 )}
+                <p className="mt-2 text-center text-xs font-medium text-slate-500 dark:text-slate-400">
+                  {hasFreeSlots
+                    ? locale === "tr"
+                      ? <>Normal fiyatı <strong className="text-slate-700 dark:text-slate-300">$9.99</strong> — ücretsiz kota bitince bu fiyata geçer</>
+                      : locale === "zh-Hans"
+                        ? <>原价 <strong className="text-slate-700 dark:text-slate-300">$9.99</strong> — 免费名额用完后恢复该价格</>
+                        : <>Normally <strong className="text-slate-700 dark:text-slate-300">$9.99</strong> — reverts to this price once free slots run out</>
+                    : locale === "tr"
+                      ? "Ücretsiz kota doldu — anında indirme bağlantısı e-postanıza gönderilir"
+                      : locale === "zh-Hans"
+                        ? "免费名额已满 — 下载链接将立即发送到您的邮箱"
+                        : "Free quota reached — instant download link sent to your email"}
+                </p>
               </div>
             </div>
           </div>
