@@ -32,7 +32,7 @@ export default async function AiVisaMatchPage({ params }: AiVisaMatchPageProps) 
       </section>
 
       <section className="mx-auto max-w-4xl px-4 pb-24 pt-4 sm:px-6">
-        <AnzscoClassifier locale={locale} />
+        <AnzscoClassifier initialLocale={locale} />
       </section>
     </div>
   );

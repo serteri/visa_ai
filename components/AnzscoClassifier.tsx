@@ -16,14 +16,155 @@ type ClassifyResult = {
 };
 
 type Status = "idle" | "extracting" | "loading" | "result" | "error";
+type UiLocale = "en" | "tr" | "zh";
 
 type AnzscoClassifierProps = {
-  locale?: string;
-  /** Which guide the sales CTA sells. Defaults to the Global English edition. */
-  productType?: "pdf_book" | "pdf_book_global";
+  /** Seeds the widget's own language toggle. The toggle still defaults to "en" if omitted. */
+  initialLocale?: string;
 };
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+// Maps the widget's simplified toggle to the app's real locale codes, which
+// StripeCheckoutButton needs for the correct checkout success/cancel URL.
+const STRIPE_LOCALE: Record<UiLocale, string> = {
+  en: "en",
+  tr: "tr",
+  zh: "zh-Hans",
+};
+
+function resolveInitialLocale(value?: string): UiLocale {
+  if (value === "tr") return "tr";
+  if (value === "zh" || value === "zh-Hans") return "zh";
+  return "en";
+}
+
+const DICT: Record<
+  UiLocale,
+  {
+    headerTitle: string;
+    headerSubtitle: string;
+    dropPrompt: string;
+    dropHint: string;
+    errorNotPdf: string;
+    errorTooLarge: string;
+    errorNoText: string;
+    errorGeneric: string;
+    extracting: (fileName: string) => string;
+    extractingHint: string;
+    matching: string;
+    matchFoundBadge: string;
+    noMatchTitle: string;
+    noMatchBody: string;
+    confidenceLabel: (pct: number) => string;
+    analyzeAnother: string;
+  }
+> = {
+  en: {
+    headerTitle: "🎯 ANZSCO AI Matcher",
+    headerSubtitle:
+      "Upload your CV and let our AI instantly identify your matching ANZSCO occupation code.",
+    dropPrompt: "Drop your CV here, or click to upload",
+    dropHint: "PDF only, up to 10MB",
+    errorNotPdf: "Please upload a PDF file.",
+    errorTooLarge: "File is too large. Max 10MB.",
+    errorNoText:
+      "We couldn't read any text from this PDF. Make sure it's not a scanned image, then try again.",
+    errorGeneric: "Something went wrong. Please try again.",
+    extracting: (fileName) => `Reading ${fileName}...`,
+    extractingHint: "This usually takes a few seconds.",
+    matching: "AI is matching your CV against 700+ ANZSCO codes...",
+    matchFoundBadge: "Match Found",
+    noMatchTitle: "No Direct Match Found",
+    noMatchBody:
+      "We couldn't find a direct ANZSCO match for your CV. Ensure your duties are clearly listed or try a different document.",
+    confidenceLabel: (pct) => `${pct}% confidence`,
+    analyzeAnother: "Analyze Another CV",
+  },
+  tr: {
+    headerTitle: "🎯 ANZSCO Yapay Zeka Eşleştirici",
+    headerSubtitle:
+      "CV'nizi yükleyin, yapay zekamız eşleşen ANZSCO meslek kodunuzu anında belirlesin.",
+    dropPrompt: "CV'nizi buraya sürükleyin veya yüklemek için tıklayın",
+    dropHint: "Yalnızca PDF, 10MB'a kadar",
+    errorNotPdf: "Lütfen bir PDF dosyası yükleyin.",
+    errorTooLarge: "Dosya çok büyük. Maksimum 10MB.",
+    errorNoText:
+      "Bu PDF'ten metin okunamadı. Taranmış bir görüntü olmadığından emin olun ve tekrar deneyin.",
+    errorGeneric: "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+    extracting: (fileName) => `${fileName} okunuyor...`,
+    extractingHint: "Bu genellikle birkaç saniye sürer.",
+    matching: "Yapay zeka CV'nizi 700+ ANZSCO koduyla karşılaştırıyor...",
+    matchFoundBadge: "Eşleşme Bulundu",
+    noMatchTitle: "Doğrudan Eşleşme Bulunamadı",
+    noMatchBody:
+      "CV'niz için doğrudan bir ANZSCO eşleşmesi bulamadık. Görevlerinizin net bir şekilde listelendiğinden emin olun veya farklı bir belge deneyin.",
+    confidenceLabel: (pct) => `%${pct} güven`,
+    analyzeAnother: "Başka Bir CV Analiz Et",
+  },
+  zh: {
+    headerTitle: "🎯 ANZSCO 智能匹配器",
+    headerSubtitle: "上传您的简历，让我们的 AI 立即识别匹配的 ANZSCO 职业代码。",
+    dropPrompt: "将简历拖放至此处，或点击上传",
+    dropHint: "仅支持 PDF，最大 10MB",
+    errorNotPdf: "请上传 PDF 文件。",
+    errorTooLarge: "文件太大。最大 10MB。",
+    errorNoText: "无法从此 PDF 中读取任何文本。请确认它不是扫描图像，然后重试。",
+    errorGeneric: "出现问题，请重试。",
+    extracting: (fileName) => `正在读取 ${fileName}...`,
+    extractingHint: "这通常需要几秒钟。",
+    matching: "AI 正在将您的简历与 700+ 个 ANZSCO 代码进行匹配...",
+    matchFoundBadge: "找到匹配",
+    noMatchTitle: "未找到直接匹配",
+    noMatchBody: "我们未能为您的简历找到直接的 ANZSCO 匹配。请确保您的职责描述清晰，或尝试其他文件。",
+    confidenceLabel: (pct) => `置信度 ${pct}%`,
+    analyzeAnother: "分析其他简历",
+  },
+};
+
+// The sales CTA only ever sells one of two products: the Turkish edition, or
+// the Global English edition. Chinese-speaking visitors see the general UI
+// in Chinese (via DICT above) but the CTA itself collapses to the English
+// offer, since there is no separate Chinese guide.
+const CTA_COPY: Record<
+  "tr" | "en",
+  {
+    body: (occupationTitle: string | null) => React.ReactNode;
+    button: string;
+  }
+> = {
+  tr: {
+    body: (occupationTitle) => (
+      <>
+        80+ sayfalık <strong>Avustralya PR Başvuru Rehberi</strong> ile tam stratejiyi, eyalet davet
+        geçmişini ve puan optimizasyon rehberini
+        {occupationTitle ? (
+          <>
+            {" "}
+            <strong>{occupationTitle}</strong> için
+          </>
+        ) : null}{" "}
+        açığa çıkarın.
+      </>
+    ),
+    button: "Tam Rehberi İndir ($9.99)",
+  },
+  en: {
+    body: (occupationTitle) => (
+      <>
+        Unlock the full strategy, state invitation history, and points optimization guide
+        {occupationTitle ? (
+          <>
+            {" "}
+            for <strong>{occupationTitle}</strong>
+          </>
+        ) : null}{" "}
+        in our 80+ page Blueprint.
+      </>
+    ),
+    button: "Download Full Blueprint ($9.99)",
+  },
+};
 
 async function extractTextFromPdf(file: File): Promise<string> {
   // Dynamic import: pdfjs-dist touches browser-only APIs (Worker, DOMMatrix)
@@ -50,10 +191,8 @@ async function extractTextFromPdf(file: File): Promise<string> {
   return pageTexts.join("\n").replace(/\s+/g, " ").trim();
 }
 
-export function AnzscoClassifier({
-  locale = "en",
-  productType = "pdf_book_global",
-}: AnzscoClassifierProps) {
+export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
+  const [locale, setLocale] = useState<UiLocale>(resolveInitialLocale(initialLocale));
   const [status, setStatus] = useState<Status>("idle");
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -61,7 +200,14 @@ export function AnzscoClassifier({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const t = DICT[locale];
   const isBusy = status === "extracting" || status === "loading";
+
+  // Only two real product variants exist: Turkish edition, or Global English
+  // (which Chinese-speaking visitors also see, per spec).
+  const ctaVariant: "tr" | "en" = locale === "tr" ? "tr" : "en";
+  const cta = CTA_COPY[ctaVariant];
+  const productType = locale === "tr" ? "pdf_book" : "pdf_book_global";
 
   function reset() {
     setStatus("idle");
@@ -76,13 +222,13 @@ export function AnzscoClassifier({
 
     if (file.type !== "application/pdf") {
       setStatus("error");
-      setErrorMessage("Please upload a PDF file.");
+      setErrorMessage(t.errorNotPdf);
       return;
     }
 
     if (file.size > MAX_FILE_BYTES) {
       setStatus("error");
-      setErrorMessage("File is too large. Max 10MB.");
+      setErrorMessage(t.errorTooLarge);
       return;
     }
 
@@ -96,9 +242,7 @@ export function AnzscoClassifier({
 
       if (!cvText || cvText.length < 20) {
         setStatus("error");
-        setErrorMessage(
-          "We couldn't read any text from this PDF. Make sure it's not a scanned image, then try again."
-        );
+        setErrorMessage(t.errorNoText);
         return;
       }
 
@@ -112,13 +256,13 @@ export function AnzscoClassifier({
       const payload = (await response.json()) as ClassifyResult | { error?: string };
       if (!response.ok || "error" in payload) {
         const message = "error" in payload ? payload.error : undefined;
-        throw new Error(message || "Analysis failed. Please try again.");
+        throw new Error(message || t.errorGeneric);
       }
 
       setResult(payload as ClassifyResult);
       setStatus("result");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      const message = err instanceof Error ? err.message : t.errorGeneric;
       setStatus("error");
       setErrorMessage(message);
     }
@@ -126,11 +270,28 @@ export function AnzscoClassifier({
 
   return (
     <Card className="overflow-hidden border-2 border-indigo-100 shadow-xl">
-      <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white">
-        <CardTitle className="text-2xl font-black text-white">🎯 ANZSCO AI Matcher</CardTitle>
-        <p className="text-sm text-indigo-100">
-          Upload your CV and let our AI instantly identify your matching ANZSCO occupation code.
-        </p>
+      <CardHeader className="relative bg-gradient-to-r from-indigo-600 to-purple-700 text-white">
+        <div className="absolute right-4 top-4 flex items-center gap-0.5 rounded-full bg-white/15 p-1 backdrop-blur-sm">
+          {(["en", "tr", "zh"] as const).map((code) => (
+            <button
+              key={code}
+              type="button"
+              onClick={() => setLocale(code)}
+              aria-pressed={locale === code}
+              className={[
+                "rounded-full px-2.5 py-1 text-xs font-bold transition-colors",
+                locale === code ? "bg-white text-indigo-700" : "text-white/80 hover:text-white",
+              ].join(" ")}
+            >
+              {code === "en" ? "EN" : code === "tr" ? "TR" : "中文"}
+            </button>
+          ))}
+        </div>
+
+        <CardTitle className="max-w-[calc(100%-7rem)] text-2xl font-black text-white">
+          {t.headerTitle}
+        </CardTitle>
+        <p className="max-w-[calc(100%-2rem)] text-sm text-indigo-100">{t.headerSubtitle}</p>
       </CardHeader>
 
       <CardContent className="space-y-5 pt-6">
@@ -162,10 +323,8 @@ export function AnzscoClassifier({
                 onChange={(event) => handleFile(event.target.files?.[0] ?? null)}
               />
               <UploadCloud className="mb-3 h-10 w-10 text-indigo-500" />
-              <p className="text-base font-semibold text-slate-900">
-                Drop your CV here, or click to upload
-              </p>
-              <p className="mt-1 text-sm text-slate-500">PDF only, up to 10MB</p>
+              <p className="text-base font-semibold text-slate-900">{t.dropPrompt}</p>
+              <p className="mt-1 text-sm text-slate-500">{t.dropHint}</p>
             </label>
 
             {status === "error" && errorMessage && (
@@ -182,11 +341,9 @@ export function AnzscoClassifier({
             <Loader2 className="h-9 w-9 animate-spin text-indigo-600" />
             <div className="text-center">
               <p className="text-sm font-semibold text-indigo-700">
-                {status === "extracting"
-                  ? `Reading ${fileName ?? "your CV"}...`
-                  : "AI is matching your CV against 700+ ANZSCO codes..."}
+                {status === "extracting" ? t.extracting(fileName ?? "CV") : t.matching}
               </p>
-              <p className="mt-1 text-xs text-indigo-500">This usually takes a few seconds.</p>
+              <p className="mt-1 text-xs text-indigo-500">{t.extractingHint}</p>
             </div>
           </div>
         )}
@@ -201,7 +358,7 @@ export function AnzscoClassifier({
                   </div>
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
-                      Match Found
+                      {t.matchFoundBadge}
                     </p>
                     <p className="text-2xl font-black leading-tight text-slate-900">
                       {result.occupation_title}
@@ -214,7 +371,7 @@ export function AnzscoClassifier({
                     ANZSCO {result.anzsco_code}
                   </span>
                   <span className="rounded-full border border-emerald-300 bg-white px-4 py-1.5 text-sm font-semibold text-emerald-700">
-                    {Math.round(result.confidence_score * 100)}% confidence
+                    {t.confidenceLabel(Math.round(result.confidence_score * 100))}
                   </span>
                 </div>
 
@@ -226,26 +383,16 @@ export function AnzscoClassifier({
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-400 text-white">
                     <FileText className="h-6 w-6" />
                   </div>
-                  <p className="text-lg font-bold text-slate-900">No Direct Match Found</p>
+                  <p className="text-lg font-bold text-slate-900">{t.noMatchTitle}</p>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-slate-700">
-                  We couldn&apos;t find a direct ANZSCO match for your CV. Ensure your duties are
-                  clearly listed or try a different document.
-                </p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-700">{t.noMatchBody}</p>
               </div>
             )}
 
             {/* Sales CTA — shown regardless of match outcome */}
             <div className="rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50 p-6">
               <p className="text-base font-semibold leading-relaxed text-slate-900">
-                Unlock the full strategy, state invitation history, and points optimization guide
-                {result.match_found && result.occupation_title ? (
-                  <>
-                    {" "}
-                    for <strong>{result.occupation_title}</strong>
-                  </>
-                ) : null}{" "}
-                in our 80+ page Blueprint.
+                {cta.body(result.match_found ? result.occupation_title : null)}
               </p>
 
               <div className="mt-4 flex items-baseline gap-2">
@@ -256,15 +403,15 @@ export function AnzscoClassifier({
               <div className="mt-4">
                 <StripeCheckoutButton
                   productType={productType}
-                  locale={locale}
+                  locale={STRIPE_LOCALE[locale]}
                   className="w-full bg-indigo-600 py-6 text-base font-bold text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 sm:w-auto"
-                  label="Download Full Blueprint ($9.99)"
+                  label={cta.button}
                 />
               </div>
             </div>
 
             <Button type="button" variant="outline" className="w-full" onClick={reset}>
-              Analyze Another CV
+              {t.analyzeAnother}
             </Button>
           </div>
         )}

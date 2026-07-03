@@ -41,7 +41,8 @@ You are an expert Australian Immigration Data Processor. Your only task is to an
 1. ANALYSIS: Compare the provided CV duties against the official ANZSCO occupation list provided in the user message.
 2. STRICT MATCHING: Only return a match if the core professional duties in the CV align with the official ANZSCO definition.
 3. NO HALLUCINATION: You may ONLY select an anzsco_code that appears verbatim in the candidate list provided in the user message. If the CV duties do not clearly match any occupation in that list, or if the data is insufficient, you MUST return match_found: false with anzsco_code and occupation_title set to null. Do not guess or invent a code that is not in the provided list.
-4. OUTPUT FORMAT: Respond ONLY with a valid JSON object. Do not add any conversational text, introductions, or markdown explanations.
+4. MULTI-LANGUAGE INPUT: The uploaded CV text may be in English, Turkish, or Chinese. You must translate and analyze the professional duties internally to match them against the official English ANZSCO occupation list. If an English keyword summary is provided alongside the CV text, use it to assist your translation rather than re-deriving it from scratch.
+5. OUTPUT FORMAT: Respond ONLY with a valid JSON object. Do not add any conversational text, introductions, or markdown explanations.
 
 # JSON OUTPUT STRUCTURE
 {
@@ -126,8 +127,21 @@ const STOPWORDS = new Set([
   "roles", "work", "worked", "working", "responsible", "responsibilities",
 ]);
 
+// Turkish-specific Latin characters get destroyed by a naive a-z filter
+// (ı/İ, ğ/Ğ, ş/Ş, ç/Ç, ö/Ö, ü/Ü are outside [a-z]). Fold them to their closest
+// ASCII equivalent before stripping, so Turkish CV tokens still overlap with
+// the (ASCII) occupation titles/duties instead of getting mangled.
+const TURKISH_FOLD: Record<string, string> = {
+  ı: "i", İ: "i", ğ: "g", Ğ: "g", ş: "s", Ş: "s",
+  ç: "c", Ç: "c", ö: "o", Ö: "o", ü: "u", Ü: "u",
+};
+
+function foldTurkish(text: string): string {
+  return text.replace(/[ıİğĞşŞçÇöÖüÜ]/g, (ch) => TURKISH_FOLD[ch] ?? ch);
+}
+
 function tokenize(text: string): string[] {
-  return text
+  return foldTurkish(text)
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, " ")
     .split(/\s+/)
@@ -142,8 +156,13 @@ function tokenize(text: string): string[] {
 // confidence. Pre-filtering to a small, relevant candidate set before the
 // LLM call fixes this (a standard retrieval-before-generation pattern) and
 // cuts token cost by roughly 95%.
-function getCandidates(cvText: string, limit = 25): Occupation[] {
-  const cvTokens = new Set(tokenize(cvText));
+//
+// extraKeywords lets a caller merge in externally-derived English signal
+// (see extractEnglishKeywords below) -- needed because this scoring is
+// fundamentally Latin-token-based and a CJK CV produces zero tokens on its
+// own, regardless of how good the match actually is.
+function getCandidates(cvText: string, extraKeywords: string[] = [], limit = 25): Occupation[] {
+  const cvTokens = new Set([...tokenize(cvText), ...tokenize(extraKeywords.join(" "))]);
   if (cvTokens.size === 0) return [];
 
   const scored = OCCUPATIONS.map((occupation) => {
@@ -172,13 +191,82 @@ function buildCandidateList(candidates: Occupation[]): string {
     .join("\n");
 }
 
-async function callOpenAi(cvText: string, candidates: Occupation[]): Promise<ClassifyResult> {
+// Cheap, small pre-step used only when local (Latin-token) retrieval can't
+// work -- primarily Chinese CVs, where tokenize() strips every character.
+// Asks the model to translate the CV's job title/skills/duties into English
+// keywords, which then feed the *existing* getCandidates() scoring so the
+// main classification call still only sees a small, relevant candidate set
+// instead of overwhelming it with all 707 (the failure mode already fixed
+// for English/Turkish input).
+async function extractEnglishKeywords(cvText: string, apiKey: string, model: string): Promise<string[]> {
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              "Extract English job-title and skill keywords from CV text written in any language (English, Turkish, Chinese, etc.), translating as needed. Respond ONLY with JSON: {\"keywords\": string[]}. Include 8-15 English keywords covering the likely job title(s), key skills, and main duties.",
+          },
+          { role: "user", content: cvText.slice(0, 8000) },
+        ],
+      }),
+    });
+
+    if (!response.ok) return [];
+
+    const json = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const content = json.choices?.[0]?.message?.content;
+    if (!content) return [];
+
+    const parsed = safeJsonParse<{ keywords?: unknown }>(content, {});
+    if (!Array.isArray(parsed.keywords)) return [];
+    return parsed.keywords.map((k) => String(k)).filter((k) => k.trim().length > 0);
+  } catch {
+    return [];
+  }
+}
+
+async function callOpenAi(
+  cvText: string,
+  candidates: Occupation[],
+  keywordSummary: string[] = []
+): Promise<ClassifyResult> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OPENAI_API_KEY is not configured.");
   }
 
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+
+  // For non-English CVs, re-deriving a translation from scratch while ALSO
+  // picking between several plausible candidates under strict anti-
+  // hallucination pressure made the model default to false even when the
+  // right code was in the list -- verified directly: a Chinese Software
+  // Engineer CV against 25 candidates (261313 present) returned
+  // match_found:false, but supplying the already-extracted English keyword
+  // summary alongside the same candidates and CV text fixed it (95%
+  // confidence, correct code). This gives the model that summary as a
+  // translation aid instead of asking it to do translation + disambiguation
+  // simultaneously from raw CJK/Turkish text.
+  const keywordSummaryBlock =
+    keywordSummary.length > 0
+      ? [
+          "",
+          "ENGLISH KEYWORD SUMMARY (translated from the original CV, for reference):",
+          keywordSummary.join(", "),
+        ]
+      : [];
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -197,6 +285,7 @@ async function callOpenAi(cvText: string, candidates: Occupation[]): Promise<Cla
           content: [
             "CANDIDATE ANZSCO OCCUPATIONS (you may ONLY select a code from this list):",
             buildCandidateList(candidates),
+            ...keywordSummaryBlock,
             "",
             "CV TEXT TO ANALYZE:",
             cvText.slice(0, 20000),
@@ -237,14 +326,38 @@ export async function POST(request: Request) {
       return NextResponse.json(NO_MATCH_RESULT);
     }
 
-    const candidates = getCandidates(cvText);
+    let candidates = getCandidates(cvText);
+    let keywordSummary: string[] = [];
+
+    // Local retrieval is Latin-token based and matches ENGLISH words only.
+    // It finds nothing for Chinese text (every character gets stripped) and
+    // ALSO nothing for a CV written entirely in Turkish -- ASCII-folding
+    // Turkish diacritics fixes character-level mangling, but "hemsire"
+    // (folded "hemşire") still doesn't textually match "nurse". Verified
+    // directly: an all-Turkish nurse CV returned match_found:false in
+    // 0.15s -- too fast to have called the LLM at all, confirming this was
+    // a retrieval-stage false negative, not a model judgment. Originally
+    // this fallback was gated on CJK_REGEX, which never fires for Turkish
+    // (Latin script) -- broadened to trigger on ANY zero-candidate result,
+    // not just detected CJK text.
+    if (candidates.length === 0) {
+      const apiKey = process.env.OPENAI_API_KEY;
+      const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+      if (apiKey) {
+        keywordSummary = await extractEnglishKeywords(cvText, apiKey, model);
+        if (keywordSummary.length > 0) {
+          candidates = getCandidates(cvText, keywordSummary);
+        }
+      }
+    }
+
     if (candidates.length === 0) {
       // Zero keyword overlap with any of the 707 occupations -- no point
       // asking the model to search a list none of it plausibly relates to.
       return NextResponse.json(NO_MATCH_RESULT);
     }
 
-    const result = await callOpenAi(cvText, candidates);
+    const result = await callOpenAi(cvText, candidates, keywordSummary);
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to classify CV against ANZSCO codes.";
