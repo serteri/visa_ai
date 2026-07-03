@@ -137,6 +137,13 @@ export function Header({
             {guidesLabel}
           </Link>
 
+          <Link
+            href={`/${locale}/ai-visa-match`}
+            className="whitespace-nowrap rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
+          >
+            AI Visa Match ⚡
+          </Link>
+
           {showAdmin ? (
             <Link
               href={`/${locale}/admin/dashboard`}
@@ -281,6 +288,13 @@ export function Header({
             {guidesLabel}
           </Link>
 
+          <Link
+            href={`/${locale}/ai-visa-match`}
+            className="whitespace-nowrap rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-xs font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
+          >
+            AI Visa Match ⚡
+          </Link>
+
           <Button
             asChild
             className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-3 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
@@ -335,6 +349,14 @@ export function Header({
             </div>
 
             <div className="h-px w-full bg-slate-100 dark:bg-white/10" />
+
+            <Link
+              href={`/${locale}/ai-visa-match`}
+              className="block w-full rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-center text-sm font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              AI Visa Match ⚡
+            </Link>
 
             <Link
               href={`/${locale}/checker`}
