@@ -242,6 +242,50 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
     return true;
   }
 
+  // Shared markup for both gate points (free-tier upload and paid checkout)
+  // so the checkbox, label, and error message stay visually and behaviorally
+  // identical rather than two independently-maintained copies.
+  function renderTermsGate() {
+    return (
+      <div className="space-y-2">
+        <label
+          className={[
+            "flex cursor-pointer items-start gap-2 text-sm transition-colors",
+            termsError ? "text-rose-600" : "text-slate-700",
+          ].join(" ")}
+        >
+          <input
+            type="checkbox"
+            checked={isTermsAccepted}
+            onChange={(event) => {
+              setIsTermsAccepted(event.target.checked);
+              if (event.target.checked) setTermsError(false);
+            }}
+            className={[
+              "mt-0.5 h-4 w-4 shrink-0 rounded accent-indigo-600",
+              termsError ? "outline outline-2 outline-offset-1 outline-rose-400" : "",
+            ].join(" ")}
+          />
+          <span>
+            {cta.termsLabel(
+              <Link
+                href="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(event) => event.stopPropagation()}
+                className="font-semibold underline underline-offset-2 hover:text-indigo-600"
+              >
+                {cta.termsLinkText}
+              </Link>
+            )}
+          </span>
+        </label>
+
+        {termsError && <p className="text-xs font-medium text-rose-600">{cta.termsError}</p>}
+      </div>
+    );
+  }
+
   function reset() {
     setStatus("idle");
     setFileName(null);
@@ -254,6 +298,15 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
 
   async function handleFile(file: File | null) {
     if (!file || isBusy) return;
+
+    // Legal gate: blocks the free-tier analysis entirely (no extraction, no
+    // API call) until Terms/MARA/data-processing consent is given -- the
+    // same requirement already enforced on the paid Stripe checkout path.
+    if (!isTermsAccepted) {
+      setTermsError(true);
+      return;
+    }
+    setTermsError(false);
 
     if (file.type !== "application/pdf") {
       setStatus("error");
@@ -332,6 +385,8 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
       <CardContent className="space-y-5 pt-6">
         {(status === "idle" || status === "error") && (
           <>
+            {renderTermsGate()}
+
             <label
               className={[
                 "group relative flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-all",
@@ -436,42 +491,7 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
               </div>
 
               <div className="mt-4 space-y-2">
-                <label
-                  className={[
-                    "flex cursor-pointer items-start gap-2 text-sm transition-colors",
-                    termsError ? "text-rose-600" : "text-slate-700",
-                  ].join(" ")}
-                >
-                  <input
-                    type="checkbox"
-                    checked={isTermsAccepted}
-                    onChange={(event) => {
-                      setIsTermsAccepted(event.target.checked);
-                      if (event.target.checked) setTermsError(false);
-                    }}
-                    className={[
-                      "mt-0.5 h-4 w-4 shrink-0 rounded accent-indigo-600",
-                      termsError ? "outline outline-2 outline-offset-1 outline-rose-400" : "",
-                    ].join(" ")}
-                  />
-                  <span>
-                    {cta.termsLabel(
-                      <Link
-                        href="/terms"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(event) => event.stopPropagation()}
-                        className="font-semibold underline underline-offset-2 hover:text-indigo-600"
-                      >
-                        {cta.termsLinkText}
-                      </Link>
-                    )}
-                  </span>
-                </label>
-
-                {termsError && (
-                  <p className="text-xs font-medium text-rose-600">{cta.termsError}</p>
-                )}
+                {renderTermsGate()}
 
                 <StripeCheckoutButton
                   productType={productType}
