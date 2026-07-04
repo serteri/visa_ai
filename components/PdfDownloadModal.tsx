@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
+import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import {
   Dialog,
   DialogContent,
@@ -52,12 +53,14 @@ export function PdfDownloadModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [termsError, setTermsError] = useState(false);
 
-  const tx = (tr: string, en: string, zh: string) => {
+  function tx<T>(tr: T, en: T, zh: T): T {
     if (locale === "tr") return tr;
     if (locale === "zh-Hans") return zh;
     return en;
-  };
+  }
 
   useEffect(() => {
     if (open) {
@@ -73,8 +76,30 @@ export function PdfDownloadModal({
     setError("");
   }
 
+  // Gate passed to StripeCheckoutButton for the paid path -- see handleSubmit
+  // for the free-download path's equivalent check.
+  function handleBeforeCheckout(): boolean {
+    if (!isTermsAccepted) {
+      setTermsError(true);
+      return false;
+    }
+    setTermsError(false);
+    return true;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Legal gate: blocks lead submission and PDF distribution entirely --
+    // no fetch, no data sent -- until Terms/data-processing consent is
+    // given. This is where the user's name/email/phone would otherwise be
+    // collected, so the check must happen before anything else.
+    if (!isTermsAccepted) {
+      setTermsError(true);
+      return;
+    }
+    setTermsError(false);
+
     setLoading(true);
     setError("");
 
@@ -283,6 +308,34 @@ export function PdfDownloadModal({
               </p>
             )}
 
+            <TermsGate
+              isTermsAccepted={isTermsAccepted}
+              termsError={termsError}
+              onToggle={(checked) => {
+                setIsTermsAccepted(checked);
+                if (checked) setTermsError(false);
+              }}
+              label={tx(
+                <>
+                  <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme
+                  politikalarını okudum, onaylıyorum. (Dijital ürünlerde iade yapılmaz.)
+                </>,
+                <>
+                  I agree to the <TermsGateLink>Terms of Service</TermsGateLink> and data
+                  processing policies. (No refunds on digital products.)
+                </>,
+                <>
+                  我已阅读并同意<TermsGateLink>服务条款</TermsGateLink>
+                  和数据处理政策。（数字产品不支持退款。）
+                </>
+              )}
+              errorText={tx(
+                "Lütfen devam etmek için yasal koşulları onaylayın.",
+                "Please accept the legal terms to proceed.",
+                "请接受法律条款以继续。"
+              )}
+            />
+
             {isFree ? (
               <Button
                 type="submit"
@@ -304,6 +357,7 @@ export function PdfDownloadModal({
                   "💳 Buy Now — $9.99",
                   "💳 立即购买 — $9.99"
                 )}
+                onBeforeCheckout={handleBeforeCheckout}
               />
             )}
 

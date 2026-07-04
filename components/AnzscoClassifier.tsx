@@ -1,12 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { CheckCircle2, FileText, Loader2, UploadCloud, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
+import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 
 type ClassifyResult = {
   match_found: boolean;
@@ -242,47 +242,21 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
     return true;
   }
 
-  // Shared markup for both gate points (free-tier upload and paid checkout)
-  // so the checkbox, label, and error message stay visually and behaviorally
-  // identical rather than two independently-maintained copies.
+  // Thin wrapper around the shared TermsGate component (also used by
+  // PdfDownloadModal) so both consumers stay in sync rather than drifting
+  // apart across independently-maintained copies.
   function renderTermsGate() {
     return (
-      <div className="space-y-2">
-        <label
-          className={[
-            "flex cursor-pointer items-start gap-2 text-sm transition-colors",
-            termsError ? "text-rose-600" : "text-slate-700",
-          ].join(" ")}
-        >
-          <input
-            type="checkbox"
-            checked={isTermsAccepted}
-            onChange={(event) => {
-              setIsTermsAccepted(event.target.checked);
-              if (event.target.checked) setTermsError(false);
-            }}
-            className={[
-              "mt-0.5 h-4 w-4 shrink-0 rounded accent-indigo-600",
-              termsError ? "outline outline-2 outline-offset-1 outline-rose-400" : "",
-            ].join(" ")}
-          />
-          <span>
-            {cta.termsLabel(
-              <Link
-                href="/terms"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(event) => event.stopPropagation()}
-                className="font-semibold underline underline-offset-2 hover:text-indigo-600"
-              >
-                {cta.termsLinkText}
-              </Link>
-            )}
-          </span>
-        </label>
-
-        {termsError && <p className="text-xs font-medium text-rose-600">{cta.termsError}</p>}
-      </div>
+      <TermsGate
+        isTermsAccepted={isTermsAccepted}
+        termsError={termsError}
+        onToggle={(checked) => {
+          setIsTermsAccepted(checked);
+          if (checked) setTermsError(false);
+        }}
+        label={cta.termsLabel(<TermsGateLink>{cta.termsLinkText}</TermsGateLink>)}
+        errorText={cta.termsError}
+      />
     );
   }
 
