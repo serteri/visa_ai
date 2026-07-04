@@ -15,6 +15,13 @@ type Props = {
   className?: string;
   /** Optional override for the button label (e.g. to reflect a scarcity-driven CTA copy). */
   label?: string;
+  /**
+   * Optional gate run before starting checkout. Return false to block the
+   * redirect (e.g. an unchecked Terms checkbox) -- the caller is responsible
+   * for surfacing its own error state. Omit for unguarded checkout (default,
+   * matches all existing call sites).
+   */
+  onBeforeCheckout?: () => boolean;
 };
 
 const DEFAULT_LABEL: Record<ProductType, string> = {
@@ -31,6 +38,7 @@ export function StripeCheckoutButton({
   reportId,
   className,
   label,
+  onBeforeCheckout,
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +46,10 @@ export function StripeCheckoutButton({
   const buttonText = label ?? DEFAULT_LABEL[productType];
 
   async function startCheckout() {
+    if (onBeforeCheckout && !onBeforeCheckout()) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);

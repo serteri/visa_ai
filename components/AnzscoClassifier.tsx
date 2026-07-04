@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { CheckCircle2, FileText, Loader2, UploadCloud, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -131,6 +132,9 @@ const CTA_COPY: Record<
   {
     body: (occupationTitle: string | null) => React.ReactNode;
     button: string;
+    termsLinkText: string;
+    termsLabel: (link: React.ReactNode) => React.ReactNode;
+    termsError: string;
   }
 > = {
   tr: {
@@ -148,6 +152,9 @@ const CTA_COPY: Record<
       </>
     ),
     button: "Tam Rehberi İndir ($9.99)",
+    termsLinkText: "Mesafeli Satış Sözleşmesi'ni",
+    termsLabel: (link) => <>{link} ve dijital ürün iade koşullarını okudum, onaylıyorum.</>,
+    termsError: "Lütfen devam etmek için sözleşmeyi onaylayın.",
   },
   en: {
     body: (occupationTitle) => (
@@ -163,6 +170,9 @@ const CTA_COPY: Record<
       </>
     ),
     button: "Download Full Blueprint ($9.99)",
+    termsLinkText: "Terms of Service",
+    termsLabel: (link) => <>I have read and agree to the {link} and digital product refund policy.</>,
+    termsError: "Please accept the terms to proceed.",
   },
 };
 
@@ -198,6 +208,8 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [result, setResult] = useState<ClassifyResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [termsError, setTermsError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const t = DICT[locale];
@@ -209,11 +221,24 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
   const cta = CTA_COPY[ctaVariant];
   const productType = locale === "tr" ? "pdf_book" : "pdf_book_global";
 
+  // Gate passed to StripeCheckoutButton -- runs at click time, blocks the
+  // Stripe redirect (not just the UI) if the checkbox hasn't been checked.
+  function handleBeforeCheckout(): boolean {
+    if (!isTermsAccepted) {
+      setTermsError(true);
+      return false;
+    }
+    setTermsError(false);
+    return true;
+  }
+
   function reset() {
     setStatus("idle");
     setFileName(null);
     setResult(null);
     setErrorMessage(null);
+    setIsTermsAccepted(false);
+    setTermsError(false);
     if (inputRef.current) inputRef.current.value = "";
   }
 
@@ -400,12 +425,50 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
                 <span className="text-base font-medium text-slate-400 line-through">$29.99</span>
               </div>
 
-              <div className="mt-4">
+              <div className="mt-4 space-y-2">
+                <label
+                  className={[
+                    "flex cursor-pointer items-start gap-2 text-sm transition-colors",
+                    termsError ? "text-rose-600" : "text-slate-700",
+                  ].join(" ")}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isTermsAccepted}
+                    onChange={(event) => {
+                      setIsTermsAccepted(event.target.checked);
+                      if (event.target.checked) setTermsError(false);
+                    }}
+                    className={[
+                      "mt-0.5 h-4 w-4 shrink-0 rounded accent-indigo-600",
+                      termsError ? "outline outline-2 outline-offset-1 outline-rose-400" : "",
+                    ].join(" ")}
+                  />
+                  <span>
+                    {cta.termsLabel(
+                      <Link
+                        href="/terms"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(event) => event.stopPropagation()}
+                        className="font-semibold underline underline-offset-2 hover:text-indigo-600"
+                      >
+                        {cta.termsLinkText}
+                      </Link>
+                    )}
+                  </span>
+                </label>
+
+                {termsError && (
+                  <p className="text-xs font-medium text-rose-600">{cta.termsError}</p>
+                )}
+
                 <StripeCheckoutButton
                   productType={productType}
                   locale={STRIPE_LOCALE[locale]}
                   className="w-full bg-indigo-600 py-6 text-base font-bold text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 sm:w-auto"
                   label={cta.button}
+                  onBeforeCheckout={handleBeforeCheckout}
                 />
               </div>
             </div>
