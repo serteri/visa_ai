@@ -152,9 +152,14 @@ const CTA_COPY: Record<
       </>
     ),
     button: "Tam Rehberi İndir ($9.99)",
-    termsLinkText: "Mesafeli Satış Sözleşmesi'ni",
-    termsLabel: (link) => <>{link} ve dijital ürün iade koşullarını okudum, onaylıyorum.</>,
-    termsError: "Lütfen devam etmek için sözleşmeyi onaylayın.",
+    termsLinkText: "Kullanım Koşullarını",
+    termsLabel: (link) => (
+      <>
+        {link}, Yasal MARA Uyarısını ve veri işleme politikalarını okudum, onaylıyorum. (Dijital
+        ürünlerde iade yapılmaz.)
+      </>
+    ),
+    termsError: "Lütfen devam etmek için yasal koşulları onaylayın.",
   },
   en: {
     body: (occupationTitle) => (
@@ -171,8 +176,13 @@ const CTA_COPY: Record<
     ),
     button: "Download Full Blueprint ($9.99)",
     termsLinkText: "Terms of Service",
-    termsLabel: (link) => <>I have read and agree to the {link} and digital product refund policy.</>,
-    termsError: "Please accept the terms to proceed.",
+    termsLabel: (link) => (
+      <>
+        I agree to the {link}, the MARA Legal Disclaimer, and data processing policies. (No
+        refunds on digital products.)
+      </>
+    ),
+    termsError: "Please accept the legal terms to proceed.",
   },
 };
 
