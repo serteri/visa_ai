@@ -143,6 +143,17 @@ export const pdfDownloads = pgTable("pdf_downloads", {
   email_idx: index("pdf_downloads_email_idx").on(table.email),
 }));
 
+export const contactMessages = pgTable("contact_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  full_name: text("full_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  message: text("message").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  email_idx: index("contact_messages_email_idx").on(table.email),
+}));
+
 export const agents = pgTable("agents", {
   id: uuid("id").primaryKey().defaultRandom(),
   full_name: text("full_name").notNull(),
