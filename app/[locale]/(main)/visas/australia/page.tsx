@@ -127,7 +127,7 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
+    <main className="min-h-screen bg-slate-50 pb-20 dark:bg-zinc-950">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
           <span className="inline-block rounded-full border border-blue-200 bg-blue-50 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-600 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-blue-400">

@@ -62,7 +62,7 @@ export default async function VisasOverviewPage({ params }: PageProps) {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
+    <main className="min-h-screen bg-slate-50 pb-20 dark:bg-zinc-950">
       <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
           <p className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-1 text-xs font-semibold uppercase tracking-widest text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">

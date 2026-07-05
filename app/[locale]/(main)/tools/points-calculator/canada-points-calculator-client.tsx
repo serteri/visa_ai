@@ -306,7 +306,7 @@ export function CanadaPointsCalculatorClient({ locale }: { locale: string }) {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
+    <main className="min-h-screen bg-slate-50 pb-20 dark:bg-zinc-950">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Page header */}
         <div className="mb-10 text-center">

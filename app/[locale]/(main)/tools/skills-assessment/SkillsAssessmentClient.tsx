@@ -156,7 +156,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-slate-200 bg-slate-950">
         <div className="absolute inset-x-0 top-0 h-1 bg-indigo-500" />
-        <div className="mx-auto flex min-h-[340px] max-w-5xl flex-col justify-center px-4 pt-28 pb-16 sm:px-6">
+        <div className="mx-auto flex min-h-[340px] max-w-5xl flex-col justify-center px-4 pb-16 sm:px-6">
           <div className="max-w-2xl">
             <div className="mb-5 inline-flex rounded-full border border-indigo-300/30 bg-indigo-300/10 px-4 py-1.5 text-sm font-semibold text-indigo-200">
               {t("sa.badge", "Skills Assessment Finder")}

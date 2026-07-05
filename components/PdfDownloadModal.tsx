@@ -55,6 +55,7 @@ export function PdfDownloadModal({
   const [success, setSuccess] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
+  const [termsAcceptedAt, setTermsAcceptedAt] = useState<string | null>(null);
 
   function tx<T>(tr: T, en: T, zh: T): T {
     if (locale === "tr") return tr;
@@ -107,7 +108,7 @@ export function PdfDownloadModal({
       const res = await fetch("/api/pdf-download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, slug }),
+        body: JSON.stringify({ ...form, slug, termsAcceptedAt }),
       });
       const data = await res.json();
 
@@ -313,6 +314,7 @@ export function PdfDownloadModal({
               termsError={termsError}
               onToggle={(checked) => {
                 setIsTermsAccepted(checked);
+                setTermsAcceptedAt(checked ? new Date().toISOString() : null);
                 if (checked) setTermsError(false);
               }}
               label={tx(

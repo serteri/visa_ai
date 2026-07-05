@@ -317,7 +317,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 sm:pt-32 dark:from-slate-950 dark:to-slate-900">
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <Link

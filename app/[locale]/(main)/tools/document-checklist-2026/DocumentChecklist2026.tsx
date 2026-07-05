@@ -472,7 +472,7 @@ export function DocumentChecklist2026({ locale, dictionary, initialVisa }: Docum
   if (!selectedVisa) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="mx-auto max-w-6xl px-4 pt-32 pb-12 sm:px-6 md:py-16">
+        <div className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 md:py-16">
           <div className="mb-8 text-center md:mb-10">
             <h1 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl">
               {dictionary.pageTitle}
@@ -564,7 +564,7 @@ export function DocumentChecklist2026({ locale, dictionary, initialVisa }: Docum
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 pt-32 pb-12 space-y-5">
+      <div className="max-w-3xl mx-auto px-4 pb-12 space-y-5">
 
         {/* Login banner */}
         {!session && (

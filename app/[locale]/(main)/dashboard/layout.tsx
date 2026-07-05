@@ -17,7 +17,7 @@ export default async function DashboardLayout({ children, params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-28">
+    <div className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex gap-8 py-8">
           <DashboardSidebar locale={locale} />

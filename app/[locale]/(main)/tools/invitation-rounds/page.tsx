@@ -94,7 +94,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
 
   return (
     <>
-      <div className="mx-auto max-w-5xl px-4 py-10 pt-28">
+      <div className="mx-auto max-w-5xl px-4 py-10">
         {/* Header */}
         <div className="mb-8">
           <div className="mb-2 flex items-center gap-2">

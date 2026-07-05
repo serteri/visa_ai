@@ -270,7 +270,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
   if (!selectedVisa) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="mx-auto max-w-6xl px-4 pt-32 pb-12 sm:px-6 md:py-16">
+        <div className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 md:py-16">
           <div className="mb-8 text-center md:mb-10">
             <h1 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl">{pack.pageTitle}</h1>
             <p className="mx-auto max-w-2xl text-base text-gray-500 md:text-lg">{pack.pageSubtitle}</p>
@@ -340,7 +340,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl space-y-5 px-4 pt-32 pb-12">
+      <div className="mx-auto max-w-3xl space-y-5 px-4 pb-12">
         {!session && (
           <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 print:hidden">
             <div className="flex items-center gap-2 text-sm text-amber-800">

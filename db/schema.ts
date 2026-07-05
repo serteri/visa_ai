@@ -136,6 +136,7 @@ export const pdfDownloads = pgTable("pdf_downloads", {
   ip_address: text("ip_address").notNull(),
   pdf_slug: text("pdf_slug").notNull().default("avustralya-pr-rehberi-2026"),
   is_paid: boolean("is_paid").default(false),
+  terms_accepted_at: timestamp("terms_accepted_at").notNull(),
   created_at: timestamp("created_at").defaultNow(),
 }, (table) => ({
   ip_idx: index("pdf_downloads_ip_idx").on(table.ip_address),

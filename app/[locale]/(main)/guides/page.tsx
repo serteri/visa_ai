@@ -62,7 +62,7 @@ export default async function GuidesIndexPage({ params }: PageProps) {
   const tx = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 sm:pt-32">
+    <main className="min-h-screen bg-slate-50">
       <section className="relative overflow-hidden border-b border-slate-200 bg-slate-950">
         <div className="absolute inset-x-0 top-0 h-1 bg-cyan-500" />
         <div className="mx-auto flex min-h-[360px] max-w-6xl flex-col justify-center px-4 py-20 sm:px-6 lg:px-8">

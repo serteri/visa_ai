@@ -72,7 +72,7 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-slate-200 bg-slate-950">
         <div className="absolute inset-x-0 top-0 h-1 bg-cyan-500" />
-        <div className="mx-auto flex min-h-[380px] max-w-6xl flex-col justify-center px-4 pt-28 pb-20 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[380px] max-w-6xl flex-col justify-center px-4 pb-20 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <div className="mb-6 inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
               {t("af.badge")}

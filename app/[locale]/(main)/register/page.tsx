@@ -60,7 +60,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 pt-28 pb-16">
+    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 pb-16">
       <div className="w-full max-w-sm">
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           {/* Logo */}

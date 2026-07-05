@@ -146,7 +146,7 @@ export default async function LocaleLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
       />
       <Header locale={locale} showAdmin={showAdmin} />
-      <main className="overflow-x-hidden">{children}</main>
+      <main className="overflow-x-hidden pt-28 sm:pt-32">{children}</main>
       <GlobalDisclaimerFooter />
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </LanguageProvider>

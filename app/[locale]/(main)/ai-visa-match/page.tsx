@@ -19,7 +19,7 @@ export default async function AiVisaMatchPage({ params }: AiVisaMatchPageProps) 
   const { locale } = await params;
 
   return (
-    <div className="bg-gradient-to-b from-slate-50 via-white to-slate-50 pt-32">
+    <div className="bg-gradient-to-b from-slate-50 via-white to-slate-50">
       <section className="section-shell pb-6 text-center">
         <h1 className="mx-auto max-w-3xl text-4xl font-black leading-tight tracking-tight text-slate-900 sm:text-5xl">
           Find Your Australia Visa Pathway in Seconds

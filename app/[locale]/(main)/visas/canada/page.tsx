@@ -372,7 +372,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
   const closedPrograms = (pausedClosedRegistry.closed ?? []) as ProgramStatusItem[];
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
+    <main className="min-h-screen bg-slate-50 pb-20 dark:bg-zinc-950">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
           <span className="inline-block rounded-full border border-red-200 bg-red-50 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-red-600 dark:border-red-950/30 dark:bg-red-950/20 dark:text-red-400">

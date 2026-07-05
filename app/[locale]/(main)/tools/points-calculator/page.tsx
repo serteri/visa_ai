@@ -73,7 +73,7 @@ export default async function PointsCalculatorHubPage({ params }: PageProps) {
   const ctaBtn = isTr ? "Puanını Hesapla" : isZh ? "开始计算" : "Calculate Points";
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
+    <main className="min-h-screen bg-slate-50 pb-20 dark:bg-zinc-950">
       {/* Ambient backgrounds */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-blue-200/25 blur-[120px] dark:bg-blue-900/10" />

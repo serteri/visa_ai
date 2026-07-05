@@ -53,7 +53,7 @@ export default async function OccupationPointsCalculatorPage({ params }: PagePro
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      <div className="pt-28 px-4 sm:px-6 lg:px-8 text-center mx-auto w-full max-w-6xl">
+      <div className="px-4 sm:px-6 lg:px-8 text-center mx-auto w-full max-w-6xl">
         <span className="inline-block rounded-full border border-blue-200 bg-blue-50 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-600">
           Occupation Specific Calculator
         </span>

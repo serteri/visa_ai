@@ -252,7 +252,7 @@ export default function CheckerPage() {
   };
 
   return (
-    <main className="flex-1 bg-slate-50 pt-32 pb-12">
+    <main className="flex-1 bg-slate-50 pb-12">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           

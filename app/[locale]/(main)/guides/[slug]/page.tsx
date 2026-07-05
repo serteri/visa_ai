@@ -185,7 +185,7 @@ export default async function GuideArticlePage({ params }: PageProps) {
   const secondHalf = blocks.slice(midpoint);
 
   return (
-    <main className="min-h-screen bg-white pt-28 sm:pt-32">
+    <main className="min-h-screen bg-white">
       {faqSchemaJson ? (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqSchemaJson }} />
       ) : null}

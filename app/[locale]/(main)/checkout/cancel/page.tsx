@@ -11,7 +11,7 @@ export default async function CheckoutCancelPage({ params }: Props) {
   const t = (en: string, tr: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 pb-24 pt-32 dark:bg-zinc-950">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 pb-24 dark:bg-zinc-950">
       <div className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-4xl dark:bg-zinc-800">
           ↩️

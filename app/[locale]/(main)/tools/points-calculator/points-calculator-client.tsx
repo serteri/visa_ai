@@ -457,7 +457,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
   const noLabel = t("pc.no");
 
   return (
-    <main className={`min-h-screen bg-slate-50 ${hideHeader ? "pt-8" : "pt-28"} pb-20`}>
+    <main className={`min-h-screen bg-slate-50 ${hideHeader ? "pt-8" : ""} pb-20`}>
       {/* Ambient blobs */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-blue-200/25 blur-[120px]" />

@@ -293,7 +293,7 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 pb-16">
+    <main className="min-h-screen bg-slate-50 pb-16">
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <span className="inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">

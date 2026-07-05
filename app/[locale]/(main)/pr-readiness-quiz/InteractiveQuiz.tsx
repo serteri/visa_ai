@@ -88,7 +88,7 @@ export function InteractiveQuiz({ locale: _locale }: { locale: string }) {
   const progressPct = (currentQ / QUESTIONS.length) * 100;
 
   return (
-    <main className="relative min-h-screen bg-slate-950 pb-20 pt-24 sm:pt-28">
+    <main className="relative min-h-screen bg-slate-950 pb-20">
       {/* Thin progress bar above everything */}
       <div className="fixed inset-x-0 top-0 z-[60] h-[3px] bg-slate-800">
         <div

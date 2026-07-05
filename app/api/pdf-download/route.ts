@@ -76,11 +76,12 @@ export async function POST(req: NextRequest) {
     const ip = getClientIp(req);
     const body = await req.json();
 
-    const { full_name, email, phone, slug: rawSlug } = body as {
+    const { full_name, email, phone, slug: rawSlug, termsAcceptedAt } = body as {
       full_name?: string;
       email?: string;
       phone?: string;
       slug?: string;
+      termsAcceptedAt?: string;
     };
     const slug = resolveSlug(rawSlug ?? null);
 
@@ -88,6 +89,16 @@ export async function POST(req: NextRequest) {
     if (!full_name?.trim() || !email?.trim() || !phone?.trim()) {
       return Response.json(
         { error: "Ad soyad, e-posta ve telefon zorunludur." },
+        { status: 400 }
+      );
+    }
+
+    // Server-side enforcement of the Terms gate -- the client already blocks
+    // submission without consent, but the API must not trust that alone.
+    const termsDate = termsAcceptedAt ? new Date(termsAcceptedAt) : null;
+    if (!termsDate || Number.isNaN(termsDate.getTime())) {
+      return Response.json(
+        { error: "Yasal koşulların kabul edildiği doğrulanamadı." },
         { status: 400 }
       );
     }
@@ -136,6 +147,7 @@ export async function POST(req: NextRequest) {
       ip_address: ip,
       pdf_slug: slug,
       is_paid: false,
+      terms_accepted_at: termsDate,
     });
 
     revalidateTag("public-guide-download-stats", "max");

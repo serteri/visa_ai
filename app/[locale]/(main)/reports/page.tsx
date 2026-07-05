@@ -48,7 +48,7 @@ export default async function ReportsCountrySelectPage({ params }: PageProps) {
   const ctaBtn = isTr ? "Devam Et" : isZh ? "继续" : "Continue";
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-28 pb-20 dark:bg-zinc-950">
+    <main className="min-h-screen bg-slate-50 pb-20 dark:bg-zinc-950">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-indigo-200/25 blur-[120px] dark:bg-indigo-900/10" />
         <div className="absolute top-1/2 right-1/4 h-[400px] w-[400px] rounded-full bg-purple-200/20 blur-[100px] dark:bg-purple-900/10" />
