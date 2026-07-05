@@ -343,6 +343,8 @@
   {
     "code": "133111",
     "title": "Construction Project Manager",
+    "title_tr": "İnşaat Proje Yöneticisi",
+    "title_zh": "建筑项目经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans, directs and coordinates construction projects from initiation to completion.",
@@ -783,6 +785,8 @@
   {
     "code": "221111",
     "title": "Accountant (General)",
+    "title_tr": "Muhasebeci (Genel)",
+    "title_zh": "会计师（综合类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares financial statements, budgets, tax returns and accounting reports.",
@@ -1245,6 +1249,8 @@
   {
     "code": "232111",
     "title": "Architect",
+    "title_tr": "Mimar",
+    "title_zh": "建筑师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs buildings and spaces according to client, regulatory and site requirements.",
@@ -1542,6 +1548,8 @@
   {
     "code": "233211",
     "title": "Civil Engineer",
+    "title_tr": "İnşaat Mühendisi",
+    "title_zh": "土木工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans, designs and supervises construction of civil engineering projects.",
@@ -1894,6 +1902,8 @@
   {
     "code": "234112",
     "title": "Agricultural Scientist",
+    "title_tr": "Tarım Bilimci",
+    "title_zh": "农业科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Conducts research into crops, livestock, soil, pests and agricultural systems.",
@@ -2356,6 +2366,8 @@
   {
     "code": "241213",
     "title": "Primary School Teacher",
+    "title_tr": "İlkokul Öğretmeni",
+    "title_zh": "小学教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans, prepares and delivers lessons across primary curriculum areas.",
@@ -3104,6 +3116,8 @@
   {
     "code": "252411",
     "title": "Occupational Therapist",
+    "title_tr": "Ergoterapist",
+    "title_zh": "职业治疗师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses functional capacity, daily living skills and environmental barriers.",
@@ -3929,6 +3943,8 @@
   {
     "code": "254412",
     "title": "Registered Nurse",
+    "title_tr": "Kayıtlı Hemşire",
+    "title_zh": "注册护士",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses, plans, implements and evaluates nursing care for patients.",
@@ -4237,6 +4253,8 @@
   {
     "code": "261313",
     "title": "Software Engineer",
+    "title_tr": "Yazılım Mühendisi",
+    "title_zh": "软件工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs, develops, modifies, documents, tests, implements and supports software applications and systems.",
@@ -4622,6 +4640,8 @@
   {
     "code": "271311",
     "title": "Solicitor",
+    "title_tr": "Avukat (Solicitor)",
+    "title_zh": "律师（事务律师）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Provides legal advice, prepares documents and represents clients in legal matters.",
@@ -5491,6 +5511,8 @@
   {
     "code": "321211",
     "title": "Motor Mechanic",
+    "title_tr": "Motor Tamircisi",
+    "title_zh": "汽车机械师",
     "skillLevel": "Skill Level 3",
     "duties": [
       "Detects and diagnoses mechanical and electrical faults in vehicles.",
@@ -6657,6 +6679,8 @@
   {
     "code": "351311",
     "title": "Chef",
+    "title_tr": "Şef (Aşçı)",
+    "title_zh": "厨师",
     "skillLevel": "Skill Level 2",
     "duties": [
       "Plans menus, estimates food and labour costs and orders food supplies.",

@@ -13,11 +13,22 @@ import anzscoList from "@/src/data/anzsco-list.json";
 type Occupation = {
   code: string;
   title: string;
+  title_tr?: string;
+  title_zh?: string;
   skillLevel: string;
   duties: string[];
 };
 
-const OCCUPATIONS = anzscoList satisfies Occupation[];
+const OCCUPATIONS = anzscoList as Occupation[];
+
+// Falls back to the canonical English title whenever a locale-specific
+// translation hasn't been added yet for that occupation (see Task 3 --
+// title_tr/title_zh are being backfilled incrementally, not all at once).
+function getLocalizedTitle(o: Occupation, locale: string): string {
+  if (locale === "tr") return o.title_tr ?? o.title;
+  if (locale === "zh-Hans") return o.title_zh ?? o.title;
+  return o.title;
+}
 const POPULAR_CODES = [
   "261313", // Software Engineer (ICT)
   "233211", // Civil Engineer (Engineering)
@@ -58,10 +69,16 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
   const matches = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
     if (!q) return popularOccupations;
-    return OCCUPATIONS.filter(
-      (o) => o.title.toLowerCase().includes(q) || o.code.toLowerCase().includes(q)
-    );
-  }, [popularOccupations, debouncedQuery]);
+    return OCCUPATIONS.filter((o) => {
+      const localizedTitle =
+        locale === "tr" ? o.title_tr : locale === "zh-Hans" ? o.title_zh : undefined;
+      return (
+        o.title.toLowerCase().includes(q) ||
+        localizedTitle?.toLowerCase().includes(q) ||
+        o.code.toLowerCase().includes(q)
+      );
+    });
+  }, [popularOccupations, debouncedQuery, locale]);
 
   const hasSearch = query.trim().length > 0;
   const selectedOccupation =
@@ -133,7 +150,9 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                         <div className="flex items-center justify-between gap-4">
                           <div>
                             <p className="text-sm font-semibold text-cyan-800">{occ.code}</p>
-                            <p className="mt-1 text-base font-bold text-slate-950">{occ.title}</p>
+                            <p className="mt-1 text-base font-bold text-slate-950">
+                              {getLocalizedTitle(occ, locale)}
+                            </p>
                           </div>
                           <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
                             {occ.skillLevel}
@@ -161,7 +180,7 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                             ANZSCO {selectedOccupation.code}
                           </p>
                           <h2 className="mt-2 text-2xl font-bold tracking-tight">
-                            {selectedOccupation.title}
+                            {getLocalizedTitle(selectedOccupation, locale)}
                           </h2>
                         </div>
                         <div className="rounded-full border border-cyan-200/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
@@ -208,7 +227,7 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                       <div className="mt-8 rounded-2xl border border-cyan-200 bg-gradient-to-br from-cyan-50 via-white to-slate-50 p-6 shadow-inner">
                         <p className="text-xl font-bold leading-8 text-slate-950">
                           {t("af.cta.text")}{" "}
-                          {selectedOccupation.title}.
+                          {getLocalizedTitle(selectedOccupation, locale)}.
                         </p>
                         <Button
                           asChild
