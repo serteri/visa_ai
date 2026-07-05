@@ -2602,6 +2602,8 @@
   {
     "code": "234599",
     "title": "Life Scientists Nec",
+    "title_tr": "Diğer Yaşam Bilimcileri (Sınıflandırılmamış)",
+    "title_zh": "其他生命科学家（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Life Scientists Nec activities in line with legislative, safety and quality requirements.",
@@ -2613,6 +2615,8 @@
   {
     "code": "234611",
     "title": "Medical Laboratory Scientist",
+    "title_tr": "Tıbbi Laboratuvar Bilimcisi",
+    "title_zh": "医学实验室科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Performs laboratory tests on biological specimens to support diagnosis and treatment.",
@@ -2624,6 +2628,8 @@
   {
     "code": "234612",
     "title": "Pathologist",
+    "title_tr": "Patolog",
+    "title_zh": "病理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Pathologist activities in line with legislative, safety and quality requirements.",
@@ -2635,6 +2641,8 @@
   {
     "code": "234711",
     "title": "Veterinarian",
+    "title_tr": "Veteriner Hekim",
+    "title_zh": "兽医",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Diagnoses, treats and prevents disease and injury in animals.",
@@ -2646,6 +2654,8 @@
   {
     "code": "234811",
     "title": "Physicist",
+    "title_tr": "Fizikçi",
+    "title_zh": "物理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Physicist activities in line with legislative, safety and quality requirements.",
@@ -2657,6 +2667,8 @@
   {
     "code": "234812",
     "title": "Astronomer",
+    "title_tr": "Astronom",
+    "title_zh": "天文学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Astronomer activities in line with legislative, safety and quality requirements.",
@@ -2668,6 +2680,8 @@
   {
     "code": "234813",
     "title": "Geographer",
+    "title_tr": "Coğrafyacı",
+    "title_zh": "地理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Geographer activities in line with legislative, safety and quality requirements.",
@@ -2679,6 +2693,8 @@
   {
     "code": "234814",
     "title": "Hydrologist",
+    "title_tr": "Hidrolog",
+    "title_zh": "水文学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Hydrologist activities in line with legislative, safety and quality requirements.",
@@ -2690,6 +2706,8 @@
   {
     "code": "234915",
     "title": "Chemist",
+    "title_tr": "Kimyager",
+    "title_zh": "化学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Chemist activities in line with legislative, safety and quality requirements.",
@@ -2701,6 +2719,8 @@
   {
     "code": "234916",
     "title": "Research Scientist (general)",
+    "title_tr": "Araştırma Bilimcisi (Genel)",
+    "title_zh": "研究科学家（综合类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Research Scientist (general) activities in line with legislative, safety and quality requirements.",
@@ -2712,6 +2732,8 @@
   {
     "code": "234999",
     "title": "Science Professionals Nec",
+    "title_tr": "Diğer Bilim Uzmanları (Sınıflandırılmamış)",
+    "title_zh": "其他科学专业人员（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Science Professionals Nec activities in line with legislative, safety and quality requirements.",
@@ -2723,6 +2745,8 @@
   {
     "code": "241111",
     "title": "Early Childhood (Pre-primary School) Teacher",
+    "title_tr": "Okul Öncesi Öğretmeni",
+    "title_zh": "学前教育教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and delivers learning programs for young children before primary school.",
@@ -2734,6 +2758,8 @@
   {
     "code": "241211",
     "title": "Primary School Teacher",
+    "title_tr": "İlkokul Öğretmeni",
+    "title_zh": "小学教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Primary School Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -2745,6 +2771,8 @@
   {
     "code": "241212",
     "title": "Primary School Teacher",
+    "title_tr": "İlkokul Öğretmeni",
+    "title_zh": "小学教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Primary School Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -2769,6 +2797,8 @@
   {
     "code": "241311",
     "title": "Middle School Teacher",
+    "title_tr": "Ortaokul Öğretmeni",
+    "title_zh": "初中教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Middle School Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -2780,6 +2810,8 @@
   {
     "code": "241312",
     "title": "Secondary School Teacher",
+    "title_tr": "Lise Öğretmeni",
+    "title_zh": "中学教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Secondary School Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -2791,6 +2823,8 @@
   {
     "code": "241313",
     "title": "Secondary School Teacher (english)",
+    "title_tr": "Lise Öğretmeni (İngilizce)",
+    "title_zh": "中学教师（英语）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Secondary School Teacher (english) learning programs aligned to curriculum, standards and learner needs.",
@@ -2802,6 +2836,8 @@
   {
     "code": "241314",
     "title": "Secondary School Teacher (mathematics)",
+    "title_tr": "Lise Öğretmeni (Matematik)",
+    "title_zh": "中学教师（数学）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Secondary School Teacher (mathematics) learning programs aligned to curriculum, standards and learner needs.",
@@ -2813,6 +2849,8 @@
   {
     "code": "241315",
     "title": "Secondary School Teacher (science)",
+    "title_tr": "Lise Öğretmeni (Fen Bilimleri)",
+    "title_zh": "中学教师（科学）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Secondary School Teacher (science) learning programs aligned to curriculum, standards and learner needs.",
@@ -2824,6 +2862,8 @@
   {
     "code": "241316",
     "title": "Secondary School Teacher (languages)",
+    "title_tr": "Lise Öğretmeni (Yabancı Diller)",
+    "title_zh": "中学教师（语言）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Secondary School Teacher (languages) learning programs aligned to curriculum, standards and learner needs.",
@@ -2835,6 +2875,8 @@
   {
     "code": "241411",
     "title": "Secondary School Teacher",
+    "title_tr": "Lise Öğretmeni",
+    "title_zh": "中学教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and teaches subject-specific lessons for secondary students.",
@@ -2846,6 +2888,8 @@
   {
     "code": "241511",
     "title": "Special Needs Teacher",
+    "title_tr": "Özel Gereksinimli Öğrenci Öğretmeni",
+    "title_zh": "特殊需要教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and delivers learning programs for students with additional needs.",
@@ -2857,6 +2901,8 @@
   {
     "code": "241512",
     "title": "Special Education Teacher (hearing Impaired)",
+    "title_tr": "Özel Eğitim Öğretmeni (İşitme Engelli)",
+    "title_zh": "特殊教育教师（听障）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Special Education Teacher (hearing Impaired) learning programs aligned to curriculum, standards and learner needs.",
@@ -2868,6 +2914,8 @@
   {
     "code": "241513",
     "title": "Special Education Teacher (physically Disabled)",
+    "title_tr": "Özel Eğitim Öğretmeni (Bedensel Engelli)",
+    "title_zh": "特殊教育教师（肢体障碍）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Special Education Teacher (physically Disabled) learning programs aligned to curriculum, standards and learner needs.",
@@ -2879,6 +2927,8 @@
   {
     "code": "241514",
     "title": "Special Education Teacher (visually Impaired)",
+    "title_tr": "Özel Eğitim Öğretmeni (Görme Engelli)",
+    "title_zh": "特殊教育教师（视障）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Special Education Teacher (visually Impaired) learning programs aligned to curriculum, standards and learner needs.",
@@ -2890,6 +2940,8 @@
   {
     "code": "241515",
     "title": "Special Education Teacher (behaviour Disordered)",
+    "title_tr": "Özel Eğitim Öğretmeni (Davranış Bozukluğu)",
+    "title_zh": "特殊教育教师（行为障碍）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Special Education Teacher (behaviour Disordered) learning programs aligned to curriculum, standards and learner needs.",
@@ -2901,6 +2953,8 @@
   {
     "code": "241516",
     "title": "Special Education Teacher (gifted Students)",
+    "title_tr": "Özel Eğitim Öğretmeni (Üstün Yetenekli Öğrenciler)",
+    "title_zh": "特殊教育教师（资优学生）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Special Education Teacher (gifted Students) learning programs aligned to curriculum, standards and learner needs.",
@@ -2912,6 +2966,8 @@
   {
     "code": "241517",
     "title": "Special Education Teacher (speech And Language Disordered)",
+    "title_tr": "Özel Eğitim Öğretmeni (Konuşma ve Dil Bozukluğu)",
+    "title_zh": "特殊教育教师（言语与语言障碍）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Special Education Teacher (speech And Language Disordered) learning programs aligned to curriculum, standards and learner needs.",
@@ -2923,6 +2979,8 @@
   {
     "code": "241611",
     "title": "Early Childhood Teacher",
+    "title_tr": "Erken Çocukluk Öğretmeni",
+    "title_zh": "幼儿教育教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Early Childhood Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -2934,6 +2992,8 @@
   {
     "code": "241612",
     "title": "Preschool Teacher",
+    "title_tr": "Anaokulu Öğretmeni",
+    "title_zh": "学前班教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Preschool Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -2945,6 +3005,8 @@
   {
     "code": "241711",
     "title": "Primary School Teacher (art)",
+    "title_tr": "İlkokul Öğretmeni (Sanat)",
+    "title_zh": "小学教师（美术）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Primary School Teacher (art) learning programs aligned to curriculum, standards and learner needs.",
@@ -2956,6 +3018,8 @@
   {
     "code": "241712",
     "title": "Primary School Teacher (english)",
+    "title_tr": "İlkokul Öğretmeni (İngilizce)",
+    "title_zh": "小学教师（英语）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Primary School Teacher (english) learning programs aligned to curriculum, standards and learner needs.",
@@ -2967,6 +3031,8 @@
   {
     "code": "241713",
     "title": "Primary School Teacher (mathematics)",
+    "title_tr": "İlkokul Öğretmeni (Matematik)",
+    "title_zh": "小学教师（数学）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Primary School Teacher (mathematics) learning programs aligned to curriculum, standards and learner needs.",
@@ -2978,6 +3044,8 @@
   {
     "code": "241714",
     "title": "Primary School Teacher (science)",
+    "title_tr": "İlkokul Öğretmeni (Fen Bilimleri)",
+    "title_zh": "小学教师（科学）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Primary School Teacher (science) learning programs aligned to curriculum, standards and learner needs.",
@@ -2989,6 +3057,8 @@
   {
     "code": "241715",
     "title": "Special Education Teacher",
+    "title_tr": "Özel Eğitim Öğretmeni",
+    "title_zh": "特殊教育教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Special Education Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -3000,6 +3070,8 @@
   {
     "code": "242111",
     "title": "University Lecturer",
+    "title_tr": "Üniversite Öğretim Görevlisi",
+    "title_zh": "大学讲师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers University Lecturer learning programs aligned to curriculum, standards and learner needs.",
@@ -3011,6 +3083,8 @@
   {
     "code": "242112",
     "title": "University Lecturer",
+    "title_tr": "Üniversite Öğretim Görevlisi",
+    "title_zh": "大学讲师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers University Lecturer learning programs aligned to curriculum, standards and learner needs.",
@@ -3022,6 +3096,8 @@
   {
     "code": "242211",
     "title": "Registered Nurse Educator",
+    "title_tr": "Kayıtlı Hemşire Eğitmeni",
+    "title_zh": "注册护士教育者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse Educator care or treatment plans.",
@@ -3033,6 +3109,8 @@
   {
     "code": "242212",
     "title": "Registered Nurse Educator",
+    "title_tr": "Kayıtlı Hemşire Eğitmeni",
+    "title_zh": "注册护士教育者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse Educator care or treatment plans.",
@@ -3044,6 +3122,8 @@
   {
     "code": "242311",
     "title": "Registered Training Organisation Manager",
+    "title_tr": "Kayıtlı Eğitim Kurumu Müdürü",
+    "title_zh": "注册培训机构经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Registered Training Organisation Manager activities in line with legislative, safety and quality requirements.",
@@ -3055,6 +3135,8 @@
   {
     "code": "242312",
     "title": "Training And Development Professional",
+    "title_tr": "Eğitim ve Gelişim Uzmanı",
+    "title_zh": "培训与发展专业人员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Training And Development Professional activities in line with legislative, safety and quality requirements.",
@@ -3066,6 +3148,8 @@
   {
     "code": "251111",
     "title": "Dentist",
+    "title_tr": "Diş Hekimi",
+    "title_zh": "牙医",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Dentist care or treatment plans.",
@@ -3077,6 +3161,8 @@
   {
     "code": "251211",
     "title": "Medical Diagnostic Radiographer",
+    "title_tr": "Tıbbi Tanısal Radyograf",
+    "title_zh": "医学诊断放射技师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Operates imaging equipment to produce diagnostic radiographic images.",
@@ -3088,6 +3174,8 @@
   {
     "code": "251212",
     "title": "Medical Radiation Therapist",
+    "title_tr": "Tıbbi Radyasyon Terapisti",
+    "title_zh": "医学放射治疗师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Medical Radiation Therapist care or treatment plans.",
@@ -3099,6 +3187,8 @@
   {
     "code": "251213",
     "title": "Nuclear Medicine Technologist",
+    "title_tr": "Nükleer Tıp Teknoloğu",
+    "title_zh": "核医学技术专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Nuclear Medicine Technologist activities in line with legislative, safety and quality requirements.",
@@ -3110,6 +3200,8 @@
   {
     "code": "251214",
     "title": "Sonographer",
+    "title_tr": "Sonografi Teknisyeni",
+    "title_zh": "超声检查技师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Performs ultrasound examinations using specialised imaging equipment.",
@@ -3121,6 +3213,8 @@
   {
     "code": "251215",
     "title": "Radiotherapy Technologist",
+    "title_tr": "Radyoterapi Teknoloğu",
+    "title_zh": "放射治疗技术专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Radiotherapy Technologist activities in line with legislative, safety and quality requirements.",
@@ -3132,6 +3226,8 @@
   {
     "code": "251216",
     "title": "Radiation Safety Officer",
+    "title_tr": "Radyasyon Güvenliği Görevlisi",
+    "title_zh": "辐射安全官员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Radiation Safety Officer activities in line with legislative, safety and quality requirements.",
@@ -3143,6 +3239,8 @@
   {
     "code": "251217",
     "title": "Nuclear Medicine Technician",
+    "title_tr": "Nükleer Tıp Teknisyeni",
+    "title_zh": "核医学技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Nuclear Medicine Technician activities in line with legislative, safety and quality requirements.",
@@ -3154,6 +3252,8 @@
   {
     "code": "251218",
     "title": "Ultrasound Technician",
+    "title_tr": "Ultrason Teknisyeni",
+    "title_zh": "超声技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Ultrasound Technician activities in line with legislative, safety and quality requirements.",
@@ -3165,6 +3265,8 @@
   {
     "code": "251311",
     "title": "Environmental Health Officer",
+    "title_tr": "Çevre Sağlığı Görevlisi",
+    "title_zh": "环境卫生官员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Environmental Health Officer activities in line with legislative, safety and quality requirements.",
@@ -3176,6 +3278,8 @@
   {
     "code": "251411",
     "title": "Optometrist",
+    "title_tr": "Optometrist",
+    "title_zh": "验光师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Examines eyes to assess vision, eye health and visual disorders.",
@@ -3187,6 +3291,8 @@
   {
     "code": "251511",
     "title": "Hospital Pharmacist",
+    "title_tr": "Hastane Eczacısı",
+    "title_zh": "医院药剂师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Hospital Pharmacist care or treatment plans.",
@@ -3198,6 +3304,8 @@
   {
     "code": "251512",
     "title": "Industrial Pharmacist",
+    "title_tr": "Endüstriyel Eczacı",
+    "title_zh": "工业药剂师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Industrial Pharmacist care or treatment plans.",
@@ -3209,6 +3317,8 @@
   {
     "code": "251611",
     "title": "Optometrist",
+    "title_tr": "Optometrist",
+    "title_zh": "验光师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Optometrist care or treatment plans.",
@@ -3220,6 +3330,8 @@
   {
     "code": "251711",
     "title": "Orthoptist",
+    "title_tr": "Ortoptist",
+    "title_zh": "视轨矫正师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Orthoptist activities in line with legislative, safety and quality requirements.",
@@ -3231,6 +3343,8 @@
   {
     "code": "251811",
     "title": "Radiographer",
+    "title_tr": "Radyograf",
+    "title_zh": "放射技师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Radiographer care or treatment plans.",
@@ -3242,6 +3356,8 @@
   {
     "code": "251812",
     "title": "Podiatrist",
+    "title_tr": "Podolog",
+    "title_zh": "足病医师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Podiatrist activities in line with legislative, safety and quality requirements.",
@@ -3253,6 +3369,8 @@
   {
     "code": "251813",
     "title": "Medical Radiation Therapist",
+    "title_tr": "Tıbbi Radyasyon Terapisti",
+    "title_zh": "医学放射治疗师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Medical Radiation Therapist care or treatment plans.",
@@ -3264,6 +3382,8 @@
   {
     "code": "251814",
     "title": "Sonographer",
+    "title_tr": "Sonografi Teknisyeni",
+    "title_zh": "超声检查技师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Sonographer activities in line with legislative, safety and quality requirements.",
@@ -3275,6 +3395,8 @@
   {
     "code": "251911",
     "title": "Veterinarian",
+    "title_tr": "Veteriner Hekim",
+    "title_zh": "兽医",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Veterinarian activities in line with legislative, safety and quality requirements.",
@@ -3286,6 +3408,8 @@
   {
     "code": "251912",
     "title": "Veterinary Technician",
+    "title_tr": "Veteriner Teknisyeni",
+    "title_zh": "兽医技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Veterinary Technician activities in line with legislative, safety and quality requirements.",
@@ -3297,6 +3421,8 @@
   {
     "code": "251913",
     "title": "Veterinary Surgeon",
+    "title_tr": "Veteriner Cerrah",
+    "title_zh": "兽医外科医师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Veterinary Surgeon care or treatment plans.",
@@ -3308,6 +3434,8 @@
   {
     "code": "251914",
     "title": "Animal Health Technician",
+    "title_tr": "Hayvan Sağlığı Teknisyeni",
+    "title_zh": "动物保健技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Animal Health Technician activities in line with legislative, safety and quality requirements.",
@@ -3319,6 +3447,8 @@
   {
     "code": "252111",
     "title": "Chiropractor",
+    "title_tr": "Kiropraktör",
+    "title_zh": "脊椎按摩师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Chiropractor activities in line with legislative, safety and quality requirements.",
@@ -3330,6 +3460,8 @@
   {
     "code": "252112",
     "title": "Osteopath",
+    "title_tr": "Osteopat",
+    "title_zh": "整骨师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Osteopath activities in line with legislative, safety and quality requirements.",
@@ -3341,6 +3473,8 @@
   {
     "code": "252113",
     "title": "Osteopath",
+    "title_tr": "Osteopat",
+    "title_zh": "整骨师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Osteopath activities in line with legislative, safety and quality requirements.",
@@ -3352,6 +3486,8 @@
   {
     "code": "252114",
     "title": "Reflexologist",
+    "title_tr": "Refleksolog",
+    "title_zh": "反射疗法师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Reflexologist activities in line with legislative, safety and quality requirements.",
@@ -3363,6 +3499,8 @@
   {
     "code": "252115",
     "title": "Renal Technician",
+    "title_tr": "Böbrek (Renal) Teknisyeni",
+    "title_zh": "肾脏技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Renal Technician activities in line with legislative, safety and quality requirements.",
@@ -3374,6 +3512,8 @@
   {
     "code": "252116",
     "title": "Dialysis Technician",
+    "title_tr": "Diyaliz Teknisyeni",
+    "title_zh": "透析技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Dialysis Technician activities in line with legislative, safety and quality requirements.",
@@ -3385,6 +3525,8 @@
   {
     "code": "252117",
     "title": "Cardiology Technician",
+    "title_tr": "Kardiyoloji Teknisyeni",
+    "title_zh": "心脏病学技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Cardiology Technician activities in line with legislative, safety and quality requirements.",
@@ -3396,6 +3538,8 @@
   {
     "code": "252118",
     "title": "Respiratory Technician",
+    "title_tr": "Solunum Teknisyeni",
+    "title_zh": "呼吸科技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Respiratory Technician activities in line with legislative, safety and quality requirements.",
@@ -3407,6 +3551,8 @@
   {
     "code": "252119",
     "title": "Operating Theatre Technician",
+    "title_tr": "Ameliyathane Teknisyeni",
+    "title_zh": "手术室技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Operating Theatre Technician activities in line with legislative, safety and quality requirements.",
@@ -3418,6 +3564,8 @@
   {
     "code": "252120",
     "title": "Anaesthetic Technician",
+    "title_tr": "Anestezi Teknisyeni",
+    "title_zh": "麻醉技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Anaesthetic Technician activities in line with legislative, safety and quality requirements.",
@@ -3429,6 +3577,8 @@
   {
     "code": "252211",
     "title": "Acupuncturist",
+    "title_tr": "Akupunktur Uzmanı",
+    "title_zh": "针灸师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Acupuncturist activities in line with legislative, safety and quality requirements.",
@@ -3440,6 +3590,8 @@
   {
     "code": "252212",
     "title": "Herbalist",
+    "title_tr": "Bitkisel Tedavi Uzmanı (Herbalist)",
+    "title_zh": "草药师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Herbalist activities in line with legislative, safety and quality requirements.",
@@ -3451,6 +3603,8 @@
   {
     "code": "252213",
     "title": "Homoeopath",
+    "title_tr": "Homeopat",
+    "title_zh": "顺势疗法师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Homoeopath activities in line with legislative, safety and quality requirements.",
@@ -3462,6 +3616,8 @@
   {
     "code": "252214",
     "title": "Naturopath",
+    "title_tr": "Doğal Tedavi Uzmanı (Naturopat)",
+    "title_zh": "自然疗法师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Naturopath activities in line with legislative, safety and quality requirements.",
@@ -3473,6 +3629,8 @@
   {
     "code": "252311",
     "title": "Naturopath",
+    "title_tr": "Doğal Tedavi Uzmanı (Naturopat)",
+    "title_zh": "自然疗法师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Naturopath activities in line with legislative, safety and quality requirements.",
@@ -3484,6 +3642,8 @@
   {
     "code": "252312",
     "title": "Dentist",
+    "title_tr": "Diş Hekimi",
+    "title_zh": "牙医",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Examines teeth, gums and oral tissues to diagnose dental conditions.",
@@ -3495,6 +3655,8 @@
   {
     "code": "252313",
     "title": "Homoeopath",
+    "title_tr": "Homeopat",
+    "title_zh": "顺势疗法师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Homoeopath activities in line with legislative, safety and quality requirements.",
@@ -3519,6 +3681,8 @@
   {
     "code": "252511",
     "title": "Physiotherapist",
+    "title_tr": "Fizyoterapist",
+    "title_zh": "物理治疗师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses physical conditions affecting movement, pain and function.",
@@ -3530,6 +3694,8 @@
   {
     "code": "252611",
     "title": "Podiatrist",
+    "title_tr": "Podolog",
+    "title_zh": "足病医师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Podiatrist activities in line with legislative, safety and quality requirements.",
@@ -3541,6 +3707,8 @@
   {
     "code": "252612",
     "title": "Audiologist",
+    "title_tr": "Odyolog",
+    "title_zh": "听力学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Audiologist activities in line with legislative, safety and quality requirements.",
@@ -3552,6 +3720,8 @@
   {
     "code": "252613",
     "title": "Dietitian",
+    "title_tr": "Diyetisyen",
+    "title_zh": "营养师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Dietitian activities in line with legislative, safety and quality requirements.",
@@ -3563,6 +3733,8 @@
   {
     "code": "252614",
     "title": "Nutritionist",
+    "title_tr": "Beslenme Uzmanı",
+    "title_zh": "营养学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Nutritionist activities in line with legislative, safety and quality requirements.",
@@ -3574,6 +3746,8 @@
   {
     "code": "252711",
     "title": "Audiologist",
+    "title_tr": "Odyolog",
+    "title_zh": "听力学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Audiologist activities in line with legislative, safety and quality requirements.",
@@ -3585,6 +3759,8 @@
   {
     "code": "252712",
     "title": "Speech Pathologist",
+    "title_tr": "Dil ve Konuşma Terapisti",
+    "title_zh": "言语病理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses communication, swallowing, speech and language disorders.",
@@ -3596,6 +3772,8 @@
   {
     "code": "252713",
     "title": "Speech Pathologist",
+    "title_tr": "Dil ve Konuşma Terapisti",
+    "title_zh": "言语病理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Speech Pathologist activities in line with legislative, safety and quality requirements.",
@@ -3607,6 +3785,8 @@
   {
     "code": "252811",
     "title": "Psychologist (general)",
+    "title_tr": "Psikolog (Genel)",
+    "title_zh": "心理学家（综合类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Psychologist (general) care or treatment plans.",
@@ -3618,6 +3798,8 @@
   {
     "code": "252812",
     "title": "Clinical Psychologist",
+    "title_tr": "Klinik Psikolog",
+    "title_zh": "临床心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Clinical Psychologist care or treatment plans.",
@@ -3629,6 +3811,8 @@
   {
     "code": "252813",
     "title": "Counselling Psychologist",
+    "title_tr": "Danışmanlık Psikoloğu",
+    "title_zh": "咨询心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Counselling Psychologist care or treatment plans.",
@@ -3640,6 +3824,8 @@
   {
     "code": "252814",
     "title": "Educational Psychologist",
+    "title_tr": "Eğitim Psikoloğu",
+    "title_zh": "教育心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Educational Psychologist care or treatment plans.",
@@ -3651,6 +3837,8 @@
   {
     "code": "252815",
     "title": "Organisational Psychologist",
+    "title_tr": "Örgütsel Psikolog",
+    "title_zh": "组织心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Organisational Psychologist care or treatment plans.",
@@ -3662,6 +3850,8 @@
   {
     "code": "252816",
     "title": "Sport And Exercise Psychologist",
+    "title_tr": "Spor ve Egzersiz Psikoloğu",
+    "title_zh": "运动与锻炼心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Sport And Exercise Psychologist care or treatment plans.",
@@ -3673,6 +3863,8 @@
   {
     "code": "253111",
     "title": "General Practitioner",
+    "title_tr": "Pratisyen Hekim",
+    "title_zh": "全科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Diagnoses and treats acute and chronic medical conditions in primary care.",
@@ -3684,6 +3876,8 @@
   {
     "code": "253211",
     "title": "Resident Medical Officer",
+    "title_tr": "Asistan Hekim (Resident)",
+    "title_zh": "住院医师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Resident Medical Officer care or treatment plans.",
@@ -3695,6 +3889,8 @@
   {
     "code": "253311",
     "title": "Specialist Physician (general Medicine)",
+    "title_tr": "Uzman Hekim (Dahiliye)",
+    "title_zh": "专科医生（普通内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (general Medicine) activities in line with legislative, safety and quality requirements.",
