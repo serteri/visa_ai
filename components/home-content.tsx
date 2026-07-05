@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { BrainCircuit, ClipboardList, EyeOff, Lock, ShieldCheck, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,6 +121,162 @@ export function HomeContent() {
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">📊</span>
               {t("socialProof.dha")}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust & Authority: Stats Bar */}
+      <section className="border-y border-slate-200 bg-slate-100/70 py-10 dark:border-zinc-800 dark:bg-zinc-900/40">
+        <div className="section-shell">
+          <div className="grid grid-cols-2 gap-8 divide-slate-200 text-center sm:grid-cols-4 sm:divide-x dark:divide-zinc-800">
+            {[
+              {
+                value: "707+",
+                label:
+                  locale === "tr"
+                    ? "İncelenen Meslek"
+                    : locale === "zh-Hans"
+                      ? "已分析职业"
+                      : "Occupations Analyzed",
+              },
+              {
+                value: locale === "tr" ? "Gerçek Zamanlı" : locale === "zh-Hans" ? "实时" : "Real-Time",
+                label:
+                  locale === "tr"
+                    ? "ANZSCO ve NOC Verisi"
+                    : locale === "zh-Hans"
+                      ? "ANZSCO 与 NOC 数据"
+                      : "ANZSCO & NOC Data",
+              },
+              {
+                value: locale === "tr" ? "AI Destekli" : locale === "zh-Hans" ? "AI 驱动" : "AI-Powered",
+                label:
+                  locale === "tr"
+                    ? "Eşleştirme Hassasiyeti"
+                    : locale === "zh-Hans"
+                      ? "匹配精准度"
+                      : "Matching Precision",
+              },
+              {
+                value: "2026",
+                label:
+                  locale === "tr" ? "Göç Verileri" : locale === "zh-Hans" ? "移民数据" : "Immigration Data",
+              },
+            ].map((stat) => (
+              <div key={stat.label} className="px-2">
+                <p className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+                  {stat.value}
+                </p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:text-sm dark:text-slate-400">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust & Authority: How It Works */}
+      <section className="section-shell">
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            {locale === "tr" ? "Nasıl Çalışır?" : locale === "zh-Hans" ? "工作原理" : "How It Works"}
+          </h2>
+          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
+            {locale === "tr"
+              ? "Profilden vize yoluna üç basit adımda."
+              : locale === "zh-Hans"
+                ? "三步即可从个人资料找到签证路径。"
+                : "From profile to pathway in three simple steps."}
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              icon: ClipboardList,
+              title:
+                locale === "tr" ? "Profil Bilgisi" : locale === "zh-Hans" ? "输入个人资料" : "Profile Input",
+              description:
+                locale === "tr"
+                  ? "Geçmişinizi hızlıca anlatın — meslek, yaş ve hedefleriniz."
+                  : locale === "zh-Hans"
+                    ? "快速告诉我们您的背景——职业、年龄和目标。"
+                    : "Quickly tell us your background — occupation, age, and goals.",
+              color: "indigo",
+            },
+            {
+              icon: BrainCircuit,
+              title: locale === "tr" ? "AI Analizi" : locale === "zh-Hans" ? "AI 分析" : "AI Analysis",
+              description:
+                locale === "tr"
+                  ? "Motorumuz profilinizi resmi göç verileriyle karşılaştırır."
+                  : locale === "zh-Hans"
+                    ? "我们的引擎将您的资料与官方移民数据进行交叉比对。"
+                    : "Our engine cross-references your profile against official immigration data.",
+              color: "purple",
+            },
+            {
+              icon: Zap,
+              title: locale === "tr" ? "Anında Sonuç" : locale === "zh-Hans" ? "即时结果" : "Instant Results",
+              description:
+                locale === "tr"
+                  ? "Uygun olduğunuz vize yollarını hemen keşfedin."
+                  : locale === "zh-Hans"
+                    ? "立即发现您符合条件的签证路径。"
+                    : "Discover your eligible visa pathways immediately.",
+              color: "emerald",
+            },
+          ].map((step, index) => (
+            <div
+              key={step.title}
+              className="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50"
+            >
+              <span className="absolute right-6 top-6 text-sm font-bold text-slate-300 dark:text-zinc-700">
+                0{index + 1}
+              </span>
+              <div
+                className={`mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl ${
+                  step.color === "indigo"
+                    ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
+                    : step.color === "purple"
+                      ? "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
+                      : "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
+                }`}
+              >
+                <step.icon className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">{step.title}</h3>
+              <p className="text-slate-600 dark:text-slate-400">{step.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Security & Privacy badges */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-slate-200 pt-8 text-sm font-medium text-slate-500 dark:border-zinc-800 dark:text-slate-400">
+          <div className="flex items-center gap-2">
+            <EyeOff className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+            {locale === "tr"
+              ? "Anonim Değerlendirme"
+              : locale === "zh-Hans"
+                ? "匿名评估"
+                : "Anonymous Assessment"}
+          </div>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+            {locale === "tr"
+              ? "Üçüncü Taraflarla Veri Paylaşımı Yok"
+              : locale === "zh-Hans"
+                ? "不与第三方共享数据"
+                : "No 3rd-Party Data Sharing"}
+          </div>
+          <div className="flex items-center gap-2">
+            <Lock className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+            {locale === "tr"
+              ? "Banka Düzeyinde Şifreleme"
+              : locale === "zh-Hans"
+                ? "银行级加密"
+                : "Bank-Level Encryption"}
           </div>
         </div>
       </section>
