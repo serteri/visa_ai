@@ -187,7 +187,8 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                             {t("af.detail.skillLevel")}
                           </div>
                           <p className="mt-2 text-3xl font-bold text-slate-950">
-                            {selectedOccupation.skillLevel.replace("Skill Level ", "Level ")}
+                            {t("af.detail.levelPrefix")}{" "}
+                            {selectedOccupation.skillLevel.match(/\d+/)?.[0] ?? ""}
                           </p>
                         </div>
                       </div>

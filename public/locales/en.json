@@ -271,6 +271,7 @@
   "af.noResults.subtitle": "Please try a different keyword or ANZSCO code.",
   "af.detail.code": "Occupation Code",
   "af.detail.skillLevel": "Skill Level",
+  "af.detail.levelPrefix": "Level",
   "af.detail.tasks": "Typical Tasks & Duties",
   "af.cta.text": "Does your CV match these duties? Calculate your PR points and visa chances for",
   "af.cta.button": "Check PR Eligibility (Free)",

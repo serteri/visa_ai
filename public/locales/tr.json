@@ -278,6 +278,7 @@
   "af.noResults.subtitle": "Lütfen farklı bir anahtar kelime veya ANZSCO kodu deneyin.",
   "af.detail.code": "Meslek Kodu",
   "af.detail.skillLevel": "Beceri Seviyesi",
+  "af.detail.levelPrefix": "Seviye",
   "af.detail.tasks": "Tipik Görev ve Sorumluluklar",
   "af.cta.text": "CV'niz bu görevlerle uyuşuyor mu? PR puanlarınızı ve vize şansınızı hesaplayın:",
   "af.cta.button": "PR Uygunluğunu Kontrol Et (Ücretsiz)",

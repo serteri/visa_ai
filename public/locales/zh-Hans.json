@@ -272,6 +272,7 @@
   "af.noResults.subtitle": "请尝试其他关键词或ANZSCO代码。",
   "af.detail.code": "职业代码",
   "af.detail.skillLevel": "技能级别",
+  "af.detail.levelPrefix": "级别",
   "af.detail.tasks": "典型任务与职责",
   "af.cta.text": "您的简历与这些职责匹配吗？计算您的PR积分和签证机会：",
   "af.cta.button": "检查PR资格（免费）",
