@@ -37,10 +37,11 @@ export function Header({
   const visasLabel = isTr ? "Vizeler" : isZh ? "签证" : "Visas";
   const adminLabel = "Admin";
   const getReportLabel = isTr ? "Ücretsiz Rapor Al" : isZh ? "获取免费报告" : "Get Free Report";
-  const pointsCalcLabel = isTr ? "Puan Hesapla" : isZh ? "算分器" : "Points Calculator";
+  const pointsCalcLabel = isTr ? "Puan Hesapla (AUS)" : isZh ? "算分器 (AUS)" : "Points Calculator (AUS)";
   const englishPointsLabel = isTr ? "İngilizce Puanları" : isZh ? "英语分数" : "English Points";
   const guidesLabel = isTr ? "Rehberler" : isZh ? "指南" : "Guides";
-  const invRoundsLabel = isTr ? "Davet Turları" : isZh ? "邀请轮次" : "Invitation Rounds";
+  const invRoundsLabel = isTr ? "Davet Turları (AUS)" : isZh ? "邀请轮次 (AUS)" : "Invitation Rounds (AUS)";
+  const occupationCodesLabel = "Occupation Codes (ANZSCO / NOC)";
   const skillsAssessLabel = isTr ? "Beceri Değerlendirme" : isZh ? "技能评估" : "Skills Assessment";
   const stateNominationLabel = isTr ? "Eyalet Nominasyonu" : isZh ? "州担保" : "State Nomination";
   const visaComparisonLabel = isTr ? "189-190-491 Karsilastirma" : isZh ? "189-190-491 对比" : "189 vs 190 vs 491";
@@ -114,7 +115,7 @@ export function Header({
                 {skillsAssessLabel}
               </Link>
               <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
-                ANZSCO Finder
+                {occupationCodesLabel}
               </Link>
               {isTr && (
                 <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-orange-100 text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-100 dark:hover:bg-orange-800">
@@ -265,7 +266,7 @@ export function Header({
                 {skillsAssessLabel}
               </Link>
               <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
-                ANZSCO Finder
+                {occupationCodesLabel}
               </Link>
               {isTr && (
                 <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-orange-100 text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-100 dark:hover:bg-orange-800">
@@ -384,7 +385,7 @@ export function Header({
                 {skillsAssessLabel}
               </Link>
               <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
-                ANZSCO Finder
+                {occupationCodesLabel}
               </Link>
               <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
                 {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
