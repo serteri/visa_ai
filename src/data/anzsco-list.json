@@ -2,6 +2,8 @@
   {
     "code": "111111",
     "title": "Chief Executive Or Managing Director",
+    "title_tr": "Genel Müdür veya İcra Kurulu Başkanı",
+    "title_zh": "首席执行官或总经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Chief Executive Or Managing Director activities in line with legislative, safety and quality requirements.",
@@ -13,6 +15,8 @@
   {
     "code": "111211",
     "title": "Chief Financial Officer",
+    "title_tr": "Finans Direktörü (CFO)",
+    "title_zh": "首席财务官",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Chief Financial Officer functions and reporting obligations.",
@@ -24,6 +28,8 @@
   {
     "code": "111212",
     "title": "Chief Information Officer",
+    "title_tr": "Bilgi Teknolojileri Direktörü (CIO)",
+    "title_zh": "首席信息官",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Chief Information Officer activities in line with legislative, safety and quality requirements.",
@@ -35,6 +41,8 @@
   {
     "code": "111213",
     "title": "Chief Technology Officer",
+    "title_tr": "Teknoloji Direktörü (CTO)",
+    "title_zh": "首席技术官",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Chief Technology Officer activities in line with legislative, safety and quality requirements.",
@@ -46,6 +54,8 @@
   {
     "code": "121111",
     "title": "Accountant (general) Manager",
+    "title_tr": "Muhasebe Müdürü (Genel)",
+    "title_zh": "会计经理（综合类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Accountant (general) Manager functions and reporting obligations.",
@@ -57,6 +67,8 @@
   {
     "code": "121112",
     "title": "Finance Manager",
+    "title_tr": "Finans Müdürü",
+    "title_zh": "财务经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Finance Manager functions and reporting obligations.",
@@ -68,6 +80,8 @@
   {
     "code": "121113",
     "title": "Payroll Manager",
+    "title_tr": "Bordro Müdürü",
+    "title_zh": "薪酬经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Payroll Manager activities in line with legislative, safety and quality requirements.",
@@ -79,6 +93,8 @@
   {
     "code": "121114",
     "title": "Supply And Distribution Manager",
+    "title_tr": "Tedarik ve Dağıtım Müdürü",
+    "title_zh": "供应与分销经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Supply And Distribution Manager activities in line with legislative, safety and quality requirements.",
@@ -90,6 +106,8 @@
   {
     "code": "121211",
     "title": "Information Technology Manager",
+    "title_tr": "Bilgi Teknolojileri Müdürü",
+    "title_zh": "信息技术经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Information Technology Manager activities in line with legislative, safety and quality requirements.",
@@ -101,6 +119,8 @@
   {
     "code": "121212",
     "title": "It Project Manager",
+    "title_tr": "BT Proje Müdürü",
+    "title_zh": "IT项目经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core It Project Manager activities in line with legislative, safety and quality requirements.",
@@ -112,6 +132,8 @@
   {
     "code": "121213",
     "title": "Applications Development Manager",
+    "title_tr": "Uygulama Geliştirme Müdürü",
+    "title_zh": "应用程序开发经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Applications Development Manager activities in line with legislative, safety and quality requirements.",
@@ -123,6 +145,8 @@
   {
     "code": "121214",
     "title": "Livestock Farmer",
+    "title_tr": "Hayvancılık Çiftçisi",
+    "title_zh": "畜牧养殖户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Livestock Farmer activities in line with legislative, safety and quality requirements.",
@@ -134,6 +158,8 @@
   {
     "code": "121215",
     "title": "Dairy Cattle Farmer",
+    "title_tr": "Süt Sığırcılığı Çiftçisi",
+    "title_zh": "奶牛养殖户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Dairy Cattle Farmer activities in line with legislative, safety and quality requirements.",
@@ -145,6 +171,8 @@
   {
     "code": "121216",
     "title": "Aquaculture Farmer",
+    "title_tr": "Su Ürünleri Yetiştiricisi",
+    "title_zh": "水产养殖户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aquaculture Farmer activities in line with legislative, safety and quality requirements.",
@@ -156,6 +184,8 @@
   {
     "code": "121312",
     "title": "Research And Development Manager",
+    "title_tr": "Araştırma ve Geliştirme Müdürü",
+    "title_zh": "研发经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Research And Development Manager activities in line with legislative, safety and quality requirements.",
@@ -167,6 +197,8 @@
   {
     "code": "131111",
     "title": "Construction Manager",
+    "title_tr": "İnşaat Müdürü",
+    "title_zh": "建筑经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Construction Manager activities in line with legislative, safety and quality requirements.",
@@ -178,6 +210,8 @@
   {
     "code": "131112",
     "title": "Project Manager (building/construction)",
+    "title_tr": "Proje Müdürü (Yapı/İnşaat)",
+    "title_zh": "项目经理（建筑施工类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Project Manager (building/construction) activities in line with legislative, safety and quality requirements.",
@@ -189,6 +223,8 @@
   {
     "code": "131113",
     "title": "Advertising Manager",
+    "title_tr": "Reklam Müdürü",
+    "title_zh": "广告经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Advertising Manager activities in line with legislative, safety and quality requirements.",
@@ -200,6 +236,8 @@
   {
     "code": "131211",
     "title": "Advertising Manager",
+    "title_tr": "Reklam Müdürü",
+    "title_zh": "广告经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Advertising Manager activities in line with legislative, safety and quality requirements.",
@@ -211,6 +249,8 @@
   {
     "code": "131212",
     "title": "Aquaculture Farmer",
+    "title_tr": "Su Ürünleri Yetiştiricisi",
+    "title_zh": "水产养殖户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aquaculture Farmer activities in line with legislative, safety and quality requirements.",
@@ -222,6 +262,8 @@
   {
     "code": "131213",
     "title": "Horticultural Farmer",
+    "title_tr": "Bahçıvanlık Çiftçisi",
+    "title_zh": "园艺种植户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Horticultural Farmer activities in line with legislative, safety and quality requirements.",
@@ -233,6 +275,8 @@
   {
     "code": "131214",
     "title": "Livestock Farmer",
+    "title_tr": "Hayvancılık Çiftçisi",
+    "title_zh": "畜牧养殖户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Livestock Farmer activities in line with legislative, safety and quality requirements.",
@@ -244,6 +288,8 @@
   {
     "code": "131215",
     "title": "Dairy Farmer",
+    "title_tr": "Süt Çiftçisi",
+    "title_zh": "奶农",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Dairy Farmer activities in line with legislative, safety and quality requirements.",
@@ -255,6 +301,8 @@
   {
     "code": "131312",
     "title": "Project Manager (engineering/construction)",
+    "title_tr": "Proje Müdürü (Mühendislik/İnşaat)",
+    "title_zh": "项目经理（工程建筑类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Project Manager (engineering/construction) solutions.",
@@ -266,6 +314,8 @@
   {
     "code": "132111",
     "title": "Corporate Services Manager",
+    "title_tr": "Kurumsal Hizmetler Müdürü",
+    "title_zh": "企业服务经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and directs administrative, corporate support and shared service functions.",
@@ -277,6 +327,8 @@
   {
     "code": "132211",
     "title": "Finance Manager",
+    "title_tr": "Finans Müdürü",
+    "title_zh": "财务经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans, organises and controls financial operations and reporting.",
@@ -288,6 +340,8 @@
   {
     "code": "132212",
     "title": "Industrial Relations Manager",
+    "title_tr": "Endüstriyel İlişkiler Müdürü",
+    "title_zh": "劳资关系经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Industrial Relations Manager activities in line with legislative, safety and quality requirements.",
@@ -299,6 +353,8 @@
   {
     "code": "132213",
     "title": "Training And Development Manager",
+    "title_tr": "Eğitim ve Gelişim Müdürü",
+    "title_zh": "培训与发展经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Training And Development Manager activities in line with legislative, safety and quality requirements.",
@@ -310,6 +366,8 @@
   {
     "code": "132311",
     "title": "Industrial Relations Manager",
+    "title_tr": "Endüstriyel İlişkiler Müdürü",
+    "title_zh": "劳资关系经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Industrial Relations Manager activities in line with legislative, safety and quality requirements.",
@@ -321,6 +379,8 @@
   {
     "code": "132312",
     "title": "Research Officer",
+    "title_tr": "Araştırma Uzmanı",
+    "title_zh": "研究专员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Research Officer activities in line with legislative, safety and quality requirements.",
@@ -332,6 +392,8 @@
   {
     "code": "132313",
     "title": "Program Officer",
+    "title_tr": "Program Uzmanı",
+    "title_zh": "项目专员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Program Officer activities in line with legislative, safety and quality requirements.",
@@ -356,6 +418,8 @@
   {
     "code": "133211",
     "title": "Engineering Manager",
+    "title_tr": "Mühendislik Müdürü",
+    "title_zh": "工程经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and directs engineering operations, projects and technical teams.",
@@ -367,6 +431,8 @@
   {
     "code": "133611",
     "title": "Supply And Distribution Manager",
+    "title_tr": "Tedarik ve Dağıtım Müdürü",
+    "title_zh": "供应与分销经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Supply And Distribution Manager activities in line with legislative, safety and quality requirements.",
@@ -378,6 +444,8 @@
   {
     "code": "134111",
     "title": "School Principal",
+    "title_tr": "Okul Müdürü",
+    "title_zh": "学校校长",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core School Principal activities in line with legislative, safety and quality requirements.",
@@ -389,6 +457,8 @@
   {
     "code": "134211",
     "title": "Aquaculture Manager",
+    "title_tr": "Su Ürünleri Yetiştiriciliği Müdürü",
+    "title_zh": "水产养殖经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aquaculture Manager activities in line with legislative, safety and quality requirements.",
@@ -400,6 +470,8 @@
   {
     "code": "134311",
     "title": "School Principal",
+    "title_tr": "Okul Müdürü",
+    "title_zh": "学校校长",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core School Principal activities in line with legislative, safety and quality requirements.",
@@ -411,6 +483,8 @@
   {
     "code": "134411",
     "title": "Aquaculture Manager",
+    "title_tr": "Su Ürünleri Yetiştiriciliği Müdürü",
+    "title_zh": "水产养殖经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aquaculture Manager activities in line with legislative, safety and quality requirements.",
@@ -422,6 +496,8 @@
   {
     "code": "135111",
     "title": "Ict Project Manager",
+    "title_tr": "BİT Proje Müdürü",
+    "title_zh": "信息通信技术项目经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Ict Project Manager solutions.",
@@ -433,6 +509,8 @@
   {
     "code": "135112",
     "title": "ICT Project Manager",
+    "title_tr": "BİT Proje Müdürü",
+    "title_zh": "信息通信技术项目经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans, manages and delivers ICT projects within scope, time and budget.",
@@ -444,6 +522,8 @@
   {
     "code": "139911",
     "title": "Hospital Chief Executive Or Medical Director",
+    "title_tr": "Hastane Genel Müdürü veya Tıbbi Direktör",
+    "title_zh": "医院首席执行官或医务主任",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Hospital Chief Executive Or Medical Director care or treatment plans.",
@@ -455,6 +535,8 @@
   {
     "code": "139912",
     "title": "Senior Research Scientist",
+    "title_tr": "Kıdemli Araştırma Bilimci",
+    "title_zh": "高级研究科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Senior Research Scientist activities in line with legislative, safety and quality requirements.",
@@ -466,6 +548,8 @@
   {
     "code": "139913",
     "title": "Laboratory Manager",
+    "title_tr": "Laboratuvar Müdürü",
+    "title_zh": "实验室经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Laboratory Manager activities in line with legislative, safety and quality requirements.",
@@ -477,6 +561,8 @@
   {
     "code": "139914",
     "title": "Quality Assurance Manager",
+    "title_tr": "Kalite Güvence Müdürü",
+    "title_zh": "质量保证经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and manages quality systems, audits and continuous improvement programs.",
@@ -488,6 +574,8 @@
   {
     "code": "139915",
     "title": "Development Director",
+    "title_tr": "Gelişim Direktörü",
+    "title_zh": "发展总监",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Development Director activities in line with legislative, safety and quality requirements.",
@@ -499,6 +587,8 @@
   {
     "code": "139999",
     "title": "Managers Nec",
+    "title_tr": "Diğer Müdürler (Sınıflandırılmamış)",
+    "title_zh": "其他经理人员（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Managers Nec activities in line with legislative, safety and quality requirements.",
@@ -510,6 +600,8 @@
   {
     "code": "141111",
     "title": "Cafe or Restaurant Manager",
+    "title_tr": "Kafe veya Restoran Müdürü",
+    "title_zh": "咖啡馆或餐厅经理",
     "skillLevel": "Skill Level 2",
     "duties": [
       "Plans and manages daily operations of cafes, restaurants or dining venues.",
@@ -521,6 +613,8 @@
   {
     "code": "149211",
     "title": "Telecommunications Manager",
+    "title_tr": "Telekomünikasyon Müdürü",
+    "title_zh": "电信经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Telecommunications Manager activities in line with legislative, safety and quality requirements.",
@@ -532,6 +626,8 @@
   {
     "code": "149212",
     "title": "Customer Service Manager",
+    "title_tr": "Müşteri Hizmetleri Müdürü",
+    "title_zh": "客户服务经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Customer Service Manager activities in line with legislative, safety and quality requirements.",
@@ -543,6 +639,8 @@
   {
     "code": "149213",
     "title": "Hotel Or Accommodation Manager",
+    "title_tr": "Otel veya Konaklama Müdürü",
+    "title_zh": "酒店或住宿经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Hotel Or Accommodation Manager activities in line with legislative, safety and quality requirements.",
@@ -554,6 +652,8 @@
   {
     "code": "149214",
     "title": "Caf? Or Restaurant Manager",
+    "title_tr": "Kafe veya Restoran Müdürü",
+    "title_zh": "咖啡馆或餐厅经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Caf? Or Restaurant Manager activities in line with legislative, safety and quality requirements.",
@@ -565,6 +665,8 @@
   {
     "code": "149215",
     "title": "Retail Manager",
+    "title_tr": "Perakende Müdürü",
+    "title_zh": "零售经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Retail Manager activities in line with legislative, safety and quality requirements.",
@@ -576,6 +678,8 @@
   {
     "code": "149216",
     "title": "Warehouse Manager",
+    "title_tr": "Depo Müdürü",
+    "title_zh": "仓库经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Warehouse Manager activities in line with legislative, safety and quality requirements.",
@@ -587,6 +691,8 @@
   {
     "code": "151111",
     "title": "Environmental Manager",
+    "title_tr": "Çevre Müdürü",
+    "title_zh": "环境经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Environmental Manager activities in line with legislative, safety and quality requirements.",
@@ -598,6 +704,8 @@
   {
     "code": "151112",
     "title": "Forestry Manager",
+    "title_tr": "Ormancılık Müdürü",
+    "title_zh": "林业经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Forestry Manager activities in line with legislative, safety and quality requirements.",
@@ -609,6 +717,8 @@
   {
     "code": "151113",
     "title": "Conservation Manager",
+    "title_tr": "Koruma Müdürü",
+    "title_zh": "自然保护经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Conservation Manager activities in line with legislative, safety and quality requirements.",
@@ -620,6 +730,8 @@
   {
     "code": "151114",
     "title": "Land Reclamation Manager",
+    "title_tr": "Arazi Islahı Müdürü",
+    "title_zh": "土地复垦经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Land Reclamation Manager activities in line with legislative, safety and quality requirements.",
@@ -631,6 +743,8 @@
   {
     "code": "151115",
     "title": "Parks And Recreational Manager",
+    "title_tr": "Park ve Rekreasyon Müdürü",
+    "title_zh": "公园与休闲管理经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Parks And Recreational Manager activities in line with legislative, safety and quality requirements.",
@@ -642,6 +756,8 @@
   {
     "code": "211111",
     "title": "Accountant (general)",
+    "title_tr": "Muhasebeci (Genel)",
+    "title_zh": "会计师（综合类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Accountant (general) functions and reporting obligations.",
@@ -653,6 +769,8 @@
   {
     "code": "211112",
     "title": "Management Accountant",
+    "title_tr": "Yönetim Muhasebecisi",
+    "title_zh": "管理会计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Management Accountant functions and reporting obligations.",
@@ -664,6 +782,8 @@
   {
     "code": "211113",
     "title": "Taxation Accountant",
+    "title_tr": "Vergi Muhasebecisi",
+    "title_zh": "税务会计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Taxation Accountant functions and reporting obligations.",
@@ -675,6 +795,8 @@
   {
     "code": "211211",
     "title": "Auditor",
+    "title_tr": "Denetçi",
+    "title_zh": "审计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Auditor functions and reporting obligations.",
@@ -686,6 +808,8 @@
   {
     "code": "212111",
     "title": "Lawyer",
+    "title_tr": "Hukukçu (Avukat)",
+    "title_zh": "律师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Lawyer activities in line with legislative, safety and quality requirements.",
@@ -697,6 +821,8 @@
   {
     "code": "212112",
     "title": "Legal Practitioner",
+    "title_tr": "Hukuk Uygulayıcısı",
+    "title_zh": "法律从业者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Legal Practitioner activities in line with legislative, safety and quality requirements.",
@@ -708,6 +834,8 @@
   {
     "code": "212113",
     "title": "Solicitor",
+    "title_tr": "Avukat (Solicitor)",
+    "title_zh": "律师（事务律师）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Solicitor activities in line with legislative, safety and quality requirements.",
@@ -719,6 +847,8 @@
   {
     "code": "212211",
     "title": "Patent Attorney",
+    "title_tr": "Patent Vekili",
+    "title_zh": "专利律师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Patent Attorney activities in line with legislative, safety and quality requirements.",
@@ -730,6 +860,8 @@
   {
     "code": "212212",
     "title": "Intellectual Property Attorney",
+    "title_tr": "Fikri Mülkiyet Avukatı",
+    "title_zh": "知识产权律师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Intellectual Property Attorney activities in line with legislative, safety and quality requirements.",
@@ -741,6 +873,8 @@
   {
     "code": "212311",
     "title": "Barrister",
+    "title_tr": "Dava Avukatı (Barrister)",
+    "title_zh": "律师（出庭律师）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Barrister activities in line with legislative, safety and quality requirements.",
@@ -752,6 +886,8 @@
   {
     "code": "213111",
     "title": "Psychologist",
+    "title_tr": "Psikolog",
+    "title_zh": "心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Psychologist care or treatment plans.",
@@ -763,6 +899,8 @@
   {
     "code": "213211",
     "title": "Social Worker",
+    "title_tr": "Sosyal Hizmet Uzmanı",
+    "title_zh": "社会工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Social Worker activities in line with legislative, safety and quality requirements.",
@@ -774,6 +912,8 @@
   {
     "code": "213212",
     "title": "Counsellor",
+    "title_tr": "Danışman",
+    "title_zh": "心理咨询师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Counsellor activities in line with legislative, safety and quality requirements.",
@@ -798,6 +938,8 @@
   {
     "code": "221112",
     "title": "Management Accountant",
+    "title_tr": "Yönetim Muhasebecisi",
+    "title_zh": "管理会计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares management reports, budgets, forecasts and cost analyses.",
@@ -809,6 +951,8 @@
   {
     "code": "221113",
     "title": "Taxation Accountant",
+    "title_tr": "Vergi Muhasebecisi",
+    "title_zh": "税务会计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares tax returns, statements and compliance documentation.",
@@ -820,6 +964,8 @@
   {
     "code": "221211",
     "title": "Auditor",
+    "title_tr": "Denetçi",
+    "title_zh": "审计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Auditor functions and reporting obligations.",
@@ -831,6 +977,8 @@
   {
     "code": "221213",
     "title": "External Auditor",
+    "title_tr": "Dış Denetçi",
+    "title_zh": "外部审计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Examines financial records, controls and reporting processes.",
@@ -842,6 +990,8 @@
   {
     "code": "221214",
     "title": "External Auditor",
+    "title_tr": "Dış Denetçi",
+    "title_zh": "外部审计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to External Auditor functions and reporting obligations.",
@@ -853,6 +1003,8 @@
   {
     "code": "222211",
     "title": "Financial Market Dealer",
+    "title_tr": "Finansal Piyasa Uzmanı",
+    "title_zh": "金融市场交易员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Buys and sells financial products on behalf of clients or organisations.",
@@ -864,6 +1016,8 @@
   {
     "code": "223111",
     "title": "Human Resource Adviser",
+    "title_tr": "İnsan Kaynakları Danışmanı",
+    "title_zh": "人力资源顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Human Resource Adviser activities in line with legislative, safety and quality requirements.",
@@ -875,6 +1029,8 @@
   {
     "code": "224111",
     "title": "Actuary",
+    "title_tr": "Aktüer",
+    "title_zh": "精算师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Actuary functions and reporting obligations.",
@@ -886,6 +1042,8 @@
   {
     "code": "224112",
     "title": "Actuarial Specialist",
+    "title_tr": "Aktüerya Uzmanı",
+    "title_zh": "精算专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Actuarial Specialist activities in line with legislative, safety and quality requirements.",
@@ -897,6 +1055,8 @@
   {
     "code": "224113",
     "title": "Statistician",
+    "title_tr": "İstatistikçi",
+    "title_zh": "统计学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Statistician activities in line with legislative, safety and quality requirements.",
@@ -908,6 +1068,8 @@
   {
     "code": "224211",
     "title": "Quantity Surveyor",
+    "title_tr": "Metraj Uzmanı (Quantity Surveyor)",
+    "title_zh": "工料测量师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Quantity Surveyor activities in line with legislative, safety and quality requirements.",
@@ -919,6 +1081,8 @@
   {
     "code": "224311",
     "title": "Valuer",
+    "title_tr": "Değerleme Uzmanı",
+    "title_zh": "评估师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Valuer activities in line with legislative, safety and quality requirements.",
@@ -930,6 +1094,8 @@
   {
     "code": "224711",
     "title": "Management Consultant",
+    "title_tr": "Yönetim Danışmanı",
+    "title_zh": "管理顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses organisational problems, processes and management practices.",
@@ -941,6 +1107,8 @@
   {
     "code": "224712",
     "title": "Library Technician",
+    "title_tr": "Kütüphane Teknisyeni",
+    "title_zh": "图书馆技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Library Technician activities in line with legislative, safety and quality requirements.",
@@ -952,6 +1120,8 @@
   {
     "code": "224999",
     "title": "Information and Organisation Professionals nec",
+    "title_tr": "Bilgi ve Organizasyon Uzmanları (Sınıflandırılmamış)",
+    "title_zh": "信息与组织专业人员（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses organisational information, systems, records or knowledge processes.",
@@ -963,6 +1133,8 @@
   {
     "code": "225111",
     "title": "Advertising Specialist",
+    "title_tr": "Reklam Uzmanı",
+    "title_zh": "广告专员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Advertising Specialist activities in line with legislative, safety and quality requirements.",
@@ -974,6 +1146,8 @@
   {
     "code": "225112",
     "title": "Advertising Manager",
+    "title_tr": "Reklam Müdürü",
+    "title_zh": "广告经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Advertising Manager activities in line with legislative, safety and quality requirements.",
@@ -985,6 +1159,8 @@
   {
     "code": "225113",
     "title": "Marketing Specialist",
+    "title_tr": "Pazarlama Uzmanı",
+    "title_zh": "市场营销专员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Researches markets, customer behaviour, competitors and campaign performance.",
@@ -996,6 +1172,8 @@
   {
     "code": "225114",
     "title": "Marketing Manager",
+    "title_tr": "Pazarlama Müdürü",
+    "title_zh": "市场营销经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Marketing Manager activities in line with legislative, safety and quality requirements.",
@@ -1007,6 +1185,8 @@
   {
     "code": "225115",
     "title": "Public Relations Professional",
+    "title_tr": "Halkla İlişkiler Uzmanı",
+    "title_zh": "公共关系专业人员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Public Relations Professional activities in line with legislative, safety and quality requirements.",
@@ -1018,6 +1198,8 @@
   {
     "code": "225116",
     "title": "Technical Writer",
+    "title_tr": "Teknik Yazar",
+    "title_zh": "技术文档撰写员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Technical Writer activities in line with legislative, safety and quality requirements.",
@@ -1029,6 +1211,8 @@
   {
     "code": "225211",
     "title": "Public Relations Professional",
+    "title_tr": "Halkla İlişkiler Uzmanı",
+    "title_zh": "公共关系专业人员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Public Relations Professional activities in line with legislative, safety and quality requirements.",
@@ -1040,6 +1224,8 @@
   {
     "code": "225212",
     "title": "Technical Writer",
+    "title_tr": "Teknik Yazar",
+    "title_zh": "技术文档撰写员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Technical Writer activities in line with legislative, safety and quality requirements.",
@@ -1051,6 +1237,8 @@
   {
     "code": "225311",
     "title": "Journalist",
+    "title_tr": "Gazeteci",
+    "title_zh": "记者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Journalist activities in line with legislative, safety and quality requirements.",
@@ -1062,6 +1250,8 @@
   {
     "code": "225312",
     "title": "Media Producer",
+    "title_tr": "Medya Yapımcısı",
+    "title_zh": "媒体制作人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Media Producer activities in line with legislative, safety and quality requirements.",
@@ -1073,6 +1263,8 @@
   {
     "code": "225313",
     "title": "Photographer",
+    "title_tr": "Fotoğrafçı",
+    "title_zh": "摄影师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Photographer activities in line with legislative, safety and quality requirements.",
@@ -1084,6 +1276,8 @@
   {
     "code": "225314",
     "title": "Video Editor",
+    "title_tr": "Video Editörü",
+    "title_zh": "视频剪辑师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Video Editor activities in line with legislative, safety and quality requirements.",
@@ -1095,6 +1289,8 @@
   {
     "code": "225315",
     "title": "Graphic Artist",
+    "title_tr": "Grafik Sanatçısı",
+    "title_zh": "平面设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Graphic Artist activities in line with legislative, safety and quality requirements.",
