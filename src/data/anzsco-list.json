@@ -1302,6 +1302,8 @@
   {
     "code": "225316",
     "title": "Illustrator",
+    "title_tr": "İllüstratör",
+    "title_zh": "插画师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Illustrator activities in line with legislative, safety and quality requirements.",
@@ -1313,6 +1315,8 @@
   {
     "code": "225411",
     "title": "Real Estate Agent",
+    "title_tr": "Emlak Danışmanı",
+    "title_zh": "房地产经纪人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Real Estate Agent activities in line with legislative, safety and quality requirements.",
@@ -1324,6 +1328,8 @@
   {
     "code": "225412",
     "title": "Property Manager",
+    "title_tr": "Mülk Yöneticisi",
+    "title_zh": "物业经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Property Manager activities in line with legislative, safety and quality requirements.",
@@ -1335,6 +1341,8 @@
   {
     "code": "225413",
     "title": "Real Estate Valuer",
+    "title_tr": "Gayrimenkul Değerleme Uzmanı",
+    "title_zh": "房地产估价师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Real Estate Valuer activities in line with legislative, safety and quality requirements.",
@@ -1346,6 +1354,8 @@
   {
     "code": "225414",
     "title": "Property Consultant",
+    "title_tr": "Mülk Danışmanı",
+    "title_zh": "物业顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Property Consultant activities in line with legislative, safety and quality requirements.",
@@ -1357,6 +1367,8 @@
   {
     "code": "231111",
     "title": "Aeroplane Pilot",
+    "title_tr": "Uçak Pilotu",
+    "title_zh": "飞机驾驶员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aeroplane Pilot activities in line with legislative, safety and quality requirements.",
@@ -1368,6 +1380,8 @@
   {
     "code": "231211",
     "title": "Flight Engineer",
+    "title_tr": "Uçuş Mühendisi",
+    "title_zh": "飞行工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Flight Engineer solutions.",
@@ -1379,6 +1393,8 @@
   {
     "code": "231212",
     "title": "Dancer",
+    "title_tr": "Dansçı",
+    "title_zh": "舞蹈演员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Dancer activities in line with legislative, safety and quality requirements.",
@@ -1390,6 +1406,8 @@
   {
     "code": "231213",
     "title": "Musician",
+    "title_tr": "Müzisyen",
+    "title_zh": "音乐家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Musician activities in line with legislative, safety and quality requirements.",
@@ -1401,6 +1419,8 @@
   {
     "code": "231214",
     "title": "Singer",
+    "title_tr": "Şarkıcı",
+    "title_zh": "歌手",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Singer activities in line with legislative, safety and quality requirements.",
@@ -1412,6 +1432,8 @@
   {
     "code": "231311",
     "title": "Flying Instructor",
+    "title_tr": "Uçuş Eğitmeni",
+    "title_zh": "飞行教练",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Flying Instructor activities in line with legislative, safety and quality requirements.",
@@ -1423,6 +1445,8 @@
   {
     "code": "231312",
     "title": "Tour Guide",
+    "title_tr": "Tur Rehberi",
+    "title_zh": "导游",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Tour Guide activities in line with legislative, safety and quality requirements.",
@@ -1434,6 +1458,8 @@
   {
     "code": "231411",
     "title": "Helicopter Pilot",
+    "title_tr": "Helikopter Pilotu",
+    "title_zh": "直升机驾驶员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Helicopter Pilot activities in line with legislative, safety and quality requirements.",
@@ -1458,6 +1484,8 @@
   {
     "code": "232112",
     "title": "Landscape Architect",
+    "title_tr": "Peyzaj Mimarı",
+    "title_zh": "景观设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and designs outdoor spaces, landscapes and environmental settings.",
@@ -1469,6 +1497,8 @@
   {
     "code": "232113",
     "title": "Landscape Architect",
+    "title_tr": "Peyzaj Mimarı",
+    "title_zh": "景观设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Landscape Architect activities in line with legislative, safety and quality requirements.",
@@ -1480,6 +1510,8 @@
   {
     "code": "232114",
     "title": "Town Planner",
+    "title_tr": "Şehir Plancısı",
+    "title_zh": "城镇规划师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Town Planner activities in line with legislative, safety and quality requirements.",
@@ -1491,6 +1523,8 @@
   {
     "code": "232115",
     "title": "Urban Designer",
+    "title_tr": "Kentsel Tasarımcı",
+    "title_zh": "城市设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Urban Designer activities in line with legislative, safety and quality requirements.",
@@ -1502,6 +1536,8 @@
   {
     "code": "232116",
     "title": "Interior Designer",
+    "title_tr": "İç Mimar",
+    "title_zh": "室内设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Interior Designer activities in line with legislative, safety and quality requirements.",
@@ -1513,6 +1549,8 @@
   {
     "code": "232211",
     "title": "Landscape Architect",
+    "title_tr": "Peyzaj Mimarı",
+    "title_zh": "景观设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Landscape Architect activities in line with legislative, safety and quality requirements.",
@@ -1524,6 +1562,8 @@
   {
     "code": "232212",
     "title": "Interior Designer",
+    "title_tr": "İç Mimar",
+    "title_zh": "室内设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Interior Designer activities in line with legislative, safety and quality requirements.",
@@ -1535,6 +1575,8 @@
   {
     "code": "232213",
     "title": "Graphic Designer",
+    "title_tr": "Grafik Tasarımcı",
+    "title_zh": "平面设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Graphic Designer activities in line with legislative, safety and quality requirements.",
@@ -1546,6 +1588,8 @@
   {
     "code": "232214",
     "title": "Fashion Designer",
+    "title_tr": "Moda Tasarımcısı",
+    "title_zh": "时装设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Fashion Designer activities in line with legislative, safety and quality requirements.",
@@ -1557,6 +1601,8 @@
   {
     "code": "232215",
     "title": "Industrial Designer",
+    "title_tr": "Endüstriyel Tasarımcı",
+    "title_zh": "工业设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Industrial Designer activities in line with legislative, safety and quality requirements.",
@@ -1568,6 +1614,8 @@
   {
     "code": "232216",
     "title": "Web Designer",
+    "title_tr": "Web Tasarımcısı",
+    "title_zh": "网页设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Web Designer activities in line with legislative, safety and quality requirements.",
@@ -1579,6 +1627,8 @@
   {
     "code": "232311",
     "title": "Land Economist",
+    "title_tr": "Arazi Ekonomisti",
+    "title_zh": "土地经济师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Land Economist functions and reporting obligations.",
@@ -1590,6 +1640,8 @@
   {
     "code": "232312",
     "title": "Drama Teacher",
+    "title_tr": "Drama Öğretmeni",
+    "title_zh": "戏剧教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Drama Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -1601,6 +1653,8 @@
   {
     "code": "232313",
     "title": "Dance Teacher",
+    "title_tr": "Dans Öğretmeni",
+    "title_zh": "舞蹈教师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs and delivers Dance Teacher learning programs aligned to curriculum, standards and learner needs.",
@@ -1612,6 +1666,8 @@
   {
     "code": "232314",
     "title": "Orchestra Conductor",
+    "title_tr": "Orkestra Şefi",
+    "title_zh": "乐团指挥",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Orchestra Conductor activities in line with legislative, safety and quality requirements.",
@@ -1623,6 +1679,8 @@
   {
     "code": "232411",
     "title": "Graphic Designer",
+    "title_tr": "Grafik Tasarımcı",
+    "title_zh": "平面设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Creates visual concepts, layouts and designs for print, digital and brand materials.",
@@ -1634,6 +1692,8 @@
   {
     "code": "232511",
     "title": "Urban Planner",
+    "title_tr": "Kentsel Plancı",
+    "title_zh": "城市规划师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Urban Planner activities in line with legislative, safety and quality requirements.",
@@ -1645,6 +1705,8 @@
   {
     "code": "232611",
     "title": "Urban And Regional Planner",
+    "title_tr": "Kentsel ve Bölgesel Plancı",
+    "title_zh": "城市与区域规划师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Urban And Regional Planner activities in line with legislative, safety and quality requirements.",
@@ -1656,6 +1718,8 @@
   {
     "code": "233111",
     "title": "Chemical Engineer",
+    "title_tr": "Kimya Mühendisi",
+    "title_zh": "化学工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Chemical Engineer solutions.",
@@ -1667,6 +1731,8 @@
   {
     "code": "233112",
     "title": "Materials Engineer",
+    "title_tr": "Malzeme Mühendisi",
+    "title_zh": "材料工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Materials Engineer solutions.",
@@ -1678,6 +1744,8 @@
   {
     "code": "233114",
     "title": "Telecommunications Engineer",
+    "title_tr": "Telekomünikasyon Mühendisi",
+    "title_zh": "电信工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Telecommunications Engineer solutions.",
@@ -1689,6 +1757,8 @@
   {
     "code": "233115",
     "title": "Mining Engineer",
+    "title_tr": "Maden Mühendisi",
+    "title_zh": "采矿工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Mining Engineer solutions.",
@@ -1700,6 +1770,8 @@
   {
     "code": "233116",
     "title": "Petroleum Engineer",
+    "title_tr": "Petrol Mühendisi",
+    "title_zh": "石油工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Petroleum Engineer solutions.",
@@ -1711,6 +1783,8 @@
   {
     "code": "233117",
     "title": "Biomedical Engineer",
+    "title_tr": "Biyomedikal Mühendis",
+    "title_zh": "生物医学工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Biomedical Engineer solutions.",
@@ -1722,6 +1796,8 @@
   {
     "code": "233118",
     "title": "Environmental Engineer",
+    "title_tr": "Çevre Mühendisi",
+    "title_zh": "环境工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Environmental Engineer solutions.",
@@ -1733,6 +1809,8 @@
   {
     "code": "233119",
     "title": "Software Engineer",
+    "title_tr": "Yazılım Mühendisi",
+    "title_zh": "软件工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Software Engineer solutions.",
@@ -1757,6 +1835,8 @@
   {
     "code": "233212",
     "title": "Geotechnical Engineer",
+    "title_tr": "Geoteknik Mühendisi",
+    "title_zh": "岩土工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Investigates soil, rock and groundwater conditions for engineering projects.",
@@ -1768,6 +1848,8 @@
   {
     "code": "233213",
     "title": "Quantity Surveyor",
+    "title_tr": "Metraj Uzmanı (Quantity Surveyor)",
+    "title_zh": "工料测量师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Quantity Surveyor activities in line with legislative, safety and quality requirements.",
@@ -1779,6 +1861,8 @@
   {
     "code": "233214",
     "title": "Structural Engineer",
+    "title_tr": "Yapı Mühendisi",
+    "title_zh": "结构工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs structural systems for buildings, bridges and other infrastructure.",
@@ -1790,6 +1874,8 @@
   {
     "code": "233215",
     "title": "Transport Engineer",
+    "title_tr": "Ulaştırma Mühendisi",
+    "title_zh": "交通工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Transport Engineer solutions.",
@@ -1801,6 +1887,8 @@
   {
     "code": "233311",
     "title": "Electrical Engineer",
+    "title_tr": "Elektrik Mühendisi",
+    "title_zh": "电气工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs electrical systems, equipment, circuits and power distribution networks.",
@@ -1812,6 +1900,8 @@
   {
     "code": "233312",
     "title": "Electronics Engineer",
+    "title_tr": "Elektronik Mühendisi",
+    "title_zh": "电子工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Electronics Engineer solutions.",
@@ -1823,6 +1913,8 @@
   {
     "code": "233313",
     "title": "Power Systems Engineer",
+    "title_tr": "Güç Sistemleri Mühendisi",
+    "title_zh": "电力系统工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Power Systems Engineer solutions.",
@@ -1834,6 +1926,8 @@
   {
     "code": "233411",
     "title": "Electronics Engineer",
+    "title_tr": "Elektronik Mühendisi",
+    "title_zh": "电子工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs electronic circuits, devices, control systems and communications equipment.",
@@ -1845,6 +1939,8 @@
   {
     "code": "233412",
     "title": "Industrial Engineer",
+    "title_tr": "Endüstri Mühendisi",
+    "title_zh": "工业工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Industrial Engineer solutions.",
@@ -1856,6 +1952,8 @@
   {
     "code": "233413",
     "title": "Mechanical Engineer",
+    "title_tr": "Makine Mühendisi",
+    "title_zh": "机械工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Mechanical Engineer solutions.",
@@ -1867,6 +1965,8 @@
   {
     "code": "233414",
     "title": "Production Engineer",
+    "title_tr": "Üretim Mühendisi",
+    "title_zh": "生产工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Production Engineer solutions.",
@@ -1878,6 +1978,8 @@
   {
     "code": "233511",
     "title": "Industrial Engineer",
+    "title_tr": "Endüstri Mühendisi",
+    "title_zh": "工业工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Industrial Engineer solutions.",
@@ -1889,6 +1991,8 @@
   {
     "code": "233512",
     "title": "Mechanical Engineer",
+    "title_tr": "Makine Mühendisi",
+    "title_zh": "机械工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and designs mechanical equipment, machines, components and systems.",
@@ -1900,6 +2004,8 @@
   {
     "code": "233513",
     "title": "Production or Plant Engineer",
+    "title_tr": "Üretim veya Tesis Mühendisi",
+    "title_zh": "生产或工厂工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and manages manufacturing processes, plant layout and production methods.",
@@ -1911,6 +2017,8 @@
   {
     "code": "233611",
     "title": "Mining Engineer (excluding Petroleum)",
+    "title_tr": "Maden Mühendisi (Petrol Hariç)",
+    "title_zh": "采矿工程师（石油除外）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Mining Engineer (excluding Petroleum) solutions.",
@@ -1922,6 +2030,8 @@
   {
     "code": "233612",
     "title": "Petroleum Engineer",
+    "title_tr": "Petrol Mühendisi",
+    "title_zh": "石油工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Petroleum Engineer solutions.",
@@ -1933,6 +2043,8 @@
   {
     "code": "233614",
     "title": "Wind Turbine Technician",
+    "title_tr": "Rüzgar Türbini Teknisyeni",
+    "title_zh": "风力涡轮机技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Wind Turbine Technician activities in line with legislative, safety and quality requirements.",
@@ -1944,6 +2056,8 @@
   {
     "code": "233615",
     "title": "Solar Engineer",
+    "title_tr": "Güneş Enerjisi Mühendisi",
+    "title_zh": "太阳能工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Solar Engineer solutions.",
@@ -1955,6 +2069,8 @@
   {
     "code": "233616",
     "title": "Renewable Energy Technician",
+    "title_tr": "Yenilenebilir Enerji Teknisyeni",
+    "title_zh": "可再生能源技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Renewable Energy Technician activities in line with legislative, safety and quality requirements.",
@@ -1966,6 +2082,8 @@
   {
     "code": "233617",
     "title": "Energy Engineer",
+    "title_tr": "Enerji Mühendisi",
+    "title_zh": "能源工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Energy Engineer solutions.",
@@ -1977,6 +2095,8 @@
   {
     "code": "233618",
     "title": "Power Systems Engineer",
+    "title_tr": "Güç Sistemleri Mühendisi",
+    "title_zh": "电力系统工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Power Systems Engineer solutions.",
@@ -1988,6 +2108,8 @@
   {
     "code": "233911",
     "title": "Aeronautical Engineer",
+    "title_tr": "Havacılık Mühendisi",
+    "title_zh": "航空工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Aeronautical Engineer solutions.",
@@ -1999,6 +2121,8 @@
   {
     "code": "233912",
     "title": "Agricultural Engineer",
+    "title_tr": "Tarım Mühendisi",
+    "title_zh": "农业工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Agricultural Engineer solutions.",
@@ -2010,6 +2134,8 @@
   {
     "code": "233913",
     "title": "Biomedical Engineer",
+    "title_tr": "Biyomedikal Mühendis",
+    "title_zh": "生物医学工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Biomedical Engineer solutions.",
@@ -2021,6 +2147,8 @@
   {
     "code": "233914",
     "title": "Engineering Technologist",
+    "title_tr": "Mühendislik Teknoloğu",
+    "title_zh": "工程技术专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Applies engineering technologies to design, testing and operational problems.",
@@ -2032,6 +2160,8 @@
   {
     "code": "233915",
     "title": "Environmental Engineer",
+    "title_tr": "Çevre Mühendisi",
+    "title_zh": "环境工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses environmental impacts of engineering projects and industrial activities.",
@@ -2043,6 +2173,8 @@
   {
     "code": "233916",
     "title": "Software Engineer",
+    "title_tr": "Yazılım Mühendisi",
+    "title_zh": "软件工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Software Engineer solutions.",
@@ -2054,6 +2186,8 @@
   {
     "code": "233917",
     "title": "Telecommunications Engineer",
+    "title_tr": "Telekomünikasyon Mühendisi",
+    "title_zh": "电信工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Telecommunications Engineer solutions.",
@@ -2065,6 +2199,8 @@
   {
     "code": "233918",
     "title": "Mining Engineer",
+    "title_tr": "Maden Mühendisi",
+    "title_zh": "采矿工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Mining Engineer solutions.",
@@ -2076,6 +2212,8 @@
   {
     "code": "233999",
     "title": "Engineering Professionals Nec",
+    "title_tr": "Diğer Mühendislik Uzmanları (Sınıflandırılmamış)",
+    "title_zh": "其他工程专业人员（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Engineering Professionals Nec solutions.",
@@ -2087,6 +2225,8 @@
   {
     "code": "234111",
     "title": "Agricultural Consultant",
+    "title_tr": "Tarım Danışmanı",
+    "title_zh": "农业顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Advises on agricultural production, land use, crop, livestock and business practices.",
@@ -2111,6 +2251,8 @@
   {
     "code": "234113",
     "title": "Forester",
+    "title_tr": "Ormancı",
+    "title_zh": "林业工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Forester activities in line with legislative, safety and quality requirements.",
@@ -2122,6 +2264,8 @@
   {
     "code": "234114",
     "title": "Agricultural Research Scientist",
+    "title_tr": "Tarımsal Araştırma Bilimcisi",
+    "title_zh": "农业研究科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Agricultural Research Scientist activities in line with legislative, safety and quality requirements.",
@@ -2133,6 +2277,8 @@
   {
     "code": "234115",
     "title": "Agronomist",
+    "title_tr": "Agronomist",
+    "title_zh": "农学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Agronomist activities in line with legislative, safety and quality requirements.",
@@ -2144,6 +2290,8 @@
   {
     "code": "234211",
     "title": "Food Technologist",
+    "title_tr": "Gıda Teknoloğu",
+    "title_zh": "食品技术专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Food Technologist activities in line with legislative, safety and quality requirements.",
@@ -2155,6 +2303,8 @@
   {
     "code": "234212",
     "title": "Food Technologist",
+    "title_tr": "Gıda Teknoloğu",
+    "title_zh": "食品技术专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Food Technologist activities in line with legislative, safety and quality requirements.",
@@ -2166,6 +2316,8 @@
   {
     "code": "234213",
     "title": "Park Manager",
+    "title_tr": "Park Yöneticisi",
+    "title_zh": "公园管理员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Park Manager activities in line with legislative, safety and quality requirements.",
@@ -2177,6 +2329,8 @@
   {
     "code": "234214",
     "title": "Ranger",
+    "title_tr": "Doğa Koruma Görevlisi (Ranger)",
+    "title_zh": "护林员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Ranger activities in line with legislative, safety and quality requirements.",
@@ -2188,6 +2342,8 @@
   {
     "code": "234221",
     "title": "Environmental Scientist",
+    "title_tr": "Çevre Bilimci",
+    "title_zh": "环境科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Environmental Scientist activities in line with legislative, safety and quality requirements.",
@@ -2199,6 +2355,8 @@
   {
     "code": "234222",
     "title": "Ecological Scientist",
+    "title_tr": "Ekoloji Bilimci",
+    "title_zh": "生态学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Ecological Scientist activities in line with legislative, safety and quality requirements.",
@@ -2210,6 +2368,8 @@
   {
     "code": "234223",
     "title": "Conservation Scientist",
+    "title_tr": "Doğa Koruma Bilimci",
+    "title_zh": "自然保护科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Conservation Scientist activities in line with legislative, safety and quality requirements.",
@@ -2221,6 +2381,8 @@
   {
     "code": "234224",
     "title": "Marine Scientist",
+    "title_tr": "Deniz Bilimci",
+    "title_zh": "海洋科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Marine Scientist activities in line with legislative, safety and quality requirements.",
@@ -2232,6 +2394,8 @@
   {
     "code": "234225",
     "title": "Meteorologist",
+    "title_tr": "Meteorolog",
+    "title_zh": "气象学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Meteorologist activities in line with legislative, safety and quality requirements.",
@@ -2243,6 +2407,8 @@
   {
     "code": "234311",
     "title": "Environmental Consultant",
+    "title_tr": "Çevre Danışmanı",
+    "title_zh": "环境顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Environmental Consultant activities in line with legislative, safety and quality requirements.",
@@ -2254,6 +2420,8 @@
   {
     "code": "234312",
     "title": "Environmental Consultant",
+    "title_tr": "Çevre Danışmanı",
+    "title_zh": "环境顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Environmental Consultant activities in line with legislative, safety and quality requirements.",
@@ -2265,6 +2433,8 @@
   {
     "code": "234313",
     "title": "Environmental Research Scientist",
+    "title_tr": "Çevre Araştırma Bilimcisi",
+    "title_zh": "环境研究科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Environmental Research Scientist activities in line with legislative, safety and quality requirements.",
@@ -2276,6 +2446,8 @@
   {
     "code": "234314",
     "title": "Soil Scientist",
+    "title_tr": "Toprak Bilimci",
+    "title_zh": "土壤科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Soil Scientist activities in line with legislative, safety and quality requirements.",
@@ -2287,6 +2459,8 @@
   {
     "code": "234399",
     "title": "Environmental Scientists Nec",
+    "title_tr": "Diğer Çevre Bilimcileri (Sınıflandırılmamış)",
+    "title_zh": "其他环境科学家（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Environmental Scientists Nec activities in line with legislative, safety and quality requirements.",
@@ -2298,6 +2472,8 @@
   {
     "code": "234411",
     "title": "Geologist",
+    "title_tr": "Jeolog",
+    "title_zh": "地质学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Geologist activities in line with legislative, safety and quality requirements.",
@@ -2309,6 +2485,8 @@
   {
     "code": "234412",
     "title": "Geophysicist",
+    "title_tr": "Jeofizikçi",
+    "title_zh": "地球物理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Geophysicist activities in line with legislative, safety and quality requirements.",
@@ -2320,6 +2498,8 @@
   {
     "code": "234511",
     "title": "Life Scientist (general)",
+    "title_tr": "Yaşam Bilimci (Genel)",
+    "title_zh": "生命科学家（综合类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Life Scientist (general) activities in line with legislative, safety and quality requirements.",
@@ -2331,6 +2511,8 @@
   {
     "code": "234512",
     "title": "Anatomist",
+    "title_tr": "Anatomist",
+    "title_zh": "解剖学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Anatomist activities in line with legislative, safety and quality requirements.",
@@ -2342,6 +2524,8 @@
   {
     "code": "234513",
     "title": "Biochemist",
+    "title_tr": "Biyokimyager",
+    "title_zh": "生物化学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Biochemist activities in line with legislative, safety and quality requirements.",
@@ -2353,6 +2537,8 @@
   {
     "code": "234514",
     "title": "Biotechnologist",
+    "title_tr": "Biyoteknolog",
+    "title_zh": "生物技术专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Biotechnologist activities in line with legislative, safety and quality requirements.",
@@ -2364,6 +2550,8 @@
   {
     "code": "234515",
     "title": "Botanist",
+    "title_tr": "Botanikçi",
+    "title_zh": "植物学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Botanist activities in line with legislative, safety and quality requirements.",
@@ -2375,6 +2563,8 @@
   {
     "code": "234516",
     "title": "Marine Biologist",
+    "title_tr": "Deniz Biyoloğu",
+    "title_zh": "海洋生物学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Marine Biologist activities in line with legislative, safety and quality requirements.",
@@ -2386,6 +2576,8 @@
   {
     "code": "234517",
     "title": "Microbiologist",
+    "title_tr": "Mikrobiyolog",
+    "title_zh": "微生物学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Microbiologist activities in line with legislative, safety and quality requirements.",
@@ -2397,6 +2589,8 @@
   {
     "code": "234518",
     "title": "Zoologist",
+    "title_tr": "Zoolog",
+    "title_zh": "动物学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Zoologist activities in line with legislative, safety and quality requirements.",
