@@ -7802,6 +7802,8 @@
   {
     "code": "344199",
     "title": "Locksmiths And Safe Specialists Nec",
+    "title_tr": "Diğer Çilingirler ve Kasa Uzmanları (Sınıflandırılmamış)",
+    "title_zh": "其他锁匠与保险柜专家（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Locksmiths And Safe Specialists Nec activities in line with legislative, safety and quality requirements.",
@@ -7813,6 +7815,8 @@
   {
     "code": "351111",
     "title": "Baker",
+    "title_tr": "Fırıncı",
+    "title_zh": "面包师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Baker tasks.",
@@ -7824,6 +7828,8 @@
   {
     "code": "351112",
     "title": "Pastrycook",
+    "title_tr": "Pastacı",
+    "title_zh": "糕点师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Pastrycook tasks.",
@@ -7835,6 +7841,8 @@
   {
     "code": "351113",
     "title": "Baker (apprentice)",
+    "title_tr": "Fırıncı (Çırak)",
+    "title_zh": "面包师（学徒）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Baker (apprentice) tasks.",
@@ -7846,6 +7854,8 @@
   {
     "code": "351211",
     "title": "Butcher",
+    "title_tr": "Kasap",
+    "title_zh": "屠夫",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Butcher activities in line with legislative, safety and quality requirements.",
@@ -7870,6 +7880,8 @@
   {
     "code": "351312",
     "title": "Chef (apprentice)",
+    "title_tr": "Şef (Çırak)",
+    "title_zh": "厨师（学徒）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Chef (apprentice) tasks.",
@@ -7881,6 +7893,8 @@
   {
     "code": "351313",
     "title": "Head Chef",
+    "title_tr": "Baş Şef",
+    "title_zh": "主厨",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Head Chef tasks.",
@@ -7892,6 +7906,8 @@
   {
     "code": "351411",
     "title": "Cook",
+    "title_tr": "Aşçı",
+    "title_zh": "厨师（普通）",
     "skillLevel": "Skill Level 3",
     "duties": [
       "Prepares and cooks meals, dishes and food items according to menus.",
@@ -7903,6 +7919,8 @@
   {
     "code": "351412",
     "title": "Cook (apprentice)",
+    "title_tr": "Aşçı (Çırak)",
+    "title_zh": "厨师（学徒）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Cook (apprentice) tasks.",
@@ -7914,6 +7932,8 @@
   {
     "code": "351413",
     "title": "Kitchen Hand",
+    "title_tr": "Mutfak Yardımcısı",
+    "title_zh": "厨房助手",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Kitchen Hand activities in line with legislative, safety and quality requirements.",
@@ -7925,6 +7945,8 @@
   {
     "code": "352111",
     "title": "Fishmonger",
+    "title_tr": "Balıkçı (Satıcı)",
+    "title_zh": "鱼贩",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Fishmonger activities in line with legislative, safety and quality requirements.",
@@ -7936,6 +7958,8 @@
   {
     "code": "352112",
     "title": "Delicatessen Counter Assistant",
+    "title_tr": "Şarküteri Tezgahtarı",
+    "title_zh": "熟食柜台助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Delicatessen Counter Assistant activities in line with legislative, safety and quality requirements.",
@@ -7947,6 +7971,8 @@
   {
     "code": "352113",
     "title": "Greengrocer",
+    "title_tr": "Manav",
+    "title_zh": "蔬果商",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Greengrocer activities in line with legislative, safety and quality requirements.",
@@ -7958,6 +7984,8 @@
   {
     "code": "352114",
     "title": "Produce Merchant",
+    "title_tr": "Ürün Tüccarı",
+    "title_zh": "农产品商",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Produce Merchant activities in line with legislative, safety and quality requirements.",
@@ -7969,6 +7997,8 @@
   {
     "code": "391111",
     "title": "Metal Fabricator",
+    "title_tr": "Metal İmalatçısı",
+    "title_zh": "金属制造工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Metal Fabricator activities in line with legislative, safety and quality requirements.",
@@ -7980,6 +8010,8 @@
   {
     "code": "391112",
     "title": "Structural Steel Worker",
+    "title_tr": "Yapısal Çelik İşçisi",
+    "title_zh": "结构钢工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Structural Steel Worker activities in line with legislative, safety and quality requirements.",
@@ -7991,6 +8023,8 @@
   {
     "code": "391113",
     "title": "Metal Worker",
+    "title_tr": "Metal İşçisi",
+    "title_zh": "金属工人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Metal Worker activities in line with legislative, safety and quality requirements.",
@@ -8002,6 +8036,8 @@
   {
     "code": "391114",
     "title": "Boilermaker",
+    "title_tr": "Kazancı (Boilermaker)",
+    "title_zh": "锅炉制造工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Boilermaker tasks.",
@@ -8013,6 +8049,8 @@
   {
     "code": "391211",
     "title": "Printer",
+    "title_tr": "Matbaacı",
+    "title_zh": "印刷工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Printer activities in line with legislative, safety and quality requirements.",
@@ -8024,6 +8062,8 @@
   {
     "code": "391212",
     "title": "Printing Machine Operator",
+    "title_tr": "Baskı Makinesi Operatörü",
+    "title_zh": "印刷机操作员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Printing Machine Operator activities in line with legislative, safety and quality requirements.",
@@ -8035,6 +8075,8 @@
   {
     "code": "391213",
     "title": "Bookbinder",
+    "title_tr": "Ciltçi",
+    "title_zh": "装订工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Bookbinder activities in line with legislative, safety and quality requirements.",
@@ -8046,6 +8088,8 @@
   {
     "code": "391214",
     "title": "Lithographer",
+    "title_tr": "Litografi Ustası",
+    "title_zh": "平版印刷工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Lithographer activities in line with legislative, safety and quality requirements.",
@@ -8057,6 +8101,8 @@
   {
     "code": "391311",
     "title": "Refrigeration Mechanic",
+    "title_tr": "Soğutma Tamircisi",
+    "title_zh": "制冷机械师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Refrigeration Mechanic tasks.",
@@ -8068,6 +8114,8 @@
   {
     "code": "391312",
     "title": "Air Conditioning Mechanic",
+    "title_tr": "Klima Tamircisi",
+    "title_zh": "空调机械师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Air Conditioning Mechanic tasks.",
@@ -8079,6 +8127,8 @@
   {
     "code": "391313",
     "title": "Gas Fitter",
+    "title_tr": "Gaz Tesisatçısı",
+    "title_zh": "燃气装配工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Gas Fitter tasks.",
@@ -8090,6 +8140,8 @@
   {
     "code": "391314",
     "title": "Pump Operator",
+    "title_tr": "Pompa Operatörü",
+    "title_zh": "泵操作员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Pump Operator activities in line with legislative, safety and quality requirements.",
@@ -8101,6 +8153,8 @@
   {
     "code": "393111",
     "title": "Sewing Machinist",
+    "title_tr": "Dikiş Makinesi Operatörü",
+    "title_zh": "缝纫机操作员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Sewing Machinist activities in line with legislative, safety and quality requirements.",
@@ -8112,6 +8166,8 @@
   {
     "code": "393112",
     "title": "Garment Maker",
+    "title_tr": "Giysi Üreticisi",
+    "title_zh": "服装制作工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Garment Maker activities in line with legislative, safety and quality requirements.",
@@ -8123,6 +8179,8 @@
   {
     "code": "393113",
     "title": "Textile Worker",
+    "title_tr": "Tekstil İşçisi",
+    "title_zh": "纺织工人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Textile Worker activities in line with legislative, safety and quality requirements.",
@@ -8134,6 +8192,8 @@
   {
     "code": "393114",
     "title": "Leather Worker",
+    "title_tr": "Deri İşçisi",
+    "title_zh": "皮革工人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Leather Worker activities in line with legislative, safety and quality requirements.",
@@ -8145,6 +8205,8 @@
   {
     "code": "394111",
     "title": "Cabinetmaker",
+    "title_tr": "Mobilyacı (Kabinetmaker)",
+    "title_zh": "细木家具工",
     "skillLevel": "Skill Level 3",
     "duties": [
       "Fabricates, assembles and installs cabinets, furniture and fitted interiors.",
@@ -8156,6 +8218,8 @@
   {
     "code": "394112",
     "title": "Cabinetmaker (apprentice)",
+    "title_tr": "Mobilyacı (Çırak)",
+    "title_zh": "细木家具工（学徒）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Cabinetmaker (apprentice) activities in line with legislative, safety and quality requirements.",
@@ -8167,6 +8231,8 @@
   {
     "code": "394113",
     "title": "Wood Machinist",
+    "title_tr": "Ahşap Makine Operatörü",
+    "title_zh": "木工机械操作员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Wood Machinist activities in line with legislative, safety and quality requirements.",
@@ -8178,6 +8244,8 @@
   {
     "code": "394199",
     "title": "Wood Trades Workers Nec",
+    "title_tr": "Diğer Ahşap Meslek Çalışanları (Sınıflandırılmamış)",
+    "title_zh": "其他木工行业工人（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Wood Trades Workers Nec activities in line with legislative, safety and quality requirements.",
@@ -8189,6 +8257,8 @@
   {
     "code": "395111",
     "title": "Upholsterer",
+    "title_tr": "Döşemeci",
+    "title_zh": "室内装潢工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Upholsterer activities in line with legislative, safety and quality requirements.",
@@ -8200,6 +8270,8 @@
   {
     "code": "395112",
     "title": "Upholsterer (apprentice)",
+    "title_tr": "Döşemeci (Çırak)",
+    "title_zh": "室内装潢工（学徒）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Upholsterer (apprentice) activities in line with legislative, safety and quality requirements.",
@@ -8211,6 +8283,8 @@
   {
     "code": "396111",
     "title": "Sheetmetal Worker",
+    "title_tr": "Sac Metal İşçisi",
+    "title_zh": "钣金工人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Sheetmetal Worker activities in line with legislative, safety and quality requirements.",
@@ -8222,6 +8296,8 @@
   {
     "code": "396112",
     "title": "Welder",
+    "title_tr": "Kaynakçı",
+    "title_zh": "焊工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Welder tasks.",
@@ -8233,6 +8309,8 @@
   {
     "code": "399111",
     "title": "Diver (commercial)",
+    "title_tr": "Dalgıç (Ticari)",
+    "title_zh": "潜水员（商业）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Diver (commercial) activities in line with legislative, safety and quality requirements.",
@@ -8244,6 +8322,8 @@
   {
     "code": "399112",
     "title": "Diver (professional)",
+    "title_tr": "Dalgıç (Profesyonel)",
+    "title_zh": "潜水员（专业）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Diver (professional) activities in line with legislative, safety and quality requirements.",
@@ -8255,6 +8335,8 @@
   {
     "code": "399113",
     "title": "Fishing Guide",
+    "title_tr": "Balıkçılık Rehberi",
+    "title_zh": "钓鱼向导",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Fishing Guide activities in line with legislative, safety and quality requirements.",
@@ -8266,6 +8348,8 @@
   {
     "code": "399114",
     "title": "Game Keeper",
+    "title_tr": "Av Bekçisi",
+    "title_zh": "猎场看守人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Game Keeper activities in line with legislative, safety and quality requirements.",
@@ -8277,6 +8361,8 @@
   {
     "code": "399115",
     "title": "Forestry Worker",
+    "title_tr": "Ormancılık İşçisi",
+    "title_zh": "林业工人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Forestry Worker activities in line with legislative, safety and quality requirements.",
@@ -8288,6 +8374,8 @@
   {
     "code": "399512",
     "title": "Camera Operator (Film, Television or Video)",
+    "title_tr": "Kamera Operatörü (Film, Televizyon veya Video)",
+    "title_zh": "摄影师（电影、电视或视频）",
     "skillLevel": "Skill Level 3",
     "duties": [
       "Operates cameras and related equipment for film, television or video production.",
@@ -8299,6 +8387,8 @@
   {
     "code": "411111",
     "title": "Aboriginal And Torres Strait Islander Health Worker",
+    "title_tr": "Aborijin ve Torres Boğazı Adalıları Sağlık Çalışanı",
+    "title_zh": "原住民及托雷斯海峡岛民卫生工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aboriginal And Torres Strait Islander Health Worker activities in line with legislative, safety and quality requirements.",
@@ -8310,6 +8400,8 @@
   {
     "code": "411112",
     "title": "Aboriginal And Torres Strait Islander Health Worker (remote Areas)",
+    "title_tr": "Aborijin ve Torres Boğazı Adalıları Sağlık Çalışanı (Uzak Bölgeler)",
+    "title_zh": "原住民及托雷斯海峡岛民卫生工作者（偏远地区）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aboriginal And Torres Strait Islander Health Worker (remote Areas) activities in line with legislative, safety and quality requirements.",
@@ -8321,6 +8413,8 @@
   {
     "code": "411121",
     "title": "Sales Assistant (general)",
+    "title_tr": "Satış Elemanı (Genel)",
+    "title_zh": "销售助理（综合）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Sales Assistant (general) activities in line with legislative, safety and quality requirements.",
@@ -8332,6 +8426,8 @@
   {
     "code": "411122",
     "title": "Retail Salesperson",
+    "title_tr": "Perakende Satış Elemanı",
+    "title_zh": "零售销售员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Retail Salesperson activities in line with legislative, safety and quality requirements.",
@@ -8343,6 +8439,8 @@
   {
     "code": "411123",
     "title": "Service Station Assistant",
+    "title_tr": "Benzin İstasyonu Görevlisi",
+    "title_zh": "加油站服务员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Service Station Assistant activities in line with legislative, safety and quality requirements.",
@@ -8354,6 +8452,8 @@
   {
     "code": "411124",
     "title": "Shop Assistant",
+    "title_tr": "Mağaza Elemanı",
+    "title_zh": "商店助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Shop Assistant activities in line with legislative, safety and quality requirements.",
@@ -8365,6 +8465,8 @@
   {
     "code": "411211",
     "title": "Aged Care Worker",
+    "title_tr": "Yaşlı Bakım Çalışanı",
+    "title_zh": "老年护理工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aged Care Worker activities in line with legislative, safety and quality requirements.",
@@ -8376,6 +8478,8 @@
   {
     "code": "411212",
     "title": "Aged Care Assistant",
+    "title_tr": "Yaşlı Bakım Yardımcısı",
+    "title_zh": "老年护理助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aged Care Assistant activities in line with legislative, safety and quality requirements.",
@@ -8387,6 +8491,8 @@
   {
     "code": "411311",
     "title": "Childcare Worker",
+    "title_tr": "Çocuk Bakım Çalışanı",
+    "title_zh": "儿童保育工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Childcare Worker activities in line with legislative, safety and quality requirements.",
@@ -8398,6 +8504,8 @@
   {
     "code": "411312",
     "title": "Childcare Assistant",
+    "title_tr": "Çocuk Bakım Yardımcısı",
+    "title_zh": "儿童保育助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Childcare Assistant activities in line with legislative, safety and quality requirements.",
@@ -8409,6 +8517,8 @@
   {
     "code": "411411",
     "title": "Enrolled Nurse",
+    "title_tr": "Yardımcı Hemşire (Enrolled Nurse)",
+    "title_zh": "注册助理护士",
     "skillLevel": "Skill Level 2",
     "duties": [
       "Provides nursing care under the direction and supervision of registered nurses.",
@@ -8420,6 +8530,8 @@
   {
     "code": "411412",
     "title": "Disability Support Assistant",
+    "title_tr": "Engelli Destek Yardımcısı",
+    "title_zh": "残障支持助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Disability Support Assistant activities in line with legislative, safety and quality requirements.",
@@ -8431,6 +8543,8 @@
   {
     "code": "411511",
     "title": "Health And Wellness Advisor",
+    "title_tr": "Sağlık ve Wellness Danışmanı",
+    "title_zh": "健康与养生顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Health And Wellness Advisor activities in line with legislative, safety and quality requirements.",
@@ -8442,6 +8556,8 @@
   {
     "code": "411512",
     "title": "Carer",
+    "title_tr": "Bakıcı",
+    "title_zh": "护理员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Carer activities in line with legislative, safety and quality requirements.",
@@ -8453,6 +8569,8 @@
   {
     "code": "411611",
     "title": "Bus Driver",
+    "title_tr": "Otobüs Şoförü",
+    "title_zh": "公交车司机",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Bus Driver activities in line with legislative, safety and quality requirements.",
@@ -8464,6 +8582,8 @@
   {
     "code": "411612",
     "title": "Taxi Driver",
+    "title_tr": "Taksi Şoförü",
+    "title_zh": "出租车司机",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Taxi Driver activities in line with legislative, safety and quality requirements.",
@@ -8475,6 +8595,8 @@
   {
     "code": "411613",
     "title": "Truck Driver",
+    "title_tr": "Kamyon Şoförü",
+    "title_zh": "卡车司机",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Truck Driver activities in line with legislative, safety and quality requirements.",
@@ -8486,6 +8608,8 @@
   {
     "code": "411614",
     "title": "Heavy Vehicle Driver",
+    "title_tr": "Ağır Vasıta Şoförü",
+    "title_zh": "重型车辆司机",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Heavy Vehicle Driver activities in line with legislative, safety and quality requirements.",
@@ -8497,6 +8621,8 @@
   {
     "code": "411711",
     "title": "Community Worker",
+    "title_tr": "Toplum Çalışanı",
+    "title_zh": "社区工作者",
     "skillLevel": "Skill Level 2",
     "duties": [
       "Supports individuals and groups to access community services and resources.",
@@ -8508,6 +8634,8 @@
   {
     "code": "421111",
     "title": "Child Care Worker",
+    "title_tr": "Çocuk Bakım Çalışanı",
+    "title_zh": "儿童保育工作者",
     "skillLevel": "Skill Level 4",
     "duties": [
       "Provides care and supervision for children in education or care settings.",
@@ -8519,6 +8647,8 @@
   {
     "code": "421112",
     "title": "Accounting Technician",
+    "title_tr": "Muhasebe Teknisyeni",
+    "title_zh": "会计技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Accounting Technician activities in line with legislative, safety and quality requirements.",
@@ -8530,6 +8660,8 @@
   {
     "code": "421113",
     "title": "Accounts Clerk",
+    "title_tr": "Muhasebe Katibi",
+    "title_zh": "会计文员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Accounts Clerk activities in line with legislative, safety and quality requirements.",
@@ -8541,6 +8673,8 @@
   {
     "code": "421114",
     "title": "Accounts Payable Specialist",
+    "title_tr": "Borç Hesapları Uzmanı",
+    "title_zh": "应付账款专员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Accounts Payable Specialist activities in line with legislative, safety and quality requirements.",
@@ -8552,6 +8686,8 @@
   {
     "code": "421115",
     "title": "Accounts Receivable Specialist",
+    "title_tr": "Alacak Hesapları Uzmanı",
+    "title_zh": "应收账款专员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Accounts Receivable Specialist activities in line with legislative, safety and quality requirements.",
@@ -8563,6 +8699,8 @@
   {
     "code": "421116",
     "title": "Bookkeeper",
+    "title_tr": "Defter Tutucu",
+    "title_zh": "簿记员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Bookkeeper activities in line with legislative, safety and quality requirements.",
@@ -8574,6 +8712,8 @@
   {
     "code": "431111",
     "title": "General Construction Worker",
+    "title_tr": "Genel İnşaat İşçisi",
+    "title_zh": "普通建筑工人",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core General Construction Worker activities in line with legislative, safety and quality requirements.",
@@ -8585,6 +8725,8 @@
   {
     "code": "431112",
     "title": "Bricklayer Assistant",
+    "title_tr": "Duvarcı Yardımcısı",
+    "title_zh": "砌砖工助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Bricklayer Assistant tasks.",
@@ -8596,6 +8738,8 @@
   {
     "code": "431113",
     "title": "Carpenter Assistant",
+    "title_tr": "Marangoz Yardımcısı",
+    "title_zh": "木匠助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Carpenter Assistant tasks.",
@@ -8607,6 +8751,8 @@
   {
     "code": "431114",
     "title": "Painter Assistant",
+    "title_tr": "Boyacı Yardımcısı",
+    "title_zh": "油漆工助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Painter Assistant tasks.",
@@ -8618,6 +8764,8 @@
   {
     "code": "431115",
     "title": "Plasterer Assistant",
+    "title_tr": "Sıvacı Yardımcısı",
+    "title_zh": "抹灰工助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Plasterer Assistant activities in line with legislative, safety and quality requirements.",
@@ -8629,6 +8777,8 @@
   {
     "code": "431116",
     "title": "Plumber Assistant",
+    "title_tr": "Tesisatçı Yardımcısı",
+    "title_zh": "管道工助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Plumber Assistant tasks.",
@@ -8640,6 +8790,8 @@
   {
     "code": "451111",
     "title": "Barista",
+    "title_tr": "Barista",
+    "title_zh": "咖啡师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Barista activities in line with legislative, safety and quality requirements.",
@@ -8651,6 +8803,8 @@
   {
     "code": "451112",
     "title": "Waiter",
+    "title_tr": "Garson",
+    "title_zh": "服务员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Waiter activities in line with legislative, safety and quality requirements.",
@@ -8662,6 +8816,8 @@
   {
     "code": "451113",
     "title": "Bartender",
+    "title_tr": "Barmen",
+    "title_zh": "调酒师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Bartender activities in line with legislative, safety and quality requirements.",
@@ -8673,6 +8829,8 @@
   {
     "code": "451114",
     "title": "Housekeeper",
+    "title_tr": "Ev İşleri Görevlisi (Housekeeper)",
+    "title_zh": "客房服务员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Housekeeper activities in line with legislative, safety and quality requirements.",
@@ -8684,6 +8842,8 @@
   {
     "code": "451115",
     "title": "Chambermaid",
+    "title_tr": "Oda Hizmetçisi",
+    "title_zh": "客房女服务员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Chambermaid activities in line with legislative, safety and quality requirements.",
@@ -8695,6 +8855,8 @@
   {
     "code": "451116",
     "title": "Cleaner",
+    "title_tr": "Temizlikçi",
+    "title_zh": "清洁工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Cleaner activities in line with legislative, safety and quality requirements.",
@@ -8706,6 +8868,8 @@
   {
     "code": "451211",
     "title": "Hairdresser",
+    "title_tr": "Kuaför",
+    "title_zh": "美发师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Hairdresser activities in line with legislative, safety and quality requirements.",
@@ -8717,6 +8881,8 @@
   {
     "code": "451212",
     "title": "Hairdressing Assistant",
+    "title_tr": "Kuaför Yardımcısı",
+    "title_zh": "美发助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Hairdressing Assistant activities in line with legislative, safety and quality requirements.",
@@ -8728,6 +8894,8 @@
   {
     "code": "451311",
     "title": "Beauty Therapist",
+    "title_tr": "Güzellik Uzmanı",
+    "title_zh": "美容师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Beauty Therapist care or treatment plans.",
@@ -8739,6 +8907,8 @@
   {
     "code": "451312",
     "title": "Beautician",
+    "title_tr": "Güzellik Uzmanı (Beautician)",
+    "title_zh": "美容顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Beautician activities in line with legislative, safety and quality requirements.",
@@ -8750,6 +8920,8 @@
   {
     "code": "451411",
     "title": "Massage Therapist",
+    "title_tr": "Masaj Terapisti",
+    "title_zh": "按摩理疗师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Massage Therapist care or treatment plans.",
@@ -8761,6 +8933,8 @@
   {
     "code": "451511",
     "title": "Prison Officer",
+    "title_tr": "Cezaevi Görevlisi",
+    "title_zh": "监狱管理员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Prison Officer activities in line with legislative, safety and quality requirements.",
@@ -8772,6 +8946,8 @@
   {
     "code": "451512",
     "title": "Protective Officer",
+    "title_tr": "Koruma Görevlisi",
+    "title_zh": "安保官员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Protective Officer activities in line with legislative, safety and quality requirements.",
@@ -8783,6 +8959,8 @@
   {
     "code": "451513",
     "title": "Security Guard",
+    "title_tr": "Güvenlik Görevlisi",
+    "title_zh": "保安",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Security Guard activities in line with legislative, safety and quality requirements.",
@@ -8794,6 +8972,8 @@
   {
     "code": "451514",
     "title": "Security Consultant",
+    "title_tr": "Güvenlik Danışmanı",
+    "title_zh": "安保顾问",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Security Consultant activities in line with legislative, safety and quality requirements.",
@@ -8805,6 +8985,8 @@
   {
     "code": "451515",
     "title": "Firefighter",
+    "title_tr": "İtfaiyeci",
+    "title_zh": "消防员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Firefighter activities in line with legislative, safety and quality requirements.",
@@ -8816,6 +8998,8 @@
   {
     "code": "451612",
     "title": "Travel Consultant",
+    "title_tr": "Seyahat Danışmanı",
+    "title_zh": "旅游顾问",
     "skillLevel": "Skill Level 4",
     "duties": [
       "Advises clients on travel options, itineraries, fares and booking conditions.",
@@ -8827,6 +9011,8 @@
   {
     "code": "451621",
     "title": "Accommodation Officer",
+    "title_tr": "Konaklama Görevlisi",
+    "title_zh": "住宿事务官",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Accommodation Officer activities in line with legislative, safety and quality requirements.",
@@ -8838,6 +9024,8 @@
   {
     "code": "451622",
     "title": "Housekeeping Manager",
+    "title_tr": "Kat Hizmetleri Müdürü",
+    "title_zh": "客房部经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Housekeeping Manager activities in line with legislative, safety and quality requirements.",
@@ -8849,6 +9037,8 @@
   {
     "code": "451623",
     "title": "Housekeeper",
+    "title_tr": "Ev İşleri Görevlisi (Housekeeper)",
+    "title_zh": "客房服务员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Housekeeper activities in line with legislative, safety and quality requirements.",
@@ -8860,6 +9050,8 @@
   {
     "code": "451624",
     "title": "Linen Worker",
+    "title_tr": "Çamaşırhane İşçisi",
+    "title_zh": "布草工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Linen Worker activities in line with legislative, safety and quality requirements.",
@@ -8871,6 +9063,8 @@
   {
     "code": "451711",
     "title": "Cleaner",
+    "title_tr": "Temizlikçi",
+    "title_zh": "清洁工",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Cleaner activities in line with legislative, safety and quality requirements.",
@@ -8882,6 +9076,8 @@
   {
     "code": "451712",
     "title": "Commercial Cleaning Supervisor",
+    "title_tr": "Ticari Temizlik Süpervizörü",
+    "title_zh": "商业清洁主管",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Commercial Cleaning Supervisor activities in line with legislative, safety and quality requirements.",
@@ -8893,6 +9089,8 @@
   {
     "code": "452111",
     "title": "Chef",
+    "title_tr": "Şef",
+    "title_zh": "厨师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Chef tasks.",
@@ -8904,6 +9102,8 @@
   {
     "code": "452112",
     "title": "Cook",
+    "title_tr": "Aşçı",
+    "title_zh": "厨师（普通）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Cook tasks.",
@@ -8915,6 +9115,8 @@
   {
     "code": "452113",
     "title": "Baker",
+    "title_tr": "Fırıncı",
+    "title_zh": "面包师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Baker tasks.",
@@ -8926,6 +9128,8 @@
   {
     "code": "452114",
     "title": "Pastrycook",
+    "title_tr": "Pastacı",
+    "title_zh": "糕点师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Pastrycook tasks.",
@@ -8937,6 +9141,8 @@
   {
     "code": "452115",
     "title": "Butcher",
+    "title_tr": "Kasap",
+    "title_zh": "屠夫",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Butcher activities in line with legislative, safety and quality requirements.",
@@ -8948,6 +9154,8 @@
   {
     "code": "511112",
     "title": "Program or Project Administrator",
+    "title_tr": "Program veya Proje Yöneticisi (İdari)",
+    "title_zh": "项目或计划行政专员",
     "skillLevel": "Skill Level 2",
     "duties": [
       "Coordinates project documentation, schedules, budgets and reporting activities.",
@@ -8959,6 +9167,8 @@
   {
     "code": "599915",
     "title": "Clinical Coder",
+    "title_tr": "Klinik Kodlayıcı",
+    "title_zh": "临床编码员",
     "skillLevel": "Skill Level 2",
     "duties": [
       "Reviews clinical records and assigns standardised diagnosis and procedure codes.",
@@ -8970,6 +9180,8 @@
   {
     "code": "612112",
     "title": "Property Manager",
+    "title_tr": "Mülk Yöneticisi",
+    "title_zh": "物业经理",
     "skillLevel": "Skill Level 3",
     "duties": [
       "Manages rental properties, leases, inspections and tenant communication.",
