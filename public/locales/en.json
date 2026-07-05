@@ -35,10 +35,13 @@
       "body3": "For any questions, you can use our free tools on logivisa.com."
     }
   },
-  "hero.headline": "Logivisa",
-  "hero.subheadline": "Structured visa pathway analysis and readiness reports for your destination country.",
-  "hero.cta": "Start pathway check",
+  "hero.headline": "Find Your Best Visa Pathway in 2 Minutes Using AI",
+  "hero.subheadline": "Fast, data-driven analysis of your profile against real ANZSCO and NOC occupation data — no forms, no guesswork.",
+  "hero.cta": "Start Free AI Assessment",
   "hero.secondary": "Ask the assistant",
+  "hero.secondaryPrefix": "Prefer a full country report?",
+  "hero.secondaryAU": "🇦🇺 Australia",
+  "hero.secondaryCA": "🇨🇦 Canada",
   "hero.trustBadge": "Logivisa",
   "trustIndicators.gov": "Based on official Australian government sources",
   "trustIndicators.info": "General information only",

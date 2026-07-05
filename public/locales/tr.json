@@ -35,10 +35,13 @@
       "body3": "Sorularınız için logivisa.com'daki ücretsiz araçlarımızı kullanabilirsiniz."
     }
   },
-  "hero.headline": "Logivisa",
-  "hero.subheadline": "Hedef ulkeniz icin yapilandirilmis vize yolu analizi ve hazirlik raporlari.",
-  "hero.cta": "Yol kontrolunu baslat",
+  "hero.headline": "Yapay Zeka ile 2 Dakikada En Uygun Vize Yolunuzu Bulun",
+  "hero.subheadline": "Profilinizin gerçek ANZSCO ve NOC meslek verileriyle hızlı, veriye dayalı analizi — form yok, tahmin yok.",
+  "hero.cta": "Ücretsiz AI Değerlendirmesini Başlat",
   "hero.secondary": "Asistana sor",
+  "hero.secondaryPrefix": "Tam ülke raporunu mu tercih edersiniz?",
+  "hero.secondaryAU": "🇦🇺 Avustralya",
+  "hero.secondaryCA": "🇨🇦 Kanada",
   "hero.trustBadge": "Logivisa",
   "trustIndicators.gov": "Avustralya resmi hükümet kaynaklarına dayalı",
   "trustIndicators.info": "Yalnızca genel bilgiler",

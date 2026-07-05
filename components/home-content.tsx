@@ -57,73 +57,50 @@ export function HomeContent() {
             {t("hero.trustBadge")}
           </Badge>
           
-          <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-7xl lg:leading-[1.1]">
-            <span className="block">Logi<span className="text-violet-600">Visa</span></span>
-            <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
-              {locale === "tr" ? "Vize Yol Haritanız" : locale === "zh-Hans" ? "您的签证路线图" : "Your Visa Roadmap"}
-            </span>
+          <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl lg:leading-[1.1]">
+            {t("hero.headline")}
           </h1>
-          
+
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400 sm:text-xl">
             {t("hero.subheadline")}
           </p>
-          
-          {/* Country Selector Cards */}
-          <div className="mt-10 flex w-full max-w-2xl flex-col gap-4 sm:flex-row sm:justify-center">
-            {/* Australia Card */}
+
+          {/* ONE primary CTA — everything else on this page defers to this. */}
+          <Link
+            href={`/${locale}/ai-visa-match`}
+            className="group mt-10 inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 px-10 py-5 text-xl font-extrabold text-white shadow-2xl shadow-indigo-500/40 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/60 sm:px-12 sm:py-6 sm:text-2xl"
+          >
+            ⚡ {t("hero.cta")}
+            <span className="transition-transform group-hover:translate-x-1">→</span>
+          </Link>
+
+          {/* Secondary actions — deliberately subtle text links, not buttons,
+              so they never compete with the primary CTA above. */}
+          <p className="mt-5 text-sm text-slate-400">
+            {t("hero.secondaryPrefix")}{" "}
             <Link
               href={`/${locale}/full-check?country=AU`}
-              className="group relative flex flex-1 flex-col items-center gap-3 rounded-2xl border-2 border-indigo-200 bg-white/80 px-6 py-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-indigo-400 hover:shadow-indigo-200/60 hover:shadow-xl hover:scale-105 dark:border-indigo-800/60 dark:bg-zinc-900/70 dark:hover:border-indigo-600"
+              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
             >
-              <span className="text-4xl">🇦🇺</span>
-              <div className="text-center">
-                <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
-                  {locale === "tr" ? "Ülke" : locale === "zh-Hans" ? "目的地" : "Destination"}
-                </p>
-                <p className="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">
-                  {locale === "tr" ? "Avustralya" : locale === "zh-Hans" ? "澳大利亚" : "Australia"}
-                </p>
-              </div>
-              <span className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 text-center text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all group-hover:shadow-indigo-500/50">
-                {locale === "tr" ? "Rapor Al →" : locale === "zh-Hans" ? "获取报告 →" : "Get My Report →"}
-              </span>
+              {t("hero.secondaryAU")}
             </Link>
-
-            {/* Canada Card */}
+            {" · "}
             <Link
               href={`/${locale}/full-check?country=CA`}
-              className="group relative flex flex-1 flex-col items-center gap-3 rounded-2xl border-2 border-red-200 bg-white/80 px-6 py-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:border-red-400 hover:shadow-red-200/60 hover:shadow-xl hover:scale-105 dark:border-red-800/60 dark:bg-zinc-900/70 dark:hover:border-red-600"
+              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
             >
-              <span className="absolute -top-3 right-4 rounded-full bg-red-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow">
-                {locale === "tr" ? "YENİ" : locale === "zh-Hans" ? "新" : "NEW"}
-              </span>
-              <span className="text-4xl">🇨🇦</span>
-              <div className="text-center">
-                <p className="text-xs font-semibold uppercase tracking-widest text-red-500 dark:text-red-400">
-                  {locale === "tr" ? "Ülke" : locale === "zh-Hans" ? "目的地" : "Destination"}
-                </p>
-                <p className="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">
-                  {locale === "tr" ? "Kanada" : locale === "zh-Hans" ? "加拿大" : "Canada"}
-                </p>
-              </div>
-              <span className="w-full rounded-xl bg-gradient-to-r from-red-500 to-rose-600 py-2.5 text-center text-sm font-bold text-white shadow-lg shadow-red-500/30 transition-all group-hover:shadow-red-500/50">
-                {locale === "tr" ? "Rapor Al →" : locale === "zh-Hans" ? "获取报告 →" : "Get My Report →"}
-              </span>
+              {t("hero.secondaryCA")}
             </Link>
-          </div>
-
-          {/* Secondary micro-tool CTA */}
-          <p className="mt-5 text-sm text-slate-400">
+            {" · "}
             <Link
               href={`/${locale}/tools/points-calculator`}
-              className="inline-flex items-center gap-1 font-medium text-indigo-500 transition-colors hover:text-indigo-700"
+              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
             >
               {locale === "tr"
-                ? "Ücretsiz Puan Hesaplayıcıyı Dene"
+                ? "Puan Hesaplayıcı"
                 : locale === "zh-Hans"
-                  ? "试用免费算分器"
-                  : "Try Free Points Calculator"}{" "}
-              ➔
+                  ? "积分计算器"
+                  : "Points Calculator"}
             </Link>
           </p>
 
