@@ -5202,6 +5202,8 @@
   {
     "code": "262113",
     "title": "Systems Administrator",
+    "title_tr": "Sistem Yöneticisi",
+    "title_zh": "系统管理员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Systems Administrator activities in line with legislative, safety and quality requirements.",
@@ -5213,6 +5215,8 @@
   {
     "code": "263111",
     "title": "Computer Network and Systems Engineer",
+    "title_tr": "Bilgisayar Ağı ve Sistem Mühendisi",
+    "title_zh": "计算机网络与系统工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Designs, configures and maintains computer networks and communication systems.",
@@ -5224,6 +5228,8 @@
   {
     "code": "263112",
     "title": "Network Administrator",
+    "title_tr": "Ağ Yöneticisi",
+    "title_zh": "网络管理员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Installs, configures and maintains network hardware, software and user access.",
@@ -5235,6 +5241,8 @@
   {
     "code": "263113",
     "title": "Network Analyst",
+    "title_tr": "Ağ Analisti",
+    "title_zh": "网络分析师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses network traffic, capacity and performance requirements.",
@@ -5246,6 +5254,8 @@
   {
     "code": "263211",
     "title": "ICT Quality Assurance Engineer",
+    "title_tr": "BİT Kalite Güvence Mühendisi",
+    "title_zh": "信息通信技术质量保证工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Develops test strategies, plans and cases for ICT systems and software releases.",
@@ -5257,6 +5267,8 @@
   {
     "code": "263212",
     "title": "ICT Support Engineer",
+    "title_tr": "BİT Destek Mühendisi",
+    "title_zh": "信息通信技术支持工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Provides technical support for ICT systems, infrastructure and applications.",
@@ -5268,6 +5280,8 @@
   {
     "code": "263214",
     "title": "It Operations Manager",
+    "title_tr": "BT Operasyon Müdürü",
+    "title_zh": "IT运营经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core It Operations Manager activities in line with legislative, safety and quality requirements.",
@@ -5279,6 +5293,8 @@
   {
     "code": "263215",
     "title": "Infrastructure Manager",
+    "title_tr": "Altyapı Müdürü",
+    "title_zh": "基础设施经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Infrastructure Manager activities in line with legislative, safety and quality requirements.",
@@ -5290,6 +5306,8 @@
   {
     "code": "263216",
     "title": "Systems Manager",
+    "title_tr": "Sistem Müdürü",
+    "title_zh": "系统经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Systems Manager activities in line with legislative, safety and quality requirements.",
@@ -5301,6 +5319,8 @@
   {
     "code": "263217",
     "title": "Service Manager",
+    "title_tr": "Hizmet Müdürü",
+    "title_zh": "服务经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Service Manager activities in line with legislative, safety and quality requirements.",
@@ -5312,6 +5332,8 @@
   {
     "code": "263218",
     "title": "Help Desk Manager",
+    "title_tr": "Yardım Masası Müdürü",
+    "title_zh": "服务台经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Help Desk Manager activities in line with legislative, safety and quality requirements.",
@@ -5323,6 +5345,8 @@
   {
     "code": "263219",
     "title": "User Support Manager",
+    "title_tr": "Kullanıcı Destek Müdürü",
+    "title_zh": "用户支持经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core User Support Manager activities in line with legislative, safety and quality requirements.",
@@ -5334,6 +5358,8 @@
   {
     "code": "263220",
     "title": "It Support Supervisor",
+    "title_tr": "BT Destek Süpervizörü",
+    "title_zh": "IT支持主管",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core It Support Supervisor activities in line with legislative, safety and quality requirements.",
@@ -5345,6 +5371,8 @@
   {
     "code": "263221",
     "title": "Technical Support Manager",
+    "title_tr": "Teknik Destek Müdürü",
+    "title_zh": "技术支持经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Technical Support Manager activities in line with legislative, safety and quality requirements.",
@@ -5356,6 +5384,8 @@
   {
     "code": "263222",
     "title": "Network Manager",
+    "title_tr": "Ağ Müdürü",
+    "title_zh": "网络经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Network Manager solutions.",
@@ -5367,6 +5397,8 @@
   {
     "code": "263223",
     "title": "Communications Manager",
+    "title_tr": "İletişim Müdürü",
+    "title_zh": "通信经理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Communications Manager activities in line with legislative, safety and quality requirements.",
@@ -5378,6 +5410,8 @@
   {
     "code": "263299",
     "title": "Ict Support And Test Engineers Nec",
+    "title_tr": "Diğer BİT Destek ve Test Mühendisleri (Sınıflandırılmamış)",
+    "title_zh": "其他信息通信技术支持与测试工程师（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Ict Support And Test Engineers Nec solutions.",
@@ -5389,6 +5423,8 @@
   {
     "code": "263311",
     "title": "Telecommunications Engineer",
+    "title_tr": "Telekomünikasyon Mühendisi",
+    "title_zh": "电信工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Telecommunications Engineer solutions.",
@@ -5400,6 +5436,8 @@
   {
     "code": "263312",
     "title": "Telecommunications Network Engineer",
+    "title_tr": "Telekomünikasyon Ağ Mühendisi",
+    "title_zh": "电信网络工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Telecommunications Network Engineer solutions.",
@@ -5411,6 +5449,8 @@
   {
     "code": "271111",
     "title": "Accountant",
+    "title_tr": "Muhasebeci",
+    "title_zh": "会计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares and analyses financial data relevant to Accountant functions and reporting obligations.",
@@ -5435,6 +5475,8 @@
   {
     "code": "272111",
     "title": "Psychologist",
+    "title_tr": "Psikolog",
+    "title_zh": "心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Psychologist care or treatment plans.",
@@ -5446,6 +5488,8 @@
   {
     "code": "272311",
     "title": "Clinical Psychologist",
+    "title_tr": "Klinik Psikolog",
+    "title_zh": "临床心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses, diagnoses and treats mental health and behavioural conditions.",
@@ -5457,6 +5501,8 @@
   {
     "code": "272312",
     "title": "Counselling Psychologist",
+    "title_tr": "Danışmanlık Psikoloğu",
+    "title_zh": "咨询心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Counselling Psychologist care or treatment plans.",
@@ -5468,6 +5514,8 @@
   {
     "code": "272313",
     "title": "Educational Psychologist",
+    "title_tr": "Eğitim Psikoloğu",
+    "title_zh": "教育心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Educational Psychologist care or treatment plans.",
@@ -5479,6 +5527,8 @@
   {
     "code": "272314",
     "title": "Occupational Psychologist",
+    "title_tr": "İş (Endüstri) Psikoloğu",
+    "title_zh": "职业心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Occupational Psychologist care or treatment plans.",
@@ -5490,6 +5540,8 @@
   {
     "code": "272315",
     "title": "Sport And Exercise Psychologist",
+    "title_tr": "Spor ve Egzersiz Psikoloğu",
+    "title_zh": "运动与锻炼心理学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Sport And Exercise Psychologist care or treatment plans.",
@@ -5501,6 +5553,8 @@
   {
     "code": "272511",
     "title": "Social Worker",
+    "title_tr": "Sosyal Hizmet Uzmanı",
+    "title_zh": "社会工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses client needs, risks, strengths and social support requirements.",
@@ -5512,6 +5566,8 @@
   {
     "code": "272512",
     "title": "Medical Social Worker",
+    "title_tr": "Tıbbi Sosyal Hizmet Uzmanı",
+    "title_zh": "医疗社会工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Medical Social Worker care or treatment plans.",
@@ -5523,6 +5579,8 @@
   {
     "code": "272613",
     "title": "Welfare Worker",
+    "title_tr": "Sosyal Yardım Görevlisi",
+    "title_zh": "福利工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Welfare Worker activities in line with legislative, safety and quality requirements.",
@@ -5534,6 +5592,8 @@
   {
     "code": "272614",
     "title": "Welfare Worker (child Protection)",
+    "title_tr": "Sosyal Yardım Görevlisi (Çocuk Koruma)",
+    "title_zh": "福利工作者（儿童保护）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Welfare Worker (child Protection) activities in line with legislative, safety and quality requirements.",
@@ -5545,6 +5605,8 @@
   {
     "code": "272615",
     "title": "Welfare Worker (community Care)",
+    "title_tr": "Sosyal Yardım Görevlisi (Toplum Bakımı)",
+    "title_zh": "福利工作者（社区照护）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Welfare Worker (community Care) activities in line with legislative, safety and quality requirements.",
@@ -5556,6 +5618,8 @@
   {
     "code": "272616",
     "title": "Welfare Worker (disability Support)",
+    "title_tr": "Sosyal Yardım Görevlisi (Engelli Desteği)",
+    "title_zh": "福利工作者（残障支持）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Welfare Worker (disability Support) activities in line with legislative, safety and quality requirements.",
@@ -5567,6 +5631,8 @@
   {
     "code": "272617",
     "title": "Welfare Worker (aged Care)",
+    "title_tr": "Sosyal Yardım Görevlisi (Yaşlı Bakımı)",
+    "title_zh": "福利工作者（老年护理）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Welfare Worker (aged Care) activities in line with legislative, safety and quality requirements.",
@@ -5578,6 +5644,8 @@
   {
     "code": "272711",
     "title": "Probation Officer",
+    "title_tr": "Denetimli Serbestlik Memuru",
+    "title_zh": "缓刑监督官",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Probation Officer activities in line with legislative, safety and quality requirements.",
@@ -5589,6 +5657,8 @@
   {
     "code": "272712",
     "title": "Welfare Officer",
+    "title_tr": "Sosyal Yardım Memuru",
+    "title_zh": "福利官员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Welfare Officer activities in line with legislative, safety and quality requirements.",
@@ -5600,6 +5670,8 @@
   {
     "code": "272713",
     "title": "Community Worker",
+    "title_tr": "Toplum Çalışanı",
+    "title_zh": "社区工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Community Worker activities in line with legislative, safety and quality requirements.",
@@ -5611,6 +5683,8 @@
   {
     "code": "272714",
     "title": "Youth Worker",
+    "title_tr": "Gençlik Çalışanı",
+    "title_zh": "青年工作者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Youth Worker activities in line with legislative, safety and quality requirements.",
@@ -5622,6 +5696,8 @@
   {
     "code": "272715",
     "title": "Family Counsellor",
+    "title_tr": "Aile Danışmanı",
+    "title_zh": "家庭咨询师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Family Counsellor activities in line with legislative, safety and quality requirements.",
@@ -5633,6 +5709,8 @@
   {
     "code": "281111",
     "title": "Ship's Master",
+    "title_tr": "Gemi Kaptanı",
+    "title_zh": "船长",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Ship's Master activities in line with legislative, safety and quality requirements.",
@@ -5644,6 +5722,8 @@
   {
     "code": "281112",
     "title": "Ship's Officer",
+    "title_tr": "Gemi Zabiti",
+    "title_zh": "船舶高级船员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Ship's Officer activities in line with legislative, safety and quality requirements.",
@@ -5655,6 +5735,8 @@
   {
     "code": "281113",
     "title": "Marine Engineer",
+    "title_tr": "Gemi Mühendisi",
+    "title_zh": "轮机工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Marine Engineer solutions.",
@@ -5666,6 +5748,8 @@
   {
     "code": "281114",
     "title": "Fishing Vessel Master",
+    "title_tr": "Balıkçı Teknesi Kaptanı",
+    "title_zh": "渔船船长",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Fishing Vessel Master activities in line with legislative, safety and quality requirements.",
@@ -5677,6 +5761,8 @@
   {
     "code": "281115",
     "title": "Fishing Vessel Officer",
+    "title_tr": "Balıkçı Teknesi Zabiti",
+    "title_zh": "渔船高级船员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Fishing Vessel Officer activities in line with legislative, safety and quality requirements.",
@@ -5688,6 +5774,8 @@
   {
     "code": "282111",
     "title": "Aeroplane Pilot",
+    "title_tr": "Uçak Pilotu",
+    "title_zh": "飞机驾驶员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aeroplane Pilot activities in line with legislative, safety and quality requirements.",
@@ -5699,6 +5787,8 @@
   {
     "code": "282112",
     "title": "Helicopter Pilot",
+    "title_tr": "Helikopter Pilotu",
+    "title_zh": "直升机驾驶员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Helicopter Pilot activities in line with legislative, safety and quality requirements.",
@@ -5710,6 +5800,8 @@
   {
     "code": "282113",
     "title": "Aircraft Maintenance Engineer",
+    "title_tr": "Uçak Bakım Mühendisi",
+    "title_zh": "飞机维修工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Aircraft Maintenance Engineer solutions.",
@@ -5721,6 +5813,8 @@
   {
     "code": "282114",
     "title": "Flight Engineer",
+    "title_tr": "Uçuş Mühendisi",
+    "title_zh": "飞行工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Flight Engineer solutions.",
@@ -5732,6 +5826,8 @@
   {
     "code": "282115",
     "title": "Flying Instructor",
+    "title_tr": "Uçuş Eğitmeni",
+    "title_zh": "飞行教练",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Flying Instructor activities in line with legislative, safety and quality requirements.",
@@ -5743,6 +5839,8 @@
   {
     "code": "282116",
     "title": "Air Traffic Controller",
+    "title_tr": "Hava Trafik Kontrolörü",
+    "title_zh": "空中交通管制员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Air Traffic Controller activities in line with legislative, safety and quality requirements.",
@@ -5754,6 +5852,8 @@
   {
     "code": "311111",
     "title": "Agricultural Technician",
+    "title_tr": "Tarım Teknisyeni",
+    "title_zh": "农业技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Agricultural Technician activities in line with legislative, safety and quality requirements.",
@@ -5765,6 +5865,8 @@
   {
     "code": "311112",
     "title": "Agricultural And Agritech Technician",
+    "title_tr": "Tarım ve Tarım Teknolojisi Teknisyeni",
+    "title_zh": "农业与农业科技技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Agricultural And Agritech Technician activities in line with legislative, safety and quality requirements.",
@@ -5776,6 +5878,8 @@
   {
     "code": "311113",
     "title": "Agricultural Technician (horticulture)",
+    "title_tr": "Tarım Teknisyeni (Bahçıvanlık)",
+    "title_zh": "农业技术员（园艺）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Agricultural Technician (horticulture) activities in line with legislative, safety and quality requirements.",
@@ -5787,6 +5891,8 @@
   {
     "code": "311114",
     "title": "Agricultural Technician (viticulture)",
+    "title_tr": "Tarım Teknisyeni (Bağcılık)",
+    "title_zh": "农业技术员（葡萄栽培）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Agricultural Technician (viticulture) activities in line with legislative, safety and quality requirements.",
@@ -5798,6 +5904,8 @@
   {
     "code": "311211",
     "title": "Farmer General",
+    "title_tr": "Genel Çiftçi",
+    "title_zh": "综合农场主",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Farmer General activities in line with legislative, safety and quality requirements.",
@@ -5809,6 +5917,8 @@
   {
     "code": "311212",
     "title": "Arable Farmer",
+    "title_tr": "Tarla Çiftçisi",
+    "title_zh": "耕作农场主",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Arable Farmer activities in line with legislative, safety and quality requirements.",
@@ -5820,6 +5930,8 @@
   {
     "code": "311213",
     "title": "Horticultural Farmer",
+    "title_tr": "Bahçıvanlık Çiftçisi",
+    "title_zh": "园艺种植户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Horticultural Farmer activities in line with legislative, safety and quality requirements.",
@@ -5831,6 +5943,8 @@
   {
     "code": "311214",
     "title": "Livestock Farmer",
+    "title_tr": "Hayvancılık Çiftçisi",
+    "title_zh": "畜牧养殖户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Livestock Farmer activities in line with legislative, safety and quality requirements.",
@@ -5842,6 +5956,8 @@
   {
     "code": "311215",
     "title": "Dairy Farmer",
+    "title_tr": "Süt Çiftçisi",
+    "title_zh": "奶农",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Dairy Farmer activities in line with legislative, safety and quality requirements.",
@@ -5853,6 +5969,8 @@
   {
     "code": "311216",
     "title": "Aquaculture Farmer",
+    "title_tr": "Su Ürünleri Yetiştiricisi",
+    "title_zh": "水产养殖户",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Aquaculture Farmer activities in line with legislative, safety and quality requirements.",
@@ -5864,6 +5982,8 @@
   {
     "code": "311411",
     "title": "Mining Technician",
+    "title_tr": "Madencilik Teknisyeni",
+    "title_zh": "采矿技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Mining Technician activities in line with legislative, safety and quality requirements.",
@@ -5875,6 +5995,8 @@
   {
     "code": "311412",
     "title": "Petroleum Technician",
+    "title_tr": "Petrol Teknisyeni",
+    "title_zh": "石油技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Petroleum Technician activities in line with legislative, safety and quality requirements.",
@@ -5886,6 +6008,8 @@
   {
     "code": "311413",
     "title": "Production Technician",
+    "title_tr": "Üretim Teknisyeni",
+    "title_zh": "生产技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Production Technician activities in line with legislative, safety and quality requirements.",
@@ -5897,6 +6021,8 @@
   {
     "code": "311414",
     "title": "Supervisor (mining)",
+    "title_tr": "Süpervizör (Madencilik)",
+    "title_zh": "主管（采矿业）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Supervisor (mining) activities in line with legislative, safety and quality requirements.",
@@ -5908,6 +6034,8 @@
   {
     "code": "312112",
     "title": "Building Associate",
+    "title_tr": "Yapı Uzmanı Yardımcısı",
+    "title_zh": "建筑助理",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Building Associate activities in line with legislative, safety and quality requirements.",
@@ -5919,6 +6047,8 @@
   {
     "code": "312113",
     "title": "Building Inspector",
+    "title_tr": "Yapı Denetçisi",
+    "title_zh": "建筑检查员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Building Inspector activities in line with legislative, safety and quality requirements.",
@@ -5930,6 +6060,8 @@
   {
     "code": "312114",
     "title": "Construction Estimator",
+    "title_tr": "İnşaat Keşif Uzmanı",
+    "title_zh": "建筑造价估算师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Construction Estimator activities in line with legislative, safety and quality requirements.",
@@ -5941,6 +6073,8 @@
   {
     "code": "312116",
     "title": "Surveying Or Spatial Science Technician",
+    "title_tr": "Harita/Mekansal Bilim Teknisyeni",
+    "title_zh": "测量或空间科学技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Surveying Or Spatial Science Technician activities in line with legislative, safety and quality requirements.",
@@ -5952,6 +6086,8 @@
   {
     "code": "312211",
     "title": "Civil Engineering Draftsperson",
+    "title_tr": "İnşaat Mühendisliği Teknik Ressamı",
+    "title_zh": "土木工程制图员",
     "skillLevel": "Skill Level 2",
     "duties": [
       "Prepares detailed drawings and plans for civil engineering works.",
@@ -5963,6 +6099,8 @@
   {
     "code": "312212",
     "title": "Civil Engineering Technician",
+    "title_tr": "İnşaat Mühendisliği Teknisyeni",
+    "title_zh": "土木工程技术员",
     "skillLevel": "Skill Level 2",
     "duties": [
       "Conducts tests and collects data for civil engineering projects.",
@@ -5974,6 +6112,8 @@
   {
     "code": "312311",
     "title": "Electrical Engineering Draftsperson",
+    "title_tr": "Elektrik Mühendisliği Teknik Ressamı",
+    "title_zh": "电气工程制图员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Electrical Engineering Draftsperson solutions.",
@@ -5985,6 +6125,8 @@
   {
     "code": "312312",
     "title": "Electrical Engineering Technician",
+    "title_tr": "Elektrik Mühendisliği Teknisyeni",
+    "title_zh": "电气工程技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Electrical Engineering Technician solutions.",
@@ -5996,6 +6138,8 @@
   {
     "code": "312411",
     "title": "Electronics Technician",
+    "title_tr": "Elektronik Teknisyeni",
+    "title_zh": "电子技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Electronics Technician activities in line with legislative, safety and quality requirements.",
@@ -6007,6 +6151,8 @@
   {
     "code": "312412",
     "title": "Electrical Technician",
+    "title_tr": "Elektrik Teknisyeni",
+    "title_zh": "电气技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Electrical Technician activities in line with legislative, safety and quality requirements.",
@@ -6018,6 +6164,8 @@
   {
     "code": "312413",
     "title": "Telecommunications Technician",
+    "title_tr": "Telekomünikasyon Teknisyeni",
+    "title_zh": "电信技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Telecommunications Technician activities in line with legislative, safety and quality requirements.",
@@ -6029,6 +6177,8 @@
   {
     "code": "312414",
     "title": "Ict Technician",
+    "title_tr": "BİT Teknisyeni",
+    "title_zh": "信息通信技术技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Ict Technician solutions.",
@@ -6040,6 +6190,8 @@
   {
     "code": "312415",
     "title": "Network Technician",
+    "title_tr": "Ağ Teknisyeni",
+    "title_zh": "网络技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Network Technician solutions.",
@@ -6051,6 +6203,8 @@
   {
     "code": "312511",
     "title": "Mechanical Engineering Draftsperson",
+    "title_tr": "Makine Mühendisliği Teknik Ressamı",
+    "title_zh": "机械工程制图员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Mechanical Engineering Draftsperson solutions.",
@@ -6062,6 +6216,8 @@
   {
     "code": "312512",
     "title": "Mechanical Engineering Technician",
+    "title_tr": "Makine Mühendisliği Teknisyeni",
+    "title_zh": "机械工程技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Mechanical Engineering Technician solutions.",
@@ -6073,6 +6229,8 @@
   {
     "code": "312611",
     "title": "Mining Technician (general)",
+    "title_tr": "Madencilik Teknisyeni (Genel)",
+    "title_zh": "采矿技术员（综合）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Mining Technician (general) activities in line with legislative, safety and quality requirements.",
@@ -6084,6 +6242,8 @@
   {
     "code": "312612",
     "title": "Mining Technician (coal)",
+    "title_tr": "Madencilik Teknisyeni (Kömür)",
+    "title_zh": "采矿技术员（煤炭）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Mining Technician (coal) activities in line with legislative, safety and quality requirements.",
@@ -6095,6 +6255,8 @@
   {
     "code": "312613",
     "title": "Mining Technician (oil And Gas)",
+    "title_tr": "Madencilik Teknisyeni (Petrol ve Gaz)",
+    "title_zh": "采矿技术员（石油天然气）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Mining Technician (oil And Gas) activities in line with legislative, safety and quality requirements.",
@@ -6106,6 +6268,8 @@
   {
     "code": "312711",
     "title": "Petroleum Technician",
+    "title_tr": "Petrol Teknisyeni",
+    "title_zh": "石油技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Petroleum Technician activities in line with legislative, safety and quality requirements.",
@@ -6117,6 +6281,8 @@
   {
     "code": "312712",
     "title": "Plumber (drainage)",
+    "title_tr": "Tesisatçı (Drenaj)",
+    "title_zh": "管道工（排水）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Plumber (drainage) tasks.",
@@ -6128,6 +6294,8 @@
   {
     "code": "312713",
     "title": "Plumber (gasfitter)",
+    "title_tr": "Tesisatçı (Gaz Tesisatı)",
+    "title_zh": "管道工（燃气装配）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Plumber (gasfitter) tasks.",
@@ -6139,6 +6307,8 @@
   {
     "code": "312714",
     "title": "Plumber (roof Plumber)",
+    "title_tr": "Tesisatçı (Çatı Tesisatı)",
+    "title_zh": "管道工（屋顶管道）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Plumber (roof Plumber) tasks.",
@@ -6150,6 +6320,8 @@
   {
     "code": "312715",
     "title": "Plumber (apprentice)",
+    "title_tr": "Tesisatçı (Çırak)",
+    "title_zh": "管道工（学徒）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Plumber (apprentice) tasks.",
@@ -6161,6 +6333,8 @@
   {
     "code": "312911",
     "title": "Building Technician",
+    "title_tr": "Yapı Teknisyeni",
+    "title_zh": "建筑技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Building Technician activities in line with legislative, safety and quality requirements.",
@@ -6172,6 +6346,8 @@
   {
     "code": "312912",
     "title": "Building And Construction Technician",
+    "title_tr": "Yapı ve İnşaat Teknisyeni",
+    "title_zh": "建筑与施工技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Building And Construction Technician activities in line with legislative, safety and quality requirements.",
@@ -6183,6 +6359,8 @@
   {
     "code": "312913",
     "title": "Surveying Or Spatial Science Technician",
+    "title_tr": "Harita/Mekansal Bilim Teknisyeni",
+    "title_zh": "测量或空间科学技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Surveying Or Spatial Science Technician activities in line with legislative, safety and quality requirements.",
@@ -6194,6 +6372,8 @@
   {
     "code": "312999",
     "title": "Engineering Technicians Nec",
+    "title_tr": "Diğer Mühendislik Teknisyenleri (Sınıflandırılmamış)",
+    "title_zh": "其他工程技术员（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Engineering Technicians Nec solutions.",
@@ -6205,6 +6385,8 @@
   {
     "code": "313211",
     "title": "Ict Support Technician",
+    "title_tr": "BİT Destek Teknisyeni",
+    "title_zh": "信息通信技术支持技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Ict Support Technician solutions.",
@@ -6216,6 +6398,8 @@
   {
     "code": "313212",
     "title": "Ict Systems Test Engineer",
+    "title_tr": "BİT Sistem Test Mühendisi",
+    "title_zh": "信息通信技术系统测试工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Ict Systems Test Engineer solutions.",
@@ -6227,6 +6411,8 @@
   {
     "code": "313213",
     "title": "Network Support Technician",
+    "title_tr": "Ağ Destek Teknisyeni",
+    "title_zh": "网络支持技术员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Network Support Technician solutions.",
@@ -6238,6 +6424,8 @@
   {
     "code": "313299",
     "title": "Ict Support And Test Technicians Nec",
+    "title_tr": "Diğer BİT Destek ve Test Teknisyenleri (Sınıflandırılmamış)",
+    "title_zh": "其他信息通信技术支持与测试技术员（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Ict Support And Test Technicians Nec solutions.",
@@ -6249,6 +6437,8 @@
   {
     "code": "321111",
     "title": "Motor Mechanic (general)",
+    "title_tr": "Motor Tamircisi (Genel)",
+    "title_zh": "汽车机械师（综合）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Motor Mechanic (general) tasks.",
@@ -6260,6 +6450,8 @@
   {
     "code": "321112",
     "title": "Diesel Motor Mechanic",
+    "title_tr": "Dizel Motor Tamircisi",
+    "title_zh": "柴油发动机机械师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Diesel Motor Mechanic tasks.",
@@ -6271,6 +6463,8 @@
   {
     "code": "321113",
     "title": "Motorcycle Mechanic",
+    "title_tr": "Motosiklet Tamircisi",
+    "title_zh": "摩托车机械师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Motorcycle Mechanic tasks.",
@@ -6282,6 +6476,8 @@
   {
     "code": "321114",
     "title": "Small Engine Mechanic",
+    "title_tr": "Küçük Motor Tamircisi",
+    "title_zh": "小型发动机机械师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and prepares materials, tools and work areas for Small Engine Mechanic tasks.",
