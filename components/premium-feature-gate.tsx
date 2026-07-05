@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 
 const initialUnlockState: PremiumUnlockState = { status: "idle" };
 
@@ -52,6 +53,8 @@ export function PremiumFeatureGate({
   const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">(
     isFreeActive ? "lead_capture" : "payment"
   );
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [termsError, setTermsError] = useState(false);
   const trackedUnlockReportIdRef = useRef<string | null>(null);
 
   const [unlockState, unlockAction, unlockPending] = useActionState(
@@ -87,6 +90,40 @@ export function PremiumFeatureGate({
       window.location.href = url;
     }
   }, [locale, onUnlocked, reportId, unlockState]);
+
+  // Legal gate: blocks the unlock action entirely -- no lead data is sent and
+  // no payment/report unlock proceeds -- until Terms/data-processing consent
+  // is given. preventDefault() here stops React 19's form `action` from firing.
+  function handleUnlockSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!isTermsAccepted) {
+      e.preventDefault();
+      setTermsError(true);
+      return;
+    }
+    setTermsError(false);
+  }
+
+  const termsLabel = isTr ? (
+    <>
+      <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme politikalarını
+      okudum, onaylıyorum. (Dijital ürünlerde iade yapılmaz.)
+    </>
+  ) : isZh ? (
+    <>
+      我已阅读并同意<TermsGateLink>服务条款</TermsGateLink>
+      和数据处理政策。（数字产品不支持退款。）
+    </>
+  ) : (
+    <>
+      I agree to the <TermsGateLink>Terms of Service</TermsGateLink> and data processing
+      policies. (No refunds on digital products.)
+    </>
+  );
+  const termsErrorText = isTr
+    ? "Lütfen devam etmek için yasal koşulları onaylayın."
+    : isZh
+      ? "请接受法律条款以继续。"
+      : "Please accept the legal terms to proceed.";
 
   return (
     <section className="space-y-5">
@@ -256,7 +293,7 @@ export function PremiumFeatureGate({
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <form action={unlockAction} className="space-y-4">
+              <form action={unlockAction} onSubmit={handleUnlockSubmit} className="space-y-4">
                 <input type="hidden" name="reportId" value={reportId} />
 
                 <div className="space-y-2">
@@ -318,6 +355,17 @@ export function PremiumFeatureGate({
                     {unlockState.message}
                   </p>
                 )}
+
+                <TermsGate
+                  isTermsAccepted={isTermsAccepted}
+                  termsError={termsError}
+                  onToggle={(checked) => {
+                    setIsTermsAccepted(checked);
+                    if (checked) setTermsError(false);
+                  }}
+                  label={termsLabel}
+                  errorText={termsErrorText}
+                />
 
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" className="h-12 flex-1 rounded-xl" onClick={() => setShowModal(false)}>

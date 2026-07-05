@@ -15,6 +15,7 @@ import {
 } from "./actions";
 import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, type SupportedCountry, type VisaPathwayOption } from "@/lib/countries";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
+import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { ActionChecklist } from "@/components/ActionChecklist";
 import { StateHeatmap } from "@/components/StateHeatmap";
@@ -364,6 +365,8 @@ export function FullCheckWaitlistForm({
   const [selectedCountry, setSelectedCountry] = useState<SupportedCountry>(
     isSupportedCountry(initialValues.targetCountry) ? initialValues.targetCountry : defaultCountry
   );
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [termsError, setTermsError] = useState(false);
   const [analysisStepIndex, setAnalysisStepIndex] = useState(0);
   const [analysisProgressId, setAnalysisProgressId] = useState(() =>
     typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`
@@ -629,6 +632,41 @@ export function FullCheckWaitlistForm({
   const selectClassName =
     "h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
 
+  // Legal gate: blocks the server action entirely -- no data is submitted,
+  // no report is generated -- until Terms/data-processing consent is given.
+  // Calling preventDefault() here stops React 19's form `action` from firing,
+  // same as it would for a plain onSubmit handler.
+  function handleIntakeSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!isTermsAccepted) {
+      e.preventDefault();
+      setTermsError(true);
+      return;
+    }
+    setTermsError(false);
+  }
+
+  const termsLabel = isTr ? (
+    <>
+      <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme politikalarını
+      okudum, onaylıyorum. (Dijital ürünlerde iade yapılmaz.)
+    </>
+  ) : isZh ? (
+    <>
+      我已阅读并同意<TermsGateLink>服务条款</TermsGateLink>
+      和数据处理政策。（数字产品不支持退款。）
+    </>
+  ) : (
+    <>
+      I agree to the <TermsGateLink>Terms of Service</TermsGateLink> and data processing
+      policies. (No refunds on digital products.)
+    </>
+  );
+  const termsErrorText = txt(
+    "Lütfen devam etmek için yasal koşulları onaylayın.",
+    "Please accept the legal terms to proceed.",
+    "请接受法律条款以继续。"
+  );
+
   return (
     <div className="space-y-6">
       {isPending && (
@@ -669,7 +707,7 @@ export function FullCheckWaitlistForm({
       )}
 
       {!shouldHideIntakeForm && (
-      <form action={formAction} className="space-y-4" noValidate>
+      <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4" noValidate>
         <input type="hidden" name="routeLocale" value={locale} />
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="preferredLanguage" value={locale} />
@@ -1002,6 +1040,17 @@ export function FullCheckWaitlistForm({
             </p>
           </div>
         )}
+
+        <TermsGate
+          isTermsAccepted={isTermsAccepted}
+          termsError={termsError}
+          onToggle={(checked) => {
+            setIsTermsAccepted(checked);
+            if (checked) setTermsError(false);
+          }}
+          label={termsLabel}
+          errorText={termsErrorText}
+        />
 
         <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
           {isPending
