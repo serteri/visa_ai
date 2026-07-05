@@ -3902,6 +3902,8 @@
   {
     "code": "253312",
     "title": "Specialist Physician (cardiovascular Medicine)",
+    "title_tr": "Uzman Hekim (Kardiyovasküler Tıp)",
+    "title_zh": "专科医生（心血管内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (cardiovascular Medicine) activities in line with legislative, safety and quality requirements.",
@@ -3913,6 +3915,8 @@
   {
     "code": "253313",
     "title": "Specialist Physician (clinical Genetics)",
+    "title_tr": "Uzman Hekim (Klinik Genetik)",
+    "title_zh": "专科医生（临床遗传学）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (clinical Genetics) activities in line with legislative, safety and quality requirements.",
@@ -3924,6 +3928,8 @@
   {
     "code": "253314",
     "title": "Specialist Physician (dermatology)",
+    "title_tr": "Uzman Hekim (Dermatoloji)",
+    "title_zh": "专科医生（皮肤科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (dermatology) activities in line with legislative, safety and quality requirements.",
@@ -3935,6 +3941,8 @@
   {
     "code": "253315",
     "title": "Specialist Physician (endocrinology)",
+    "title_tr": "Uzman Hekim (Endokrinoloji)",
+    "title_zh": "专科医生（内分泌科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (endocrinology) activities in line with legislative, safety and quality requirements.",
@@ -3946,6 +3954,8 @@
   {
     "code": "253316",
     "title": "Specialist Physician (gastroenterology)",
+    "title_tr": "Uzman Hekim (Gastroenteroloji)",
+    "title_zh": "专科医生（消化内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (gastroenterology) activities in line with legislative, safety and quality requirements.",
@@ -3957,6 +3967,8 @@
   {
     "code": "253317",
     "title": "Specialist Physician (general Medicine)",
+    "title_tr": "Uzman Hekim (Genel Dahiliye)",
+    "title_zh": "专科医生（普通内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (general Medicine) activities in line with legislative, safety and quality requirements.",
@@ -3968,6 +3980,8 @@
   {
     "code": "253318",
     "title": "Specialist Physician (infectious Diseases)",
+    "title_tr": "Uzman Hekim (Enfeksiyon Hastalıkları)",
+    "title_zh": "专科医生（感染科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (infectious Diseases) activities in line with legislative, safety and quality requirements.",
@@ -3979,6 +3993,8 @@
   {
     "code": "253319",
     "title": "Specialist Physician (nephrology)",
+    "title_tr": "Uzman Hekim (Nefroloji)",
+    "title_zh": "专科医生（肾内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (nephrology) activities in line with legislative, safety and quality requirements.",
@@ -3990,6 +4006,8 @@
   {
     "code": "253321",
     "title": "Specialist Physician (neurology)",
+    "title_tr": "Uzman Hekim (Nöroloji)",
+    "title_zh": "专科医生（神经内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (neurology) activities in line with legislative, safety and quality requirements.",
@@ -4001,6 +4019,8 @@
   {
     "code": "253322",
     "title": "Specialist Physician (oncology)",
+    "title_tr": "Uzman Hekim (Onkoloji)",
+    "title_zh": "专科医生（肿瘤科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (oncology) activities in line with legislative, safety and quality requirements.",
@@ -4012,6 +4032,8 @@
   {
     "code": "253323",
     "title": "Specialist Physician (respiratory Medicine)",
+    "title_tr": "Uzman Hekim (Göğüs Hastalıkları)",
+    "title_zh": "专科医生（呼吸内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (respiratory Medicine) activities in line with legislative, safety and quality requirements.",
@@ -4023,6 +4045,8 @@
   {
     "code": "253324",
     "title": "Specialist Physician (rheumatology)",
+    "title_tr": "Uzman Hekim (Romatoloji)",
+    "title_zh": "专科医生（风湿科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physician (rheumatology) activities in line with legislative, safety and quality requirements.",
@@ -4034,6 +4058,8 @@
   {
     "code": "253331",
     "title": "Cardiologist",
+    "title_tr": "Kardiyolog",
+    "title_zh": "心脏病专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Cardiologist activities in line with legislative, safety and quality requirements.",
@@ -4045,6 +4071,8 @@
   {
     "code": "253332",
     "title": "Dermatologist",
+    "title_tr": "Dermatolog",
+    "title_zh": "皮肤科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Dermatologist activities in line with legislative, safety and quality requirements.",
@@ -4056,6 +4084,8 @@
   {
     "code": "253333",
     "title": "Endocrinologist",
+    "title_tr": "Endokrinolog",
+    "title_zh": "内分泌科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Endocrinologist activities in line with legislative, safety and quality requirements.",
@@ -4067,6 +4097,8 @@
   {
     "code": "253334",
     "title": "Gastroenterologist",
+    "title_tr": "Gastroenterolog",
+    "title_zh": "消化科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Gastroenterologist activities in line with legislative, safety and quality requirements.",
@@ -4078,6 +4110,8 @@
   {
     "code": "253335",
     "title": "Nephrologist",
+    "title_tr": "Nefrolog",
+    "title_zh": "肾脏科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Nephrologist activities in line with legislative, safety and quality requirements.",
@@ -4089,6 +4123,8 @@
   {
     "code": "253336",
     "title": "Neurologist",
+    "title_tr": "Nörolog",
+    "title_zh": "神经科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Neurologist activities in line with legislative, safety and quality requirements.",
@@ -4100,6 +4136,8 @@
   {
     "code": "253337",
     "title": "Oncologist",
+    "title_tr": "Onkolog",
+    "title_zh": "肿瘤科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Oncologist activities in line with legislative, safety and quality requirements.",
@@ -4111,6 +4149,8 @@
   {
     "code": "253338",
     "title": "Respiratory Medicine Specialist",
+    "title_tr": "Göğüs Hastalıkları Uzmanı",
+    "title_zh": "呼吸内科专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Respiratory Medicine Specialist activities in line with legislative, safety and quality requirements.",
@@ -4122,6 +4162,8 @@
   {
     "code": "253339",
     "title": "Rheumatologist",
+    "title_tr": "Romatolog",
+    "title_zh": "风湿科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Rheumatologist activities in line with legislative, safety and quality requirements.",
@@ -4133,6 +4175,8 @@
   {
     "code": "253399",
     "title": "Specialist Physicians Nec",
+    "title_tr": "Diğer Uzman Hekimler (Sınıflandırılmamış)",
+    "title_zh": "其他专科医生（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Specialist Physicians Nec activities in line with legislative, safety and quality requirements.",
@@ -4144,6 +4188,8 @@
   {
     "code": "253411",
     "title": "Psychiatrist",
+    "title_tr": "Psikiyatrist",
+    "title_zh": "精神科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Psychiatrist activities in line with legislative, safety and quality requirements.",
@@ -4155,6 +4201,8 @@
   {
     "code": "253412",
     "title": "Forensic Psychiatrist",
+    "title_tr": "Adli Psikiyatrist",
+    "title_zh": "法医精神科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Forensic Psychiatrist activities in line with legislative, safety and quality requirements.",
@@ -4166,6 +4214,8 @@
   {
     "code": "253413",
     "title": "Child Psychiatrist",
+    "title_tr": "Çocuk Psikiyatristi",
+    "title_zh": "儿童精神科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Child Psychiatrist activities in line with legislative, safety and quality requirements.",
@@ -4177,6 +4227,8 @@
   {
     "code": "253511",
     "title": "Surgeon",
+    "title_tr": "Cerrah",
+    "title_zh": "外科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Surgeon care or treatment plans.",
@@ -4188,6 +4240,8 @@
   {
     "code": "253512",
     "title": "Orthopaedic Surgeon",
+    "title_tr": "Ortopedi Cerrahı",
+    "title_zh": "骨科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Orthopaedic Surgeon care or treatment plans.",
@@ -4199,6 +4253,8 @@
   {
     "code": "253513",
     "title": "Neurosurgeon",
+    "title_tr": "Nöroşirürji Uzmanı",
+    "title_zh": "神经外科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Neurosurgeon care or treatment plans.",
@@ -4210,6 +4266,8 @@
   {
     "code": "253514",
     "title": "Thoracic Surgeon",
+    "title_tr": "Göğüs Cerrahı",
+    "title_zh": "胸外科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Thoracic Surgeon care or treatment plans.",
@@ -4221,6 +4279,8 @@
   {
     "code": "253611",
     "title": "Anaesthetist",
+    "title_tr": "Anestezi Uzmanı",
+    "title_zh": "麻醉科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Anaesthetist activities in line with legislative, safety and quality requirements.",
@@ -4232,6 +4292,8 @@
   {
     "code": "253711",
     "title": "Dentist",
+    "title_tr": "Diş Hekimi",
+    "title_zh": "牙医",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Dentist care or treatment plans.",
@@ -4243,6 +4305,8 @@
   {
     "code": "253712",
     "title": "Dental Specialist",
+    "title_tr": "Diş Hekimliği Uzmanı",
+    "title_zh": "口腔专科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Dental Specialist activities in line with legislative, safety and quality requirements.",
@@ -4254,6 +4318,8 @@
   {
     "code": "253812",
     "title": "Optometrist",
+    "title_tr": "Optometrist",
+    "title_zh": "验光师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Optometrist care or treatment plans.",
@@ -4265,6 +4331,8 @@
   {
     "code": "253813",
     "title": "Ocularist",
+    "title_tr": "Göz Protezi Uzmanı (Okülarist)",
+    "title_zh": "义眼制作师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Ocularist activities in line with legislative, safety and quality requirements.",
@@ -4276,6 +4344,8 @@
   {
     "code": "253911",
     "title": "Obstetrician",
+    "title_tr": "Kadın Doğum Uzmanı",
+    "title_zh": "产科医生",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Obstetrician activities in line with legislative, safety and quality requirements.",
@@ -4287,6 +4357,8 @@
   {
     "code": "253999",
     "title": "Medical Practitioners nec",
+    "title_tr": "Diğer Hekimler (Sınıflandırılmamış)",
+    "title_zh": "其他医生（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Diagnoses, treats and manages patient health conditions within a medical specialty.",
@@ -4298,6 +4370,8 @@
   {
     "code": "254111",
     "title": "Midwife",
+    "title_tr": "Ebe",
+    "title_zh": "助产士",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Midwife care or treatment plans.",
@@ -4309,6 +4383,8 @@
   {
     "code": "254211",
     "title": "Nurse Practitioner",
+    "title_tr": "Uzman Hemşire (Nurse Practitioner)",
+    "title_zh": "执业护士",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Nurse Practitioner care or treatment plans.",
@@ -4320,6 +4396,8 @@
   {
     "code": "254212",
     "title": "Registered Nurse",
+    "title_tr": "Kayıtlı Hemşire",
+    "title_zh": "注册护士",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse care or treatment plans.",
@@ -4331,6 +4409,8 @@
   {
     "code": "254213",
     "title": "Divisional Nurse Manager",
+    "title_tr": "Bölüm Hemşire Müdürü",
+    "title_zh": "科室护士长",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Divisional Nurse Manager care or treatment plans.",
@@ -4342,6 +4422,8 @@
   {
     "code": "254214",
     "title": "Nurse Educator",
+    "title_tr": "Hemşire Eğitmeni",
+    "title_zh": "护理教育者",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Nurse Educator care or treatment plans.",
@@ -4353,6 +4435,8 @@
   {
     "code": "254215",
     "title": "Nurse Researcher",
+    "title_tr": "Hemşire Araştırmacı",
+    "title_zh": "护理研究员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Nurse Researcher care or treatment plans.",
@@ -4364,6 +4448,8 @@
   {
     "code": "254216",
     "title": "Registered Nurse (critical Care And Emergency)",
+    "title_tr": "Kayıtlı Hemşire (Yoğun Bakım ve Acil)",
+    "title_zh": "注册护士（重症监护与急诊）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (critical Care And Emergency) care or treatment plans.",
@@ -4375,6 +4461,8 @@
   {
     "code": "254217",
     "title": "Registered Nurse (family And Community Health)",
+    "title_tr": "Kayıtlı Hemşire (Aile ve Toplum Sağlığı)",
+    "title_zh": "注册护士（家庭与社区卫生）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (family And Community Health) care or treatment plans.",
@@ -4386,6 +4474,8 @@
   {
     "code": "254218",
     "title": "Registered Nurse (medical)",
+    "title_tr": "Kayıtlı Hemşire (Dahiliye)",
+    "title_zh": "注册护士（内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (medical) care or treatment plans.",
@@ -4397,6 +4487,8 @@
   {
     "code": "254219",
     "title": "Registered Nurse (perioperative)",
+    "title_tr": "Kayıtlı Hemşire (Ameliyat Öncesi/Sonrası)",
+    "title_zh": "注册护士（围手术期）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (perioperative) care or treatment plans.",
@@ -4408,6 +4500,8 @@
   {
     "code": "254311",
     "title": "Enrolled Nurse",
+    "title_tr": "Yardımcı Hemşire (Enrolled Nurse)",
+    "title_zh": "注册助理护士",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse care or treatment plans.",
@@ -4419,6 +4513,8 @@
   {
     "code": "254312",
     "title": "Enrolled Nurse (aged Care)",
+    "title_tr": "Yardımcı Hemşire (Yaşlı Bakımı)",
+    "title_zh": "注册助理护士（老年护理）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse (aged Care) care or treatment plans.",
@@ -4430,6 +4526,8 @@
   {
     "code": "254313",
     "title": "Enrolled Nurse (child And Family Health)",
+    "title_tr": "Yardımcı Hemşire (Çocuk ve Aile Sağlığı)",
+    "title_zh": "注册助理护士（儿童与家庭卫生）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse (child And Family Health) care or treatment plans.",
@@ -4441,6 +4539,8 @@
   {
     "code": "254314",
     "title": "Enrolled Nurse (community Health)",
+    "title_tr": "Yardımcı Hemşire (Toplum Sağlığı)",
+    "title_zh": "注册助理护士（社区卫生）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse (community Health) care or treatment plans.",
@@ -4452,6 +4552,8 @@
   {
     "code": "254315",
     "title": "Enrolled Nurse (developmental Disability)",
+    "title_tr": "Yardımcı Hemşire (Gelişimsel Engellilik)",
+    "title_zh": "注册助理护士（发育障碍）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse (developmental Disability) care or treatment plans.",
@@ -4463,6 +4565,8 @@
   {
     "code": "254316",
     "title": "Enrolled Nurse (mental Health)",
+    "title_tr": "Yardımcı Hemşire (Ruh Sağlığı)",
+    "title_zh": "注册助理护士（心理健康）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse (mental Health) care or treatment plans.",
@@ -4474,6 +4578,8 @@
   {
     "code": "254317",
     "title": "Enrolled Nurse (surgical)",
+    "title_tr": "Yardımcı Hemşire (Cerrahi)",
+    "title_zh": "注册助理护士（外科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse (surgical) care or treatment plans.",
@@ -4485,6 +4591,8 @@
   {
     "code": "254318",
     "title": "Enrolled Nurse (mixed)",
+    "title_tr": "Yardımcı Hemşire (Karma)",
+    "title_zh": "注册助理护士（综合）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse (mixed) care or treatment plans.",
@@ -4496,6 +4604,8 @@
   {
     "code": "254319",
     "title": "Enrolled Nurse (assistive Care)",
+    "title_tr": "Yardımcı Hemşire (Destekleyici Bakım)",
+    "title_zh": "注册助理护士（辅助护理）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurse (assistive Care) care or treatment plans.",
@@ -4507,6 +4617,8 @@
   {
     "code": "254399",
     "title": "Enrolled Nurses Nec",
+    "title_tr": "Diğer Yardımcı Hemşireler (Sınıflandırılmamış)",
+    "title_zh": "其他注册助理护士（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Enrolled Nurses Nec care or treatment plans.",
@@ -4518,6 +4630,8 @@
   {
     "code": "254411",
     "title": "Registered Nurse (aged Care)",
+    "title_tr": "Kayıtlı Hemşire (Yaşlı Bakımı)",
+    "title_zh": "注册护士（老年护理）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (aged Care) care or treatment plans.",
@@ -4542,6 +4656,8 @@
   {
     "code": "254413",
     "title": "Registered Nurse (child And Family Health)",
+    "title_tr": "Kayıtlı Hemşire (Çocuk ve Aile Sağlığı)",
+    "title_zh": "注册护士（儿童与家庭卫生）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (child And Family Health) care or treatment plans.",
@@ -4553,6 +4669,8 @@
   {
     "code": "254414",
     "title": "Registered Nurse (community Health)",
+    "title_tr": "Kayıtlı Hemşire (Toplum Sağlığı)",
+    "title_zh": "注册护士（社区卫生）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (community Health) care or treatment plans.",
@@ -4564,6 +4682,8 @@
   {
     "code": "254415",
     "title": "Registered Nurse (Critical Care and Emergency)",
+    "title_tr": "Kayıtlı Hemşire (Yoğun Bakım ve Acil)",
+    "title_zh": "注册护士（重症监护与急诊）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Provides specialised nursing care for critically ill or emergency patients.",
@@ -4575,6 +4695,8 @@
   {
     "code": "254418",
     "title": "Registered Nurse (Medical)",
+    "title_tr": "Kayıtlı Hemşire (Dahiliye)",
+    "title_zh": "注册护士（内科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Provides nursing care for patients with medical conditions and ongoing health needs.",
@@ -4586,6 +4708,8 @@
   {
     "code": "254421",
     "title": "Registered Nurse (medical Practice)",
+    "title_tr": "Kayıtlı Hemşire (Klinik Uygulama)",
+    "title_zh": "注册护士（医疗实践）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (medical Practice) care or treatment plans.",
@@ -4597,6 +4721,8 @@
   {
     "code": "254422",
     "title": "Registered Nurse (Mental Health)",
+    "title_tr": "Kayıtlı Hemşire (Ruh Sağlığı)",
+    "title_zh": "注册护士（心理健康）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Provides nursing care for people experiencing mental health conditions.",
@@ -4608,6 +4734,8 @@
   {
     "code": "254423",
     "title": "Registered Nurse (Perioperative)",
+    "title_tr": "Kayıtlı Hemşire (Ameliyat Öncesi/Sonrası)",
+    "title_zh": "注册护士（围手术期）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Provides nursing care before, during and after surgical procedures.",
@@ -4619,6 +4747,8 @@
   {
     "code": "254424",
     "title": "Registered Nurse (surgical)",
+    "title_tr": "Kayıtlı Hemşire (Cerrahi)",
+    "title_zh": "注册护士（外科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (surgical) care or treatment plans.",
@@ -4630,6 +4760,8 @@
   {
     "code": "254425",
     "title": "Registered Nurse (palliative Care)",
+    "title_tr": "Kayıtlı Hemşire (Palyatif Bakım)",
+    "title_zh": "注册护士（姑息护理）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (palliative Care) care or treatment plans.",
@@ -4641,6 +4773,8 @@
   {
     "code": "254426",
     "title": "Registered Nurse (developmental Disability)",
+    "title_tr": "Kayıtlı Hemşire (Gelişimsel Engellilik)",
+    "title_zh": "注册护士（发育障碍）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (developmental Disability) care or treatment plans.",
@@ -4652,6 +4786,8 @@
   {
     "code": "254427",
     "title": "Registered Nurse (mental Health)",
+    "title_tr": "Kayıtlı Hemşire (Ruh Sağlığı)",
+    "title_zh": "注册护士（心理健康）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (mental Health) care or treatment plans.",
@@ -4663,6 +4799,8 @@
   {
     "code": "254428",
     "title": "Registered Nurse (perioperative)",
+    "title_tr": "Kayıtlı Hemşire (Ameliyat Öncesi/Sonrası)",
+    "title_zh": "注册护士（围手术期）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (perioperative) care or treatment plans.",
@@ -4674,6 +4812,8 @@
   {
     "code": "254499",
     "title": "Registered Nurses Nec",
+    "title_tr": "Diğer Kayıtlı Hemşireler (Sınıflandırılmamış)",
+    "title_zh": "其他注册护士（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurses Nec care or treatment plans.",
@@ -4685,6 +4825,8 @@
   {
     "code": "254511",
     "title": "Registered Nurse (palliative Care)",
+    "title_tr": "Kayıtlı Hemşire (Palyatif Bakım)",
+    "title_zh": "注册护士（姑息护理）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (palliative Care) care or treatment plans.",
@@ -4696,6 +4838,8 @@
   {
     "code": "254512",
     "title": "Registered Nurse (rehabilitation)",
+    "title_tr": "Kayıtlı Hemşire (Rehabilitasyon)",
+    "title_zh": "注册护士（康复护理）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (rehabilitation) care or treatment plans.",
@@ -4707,6 +4851,8 @@
   {
     "code": "254513",
     "title": "Registered Nurse (maternity)",
+    "title_tr": "Kayıtlı Hemşire (Doğum/Annelik)",
+    "title_zh": "注册护士（产科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (maternity) care or treatment plans.",
@@ -4718,6 +4864,8 @@
   {
     "code": "254514",
     "title": "Registered Nurse (neonatal)",
+    "title_tr": "Kayıtlı Hemşire (Yenidoğan)",
+    "title_zh": "注册护士（新生儿）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (neonatal) care or treatment plans.",
@@ -4729,6 +4877,8 @@
   {
     "code": "254515",
     "title": "Registered Nurse (paediatric)",
+    "title_tr": "Kayıtlı Hemşire (Pediatri)",
+    "title_zh": "注册护士（儿科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (paediatric) care or treatment plans.",
@@ -4740,6 +4890,8 @@
   {
     "code": "254516",
     "title": "Registered Nurse (psychiatric)",
+    "title_tr": "Kayıtlı Hemşire (Psikiyatri)",
+    "title_zh": "注册护士（精神科）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (psychiatric) care or treatment plans.",
@@ -4751,6 +4903,8 @@
   {
     "code": "254517",
     "title": "Registered Nurse (intensive Care Unit)",
+    "title_tr": "Kayıtlı Hemşire (Yoğun Bakım Ünitesi)",
+    "title_zh": "注册护士（重症监护病房）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses patient needs and develops evidence-based Registered Nurse (intensive Care Unit) care or treatment plans.",
@@ -4762,6 +4916,8 @@
   {
     "code": "261111",
     "title": "ICT Business Analyst",
+    "title_tr": "BİT İş Analisti",
+    "title_zh": "信息通信技术业务分析师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Identifies and evaluates business processes, procedures and work practices.",
@@ -4773,6 +4929,8 @@
   {
     "code": "261112",
     "title": "Systems Analyst",
+    "title_tr": "Sistem Analisti",
+    "title_zh": "系统分析师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Evaluates existing ICT systems and recommends improvements to meet business needs.",
@@ -4784,6 +4942,8 @@
   {
     "code": "261113",
     "title": "Software Architect",
+    "title_tr": "Yazılım Mimarı",
+    "title_zh": "软件架构师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Software Architect solutions.",
@@ -4795,6 +4955,8 @@
   {
     "code": "261211",
     "title": "Multimedia Specialist",
+    "title_tr": "Multimedya Uzmanı",
+    "title_zh": "多媒体专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Multimedia Specialist activities in line with legislative, safety and quality requirements.",
@@ -4806,6 +4968,8 @@
   {
     "code": "261212",
     "title": "Web Developer",
+    "title_tr": "Web Geliştiricisi",
+    "title_zh": "网页开发工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Web Developer solutions.",
@@ -4817,6 +4981,8 @@
   {
     "code": "261311",
     "title": "Analyst Programmer",
+    "title_tr": "Analist Programcı",
+    "title_zh": "分析程序员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses business requirements and translates them into software system specifications.",
@@ -4828,6 +4994,8 @@
   {
     "code": "261312",
     "title": "Developer Programmer",
+    "title_tr": "Geliştirici Programcı",
+    "title_zh": "开发程序员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Interprets specifications and technical designs for software development tasks.",
@@ -4852,6 +5020,8 @@
   {
     "code": "261314",
     "title": "Software Tester",
+    "title_tr": "Yazılım Test Uzmanı",
+    "title_zh": "软件测试工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Software Tester solutions.",
@@ -4863,6 +5033,8 @@
   {
     "code": "261321",
     "title": "Database Designer",
+    "title_tr": "Veritabanı Tasarımcısı",
+    "title_zh": "数据库设计师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Database Designer solutions.",
@@ -4874,6 +5046,8 @@
   {
     "code": "261322",
     "title": "Data Engineer",
+    "title_tr": "Veri Mühendisi",
+    "title_zh": "数据工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Data Engineer solutions.",
@@ -4885,6 +5059,8 @@
   {
     "code": "261323",
     "title": "Big Data Specialist",
+    "title_tr": "Büyük Veri Uzmanı",
+    "title_zh": "大数据专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Big Data Specialist activities in line with legislative, safety and quality requirements.",
@@ -4896,6 +5072,8 @@
   {
     "code": "261324",
     "title": "Data Scientist",
+    "title_tr": "Veri Bilimci",
+    "title_zh": "数据科学家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Data Scientist activities in line with legislative, safety and quality requirements.",
@@ -4907,6 +5085,8 @@
   {
     "code": "261325",
     "title": "Machine Learning Engineer",
+    "title_tr": "Makine Öğrenmesi Mühendisi",
+    "title_zh": "机器学习工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Machine Learning Engineer solutions.",
@@ -4918,6 +5098,8 @@
   {
     "code": "261326",
     "title": "Ai Engineer",
+    "title_tr": "Yapay Zeka Mühendisi",
+    "title_zh": "人工智能工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Ai Engineer solutions.",
@@ -4929,6 +5111,8 @@
   {
     "code": "261327",
     "title": "Cloud Architect",
+    "title_tr": "Bulut Mimarı",
+    "title_zh": "云架构师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Plans and coordinates core Cloud Architect activities in line with legislative, safety and quality requirements.",
@@ -4940,6 +5124,8 @@
   {
     "code": "261328",
     "title": "Devops Engineer",
+    "title_tr": "DevOps Mühendisi",
+    "title_zh": "DevOps工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Devops Engineer solutions.",
@@ -4951,6 +5137,8 @@
   {
     "code": "261329",
     "title": "Site Reliability Engineer",
+    "title_tr": "Site Güvenilirlik Mühendisi (SRE)",
+    "title_zh": "站点可靠性工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Site Reliability Engineer solutions.",
@@ -4962,6 +5150,8 @@
   {
     "code": "261330",
     "title": "Cyber Security Engineer",
+    "title_tr": "Siber Güvenlik Mühendisi",
+    "title_zh": "网络安全工程师",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Cyber Security Engineer solutions.",
@@ -4973,6 +5163,8 @@
   {
     "code": "261399",
     "title": "Software And Applications Programmers Nec",
+    "title_tr": "Diğer Yazılım ve Uygulama Programcıları (Sınıflandırılmamış)",
+    "title_zh": "其他软件与应用程序员（未另分类）",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Analyses technical and business requirements to design fit-for-purpose Software And Applications Programmers Nec solutions.",
@@ -4984,6 +5176,8 @@
   {
     "code": "262111",
     "title": "Database Administrator",
+    "title_tr": "Veritabanı Yöneticisi",
+    "title_zh": "数据库管理员",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Administers database management systems, access controls and backup procedures.",
@@ -4995,6 +5189,8 @@
   {
     "code": "262112",
     "title": "ICT Security Specialist",
+    "title_tr": "BİT Güvenlik Uzmanı",
+    "title_zh": "信息通信技术安全专家",
     "skillLevel": "Skill Level 1",
     "duties": [
       "Assesses ICT security risks, vulnerabilities and control requirements.",
