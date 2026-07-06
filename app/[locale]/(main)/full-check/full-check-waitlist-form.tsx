@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   type FullCheckWaitlistState,
@@ -387,6 +394,9 @@ export function FullCheckWaitlistForm({
   const [nocTeer, setNocTeer] = useState<number | null>(null);
   const [nocResults, setNocResults] = useState<NocEntry[]>([]);
   const [nocOpen, setNocOpen] = useState(false);
+  const [qualificationLevel, setQualificationLevel] = useState("");
+  const [sponsorFamilyStatus, setSponsorFamilyStatus] = useState("");
+  const [annualSalaryAud, setAnnualSalaryAud] = useState("");
 
   // NOC_ALIAS_MAP and filterNoc replaced by module-level NOC_ALIAS_MAP_STATIC
   // and searchNoc() which uses Fuse.js — see top of file.
@@ -631,6 +641,52 @@ export function FullCheckWaitlistForm({
     "h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
   const selectClassName =
     "h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
+
+  const educationOptions = [
+    {
+      value: "High School",
+      label: txt("Lise", "High School", "高中"),
+    },
+    {
+      value: "Bachelor's Degree",
+      label: txt("Lisans Derecesi", "Bachelor's Degree", "学士学位"),
+    },
+    {
+      value: "Master's Degree (Coursework)",
+      label: txt("Yüksek Lisans (Ders Ağırlıklı)", "Master's Degree (Coursework)", "硕士学位（授课型）"),
+    },
+    {
+      value: "Master's Degree (Research)",
+      label: txt("Yüksek Lisans (Araştırma)", "Master's Degree (Research)", "硕士学位（研究型）"),
+    },
+    {
+      value: "PhD/Doctorate",
+      label: txt("Doktora / PhD", "PhD/Doctorate", "博士学位"),
+    },
+  ];
+
+  const sponsorFamilyOptions = [
+    {
+      value: "Single / No Dependants",
+      label: txt("Bekar / Bağımlı Yok", "Single / No Dependants", "单身 / 无受养人"),
+    },
+    {
+      value: "Partner / Dependants with Functional English",
+      label: txt(
+        "Partner / Bağımlılar Functional English ile",
+        "Partner / Dependants with Functional English",
+        "配偶 / 受养人具备 Functional English"
+      ),
+    },
+    {
+      value: "Partner / Dependants WITHOUT Functional English",
+      label: txt(
+        "Partner / Bağımlılar Functional English OLMADAN",
+        "Partner / Dependants WITHOUT Functional English",
+        "配偶 / 受养人不具备 Functional English"
+      ),
+    },
+  ];
 
   // Legal gate: blocks the server action entirely -- no data is submitted,
   // no report is generated -- until Terms/data-processing consent is given.
@@ -922,13 +978,62 @@ export function FullCheckWaitlistForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-sponsor">{txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}</Label>
+          <Label htmlFor="waitlist-education">
+            {txt("En yüksek eğitim seviyesi", "Highest Education Level", "最高学历")}
+          </Label>
+          <Select value={qualificationLevel} onValueChange={setQualificationLevel}>
+            <SelectTrigger id="waitlist-education" className={fieldClassName}>
+              <SelectValue
+                placeholder={txt("Eğitim seviyenizi seçin", "Select your education level", "请选择你的学历")}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {educationOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <input type="hidden" name="qualificationLevel" value={qualificationLevel} />
+          <ErrorText message={state.errors?.qualificationLevel} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-salary-aud">{txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}</Label>
           <Input
-            id="waitlist-sponsor"
-            name="sponsorOrFamily"
+            id="waitlist-salary-aud"
+            name="annualSalaryAud"
+            type="number"
+            min={0}
+            step={1}
+            inputMode="numeric"
+            value={annualSalaryAud}
+            onChange={(e) => setAnnualSalaryAud(e.target.value)}
             className={fieldClassName}
-            placeholder={txt("Örn: İşveren sponsor, Partner veya Aile", "E.g., Employer sponsor, Partner, or Family", "例如：雇主担保、配偶或家庭")}
+            placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")}
           />
+          <ErrorText message={state.errors?.annualSalaryAud} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-sponsor">{txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}</Label>
+          <Select value={sponsorFamilyStatus} onValueChange={setSponsorFamilyStatus}>
+            <SelectTrigger id="waitlist-sponsor" className={fieldClassName}>
+              <SelectValue
+                placeholder={txt("Sponsor/aile durumunu seçin", "Select sponsor/family status", "请选择担保/家庭状态")}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {sponsorFamilyOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <input type="hidden" name="sponsorOrFamily" value={sponsorFamilyStatus} />
+          <ErrorText message={state.errors?.sponsorOrFamily} />
         </div>
 
         <div className="space-y-2">

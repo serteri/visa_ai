@@ -71,6 +71,11 @@ const JULY_2026_189_190_BASE_COST_AUD = 6140;
 const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
 
 function parseDeclaredSalaryAud(input: ReadinessInput): number | null {
+  if (typeof input.annualSalaryAud === "number" && Number.isFinite(input.annualSalaryAud)) {
+    const rounded = Math.round(input.annualSalaryAud);
+    if (rounded >= 20000 && rounded <= 500000) return rounded;
+  }
+
   const combined = [
     input.mainGoal ?? "",
     input.preferredPathway ?? "",
@@ -112,8 +117,15 @@ function parseDeclaredAge(input: ReadinessInput): number | null {
 }
 
 function has485AgeException(input: ReadinessInput): boolean {
-  const qualification = (input.qualificationLevel ?? "").toLowerCase();
-  if (qualification === "phd") return true;
+  const qualification = input.qualificationLevel ?? "";
+  const normalizedQualification = qualification.toLowerCase();
+  if (
+    qualification === "Master's Degree (Research)" ||
+    qualification === "PhD/Doctorate" ||
+    normalizedQualification === "phd"
+  ) {
+    return true;
+  }
 
   const combined = [input.mainGoal ?? "", input.preferredPathway ?? "", input.biggestConcern ?? ""]
     .join(" ")
@@ -123,6 +135,20 @@ function has485AgeException(input: ReadinessInput): boolean {
   return /(masters?\s*(?:by\s*)?research|master\s*by\s*research|phd|doctorate)/i.test(combined)
     || /(hong\s*kong|\bhk\s*sar\b)/i.test(passport)
     || /(\bbno\b|british\s*national\s*\(?(?:overseas|o)\)?)/i.test(`${passport} ${combined}`);
+}
+
+function hasDependantsWithoutFunctionalEnglish(input: ReadinessInput): boolean {
+  const value = norm(input.sponsorOrFamily ?? "");
+  if (!value) return false;
+
+  return (
+    value.includes("without functional english") ||
+    value.includes("partner / dependants without functional english") ||
+    value.includes("functional english yok") ||
+    value.includes("fonksiyonel ingilizce yok") ||
+    value.includes("无功能英语") ||
+    value.includes("沒有功能英語")
+  );
 }
 
 function evaluateEmployerSalaryGate(input: ReadinessInput): {
@@ -2547,6 +2573,7 @@ function buildFinancialRoadmap(
   const isTr = locale === "tr";
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
   const has482 = subclasses.includes("482");
+  const hasNoFunctionalEnglishDependants = hasDependantsWithoutFunctionalEnglish(input);
   const variable = isTr ? "Değişken / sağlayıcıya bağlı" : "Variable / depends on provider";
 
   const feeSubclass = subclasses.find((s) => GOV_FEES_EN[s]);
@@ -2582,8 +2609,12 @@ function buildFinancialRoadmap(
         ? `Bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}`
         : `About AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant`,
       explanation: isTr
-        ? "18 yaş ve üzeri bağımlılar Functional English kanıtı sunamazsa kişi başı ikinci taksit ücreti uygulanabilir. Bu risk bazı başvurularda toplam maliyeti anlamlı biçimde artırır ve başvuru öncesi İngilizce kanıt planı yapılmalıdır."
-        : "Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant. This can materially increase total cost and should be checked early in planning.",
+        ? hasNoFunctionalEnglishDependants
+          ? `Seçilen aile durumunda (18+ bağımlılarda Functional English yok), ikinci taksit riski aktif görünüyor: bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}.`
+          : "18 yaş ve üzeri bağımlılar Functional English kanıtı sunamazsa kişi başı ikinci taksit ücreti uygulanabilir. Aile durumunuz buna işaret etmiyorsa risk profil bazında değişir."
+        : hasNoFunctionalEnglishDependants
+          ? `Your selected family status indicates no functional English for dependants aged 18+, so the second-instalment risk appears active at about AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant.`
+          : "Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant. If your family status does not indicate this, risk remains profile-dependent.",
     },
   ];
 
@@ -3197,7 +3228,13 @@ function buildCanadaPointsBoosterSimulator(
   });
 
   // Education upgrade
-  const hasHighEd = input.qualificationLevel === "PhD" || input.qualificationLevel === "Bachelor";
+  const hasHighEd =
+    input.qualificationLevel === "PhD" ||
+    input.qualificationLevel === "PhD/Doctorate" ||
+    input.qualificationLevel === "Bachelor" ||
+    input.qualificationLevel === "Bachelor's Degree" ||
+    input.qualificationLevel === "Master's Degree (Coursework)" ||
+    input.qualificationLevel === "Master's Degree (Research)";
   if (!hasHighEd) {
     scenarios.push({
       label: t("Canadian bachelor's degree (or foreign equivalent ECA)", "Kanada lisans derecesi (veya yabancı denklik ECA'sı)", "加拿大学士学位（或外国同等ECA）"),

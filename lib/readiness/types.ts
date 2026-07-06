@@ -16,9 +16,20 @@ export type ReadinessInput = {
   estimatedBudgetRange?: string;
   timeline?: string;
   sponsorOrFamily?: string;
+  annualSalaryAud?: number;
   preferredPathway?: string;
   biggestConcern?: string;
-  qualificationLevel?: "PhD" | "Bachelor" | "Diploma" | "Certificate" | "Other";
+  qualificationLevel?:
+    | "High School"
+    | "Bachelor's Degree"
+    | "Master's Degree (Coursework)"
+    | "Master's Degree (Research)"
+    | "PhD/Doctorate"
+    | "PhD"
+    | "Bachelor"
+    | "Diploma"
+    | "Certificate"
+    | "Other";
   offshoreExperienceYears?: number;
   onshoreExperienceYears?: number;
   regionalWilling?: boolean;

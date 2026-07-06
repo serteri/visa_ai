@@ -18,7 +18,7 @@ import {
   updateFullCheckProgress,
 } from "@/lib/full-check-progress";
 import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
-import type { ReadinessReport } from "@/lib/readiness/types";
+import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import {
   createUserReport,
   getUserReportById,
@@ -53,6 +53,8 @@ export type FullCheckWaitlistState = {
     currentCountry?: string;
     passportCountry?: string;
     age?: string;
+    qualificationLevel?: string;
+    annualSalaryAud?: string;
     occupation?: string;
     englishLevel?: string;
     sponsorOrFamily?: string;
@@ -72,6 +74,8 @@ export type PremiumUnlockState = {
     currentCountry?: string;
     passportCountry?: string;
     age?: string;
+    qualificationLevel?: string;
+    annualSalaryAud?: string;
     occupation?: string;
     englishLevel?: string;
     sponsorOrFamily?: string;
@@ -680,6 +684,26 @@ export async function submitFullCheckWaitlist(
   const age = String(formData.get("age") ?? "").trim();
   const occupation = String(formData.get("occupation") ?? "").trim();
   const englishLevel = String(formData.get("englishLevel") ?? "").trim();
+  const qualificationLevelRaw = String(formData.get("qualificationLevel") ?? "").trim();
+  const qualificationLevels: NonNullable<ReadinessInput["qualificationLevel"]>[] = [
+    "High School",
+    "Bachelor's Degree",
+    "Master's Degree (Coursework)",
+    "Master's Degree (Research)",
+    "PhD/Doctorate",
+    "PhD",
+    "Bachelor",
+    "Diploma",
+    "Certificate",
+    "Other",
+  ];
+  const qualificationLevel = qualificationLevels.includes(
+    qualificationLevelRaw as NonNullable<ReadinessInput["qualificationLevel"]>
+  )
+    ? (qualificationLevelRaw as ReadinessInput["qualificationLevel"])
+    : undefined;
+  const annualSalaryAudRaw = String(formData.get("annualSalaryAud") ?? "").trim();
+  const annualSalaryAud = annualSalaryAudRaw ? Number(annualSalaryAudRaw) : undefined;
   const englishTestTaken = String(formData.get("englishTestTaken") ?? "").trim();
   const occupationConfirmed = String(formData.get("occupationConfirmed") ?? "").trim();
   const estimatedBudgetRange = String(formData.get("estimatedBudgetRange") ?? "").trim();
@@ -710,6 +734,33 @@ export async function submitFullCheckWaitlist(
   }
   if (!age) errors.age = isTr ? "Yas gereklidir." : isZh ? "年龄为必填项。" : "Age is required.";
   if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : isZh ? "主要目标为必填项。" : "Main goal is required.";
+  if (!qualificationLevel) {
+    errors.qualificationLevel = isTr
+      ? "Egitim seviyesi gereklidir."
+      : isZh
+        ? "学历为必填项。"
+        : "Education level is required.";
+  }
+  if (!sponsorOrFamily) {
+    errors.sponsorOrFamily = isTr
+      ? "Sponsor/aile durumu gereklidir."
+      : isZh
+        ? "担保/家庭情况为必填项。"
+        : "Sponsor/family status is required.";
+  }
+  if (!annualSalaryAudRaw) {
+    errors.annualSalaryAud = isTr
+      ? "Yillik maas (AUD) gereklidir."
+      : isZh
+        ? "年薪（AUD）为必填项。"
+        : "Annual salary (AUD) is required.";
+  } else if (!Number.isFinite(annualSalaryAud) || (annualSalaryAud ?? 0) <= 0) {
+    errors.annualSalaryAud = isTr
+      ? "Gecerli bir yillik maas girin."
+      : isZh
+        ? "请输入有效的年薪数值。"
+        : "Enter a valid annual salary amount.";
+  }
 
   if (Object.keys(errors).length > 0) {
     if (analysisProgressId) {
@@ -860,23 +911,27 @@ export async function submitFullCheckWaitlist(
 
   const generatedReport = ensureCountrySpecificReportSchema(
     runReadinessEngine({
-    locale: resolvedLocale,
-    country: targetCountry,
-    mainGoal,
-    currentCountry: currentCountry || undefined,
-    passportCountry,
-    age,
-    occupation: occupation || undefined,
-    englishLevel: englishLevel || undefined,
-    englishTestTaken: englishTestTaken || undefined,
-    occupationConfirmed: occupationConfirmed || undefined,
-    estimatedBudgetRange: estimatedBudgetRange || undefined,
-    timeline: timeline || undefined,
-    sponsorOrFamily: sponsorOrFamily || undefined,
-    preferredPathway: visaInterest || undefined,
-    biggestConcern: biggestConcern || undefined,
-    nocCode: nocCode || undefined,
-    nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
+      locale: resolvedLocale,
+      country: targetCountry,
+      mainGoal,
+      currentCountry: currentCountry || undefined,
+      passportCountry,
+      age,
+      occupation: occupation || undefined,
+      englishLevel: englishLevel || undefined,
+      qualificationLevel,
+      annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
+        ? annualSalaryAud
+        : undefined,
+      englishTestTaken: englishTestTaken || undefined,
+      occupationConfirmed: occupationConfirmed || undefined,
+      estimatedBudgetRange: estimatedBudgetRange || undefined,
+      timeline: timeline || undefined,
+      sponsorOrFamily: sponsorOrFamily || undefined,
+      preferredPathway: visaInterest || undefined,
+      biggestConcern: biggestConcern || undefined,
+      nocCode: nocCode || undefined,
+      nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
     }),
     targetCountry
   );
@@ -936,6 +991,10 @@ export async function submitFullCheckWaitlist(
       age,
       occupation: occupation || undefined,
       englishLevel: englishLevel || undefined,
+      qualificationLevel,
+      annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
+        ? annualSalaryAud
+        : undefined,
       englishTestTaken: englishTestTaken || undefined,
       occupationConfirmed: occupationConfirmed || undefined,
       estimatedBudgetRange: estimatedBudgetRange || undefined,
@@ -1036,6 +1095,8 @@ export async function submitFullCheckWaitlist(
       currentCountry: currentCountry || undefined,
       passportCountry,
       age,
+      qualificationLevel,
+      annualSalaryAud: annualSalaryAudRaw || undefined,
       occupation: occupation || undefined,
       englishLevel: englishLevel || undefined,
       sponsorOrFamily: sponsorOrFamily || undefined,
@@ -1174,6 +1235,11 @@ export async function unlockPremiumReport(
       currentCountry: record.input.currentCountry,
       passportCountry: record.input.passportCountry,
       age: record.input.age,
+      qualificationLevel: record.input.qualificationLevel,
+      annualSalaryAud:
+        typeof record.input.annualSalaryAud === "number"
+          ? String(record.input.annualSalaryAud)
+          : undefined,
       occupation: record.input.occupation,
       englishLevel: record.input.englishLevel,
       sponsorOrFamily: record.input.sponsorOrFamily,

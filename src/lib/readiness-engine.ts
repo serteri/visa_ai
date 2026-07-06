@@ -5,7 +5,12 @@ import { generateChecklist } from "@/lib/generateChecklist";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateRankedPathways } from "@/lib/readiness/ranked-pathways";
 import { calculateStateNominationTracker } from "@/lib/readiness/state-nomination";
-import { calculateVisaPoints, type AgeRange, type EnglishLevel } from "@/lib/readiness/visa-points-calculator";
+import {
+  calculateVisaPoints,
+  type AgeRange,
+  type EnglishLevel,
+  type QualificationLevel,
+} from "@/lib/readiness/visa-points-calculator";
 import { localizeOccupationWarning, localizeText, t3 } from "@/src/lib/readiness/localization";
 import type {
   DocumentCategory,
@@ -123,6 +128,29 @@ function parseEnglishLevel(value?: string): EnglishLevel | undefined {
   return undefined;
 }
 
+function normalizeQualificationLevelForPoints(
+  level?: ReadinessInput["qualificationLevel"]
+): QualificationLevel {
+  switch (level) {
+    case "PhD/Doctorate":
+    case "PhD":
+      return "PhD";
+    case "Bachelor's Degree":
+    case "Master's Degree (Coursework)":
+    case "Master's Degree (Research)":
+    case "Bachelor":
+      return "Bachelor";
+    case "Diploma":
+      return "Diploma";
+    case "Certificate":
+      return "Certificate";
+    case "High School":
+    case "Other":
+    default:
+      return "Other";
+  }
+}
+
 function computeBestKnownScore(input: ReadinessInput, base: ReadinessReport, occupationCode?: string): number {
   const ageRange = parseAgeRange(input.age);
   const englishLevel = parseEnglishLevel(input.englishLevel);
@@ -134,7 +162,7 @@ function computeBestKnownScore(input: ReadinessInput, base: ReadinessReport, occ
   const points = calculateVisaPoints({
     ageRange,
     englishLevel,
-    qualificationLevel: input.qualificationLevel ?? "Bachelor",
+    qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
     offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
     onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
     anzscoCode: occupationCode,
@@ -168,7 +196,7 @@ function computeUserPointsBySubclass(input: ReadinessInput, base: ReadinessRepor
   const points = calculateVisaPoints({
     ageRange,
     englishLevel,
-    qualificationLevel: input.qualificationLevel ?? "Bachelor",
+    qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
     offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
     onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
     anzscoCode: occupationCode,
@@ -277,7 +305,7 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport, 
     ? calculateVisaPoints({
         ageRange,
         englishLevel,
-        qualificationLevel: input.qualificationLevel ?? "Bachelor",
+        qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
         offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
         onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
         anzscoCode: occupationCode,
