@@ -176,6 +176,43 @@ export function HomeContent() {
         </div>
       </section>
 
+      {/* Trust & Authority: Official Data Sources — typography-only, no
+          government crests/logos, to stay clear of copyright/endorsement
+          issues while still signalling authoritative data provenance. */}
+      <section className="section-shell py-10">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            {locale === "tr"
+              ? "Resmi Göç Verileriyle Desteklenmektedir:"
+              : locale === "zh-Hans"
+                ? "由官方移民数据提供支持："
+                : "Powered by Official Immigration Data:"}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+            <div className="flex items-center gap-2 text-slate-500 opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0 dark:text-slate-400">
+              <span className="text-xl">🇦🇺</span>
+              <span className="text-sm font-bold tracking-tight sm:text-base">
+                {locale === "tr"
+                  ? "Avustralya Hükümeti İçişleri Bakanlığı (ANZSCO)"
+                  : locale === "zh-Hans"
+                    ? "澳大利亚政府内政部（ANZSCO）"
+                    : "Australian Govt. Department of Home Affairs (ANZSCO)"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-500 opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0 dark:text-slate-400">
+              <span className="text-xl">🇨🇦</span>
+              <span className="text-sm font-bold tracking-tight sm:text-base">
+                {locale === "tr"
+                  ? "Kanada Hükümeti IRCC (NOC)"
+                  : locale === "zh-Hans"
+                    ? "加拿大政府 IRCC（NOC）"
+                    : "Government of Canada IRCC (NOC)"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Trust & Authority: How It Works */}
       <section className="section-shell">
         <div className="mb-10 text-center">
