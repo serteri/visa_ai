@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 
 import guides from "@/src/data/guides.json";
 import { InlineLeadCta } from "../InlineLeadCta";
+import { FinalGuideCta } from "../FinalGuideCta";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -249,6 +250,8 @@ export default async function GuideArticlePage({ params }: PageProps) {
               </div>
             </section>
           ) : null}
+
+          {slug === "australia-visa-changes-july-2026" ? <FinalGuideCta locale={locale} /> : null}
 
           <p className="mt-8 text-sm text-slate-500">
             {tx("Created", "Olusturulma", "创建于")} {formatDate(createdAt)}
