@@ -724,7 +724,7 @@ export function FullCheckWaitlistForm({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-visible">
       {isPending && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
           <div className="w-full max-w-xl rounded-2xl border border-border/70 bg-card/95 p-6 shadow-2xl">
@@ -763,7 +763,7 @@ export function FullCheckWaitlistForm({
       )}
 
       {!shouldHideIntakeForm && (
-      <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4" noValidate>
+      <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4 overflow-visible" noValidate>
         <input type="hidden" name="routeLocale" value={locale} />
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="preferredLanguage" value={locale} />
