@@ -42,6 +42,8 @@
   "hero.secondaryPrefix": "Tam ülke raporunu mu tercih edersiniz?",
   "hero.secondaryAU": "🇦🇺 Avustralya",
   "hero.secondaryCA": "🇨🇦 Kanada",
+  "hero.btnAustralia": "🇦🇺 Avustralya Analizine Başla",
+  "hero.btnCanada": "🇨🇦 Kanada Analizine Başla",
   "hero.trustBadge": "Logivisa",
   "trustIndicators.gov": "Avustralya resmi hükümet kaynaklarına dayalı",
   "trustIndicators.info": "Yalnızca genel bilgiler",

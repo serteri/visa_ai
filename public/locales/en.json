@@ -42,6 +42,8 @@
   "hero.secondaryPrefix": "Prefer a full country report?",
   "hero.secondaryAU": "🇦🇺 Australia",
   "hero.secondaryCA": "🇨🇦 Canada",
+  "hero.btnAustralia": "🇦🇺 Start Australia Assessment",
+  "hero.btnCanada": "🇨🇦 Start Canada Assessment",
   "hero.trustBadge": "Logivisa",
   "trustIndicators.gov": "Based on official Australian government sources",
   "trustIndicators.info": "General information only",

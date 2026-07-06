@@ -67,44 +67,23 @@ export function HomeContent() {
             {t("hero.subheadline")}
           </p>
 
-          {/* ONE primary CTA — everything else on this page defers to this. */}
-          <Link
-            href={`/${locale}/ai-visa-match`}
-            className="group mt-10 inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 px-10 py-5 text-xl font-extrabold text-white shadow-2xl shadow-indigo-500/40 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/60 sm:px-12 sm:py-6 sm:text-2xl"
-          >
-            ⚡ {t("hero.cta")}
-            <span className="transition-transform group-hover:translate-x-1">→</span>
-          </Link>
-
-          {/* Secondary actions — deliberately subtle text links, not buttons,
-              so they never compete with the primary CTA above. */}
-          <p className="mt-5 text-sm text-slate-400">
-            {t("hero.secondaryPrefix")}{" "}
+          {/* Dual country-specific CTAs — the two monetization paths. */}
+          <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row md:justify-start">
             <Link
               href={`/${locale}/full-check?country=AU`}
-              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
+              className="group inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 px-10 py-5 text-xl font-extrabold text-white shadow-2xl shadow-indigo-500/40 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/60 sm:px-12 sm:py-6 sm:text-2xl"
             >
-              {t("hero.secondaryAU")}
+              {t("hero.btnAustralia")}
+              <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
-            {" · "}
             <Link
               href={`/${locale}/full-check?country=CA`}
-              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
+              className="group inline-flex items-center justify-center gap-3 rounded-2xl border-2 border-indigo-600 bg-white px-10 py-5 text-xl font-extrabold text-indigo-700 shadow-2xl shadow-indigo-500/10 transition-all duration-300 hover:scale-105 hover:bg-indigo-50 hover:shadow-indigo-500/20 dark:bg-zinc-900 dark:text-indigo-300 dark:hover:bg-zinc-800 sm:px-12 sm:py-6 sm:text-2xl"
             >
-              {t("hero.secondaryCA")}
+              {t("hero.btnCanada")}
+              <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
-            {" · "}
-            <Link
-              href={`/${locale}/tools/points-calculator`}
-              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
-            >
-              {locale === "tr"
-                ? "Puan Hesaplayıcı"
-                : locale === "zh-Hans"
-                  ? "积分计算器"
-                  : "Points Calculator"}
-            </Link>
-          </p>
+          </div>
 
           {/* Trust Signals under CTA */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400 sm:gap-10">
