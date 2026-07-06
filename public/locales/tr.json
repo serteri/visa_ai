@@ -572,7 +572,11 @@
     "pacificCountriesLabel": "Pasifik Adaları ve Doğu Timor",
     "aseanCountriesLabel": "ASEAN",
     "secondInstalmentTitle": "İkinci Taksit Ücreti",
-    "csitTitle": "Temel Beceri Gelir Eşiği (CSIT)"
+    "csitTitle": "Temel Beceri Gelir Eşiği (CSIT)",
+    "ageRequirementTitle": "Yaş Şartı",
+    "englishRequirementsTitle": "İngilizce Dil Şartı",
+    "testLabel": "Sınav",
+    "minimumScoreLabel": "Asgari Puan"
   },
   "timeUnits": {
     "months": "ay",

@@ -565,7 +565,11 @@
     "pacificCountriesLabel": "Pacific Island & Timor-Leste",
     "aseanCountriesLabel": "ASEAN",
     "secondInstalmentTitle": "Second Instalment Charge",
-    "csitTitle": "Core Skills Income Threshold (CSIT)"
+    "csitTitle": "Core Skills Income Threshold (CSIT)",
+    "ageRequirementTitle": "Age Requirement",
+    "englishRequirementsTitle": "English Language Requirement",
+    "testLabel": "Test",
+    "minimumScoreLabel": "Minimum Score"
   },
   "timeUnits": {
     "months": "months",

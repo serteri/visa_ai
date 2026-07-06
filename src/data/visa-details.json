@@ -512,15 +512,83 @@
     "processingTime_tr": "Programı kontrol edin",
     "processingTime_zh": "参考处理时间指南",
     "processingTimeUnit": "",
-    "fee": 4600,
+    "fee": 5750,
     "minPoints": null,
+    "ageRequirement": {
+      "standardMaxAge": 35,
+      "extendedMaxAge": 50,
+      "note": "Applicants must be 35 years of age or under when applying. An extended age limit of up to 50 years applies to applicants who have completed a Masters by Research or a Doctoral Degree, and to eligible Hong Kong or British National (Overseas) (BNO) passport holders.",
+      "note_tr": "Başvuru sahiplerinin başvuru sırasında 35 yaş veya altında olması gerekir. Araştırma Yüksek Lisansı (Masters by Research) veya Doktora derecesini tamamlamış başvuru sahipleri ile uygun Hong Kong veya İngiliz Ulusu (Denizaşırı) (BNO) pasaport sahipleri için 50 yaşa kadar uzatılmış bir yaş sınırı uygulanır.",
+      "note_zh": "申请人在申请时须年满35岁或以下。已完成研究型硕士（Masters by Research）或博士学位的申请人，以及符合条件的香港或英国国民（海外）（BNO）护照持有人，可适用最高50岁的延长年龄限制。"
+    },
+    "englishRequirements": {
+      "effectiveDate": "2025-08-07",
+      "note": "Effective 7 August 2025, applicants must meet the following minimum English test scores. These requirements apply equally to Hong Kong and British National (Overseas) (BNO) passport holders — see the Age Requirement above for the separate age exception that applies to that group.",
+      "note_tr": "7 Ağustos 2025 tarihinden itibaren, başvuru sahiplerinin aşağıdaki asgari İngilizce test puanlarını karşılaması gerekir. Bu şartlar, Hong Kong ve İngiliz Ulusu (Denizaşırı) (BNO) pasaport sahipleri için de aynı şekilde geçerlidir — bu gruba uygulanan ayrı yaş istisnası için yukarıdaki Yaş Şartı bölümüne bakın.",
+      "note_zh": "自2025年8月7日起，申请人须达到以下最低英语考试成绩。这些要求同样适用于香港及英国国民（海外）（BNO）护照持有人——该群体适用的单独年龄豁免请参见上方的年龄要求部分。",
+      "tests": [
+        { "test": "IELTS Academic", "score": "6.5 overall" },
+        { "test": "PTE Academic", "score": "55 overall" }
+      ]
+    },
+    "pacificConcession": {
+      "effectiveDate": "2026-07-01",
+      "note": "From 1 July 2026, a lower visa cost applies to eligible Pacific Island and Timor-Leste citizens.",
+      "note_tr": "1 Temmuz 2026 tarihinden itibaren, uygun Pasifik Adaları ve Doğu Timor vatandaşlarına daha düşük bir vize ücreti uygulanır.",
+      "note_zh": "自2026年7月1日起，符合条件的太平洋岛国及东帝汶公民可享受较低的签证费用。",
+      "eligibleCountries": [
+        "Federated States of Micronesia",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua New Guinea",
+        "Republic of the Marshall Islands",
+        "Samoa",
+        "Solomon Islands",
+        "Timor-Leste",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_tr": [
+        "Mikronezya Federal Devletleri",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua Yeni Gine",
+        "Marshall Adaları Cumhuriyeti",
+        "Samoa",
+        "Solomon Adaları",
+        "Doğu Timor",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_zh": [
+        "密克罗尼西亚联邦",
+        "斐济",
+        "基里巴斯",
+        "瑙鲁",
+        "帕劳",
+        "巴布亚新几内亚",
+        "马绍尔群岛共和国",
+        "萨摩亚",
+        "所罗门群岛",
+        "东帝汶",
+        "汤加",
+        "图瓦卢",
+        "瓦努阿图"
+      ]
+    },
     "description": "Stay 2-6 years after completing Australian studies. Work and live temporarily in Australia; up to 5 years for Hong Kong and British National Overseas passport holders. Must find own employment.",
     "description_tr": "Avustralya'da eğitim tamamladıktan sonra 2-6 yıl kalın. Avustralya'da geçici olarak çalışın ve yaşayın; Hong Kong ve British National Overseas pasaport sahipleri 5 yıla kadar kalabilir. Kendi istihdam bulmanız gerekir.",
     "description_zh": "完成澳大利亚学业后停留2-6年。在澳大利亚临时工作和生活；香港和英国国民（海外）护照持有者可停留至5年。必须自己寻找工作。",
     "requirements": [
       "Completed eligible Australian degree (Bachelor, Masters, or Doctorate)",
       "Applied within 6 months of course completion",
-      "Under 50 years of age when applying (under 35 normally, but exceptions for higher qualifications and certain passport holders)",
+      "35 years of age or under when applying (extended to under 50 for Masters by Research/Doctoral Degree holders and eligible Hong Kong/BNO passport holders)",
       "English language requirement met",
       "Adequate health insurance (OSHC)",
       "Australian Federal Police character check",
@@ -529,7 +597,7 @@
     "requirements_tr": [
       "Uygun Avustralya derecesini tamamlamış (Lisans, Yüksek Lisans veya Doktora)",
       "Kurs bitişinden sonra 6 ay içinde başvurmuş",
-      "Başvuru yaparken 50 yaş altında (normalde 35 yaş altında, ancak daha yüksek nitelikler ve belirli pasaport sahipleri için istisnalar)",
+      "Başvuru sırasında 35 yaş veya altında (Araştırma Yüksek Lisansı/Doktora sahipleri ve uygun Hong Kong/BNO pasaport sahipleri için 50 yaşa kadar uzatılır)",
       "İngilizce dil şartı karşılanmış",
       "Yeterli sağlık sigortası (OSHC)",
       "Avustralya Federal Polis karakter kontrolü",
@@ -538,7 +606,7 @@
     "requirements_zh": [
       "完成符合条件的澳大利亚学位（学士学位、硕士或博士）",
       "在课程完成后6个月内申请",
-      "申请时年满50岁以下（通常为35岁以下，但高学历和特定护照持有人除外）",
+      "申请时须年满35岁或以下（研究型硕士/博士学位持有人及符合条件的香港/BNO护照持有人可延长至50岁）",
       "满足英语语言要求",
       "充分的健康保险（OSHC）",
       "澳大利亚联邦警察品格检查",
@@ -551,7 +619,7 @@
       "Apply for Australian Federal Police character check (do this before visa application)",
       "Organise health insurance (OSHC)",
       "Lodge visa application online in ImmiAccount within 6 months of graduation",
-      "Pay visa application charge (AUD 4,600 main applicant, lower cost for eligible Pacific Island and Timor-Leste citizens from March 1, 2026)",
+      "Pay visa application charge (AUD 5,750 main applicant, lower cost for eligible Pacific Island and Timor-Leste citizens from 1 July 2026)",
       "Provide all required documents and evidence",
       "Await visa decision"
     ],
@@ -562,7 +630,7 @@
       "Avustralya Federal Polis karakter kontrolü için başvurun (vize başvurusundan önce yapın)",
       "Sağlık sigortası (OSHC) temin edin",
       "İmmiAccount'da çevrimiçi vize başvurusu yapın (mezuniyetten sonra 6 ay içinde)",
-      "Vize başvuru ücretini ödeyin (ana başvurucu için AUD 4.600, 1 Mart 2026'dan itibaren uygun Pasifik Adası ve Timor-Leste vatandaşları için daha düşük maliyet)",
+      "Vize başvuru ücretini ödeyin (ana başvurucu için AUD 5.750, 1 Temmuz 2026'dan itibaren uygun Pasifik Adası ve Timor-Leste vatandaşları için daha düşük maliyet)",
       "Tüm gerekli belge ve kanıtları sağlayın",
       "Vize kararını bekleyin"
     ],
@@ -573,13 +641,13 @@
       "申请澳大利亚联邦警察品格检查（在签证申请前进行）",
       "组织健康保险（OSHC）",
       "在毕业后6个月内通过ImmiAccount在线提交签证申请",
-      "支付签证申请费（主申请人澳元4,600，从2026年3月1日起，符合条件的太平洋岛国和东帝汶公民收费更低）",
+      "支付签证申请费（主申请人5,750澳元，从2026年7月1日起，符合条件的太平洋岛国和东帝汶公民收费更低）",
       "提供所有必需的文件和证据",
       "等待签证决定"
     ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485/post-higher-education-work",
     "pdfSnapshotUrls": [
-      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Temporary%20Graduate%20visa%20%28subclass%20485%29%20Post-Higher%20Education%20Work%20stream/Temporary%20Graduate%20visa%20%28subclass%20485%29%20Post-Higher%20Education%20Work%20stream%20_29April2026.pdf"
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Temporary%20Graduate%20visa%20%28subclass%20485%29%20Post-Higher%20Education%20Work%20stream/Temporary%20Graduate%20visa%20%28subclass%20485%29%20Post-Higher%20Education%20Work%20stream%20_01July2026.pdf"
     ]
   },
   {

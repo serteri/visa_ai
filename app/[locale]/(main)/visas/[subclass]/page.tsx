@@ -68,6 +68,20 @@ type VisaDetail = {
     note_tr?: string;
     note_zh?: string;
   };
+  ageRequirement?: {
+    standardMaxAge: number;
+    extendedMaxAge: number;
+    note: string;
+    note_tr?: string;
+    note_zh?: string;
+  };
+  englishRequirements?: {
+    effectiveDate: string;
+    note: string;
+    note_tr?: string;
+    note_zh?: string;
+    tests: Array<{ test: string; score: string }>;
+  };
   concession2026?: {
     effectiveDate: string;
     note: string;
@@ -196,6 +210,21 @@ function getLocalizedCsitNote(csit: NonNullable<VisaDetail["csit"]>, locale: str
   return csit.note;
 }
 
+function getLocalizedAgeRequirementNote(ageRequirement: NonNullable<VisaDetail["ageRequirement"]>, locale: string) {
+  if (locale === "tr") return ageRequirement.note_tr ?? ageRequirement.note;
+  if (locale === "zh-Hans") return ageRequirement.note_zh ?? ageRequirement.note;
+  return ageRequirement.note;
+}
+
+function getLocalizedEnglishRequirementsNote(
+  englishRequirements: NonNullable<VisaDetail["englishRequirements"]>,
+  locale: string
+) {
+  if (locale === "tr") return englishRequirements.note_tr ?? englishRequirements.note;
+  if (locale === "zh-Hans") return englishRequirements.note_zh ?? englishRequirements.note;
+  return englishRequirements.note;
+}
+
 function getVisaTypeLabel(translations: Record<string, unknown>, type: string) {
   const normalizedType = type.toLowerCase();
   if (normalizedType.includes("temporary then permanent")) {
@@ -318,6 +347,12 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const secondInstalmentTitle = t(translations, "visas.secondInstalmentTitle", "Second Instalment Charge");
   const csit = visa.csit;
   const csitTitle = t(translations, "visas.csitTitle", "Core Skills Income Threshold (CSIT)");
+  const ageRequirement = visa.ageRequirement;
+  const ageRequirementTitle = t(translations, "visas.ageRequirementTitle", "Age Requirement");
+  const englishRequirements = visa.englishRequirements;
+  const englishRequirementsTitle = t(translations, "visas.englishRequirementsTitle", "English Language Requirement");
+  const testLabel = t(translations, "visas.testLabel", "Test");
+  const minimumScoreLabel = t(translations, "visas.minimumScoreLabel", "Minimum Score");
 
   const isCanada = subclass === "canada-express-entry";
   const officialBtnLabel = isCanada ? visitIRCCLabel : visitOfficialWebsiteLabel;
@@ -453,8 +488,68 @@ export default async function VisaSubclassPage({ params }: PageProps) {
           </Card>
         </div>
 
-        {(feeConcessions.length > 0 || pacificConcession || concession2026 || secondInstalment || csit) && (
+        {(feeConcessions.length > 0 ||
+          pacificConcession ||
+          concession2026 ||
+          secondInstalment ||
+          csit ||
+          ageRequirement ||
+          englishRequirements) && (
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            {ageRequirement && (
+              <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <BadgeCheck className="h-5 w-5 text-cyan-600" />
+                    {ageRequirementTitle}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="rounded-xl bg-slate-100 px-4 py-2 text-lg font-bold text-slate-950 dark:bg-slate-800 dark:text-white">
+                      {ageRequirement.standardMaxAge}
+                    </span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">→</span>
+                    <span className="rounded-xl bg-slate-100 px-4 py-2 text-lg font-bold text-slate-950 dark:bg-slate-800 dark:text-white">
+                      {ageRequirement.extendedMaxAge}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
+                    {getLocalizedAgeRequirementNote(ageRequirement, locale)}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {englishRequirements && (
+              <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <CardHeader>
+                  <CardTitle className="text-xl">{englishRequirementsTitle}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:border-slate-800">
+                        <th className="pb-2">{testLabel}</th>
+                        <th className="pb-2">{minimumScoreLabel}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {englishRequirements.tests.map((row) => (
+                        <tr key={row.test} className="border-b border-slate-100 last:border-0 dark:border-slate-800/60">
+                          <td className="py-2 font-medium text-slate-900 dark:text-white">{row.test}</td>
+                          <td className="py-2 text-slate-700 dark:text-slate-300">{row.score}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">
+                    {getLocalizedEnglishRequirementsNote(englishRequirements, locale)}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
             {csit && (
               <Card className="border-cyan-300 bg-cyan-50 shadow-sm lg:col-span-2 dark:border-cyan-700 dark:bg-cyan-950/30">
                 <CardHeader>

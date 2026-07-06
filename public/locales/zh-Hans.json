@@ -566,7 +566,11 @@
     "pacificCountriesLabel": "太平洋岛国及东帝汶",
     "aseanCountriesLabel": "东盟（ASEAN）",
     "secondInstalmentTitle": "第二期付款",
-    "csitTitle": "核心技能收入门槛（CSIT）"
+    "csitTitle": "核心技能收入门槛（CSIT）",
+    "ageRequirementTitle": "年龄要求",
+    "englishRequirementsTitle": "英语语言要求",
+    "testLabel": "考试",
+    "minimumScoreLabel": "最低成绩"
   },
   "timeUnits": {
     "months": "个月",
