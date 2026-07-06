@@ -152,14 +152,23 @@ export default async function GuideArticlePage({ params }: PageProps) {
 
   if (!guide) notFound();
 
-  const blocks = guide.content.split("\n\n").filter(Boolean);
   const g = guide as Record<string, string | number | GuideFaq[]>;
+  const localContent = isTr
+    ? (g.content_tr as string) ?? guide.content
+    : isZh
+      ? (g.content_zh as string) ?? guide.content
+      : guide.content;
+  const blocks = localContent.split("\n\n").filter(Boolean);
   const localTitle = isTr ? (g.title_tr as string) ?? guide.title : isZh ? (g.title_zh as string) ?? guide.title : guide.title;
   const localExcerpt = isTr ? (g.excerpt_tr as string) ?? guide.excerpt : isZh ? (g.excerpt_zh as string) ?? guide.excerpt : guide.excerpt;
   const localCategory = isTr ? (g.category_tr as string) ?? guide.category : isZh ? (g.category_zh as string) ?? guide.category : guide.category;
   const readTime = (g.readTime as number | undefined) ?? 7;
   const createdAt = (g.createdAt as string | undefined) ?? guide.date;
-  const faqItems = (g.faqs as GuideFaq[] | undefined) ?? [];
+  const faqItems = (isTr
+    ? (g.faqs_tr as GuideFaq[] | undefined)
+    : isZh
+      ? (g.faqs_zh as GuideFaq[] | undefined)
+      : undefined) ?? (g.faqs as GuideFaq[] | undefined) ?? [];
   const localFaqTitle = isTr
     ? ((g.faqTitle_tr as string | undefined) ?? "Sikca Sorulan Sorular")
     : isZh
