@@ -54,6 +54,12 @@ type VisaDetail = {
     eligibleCountries_tr?: string[];
     eligibleCountries_zh?: string[];
   };
+  secondInstalment?: {
+    amount: number;
+    note: string;
+    note_tr?: string;
+    note_zh?: string;
+  };
   concession2026?: {
     effectiveDate: string;
     note: string;
@@ -168,6 +174,12 @@ function getLocalizedAseanCountries(concession: NonNullable<VisaDetail["concessi
   if (locale === "tr") return concession.aseanCountries_tr ?? concession.aseanCountries;
   if (locale === "zh-Hans") return concession.aseanCountries_zh ?? concession.aseanCountries;
   return concession.aseanCountries;
+}
+
+function getLocalizedSecondInstalmentNote(secondInstalment: NonNullable<VisaDetail["secondInstalment"]>, locale: string) {
+  if (locale === "tr") return secondInstalment.note_tr ?? secondInstalment.note;
+  if (locale === "zh-Hans") return secondInstalment.note_zh ?? secondInstalment.note;
+  return secondInstalment.note;
 }
 
 function getVisaTypeLabel(translations: Record<string, unknown>, type: string) {
@@ -288,6 +300,8 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   );
   const pacificCountriesLabel = t(translations, "visas.pacificCountriesLabel", "Pacific Island & Timor-Leste");
   const aseanCountriesLabel = t(translations, "visas.aseanCountriesLabel", "ASEAN");
+  const secondInstalment = visa.secondInstalment;
+  const secondInstalmentTitle = t(translations, "visas.secondInstalmentTitle", "Second Instalment Charge");
 
   const isCanada = subclass === "canada-express-entry";
   const officialBtnLabel = isCanada ? visitIRCCLabel : visitOfficialWebsiteLabel;
@@ -423,8 +437,27 @@ export default async function VisaSubclassPage({ params }: PageProps) {
           </Card>
         </div>
 
-        {(feeConcessions.length > 0 || pacificConcession || concession2026) && (
+        {(feeConcessions.length > 0 || pacificConcession || concession2026 || secondInstalment) && (
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            {secondInstalment && (
+              <Card className="border-amber-300 bg-amber-50 shadow-sm lg:col-span-2 dark:border-amber-700 dark:bg-amber-950/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl text-amber-900 dark:text-amber-200">
+                    <DollarSign className="h-5 w-5" />
+                    {secondInstalmentTitle}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap items-center justify-between gap-4">
+                  <p className="max-w-2xl text-sm leading-6 text-amber-900 dark:text-amber-100">
+                    {getLocalizedSecondInstalmentNote(secondInstalment, locale)}
+                  </p>
+                  <span className="shrink-0 rounded-xl bg-amber-100 px-4 py-2 text-lg font-bold text-amber-900 dark:bg-amber-900/40 dark:text-amber-100">
+                    {formatFee(locale, secondInstalment.amount, subclass)}
+                  </span>
+                </CardContent>
+              </Card>
+            )}
+
             {feeConcessions.length > 0 && (
               <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <CardHeader>

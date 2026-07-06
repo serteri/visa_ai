@@ -43,6 +43,9 @@ type VisaVac = {
   // since only the 820 fee table currently has these reduced rates.
   subclass300Holder?: number;
   formerSubclass300Holder?: number;
+  // Subclass 189-specific mandatory surcharge (1 July 2026 pricing) for
+  // applicants 18+ without functional English.
+  secondInstalmentEnglish?: number;
 };
 
 type VisaFeeTable = {
