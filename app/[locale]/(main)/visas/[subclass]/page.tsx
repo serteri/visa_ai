@@ -54,6 +54,18 @@ type VisaDetail = {
     eligibleCountries_tr?: string[];
     eligibleCountries_zh?: string[];
   };
+  concession2026?: {
+    effectiveDate: string;
+    note: string;
+    note_tr?: string;
+    note_zh?: string;
+    pacificCountries: string[];
+    pacificCountries_tr?: string[];
+    pacificCountries_zh?: string[];
+    aseanCountries: string[];
+    aseanCountries_tr?: string[];
+    aseanCountries_zh?: string[];
+  };
 };
 
 const VISA_DETAILS = visaDetails as VisaDetail[];
@@ -138,6 +150,24 @@ function getLocalizedEligibleCountries(
   if (locale === "tr") return pacificConcession.eligibleCountries_tr ?? pacificConcession.eligibleCountries;
   if (locale === "zh-Hans") return pacificConcession.eligibleCountries_zh ?? pacificConcession.eligibleCountries;
   return pacificConcession.eligibleCountries;
+}
+
+function getLocalizedConcession2026Note(concession: NonNullable<VisaDetail["concession2026"]>, locale: string) {
+  if (locale === "tr") return concession.note_tr ?? concession.note;
+  if (locale === "zh-Hans") return concession.note_zh ?? concession.note;
+  return concession.note;
+}
+
+function getLocalizedPacificCountries2026(concession: NonNullable<VisaDetail["concession2026"]>, locale: string) {
+  if (locale === "tr") return concession.pacificCountries_tr ?? concession.pacificCountries;
+  if (locale === "zh-Hans") return concession.pacificCountries_zh ?? concession.pacificCountries;
+  return concession.pacificCountries;
+}
+
+function getLocalizedAseanCountries(concession: NonNullable<VisaDetail["concession2026"]>, locale: string) {
+  if (locale === "tr") return concession.aseanCountries_tr ?? concession.aseanCountries;
+  if (locale === "zh-Hans") return concession.aseanCountries_zh ?? concession.aseanCountries;
+  return concession.aseanCountries;
 }
 
 function getVisaTypeLabel(translations: Record<string, unknown>, type: string) {
@@ -250,6 +280,14 @@ export default async function VisaSubclassPage({ params }: PageProps) {
     "1 July 2026 Pacific & Timor-Leste Concession"
   );
   const eligibleCountriesLabel = t(translations, "visas.eligibleCountriesLabel", "Eligible passport countries");
+  const concession2026 = visa.concession2026;
+  const concession2026Title = t(
+    translations,
+    "visas.concession2026Title",
+    "1 July 2026 Concessions & Exemptions"
+  );
+  const pacificCountriesLabel = t(translations, "visas.pacificCountriesLabel", "Pacific Island & Timor-Leste");
+  const aseanCountriesLabel = t(translations, "visas.aseanCountriesLabel", "ASEAN");
 
   const isCanada = subclass === "canada-express-entry";
   const officialBtnLabel = isCanada ? visitIRCCLabel : visitOfficialWebsiteLabel;
@@ -385,7 +423,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
           </Card>
         </div>
 
-        {(feeConcessions.length > 0 || pacificConcession) && (
+        {(feeConcessions.length > 0 || pacificConcession || concession2026) && (
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             {feeConcessions.length > 0 && (
               <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -431,6 +469,37 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                     <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">
                       {getLocalizedEligibleCountries(pacificConcession, locale).join(" · ")}
                     </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {concession2026 && (
+              <Card className="border-slate-200 bg-white shadow-sm lg:col-span-2 dark:border-slate-800 dark:bg-slate-900">
+                <CardHeader>
+                  <CardTitle className="text-xl">{concession2026Title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
+                    {getLocalizedConcession2026Note(concession2026, locale)}
+                  </p>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        {pacificCountriesLabel}
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">
+                        {getLocalizedPacificCountries2026(concession2026, locale).join(" · ")}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        {aseanCountriesLabel}
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">
+                        {getLocalizedAseanCountries(concession2026, locale).join(" · ")}
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

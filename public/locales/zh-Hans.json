@@ -561,7 +561,10 @@
     "visa801desc": "澳大利亚公民或永久居民的配偶或伴侣在临时阶段后获得的永久居留权。",
     "feeConcessionsTitle": "费用减免",
     "pacificConcessionTitle": "2026年7月1日太平洋及东帝汶减免政策",
-    "eligibleCountriesLabel": "符合条件的护照国家"
+    "eligibleCountriesLabel": "符合条件的护照国家",
+    "concession2026Title": "2026年7月1日减免与豁免政策",
+    "pacificCountriesLabel": "太平洋岛国及东帝汶",
+    "aseanCountriesLabel": "东盟（ASEAN）"
   },
   "timeUnits": {
     "months": "个月",

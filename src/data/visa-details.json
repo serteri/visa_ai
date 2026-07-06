@@ -363,8 +363,98 @@
     "processingTime_tr": "Kursa göre değişir",
     "processingTime_zh": "因课程而异",
     "processingTimeUnit": "",
-    "fee": 2000,
+    "fee": 2500,
     "minPoints": null,
+    "concession2026": {
+      "effectiveDate": "2026-07-01",
+      "note": "From 1 July 2026, a lower visa cost applies to eligible Pacific Island and Timor-Leste citizens, eligible ASEAN citizens, and applicants in the ELICOS and Non-Award sector.",
+      "note_tr": "1 Temmuz 2026 tarihinden itibaren, uygun Pasifik Adaları ve Doğu Timor vatandaşlarına, uygun ASEAN vatandaşlarına ve ELICOS ile Kredisiz (Non-Award) sektöründeki başvuru sahiplerine daha düşük bir vize ücreti uygulanır.",
+      "note_zh": "自2026年7月1日起，符合条件的太平洋岛国及东帝汶公民、符合条件的东盟（ASEAN）公民，以及ELICOS和非学位（Non-Award）类别的申请人可享受较低的签证费用。",
+      "pacificCountries": [
+        "Federated States of Micronesia",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua New Guinea",
+        "Republic of the Marshall Islands",
+        "Samoa",
+        "Solomon Islands",
+        "Timor-Leste",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "pacificCountries_tr": [
+        "Mikronezya Federal Devletleri",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua Yeni Gine",
+        "Marshall Adaları Cumhuriyeti",
+        "Samoa",
+        "Solomon Adaları",
+        "Doğu Timor",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "pacificCountries_zh": [
+        "密克罗尼西亚联邦",
+        "斐济",
+        "基里巴斯",
+        "瑙鲁",
+        "帕劳",
+        "巴布亚新几内亚",
+        "马绍尔群岛共和国",
+        "萨摩亚",
+        "所罗门群岛",
+        "东帝汶",
+        "汤加",
+        "图瓦卢",
+        "瓦努阿图"
+      ],
+      "aseanCountries": [
+        "Brunei Darussalam",
+        "Cambodia",
+        "Indonesia",
+        "Lao Peoples Dem Republic",
+        "Malaysia",
+        "Myanmar",
+        "Philippines",
+        "Singapore",
+        "Thailand",
+        "Timor-Leste",
+        "Vietnam"
+      ],
+      "aseanCountries_tr": [
+        "Brunei Darüsselam",
+        "Kamboçya",
+        "Endonezya",
+        "Laos Demokratik Halk Cumhuriyeti",
+        "Malezya",
+        "Myanmar",
+        "Filipinler",
+        "Singapur",
+        "Tayland",
+        "Doğu Timor",
+        "Vietnam"
+      ],
+      "aseanCountries_zh": [
+        "文莱达鲁萨兰国",
+        "柬埔寨",
+        "印度尼西亚",
+        "老挝人民民主共和国",
+        "马来西亚",
+        "缅甸",
+        "菲律宾",
+        "新加坡",
+        "泰国",
+        "东帝汶",
+        "越南"
+      ]
+    },
     "description": "For international students to study full-time in Australia.",
     "description_tr": "Avustralya'da tam zamanlı eğitim almak isteyen uluslararası öğrenciler için.",
     "description_zh": "适用于希望在澳大利亚全日制学习的国际学生。",
@@ -418,7 +508,7 @@
     ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500",
     "pdfSnapshotUrls": [
-      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa_500/visa_class_500_24April2026.pdf"
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa_500/Student%20visa_class_500_01July2026.pdf"
     ]
   },
   {

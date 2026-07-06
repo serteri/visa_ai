@@ -5,8 +5,9 @@
   "visas": {
     "500": {
       "label": "Student visa (subclass 500)",
+      "vac_note": "Effective 1 July 2026. Reduced concession pricing applies to eligible Pacific/Timor-Leste and ASEAN citizens and to ELICOS/Non-Award sector applicants — see visa-details.json for the full country lists.",
       "vac": {
-        "main": 2000,
+        "main": 2500,
         "partner_18_plus": 1000,
         "child_under_18": 400
       }

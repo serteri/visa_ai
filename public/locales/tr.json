@@ -567,7 +567,10 @@
     "visa801desc": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için, geçici aşamadan sonra verilen kalıcı oturum.",
     "feeConcessionsTitle": "Ücret İndirimleri",
     "pacificConcessionTitle": "1 Temmuz 2026 Pasifik ve Doğu Timor İndirimi",
-    "eligibleCountriesLabel": "Uygun pasaport ülkeleri"
+    "eligibleCountriesLabel": "Uygun pasaport ülkeleri",
+    "concession2026Title": "1 Temmuz 2026 İndirimleri ve Muafiyetleri",
+    "pacificCountriesLabel": "Pasifik Adaları ve Doğu Timor",
+    "aseanCountriesLabel": "ASEAN"
   },
   "timeUnits": {
     "months": "ay",
