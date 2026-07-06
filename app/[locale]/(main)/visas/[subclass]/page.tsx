@@ -39,6 +39,21 @@ type VisaDetail = {
   steps_zh?: string[];
   officialUrl: string;
   pdfSnapshotUrls?: string[];
+  feeConcessions?: Array<{
+    label: string;
+    label_tr?: string;
+    label_zh?: string;
+    amount: number;
+  }>;
+  pacificConcession?: {
+    effectiveDate: string;
+    note: string;
+    note_tr?: string;
+    note_zh?: string;
+    eligibleCountries: string[];
+    eligibleCountries_tr?: string[];
+    eligibleCountries_zh?: string[];
+  };
 };
 
 const VISA_DETAILS = visaDetails as VisaDetail[];
@@ -99,6 +114,30 @@ function getLocalizedVisaList(visa: VisaDetail, locale: string, key: "requiremen
   if (locale === "tr") return visa[`${key}_tr` as const] ?? visa[key];
   if (locale === "zh-Hans") return visa[`${key}_zh` as const] ?? visa[key];
   return visa[key];
+}
+
+function getLocalizedFeeConcessionLabel(
+  concession: NonNullable<VisaDetail["feeConcessions"]>[number],
+  locale: string
+) {
+  if (locale === "tr") return concession.label_tr ?? concession.label;
+  if (locale === "zh-Hans") return concession.label_zh ?? concession.label;
+  return concession.label;
+}
+
+function getLocalizedPacificNote(pacificConcession: NonNullable<VisaDetail["pacificConcession"]>, locale: string) {
+  if (locale === "tr") return pacificConcession.note_tr ?? pacificConcession.note;
+  if (locale === "zh-Hans") return pacificConcession.note_zh ?? pacificConcession.note;
+  return pacificConcession.note;
+}
+
+function getLocalizedEligibleCountries(
+  pacificConcession: NonNullable<VisaDetail["pacificConcession"]>,
+  locale: string
+) {
+  if (locale === "tr") return pacificConcession.eligibleCountries_tr ?? pacificConcession.eligibleCountries;
+  if (locale === "zh-Hans") return pacificConcession.eligibleCountries_zh ?? pacificConcession.eligibleCountries;
+  return pacificConcession.eligibleCountries;
 }
 
 function getVisaTypeLabel(translations: Record<string, unknown>, type: string) {
@@ -202,6 +241,15 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const pdfSnapshotUrls = visa.pdfSnapshotUrls?.filter((url) => Boolean(url)) ?? [];
   const fee = formatFee(locale, visa.fee, subclass);
   const minPointsText = getMinPointsLabel(translations, visa.minPoints);
+  const feeConcessions = visa.feeConcessions ?? [];
+  const pacificConcession = visa.pacificConcession;
+  const feeConcessionsTitle = t(translations, "visas.feeConcessionsTitle", "Fee Concessions");
+  const pacificConcessionTitle = t(
+    translations,
+    "visas.pacificConcessionTitle",
+    "1 July 2026 Pacific & Timor-Leste Concession"
+  );
+  const eligibleCountriesLabel = t(translations, "visas.eligibleCountriesLabel", "Eligible passport countries");
 
   const isCanada = subclass === "canada-express-entry";
   const officialBtnLabel = isCanada ? visitIRCCLabel : visitOfficialWebsiteLabel;
@@ -336,6 +384,59 @@ export default async function VisaSubclassPage({ params }: PageProps) {
             </CardContent>
           </Card>
         </div>
+
+        {(feeConcessions.length > 0 || pacificConcession) && (
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            {feeConcessions.length > 0 && (
+              <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <DollarSign className="h-5 w-5 text-cyan-600" />
+                    {feeConcessionsTitle}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {feeConcessions.map((concession) => (
+                      <li
+                        key={concession.label}
+                        className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-800 dark:bg-slate-950/60"
+                      >
+                        <span className="text-slate-700 dark:text-slate-300">
+                          {getLocalizedFeeConcessionLabel(concession, locale)}
+                        </span>
+                        <span className="shrink-0 font-bold text-slate-950 dark:text-white">
+                          {formatFee(locale, concession.amount, subclass)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+
+            {pacificConcession && (
+              <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <CardHeader>
+                  <CardTitle className="text-xl">{pacificConcessionTitle}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
+                    {getLocalizedPacificNote(pacificConcession, locale)}
+                  </p>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      {eligibleCountriesLabel}
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">
+                      {getLocalizedEligibleCountries(pacificConcession, locale).join(" · ")}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">

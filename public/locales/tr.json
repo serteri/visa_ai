@@ -564,7 +564,10 @@
     "visa485desc": "Avustralya'da eğitimini tamamlayan uluslararası mezunlar için.",
     "visa500desc": "Avustralya'da tam zamanlı eğitim almak isteyen uluslararası öğrenciler için.",
     "visa820desc": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için kalıcı oturuma ilk adım.",
-    "visa801desc": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için, geçici aşamadan sonra verilen kalıcı oturum."
+    "visa801desc": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için, geçici aşamadan sonra verilen kalıcı oturum.",
+    "feeConcessionsTitle": "Ücret İndirimleri",
+    "pacificConcessionTitle": "1 Temmuz 2026 Pasifik ve Doğu Timor İndirimi",
+    "eligibleCountriesLabel": "Uygun pasaport ülkeleri"
   },
   "timeUnits": {
     "months": "ay",

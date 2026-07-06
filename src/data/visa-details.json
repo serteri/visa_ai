@@ -432,8 +432,73 @@
     "processingTime_tr": "Programa göre değişir",
     "processingTime_zh": "视申请情况而定",
     "processingTimeUnit": "",
-    "fee": 9365,
+    "fee": 11710,
     "minPoints": null,
+    "feeConcessions": [
+      {
+        "label": "Prospective Marriage (Subclass 300) visa holders",
+        "label_tr": "Prospective Marriage (Subclass 300) vize sahipleri",
+        "label_zh": "求婚（300 类）签证持有人",
+        "amount": 1955
+      },
+      {
+        "label": "Former Subclass 300 visa holders (visa ceased without applying for another substantive visa)",
+        "label_tr": "Eski Subclass 300 vize sahipleri (başka bir esas vizeye başvurmadan vizesi sona eren)",
+        "label_zh": "曾持 300 类签证者（签证失效且未申请其他实质性签证）",
+        "amount": 2475
+      }
+    ],
+    "pacificConcession": {
+      "effectiveDate": "2026-07-01",
+      "note": "From 1 July 2026, applicants who hold a passport from an eligible Pacific country or Timor-Leste may be charged a reduced Subclass 820 visa application charge.",
+      "note_tr": "1 Temmuz 2026 tarihinden itibaren, uygun bir Pasifik ülkesi veya Doğu Timor pasaportuna sahip başvuru sahiplerinden indirimli Subclass 820 vize başvuru ücreti alınabilir.",
+      "note_zh": "自 2026 年 7 月 1 日起，持有符合条件的太平洋国家或东帝汶护照的申请人，可能有资格获得 820 类签证申请费的减免。",
+      "eligibleCountries": [
+        "Federated States of Micronesia",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua New Guinea",
+        "Republic of the Marshall Islands",
+        "Samoa",
+        "Solomon Islands",
+        "Timor-Leste",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_tr": [
+        "Mikronezya Federal Devletleri",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua Yeni Gine",
+        "Marshall Adaları Cumhuriyeti",
+        "Samoa",
+        "Solomon Adaları",
+        "Doğu Timor",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_zh": [
+        "密克罗尼西亚联邦",
+        "斐济",
+        "基里巴斯",
+        "瑙鲁",
+        "帕劳",
+        "巴布亚新几内亚",
+        "马绍尔群岛共和国",
+        "萨摩亚",
+        "所罗门群岛",
+        "东帝汶",
+        "汤加",
+        "图瓦卢",
+        "瓦努阿图"
+      ]
+    },
     "description": "Lets the de facto partner or spouse of an Australian citizen, permanent resident or eligible NZ citizen live in Australia temporarily. The first step toward the permanent Partner visa (subclass 801).",
     "description_tr": "Avustralya vatandaşı, daimi oturma izni sahibi veya uygun bir Yeni Zelanda vatandaşının de facto partnerinin veya eşinin Avustralya'da geçici olarak yaşamasına izin verir. Kalıcı Partner Vizesi'ne (subclass 801) ilk adımdır.",
     "description_zh": "允许澳大利亚公民、永久居民或符合条件的新西兰公民的事实伴侣或配偶在澳大利亚临时居住。这是获得永久配偶签证（801类别）的第一步。",
@@ -488,9 +553,9 @@
       "等待结果——处理时间不固定；请查阅官方签证处理时间指南工具",
       "获批后，您将持有820类别签证，直至永久配偶签证（801类别）最终确定"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore-temporary-and-permanent-820-801",
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore/temporary-820#Overview",
     "pdfSnapshotUrls": [
-      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/%28Subclasses%20820%20and%20801%29%20Partner%20visas%20%28apply%20in%20Australia%29/Subclass%20820%20Partner%20visa%20%28temporary%29/Subclass%20820%20Partner%20visa%20%28temporary%29_26April2026.pdf"
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/%28Subclasses%20820%20and%20801%29%20Partner%20visas%20%28apply%20in%20Australia%29/Subclass%20820%20Partner%20visa%20%28temporary%29/Subclass%20820%20Partner%20visa%20%28temporary%29_01July2026.pdf"
     ]
   },
   {

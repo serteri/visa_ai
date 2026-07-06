@@ -53,11 +53,13 @@
     },
     "820": {
       "label": "Partner visa - Temporary (subclass 820)",
-      "vac_note": "This fee covers both the temporary (820) and permanent (801) stages of the application.",
+      "vac_note": "This fee covers both the temporary (820) and permanent (801) stages of the application. Effective 1 July 2026.",
       "vac": {
-        "main": 9365,
+        "main": 11710,
         "partner_18_plus": 0,
-        "child_under_18": 2345
+        "child_under_18": 2345,
+        "subclass300Holder": 1955,
+        "formerSubclass300Holder": 2475
       }
     },
     "801": {

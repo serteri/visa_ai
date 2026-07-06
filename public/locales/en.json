@@ -557,7 +557,10 @@
     "visa485desc": "Allows international graduates to live and work in Australia after completing studies.",
     "visa500desc": "For international students to study full-time in Australia.",
     "visa820desc": "The first step toward permanent residence for partners or spouses of Australian citizens or permanent residents.",
-    "visa801desc": "Permanent residence for partners or spouses of Australian citizens or permanent residents, granted after the temporary stage."
+    "visa801desc": "Permanent residence for partners or spouses of Australian citizens or permanent residents, granted after the temporary stage.",
+    "feeConcessionsTitle": "Fee Concessions",
+    "pacificConcessionTitle": "1 July 2026 Pacific & Timor-Leste Concession",
+    "eligibleCountriesLabel": "Eligible passport countries"
   },
   "timeUnits": {
     "months": "months",

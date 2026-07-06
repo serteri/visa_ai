@@ -39,6 +39,10 @@ type VisaVac = {
   main: number;
   partner_18_plus: number;
   child_under_18: number;
+  // Subclass 820-specific concession tiers (1 July 2026 pricing) -- optional
+  // since only the 820 fee table currently has these reduced rates.
+  subclass300Holder?: number;
+  formerSubclass300Holder?: number;
 };
 
 type VisaFeeTable = {
