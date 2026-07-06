@@ -133,8 +133,65 @@
     "processingTime_tr": "Programı kontrol edin",
     "processingTime_zh": "参考处理时间指南",
     "processingTimeUnit": "",
-    "fee": 4910,
+    "fee": 6140,
     "minPoints": 65,
+    "secondInstalment": {
+      "amount": 4885,
+      "note": "A mandatory Second Instalment charge of AUD 4,885.00 applies to any applicant aged 18 or over who does not have functional English.",
+      "note_tr": "İşlevsel İngilizce düzeyine sahip olmayan 18 yaş ve üzeri her başvuru sahibi için AUD 4.885,00 tutarında zorunlu İkinci Taksit ücreti uygulanır.",
+      "note_zh": "年满18岁且未达到功能性英语水平的申请人，须缴纳强制性的第二期付款，金额为 4,885.00 澳元。"
+    },
+    "pacificConcession": {
+      "effectiveDate": "2026-07-01",
+      "note": "From 1 July 2026, a lower visa cost applies to eligible Pacific Island and Timor-Leste citizens who lodge a valid visa application.",
+      "note_tr": "1 Temmuz 2026 tarihinden itibaren, geçerli bir vize başvurusu yapan uygun Pasifik Adaları ve Doğu Timor vatandaşlarına daha düşük bir vize ücreti uygulanır.",
+      "note_zh": "自2026年7月1日起，提交有效签证申请的符合条件的太平洋岛国及东帝汶公民可享受较低的签证费用。",
+      "eligibleCountries": [
+        "Federated States of Micronesia",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua New Guinea",
+        "Republic of the Marshall Islands",
+        "Samoa",
+        "Solomon Islands",
+        "Timor-Leste",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_tr": [
+        "Mikronezya Federal Devletleri",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua Yeni Gine",
+        "Marshall Adaları Cumhuriyeti",
+        "Samoa",
+        "Solomon Adaları",
+        "Doğu Timor",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_zh": [
+        "密克罗尼西亚联邦",
+        "斐济",
+        "基里巴斯",
+        "瑙鲁",
+        "帕劳",
+        "巴布亚新几内亚",
+        "马绍尔群岛共和国",
+        "萨摩亚",
+        "所罗门群岛",
+        "东帝汶",
+        "汤加",
+        "图瓦卢",
+        "瓦努阿图"
+      ]
+    },
     "description": "For skilled workers nominated by a state or territory government.",
     "description_tr": "Eyalet veya bölge hükümeti tarafından aday gösterilen yetenekli çalışanlar için.",
     "description_zh": "适用于获得州或地区政府提名的技术工人。",
@@ -188,7 +245,7 @@
     ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190",
     "pdfSnapshotUrls": [
-      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20190%20Skilled%20Nominated%20visa/Subclass%20190%20Skilled%20Nominated%20visa_25April2026.pdf"
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20190%20Skilled%20Nominated%20visa/Subclass%20190%20Skilled%20Nominated%20visa_01July2026.pdf"
     ]
   },
   {
