@@ -19,8 +19,25 @@ export type GroundedAssistantResult = {
   nextActions: GroundedNextAction[];
 };
 
-const SYSTEM_PROMPT =
-  "You are a controlled Australian visa information assistant. You are not a migration agent and do not provide migration advice or legal advice. Answer only using the supplied database context. Do not use outside knowledge. Do not guess. If the answer is not in the context, say that the stored information does not contain enough detail and that personalised advice is handled by a registered migration agent or Australian legal practitioner. Do not state personal outcomes or deterministic conclusions. Use wording such as may be relevant, depends on circumstances, typically, can be considered, and general information only.";
+const JULY_2026_CSIT_AUD = 79423;
+const JULY_2026_482_BASE_AUD = 4015;
+const JULY_2026_189_190_BASE_AUD = 6140;
+const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
+
+const SYSTEM_PROMPT = [
+  "You are Logi AI, a strict and accurate Australian immigration assistant with rules anchored to 1 July 2026.",
+  "You are not a migration agent and do not provide legal advice.",
+  "Answer only using the supplied database context plus these fixed July 2026 constants.",
+  "Do not use outside knowledge and do not guess.",
+  "Mandatory July 2026 AU rules:",
+  "- CSIT is exactly AUD 79,423.",
+  "- If a declared salary offer is below AUD 79,423, treat employer-sponsored pathways including Subclass 482 and 186 as ineligible under this threshold.",
+  "- Subclass 485 age cap is 35 unless Masters by Research, PhD, or Hong Kong/BNO passport exception applies (exception cap is 50).",
+  "- Warn on updated base costs: Subclass 482 = AUD 4,015; Subclass 189/190 about AUD 6,140.",
+  "- Warn about second instalment risk: about AUD 4,890 for each dependant aged 18+ without functional English.",
+  "If information is missing, state that stored information does not contain enough detail.",
+  "Do not state deterministic personal outcomes; use cautious language and say general information only.",
+].join(" ");
 
 const PERSONALIZED_INTENT_REPLY =
   "I can provide general information about visa pathways. For a structured assessment based on your situation, you can generate a readiness report.";
@@ -30,6 +47,103 @@ const PERSONALISED_ADVICE_FALLBACK =
 
 function normalize(message: string): string {
   return message.trim().toLowerCase();
+}
+
+function parseDeclaredSalaryAud(message: string): number | null {
+  const lower = normalize(message);
+  const hasSalarySignal = /(salary|income|wage|pay|offer|package|aud|\$|maas|maaş)/i.test(lower);
+  if (!hasSalarySignal) return null;
+
+  const patterns = [
+    /(?:aud|\$)\s*(\d{2,3}(?:[\s,]\d{3})+|\d{5,6}|\d{2,3}(?:\.\d+)?k)\b/gi,
+    /\b(\d{2,3}(?:\.\d+)?k|\d{2,3}(?:[\s,]\d{3})+|\d{5,6})\s*(?:aud)?\b/gi,
+  ];
+
+  for (const pattern of patterns) {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(message)) !== null) {
+      const raw = match[1].trim().toLowerCase();
+      const parsed = raw.endsWith("k")
+        ? Math.round(parseFloat(raw.slice(0, -1)) * 1000)
+        : parseInt(raw.replace(/[\s,]/g, ""), 10);
+
+      if (!Number.isFinite(parsed)) continue;
+      if (parsed >= 20000 && parsed <= 500000) return parsed;
+    }
+  }
+
+  return null;
+}
+
+function parseDeclaredAge(message: string): number | null {
+  const patterns = [
+    /\b(?:age\s*[:=]?\s*)(\d{1,2})\b/i,
+    /\b(\d{1,2})\s*(?:years?\s*old|yo)\b/i,
+    /\b(?:yas|yaş)\s*[:=]?\s*(\d{1,2})\b/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = message.match(pattern);
+    if (!match) continue;
+    const age = parseInt(match[1], 10);
+    if (Number.isFinite(age) && age >= 15 && age <= 75) return age;
+  }
+
+  return null;
+}
+
+function hasSubclassMention(message: string, subclass: string): boolean {
+  return new RegExp(`\\b${subclass}\\b`, "i").test(message);
+}
+
+function has485ExceptionSignal(message: string): boolean {
+  return /(masters?\s*(?:by\s*)?research|master\s*by\s*research|phd|doctorate|hong\s*kong|\bbno\b|british\s*national\s*\(?(?:overseas|o)\)?)/i.test(
+    message
+  );
+}
+
+function buildJuly2026RuleNotice(message: string, locale: "en" | "tr" | "zh-Hans"): string | null {
+  const notes: string[] = [];
+  const salary = parseDeclaredSalaryAud(message);
+  const age = parseDeclaredAge(message);
+  const asksCost = /(cost|fee|charge|price|ucret|ücret|harc|maliyet|second instalment|functional english)/i.test(message);
+
+  if ((hasSubclassMention(message, "482") || hasSubclassMention(message, "186")) && salary !== null && salary < JULY_2026_CSIT_AUD) {
+    notes.push(
+      locale === "tr"
+        ? `Temmuz 2026 kuralına göre beyan edilen ücret (AUD ${salary.toLocaleString("en-AU")}), CSIT olan AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")} eşiğinin altında olduğu için 482/186 işveren sponsorlu yolları bu gelir eşiği altında uygun görünmez.`
+        : locale === "zh-Hans"
+          ? `按2026年7月规则，你声明的薪资（AUD ${salary.toLocaleString("en-AU")}）低于CSIT门槛AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}，因此482/186雇主担保路径在该收入门槛下不具备资格。`
+          : `Under the July 2026 rule set, the declared salary (AUD ${salary.toLocaleString("en-AU")}) is below the CSIT floor of AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}, so employer-sponsored pathways such as 482/186 are ineligible under this income threshold.`
+    );
+  }
+
+  if (hasSubclassMention(message, "485") && age !== null) {
+    const hasException = has485ExceptionSignal(message);
+    const maxAge = hasException ? 50 : 35;
+    if (age > maxAge) {
+      notes.push(
+        locale === "tr"
+          ? `Temmuz 2026 kuralına göre 485 yaş sınırı ${hasException ? "istisna kapsamında" : "standart olarak"} ${maxAge}. Beyan edilen yaş (${age}) bu sınırı aştığı için uygun görünmez.`
+          : locale === "zh-Hans"
+            ? `按2026年7月规则，485年龄上限${hasException ? "在例外情形下为" : "为"}${maxAge}岁。你声明的年龄（${age}岁）超过该上限，因此不具资格。`
+            : `Under the July 2026 rule set, the 485 age cap is ${maxAge}${hasException ? " under the stated exception" : ""}. The declared age (${age}) is above that cap, so this pathway is ineligible on age.`
+      );
+    }
+  }
+
+  if (asksCost || hasSubclassMention(message, "482") || hasSubclassMention(message, "189") || hasSubclassMention(message, "190")) {
+    notes.push(
+      locale === "tr"
+        ? `Temmuz 2026 maliyet uyarısı: 482 temel ücret AUD ${JULY_2026_482_BASE_AUD.toLocaleString("en-AU")}; 189/190 temel ücret yaklaşık AUD ${JULY_2026_189_190_BASE_AUD.toLocaleString("en-AU")}; 18+ bağımlılarda Functional English yoksa kişi başı yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} ikinci taksit riski olabilir.`
+        : locale === "zh-Hans"
+          ? `2026年7月费用提示：482基础费用为AUD ${JULY_2026_482_BASE_AUD.toLocaleString("en-AU")}；189/190基础费用约为AUD ${JULY_2026_189_190_BASE_AUD.toLocaleString("en-AU")}；18岁及以上附属申请人若无Functional English，可能触发约AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}的第二期费用风险。`
+          : `July 2026 cost warning: Subclass 482 base charge is AUD ${JULY_2026_482_BASE_AUD.toLocaleString("en-AU")}; Subclass 189/190 base charge is about AUD ${JULY_2026_189_190_BASE_AUD.toLocaleString("en-AU")}; and dependants aged 18+ without functional English may trigger a second-instalment risk of about AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} each.`
+    );
+  }
+
+  if (notes.length === 0) return null;
+  return notes.join(" ");
 }
 
 function includesAny(text: string, tokens: string[]): boolean {
@@ -381,6 +495,19 @@ export async function generateGroundedAnswer(input: {
   const locale = input.locale === "tr" ? "tr" : input.locale === "zh-Hans" ? "zh-Hans" : "en";
   const sources = buildSources(locale, input.context);
   const nextActions = buildActions(locale, input.context);
+  const july2026RuleNotice = buildJuly2026RuleNotice(input.message, locale);
+
+  if (july2026RuleNotice) {
+    return {
+      answer: applyAssistantSafetyFooter({
+        answer: neutralizeDeterministicLanguage(withSourceSubclassFooter(july2026RuleNotice, input.context, locale)),
+        message: input.message,
+        locale,
+      }),
+      sources,
+      nextActions,
+    };
+  }
 
   if (isPersonalizedIntentQuestion(input.message)) {
     const safeAnswer = applyAssistantSafetyFooter({

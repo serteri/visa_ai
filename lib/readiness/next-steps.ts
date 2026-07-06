@@ -59,8 +59,16 @@ export function buildNextSteps(ctx: NextStepsContext): string[] {
   if (ctx.has482Pathway) {
     steps.push(
       isTr
-        ? "482 yolu icin isveren sponsorlugu baglami, rol uyumu ve ucret esikleri ana veri degiskenleri olarak gorunmektedir."
-        : "For the 482 pathway, employer sponsorship context, role alignment, and salary thresholds appear as the main data variables."
+        ? "482 yolu icin isveren sponsorlugu baglami, rol uyumu ve ucret esikleri ana veri degiskenleridir; 1 Temmuz 2026 CSIT tabani AUD 79,423 olarak uygulanir."
+        : "For the 482 pathway, employer sponsorship context, role alignment, and salary thresholds are core variables; the 1 July 2026 CSIT floor is AUD 79,423."
+    );
+  }
+
+  if (ctx.has482Pathway || ctx.hasSkilledPathway) {
+    steps.push(
+      isTr
+        ? "Ucret/harc planlamasinda 2026 tabanlari dikkate alinmalidir: 482 temel harci AUD 4,015; 189/190 temel harci yaklasik AUD 6,140; 18+ bagimlilarda Functional English yoksa kisi basi yaklasik AUD 4,890 ikinci taksit riski olabilir."
+        : "Cost planning should use 2026 baselines: 482 base charge AUD 4,015; 189/190 base charge about AUD 6,140; and dependants aged 18+ without functional English may trigger a second-instalment risk of about AUD 4,890 each."
     );
   }
 

@@ -63,6 +63,96 @@ function hasSponsorContext(raw?: string): boolean {
   return !noneKeywords.some((kw) => s === kw || s.includes(kw));
 }
 
+const JULY_2026_CSIT_AUD = 79423;
+const JULY_2026_485_STANDARD_MAX_AGE = 35;
+const JULY_2026_485_EXCEPTION_MAX_AGE = 50;
+const JULY_2026_482_BASE_COST_AUD = 4015;
+const JULY_2026_189_190_BASE_COST_AUD = 6140;
+const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
+
+function parseDeclaredSalaryAud(input: ReadinessInput): number | null {
+  const combined = [
+    input.mainGoal ?? "",
+    input.preferredPathway ?? "",
+    input.sponsorOrFamily ?? "",
+    input.biggestConcern ?? "",
+  ].join(" ");
+
+  const lower = norm(combined);
+  const hasSalarySignal = /(salary|income|wage|pay|offer|package|aud|\$|maas|maaş)/i.test(lower);
+  if (!hasSalarySignal) return null;
+
+  const patterns = [
+    /(?:aud|\$)\s*(\d{2,3}(?:[\s,]\d{3})+|\d{5,6}|\d{2,3}(?:\.\d+)?k)\b/gi,
+    /\b(\d{2,3}(?:\.\d+)?k|\d{2,3}(?:[\s,]\d{3})+|\d{5,6})\s*(?:aud)?\b/gi,
+  ];
+
+  for (const pattern of patterns) {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(combined)) !== null) {
+      const raw = match[1].trim().toLowerCase();
+      const parsed = raw.endsWith("k")
+        ? Math.round(parseFloat(raw.slice(0, -1)) * 1000)
+        : parseInt(raw.replace(/[\s,]/g, ""), 10);
+
+      if (!Number.isFinite(parsed)) continue;
+      if (parsed >= 20000 && parsed <= 500000) return parsed;
+    }
+  }
+
+  return null;
+}
+
+function parseDeclaredAge(input: ReadinessInput): number | null {
+  if (!input.age) return null;
+  const value = parseInt(input.age.trim(), 10);
+  if (!Number.isFinite(value)) return null;
+  if (value < 15 || value > 80) return null;
+  return value;
+}
+
+function has485AgeException(input: ReadinessInput): boolean {
+  const qualification = (input.qualificationLevel ?? "").toLowerCase();
+  if (qualification === "phd") return true;
+
+  const combined = [input.mainGoal ?? "", input.preferredPathway ?? "", input.biggestConcern ?? ""]
+    .join(" ")
+    .toLowerCase();
+  const passport = (input.passportCountry ?? "").toLowerCase();
+
+  return /(masters?\s*(?:by\s*)?research|master\s*by\s*research|phd|doctorate)/i.test(combined)
+    || /(hong\s*kong|\bhk\s*sar\b)/i.test(passport)
+    || /(\bbno\b|british\s*national\s*\(?(?:overseas|o)\)?)/i.test(`${passport} ${combined}`);
+}
+
+function evaluateEmployerSalaryGate(input: ReadinessInput): {
+  declaredSalaryAud: number | null;
+  isBelowCsit: boolean;
+} {
+  const declaredSalaryAud = parseDeclaredSalaryAud(input);
+  return {
+    declaredSalaryAud,
+    isBelowCsit: declaredSalaryAud !== null && declaredSalaryAud < JULY_2026_CSIT_AUD,
+  };
+}
+
+function evaluate485AgeGate(input: ReadinessInput): {
+  declaredAge: number | null;
+  maxAllowedAge: number;
+  hasException: boolean;
+  isAboveLimit: boolean;
+} {
+  const declaredAge = parseDeclaredAge(input);
+  const hasException = has485AgeException(input);
+  const maxAllowedAge = hasException ? JULY_2026_485_EXCEPTION_MAX_AGE : JULY_2026_485_STANDARD_MAX_AGE;
+  return {
+    declaredAge,
+    maxAllowedAge,
+    hasException,
+    isAboveLimit: declaredAge !== null && declaredAge > maxAllowedAge,
+  };
+}
+
 // ─── Pathway detection ────────────────────────────────────────────────────────
 
 function detectSubclasses(input: ReadinessInput): string[] {
@@ -700,11 +790,19 @@ function getPathwaySpecificRisks(
   }
 
   if (subclass === "485") {
+    const ageGate = evaluate485AgeGate(input);
     risks.push(
       isTr
         ? "İstihdam sonuçları ve nitelikli yollara geçiş bireysel koşullara bağlı olabilir."
         : "Employment outcomes and transition to skilled pathways may affect this pathway."
     );
+    if (ageGate.isAboveLimit) {
+      risks.push(
+        isTr
+          ? `1 Temmuz 2026 kuralına göre 485 için yaş sınırı ${ageGate.hasException ? `istisna kapsamında ${ageGate.maxAllowedAge}` : `${ageGate.maxAllowedAge}`} olarak uygulanır. Beyan edilen yaş (${ageGate.declaredAge}) bu sınırın üzerindedir.`
+          : `Under the 1 July 2026 rule set, the 485 age cap is ${ageGate.maxAllowedAge}${ageGate.hasException ? " under the stated exception" : ""}. The declared age (${ageGate.declaredAge}) is above this cap.`
+      );
+    }
     if (!hasKw([input.mainGoal ?? "", input.preferredPathway ?? ""].join(" "), ["study", "student", "graduated", "eğitim", "mezun"])) {
       risks.push(
         isTr
@@ -715,11 +813,19 @@ function getPathwaySpecificRisks(
   }
 
   if (subclass === "482") {
+    const salaryGate = evaluateEmployerSalaryGate(input);
     if (!hasKw([input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "), ["sponsor", "employer", "işveren", "sponsored"])) {
       risks.push(
         isTr
           ? "İşveren sponsorluğu bağlamı açık değil."
           : "Employer sponsorship context is not yet clear."
+      );
+    }
+    if (salaryGate.isBelowCsit && salaryGate.declaredSalaryAud !== null) {
+      risks.push(
+        isTr
+          ? `1 Temmuz 2026 CSIT eşiği AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}. Beyan edilen teklif (AUD ${salaryGate.declaredSalaryAud.toLocaleString("en-AU")}) bu eşiğin altında olduğu için 482/186 işveren sponsorlu yolları uygun görünmez.`
+          : `The 1 July 2026 CSIT floor is AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}. The declared salary offer (AUD ${salaryGate.declaredSalaryAud.toLocaleString("en-AU")}) is below this threshold, so employer-sponsored pathways such as 482/186 are ineligible under this income floor.`
       );
     }
     if (!input.occupation) {
@@ -994,25 +1100,41 @@ function buildPathwayEntry(
         ? "The study goal indicates the Student Visa (subclass 500) may be a possible pathway. This is general information only and depends on individual circumstances."
         : "The 500 Student Visa may be relevant for study at a registered Australian institution. More context would support this assessment.";
   } else if (subclass === "485") {
+    const ageGate = evaluate485AgeGate(input);
     const hasGradSignal = hasKw(goalText, ["study", "student", "graduated", "graduate", "485", "eğitim", "mezun"]);
-    relevance = hasGradSignal ? "possible" : "needs_more_information";
-    reason = isTr
-      ? hasGradSignal
-        ? "485 Geçici Mezun Vizesi (Post-Yükseköğretim Çalışma akışı), Avustralya'da uygun bir kurumdan mezun olan kişiler için ilgili bir yol olabilir. Bu yalnızca genel bilgidir ve bireysel koşullara bağlıdır."
-        : "485 Geçici Mezun Vizesi, Avustralya'da uygun çalışmayı tamamlayan mezunlar için ilgili olabilir. Bu yolun değerlendirilebilmesi için daha fazla eğitim ve mezuniyet bağlamı gereklidir."
-      : hasGradSignal
-        ? "The 485 Temporary Graduate Visa (Post-Higher Education Work stream) may be a possible pathway for those who have completed Australian study in Australia. This is general information only and depends on individual circumstances."
-        : "The 485 Temporary Graduate Visa may be relevant for those who have completed Australian study at a CRICOS-registered institution. More graduate or study context would support this assessment.";
+    if (ageGate.isAboveLimit) {
+      relevance = "not_enough_information";
+      reason = isTr
+        ? `1 Temmuz 2026 kuralına göre 485 yaş sınırı ${ageGate.hasException ? `istisna kapsamında ${ageGate.maxAllowedAge}` : `${ageGate.maxAllowedAge}`}. Beyan edilen yaş (${ageGate.declaredAge}) bu sınırı aştığı için bu yol uygun görünmez.`
+        : `Under the 1 July 2026 rule set, the 485 age cap is ${ageGate.maxAllowedAge}${ageGate.hasException ? " under the stated exception" : ""}. The declared age (${ageGate.declaredAge}) is above this cap, so this pathway is ineligible on age.`;
+    } else {
+      relevance = hasGradSignal ? "possible" : "needs_more_information";
+      reason = isTr
+        ? hasGradSignal
+          ? "485 Geçici Mezun Vizesi (Post-Yükseköğretim Çalışma akışı), Avustralya'da uygun bir kurumdan mezun olan kişiler için ilgili bir yol olabilir. Bu yalnızca genel bilgidir ve bireysel koşullara bağlıdır."
+          : "485 Geçici Mezun Vizesi, Avustralya'da uygun çalışmayı tamamlayan mezunlar için ilgili olabilir. Bu yolun değerlendirilebilmesi için daha fazla eğitim ve mezuniyet bağlamı gereklidir."
+        : hasGradSignal
+          ? "The 485 Temporary Graduate Visa (Post-Higher Education Work stream) may be a possible pathway for those who have completed Australian study in Australia. This is general information only and depends on individual circumstances."
+          : "The 485 Temporary Graduate Visa may be relevant for those who have completed Australian study at a CRICOS-registered institution. More graduate or study context would support this assessment.";
+    }
   } else if (subclass === "482") {
+    const salaryGate = evaluateEmployerSalaryGate(input);
     const hasSponsor = hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]);
-    relevance = hasSponsor ? "possible" : "needs_more_information";
-    reason = isTr
-      ? hasSponsor
-        ? "İşveren sponsoru bağlamı, 482 Skills in Demand Vizesinin olası bir yol olabileceğini göstermektedir. Bu kişisel duruma göre değişebilir."
-        : "482 Skills in Demand Vizesi bir işveren sponsoru gerektirmektedir. Sponsor bağlamı bu değerlendirme için önemlidir."
-      : hasSponsor
-        ? "The employer sponsor context indicates the 482 Skills in Demand Visa may be a possible pathway. This depends on individual circumstances."
-        : "The 482 Skills in Demand Visa requires an employer sponsor. Sponsor context is important to support this assessment.";
+    if (salaryGate.isBelowCsit && salaryGate.declaredSalaryAud !== null) {
+      relevance = "not_enough_information";
+      reason = isTr
+        ? `1 Temmuz 2026 CSIT eşiği AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}. Beyan edilen teklif (AUD ${salaryGate.declaredSalaryAud.toLocaleString("en-AU")}) bu eşiğin altında olduğu için 482/186 işveren sponsorlu yolları uygun görünmez.`
+        : `The 1 July 2026 CSIT floor is AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}. The declared salary offer (AUD ${salaryGate.declaredSalaryAud.toLocaleString("en-AU")}) is below this threshold, so employer-sponsored pathways such as 482/186 are ineligible under this income floor.`;
+    } else {
+      relevance = hasSponsor ? "possible" : "needs_more_information";
+      reason = isTr
+        ? hasSponsor
+          ? "İşveren sponsoru bağlamı, 482 Skills in Demand Vizesinin olası bir yol olabileceğini göstermektedir. Bu kişisel duruma göre değişebilir."
+          : "482 Skills in Demand Vizesi bir işveren sponsoru gerektirmektedir. Sponsor bağlamı bu değerlendirme için önemlidir."
+        : hasSponsor
+          ? "The employer sponsor context indicates the 482 Skills in Demand Visa may be a possible pathway. This depends on individual circumstances."
+          : "The 482 Skills in Demand Visa requires an employer sponsor. Sponsor context is important to support this assessment.";
+    }
   } else if (subclass === "189") {
     relevance = input.occupation ? "possible" : "needs_more_information";
     reason = isTr
@@ -1045,14 +1167,24 @@ function buildPathwayEntry(
       : "This pathway may be relevant to explore based on available information.";
   }
 
-  const confidenceLevel = getPathwayConfidenceLevel(
+  let confidenceLevel = getPathwayConfidenceLevel(
     subclass,
     input,
     relevance,
     dataCompletenessPercentage,
     estimatedPoints
   );
-  const confidenceExplanation = getConfidenceExplanation(
+  const ageGate = subclass === "485" ? evaluate485AgeGate(input) : null;
+  const salaryGate = subclass === "482" ? evaluateEmployerSalaryGate(input) : null;
+  const forcedIneligibleByRule =
+    (subclass === "485" && ageGate?.isAboveLimit) ||
+    (subclass === "482" && salaryGate?.isBelowCsit);
+
+  if (forcedIneligibleByRule) {
+    confidenceLevel = "low";
+  }
+
+  let confidenceExplanation = getConfidenceExplanation(
     subclass,
     input,
     locale,
@@ -1060,6 +1192,11 @@ function buildPathwayEntry(
     dataCompletenessPercentage,
     estimatedPoints
   );
+  if (forcedIneligibleByRule) {
+    confidenceExplanation = isTr
+      ? "Bu değerlendirme sinyali 1 Temmuz 2026 kural eşiği ihlali nedeniyle düşük güvene çekildi."
+      : "This pathway signal is forced to low confidence due to a direct 1 July 2026 rule-threshold failure.";
+  }
   const difficulty = getDifficultyForPathway({ subclass });
   const requirementType = getRequirementType(
     { subclass },
@@ -1434,8 +1571,8 @@ function buildFactorsAffectingPathways(
   if (hasEmployerPathway) {
     items.push(
       isTr
-        ? "İşverenin rol, ücret ve sponsorluk gerekliliklerine uygunluğu sonucu etkileyebilir."
-        : "Employer alignment with role, salary, and sponsorship settings can affect pathway viability signals."
+        ? `İşverenin rol, sponsorluk ve ücret gerekliliklerine uygunluğu sonucu etkileyebilir; 1 Temmuz 2026 için CSIT eşiği AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")} olarak uygulanır.`
+        : `Employer alignment with role, sponsorship, and salary settings can affect pathway viability; for 1 July 2026 rules, the CSIT floor is AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}.`
     );
   }
 
@@ -2383,20 +2520,20 @@ function buildPointsBoosterSimulator(
 // Source: Australian Government Department of Home Affairs (subject to change)
 const GOV_FEES_EN: Record<string, string> = {
   "500": "From AUD 2,000 (unless exempt)",
-  "482": "From AUD 3,210 (main applicant and dependants 18+); AUD 805 (dependants under 18)",
+  "482": "From AUD 4,015 (base application charge)",
   "485": "From AUD 4,600",
-  "189": "From AUD 4,910 (main applicant)",
-  "190": "From AUD 4,910 (main applicant)",
+  "189": "From about AUD 6,140 (main applicant)",
+  "190": "From about AUD 6,140 (main applicant)",
   "491": "From AUD 4,910 (main applicant)",
   "820": "From AUD 9,365 (most applicants) — covers both the temporary (820) and permanent (801) stages",
   "801": "No separate fee — already paid as part of the subclass 820 application",
 };
 const GOV_FEES_TR: Record<string, string> = {
   "500": "AUD 2.000'den itibaren (muaf olmayan başvurular için)",
-  "482": "AUD 3.210'dan itibaren (ana başvurucu ve 18+ bağımlılar); AUD 805 (18 yaş altı bağımlılar)",
+  "482": "AUD 4.015'ten itibaren (temel başvuru ücreti)",
   "485": "AUD 4.600'dan itibaren",
-  "189": "AUD 4.910'dan itibaren (ana başvurucu)",
-  "190": "AUD 4.910'dan itibaren (ana başvurucu)",
+  "189": "Yaklaşık AUD 6.140'tan itibaren (ana başvurucu)",
+  "190": "Yaklaşık AUD 6.140'tan itibaren (ana başvurucu)",
   "491": "AUD 4.910'dan itibaren (ana başvurucu)",
   "820": "AUD 9.365'ten itibaren (çoğu başvurucu) — geçici (820) ve kalıcı (801) aşamaları kapsar",
   "801": "Ayrı bir ücret yok — subclass 820 başvurusu kapsamında ödenmiştir",
@@ -2423,8 +2560,8 @@ function buildFinancialRoadmap(
       estimateType: "official_fee",
       amountLabel: govFeeLabel,
       explanation: isTr
-        ? "Avustralya Ev İdaresi'ne ödenen resmi başvuru ücreti, geçici veya kalıcı vize türüne göre değişir. 189/190/491 ücretleri kişi başıdır: ana başvurucu (AUD 4,910), 18 yaş ve üzeri bağımlılar (AUD 4,910 her biri), 18 yaş altı çocuklar (AUD 1,230 her biri). Bu ücretler Avustralya hükümeti tarafından düzenli olarak güncellenir. Ödeme, başvuru ImmiAccount'a sunulduğunda banka kartı veya kredi kartıyla yapılabilir."
-        : "The official charge paid to the Australian Department of Home Affairs. For skilled independent (189), state-nominated (190), and regional (491) visas, the main applicant fee is AUD $4,910; each secondary applicant aged 18+ also pays AUD $4,910; dependants under 18 pay AUD $1,230 each. These charges are indexed periodically by the Australian government and must be verified before lodgement. Payment is made via credit/debit card at the time of online application through ImmiAccount.",
+        ? `Resmi başvuru ücreti vize türüne göre değişir ve 1 Temmuz 2026 sonrası güncellenmiştir. 482 temel ücret: AUD ${JULY_2026_482_BASE_COST_AUD.toLocaleString("en-AU")}. 189/190 temel ücret: yaklaşık AUD ${JULY_2026_189_190_BASE_COST_AUD.toLocaleString("en-AU")}. 491 için ücretler ayrı tabloda doğrulanmalıdır. Ücretler dönemsel olarak endekslenebilir; başvuru öncesi güncel tablo doğrulanmalıdır.`
+        : `Official visa application charges vary by subclass and were updated for the post-1 July 2026 schedule. Subclass 482 base charge: AUD ${JULY_2026_482_BASE_COST_AUD.toLocaleString("en-AU")}. Subclass 189/190 base charge: about AUD ${JULY_2026_189_190_BASE_COST_AUD.toLocaleString("en-AU")}. 491 charges should be separately confirmed from the current schedule. Charges can be indexed periodically and should be verified before lodgement.`,
     },
     {
       category: isTr ? "İngilizce Dil Testi (IELTS / PTE / OET)" : "English Language Test (IELTS / PTE / OET)",
@@ -2435,6 +2572,18 @@ function buildFinancialRoadmap(
       explanation: isTr
         ? "Avustralya göçü için kabul edilen testler şunlardır: IELTS Academic veya General Training (~AUD 385–405), PTE Academic (~AUD 375–395), OET (Occupational English Test, sağlık meslekleri için, ~AUD 587), TOEFL iBT (~AUD 340–390, bazı akışlar için kabul edilir). Competent English için genel eşikler: IELTS her bantta minimum 6.0, PTE her bantta minimum 50. Superior English (IELTS 8.0+) puan tablosunda +20 ek puan sağlar. Sınavlar 2 yıldan uzun süre önce alınmışsa yenilenmesi gerekir."
         : "Tests accepted for Australian migration include: IELTS Academic or General Training (~AUD $385–$405 per attempt), PTE Academic (~AUD $375–$395), OET (Occupational English Test, used by healthcare occupations, ~AUD $587), and TOEFL iBT (~AUD $340–$390, accepted for some streams). Minimum Competent English thresholds: IELTS 6.0 in all four bands, PTE 50 in all bands. Achieving Superior English (IELTS 8.0+ in all four bands or PTE 79+) unlocks +20 additional points in the Australian points test — a significant investment if retesting is needed. Scores must be no more than 3 years old at time of visa grant.",
+    },
+    {
+      category: isTr
+        ? "Fonksiyonel İngilizce ikinci taksit riski (18+ bağımlılar)"
+        : "Functional English second-instalment risk (dependants 18+)",
+      estimateType: "official_fee",
+      amountLabel: isTr
+        ? `Bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}`
+        : `About AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant`,
+      explanation: isTr
+        ? "18 yaş ve üzeri bağımlılar Functional English kanıtı sunamazsa kişi başı ikinci taksit ücreti uygulanabilir. Bu risk bazı başvurularda toplam maliyeti anlamlı biçimde artırır ve başvuru öncesi İngilizce kanıt planı yapılmalıdır."
+        : "Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant. This can materially increase total cost and should be checked early in planning.",
     },
   ];
 
