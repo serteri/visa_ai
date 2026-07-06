@@ -259,11 +259,68 @@
     "processingTime_tr": "Programı kontrol edin",
     "processingTime_zh": "参考处理时间指南",
     "processingTimeUnit": "",
-    "fee": 4910,
+    "fee": 6140,
     "minPoints": 65,
-    "description": "For skilled workers nominated by a state or sponsored by family to live and work in regional Australia.",
-    "description_tr": "Avustralya'nın bölgesel alanlarında yaşamak ve çalışmak isteyen yetenekli çalışanlar için.",
-    "description_zh": "适用于希望在澳大利亚偏远地区生活和工作的技术工人。",
+    "secondInstalment": {
+      "amount": 4890,
+      "note": "A mandatory Second Instalment charge of AUD 4,890.00 applies to any dependent applicant aged 18 or over who does not have functional English.",
+      "note_tr": "İşlevsel İngilizce düzeyine sahip olmayan 18 yaş ve üzeri her bağımlı başvuru sahibi için AUD 4.890,00 tutarında zorunlu İkinci Taksit ücreti uygulanır.",
+      "note_zh": "年满18岁且未达到功能性英语水平的随行申请人，须缴纳强制性的第二期付款，金额为 4,890.00 澳元。"
+    },
+    "pacificConcession": {
+      "effectiveDate": "2026-07-01",
+      "note": "From 1 July 2026, a lower visa cost applies to eligible Pacific Island and Timor-Leste citizens who lodge a valid visa application.",
+      "note_tr": "1 Temmuz 2026 tarihinden itibaren, geçerli bir vize başvurusu yapan uygun Pasifik Adaları ve Doğu Timor vatandaşlarına daha düşük bir vize ücreti uygulanır.",
+      "note_zh": "自2026年7月1日起，提交有效签证申请的符合条件的太平洋岛国及东帝汶公民可享受较低的签证费用。",
+      "eligibleCountries": [
+        "Federated States of Micronesia",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua New Guinea",
+        "Republic of the Marshall Islands",
+        "Samoa",
+        "Solomon Islands",
+        "Timor-Leste",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_tr": [
+        "Mikronezya Federal Devletleri",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua Yeni Gine",
+        "Marshall Adaları Cumhuriyeti",
+        "Samoa",
+        "Solomon Adaları",
+        "Doğu Timor",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_zh": [
+        "密克罗尼西亚联邦",
+        "斐济",
+        "基里巴斯",
+        "瑙鲁",
+        "帕劳",
+        "巴布亚新几内亚",
+        "马绍尔群岛共和国",
+        "萨摩亚",
+        "所罗门群岛",
+        "东帝汶",
+        "汤加",
+        "图瓦卢",
+        "瓦努阿图"
+      ]
+    },
+    "description": "For skilled workers nominated by a state or sponsored by family to live and work in regional Australia. This provisional visa is valid for up to 5 years.",
+    "description_tr": "Avustralya'nın bölgesel alanlarında yaşamak ve çalışmak isteyen, eyalet tarafından aday gösterilen veya aile tarafından sponsor olunan yetenekli çalışanlar için. Bu geçici (provisional) vize en fazla 5 yıl geçerlidir.",
+    "description_zh": "适用于获得州提名或家庭担保、希望在澳大利亚偏远地区生活和工作的技术工人。此临时（过渡）签证有效期最长为5年。",
     "requirements": [
       "Occupation on MLTSSL, STSOL or ROL",
       "State nomination or family sponsorship (adds 15 points)",
@@ -320,7 +377,7 @@
     ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491",
     "pdfSnapshotUrls": [
-      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant_25April2026.pdf"
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant/Subclass%20491%20Skilled%20Work%20Regional%20%28Provisional%29%20visa%20-%20Main%20applicant_01July2026.pdf"
     ]
   },
   {

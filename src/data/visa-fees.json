@@ -50,10 +50,12 @@
     },
     "491": {
       "label": "Skilled Work Regional visa (subclass 491)",
+      "vac_note": "Effective 1 July 2026. A mandatory Second Instalment of AUD 4,890.00 applies to dependent applicants 18+ without functional English. Reduced concession pricing applies to eligible Pacific/Timor-Leste citizens — see visa-details.json for the full country list.",
       "vac": {
-        "main": 4910,
+        "main": 6140,
         "partner_18_plus": 2455,
-        "child_under_18": 1230
+        "child_under_18": 1230,
+        "secondInstalmentEnglish": 4890
       }
     },
     "820": {
