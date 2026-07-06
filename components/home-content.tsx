@@ -76,34 +76,28 @@ export function HomeContent() {
             <span className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
 
-          {/* Secondary actions — deliberately subtle text links, not buttons,
-              so they never compete with the primary CTA above. */}
-          <p className="mt-5 text-sm text-slate-400">
-            {t("hero.secondaryPrefix")}{" "}
-            <Link
-              href={`/${locale}/full-check?country=AU`}
-              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
-            >
-              {t("hero.secondaryAU")}
-            </Link>
-            {" · "}
-            <Link
-              href={`/${locale}/full-check?country=CA`}
-              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
-            >
-              {t("hero.secondaryCA")}
-            </Link>
-            {" · "}
-            <Link
-              href={`/${locale}/tools/points-calculator`}
-              className="font-medium text-slate-500 underline underline-offset-2 transition-colors hover:text-indigo-600 dark:text-slate-400"
-            >
+          {/* Single non-clickable trust signal line — no competing links, one CTA only. */}
+          <p className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm font-medium text-slate-400 dark:text-slate-500">
+            <span>
+              ✓{" "}
               {locale === "tr"
-                ? "Puan Hesaplayıcı"
+                ? "Kredi kartı gerekmez"
                 : locale === "zh-Hans"
-                  ? "积分计算器"
-                  : "Points Calculator"}
-            </Link>
+                  ? "无需信用卡"
+                  : "No credit card required"}
+            </span>
+            <span>
+              ✓{" "}
+              {locale === "tr" ? "2 dakika sürer" : locale === "zh-Hans" ? "仅需2分钟" : "Takes 2 minutes"}
+            </span>
+            <span>
+              ✓{" "}
+              {locale === "tr"
+                ? "Gerçek 2026 verilerine dayanır"
+                : locale === "zh-Hans"
+                  ? "基于真实的2026年数据"
+                  : "Based on real 2026 data"}
+            </span>
           </p>
 
           {/* Trust Signals under CTA */}
