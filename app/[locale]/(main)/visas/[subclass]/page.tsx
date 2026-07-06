@@ -60,6 +60,14 @@ type VisaDetail = {
     note_tr?: string;
     note_zh?: string;
   };
+  csit?: {
+    effectiveDate: string;
+    amount: number;
+    previousAmount: number;
+    note: string;
+    note_tr?: string;
+    note_zh?: string;
+  };
   concession2026?: {
     effectiveDate: string;
     note: string;
@@ -182,6 +190,12 @@ function getLocalizedSecondInstalmentNote(secondInstalment: NonNullable<VisaDeta
   return secondInstalment.note;
 }
 
+function getLocalizedCsitNote(csit: NonNullable<VisaDetail["csit"]>, locale: string) {
+  if (locale === "tr") return csit.note_tr ?? csit.note;
+  if (locale === "zh-Hans") return csit.note_zh ?? csit.note;
+  return csit.note;
+}
+
 function getVisaTypeLabel(translations: Record<string, unknown>, type: string) {
   const normalizedType = type.toLowerCase();
   if (normalizedType.includes("temporary then permanent")) {
@@ -302,6 +316,8 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const aseanCountriesLabel = t(translations, "visas.aseanCountriesLabel", "ASEAN");
   const secondInstalment = visa.secondInstalment;
   const secondInstalmentTitle = t(translations, "visas.secondInstalmentTitle", "Second Instalment Charge");
+  const csit = visa.csit;
+  const csitTitle = t(translations, "visas.csitTitle", "Core Skills Income Threshold (CSIT)");
 
   const isCanada = subclass === "canada-express-entry";
   const officialBtnLabel = isCanada ? visitIRCCLabel : visitOfficialWebsiteLabel;
@@ -437,8 +453,27 @@ export default async function VisaSubclassPage({ params }: PageProps) {
           </Card>
         </div>
 
-        {(feeConcessions.length > 0 || pacificConcession || concession2026 || secondInstalment) && (
+        {(feeConcessions.length > 0 || pacificConcession || concession2026 || secondInstalment || csit) && (
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            {csit && (
+              <Card className="border-cyan-300 bg-cyan-50 shadow-sm lg:col-span-2 dark:border-cyan-700 dark:bg-cyan-950/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl text-cyan-900 dark:text-cyan-200">
+                    <DollarSign className="h-5 w-5" />
+                    {csitTitle}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap items-center justify-between gap-4">
+                  <p className="max-w-2xl text-sm leading-6 text-cyan-900 dark:text-cyan-100">
+                    {getLocalizedCsitNote(csit, locale)}
+                  </p>
+                  <span className="shrink-0 rounded-xl bg-cyan-100 px-4 py-2 text-lg font-bold text-cyan-900 dark:bg-cyan-900/40 dark:text-cyan-100">
+                    {formatFee(locale, csit.amount, subclass)}
+                  </span>
+                </CardContent>
+              </Card>
+            )}
+
             {secondInstalment && (
               <Card className="border-amber-300 bg-amber-50 shadow-sm lg:col-span-2 dark:border-amber-700 dark:bg-amber-950/30">
                 <CardHeader>

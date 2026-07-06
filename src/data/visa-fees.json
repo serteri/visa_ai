@@ -22,10 +22,11 @@
     },
     "482": {
       "label": "Skills in Demand / TSS visa (subclass 482)",
+      "vac_note": "Effective 1 July 2026. Core Skills Income Threshold (CSIT) indexed to AUD 79,423. Reduced concession pricing applies to eligible Pacific/Timor-Leste citizens — see visa-details.json for the full country list.",
       "vac": {
-        "main": 3210,
-        "partner_18_plus": 3210,
-        "child_under_18": 805
+        "main": 4015,
+        "partner_18_plus": 4015,
+        "child_under_18": 1005
       }
     },
     "189": {

@@ -553,7 +553,7 @@
     "visa189desc": "For skilled workers who are not sponsored by an employer, state or family member.",
     "visa190desc": "For skilled workers nominated by a state or territory government.",
     "visa491desc": "For skilled workers nominated by a state or sponsored by family to live and work in regional Australia. This provisional visa is valid for up to 5 years.",
-    "visa482desc": "Employer sponsored visa for skilled workers.",
+    "visa482desc": "Employer‑sponsored temporary visa for skilled workers. Stay up to 4 years (up to 5 for eligible Hong Kong passport holders). From 1 July 2026, sponsors must guarantee the nominee's annual earnings meet or exceed the Core Skills Income Threshold (CSIT) of AUD 79,423.",
     "visa485desc": "Allows international graduates to live and work in Australia after completing studies.",
     "visa500desc": "For international students to study full-time in Australia.",
     "visa820desc": "The first step toward permanent residence for partners or spouses of Australian citizens or permanent residents.",
@@ -564,7 +564,8 @@
     "concession2026Title": "1 July 2026 Concessions & Exemptions",
     "pacificCountriesLabel": "Pacific Island & Timor-Leste",
     "aseanCountriesLabel": "ASEAN",
-    "secondInstalmentTitle": "Second Instalment Charge"
+    "secondInstalmentTitle": "Second Instalment Charge",
+    "csitTitle": "Core Skills Income Threshold (CSIT)"
   },
   "timeUnits": {
     "months": "months",

@@ -560,7 +560,7 @@
     "visa189desc": "İşveren, eyalet veya aile tarafından desteklenmeyen yetenekli çalışanlar için.",
     "visa190desc": "Eyalet veya bölge hükümeti tarafından aday gösterilen yetenekli çalışanlar için.",
     "visa491desc": "Avustralya'nın bölgesel alanlarında yaşamak ve çalışmak isteyen, eyalet tarafından aday gösterilen veya aile tarafından sponsor olunan yetenekli çalışanlar için. Bu geçici (provisional) vize en fazla 5 yıl geçerlidir.",
-    "visa482desc": "Yetenekli çalışanlar için işveren destekli geçici vize.",
+    "visa482desc": "İşveren destekli geçici yetenekli çalışan vizesi. En fazla 4 yıl (uygun Hong Kong pasaportu sahipleri için 5 yıla kadar) kalış süresi. 1 Temmuz 2026 tarihinden itibaren, sponsorların aday gösterilen kişinin yıllık kazancının Temel Beceri Gelir Eşiği'ni (CSIT) — AUD 79.423 — karşılaması veya aşması garanti edilmelidir.",
     "visa485desc": "Avustralya'da eğitimini tamamlayan uluslararası mezunlar için.",
     "visa500desc": "Avustralya'da tam zamanlı eğitim almak isteyen uluslararası öğrenciler için.",
     "visa820desc": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için kalıcı oturuma ilk adım.",
@@ -571,7 +571,8 @@
     "concession2026Title": "1 Temmuz 2026 İndirimleri ve Muafiyetleri",
     "pacificCountriesLabel": "Pasifik Adaları ve Doğu Timor",
     "aseanCountriesLabel": "ASEAN",
-    "secondInstalmentTitle": "İkinci Taksit Ücreti"
+    "secondInstalmentTitle": "İkinci Taksit Ücreti",
+    "csitTitle": "Temel Beceri Gelir Eşiği (CSIT)"
   },
   "timeUnits": {
     "months": "ay",

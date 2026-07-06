@@ -389,11 +389,70 @@
     "type": "Temporary (up to 4 years; up to 5 for some Hong Kong passport holders)",
     "processingTime": "Varies (see processing time guide)",
     "processingTimeUnit": "months",
-    "fee": 3210,
+    "fee": 4015,
     "minPoints": null,
-    "description": "Employer‑sponsored temporary visa for skilled workers. Stay up to 4 years (up to 5 for eligible Hong Kong passport holders). Fees and processing times vary; consult the Home Affairs visa page and processing time guide.",
-    "description_tr": "Yetenekli çalışanlar için işveren destekli geçici vize.",
-    "description_zh": "雇主担保的技术工人临时签证。",
+    "csit": {
+      "effectiveDate": "2026-07-01",
+      "amount": 79423,
+      "previousAmount": 76515,
+      "note": "Effective 1 July 2026, sponsors must guarantee the nominee's annual earnings meet or exceed the indexed Core Skills Income Threshold (CSIT) of AUD 79,423 (up from AUD 76,515).",
+      "note_tr": "1 Temmuz 2026 tarihinden itibaren, sponsorlar aday gösterilen kişinin yıllık kazancının, endekslenmiş Temel Beceri Gelir Eşiği'ni (CSIT) — AUD 79.423 (önceki tutar AUD 76.515) — karşıladığını veya aştığını garanti etmelidir.",
+      "note_zh": "自2026年7月1日起，担保方必须保证被提名人的年收入达到或超过经指数化调整后的核心技能收入门槛（CSIT），即79,423澳元（此前为76,515澳元）。"
+    },
+    "pacificConcession": {
+      "effectiveDate": "2026-07-01",
+      "note": "From 1 July 2026, a lower visa application cost (VAC) applies to eligible Pacific Island and Timor-Leste citizens who lodge a valid visa application.",
+      "note_tr": "1 Temmuz 2026 tarihinden itibaren, geçerli bir vize başvurusu yapan uygun Pasifik Adaları ve Doğu Timor vatandaşlarına daha düşük bir vize başvuru ücreti (VAC) uygulanır.",
+      "note_zh": "自2026年7月1日起，提交有效签证申请的符合条件的太平洋岛国及东帝汶公民可享受较低的签证申请费（VAC）。",
+      "eligibleCountries": [
+        "Federated States of Micronesia",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua New Guinea",
+        "Republic of the Marshall Islands",
+        "Samoa",
+        "Solomon Islands",
+        "Timor-Leste",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_tr": [
+        "Mikronezya Federal Devletleri",
+        "Fiji",
+        "Kiribati",
+        "Nauru",
+        "Palau",
+        "Papua Yeni Gine",
+        "Marshall Adaları Cumhuriyeti",
+        "Samoa",
+        "Solomon Adaları",
+        "Doğu Timor",
+        "Tonga",
+        "Tuvalu",
+        "Vanuatu"
+      ],
+      "eligibleCountries_zh": [
+        "密克罗尼西亚联邦",
+        "斐济",
+        "基里巴斯",
+        "瑙鲁",
+        "帕劳",
+        "巴布亚新几内亚",
+        "马绍尔群岛共和国",
+        "萨摩亚",
+        "所罗门群岛",
+        "东帝汶",
+        "汤加",
+        "图瓦卢",
+        "瓦努阿图"
+      ]
+    },
+    "description": "Employer‑sponsored temporary visa for skilled workers. Stay up to 4 years (up to 5 for eligible Hong Kong passport holders). From 1 July 2026, sponsors must guarantee the nominee's annual earnings meet or exceed the Core Skills Income Threshold (CSIT) of AUD 79,423. Fees and processing times vary; consult the Home Affairs visa page and processing time guide.",
+    "description_tr": "İşveren destekli geçici yetenekli çalışan vizesi. En fazla 4 yıl (uygun Hong Kong pasaportu sahipleri için 5 yıla kadar) kalış süresi. 1 Temmuz 2026 tarihinden itibaren, sponsorların aday gösterilen kişinin yıllık kazancının Temel Beceri Gelir Eşiği'ni (CSIT) — AUD 79.423 — karşılaması veya aşması garanti edilmelidir. Ücretler ve işlem süreleri değişkenlik gösterir; İçişleri Bakanlığı vize sayfasını ve işlem süresi rehberini inceleyin.",
+    "description_zh": "雇主担保的技术工人临时签证。停留期最长4年（符合条件的香港护照持有人最长5年）。自2026年7月1日起，担保方必须保证被提名人的年收入达到或超过核心技能收入门槛（CSIT），即79,423澳元。费用及处理时间可能有所不同；请查阅内政部签证页面及处理时间指南。",
     "requirements": [
       "Employer sponsorship required",
       "Occupation on relevant list",
@@ -436,9 +495,9 @@
       "提交签证申请",
       "完成健康和品格审查"
     ],
-    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-482",
+    "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-visa-subclass-482/core-skills-stream#Overview",
     "pdfSnapshotUrls": [
-      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/Skills%20in%20Demand%20Visa%20%28subclass%20482%29%20Core%20Skills%20stream_25April2026.pdf",
+      "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/Skills%20in%20Demand%20Visa%20%28subclass%20482%29%20Core%20Skills%20stream_01July2026.pdf",
       "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Visa%20%28subclass%20482%29%20Core%20Skills%20stream/English%20proficiency%20%28subclass%20482%29_25April2026.pdf"
     ]
   },
