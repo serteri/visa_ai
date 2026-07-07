@@ -49,6 +49,7 @@
   "hero.secondaryCA": "🇨🇦 加拿大",
   "hero.btnAustralia": "🇦🇺 开始澳大利亚评估",
   "hero.btnCanada": "🇨🇦 开始加拿大评估",
+  "hero.scarcityText": "🔥 两国共享 — 今日仅剩 {{remaining}} 个免费评估名额！（原价 $99 — 免费名额用尽后将恢复原价）",
   "hero.trustBadge": "Logivisa",
   "trustIndicators.gov": "基于澳大利亚官方信息来源",
   "trustIndicators.info": "仅提供一般信息",

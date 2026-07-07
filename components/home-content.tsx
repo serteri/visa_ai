@@ -26,18 +26,26 @@ interface HomeContentProps {
    * revalidated server-side every 60s (see getCachedPdfLeadDownloadStats).
    */
   initialFreeDownloadsLeft?: number;
+  /** Server-computed free-assessment quota (see getCachedFullCheckUsage), same
+   * seed-once pattern as initialFreeDownloadsLeft — avoids the hydration flicker. */
+  initialAssessmentSlotsLeft?: number;
 }
 
-export function HomeContent({ initialFreeDownloadsLeft }: HomeContentProps) {
+const ASSESSMENT_SLOTS_FALLBACK = 50;
+
+export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLeft }: HomeContentProps) {
   const params = useParams();
   const locale = params.locale as string;
   const { t } = useTranslation();
 
   // Shared free-download counter — drives the CTA copy on BOTH product cards below.
   const [freeDownloadsLeft] = useState(initialFreeDownloadsLeft ?? FREE_DOWNLOADS_FALLBACK);
+  const [assessmentSlotsLeft] = useState(initialAssessmentSlotsLeft ?? ASSESSMENT_SLOTS_FALLBACK);
   const [activePdfModal, setActivePdfModal] = useState<PdfProduct | null>(null);
 
   const hasFreeSlots = freeDownloadsLeft > 0;
+  const hasFreeAssessmentSlots = assessmentSlotsLeft > 0;
+  const scarcityText = t("hero.scarcityText").replace("{{remaining}}", String(assessmentSlotsLeft));
 
   return (
     <section className="space-y-24 pb-24">
@@ -81,6 +89,14 @@ export function HomeContent({ initialFreeDownloadsLeft }: HomeContentProps) {
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
           </div>
+
+          {/* Shared scarcity/price-anchor text for both country CTAs above —
+              same styling as the PDF section's scarcity banner. */}
+          {hasFreeAssessmentSlots && (
+            <div className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-semibold text-emerald-800 shadow-sm dark:border-emerald-800/50 dark:bg-emerald-900/20 dark:text-emerald-300">
+              <span>{scarcityText}</span>
+            </div>
+          )}
 
           {/* Trust Signals under CTA */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400 sm:gap-10">
@@ -210,35 +226,49 @@ export function HomeContent({ initialFreeDownloadsLeft }: HomeContentProps) {
             {
               icon: ClipboardList,
               title:
-                locale === "tr" ? "Profil Bilgisi" : locale === "zh-Hans" ? "输入个人资料" : "Profile Input",
+                locale === "tr"
+                  ? "Profil ve Mesleki Eşleştirme"
+                  : locale === "zh-Hans"
+                    ? "档案与职业匹配"
+                    : "Profile & Professional Mapping",
               description:
                 locale === "tr"
-                  ? "Geçmişinizi hızlıca anlatın — meslek, yaş ve hedefleriniz."
+                  ? "Yaşınızı, İngilizce seviyenizi, eğitiminizi ve iş tanımlarınızı girin. Sistemimiz kariyer profilinizi anında resmi ANZSCO (Avustralya) veya NOC (Kanada) meslek veri tabanlarıyla eşleştirir."
                   : locale === "zh-Hans"
-                    ? "快速告诉我们您的背景——职业、年龄和目标。"
-                    : "Quickly tell us your background — occupation, age, and goals.",
+                    ? "输入您的年龄、英语水平、学历和具体工作职责。系统会立即将您的职业背景与官方 ANZSCO（澳大利亚）或 NOC（加拿大）职业数据库进行匹配。"
+                    : "Input your age, English proficiency, education, and specific duties. Our system instantly maps your career profile to official ANZSCO (Australia) or NOC (Canada) occupational databases.",
               color: "indigo",
             },
             {
               icon: BrainCircuit,
-              title: locale === "tr" ? "AI Analizi" : locale === "zh-Hans" ? "AI 分析" : "AI Analysis",
+              title:
+                locale === "tr"
+                  ? "Yasal ve Puan Uyumluluk Kontrolleri"
+                  : locale === "zh-Hans"
+                    ? "法律与分数合规审查"
+                    : "Legal & Point Compliance Checks",
               description:
                 locale === "tr"
-                  ? "Motorumuz profilinizi resmi göç verileriyle karşılaştırır."
+                  ? "Yapay zeka motorumuz geçmişinizi sıkı göçmenlik mevzuatlarına göre değerlendirir. Yasal sınırları çapraz kontrol eder, puan barajlarını doğrular ve başvurulara binlerce dolar harcamadan önce karşınıza çıkabilecek tüm engelleri raporlar."
                   : locale === "zh-Hans"
-                    ? "我们的引擎将您的资料与官方移民数据进行交叉比对。"
-                    : "Our engine cross-references your profile against official immigration data.",
+                    ? "我们的引擎依据严格的移民法规评估您的背景，交叉核对法定门槛、验证打分限制，并在您为申请投入大量资金之前，提前标记出任何可能构成\"硬性门槛（Hard Gate）\"的障碍。"
+                    : "The engine evaluates your background against strict immigration frameworks. It cross-references legal thresholds, verifies point limits, and flags any 'Hard Gate' roadblocks before you spend thousands on applications.",
               color: "purple",
             },
             {
               icon: Zap,
-              title: locale === "tr" ? "Anında Sonuç" : locale === "zh-Hans" ? "即时结果" : "Instant Results",
+              title:
+                locale === "tr"
+                  ? "Uygulanabilir Strateji Raporu"
+                  : locale === "zh-Hans"
+                    ? "可执行策略报告"
+                    : "Actionable Strategy Report",
               description:
                 locale === "tr"
-                  ? "Uygun olduğunuz vize yollarını hemen keşfedin."
+                  ? "Kişiselleştirilmiş ve veriye dayalı puan dökümünüzü, kesin uygunluk durumunuzu ve geçme puanlarına ulaşmak için profilinizi tam olarak nasıl optimize edeceğinizi gösteren hedefli matematiksel projeksiyonları anında alın."
                   : locale === "zh-Hans"
-                    ? "立即发现您符合条件的签证路径。"
-                    : "Discover your eligible visa pathways immediately.",
+                    ? "获取个性化的、基于数据的分数明细、明确的资格状态，以及有针对性的数学预测，精确展示如何优化您的档案以达到及格分数。"
+                    : "Get your personalized data-driven score breakdown, absolute eligibility status, and targeted mathematical projections showing exactly how to optimize your profile to reach passing scores.",
               color: "emerald",
             },
           ].map((step, index) => (
