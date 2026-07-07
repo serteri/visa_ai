@@ -56,34 +56,57 @@ export async function submitDownloadForm(data: {
 
   revalidateTag("public-guide-download-stats", "max")
 
-  // 4. Send email via Resend with download link
+  // 4. Send the user's delivery email and the admin lead notification
+  // concurrently via Promise.all so the admin copy never delays or blocks
+  // the user-facing response. The admin send has its own .catch so a
+  // notification failure never surfaces as a user-facing "email_send_failed".
+  const userEmailPayload = {
+    from: "LogiVisa <no-reply@logivisa.com>",
+    to: [data.email],
+    subject: dictionary.guidePage.email.subject,
+    html: `
+      <p>${dictionary.guidePage.email.greeting} ${data.firstName},</p>
+      <p>${dictionary.guidePage.email.body1}</p>
+      <p>
+        <a href="https://www.logivisa.com/avustralya-pr-rehberi-2026.pdf"
+           style="display: inline-block; padding: 10px 20px; color: white; background-color: #007bff; text-decoration: none; border-radius: 5px;"
+        >
+          📥 ${dictionary.guidePage.email.downloadButton}
+        </a>
+      </p>
+      <p>${dictionary.guidePage.email.body2}</p>
+      <ul>
+        <li>${dictionary.guidePage.bullet1}</li>
+        <li>${dictionary.guidePage.bullet2}</li>
+        <li>${dictionary.guidePage.bullet3}</li>
+        <li>${dictionary.guidePage.bullet4}</li>
+      </ul>
+      <p>${dictionary.guidePage.email.body3}</p>
+      <p>LogiVisa Ekibi</p>
+      <p><a href="https://www.logivisa.com">logivisa.com</a></p>
+    `,
+  };
+
+  const adminEmailPayload = {
+    from: "LogiVisa <no-reply@logivisa.com>",
+    to: [process.env.PDF_LEAD_NOTIFICATION_EMAIL || "serter@logivisa.com"],
+    subject: "🚀 New Lead: PDF Guide Download",
+    text: [
+      "A new PDF guide lead has been captured.",
+      "",
+      `Full Name: ${data.firstName} ${data.lastName}`,
+      `Email: ${data.email}`,
+      `Phone Number: ${data.phone || "-"}`,
+    ].join("\n"),
+  };
+
   try {
-    await resend.emails.send({
-      from: "LogiVisa <no-reply@logivisa.com>",
-      to: [data.email],
-      subject: dictionary.guidePage.email.subject,
-      html: `
-        <p>${dictionary.guidePage.email.greeting} ${data.firstName},</p>
-        <p>${dictionary.guidePage.email.body1}</p>
-        <p>
-          <a href="https://www.logivisa.com/avustralya-pr-rehberi-2026.pdf"
-             style="display: inline-block; padding: 10px 20px; color: white; background-color: #007bff; text-decoration: none; border-radius: 5px;"
-          >
-            📥 ${dictionary.guidePage.email.downloadButton}
-          </a>
-        </p>
-        <p>${dictionary.guidePage.email.body2}</p>
-        <ul>
-          <li>${dictionary.guidePage.bullet1}</li>
-          <li>${dictionary.guidePage.bullet2}</li>
-          <li>${dictionary.guidePage.bullet3}</li>
-          <li>${dictionary.guidePage.bullet4}</li>
-        </ul>
-        <p>${dictionary.guidePage.email.body3}</p>
-        <p>LogiVisa Ekibi</p>
-        <p><a href="https://www.logivisa.com">logivisa.com</a></p>
-      `,
-    })
+    await Promise.all([
+      resend.emails.send(userEmailPayload),
+      resend.emails.send(adminEmailPayload).catch((err) =>
+        console.error("Admin notification failed (non-blocking):", err)
+      ),
+    ]);
   } catch (emailError) {
     console.error("Failed to send email:", emailError)
     return { success: false, error: "email_send_failed" }
