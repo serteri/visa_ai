@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray, count } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 import { db } from "@/db";
-import { fullCheckUsage } from "@/db/schema";
+import { fullCheckUsage, pdfDownloads } from "@/db/schema";
+import { FREE_LIMIT as PDF_FREE_LIMIT, PDF_SLUGS } from "@/app/api/pdf-download/route";
 import { getUniqueOccupations } from "@/lib/occupations/seo";
 import { prisma } from "@/lib/prisma";
 
@@ -39,6 +40,32 @@ export const getCachedGuideDownloadStats = unstable_cache(
   },
   ["public-guide-download-stats"],
   { revalidate: 3600, tags: ["public-guide-download-stats"] },
+);
+
+// Backs the "free download slots left" counter on the homepage
+// (components/home-content.tsx). Computed server-side and passed in as the
+// initial prop so SSR output already matches the real count — this is what
+// prevents the 18 -> 17 hydration flicker that used to happen when the
+// client re-fetched the live value after mount.
+export const getCachedPdfLeadDownloadStats = unstable_cache(
+  async () => {
+    const allSlugs = Object.values(PDF_SLUGS);
+    const [totalRow] = await db
+      .select({ value: count() })
+      .from(pdfDownloads)
+      .where(inArray(pdfDownloads.pdf_slug, allSlugs));
+
+    const totalDownloads = Number(totalRow?.value ?? 0);
+    const freeRemaining = Math.max(0, PDF_FREE_LIMIT - totalDownloads);
+
+    return {
+      totalDownloads,
+      freeRemaining,
+      isFree: totalDownloads < PDF_FREE_LIMIT,
+    };
+  },
+  ["public-pdf-lead-download-stats"],
+  { revalidate: 60, tags: ["public-guide-download-stats"] },
 );
 
 export const getCachedFullCheckUsage = unstable_cache(

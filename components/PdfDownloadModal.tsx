@@ -21,9 +21,15 @@ const PDF_SLUGS: Record<PdfProduct, string> = {
   global: "australia-guide-2026",
 };
 
-const PDF_FILENAMES: Record<PdfProduct, string> = {
-  turkish: "Avustralya-PR-Rehberi-2026.pdf",
-  global: "Australia-Migration-Blueprint-2026.pdf",
+// Strict RFC-5322-ish format check (Level 1 frontend validation) — deliberately
+// tighter than the browser's native type="email" check, which accepts things
+// like "a@b" with no TLD.
+const STRICT_EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+type FieldErrors = {
+  full_name?: string;
+  email?: string;
 };
 
 interface PdfStatus {
@@ -53,6 +59,7 @@ export function PdfDownloadModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
   const [termsAcceptedAt, setTermsAcceptedAt] = useState<string | null>(null);
@@ -73,8 +80,33 @@ export function PdfDownloadModal({
   }, [open, slug]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
     setError("");
+    setFieldErrors((prev) => (prev[name as keyof FieldErrors] ? { ...prev, [name]: undefined } : prev));
+  }
+
+  // Level 1 frontend validation: Full Name is required, Email is required and
+  // must pass a strict format check, Phone is optional. Runs before the
+  // request is sent so bad input never reaches the API.
+  function validate(): FieldErrors {
+    const nextErrors: FieldErrors = {};
+
+    if (!form.full_name.trim()) {
+      nextErrors.full_name = tx("Ad Soyad zorunludur.", "Full Name is required.", "姓名为必填项。");
+    }
+
+    if (!form.email.trim()) {
+      nextErrors.email = tx("E-posta zorunludur.", "Email is required.", "邮箱为必填项。");
+    } else if (!STRICT_EMAIL_REGEX.test(form.email.trim())) {
+      nextErrors.email = tx(
+        "Geçerli bir e-posta adresi girin.",
+        "Enter a valid email address.",
+        "请输入有效的邮箱地址。"
+      );
+    }
+
+    return nextErrors;
   }
 
   // Gate passed to StripeCheckoutButton for the paid path -- see handleSubmit
@@ -90,6 +122,15 @@ export function PdfDownloadModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Level 1: custom inline validation runs before anything else. The <form>
+    // has noValidate so the browser's native tooltips never fire; invalid
+    // fields are highlighted inline instead.
+    const nextFieldErrors = validate();
+    setFieldErrors(nextFieldErrors);
+    if (Object.keys(nextFieldErrors).length > 0) {
+      return;
+    }
 
     // Legal gate: blocks lead submission and PDF distribution entirely --
     // no fetch, no data sent -- until Terms/data-processing consent is
@@ -138,13 +179,9 @@ export function PdfDownloadModal({
         return;
       }
 
-      // Trigger download
-      const a = document.createElement("a");
-      a.href = data.downloadUrl;
-      a.download = PDF_FILENAMES[product];
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      // Delivery Trap: no client-side download trigger. The guide is emailed
+      // to the address the user provided (see the API route) — the UI just
+      // transitions to a success state confirming delivery.
       setSuccess(true);
     } catch {
       setError(
@@ -226,16 +263,22 @@ export function PdfDownloadModal({
         )}
 
         {success ? (
+          // Delivery Trap success state: no file has been downloaded to the
+          // browser -- the guide was emailed to the address the user gave us.
           <div className="space-y-4 text-center py-6">
-            <div className="text-5xl">🎉</div>
+            <div className="text-5xl">📬</div>
             <p className="font-semibold text-slate-900 dark:text-white">
-              {tx("Indirme basladi!", "Download started!", "下载已开始！")}
+              {tx(
+                <>Başarılı! PR Rehberi <strong>{form.email}</strong> adresine gönderildi.</>,
+                <>Success! The PR Guide has been sent to <strong>{form.email}</strong>.</>,
+                <>成功！PR 指南已发送到 <strong>{form.email}</strong>。</>
+              )}
             </p>
             <p className="text-sm text-slate-500">
               {tx(
-                "PDF rehberiniz indirilmeye basladi. Iyi okumalar!",
-                "Your PDF guide is downloading. Enjoy reading!",
-                "您的 PDF 指南正在下载，祝您阅读愉快！"
+                "Lütfen gelen kutunuzu ve spam/gereksiz klasörünü kontrol edin.",
+                "Please check your inbox and spam folder.",
+                "请检查您的收件箱和垃圾邮件文件夹。"
               )}
             </p>
             <Button onClick={onClose} className="w-full">
@@ -263,7 +306,7 @@ export function PdfDownloadModal({
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4 mt-2">
             <div className="space-y-1">
               <Label htmlFor="full_name">{tx("Ad Soyad", "Full Name", "姓名")}</Label>
               <Input
@@ -272,9 +315,13 @@ export function PdfDownloadModal({
                 placeholder={tx("Ahmet Yilmaz", "John Smith", "张伟")}
                 value={form.full_name}
                 onChange={handleChange}
-                required
+                aria-invalid={Boolean(fieldErrors.full_name)}
+                className={fieldErrors.full_name ? "border-red-500 focus-visible:ring-red-500" : ""}
                 disabled={loading || !isFree}
               />
+              {fieldErrors.full_name && (
+                <p className="text-xs text-red-600">{fieldErrors.full_name}</p>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="email">{tx("E-posta", "Email", "邮箱")}</Label>
@@ -285,12 +332,17 @@ export function PdfDownloadModal({
                 placeholder={tx("ahmet@ornek.com", "john@example.com", "name@example.com")}
                 value={form.email}
                 onChange={handleChange}
-                required
+                aria-invalid={Boolean(fieldErrors.email)}
+                className={fieldErrors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
                 disabled={loading || !isFree}
               />
+              {fieldErrors.email && <p className="text-xs text-red-600">{fieldErrors.email}</p>}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="phone">{tx("Telefon Numarasi", "Phone Number", "手机号")}</Label>
+              <Label htmlFor="phone">
+                {tx("Telefon Numarası", "Phone Number", "手机号")}{" "}
+                <span className="text-slate-400 font-normal">{tx("(opsiyonel)", "(optional)", "（选填）")}</span>
+              </Label>
               <Input
                 id="phone"
                 name="phone"
@@ -298,7 +350,6 @@ export function PdfDownloadModal({
                 placeholder={tx("+90 555 000 0000", "+61 412 345 678", "+86 138 0013 8000")}
                 value={form.phone}
                 onChange={handleChange}
-                required
                 disabled={loading || !isFree}
               />
             </div>
@@ -345,7 +396,7 @@ export function PdfDownloadModal({
                 disabled={loading}
               >
                 {loading
-                  ? tx("Indiriliyor...", "Downloading...", "下载中...")
+                  ? tx("Gönderiliyor...", "Sending...", "发送中...")
                   : tx("📥 Ucretsiz Indir", "📥 Free Download", "📥 免费下载")}
               </Button>
             ) : (

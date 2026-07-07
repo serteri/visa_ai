@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { BrainCircuit, ClipboardList, EyeOff, Lock, ShieldCheck, Zap } from "lucide-react";
@@ -15,30 +15,27 @@ import { activeCountries, countryComplianceBadge } from "@/lib/countries";
 
 const FREE_DOWNLOADS_FALLBACK = 18;
 
-export function HomeContent() {
+interface HomeContentProps {
+  /**
+   * Server-computed free-download count (see app/[locale]/(main)/page.tsx),
+   * used to seed state so the initial client render already matches the
+   * server-rendered HTML. Re-fetching this on the client after mount was
+   * what caused the old 18 -> 17 flicker; there is deliberately no client-side
+   * refetch here anymore — a fresh value only requires reloading the page,
+   * which already happens naturally on next navigation since the value is
+   * revalidated server-side every 60s (see getCachedPdfLeadDownloadStats).
+   */
+  initialFreeDownloadsLeft?: number;
+}
+
+export function HomeContent({ initialFreeDownloadsLeft }: HomeContentProps) {
   const params = useParams();
   const locale = params.locale as string;
   const { t } = useTranslation();
 
   // Shared free-download counter — drives the CTA copy on BOTH product cards below.
-  // Seeded with the known fallback, then reconciled against the real shared quota
-  // (both guides draw from one combined pool — see /api/pdf-download).
-  const [freeDownloadsLeft, setFreeDownloadsLeft] = useState(FREE_DOWNLOADS_FALLBACK);
+  const [freeDownloadsLeft] = useState(initialFreeDownloadsLeft ?? FREE_DOWNLOADS_FALLBACK);
   const [activePdfModal, setActivePdfModal] = useState<PdfProduct | null>(null);
-
-  useEffect(() => {
-    fetch("/api/pdf-download")
-      .then((r) => r.json())
-      .then((data: { freeRemaining?: number }) => {
-        if (typeof data.freeRemaining === "number") {
-          setFreeDownloadsLeft(data.freeRemaining);
-        }
-      })
-      .catch(() => {
-        // Keep the fallback value — the CTA still works, it just won't reflect
-        // real-time quota until the next successful fetch.
-      });
-  }, []);
 
   const hasFreeSlots = freeDownloadsLeft > 0;
 

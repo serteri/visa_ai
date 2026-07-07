@@ -292,17 +292,20 @@ async function sendFullCheckAdminEmail(payload: {
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   const notificationEmail =
-    process.env.FULL_CHECK_NOTIFICATION_EMAIL || process.env.REFERRAL_NOTIFICATION_EMAIL;
+    process.env.FULL_CHECK_NOTIFICATION_EMAIL ||
+    process.env.REFERRAL_NOTIFICATION_EMAIL ||
+    "serter@logivisa.com";
 
-  if (!apiKey || !notificationEmail) return;
+  if (!apiKey) return;
 
   const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
+  const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
   const bodyLines = [
-    "A new full readiness report lead has been submitted.",
+    "A new full readiness assessment has been completed.",
     "",
     `full name: ${payload.fullName || "-"}`,
     `email: ${payload.email}`,
+    `phone: -`,
     `visa interest: ${payload.visaInterest || "-"}`,
     `preferred language: ${payload.preferredLanguage || "-"}`,
     `current country: ${payload.currentCountry || "-"}`,
@@ -323,7 +326,7 @@ async function sendFullCheckAdminEmail(payload: {
   await resend.emails.send({
     from: fromEmail,
     to: [notificationEmail],
-    subject: "New full readiness report lead",
+    subject: `🔥 New Assessment Completed: ${payload.fullName || "Unknown"}`,
     text: bodyLines.join("\n"),
   });
 }
@@ -1053,36 +1056,42 @@ export async function submitFullCheckWaitlist(
     await updateFullCheckProgress(analysisProgressId, "generating_report");
   }
 
-  if (!suppressNotifications) {
-    sendFullCheckAdminEmail({
-      fullName,
-      email,
-      visaInterest,
-      preferredLanguage,
-      currentCountry,
-      passportCountry,
-      age,
-      occupation,
-      englishLevel,
-      englishTestTaken,
-      occupationConfirmed,
-      estimatedBudgetRange,
-      timeline,
-      sponsorOrFamily,
-      biggestConcern,
-      mainGoal,
-      source,
-    }).catch((err) => console.error("Admin email failed (non-blocking):", err));
-  }
-
+  // Fire the user confirmation and admin notification concurrently rather
+  // than sequentially, so neither email's latency stacks onto the other's —
+  // this whole block is deliberately not awaited before the response below,
+  // so email delivery never blocks the user-facing response time.
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "https://logivisa.com";
   const reportLink = `${baseUrl}/${resolvedLocale}/full-check/result?reportId=${reportRecord.id}`;
-  sendReportReadyEmail({
-    email,
-    fullName,
-    reportLink,
-    locale: resolvedLocale,
-  }).catch((err) => console.error("Customer report email failed (non-blocking):", err));
+
+  Promise.all([
+    suppressNotifications
+      ? Promise.resolve()
+      : sendFullCheckAdminEmail({
+          fullName,
+          email,
+          visaInterest,
+          preferredLanguage,
+          currentCountry,
+          passportCountry,
+          age,
+          occupation,
+          englishLevel,
+          englishTestTaken,
+          occupationConfirmed,
+          estimatedBudgetRange,
+          timeline,
+          sponsorOrFamily,
+          biggestConcern,
+          mainGoal,
+          source,
+        }).catch((err) => console.error("Admin email failed (non-blocking):", err)),
+    sendReportReadyEmail({
+      email,
+      fullName,
+      reportLink,
+      locale: resolvedLocale,
+    }).catch((err) => console.error("Customer report email failed (non-blocking):", err)),
+  ]);
 
   if (analysisProgressId) {
     await completeFullCheckProgress(analysisProgressId);
