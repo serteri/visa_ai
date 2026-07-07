@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/contexts/language-context";
 import { PdfDownloadModal, type PdfProduct } from "@/components/PdfDownloadModal";
+import { SampleReportMockup } from "@/components/SampleReportMockup";
 import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
 import { activeCountries, countryComplianceBadge } from "@/lib/countries";
 
@@ -294,6 +295,19 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
               <p className="text-slate-600 dark:text-slate-400">{step.description}</p>
             </div>
           ))}
+        </div>
+
+        {/* Sample Report Mockup — pure Tailwind, no image assets. Sits right
+            below the steps so visitors see the payoff immediately. */}
+        <div className="mt-14">
+          <p className="mb-6 text-center text-sm font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+            {locale === "tr"
+              ? "Raporunuz Bu Şekilde Görünecek"
+              : locale === "zh-Hans"
+                ? "您的报告将是这样的"
+                : "Here's What Your Report Looks Like"}
+          </p>
+          <SampleReportMockup locale={locale} />
         </div>
 
         {/* Security & Privacy badges */}
