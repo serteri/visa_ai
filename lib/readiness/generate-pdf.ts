@@ -4,7 +4,7 @@ import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { frictionBandLabel } from "@/src/lib/readiness/localization";
-import type { ReadinessReport } from "./types";
+import type { ReadinessReport, RankedPathway } from "./types";
 
 const COLORS = {
   primary: { r: 22, g: 78, b: 99 },
@@ -129,7 +129,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       pathwayRisks: "Yola Özgü Riskler",
       keyVisaRequirements: "Ana Vize Gereklilikleri",
       executiveSummary: "Yönetici Özeti",
-      riskIndicators: "Risk Göstergeleri",
+      riskIndicators: "Kritik Uyumluluk Uyarıları",
+      criticalComplianceAlertLabel: "🚨 KRİTİK UYUMLULUK UYARISI",
       suggestedNextSteps: "Eksik Analizi ve Değerlendirmeler",
       documentLevelSpecificity: "Belge Düzeyinde Ayrıntı",
       yourImmediateActionPlan: "Eksik Analizi ve Değerlendirmeler",
@@ -180,16 +181,18 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       highlyRecommendedPathway: "Guclu Onerilen Yol",
       alternativeOption: "Alternatif Secenek",
       highRiskLowProbability: "Yuksek Risk / Dusuk Olasilik",
+      ineligibleComplianceViolation: "❌ Uygun Değil (Uyumluluk İhlali)",
       highPotentialBadge: "YUKSEK POTANSIYEL",
       conditionalBadge: "KOSULLU",
       highRiskBadge: "YUKSEK RISK",
       coverTitle: "LogiVisa Premium Hazirlik Degerlendirmesi",
       coverSubtitle: "AI destekli goc stratejisi ve uygunluk raporu",
       preparedFor: "Hazirlanan Kisi",
-      advisoryIntro: "Bu rapor, profil bilgilerinizi olasi vize yollari, eyalet sinyalleri ve kanit hazirligi acisindan yapilandirilmis sekilde inceler.",
+      advisoryIntro: "Bu rapor, profilinizi 1 Temmuz 2026 tarihli bağlayıcı düzenleyici eşiklere, eyalet aday gösterme sinyallerine ve kanıt gerekliliklerine karşı denetleyen, uyumluluk odaklı bir değerlendirmedir.",
       stateTrackerIntro: "Asagidaki matris, profilinizi mevcut eyalet/bolge talep sinyalleri ve kanit uyumu acisindan degerlendirir.",
       pathwayTableIntro: "Asagidaki karsilastirma, olasi vize yollarini guven, rekabet ve pratik uygunluk sinyalleriyle birlikte gosterir.",
-      riskBoxIntro: "Bu gostergeler kesin sonuc degil, daha dikkatli incelenmesi gerekebilecek alanlardir.",
+      pathwayStrengthIntro: "Yol gücü öncelikle bağlayıcı düzenleyici eşiklere göre değerlendirilir; herhangi bir Zorunlu Eşik (Hard Gate) ihlali, altta yatan sinyali geçersiz kılarak yolu Uygun Değil durumuna zorlar.",
+      riskBoxIntro: "Bunlar isteğe bağlı notlar değil, zorunlu uyumluluk uyarılarıdır. Her uyarı, 1 Temmuz 2026 tarihli bağlayıcı bir kural eşiğini yansıtır ve bir yola güvenilmeden önce çözülmeli veya doğrulanmalıdır.",
       nextStepBoxIntro: "Asagidaki noktalar, basvuru hazirligi dusunulurken dikkate alinabilecek egitimsel onceliklerdir.",
       sparseDataDisclaimerLabel: "Eksik Veri Uyarısı",
       nocEcaSection: "NOC / TEER Kodu & ECA Değerlendirme Stratejisi",
@@ -245,7 +248,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       pathwayRisks: "路径特定风险",
       keyVisaRequirements: "关键签证要求",
       executiveSummary: "执行摘要",
-      riskIndicators: "风险指标",
+      riskIndicators: "关键合规警报",
+      criticalComplianceAlertLabel: "🚨 关键合规警报",
       suggestedNextSteps: "差距分析与考量",
       documentLevelSpecificity: "文件级具体性",
       yourImmediateActionPlan: "差距分析与考量",
@@ -296,16 +300,18 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       highlyRecommendedPathway: "强烈推荐路径",
       alternativeOption: "替代选项",
       highRiskLowProbability: "高风险 / 低概率",
+      ineligibleComplianceViolation: "❌ 不符合资格（合规违规）",
       highPotentialBadge: "高潜力",
       conditionalBadge: "有条件",
       highRiskBadge: "高风险",
       coverTitle: "\u004c\u006f\u0067\u0069\u0056\u0069\u0073\u0061 \u9ad8\u7ea7\u51c6\u5907\u5ea6\u8bc4\u4f30",
       coverSubtitle: "\u0041\u0049 \u9a71\u52a8\u7684\u79fb\u6c11\u7b56\u7565\u4e0e\u53ef\u884c\u6027\u62a5\u544a",
       preparedFor: "\u4e3a\u4ee5\u4e0b\u7533\u8bf7\u4eba\u51c6\u5907",
-      advisoryIntro: "\u672c\u62a5\u544a\u4ee5\u7ed3\u6784\u5316\u65b9\u5f0f\u5206\u6790\u4f60\u7684\u7b7e\u8bc1\u8def\u5f84\u3001\u5dde\u62c5\u4fdd\u4fe1\u53f7\u548c\u6750\u6599\u51c6\u5907\u5ea6\u3002",
+      advisoryIntro: "\u672c\u62a5\u544a\u662f\u4e00\u9879\u4ee5\u5408\u89c4\u4e3a\u5bfc\u5411\u7684\u5ba1\u8ba1\uff0c\u4f9d\u636e2026\u5e747\u67081\u65e5\u8d77\u5177\u6709\u7ea6\u675f\u529b\u7684\u76d1\u7ba1\u95e8\u69db\u3001\u5dde\u63d0\u540d\u4fe1\u53f7\u53ca\u4e3e\u8bc1\u8981\u6c42\uff0c\u5bf9\u4f60\u7684\u7b7e\u8bc1\u53ef\u884c\u6027\u8fdb\u884c\u6838\u67e5\u3002",
       stateTrackerIntro: "\u4e0b\u8868\u6839\u636e\u5f53\u524d\u5dde/\u5730\u533a\u9700\u6c42\u4fe1\u53f7\u548c\u6750\u6599\u5339\u914d\u5ea6\u8bc4\u4f30\u4f60\u7684\u6863\u6848\u3002",
       pathwayTableIntro: "\u4e0b\u8868\u5c06\u53ef\u80fd\u7684\u7b7e\u8bc1\u8def\u5f84\u4e0e\u7f6e\u4fe1\u5ea6\u3001\u7ade\u4e89\u5f3a\u5ea6\u548c\u5b9e\u9645\u5339\u914d\u4fe1\u53f7\u5bf9\u7167\u3002",
-      riskBoxIntro: "\u8fd9\u4e9b\u6307\u6807\u4e0d\u662f\u7ed3\u8bba\uff0c\u800c\u662f\u53ef\u80fd\u9700\u8981\u8fdb\u4e00\u6b65\u5ba1\u9605\u7684\u533a\u57df\u3002",
+      pathwayStrengthIntro: "\u8def\u5f84\u5f3a\u5ea6\u9996\u5148\u4f9d\u636e\u5177\u6709\u7ea6\u675f\u529b\u7684\u76d1\u7ba1\u95e8\u69db\u8fdb\u884c\u8bc4\u4f30\uff1b\u4efb\u4f55\u5f3a\u5236\u6027\u95e8\u69db\uff08Hard Gate\uff09\u8fdd\u89c4\u90fd\u5c06\u8986\u76d6\u5e95\u5c42\u4fe1\u53f7\uff0c\u5f3a\u5236\u5c06\u8be5\u8def\u5f84\u5224\u5b9a\u4e3a\u4e0d\u7b26\u5408\u8d44\u683c\u3002",
+      riskBoxIntro: "\u4ee5\u4e0b\u5e76\u975e\u53ef\u9009\u63d0\u793a\uff0c\u800c\u662f\u5f3a\u5236\u6027\u5408\u89c4\u8b66\u62a5\u3002\u6bcf\u4e00\u9879\u8b66\u62a5\u5747\u53cd\u66202026\u5e747\u67081\u65e5\u8d77\u5177\u6709\u7ea6\u675f\u529b\u7684\u89c4\u5219\u95e8\u69db\uff0c\u5fc5\u987b\u5728\u4f9d\u8d56\u8be5\u8def\u5f84\u4e4b\u524d\u4e88\u4ee5\u89e3\u51b3\u6216\u6838\u5b9e\u3002",
       nextStepBoxIntro: "\u4ee5\u4e0b\u5185\u5bb9\u662f\u8003\u8651\u7533\u8bf7\u51c6\u5907\u65f6\u53ef\u53c2\u8003\u7684\u6559\u80b2\u6027\u4f18\u5148\u9879\u3002",
       sparseDataDisclaimerLabel: "\u6570\u636e\u7f3a\u5931\u8bf4\u660e",
       nocEcaSection: "NOC / TEER \u4ee3\u7801\u53ca ECA \u8bc4\u4f30\u7b56\u7565",
@@ -360,7 +366,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     pathwayRisks: "Pathway-Specific Risks",
     keyVisaRequirements: "Key Visa Requirements",
     executiveSummary: "Executive Summary",
-    riskIndicators: "Risk Indicators",
+    riskIndicators: "Critical Compliance Alerts",
+    criticalComplianceAlertLabel: "🚨 CRITICAL COMPLIANCE ALERT",
     suggestedNextSteps: "Gap Analysis & Considerations",
     documentLevelSpecificity: "Document-Level Specificity",
     yourImmediateActionPlan: "Gap Analysis & Considerations",
@@ -411,16 +418,18 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     highlyRecommendedPathway: "Highly Recommended Pathway",
     alternativeOption: "Alternative Option",
     highRiskLowProbability: "High Risk / Low Probability",
+    ineligibleComplianceViolation: "❌ Ineligible (Compliance Violation)",
     highPotentialBadge: "HIGH POTENTIAL",
     conditionalBadge: "CONDITIONAL",
     highRiskBadge: "HIGH RISK",
     coverTitle: "LogiVisa Premium Readiness Assessment",
     coverSubtitle: "AI-Powered Migration Strategy & Viability Report",
     preparedFor: "Prepared for",
-    advisoryIntro: "This report reviews your profile through visa viability, state nomination signals, and evidence readiness in a structured advisory format.",
+    advisoryIntro: "This report is a compliance-driven audit of your visa viability against binding 1 July 2026 regulatory thresholds, state nomination signals, and evidentiary requirements.",
     stateTrackerIntro: "The following matrix analyzes your profile against current state and territory demand signals, nomination posture, and evidence fit.",
     pathwayTableIntro: "The following comparison places each possible pathway beside its confidence, friction, and practical readiness signals.",
-    riskBoxIntro: "These indicators are not determinations; they highlight areas that may need closer review before relying on a pathway.",
+    pathwayStrengthIntro: "Pathway strength is assessed against binding regulatory thresholds first; any Hard Gate violation overrides the underlying signal and forces the pathway to Ineligible.",
+    riskBoxIntro: "These are mandatory compliance flags, not optional notes. Each alert reflects a binding 1 July 2026 rule threshold and must be resolved or verified before a pathway can be relied upon.",
     nextStepBoxIntro: "The following items are educational priorities to consider while assessing application readiness.",
     sparseDataDisclaimerLabel: "Sparse Data Disclaimer",
     nocEcaSection: "NOC / TEER Code Mapping & ECA Valuation Strategy",
@@ -432,6 +441,34 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     livingCostBothNote: "CAD indicative figures: rent, groceries, and transit included. Costs vary significantly by neighbourhood and lifestyle.",
     crsDrawTrends: "CRS Draw Trends & Category-Based Selection",
   };
+}
+
+const INELIGIBLE_RANKING_SUBCLASSES = ["482", "485", "189", "190", "491"] as const;
+
+/**
+ * Hard Gate (1 July 2026): pathways the readiness engine marked "ineligible"
+ * (482 salary/CSIT, 485 age, 189/190/491 sub-65-point score) must always
+ * appear first in the Visa Viability Ranking, regardless of any
+ * match-percentage score. This scans the compliance-checked pathway
+ * comparison rather than the match-percentage ranking, since ineligible
+ * pathways are excluded from that scoring entirely.
+ */
+function buildIneligiblePathwayEntries(report: ReadinessReport): RankedPathway[] {
+  return report.pathwayComparison
+    .filter(
+      (p): p is typeof p & { subclass: (typeof INELIGIBLE_RANKING_SUBCLASSES)[number] } =>
+        p.relevance === "ineligible" &&
+        (INELIGIBLE_RANKING_SUBCLASSES as readonly string[]).includes(p.subclass)
+    )
+    .map((p) => ({
+      subclass: p.subclass,
+      visaLabel: `${p.subclass} - ${p.visaName}`,
+      matchPercentage: 0,
+      pointsSignal: 0,
+      recommendationTag: "❌ Ineligible (Compliance Violation)" as const,
+      isHardIneligible: true,
+      ineligibleReason: p.reason,
+    }));
 }
 
 function getFeedbackTexts(locale: "en" | "tr" | "zh-Hans") {
@@ -1387,6 +1424,22 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.text(safeText(line), x, yPosition);
       yPosition += lineHeight;
     });
+  }
+
+  /** Bold red compliance-alert line, used for Hard Gate ineligibility reasons. */
+  function addCriticalAlertText(value: string, indent = 0) {
+    setBoldFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
+    const x = margin + indent;
+    const lines = doc.splitTextToSize(safeText(value), contentWidth - indent);
+    lines.forEach((line: string) => {
+      ensurePageSpace(lineHeight + 1);
+      setBoldFont();
+      doc.text(safeText(line), x, yPosition);
+      yPosition += lineHeight;
+    });
+    setBaseFont();
   }
 
   function addBulletPoints(items: string[]) {
@@ -2439,6 +2492,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function formatRecommendationTag(tag: string) {
+    if (tag.includes("Ineligible")) return text.ineligibleComplianceViolation;
     if (tag.includes("Highly")) return text.highlyRecommendedPathway;
     if (tag.includes("Alternative")) return text.alternativeOption;
     if (tag.includes("High Risk")) return text.highRiskLowProbability;
@@ -2462,7 +2516,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function drawVisaViabilityRanking() {
-    const rankedPathways =
+    const computedRankedPathways =
       report.rankedPathways ??
       (report.country === "CA"
         ? buildCaRankedPathways(report)
@@ -2470,12 +2524,62 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
             age: userInputSummary.age,
             currentCountry: userInputSummary.currentCountry,
           }));
+
+    // Hard Gate (1 July 2026): ineligible pathways are unconditionally pinned
+    // to the top of the ranking, ahead of any match-percentage score below.
+    const ineligiblePathways = buildIneligiblePathwayEntries(report);
+    const rankedPathways = [
+      ...ineligiblePathways,
+      ...computedRankedPathways.filter(
+        (rp) => !ineligiblePathways.some((ie) => ie.subclass === rp.subclass)
+      ),
+    ];
     if (rankedPathways.length === 0) return;
 
     addHeading(text.visaViabilityRanking);
     ensurePageSpace(55);
 
-    rankedPathways.forEach((item, index) => {
+    let viableRank = 0;
+    rankedPathways.forEach((item) => {
+      if (item.isHardIneligible) {
+        const rowHeight = 20;
+        ensurePageSpace(rowHeight + 2);
+        const topY = yPosition;
+        const red = COLORS.riskHigh;
+
+        doc.setFillColor(254, 242, 242);
+        doc.setDrawColor(red.r, red.g, red.b);
+        doc.setLineWidth(0.5);
+        doc.roundedRect(margin, topY, contentWidth, rowHeight, 1.2, 1.2, "FD");
+        doc.setFillColor(red.r, red.g, red.b);
+        doc.rect(margin, topY, 2.5, rowHeight, "F");
+
+        setBoldFont();
+        doc.setFontSize(FONTS.body);
+        doc.setTextColor(red.r, red.g, red.b);
+        doc.text(safeText(item.visaLabel), margin + 6, topY + 5.2);
+
+        const badgeLabel = formatRecommendationTag(item.recommendationTag);
+        const badgeWidth = Math.min(70, Math.max(34, doc.getTextWidth(safeText(badgeLabel)) + 7));
+        doc.setFillColor(red.r, red.g, red.b);
+        doc.roundedRect(margin + contentWidth - badgeWidth - 2.5, topY + 2.4, badgeWidth, 5.6, 1.4, 1.4, "F");
+        doc.setFontSize(6.6);
+        doc.setTextColor(255, 255, 255);
+        doc.text(safeText(badgeLabel), margin + contentWidth - badgeWidth + 1, topY + 6.2);
+
+        setBaseFont();
+        doc.setFontSize(FONTS.small);
+        doc.setTextColor(red.r, red.g, red.b);
+        const reasonLines = doc.splitTextToSize(safeText(item.ineligibleReason ?? ""), contentWidth - 10);
+        doc.text(reasonLines.slice(0, 2), margin + 6, topY + 10, { lineHeightFactor: 1.18 });
+
+        yPosition += rowHeight + 2;
+        return;
+      }
+
+      const rank = viableRank;
+      viableRank += 1;
+
       const rowHeight = 16;
       ensurePageSpace(rowHeight + 2);
 
@@ -2517,9 +2621,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
       const fillW = (barW * item.matchPercentage) / 100;
       const barColor =
-        index === 0
+        rank === 0
           ? COLORS.riskLow
-          : index === 1
+          : rank === 1
             ? COLORS.riskMedium
             : COLORS.riskHigh;
       doc.setFillColor(barColor.r, barColor.g, barColor.b);
@@ -2855,8 +2959,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.pathwayStrengthComparison.length > 0) {
     addHeading(text.pathwayStrengthComparison);
+    addSmallText(text.pathwayStrengthIntro, 0);
+    yPosition += 2;
     report.pathwayStrengthComparison.forEach((item) => {
       addBody(`${item.visaName} (${item.subclass})`);
+      if (item.isHardIneligible && item.ineligibleReason) {
+        // Hard Gate (1 July 2026): the ineligibility reason is always the
+        // FIRST item in the breakdown, rendered bold red, ahead of strength/
+        // friction/evidence signals which no longer apply once a hard gate trips.
+        addCriticalAlertText(`${text.criticalComplianceAlertLabel}: ${item.ineligibleReason}`, 4);
+      }
       addSmallText(`${effectiveLocale === "tr" ? "Güç" : effectiveLocale === "zh-Hans" ? "强度" : "Strength"}: ${formatStrength(item.strength)}`, 4);
       addSmallText(`${effectiveLocale === "tr" ? "Zorluk seviyesi" : effectiveLocale === "zh-Hans" ? "竞争激烈度" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
       addSmallText(`${effectiveLocale === "tr" ? "Gerekli belge düzeyi" : effectiveLocale === "zh-Hans" ? "材料准备难度" : "Evidence load"}: ${formatLoad(item.evidenceLoad)}`, 4);
@@ -2955,8 +3067,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   if (report.pathwayFriction.length > 0) {
     addHeading(text.pathwayFriction);
     report.pathwayFriction.forEach((item) => {
-      addBody(`${item.pathway}: ${item.frictionType}`);
-      addSmallText(item.explanation, 4);
+      if (item.isHardIneligible) {
+        // Hard Gate (1 July 2026): rendered as a bold red compliance alert
+        // instead of a routine friction note.
+        addCriticalAlertText(`${item.pathway}: ${item.frictionType}`);
+        addCriticalAlertText(item.explanation, 4);
+      } else {
+        addBody(`${item.pathway}: ${item.frictionType}`);
+        addSmallText(item.explanation, 4);
+      }
     });
     yPosition += 3;
   }
@@ -3017,18 +3136,33 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // CRS Cutoff Bar Chart (CA only)
   drawCrsBarChart();
 
-  // Risk indicators
-  if (report.riskIndicators.length > 0) {
-    drawAlertCollection(
-      text.riskIndicators,
-      text.riskBoxIntro,
-      report.riskIndicators.map((r) => ({
+  // Critical Compliance Alerts — mandatory rule-threshold warnings (e.g. the
+  // second-instalment financial risk) are surfaced here as hard alerts,
+  // not buried as a general note inside the Financial Roadmap.
+  {
+    const secondInstalmentAlerts = report.financialRoadmap
+      .filter((item) => /second-instalment|ikinci taksit|第二期/i.test(item.category))
+      .map((item) => ({
+        // item.category already carries the "🚨 CRITICAL COMPLIANCE ALERT: ..."
+        // prefix (re-labeled at the source in buildFinancialRoadmap), so it is
+        // used directly here rather than doubling the alert prefix.
+        label: item.category,
+        body: `${item.amountLabel}. ${item.explanation}`,
+        level: "high" as const,
+      }));
+
+    const criticalComplianceAlerts = [
+      ...report.riskIndicators.map((r) => ({
         label: `${r.level === "high" ? text.highRisk : r.level === "medium" ? text.mediumRisk : text.lowRisk} - ${r.title}`,
         body: r.explanation,
         level: r.level,
       })),
-      "risk"
-    );
+      ...secondInstalmentAlerts,
+    ];
+
+    if (criticalComplianceAlerts.length > 0) {
+      drawAlertCollection(text.riskIndicators, text.riskBoxIntro, criticalComplianceAlerts, "risk");
+    }
   }
 
   // Audit-Ready Proof Checklist — dedicated section (was "Document-Level Specificity")

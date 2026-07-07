@@ -683,7 +683,9 @@ export async function submitFullCheckWaitlist(
   const passportCountry = String(formData.get("passportCountry") ?? "").trim();
   const age = String(formData.get("age") ?? "").trim();
   const occupation = String(formData.get("occupation") ?? "").trim();
-  const englishLevel = String(formData.get("englishLevel") ?? "").trim();
+  const englishLevelRaw = String(formData.get("englishLevel") ?? "").trim();
+  const englishLevelOptions = ["none", "competent", "proficient", "superior"];
+  const englishLevel = englishLevelOptions.includes(englishLevelRaw) ? englishLevelRaw : "";
   const qualificationLevelRaw = String(formData.get("qualificationLevel") ?? "").trim();
   const qualificationLevels: NonNullable<ReadinessInput["qualificationLevel"]>[] = [
     "High School",
@@ -740,6 +742,13 @@ export async function submitFullCheckWaitlist(
       : isZh
         ? "学历为必填项。"
         : "Education level is required.";
+  }
+  if (!englishLevel) {
+    errors.englishLevel = isTr
+      ? "Ingilizce seviyesi gereklidir."
+      : isZh
+        ? "英语水平为必填项。"
+        : "English level is required.";
   }
   if (!sponsorOrFamily) {
     errors.sponsorOrFamily = isTr

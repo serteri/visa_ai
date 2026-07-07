@@ -43,7 +43,8 @@ export type ReadinessInput = {
 export type PathwayRelevance =
   | "possible"
   | "needs_more_information"
-  | "not_enough_information";
+  | "not_enough_information"
+  | "ineligible";
 
 export type ConfidenceLevel = "low" | "medium" | "high";
 
@@ -137,6 +138,10 @@ export type PathwayStrengthComparison = {
     label: string;
     status: "provided" | "missing" | "unclear" | "typically_required";
   }>;
+  /** Hard Gate (1 July 2026): true when this pathway was disqualified by a mandatory rule threshold (salary/age). */
+  isHardIneligible?: boolean;
+  /** Localized "Ineligible: ..." text, shown in bold red as the first item of this pathway's strength breakdown. */
+  ineligibleReason?: string;
 };
 
 export type EvidenceReadinessItem = {
@@ -176,19 +181,26 @@ export type PathwayFriction = {
   pathway: string;
   frictionType: string;
   explanation: string;
+  /** Hard Gate (1 July 2026): true when this pathway was disqualified by a mandatory rule threshold (salary/age). Rendered as a bold red "CRITICAL COMPLIANCE ALERT" instead of a routine friction note. */
+  isHardIneligible?: boolean;
 };
 
 export type RankedPathwayRecommendation =
   | "🌟 Highly Recommended Pathway"
   | "⚖️ Alternative Option"
-  | "⚠️ High Risk / Low Probability";
+  | "⚠️ High Risk / Low Probability"
+  | "❌ Ineligible (Compliance Violation)";
 
 export type RankedPathway = {
-  subclass: "189" | "190" | "491" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
+  subclass: "189" | "190" | "491" | "482" | "485" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
   visaLabel: string;
   matchPercentage: number;
   pointsSignal: number;
   recommendationTag: RankedPathwayRecommendation;
+  /** Hard Gate (1 July 2026): true when a mandatory rule threshold (salary/age) was violated. Forces this entry to the top of the Visa Viability Ranking, rendered in red. */
+  isHardIneligible?: boolean;
+  /** Localized "Ineligible: ..." warning text, shown under the entry when isHardIneligible is true. */
+  ineligibleReason?: string;
 };
 
 export type StateNominationStatus =

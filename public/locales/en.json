@@ -2,6 +2,10 @@
   "nav.home": "Home",
   "nav.checker": "Visa Checker",
   "nav.legal": "Legal",
+  "ineligible.salaryReason": "Ineligible: Salary: {{salary}} AUD vs Threshold: {{threshold}} AUD.",
+  "ineligible.ageReason": "Ineligible: Age: {{age}} vs Limit: {{ageLimit}}.",
+  "ineligible.lowPoints": "Ineligible: Total Points: {{points}} vs Minimum Required: 65.",
+  "suggestion.improveEnglish": "Mathematical Projection: Upgrading your English test result to 'Superior' would add +20 points to your profile. Note: This is a points calculation, not a guarantee of visa invitation.",
   "guidePage": {
     "title": "Free Australia PR Guide 2026",
     "subtitle": "80-page comprehensive English guide — free",

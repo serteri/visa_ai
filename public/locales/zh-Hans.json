@@ -1,5 +1,9 @@
 {
   "nav.home": "首页",
+  "ineligible.salaryReason": "不符合资格：薪资：{{salary}} AUD 对比 门槛：{{threshold}} AUD。",
+  "ineligible.ageReason": "不符合资格：年龄：{{age}} 对比 上限：{{ageLimit}}。",
+  "ineligible.lowPoints": "不符合资格：总分：{{points}} 对比 最低要求：65。",
+  "suggestion.improveEnglish": "数学预测：将您的英语测试结果提升至“Superior”将为您的个人资料增加 20 分。注意：这是分数计算，不能保证获得签证邀请。",
   "guidePage": {
     "title": "澳大利亚PR申请指南 2026",
     "subtitle": "80页综合英文指南 — 免费",

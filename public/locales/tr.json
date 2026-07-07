@@ -2,6 +2,10 @@
   "nav.home": "Anasayfa",
   "nav.checker": "Vize Kontrolü",
   "nav.legal": "Hukuki",
+  "ineligible.salaryReason": "Uygun Değil: Maaş: {{salary}} AUD - Eşik: {{threshold}} AUD.",
+  "ineligible.ageReason": "Uygun Değil: Yaş: {{age}} - Sınır: {{ageLimit}}.",
+  "ineligible.lowPoints": "Uygun Değil: Toplam Puan: {{points}} - Gerekli Minimum: 65.",
+  "suggestion.improveEnglish": "Matematiksel Projeksiyon: İngilizce test sonucunuzu 'Superior' seviyesine yükseltmek profilinize +20 puan ekleyecektir. Not: Bu bir puan hesaplamasıdır, vize daveti garantisi değildir.",
   "guidePage": {
     "title": "Avustralya PR Başvuru Rehberi 2026",
     "subtitle": "80 sayfalık kapsamlı Türkçe rehber — ücretsiz",

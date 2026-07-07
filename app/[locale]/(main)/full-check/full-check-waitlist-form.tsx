@@ -395,6 +395,7 @@ export function FullCheckWaitlistForm({
   const [nocResults, setNocResults] = useState<NocEntry[]>([]);
   const [nocOpen, setNocOpen] = useState(false);
   const [qualificationLevel, setQualificationLevel] = useState("");
+  const [englishLevel, setEnglishLevel] = useState("");
   const [sponsorFamilyStatus, setSponsorFamilyStatus] = useState("");
   const [annualSalaryAud, setAnnualSalaryAud] = useState("");
 
@@ -641,6 +642,29 @@ export function FullCheckWaitlistForm({
     "h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
   const selectClassName =
     "h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
+
+  const englishLevelOptions = [
+    {
+      value: "none",
+      label: txt(
+        "Test almadım / Test 3 yıldan eski",
+        "I haven't taken a test / Test is older than 3 years",
+        "我还没有参加考试 / 成绩已超过3年"
+      ),
+    },
+    {
+      value: "competent",
+      label: txt("Competent (örn. IELTS 6.0, PTE 50)", "Competent (e.g., IELTS 6.0, PTE 50)", "Competent（如 IELTS 6.0，PTE 50）"),
+    },
+    {
+      value: "proficient",
+      label: txt("Proficient (örn. IELTS 7.0, PTE 65)", "Proficient (e.g., IELTS 7.0, PTE 65)", "Proficient（如 IELTS 7.0，PTE 65）"),
+    },
+    {
+      value: "superior",
+      label: txt("Superior (örn. IELTS 8.0, PTE 79)", "Superior (e.g., IELTS 8.0, PTE 79)", "Superior（如 IELTS 8.0，PTE 79）"),
+    },
+  ];
 
   const educationOptions = [
     {
@@ -969,12 +993,22 @@ export function FullCheckWaitlistForm({
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-english">{txt("İngilizce seviyesi", "English level", "英语水平")}</Label>
-          <Input
-            id="waitlist-english"
-            name="englishLevel"
-            className={fieldClassName}
-            placeholder={txt("Örn: IELTS 7.0 veya Yüksek", "E.g., IELTS 7.0 or Proficient", "例如：IELTS 7.0 或 Proficient")}
-          />
+          <Select value={englishLevel} onValueChange={setEnglishLevel}>
+            <SelectTrigger id="waitlist-english" className={fieldClassName}>
+              <SelectValue
+                placeholder={txt("İngilizce seviyenizi seçin", "Select your English level", "请选择你的英语水平")}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {englishLevelOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <input type="hidden" name="englishLevel" value={englishLevel} />
+          <ErrorText message={state.errors?.englishLevel} />
         </div>
 
         <div className="space-y-2">
@@ -1259,47 +1293,80 @@ export function FullCheckWaitlistForm({
               </Card>
             )}
 
-            {report.rankedPathways && report.rankedPathways.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    {rpt("签证可行性排序", "Vize Sans Siralamasi", "Visa Viability Ranking")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {report.rankedPathways.map((item, index) => {
-                    const barColor =
-                      index === 0
-                        ? "bg-emerald-500"
-                        : index === 1
-                          ? "bg-amber-500"
-                          : "bg-red-500";
+            {(() => {
+              // Hard Gate (1 July 2026): pathways the engine marked "ineligible"
+              // (482 salary/CSIT, 485 age, 189/190/491 sub-65-point score) are
+              // unconditionally pinned to the top of the ranking, ahead of any
+              // match-percentage score below.
+              const ineligiblePathways = report.pathwayComparison.filter(
+                (p) =>
+                  p.relevance === "ineligible" &&
+                  ["482", "485", "189", "190", "491"].includes(p.subclass)
+              );
+              const rankedPathways = (report.rankedPathways ?? []).filter(
+                (rp) => !ineligiblePathways.some((ie) => ie.subclass === rp.subclass)
+              );
+              if (ineligiblePathways.length === 0 && rankedPathways.length === 0) return null;
 
-                    return (
-                      <div key={item.subclass} className="rounded-md border border-border/70 p-3">
+              return (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">
+                      {rpt("签证可行性排序", "Vize Sans Siralamasi", "Visa Viability Ranking")}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {ineligiblePathways.map((p) => (
+                      <div
+                        key={p.subclass}
+                        className="rounded-md border-2 border-red-600 bg-red-50 p-3 dark:bg-red-950/30"
+                      >
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <p className="text-sm font-semibold text-foreground">
-                            {getRankedVisaLabel(item.subclass)} - {item.matchPercentage}% {rpt("匹配", "Uyum", "Match")}
+                          <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+                            {p.subclass} - {p.visaName}
                           </p>
-                          <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-                            {getViabilityBadge(index)}
+                          <span className="rounded-full bg-red-600 px-2.5 py-1 text-xs font-bold text-white">
+                            {rpt("❌ 不符合资格（合规违规）", "❌ Uygun Değil (Uyumluluk İhlali)", "❌ Ineligible (Compliance Violation)")}
                           </span>
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {rpt("估算基础分", "Tahmini temel puan", "Estimated base points")}: {item.pointsSignal}
-                        </p>
-                        <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-muted">
-                          <div
-                            className={`h-full rounded-full ${barColor}`}
-                            style={{ width: `${item.matchPercentage}%` }}
-                          />
-                        </div>
+                        <p className="mt-1 text-xs font-bold text-red-700 dark:text-red-400">{p.reason}</p>
                       </div>
-                    );
-                  })}
-                </CardContent>
-              </Card>
-            )}
+                    ))}
+
+                    {rankedPathways.map((item, index) => {
+                      const barColor =
+                        index === 0
+                          ? "bg-emerald-500"
+                          : index === 1
+                            ? "bg-amber-500"
+                            : "bg-red-500";
+
+                      return (
+                        <div key={item.subclass} className="rounded-md border border-border/70 p-3">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <p className="text-sm font-semibold text-foreground">
+                              {getRankedVisaLabel(item.subclass)} - {item.matchPercentage}% {rpt("匹配", "Uyum", "Match")}
+                            </p>
+                            <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+                              {getViabilityBadge(index)}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {rpt("估算基础分", "Tahmini temel puan", "Estimated base points")}: {item.pointsSignal}
+                          </p>
+                          <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-muted">
+                            <div
+                              className={`h-full rounded-full ${barColor}`}
+                              style={{ width: `${item.matchPercentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              );
+            })()}
 
             {report.stateNominationTracker && report.stateNominationTracker.states.length > 0 && (
               <StateHeatmap locale={locale} tracker={report.stateNominationTracker} />
@@ -1402,6 +1469,12 @@ export function FullCheckWaitlistForm({
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
                           <p className="font-semibold">{item.visaName} ({item.subclass})</p>
+                          {item.isHardIneligible && item.ineligibleReason && (
+                            <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
+                              {rpt("🚨 关键合规警报：", "🚨 KRİTİK UYUMLULUK UYARISI: ", "🚨 CRITICAL COMPLIANCE ALERT: ")}
+                              {item.ineligibleReason}
+                            </p>
+                          )}
                           <p className="text-xs text-muted-foreground mt-0.5">{item.typicalPath}</p>
                         </div>
                         <div className="flex flex-wrap gap-1.5 text-xs">
@@ -1600,10 +1673,23 @@ export function FullCheckWaitlistForm({
               </CardHeader>
               <CardContent className="space-y-3">
                 {report.pathwayFriction.map((item) => (
-                  <div key={`${item.pathway}-${item.frictionType}`} className="rounded-md border border-border/70 p-3 text-sm">
-                    <p className="font-medium">{item.pathway}</p>
-                    <p className="text-xs text-muted-foreground">{item.frictionType}</p>
-                    <p className="mt-2 text-muted-foreground">{item.explanation}</p>
+                  <div
+                    key={`${item.pathway}-${item.frictionType}`}
+                    className={
+                      item.isHardIneligible
+                        ? "rounded-md border-2 border-red-600 bg-red-50 p-3 text-sm dark:bg-red-950/30"
+                        : "rounded-md border border-border/70 p-3 text-sm"
+                    }
+                  >
+                    <p className={item.isHardIneligible ? "font-bold text-red-700 dark:text-red-400" : "font-medium"}>
+                      {item.pathway}
+                    </p>
+                    <p className={item.isHardIneligible ? "text-xs font-bold text-red-700 dark:text-red-400" : "text-xs text-muted-foreground"}>
+                      {item.frictionType}
+                    </p>
+                    <p className={item.isHardIneligible ? "mt-2 font-bold text-red-700 dark:text-red-400" : "mt-2 text-muted-foreground"}>
+                      {item.explanation}
+                    </p>
                   </div>
                 ))}
               </CardContent>

@@ -3,8 +3,17 @@ import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
 import type { CanadaCRSInput, CLBLevel } from "@/lib/points/canada-types";
-import type { AgeOption, EnglishOption } from "@/lib/points/types";
+import type {
+  AgeOption,
+  AustralianEmploymentOption,
+  EducationOption,
+  EnglishOption,
+  OverseasEmploymentOption,
+} from "@/lib/points/types";
 import expressEntryConfig from "@/src/data/countries/ca/express-entry.json";
+import enTranslations from "@/public/locales/en.json";
+import trTranslations from "@/public/locales/tr.json";
+import zhTranslations from "@/public/locales/zh-Hans.json";
 import { generatePremiumSections } from "@/src/lib/readiness/report-generator";
 import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-checklists";
 import { buildRiskIndicators, buildCanadaRiskIndicators } from "./risk-rules";
@@ -69,6 +78,7 @@ const JULY_2026_485_EXCEPTION_MAX_AGE = 50;
 const JULY_2026_482_BASE_COST_AUD = 4015;
 const JULY_2026_189_190_BASE_COST_AUD = 6140;
 const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
+const SKILLED_MIGRATION_MIN_POINTS = 65;
 
 function parseDeclaredSalaryAud(input: ReadinessInput): number | null {
   if (typeof input.annualSalaryAud === "number" && Number.isFinite(input.annualSalaryAud)) {
@@ -162,6 +172,34 @@ function evaluateEmployerSalaryGate(input: ReadinessInput): {
   };
 }
 
+const QUALIFICATIONS_BACHELOR_OR_LOWER = new Set([
+  "High School",
+  "Bachelor's Degree",
+  "Bachelor",
+  "Diploma",
+  "Certificate",
+  "Other",
+]);
+
+/**
+ * Hard Gate (1 July 2026 rules): age > 35 with a Bachelor's degree or lower
+ * is an unconditional 485 disqualifier, regardless of any other "possible"/
+ * "high potential" signal the softer evaluate485AgeGate heuristic below
+ * might otherwise produce.
+ */
+function evaluate485HardAgeGate(input: ReadinessInput): {
+  declaredAge: number | null;
+  isHardIneligible: boolean;
+} {
+  const declaredAge = parseDeclaredAge(input);
+  const qualification = input.qualificationLevel;
+  const isBachelorOrLower = qualification !== undefined && QUALIFICATIONS_BACHELOR_OR_LOWER.has(qualification);
+  return {
+    declaredAge,
+    isHardIneligible: declaredAge !== null && declaredAge > 35 && isBachelorOrLower,
+  };
+}
+
 function evaluate485AgeGate(input: ReadinessInput): {
   declaredAge: number | null;
   maxAllowedAge: number;
@@ -177,6 +215,64 @@ function evaluate485AgeGate(input: ReadinessInput): {
     hasException,
     isAboveLimit: declaredAge !== null && declaredAge > maxAllowedAge,
   };
+}
+
+// ─── i18n ─────────────────────────────────────────────────────────────────────
+// engine.ts runs server-side with no React context, so it reads the same flat
+// dot-key /public/locales/*.json files the frontend's useTranslation() hook
+// uses, rather than a separate translation source of truth.
+
+const TRANSLATIONS: Record<Locale, Record<string, unknown>> = {
+  en: enTranslations,
+  tr: trTranslations,
+  "zh-Hans": zhTranslations,
+};
+
+function t(locale: Locale, key: string, params: Record<string, string | number> = {}): string {
+  const raw = TRANSLATIONS[locale]?.[key] ?? TRANSLATIONS.en[key];
+  const template = typeof raw === "string" ? raw : key;
+  return Object.entries(params).reduce(
+    (result, [paramKey, value]) => result.replaceAll(`{{${paramKey}}}`, String(value)),
+    template
+  );
+}
+
+/**
+ * Hard Gate (1 July 2026): strict "Ineligible: [Reason]" template with the
+ * user's declared value and the breached threshold spelled out, so the PDF/UI
+ * layer can display the exact compliance reason without additional parsing.
+ */
+function formatIneligibleSalaryReason(locale: Locale, declaredSalaryAud: number): string {
+  const declared = declaredSalaryAud.toLocaleString("en-AU");
+  const threshold = JULY_2026_CSIT_AUD.toLocaleString("en-AU");
+  return t(locale, "ineligible.salaryReason", { salary: declared, threshold });
+}
+
+function formatIneligibleAgeReason(locale: Locale, declaredAge: number): string {
+  const limit = JULY_2026_485_STANDARD_MAX_AGE;
+  return t(locale, "ineligible.ageReason", { age: declaredAge, ageLimit: limit });
+}
+
+/**
+ * Hard Gate: Skilled Migration (189/190/491) pathways require an estimated
+ * base points-test score of at least 65. Below this, the pathway is
+ * unconditionally ineligible regardless of any other "possible" signal.
+ *
+ * When the user's English level still sits at the 0-point tier ("none" or
+ * "competent"), a MARA-compliant "Mathematical Improvement" suggestion is
+ * appended — framed strictly as a points calculation, not an eligibility or
+ * invitation guarantee.
+ */
+function formatIneligibleLowPointsReason(
+  locale: Locale,
+  estimatedPoints: number,
+  englishLevel?: string
+): string {
+  const base = t(locale, "ineligible.lowPoints", { points: estimatedPoints });
+  const normalizedEnglish = (englishLevel ?? "").trim().toLowerCase();
+  const hasRoomToImproveEnglish = normalizedEnglish === "none" || normalizedEnglish === "competent";
+  if (!hasRoomToImproveEnglish) return base;
+  return `${base} ${t(locale, "suggestion.improveEnglish")}`;
 }
 
 // ─── Pathway detection ────────────────────────────────────────────────────────
@@ -816,13 +912,17 @@ function getPathwaySpecificRisks(
   }
 
   if (subclass === "485") {
+    const hardAgeGate = evaluate485HardAgeGate(input);
     const ageGate = evaluate485AgeGate(input);
+    if (hardAgeGate.isHardIneligible && hardAgeGate.declaredAge !== null) {
+      risks.push(formatIneligibleAgeReason(locale, hardAgeGate.declaredAge));
+    }
     risks.push(
       isTr
         ? "İstihdam sonuçları ve nitelikli yollara geçiş bireysel koşullara bağlı olabilir."
         : "Employment outcomes and transition to skilled pathways may affect this pathway."
     );
-    if (ageGate.isAboveLimit) {
+    if (!hardAgeGate.isHardIneligible && ageGate.isAboveLimit) {
       risks.push(
         isTr
           ? `1 Temmuz 2026 kuralına göre 485 için yaş sınırı ${ageGate.hasException ? `istisna kapsamında ${ageGate.maxAllowedAge}` : `${ageGate.maxAllowedAge}`} olarak uygulanır. Beyan edilen yaş (${ageGate.declaredAge}) bu sınırın üzerindedir.`
@@ -848,6 +948,7 @@ function getPathwaySpecificRisks(
       );
     }
     if (salaryGate.isBelowCsit && salaryGate.declaredSalaryAud !== null) {
+      risks.push(formatIneligibleSalaryReason(locale, salaryGate.declaredSalaryAud));
       risks.push(
         isTr
           ? `1 Temmuz 2026 CSIT eşiği AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}. Beyan edilen teklif (AUD ${salaryGate.declaredSalaryAud.toLocaleString("en-AU")}) bu eşiğin altında olduğu için 482/186 işveren sponsorlu yolları uygun görünmez.`
@@ -864,6 +965,9 @@ function getPathwaySpecificRisks(
   }
 
   if (["189", "190", "491"].includes(subclass)) {
+    if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
+      risks.push(formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel));
+    }
     if (!input.occupation) {
       risks.push(
         isTr
@@ -876,13 +980,6 @@ function getPathwaySpecificRisks(
         isTr
           ? "Yaş ve İngilizce bilgisi eksik olduğunda puan testli değerlendirme eksik kalır."
           : "When age and English details are missing, the points-based review remains incomplete."
-      );
-    }
-    if (estimatedPoints !== undefined && estimatedPoints < 65) {
-      risks.push(
-        isTr
-          ? "Mevcut tahmini temel puan, tipik minimum eşiğin altında kalmaktadır."
-          : "The estimated base points sit below the commonly referenced minimum threshold."
       );
     }
   }
@@ -1126,9 +1223,14 @@ function buildPathwayEntry(
         ? "The study goal indicates the Student Visa (subclass 500) may be a possible pathway. This is general information only and depends on individual circumstances."
         : "The 500 Student Visa may be relevant for study at a registered Australian institution. More context would support this assessment.";
   } else if (subclass === "485") {
+    const hardAgeGate = evaluate485HardAgeGate(input);
     const ageGate = evaluate485AgeGate(input);
     const hasGradSignal = hasKw(goalText, ["study", "student", "graduated", "graduate", "485", "eğitim", "mezun"]);
-    if (ageGate.isAboveLimit) {
+    if (hardAgeGate.isHardIneligible && hardAgeGate.declaredAge !== null) {
+      // Hard Gate (1 July 2026): overrides any "possible"/high-potential signal below.
+      relevance = "ineligible";
+      reason = formatIneligibleAgeReason(locale, hardAgeGate.declaredAge);
+    } else if (ageGate.isAboveLimit) {
       relevance = "not_enough_information";
       reason = isTr
         ? `1 Temmuz 2026 kuralına göre 485 yaş sınırı ${ageGate.hasException ? `istisna kapsamında ${ageGate.maxAllowedAge}` : `${ageGate.maxAllowedAge}`}. Beyan edilen yaş (${ageGate.declaredAge}) bu sınırı aştığı için bu yol uygun görünmez.`
@@ -1147,10 +1249,9 @@ function buildPathwayEntry(
     const salaryGate = evaluateEmployerSalaryGate(input);
     const hasSponsor = hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]);
     if (salaryGate.isBelowCsit && salaryGate.declaredSalaryAud !== null) {
-      relevance = "not_enough_information";
-      reason = isTr
-        ? `1 Temmuz 2026 CSIT eşiği AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}. Beyan edilen teklif (AUD ${salaryGate.declaredSalaryAud.toLocaleString("en-AU")}) bu eşiğin altında olduğu için 482/186 işveren sponsorlu yolları uygun görünmez.`
-        : `The 1 July 2026 CSIT floor is AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}. The declared salary offer (AUD ${salaryGate.declaredSalaryAud.toLocaleString("en-AU")}) is below this threshold, so employer-sponsored pathways such as 482/186 are ineligible under this income floor.`;
+      // Hard Gate (1 July 2026): overrides any "possible"/high-potential signal below.
+      relevance = "ineligible";
+      reason = formatIneligibleSalaryReason(locale, salaryGate.declaredSalaryAud);
     } else {
       relevance = hasSponsor ? "possible" : "needs_more_information";
       reason = isTr
@@ -1162,20 +1263,38 @@ function buildPathwayEntry(
           : "The 482 Skills in Demand Visa requires an employer sponsor. Sponsor context is important to support this assessment.";
     }
   } else if (subclass === "189") {
-    relevance = input.occupation ? "possible" : "needs_more_information";
-    reason = isTr
-      ? "189 Yetenekli Bağımsız Vizesi, puan testi ve davet gereksinimi olan bağımsız bir yoldur. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
-      : "The 189 Skilled Independent Visa is a points-tested pathway requiring an invitation. This is general information only and depends on individual circumstances.";
+    if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
+      // Hard Gate: overrides any "possible"/high-potential signal below.
+      relevance = "ineligible";
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel);
+    } else {
+      relevance = input.occupation ? "possible" : "needs_more_information";
+      reason = isTr
+        ? "189 Yetenekli Bağımsız Vizesi, puan testi ve davet gereksinimi olan bağımsız bir yoldur. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
+        : "The 189 Skilled Independent Visa is a points-tested pathway requiring an invitation. This is general information only and depends on individual circumstances.";
+    }
   } else if (subclass === "190") {
-    relevance = input.occupation ? "possible" : "needs_more_information";
-    reason = isTr
-      ? "190 Yetenekli Aday Gösterilen Vizesi, eyalet veya bölge adaylığı gerektiren bir puan testi yoludur. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
-      : "The 190 Skilled Nominated Visa is a points-tested pathway requiring state or territory nomination. This is general information only and depends on individual circumstances.";
+    if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
+      // Hard Gate: overrides any "possible"/high-potential signal below.
+      relevance = "ineligible";
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel);
+    } else {
+      relevance = input.occupation ? "possible" : "needs_more_information";
+      reason = isTr
+        ? "190 Yetenekli Aday Gösterilen Vizesi, eyalet veya bölge adaylığı gerektiren bir puan testi yoludur. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
+        : "The 190 Skilled Nominated Visa is a points-tested pathway requiring state or territory nomination. This is general information only and depends on individual circumstances.";
+    }
   } else if (subclass === "491") {
-    relevance = input.occupation ? "possible" : "needs_more_information";
-    reason = isTr
-      ? "491 Bölgesel Yetenekli Çalışma Vizesi, bölgesel adaylık veya akraba sponsorluğu gerektiren geçici bir yoldur. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
-      : "The 491 Skilled Work Regional Visa is a provisional regional pathway requiring nomination or relative sponsorship. This is general information only and depends on individual circumstances.";
+    if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
+      // Hard Gate: overrides any "possible"/high-potential signal below.
+      relevance = "ineligible";
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel);
+    } else {
+      relevance = input.occupation ? "possible" : "needs_more_information";
+      reason = isTr
+        ? "491 Bölgesel Yetenekli Çalışma Vizesi, bölgesel adaylık veya akraba sponsorluğu gerektiren geçici bir yoldur. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
+        : "The 491 Skilled Work Regional Visa is a provisional regional pathway requiring nomination or relative sponsorship. This is general information only and depends on individual circumstances.";
+    }
   } else if ((subclass === "820" || subclass === "801")) {
     const hasPartnerSignal = hasKw(sponsorText, ["partner", "citizen", "pr", "permanent", "nz", "eş", "vatandaş", "daimi"]);
     relevance = hasPartnerSignal ? "possible" : "needs_more_information";
@@ -1201,10 +1320,22 @@ function buildPathwayEntry(
     estimatedPoints
   );
   const ageGate = subclass === "485" ? evaluate485AgeGate(input) : null;
+  const hardAgeGate = subclass === "485" ? evaluate485HardAgeGate(input) : null;
   const salaryGate = subclass === "482" ? evaluateEmployerSalaryGate(input) : null;
+  const isLowPointsIneligible =
+    ["189", "190", "491"].includes(subclass) &&
+    estimatedPoints !== undefined &&
+    estimatedPoints < SKILLED_MIGRATION_MIN_POINTS;
   const forcedIneligibleByRule =
-    (subclass === "485" && ageGate?.isAboveLimit) ||
-    (subclass === "482" && salaryGate?.isBelowCsit);
+    (subclass === "485" && (hardAgeGate?.isHardIneligible || ageGate?.isAboveLimit)) ||
+    (subclass === "482" && salaryGate?.isBelowCsit) ||
+    isLowPointsIneligible;
+
+  // Hard Gate: unconditionally overrides any "possible"/high-potential relevance
+  // and confidence the softer heuristics above might otherwise have produced.
+  if (hardAgeGate?.isHardIneligible || (subclass === "482" && salaryGate?.isBelowCsit) || isLowPointsIneligible) {
+    relevance = "ineligible";
+  }
 
   if (forcedIneligibleByRule) {
     confidenceLevel = "low";
@@ -1305,6 +1436,12 @@ function getUserRelativePosition(
   locale: Locale
 ): string {
   const isTr = locale === "tr";
+
+  if (pathway.relevance === "ineligible") {
+    return isTr
+      ? "Uygun Değil — 1 Temmuz 2026 kural eşiği karşılanmıyor"
+      : "Ineligible — does not meet the 1 July 2026 rule threshold";
+  }
 
   if (pathway.relevance === "not_enough_information") {
     return isTr
@@ -1661,6 +1798,13 @@ function parseAgeOption(ageStr: string): AgeOption | null {
 
 function parseEnglishOption(raw: string): EnglishOption | null {
   const s = raw.toLowerCase().trim();
+  // Strict exact-match mapping for the standardized "English Level" dropdown
+  // values (none/competent/proficient/superior) before falling back to the
+  // fuzzy free-text matching below (used by other callers, e.g. chat intake).
+  if (s === "none") return "competent"; // 0 points — same tier as "competent"
+  if (s === "competent") return "competent";
+  if (s === "proficient") return "proficient";
+  if (s === "superior") return "superior";
   if (s.includes("superior") || s.includes("高级") || s.includes("优秀") || /ielts\s*[89]/.test(s) || /pte\s*7[0-9]/.test(s) || /pte\s*8/.test(s))
     return "superior";
   if (s.includes("proficient") || s.includes("熟练") || /ielts\s*7/.test(s) || /pte\s*6[0-9]/.test(s))
@@ -1683,6 +1827,37 @@ function parseEnglishOption(raw: string): EnglishOption | null {
     if (level >= 5) return "competent";
   }
   return null;
+}
+
+function yearsToOverseasEmploymentOption(years: number | undefined): OverseasEmploymentOption {
+  if (years === undefined) return "lt3";
+  if (years >= 8) return "8_plus";
+  if (years >= 5) return "5_7";
+  if (years >= 3) return "3_4";
+  return "lt3";
+}
+
+function yearsToAustralianEmploymentOption(years: number | undefined): AustralianEmploymentOption {
+  if (years === undefined) return "lt1";
+  if (years >= 8) return "8_plus";
+  if (years >= 5) return "5_7";
+  if (years >= 3) return "3_4";
+  if (years >= 1) return "1_2";
+  return "lt1";
+}
+
+function qualificationToEducationOption(level: ReadinessInput["qualificationLevel"]): EducationOption {
+  if (level === "PhD/Doctorate" || level === "PhD") return "doctorate";
+  if (
+    level === "Bachelor's Degree" ||
+    level === "Bachelor" ||
+    level === "Master's Degree (Coursework)" ||
+    level === "Master's Degree (Research)"
+  ) {
+    return "bachelor_or_higher";
+  }
+  if (level === "Diploma") return "australian_diploma_or_trade";
+  return "none_or_unsure";
 }
 
 // Rough bridge from AU's English bands to CLB — both are ultimately derived
@@ -1776,12 +1951,16 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   const isTr = locale === "tr";
   const ageOption = input.age ? parseAgeOption(input.age) : null;
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const hasExperienceInput =
+    input.offshoreExperienceYears !== undefined || input.onshoreExperienceYears !== undefined;
+  const hasEducationInput = Boolean(input.qualificationLevel);
 
-  const missingFactors = [
-    ...(isTr
-      ? ["Yurt dışı istihdam", "Avustralya istihdam", "Eğitim", "Bonus faktörler", "Partner durumu"]
-      : ["Overseas employment", "Australian employment", "Education", "Bonus factors", "Partner status"]),
-  ];
+  // Bonus factors (specialist education, professional year, community language,
+  // regional study), partner points, and state/regional nomination are not yet
+  // collected on the intake form, so they remain excluded from this estimate.
+  const missingFactors = isTr
+    ? ["Bonus faktörler", "Partner durumu"]
+    : ["Bonus factors", "Partner status"];
 
   if (!ageOption && !englishOption) {
     return {
@@ -1794,12 +1973,16 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     };
   }
 
+  const overseasEmployment = yearsToOverseasEmploymentOption(input.offshoreExperienceYears);
+  const australianEmployment = yearsToAustralianEmploymentOption(input.onshoreExperienceYears);
+  const education = qualificationToEducationOption(input.qualificationLevel);
+
   const result = calculateAustraliaPoints({
     age: ageOption ?? "18_24",
     english: englishOption ?? "competent",
-    overseasEmployment: "lt3",
-    australianEmployment: "lt1",
-    education: "none_or_unsure",
+    overseasEmployment,
+    australianEmployment,
+    education,
     specialistEducation: false,
     australianStudyRequirement: false,
     professionalYear: false,
@@ -1825,14 +2008,30 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           note: input.englishLevel,
         }
       : null,
+    hasExperienceInput
+      ? {
+          label: isTr ? "İstihdam puanı (yurt dışı + Avustralya)" : "Employment points (overseas + Australian)",
+          points: result.breakdown.employmentCombinedAfterCap,
+          note: isTr
+            ? `Yurt dışı: ${input.offshoreExperienceYears ?? 0} yıl, Avustralya: ${input.onshoreExperienceYears ?? 0} yıl`
+            : `Overseas: ${input.offshoreExperienceYears ?? 0} yrs, Australian: ${input.onshoreExperienceYears ?? 0} yrs`,
+        }
+      : null,
+    hasEducationInput
+      ? {
+          label: isTr ? "Eğitim puanı" : "Education points",
+          points: result.breakdown.education,
+          note: input.qualificationLevel,
+        }
+      : null,
   ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
 
   const missingStr = missingFactors.join(", ");
   const note = isTr
-    ? `Bu yalnızca yaş${ageOption ? "" : " (belirtilmedi)"} ve İngilizce seviyesine${englishOption ? "" : " (belirtilmedi)"} dayalı kısmi bir tahmindir. Diğer faktörler dahil değil: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.`
-    : `This is a partial estimate based on age${ageOption ? "" : " (not provided)"} and English level${englishOption ? "" : " (not provided)"}. Other factors not included: ${missingStr}. Actual points position depends on individual circumstances.`;
+    ? `Bu, yaş${ageOption ? "" : " (belirtilmedi)"}, İngilizce seviyesi${englishOption ? "" : " (belirtilmedi)"}, iş deneyimi${hasExperienceInput ? "" : " (belirtilmedi)"} ve eğitim düzeyine${hasEducationInput ? "" : " (belirtilmedi)"} dayalı bir tahmindir. Dahil edilmeyen faktörler: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.`
+    : `This estimate is based on age${ageOption ? "" : " (not provided)"}, English level${englishOption ? "" : " (not provided)"}, work experience${hasExperienceInput ? "" : " (not provided)"}, and education level${hasEducationInput ? "" : " (not provided)"}. Factors not included: ${missingStr}. Actual points position depends on individual circumstances.`;
 
   return {
     appliesTo: ["189", "190", "491"],
@@ -2034,38 +2233,54 @@ function buildExecutiveSummary(
     .slice(0, 6)
     .map((pathway) => pathway.subclass)
     .join(", ");
+
+  // Hard Gate (1 July 2026): ineligible pathways are reported as flat
+  // determinations, not softened "may be possible" language, and are
+  // placed first so they cannot be missed or outranked by softer signals.
+  const ineligiblePathways = pathways.filter((pathway) => pathway.relevance === "ineligible");
+  const ineligibleLines = ineligiblePathways.map((pathway) =>
+    isTr
+      ? `Alt sınıf ${pathway.subclass}: ${pathway.reason}`
+      : isZh
+        ? `子类别 ${pathway.subclass}：${pathway.reason}`
+        : `Subclass ${pathway.subclass}: ${pathway.reason}`
+  );
+
   if (isTr) {
     return [
+      ...ineligibleLines,
       pathwayNames
-        ? `Bu rapor ${pathwayNames} yollarını aynı çerçevede karşılaştırır; çalışma, mezuniyet, iş sponsorluğu ve nitelikli göç sinyalleri birlikte ele alınır.`
-        : "Bu rapor, verilen bilgilerle görünen yol sinyallerini aynı çerçevede karşılaştırır.",
+        ? `Bu rapor, ${pathwayNames} yollarını bağlayıcı 1 Temmuz 2026 kural eşiklerine göre değerlendirir; çalışma, mezuniyet, iş sponsorluğu ve nitelikli göç sinyalleri tek çerçevede sunulur.`
+        : "Bu rapor, verilen bilgilerle görünen yol sinyallerini bağlayıcı kural eşiklerine göre değerlendirir.",
       skilledVisible && estimatedPoints !== undefined
-        ? `Tahmini temel puan ${estimatedPoints}; bu matematiksel gösterge puan testli yolların göreli konumunu etkileyebilir.`
-        : "Puan bağlamı sınırlı olduğunda puan testli yolların göreli konumu daha temkinli okunur.",
-      "Beceri değerlendirmesi, adaylık bağlamı, sponsor bilgisi ve belge hazırlığı gibi ayrıntılar yol gücü karşılaştırmasını değiştirebilir.",
+        ? `Tahmini temel puan ${estimatedPoints}; bu puan, puan testli yolların sıralamasını belirleyen ana faktördür.`
+        : "Puan bağlamı sınırlı olduğunda puan testli yolların sıralaması doğrulanamaz.",
+      "Beceri değerlendirmesi, adaylık bağlamı, sponsor bilgisi ve belge tamlığı, yol gücü sıralamasını doğrudan belirler.",
     ];
   }
 
   if (isZh) {
     return [
+      ...ineligibleLines,
       pathwayNames
-        ? `本报告在同一视图中比较 ${pathwayNames} 路径，并综合学习、毕业生、雇主担保与技术移民信号。`
-        : "本报告根据已提供信息比较当前可见的签证路径信号。",
+        ? `本报告依据具有约束力的2026年7月1日规则门槛评估 ${pathwayNames} 路径，并综合学习、毕业生、雇主担保与技术移民信号。`
+        : "本报告依据具有约束力的规则门槛评估当前可见的签证路径信号。",
       skilledVisible && estimatedPoints !== undefined
-        ? `当前加分信号为 ${estimatedPoints}；该数学信号可能影响打分制路径的相对位置。`
-        : "加分背景有限时，打分制路径的相对位置需要更谨慎解读。",
-      "职业评估、州担保背景、担保信息与材料准备度等细节，可能明显改变路径强度比较。",
+        ? `当前加分信号为 ${estimatedPoints}；该分数是决定打分制路径排序的关键因素。`
+        : "加分背景有限时，打分制路径的排序无法得到确认。",
+      "职业评估、州担保背景、担保信息与材料完整度，直接决定路径强度排序。",
     ];
   }
 
   return [
+    ...ineligibleLines,
     pathwayNames
-      ? `This report compares ${pathwayNames} in one view, bringing study, graduate, employer-sponsored, and skilled pathway signals together.`
-      : "This report compares visible pathway signals from the details provided.",
+      ? `This report evaluates ${pathwayNames} against binding 1 July 2026 rule thresholds, cross-referencing study, graduate, employer-sponsored, and skilled pathway signals.`
+      : "This report evaluates visible pathway signals from the details provided against binding rule thresholds.",
     skilledVisible && estimatedPoints !== undefined
-      ? `Estimated base points are ${estimatedPoints}; this mathematical indicator may affect the relative position of points-tested pathways.`
-      : "Limited points context may affect the relative position of points-tested pathways.",
-    "Skills assessment, nomination context, sponsorship details, and evidence preparation can materially change the pathway strength comparison.",
+      ? `Estimated base points are ${estimatedPoints}; this is a determining factor in the ranking of points-tested pathways.`
+      : "Limited points context means the ranking of points-tested pathways cannot be confirmed.",
+    "Skills assessment, nomination context, sponsorship evidence, and documentation completeness directly determine the pathway strength ranking.",
   ];
 }
 
@@ -2292,6 +2507,10 @@ function buildPathwayStrengthComparison(
       signalReasons,
       limitingFactors,
       evidenceStatus,
+      // Hard Gate (1 July 2026): overrides the strength breakdown with a bold
+      // red compliance-violation reason shown as the first item in the PDF.
+      isHardIneligible: pathway.relevance === "ineligible",
+      ineligibleReason: pathway.relevance === "ineligible" ? pathway.reason : undefined,
     };
   });
 }
@@ -2571,6 +2790,7 @@ function buildFinancialRoadmap(
   locale: Locale
 ): FinancialRoadmapItem[] {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
   const has482 = subclasses.includes("482");
   const hasNoFunctionalEnglishDependants = hasDependantsWithoutFunctionalEnglish(input);
@@ -2601,9 +2821,13 @@ function buildFinancialRoadmap(
         : "Tests accepted for Australian migration include: IELTS Academic or General Training (~AUD $385–$405 per attempt), PTE Academic (~AUD $375–$395), OET (Occupational English Test, used by healthcare occupations, ~AUD $587), and TOEFL iBT (~AUD $340–$390, accepted for some streams). Minimum Competent English thresholds: IELTS 6.0 in all four bands, PTE 50 in all bands. Achieving Superior English (IELTS 8.0+ in all four bands or PTE 79+) unlocks +20 additional points in the Australian points test — a significant investment if retesting is needed. Scores must be no more than 3 years old at time of visa grant.",
     },
     {
+      // Re-labeled as a Critical Compliance Alert (1 July 2026): this is a
+      // mandatory compliance flag, not a routine cost-planning line item.
       category: isTr
-        ? "Fonksiyonel İngilizce ikinci taksit riski (18+ bağımlılar)"
-        : "Functional English second-instalment risk (dependants 18+)",
+        ? `🚨 KRİTİK UYUMLULUK UYARISI: 18+ bağımlılar için olası ikinci taksit ücreti ~AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}`
+        : isZh
+          ? `🚨 关键合规警报：18岁及以上受抚养人可能产生约 AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} 的第二期费用`
+          : `🚨 CRITICAL COMPLIANCE ALERT: Potential second-instalment charge of ~${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} AUD`,
       estimateType: "official_fee",
       amountLabel: isTr
         ? `Bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}`
@@ -2778,7 +3002,20 @@ function buildPathwayFriction(
   locale: Locale
 ): PathwayFriction[] {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   return pathways.map((pathway) => {
+    if (pathway.relevance === "ineligible") {
+      // Hard Gate (1 July 2026): replaces the routine friction note with a
+      // bold red compliance alert carrying the exact ineligibility reason.
+      const visaLabel =
+        pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName} (${pathway.subclass})`;
+      return {
+        pathway: visaLabel,
+        frictionType: isTr ? "🚨 KRİTİK UYUMLULUK UYARISI" : isZh ? "🚨 关键合规警报" : "🚨 CRITICAL COMPLIANCE ALERT",
+        explanation: pathway.reason,
+        isHardIneligible: true,
+      };
+    }
     const visaLabel =
       pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName} (${pathway.subclass})`;
     const detail: Record<string, { en: string; tr: string }> = {
