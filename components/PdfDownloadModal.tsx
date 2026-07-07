@@ -79,6 +79,27 @@ export function PdfDownloadModal({
     }
   }, [open, slug]);
 
+  // Fixes stale state: this modal instance stays mounted (only `open` toggles)
+  // so without an explicit reset, form values/errors/success from a previous
+  // visit would still be showing the next time it's opened — even for a
+  // different guide (Australia vs Canada) sharing this same component.
+  function resetFormState() {
+    setForm({ full_name: "", email: "", phone: "" });
+    setFieldErrors({});
+    setError("");
+    setSuccess(false);
+    setIsTermsAccepted(false);
+    setTermsError(false);
+    setTermsAcceptedAt(null);
+    setLoading(false);
+    setStatus(null);
+  }
+
+  function handleClose() {
+    resetFormState();
+    onClose();
+  }
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -223,7 +244,7 @@ export function PdfDownloadModal({
         );
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">{titleText}</DialogTitle>
@@ -281,7 +302,7 @@ export function PdfDownloadModal({
                 "请检查您的收件箱和垃圾邮件文件夹。"
               )}
             </p>
-            <Button onClick={onClose} className="w-full">
+            <Button onClick={handleClose} className="w-full">
               {tx("Kapat", "Close", "关闭")}
             </Button>
           </div>
@@ -301,7 +322,7 @@ export function PdfDownloadModal({
                 "每个 IP 地址仅允许下载一次。"
               )}
             </p>
-            <Button variant="outline" onClick={onClose} className="w-full">
+            <Button variant="outline" onClick={handleClose} className="w-full">
               {tx("Kapat", "Close", "关闭")}
             </Button>
           </div>
