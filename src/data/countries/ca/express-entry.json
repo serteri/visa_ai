@@ -1,12 +1,20 @@
 {
   "country": "CA",
   "countryName": "Canada",
+  "countryName_tr": "Kanada",
+  "countryName_zh": "加拿大",
   "pathwayCovered": "Express Entry only (CEC, FSW, FSTP, CRS)",
+  "pathwayCovered_tr": "Yalnızca Express Entry (CEC, FSW, FSTP, CRS)",
+  "pathwayCovered_zh": "仅限 Express Entry（CEC、FSW、FSTP、CRS）",
   "notCovered": ["Provincial Nominee Program detayları (sadece +600 puan etkisi var, PNP'nin kendi eyalet bazlı kriterleri yok)", "Family/spousal sponsorship", "Study permits", "Work permits", "NOC (occupation classification) verisi"],
+  "notCovered_tr": ["Eyalet Adayı Programı ayrıntıları (yalnızca +600 puan etkisi var; PNP'nin kendi eyalet bazlı kriterleri yok)", "Aile/eş sponsorluğu", "Öğrenci izinleri", "Çalışma izinleri", "NOC (meslek sınıflandırması) verisi"],
+  "notCovered_zh": ["省提名计划的详细信息（仅有 +600 分影响，没有 PNP 自身的省级标准）", "家庭/配偶担保", "学习许可", "工作许可", "NOC（职业分类）数据"],
   "pathwayType": "points-based",
   "system": "Express Entry",
   "lastVerified": "2026-06-23",
   "processingTimes": "Varies by program",
+  "processingTimes_tr": "Programa göre değişir",
+  "processingTimes_zh": "因项目而异",
   "sourceUrls": [
     "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html",
     "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
@@ -18,7 +26,9 @@
     "spouse": 1590,
     "dependentChild": 270,
     "lastIncreaseDate": "2026-04-30",
-    "note": "Fees increased April 30, 2026"
+    "note": "Fees increased April 30, 2026",
+    "note_tr": "Ücretler 30 Nisan 2026'da arttı",
+    "note_zh": "费用于 2026 年 4 月 30 日上涨"
   },
 
   "sections": [
@@ -34,6 +44,32 @@
     "After you apply",
     "If we approve your application"
   ],
+  "sections_tr": [
+    "Kimler başvurabilir",
+    "Tüm 3 programın uygunluk şartlarını karşılaştırın",
+    "Puanınızı kontrol edin",
+    "Kapsamlı Sıralama Sistemi (CRS) puanınızı hesaplayın",
+    "Belgelerinizi hazırlayın",
+    "Profilinizi oluşturun",
+    "Havuzuna girmek için profilinizi gönderin",
+    "Davet turları",
+    "Daimi oturum için başvurun",
+    "Başvurudan sonra",
+    "Başvurunuzu onaylarsak"
+  ],
+  "sections_zh": [
+    "谁可以申请",
+    "比较这 3 个项目的资格要求",
+    "检查您的分数",
+    "计算综合排名系统（CRS）分数",
+    "准备好材料",
+    "创建您的档案",
+    "提交档案进入候选池",
+    "邀请轮次",
+    "申请永久居留",
+    "申请之后",
+    "如果我们批准您的申请"
+  ],
 
   "howItWorks": [
     "Create a profile and enter the pool.",
@@ -41,10 +77,24 @@
     "If you're invited to apply, fill out the application.",
     "We'll review your application and make a decision."
   ],
+  "howItWorks_tr": [
+    "Bir profil oluşturun ve havuza girin.",
+    "En çok puana sahip adayları turlarda davet ederiz.",
+    "Başvuruya davet edilirse, başvuruyu doldurun.",
+    "Başvurunuzu inceleyip karar veririz."
+  ],
+  "howItWorks_zh": [
+    "创建档案并进入候选池。",
+    "我们会在轮次中邀请得分最高的候选人。",
+    "如果您收到申请邀请，请填写申请。",
+    "我们会审核您的申请并作出决定。"
+  ],
 
   "programs": {
     "CEC": {
       "name": "Canadian Experience Class",
+      "name_tr": "Kanada Deneyim Sınıfı",
+      "name_zh": "加拿大经验类别",
       "languageRequirement": { "TEER_0_1": "CLB 7", "TEER_2_3": "CLB 5" },
       "workExperience": {
         "type": "Canadian work experience only",
@@ -57,6 +107,8 @@
     },
     "FSW": {
       "name": "Federal Skilled Worker Program",
+      "name_tr": "Federal Nitelikli İşçi Programı",
+      "name_zh": "联邦技术工人项目",
       "languageRequirement": "CLB 7 all abilities",
       "workExperience": {
         "type": "Foreign or Canadian, primary occupation",
@@ -89,6 +141,8 @@
     },
     "FSTP": {
       "name": "Federal Skilled Trades Program",
+      "name_tr": "Federal Nitelikli Meslekler Programı",
+      "name_zh": "联邦技术贸易项目",
       "languageRequirement": { "speakingListening": "CLB 5", "readingWriting": "CLB 4" },
       "workExperience": {
         "type": "Skilled trade, in country where qualified to practice",
@@ -107,6 +161,8 @@
     "lastRuleChange": {
       "date": "2025-03-25",
       "change": "Job offer points removed from CRS (was 200pts Major Group 00, 50pts other skilled occupations). Job offer still required for FSTP/FSW eligibility in some cases, just no longer scores CRS points."
+      ,"change_tr": "İş teklifi puanları CRS'den kaldırıldı (eskiden Major Group 00 için 200 puan, diğer nitelikli meslekler için 50 puandı). Bazı durumlarda FSTP/FSW uygunluğu için iş teklifi hâlâ gerekir, ancak artık CRS puanı sağlamaz.",
+      "change_zh": "工作邀约分数已从 CRS 中移除（此前主组 00 为 200 分，其他技术职业为 50 分）。在某些情况下，FSTP/FSW 资格仍然需要工作邀约，但它不再计入 CRS 分数。"
     },
 
     "coreHumanCapitalFactors": {
@@ -151,7 +207,9 @@
           "masters_or_professional_degree": { "withSpouse": 126, "withoutSpouse": 135 },
           "doctoral_phd": { "withSpouse": 140, "withoutSpouse": 150 }
         },
-        "note": "Professional degree must be in: medicine, veterinary medicine, dentistry, optometry, law, chiropractic medicine, or pharmacy"
+        "note": "Professional degree must be in: medicine, veterinary medicine, dentistry, optometry, law, chiropractic medicine, or pharmacy",
+        "note_tr": "Mesleki derece şu alanlardan birinde olmalıdır: tıp, veterinerlik, diş hekimliği, optometri, hukuk, kiropraktik tıbbı veya eczacılık",
+        "note_zh": "专业学位必须来自以下领域：医学、兽医学、牙科、验光、法律、脊椎推拿医学或药学"
       },
       "firstOfficialLanguage": {
         "maxPerAbilityWithSpouse": 32,
@@ -165,7 +223,9 @@
           "CLB_9": { "withSpouse": 29, "withoutSpouse": 31 },
           "CLB_10_plus": { "withSpouse": 32, "withoutSpouse": 34 }
         },
-        "note": "Per-ability score (reading/writing/speaking/listening), x4 for total"
+        "note": "Per-ability score (reading/writing/speaking/listening), x4 for total",
+        "note_tr": "Her beceri için ayrı puan (okuma/yazma/konuşma/dinleme), toplam için x4",
+        "note_zh": "按能力分别计分（阅读/写作/口语/听力），总分乘以 4"
       },
       "secondOfficialLanguage": {
         "maxCombinedWithSpouse": 22,
@@ -249,7 +309,9 @@
       },
       "provincialOrTerritorialNomination": {
         "points": 600,
-        "note": "Virtually guarantees an Invitation to Apply (ITA) in next draw"
+        "note": "Virtually guarantees an Invitation to Apply (ITA) in next draw",
+        "note_tr": "Bir sonraki çekilişte başvuru daveti (ITA) almayı neredeyse garanti eder",
+        "note_zh": "几乎保证在下一轮抽选中获得申请邀请（ITA）"
       }
     }
   },

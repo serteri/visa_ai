@@ -1,0 +1,245 @@
+﻿{
+    "timestamp":  "2026-06-29T08:36:33",
+    "statuses":  [
+                     {
+                         "page":  "visas/canada",
+                         "locale":  "en",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada",
+                         "locale":  "tr",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada",
+                         "locale":  "zh-Hans",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-pnp-non-express-entry",
+                         "locale":  "en",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-pnp-non-express-entry",
+                         "locale":  "tr",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-pnp-non-express-entry",
+                         "locale":  "zh-Hans",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-rural-pilot",
+                         "locale":  "en",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-rural-pilot",
+                         "locale":  "tr",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-rural-pilot",
+                         "locale":  "zh-Hans",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-francophone-pilot",
+                         "locale":  "en",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-francophone-pilot",
+                         "locale":  "tr",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-francophone-pilot",
+                         "locale":  "zh-Hans",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-medical-doctor",
+                         "locale":  "en",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-medical-doctor",
+                         "locale":  "tr",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-medical-doctor",
+                         "locale":  "zh-Hans",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-quebec-business",
+                         "locale":  "en",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-quebec-business",
+                         "locale":  "tr",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-quebec-business",
+                         "locale":  "zh-Hans",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-quebec-skilled-workers",
+                         "locale":  "en",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-quebec-skilled-workers",
+                         "locale":  "tr",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/canada-quebec-skilled-workers",
+                         "locale":  "zh-Hans",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/atlantic-immigration-program",
+                         "locale":  "en",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/atlantic-immigration-program",
+                         "locale":  "tr",
+                         "status":  200,
+                         "err":  null
+                     },
+                     {
+                         "page":  "visas/atlantic-immigration-program",
+                         "locale":  "zh-Hans",
+                         "status":  200,
+                         "err":  null
+                     }
+                 ],
+    "checks":  [
+                   {
+                       "name":  "Quebec warning EN",
+                       "ok":  true,
+                       "missing":  [
+
+                                   ]
+                   },
+                   {
+                       "name":  "Quebec warning TR",
+                       "ok":  false,
+                       "missing":  [
+                                       "BU SADECE İKİ AŞAMALI SÜRECİN İKİNCİ",
+                                       "federal/IRCC"
+                                   ]
+                   },
+                   {
+                       "name":  "Quebec warning ZH",
+                       "ok":  false,
+                       "missing":  [
+                                       "两阶段流程中的第二阶段（联邦阶段/IRCC）",
+                                       "魁北克自己的筛选流程"
+                                   ]
+                   },
+                   {
+                       "name":  "Hub paused/closed EN",
+                       "ok":  true,
+                       "missing":  [
+
+                                   ]
+                   },
+                   {
+                       "name":  "Hub paused/closed TR",
+                       "ok":  false,
+                       "missing":  [
+                                       "duraklatıldı",
+                                       "kapatıldı"
+                                   ]
+                   },
+                   {
+                       "name":  "Hub paused/closed ZH",
+                       "ok":  true,
+                       "missing":  [
+
+                                   ]
+                   },
+                   {
+                       "name":  "IMM/fee EN",
+                       "ok":  true,
+                       "missing":  [
+
+                                   ]
+                   },
+                   {
+                       "name":  "IMM/fee TR",
+                       "ok":  false,
+                       "missing":  [
+                                       "$1,590"
+                                   ]
+                   },
+                   {
+                       "name":  "IMM/fee ZH",
+                       "ok":  true,
+                       "missing":  [
+
+                                   ]
+                   },
+                   {
+                       "name":  "Hub cards EN",
+                       "ok":  true,
+                       "missing":  [
+
+                                   ]
+                   },
+                   {
+                       "name":  "Hub cards TR",
+                       "ok":  false,
+                       "missing":  [
+                                       "Kırsal Topluluk Göç Pilot Programı",
+                                       "Frankofon Topluluk Göç Pilot Programı",
+                                       "Eyalet Adayı Programı"
+                                   ]
+                   },
+                   {
+                       "name":  "Hub cards ZH",
+                       "ok":  false,
+                       "missing":  [
+                                       "农村社区移民试点"
+                                   ]
+                   }
+               ],
+    "summary":  {
+                    "totalUrls":  24,
+                    "http200":  24,
+                    "failedChecks":  6
+                }
+}

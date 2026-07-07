@@ -3,22 +3,40 @@
   "dataType": "program_status_registry",
   "lastVerified": "2026-06-28",
   "purpose": "Kullanicinin acik olmayan bir programa zaman harcamasini onlemek icin seffaf durum listesi. Detayli kriterler bu dosyada yok - sadece durum (paused/closed) + resmi link.",
+  "purpose_tr": "Kullanıcının açık olmayan bir programa zaman harcamasını önlemek için şeffaf durum listesi. Ayrıntılı kriterler bu dosyada yok; yalnızca durum (paused/closed) ve resmi bağlantı var.",
+  "purpose_zh": "为避免用户把时间花在未开放的项目上而提供的透明状态列表。本文件不包含详细标准，仅提供状态（暂停/关闭）和官方链接。",
   "importantCrossReference": {
     "warning": "Federal 'Self-employed persons Program' (self-employed.html) burada PAUSED gorunuyor. Bu, Quebec'in KENDI self-employed akisiyla (quebec-investors-entrepreneurs-self-employed.json icindeki selfEmployedPerson) AYNI SEY DEGIL - Quebec MIFI uzerinden isleyen ayri bir program, bu listede ayrica durmuyor.",
+    "warning_tr": "Federal 'Self-employed persons Program' (self-employed.html) burada paused görünüyor. Bu, Quebec'in kendi self-employed akışıyla (quebec-investors-entrepreneurs-self-employed.json içindeki selfEmployedPerson) aynı şey değildir; Quebec MIFI üzerinden işleyen ayrı bir programdır ve bu listede ayrıca yer almaz.",
+    "warning_zh": "联邦 'Self-employed persons Program'（self-employed.html）在此处显示为暂停。这与魁北克自身的自雇通道（quebec-investors-entrepreneurs-self-employed.json 中的 selfEmployedPerson）并不是同一项目。后者是通过魁北克 MIFI 运作的独立项目，不会在此列表中单独出现。",
     "actionNeeded": "Quebec'in kendi self-employed akiminin (MIFI tarafindan) su an gercekten acik olup olmadigini ayrica dogrulamak gerekiyor - bu listenin 'kapali' demedigi her seyin otomatik 'acik' oldugu anlamina gelmez, ayri teyit gerekir."
+    ,"actionNeeded_tr": "Quebec'in kendi self-employed akışının (MIFI tarafında) şu an gerçekten açık olup olmadığını ayrıca doğrulamak gerekiyor. Bu listenin 'kapalı' demediği her şey otomatik olarak 'açık' demek değildir; ayrı teyit gerekir.",
+    "actionNeeded_zh": "需要另行核实魁北克自己的自雇通道（由 MIFI 负责）目前是否真的开放。本列表没有标注为“关闭”并不意味着它一定“开放”，仍需单独确认。"
   },
   "paused": [
     {
       "name": "Start-up Visa",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/start-visa.html",
       "status": "paused",
-      "note": "Yeni basvuru almiyor ama tamamen kapatilmamis (closed degil, paused) - gelecekte yeniden acilabilir."
+      "name_tr": "Start-up Visa",
+      "name_zh": "创业签证",
+      "status_tr": "duraklatıldı",
+      "status_zh": "暂停",
+      "note": "Yeni basvuru almiyor ama tamamen kapatilmamis (closed degil, paused) - gelecekte yeniden acilabilir.",
+      "note_tr": "Yeni başvuru almıyor ama tamamen kapatılmamış durumda (closed değil, paused); gelecekte yeniden açılabilir.",
+      "note_zh": "目前不接收新申请，但并未完全关闭（不是 closed，而是 paused），未来可能重新开放。"
     },
     {
       "name": "Self-employed persons (Federal Program)",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/self-employed.html",
       "status": "paused",
-      "note": "Bu FEDERAL program - Quebec'in kendi self-employed akisiyla karistirilmamali."
+      "name_tr": "Self-employed persons (Federal Program)",
+      "name_zh": "自雇人士（联邦项目）",
+      "status_tr": "duraklatıldı",
+      "status_zh": "暂停",
+      "note": "Bu FEDERAL program - Quebec'in kendi self-employed akisiyla karistirilmamali.",
+      "note_tr": "Bu federal programdır; Quebec'in kendi self-employed akışıyla karıştırılmamalıdır.",
+      "note_zh": "这是联邦项目，不应与魁北克自己的自雇通道混淆。"
     }
   ],
   "closed": [
@@ -26,53 +44,117 @@
       "name": "Economic Mobility Pathways Pilot (EMPP)",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/refugees/economic-mobility-pathways-pilot.html",
       "category": "refugee/economic hybrid pilot"
+      ,"name_tr": "Economic Mobility Pathways Pilot (EMPP)",
+      "name_zh": "经济流动路径试点（EMPP）",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "mülteci/ekonomi hibrit pilotu",
+      "category_zh": "难民/经济混合试点"
     },
     {
       "name": "Temporary resident (TR) to permanent resident (PR) pathway",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/tr-pr-pathway.html",
       "category": "special transitional pathway"
+      ,"name_tr": "Temporary resident (TR) to permanent resident (PR) pathway",
+      "name_zh": "临时居民（TR）转永久居民（PR）路径",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "özel geçiş yolu",
+      "category_zh": "特殊过渡路径"
     },
     {
       "name": "Agri-Food Pilot",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/agri-food-pilot.html",
       "category": "sector-specific pilot"
+      ,"name_tr": "Agri-Food Pilot",
+      "name_zh": "农业食品试点",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "sektöre özel pilot",
+      "category_zh": "特定行业试点"
     },
     {
       "name": "People affected by the conflict in Sudan",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/sudan2023/pr-pathway.html",
       "category": "humanitarian/crisis-specific"
+      ,"name_tr": "People affected by the conflict in Sudan",
+      "name_zh": "受苏丹冲突影响的人士",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "insani/kriz odaklı",
+      "category_zh": "人道/危机专项"
     },
     {
       "name": "Family-based program for Colombians, Haitians and Venezuelans",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/humanitarian-colombia-haiti-venezuela.html",
       "category": "humanitarian/crisis-specific"
+      ,"name_tr": "Kolombiyalılar, Haitililer ve Venezuelalılar için aile temelli program",
+      "name_zh": "面向哥伦比亚、海地和委内瑞拉人士的家庭类项目",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "insani/kriz odaklı",
+      "category_zh": "人道/危机专项"
     },
     {
       "name": "Rural and Northern Immigration Pilot (RNIP)",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/rural-northern-immigration-pilot.html",
       "category": "regional pilot",
       "note": "Bu, daha once konustugumuz Rural Community Immigration Pilot (RCIP)'in SELEFI - RNIP kapandi, RCIP onun yerine geldi. JSON'larda bu ardillik iliskisini karistirmamak icin not edildi."
+      ,"name_tr": "Kırsal ve Kuzey Göç Programı Pilotu (RNIP)",
+      "name_zh": "农村与北部移民试点（RNIP）",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "bölgesel pilot",
+      "category_zh": "区域试点",
+      "note_tr": "Bu, daha önce konuştuğumuz Rural Community Immigration Pilot (RCIP)'in selefidir; RNIP kapandı, RCIP onun yerine geldi. JSON'larda bu ardıllık ilişkisini karıştırmamak için not edildi.",
+      "note_zh": "这是我们之前提到的 Rural Community Immigration Pilot（RCIP）的前身。RNIP 已关闭，由 RCIP 接替。此说明用于避免在 JSON 中混淆这种前后继关系。"
     },
     {
       "name": "Out-of-status construction workers",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/gta-construction-workers.html",
       "category": "sector/region-specific (GTA)"
+      ,"name_tr": "Statüsü olmayan inşaat işçileri",
+      "name_zh": "无身份建筑工人",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "sektör/bölge özelinde (GTA)",
+      "category_zh": "行业/地区专项（GTA）"
     },
     {
       "name": "Ukrainian nationals with family in Canada",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/ukraine-measures/pr-family-reunification.html",
       "category": "humanitarian/crisis-specific"
+      ,"name_tr": "Kanada'da ailesi bulunan Ukrayna vatandaşları",
+      "name_zh": "在加拿大有家人的乌克兰公民",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "insani/kriz odaklı",
+      "category_zh": "人道/危机专项"
     },
     {
       "name": "Families of flight PS752 victims",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/families-ps752.html",
       "category": "humanitarian/crisis-specific"
+      ,"name_tr": "PS752 uçuşu kurbanlarının aileleri",
+      "name_zh": "PS752 航班遇难者家属",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "insani/kriz odaklı",
+      "category_zh": "人道/危机专项"
     },
     {
       "name": "Resettled Yazidis and survivors of Daesh",
       "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/yazidi-or-survivors-of-daesh.html",
       "category": "humanitarian/crisis-specific"
+      ,"name_tr": "Yeniden yerleştirilen Yezidiler ve Daesh'ten sağ kalanlar",
+      "name_zh": "已安置的雅兹迪人和达伊沙幸存者",
+      "status_tr": "kapatıldı",
+      "status_zh": "已关闭",
+      "category_tr": "insani/kriz odaklı",
+      "category_zh": "人道/危机专项"
     }
   ],
   "displayRecommendation": "Bu listeyi /visas/canada sayfasinin ALT kisminda, ana (acik) pathway kartlarindan gorsel olarak ayri, sonuk/collapsed bir bolum olarak goster (ornek: 'Paused or Closed Programs (click to expand)') - ana dikkat acik programlara gitmeli, bu liste sadece referans/seffaflik amacli."
+  ,"displayRecommendation_tr": "/visas/canada sayfasının ALT kısmında, ana (açık) pathway kartlarından görsel olarak ayrı ve sönük/collapsed bir bölüm olarak göster (örnek: 'Paused or Closed Programs (click to expand)'). Ana dikkat açık programlara gitmeli; bu liste yalnızca referans/şeffaflık amaçlıdır.",
+  "displayRecommendation_zh": "应将此列表放在 /visas/canada 页面底部，与主（开放）路径卡片在视觉上区分开，并以收起/折叠方式呈现（例如：'Paused or Closed Programs (click to expand)'）。主要注意力应放在开放项目上；此列表仅用于参考/透明度。"
 }

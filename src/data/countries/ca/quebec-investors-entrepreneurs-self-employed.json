@@ -1,9 +1,13 @@
 {
   "country": "CA",
   "pathwayCovered": "Quebec investors, entrepreneurs and self-employed persons",
+  "pathwayCovered_tr": "Quebec yatırımcıları, girişimcileri ve self-employed kişiler",
+  "pathwayCovered_zh": "魁北克投资者、企业家与自雇人士通道",
   "lastVerified": "2026-06-28",
   "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Quebec%20investors%2C%20entrepreneurs%20and%20self-employed%20persons/Quebec%20investors%2C%20entrepreneurs%20and%20self-employed%20persons.pdf",
   "relationToOtherQuebecFile": "Bu, 'canada-quebec-selected-skilled-workers.json' dosyasindaki missingDataFlags'in bir kismini dolduruyor - ama SADECE bu is sinifi (investor/entrepreneur/self-employed) icin. Genel skilled-worker akisinin (QSWP/PSTQ, Arrima portali) kendi secim kriterleri hala ayri, hala belgelenmedi.",
+  "relationToOtherQuebecFile_tr": "Bu dosya, 'canada-quebec-selected-skilled-workers.json' içindeki missingDataFlags'in bir kısmını doldurur; ancak SADECE bu iş sınıfı (investor/entrepreneur/self-employed) için. Genel skilled-worker akışının (QSWP/PSTQ, Arrima portalı) seçim kriterleri hâlâ ayrı ve henüz belgelenmemiştir.",
+  "relationToOtherQuebecFile_zh": "该文件补充了 'canada-quebec-selected-skilled-workers.json' 中部分 missingDataFlags，但仅适用于此商业类别（投资者/企业家/自雇）。一般技术工人路径（QSWP/PSTQ、Arrima 门户）的筛选标准仍是独立内容，尚未文档化。",
   "twoStageProcess": {
     "stage1_quebec": {
       "authority": "Ministere de l'Immigration, de la Francisation et de l'Integration (MIFI)",
@@ -14,6 +18,40 @@
       "authority": "IRCC",
       "fee": { "currency": "CAD", "from": 2495, "lastIncreaseDate": "2026-04-30", "note": "Skilled-worker akisinin $1,590 ucretinden YUKSEK - farkli ucret kademesi" },
       "prerequisite": "Must hold CSQ before applying for federal PR"
+    }
+  },
+  "twoStageProcess_tr": {
+    "stage1_quebec": {
+      "authority": "Ministere de l'Immigration, de la Francisation et de l'Integration (MIFI)",
+      "outcome": "Certificat de selection du Quebec (CSQ)",
+      "note": "Bu dosyada (önceki skilled-worker dosyasından farklı olarak) Quebec'in kendi seçim kriterleri DETAYLI biçimde yer alır; aşağıdaki subStreams alanına bakın."
+    },
+    "stage2_federal": {
+      "authority": "IRCC",
+      "fee": {
+        "currency": "CAD",
+        "from": 2495,
+        "lastIncreaseDate": "2026-04-30",
+        "note": "Skilled-worker akışındaki $1,590 ücretinden DAHA YÜKSEK - farklı ücret kademesi"
+      },
+      "prerequisite": "Federal PR başvurusu öncesinde CSQ sahibi olunmalıdır"
+    }
+  },
+  "twoStageProcess_zh": {
+    "stage1_quebec": {
+      "authority": "Ministere de l'Immigration, de la Francisation et de l'Integration (MIFI)",
+      "outcome": "Certificat de selection du Quebec (CSQ)",
+      "note": "与前一个 skilled-worker 文件不同，本文件详细包含了魁北克端筛选标准；请查看下方 subStreams 字段。"
+    },
+    "stage2_federal": {
+      "authority": "IRCC",
+      "fee": {
+        "currency": "CAD",
+        "from": 2495,
+        "lastIncreaseDate": "2026-04-30",
+        "note": "高于 skilled-worker 通道中的 $1,590 - 属于不同费用档位"
+      },
+      "prerequisite": "在申请联邦 PR 前必须已持有 CSQ"
     }
   },
   "ineligibleSectorsGeneral": [
@@ -217,5 +255,7 @@
       "withdrawal": "Possible via webform; partial fee refund depending on processing stage"
     }
   },
-  "disclaimerRequired": true
+  "disclaimerRequired": true,
+  "disclaimerRequired_tr": true,
+  "disclaimerRequired_zh": true
 }

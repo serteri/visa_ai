@@ -1,7 +1,11 @@
 {
   "country": "CA",
   "pathwayCovered": "Provincial Nominee Program — Non-Express Entry process (process/fees/documents only, NOT eligibility criteria)",
+  "pathwayCovered_tr": "Eyalet Adayı Programı — Non-Express Entry süreci (yalnızca süreç/ücret/belgeler, uygunluk kriterleri DEĞİL)",
+  "pathwayCovered_zh": "省提名计划——非快速通道流程（仅流程/费用/材料，不含资格条件）",
   "note": "Bu dosya PNP'nin her eyaletin kendi stream/eligibility kriterini İÇERMEZ — o, ayrı bir 'pnp-streams-{province}.json' setinde olacak. Bu dosya sadece IRCC'nin federal düzeyde, hangi eyalet/stream olursa olsun ortak olan BAŞVURU SÜRECİ, ÜCRET ve BELGE bilgisini taşır.",
+  "note_tr": "Bu dosya PNP'nin eyalet bazlı kendi stream/uygunluk kriterlerini İÇERMEZ. Bunlar ayrı bir 'pnp-streams-{province}.json' setinde tutulacak. Bu dosya yalnızca IRCC'nin federal düzeyde, tüm eyalet/stream'ler için ortak olan başvuru süreci, ücret ve belge bilgisini taşır.",
+  "note_zh": "本文件不包含 PNP 各省自身的类别/资格标准，这些内容将放在独立的 'pnp-streams-{province}.json' 集中。本文件仅包含 IRCC 联邦层面、适用于所有省份/类别的申请流程、费用和材料信息。",
   "lastVerified": "2026-06-27",
   "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/provincial-nominees/non-express-entry.html",
   "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Provincial%20Nominee%20Program%3A%20Non-Express%20Entry%20Process/Provincial%20Nominee%20Program_%20Non-Express%20Entry%20Process%20-%20Canada.ca.pdf",
@@ -19,6 +23,8 @@
   },
   "processingTime": {
     "estimate": "about 13 months",
+    "estimate_tr": "yaklaşık 13 ay",
+    "estimate_zh": "约13个月",
     "variableFactors": [
       "type of application",
       "application completeness",
@@ -29,28 +35,28 @@
     ]
   },
   "processSteps": [
-    { "step": 1, "name": "Get nominated by a province or territory", "description": "Applicant chooses a province/territory and applies under one of its non-Express-Entry streams. Province reviews based on their immigration needs, minimum stream requirements, and genuine intention to live there." },
-    { "step": 2, "name": "Get your documents ready", "description": "Principal applicant signs for entire application incl. family members 18+." },
-    { "step": 3, "name": "Apply for permanent residence", "description": "Online application via PR Portal, after provincial nomination confirmed." },
-    { "step": 4, "name": "After you apply", "description": "AOR issued, biometrics + medical exam requested, eligibility/admissibility assessed." },
-    { "step": 5, "name": "Settling in Canada", "description": "COPR issued, PR card mailed, settlement services available." }
+    { "step": 1, "name": "Get nominated by a province or territory", "name_tr": "Bir eyalet veya bölge tarafından aday gösterilme", "name_zh": "获得省或地区提名", "description": "Applicant chooses a province/territory and applies under one of its non-Express-Entry streams. Province reviews based on their immigration needs, minimum stream requirements, and genuine intention to live there.", "description_tr": "Başvuru sahibi bir eyalet/bölge seçer ve onun non-Express-Entry stream'lerinden birine başvurur. Eyalet, göç ihtiyacı, asgari stream şartları ve orada yaşama niyeti temelinde inceleme yapar.", "description_zh": "申请人选择一个省/地区，并通过其非快速通道类别之一申请。省方会依据移民需求、类别最低要求以及真实居住意图进行审查。" },
+    { "step": 2, "name": "Get your documents ready", "name_tr": "Belgelerinizi hazırlayın", "name_zh": "准备好材料", "description": "Principal applicant signs for entire application incl. family members 18+.", "description_tr": "Asıl başvuru sahibi, 18 yaş ve üzerindeki aile üyeleri dahil tüm başvuru için imza atar.", "description_zh": "主申请人需为包含18岁及以上家庭成员在内的整份申请签字。" },
+    { "step": 3, "name": "Apply for permanent residence", "name_tr": "Daimi oturum için başvurun", "name_zh": "申请永久居留", "description": "Online application via PR Portal, after provincial nomination confirmed.", "description_tr": "Eyalet adaylığı onaylandıktan sonra PR Portal üzerinden çevrimiçi başvuru yapılır.", "description_zh": "在省提名确认后，通过 PR Portal 在线申请。" },
+    { "step": 4, "name": "After you apply", "name_tr": "Başvurudan sonra", "name_zh": "提交申请后", "description": "AOR issued, biometrics + medical exam requested, eligibility/admissibility assessed.", "description_tr": "AOR düzenlenir, biyometri ve sağlık muayenesi istenir, uygunluk/kabul edilebilirlik değerlendirilir.", "description_zh": "将发出 AOR，并要求采集生物识别信息与体检，同时审核资格/可入境性。" },
+    { "step": 5, "name": "Settling in Canada", "name_tr": "Kanada'ya yerleşme", "name_zh": "在加拿大安置", "description": "COPR issued, PR card mailed, settlement services available.", "description_tr": "COPR düzenlenir, PR kartı postalanır, yerleşim hizmetleri kullanılabilir hale gelir.", "description_zh": "将签发 COPR，PR 卡会邮寄，且可使用安置服务。" }
   ],
   "documentsRequired": {
     "fillInPortal": [
-      { "form": "IMM 0008", "name": "Generic Application Form for Canada" },
-      { "form": "IMM 5669", "name": "Schedule A – Background/Declaration" },
-      { "form": "IMM 5406", "name": "Additional Family Information" },
-      { "form": "IMM 5562", "name": "Supplementary Information - Your travels" }
+      { "form": "IMM 0008", "name": "Generic Application Form for Canada", "name_tr": "Kanada için Genel Başvuru Formu", "name_zh": "加拿大通用申请表" },
+      { "form": "IMM 5669", "name": "Schedule A – Background/Declaration", "name_tr": "Schedule A – Geçmiş/Beyan", "name_zh": "附表A——背景/声明" },
+      { "form": "IMM 5406", "name": "Additional Family Information", "name_tr": "Ek Aile Bilgileri", "name_zh": "补充家庭信息" },
+      { "form": "IMM 5562", "name": "Supplementary Information - Your travels", "name_tr": "Ek Bilgiler - Seyahatleriniz", "name_zh": "补充信息——您的旅行记录" }
     ],
     "downloadAndUpload": [
-      { "form": "IMM 0199", "name": "Document Checklist" },
-      { "form": "IMM 0008 Schedule 4", "name": "Economic Classes: Provincial Nominees" },
-      { "form": "IMM 0008 Schedule 4A", "name": "Economic Classes: Provincial Nominees – Business Nominees", "note": "Only for business/entrepreneur nominees" }
+      { "form": "IMM 0199", "name": "Document Checklist", "name_tr": "Belge Kontrol Listesi", "name_zh": "材料清单" },
+      { "form": "IMM 0008 Schedule 4", "name": "Economic Classes: Provincial Nominees", "name_tr": "Ekonomik Sınıflar: Eyalet Adayları", "name_zh": "经济类：省提名人" },
+      { "form": "IMM 0008 Schedule 4A", "name": "Economic Classes: Provincial Nominees – Business Nominees", "name_tr": "Ekonomik Sınıflar: Eyalet Adayları – İş Adayları", "name_zh": "经济类：省提名人——商业提名人", "note": "Only for business/entrepreneur nominees", "note_tr": "Yalnızca iş/entrepreneur adayları için", "note_zh": "仅适用于商业/企业家提名人" }
     ],
     "conditionalForms": [
-      { "form": "IMM 5604", "name": "Declaration From Non-accompanying Parent/Guardian for Minors", "condition": "If a parent of a minor applicant is not coming to Canada" },
-      { "form": "IMM 5409", "name": "Statutory Declaration of Common-law Union", "condition": "If applicant has a common-law partner" },
-      { "form": "IMM 5476", "name": "Use of a representative", "condition": "If using an immigration representative" }
+      { "form": "IMM 5604", "name": "Declaration From Non-accompanying Parent/Guardian for Minors", "name_tr": "Reşit Olmayanlar İçin Eşlik Etmeyen Ebeveyn/Vasi Beyanı", "name_zh": "未随行父母/监护人声明", "condition": "If a parent of a minor applicant is not coming to Canada", "condition_tr": "Reşit olmayan başvuru sahibinin bir ebeveyni Kanada'ya gelmiyorsa", "condition_zh": "如果未成年申请人的一位父母不随同前往加拿大" },
+      { "form": "IMM 5409", "name": "Statutory Declaration of Common-law Union", "name_tr": "Fiili Birliktelik Yasal Beyanı", "name_zh": "事实同居法定声明", "condition": "If applicant has a common-law partner", "condition_tr": "Başvuru sahibinin fiili birliktelik partneri varsa", "condition_zh": "如果申请人有事实伴侣" },
+      { "form": "IMM 5476", "name": "Use of a representative", "name_tr": "Temsilci kullanımı", "name_zh": "使用代表", "condition": "If using an immigration representative", "condition_tr": "Bir göçmenlik temsilcisi kullanılıyorsa", "condition_zh": "如果使用移民代表" }
     ],
     "supportingDocuments": [
       "Photos (taken within 12 months, both sides scanned per portal instructions)",
@@ -66,16 +72,20 @@
     ]
   },
   "afterApply": {
-    "biometrics": { "ageRange": "14-79", "deadline": "30 days from request letter date", "note": "Required even if biometrics were previously given and are still valid" },
-    "medicalExam": { "required": true, "appliesTo": "applicant + all family members, even non-accompanying ones", "disqualifiers": ["danger to Canada's public health/safety", "excessive demand on health/social services"] },
+    "biometrics": { "ageRange": "14-79", "deadline": "30 days from instruction letter", "note": "Required even if biometrics were previously given and still valid" },
+    "medicalExam": { "required": true, "appliesTo": "applicant + all family members, even non-accompanying", "disqualifiers": ["danger to Canada's public health/safety", "excessive demand on health/social services"] },
     "decisionCriteria": ["meets eligibility criteria for the program", "has funds to support self and family on arrival", "admissible (medical exam, police certificate, background checks)"],
-    "misrepresentationConsequence": "Application refusal, inadmissibility finding, and/or 5-year bar from applying for permanent residence"
+    "decisionCriteria_tr": ["programın uygunluk kriterlerini karşılar", "varışta kendini ve ailesini destekleyecek finansal güce sahiptir", "kabul edilebilir durumdadır (sağlık muayenesi, polis belgesi, arka plan kontrolleri)"],
+    "decisionCriteria_zh": ["符合该项目的资格条件", "抵达时有足够资金支持自己和家人", "可被接纳（体检、无犯罪证明、背景调查）"],
+    "misrepresentationConsequence": "Application refusal, inadmissibility finding, and/or 5-year bar from applying for permanent residence",
+    "misrepresentationConsequence_tr": "Başvurunun reddi, kabul edilemezlik kararı ve/veya daimi oturum için 5 yıl başvuru yasağı",
+    "misrepresentationConsequence_zh": "申请被拒、被认定不可入境和/或五年内不得申请永久居留"
   },
   "importantCaveats": [
-    { "topic": "work_authorization", "text": "A provincial nomination does NOT itself grant permission to work in Canada. A separate work permit application is required to work while the PR application is processed." },
-    { "topic": "physician_fast_track", "text": "Faster work permit processing available for physicians/healthcare specialists (clinical lab medicine, surgery, general practice/family medicine) with a full-time offer + a support letter from the nominating province/territory." },
-    { "topic": "bridging_open_work_permit", "text": "Available if applicant's existing work permit is about to expire while PR application is still processing." },
-    { "topic": "representative_limitations", "text": "An immigration representative cannot open a portal account on the applicant's behalf, sign the application electronically, or log in using the applicant's credentials. They can fill forms and communicate via their own account." }
+    { "topic": "work_authorization", "text": "A provincial nomination does NOT itself grant permission to work in Canada. A separate work permit application is required to work while the PR application is processed.", "text_tr": "Eyalet adaylığı tek başına Kanada'da çalışma izni vermez. PR başvurusu işlenirken çalışmak için ayrı bir çalışma izni başvurusu gerekir.", "text_zh": "省提名本身并不赋予在加拿大工作的许可。在永久居留申请处理期间，如需工作，必须另行申请工作许可。" },
+    { "topic": "physician_fast_track", "text": "Faster work permit processing available for physicians/healthcare specialists (clinical lab medicine, surgery, general practice/family medicine) with a full-time offer + a support letter from the nominating province/territory.", "text_tr": "Tam zamanlı teklif ve aday gösteren eyalet/bölgeden destek mektubu olan doktorlar/sağlık uzmanları (klinik laboratuvar tıbbı, cerrahi, genel pratisyen/aile hekimliği) için daha hızlı çalışma izni işleme süreci mevcuttur.", "text_zh": "对于医生/医疗专业人士（临床实验室医学、外科、全科/家庭医学），若有全职工作邀约及提名省/地区的支持信，可获得更快的工签处理。" },
+    { "topic": "bridging_open_work_permit", "text": "Available if applicant's existing work permit is about to expire while PR application is still processing.", "text_tr": "Başvuru sahibinin mevcut çalışma izni, PR başvurusu hâlâ işlenirken süresini doldurmak üzereyse kullanılabilir.", "text_zh": "如果申请人的现有工作许可在永久居留申请仍在处理期间即将到期，则可申请。" },
+    { "topic": "representative_limitations", "text": "An immigration representative cannot open a portal account on the applicant's behalf, sign the application electronically, or log in using the applicant's credentials. They can fill forms and communicate via their own account.", "text_tr": "Bir göçmenlik temsilcisi, başvuru sahibi adına portal hesabı açamaz, başvuruyu elektronik olarak imzalayamaz veya başvuru sahibinin kimlik bilgileriyle giriş yapamaz. Kendi hesabı üzerinden form doldurup iletişim kurabilir.", "text_zh": "移民代表不能代申请人开设门户账户、电子签署申请或使用申请人的凭据登录。他们只能通过自己的账户填写表格并沟通。" }
   ],
   "knownPendingChanges": {
     "note": "Newcomer settlement-service eligibility period changed starting April 1, 2026 for economic class PRs (limited-time access, was previously unrestricted). Re-verify if this affects how settlement guidance is presented to users.",

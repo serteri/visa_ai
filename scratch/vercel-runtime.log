@@ -1,0 +1,114 @@
+﻿node.exe : Vercel CLI 54.18.5 (Node.js 24.12.0)
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Users\serte\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Vercel CLI 54.18.5 (Node.js 24.12 
+   .0):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Resolving deployment "visa-fmcfrlu1y-serters-projects-8267fb48.vercel.app"
+Fetching project "prj_qMcuxb1OyWzXwtwVPD8jObV9rGPe"
+Fetching logs...
+TIME         HOST              LEVEL                                           
+   STATUS  MESSAGE                       
+22:37:43.10  www.logivisa.com  info     GET /api/full-check/progress           
+   200     (no message)                  
+22:37:42.11  www.logivisa.com  info   ╬╗ GET /api/full-check/progress          
+    200     (no message)                  
+22:37:41.11  www.logivisa.com  info     GET /api/full-check/progress           
+   200     (no message)                  
+22:37:40.10  www.logivisa.com  info   ╬╗ GET /api/full-check/progress          
+    200     (no message)                  
+22:37:39.09  www.logivisa.com  info     GET /api/full-check/progress           
+   200     (no message)                  
+22:37:38.54  www.logivisa.com  error    POST /full-check                       
+   500     Error [PrismaClientKnownRequeΓÇª
+22:37:09.21  www.logivisa.com  info   ╬╗ GET /                                 
+    200     (no message)                  
+22:37:09.18  www.logivisa.com  info   ╬╗ GET /visas/australia                  
+    200     (no message)                  
+22:37:09.09  www.logivisa.com  info   ╬╗ GET /visas/canada                     
+    200     (no message)                  
+22:37:08.93  www.logivisa.com  info     GET /tools/points-calculator           
+   200     (no message)                  
+22:37:08.92  www.logivisa.com  info     GET /tools/english-points              
+   200     (no message)                  
+22:37:08.88  www.logivisa.com  info     GET /tools/invitation-rounds           
+   200     (no message)                  
+22:37:08.82  www.logivisa.com  info   ╬╗ GET /tools/skills-assessment          
+    200     (no message)                  
+22:37:08.62  www.logivisa.com  info   ╬╗ GET /tools/anzsco-finder              
+    200     (no message)                  
+22:37:08.59  www.logivisa.com  info     GET /tools/document-checklist-2026     
+   200     (no message)                  
+22:37:08.52  www.logivisa.com  info     GET /occupation-checker                
+   200     (no message)                  
+22:37:08.52  www.logivisa.com  info     GET /guides                            
+   200     (no message)                  
+22:37:08.05  www.logivisa.com  info   ╬╗ GET /full-check                       
+    200     (no message)                  
+22:37:07.96  www.logivisa.com  info     GET /visas/australia                   
+   200     (no message)                  
+22:37:07.96  www.logivisa.com  info     GET /                                  
+   200     (no message)                  
+22:37:07.94  www.logivisa.com  info     GET /visas/canada                      
+   200     (no message)                  
+22:37:07.92  www.logivisa.com  info     GET /en/visas/australia                
+   307     (no message)                  
+22:37:07.92  www.logivisa.com  info     GET /en                                
+   307     (no message)                  
+22:37:07.90  www.logivisa.com  info     GET /en/visas/canada                   
+   307     (no message)                  
+22:37:07.46  www.logivisa.com  info   ╬╗ GET /tools/points-calculator          
+    200     (no message)                  
+22:37:07.41  www.logivisa.com  info     GET /en/tools/points-calculator        
+   307     (no message)                  
+22:37:07.36  www.logivisa.com  info     GET /tools/english-points              
+   200     (no message)                  
+22:37:07.30  www.logivisa.com  info     GET /en/tools/english-points           
+   307     (no message)                  
+22:37:06.96  www.logivisa.com  info     GET /api/auth/session                  
+   200     (no message)                  
+22:37:06.83  www.logivisa.com  info     GET /tools/invitation-rounds           
+   200     (no message)                  
+22:37:06.79  www.logivisa.com  info     GET /en/tools/invitation-rounds        
+   307     (no message)                  
+22:37:06.77  www.logivisa.com  info     GET /tools/skills-assessment           
+   200     (no message)                  
+22:37:06.76  www.logivisa.com  info     GET /tools/anzsco-finder               
+   200     (no message)                  
+22:37:06.73  www.logivisa.com  info     GET /en/tools/skills-assessment        
+   307     (no message)                  
+22:37:06.71  www.logivisa.com  info     GET /en/tools/anzsco-finder            
+   307     (no message)                  
+22:37:06.69  www.logivisa.com  info   ╬╗ GET /api/auth/session                 
+    200     (no message)                  
+22:37:06.40  www.logivisa.com  info   ╬╗ GET /api/auth/session                 
+    200     (no message)                  
+22:37:06.30  www.logivisa.com  info     GET /occupation-checker                
+   200     (no message)                  
+22:37:06.19  www.logivisa.com  info     GET /guides                            
+   200     (no message)                  
+22:37:06.19  www.logivisa.com  info     GET /tools/document-checklist-2026     
+   200     (no message)                  
+22:37:06.17  www.logivisa.com  info     GET /full-check                        
+   200     (no message)                  
+22:37:06.12  www.logivisa.com  info     GET /en/occupation-checker             
+   307     (no message)                  
+22:37:06.12  www.logivisa.com  info     GET /en/tools/document-checklist-2026  
+   307     (no message)                  
+22:37:06.12  www.logivisa.com  info     GET /en/guides                         
+   307     (no message)                  
+22:37:06.12  www.logivisa.com  info     GET /en/full-check                     
+   307     (no message)                  
+22:37:06.09  www.logivisa.com  info   ╬╗ GET /api/auth/session                 
+    200     (no message)                  
+22:37:05.41  www.logivisa.com  info     GET /full-check                        
+   200     (no message)                  
+22:37:05.31  www.logivisa.com  info     GET /api/auth/session                  
+   200     (no message)                  
+22:37:05.25  www.logivisa.com  info     GET /en/full-check                     
+   307     (no message)                  
+22:37:02.26  www.logivisa.com  info     GET /full-check                        
+   200     (no message)                  
+Fetched 50 logs for serters-projects-8267fb48/visa-ai

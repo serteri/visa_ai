@@ -2,6 +2,10 @@
   "country": "CA",
   "occupationOverlay": "Medical Doctor / Physician",
   "structuralNote": "Bu dosya tek bir vize turu DEGIL - doktor mesleginin Express Entry, PNP, Atlantic Immigration, Rural/Francophone pilotlari uzerine bindirilen meslek-ozel kurallari (immigrationPathways) + gocten tamamen ayri, paralel bir tibbi lisanslama sureci (medicalLicensingPathway) iceriyor. Bir doktorun Kanada'da pratik yapabilmesi icin HER IKISI de gerekiyor - gocmenlik statusu kazanmak, lisans almak icin yeterli degil.",
+  "occupationOverlay_tr": "Tıp Doktoru / Physician",
+  "occupationOverlay_zh": "医学医生 / Physician",
+  "structuralNote_tr": "Bu dosya TEK BİR VİZE TÜRÜ DEĞİLDİR. Doktor mesleği için Express Entry, PNP, Atlantic Immigration, Rural/Francophone pilotları üzerine binen meslek-özel göç kurallarını (immigrationPathways) VE göçten tamamen ayrı, paralel bir tıbbi lisanslama sürecini (medicalLicensingPathway) birlikte içerir. Kanada'da hekimlik pratiği için HER İKİSİ de zorunludur; yalnızca göçmenlik statüsü almak lisans için yeterli değildir.",
+  "structuralNote_zh": "本文件不是单一“医生签证”。它同时包含医生职业在 Express Entry、PNP、Atlantic Immigration、Rural/Francophone 试点上的移民路径规则（immigrationPathways），以及与移民完全分离、并行推进的医疗执照路径（medicalLicensingPathway）。要在加拿大行医，两条路径都必须完成；仅获得移民身份并不足以取得执照。",
   "lastVerified": "2026-06-27",
   "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/health-care-providers/physicians.html",
   "sourcePdfBlobUrl": "https://jjcmslfzfhz5bjbp.public.blob.vercel-storage.com/Canada/Live%20and%20work%20as%20a%20medical%20doctor%20in%20Canada/Live%20and%20work%20as%20a%20medical%20doctor%20in%20Canada.pdf",
@@ -121,6 +125,8 @@
   ],
   "medicalLicensingPathway": {
     "note": "Bu surec IRCC/gocmenlik degil - Medical Council of Canada (MCC) ve eyalet/bolge Medical Regulatory Authority'leri (MRA) tarafindan yonetiliyor. Gocmenlik statusunden BAGIMSIZ olarak tamamlanmasi gerekiyor.",
+    "note_tr": "Bu süreç IRCC göç süreci değildir; Medical Council of Canada (MCC) ve eyalet/bölge Medical Regulatory Authority'leri (MRA) tarafından yürütülür. Göçmenlik statüsünden BAĞIMSIZ olarak tamamlanmalıdır.",
+    "note_zh": "该流程不是 IRCC 的移民流程，而是由 Medical Council of Canada (MCC) 及各省/地区 Medical Regulatory Authority (MRA) 管理。它必须独立于移民身份单独完成。",
     "framework": {
       "name": "IMG-L Framework",
       "components": {
@@ -253,5 +259,7 @@
   },
   "otherHealthcareWorkers": {
     "note": "Non-physician healthcare workers may be eligible for different programs; Express Entry continues to invite candidates with other healthcare work experience via general/program-specific rounds (not the new physician-specific category)."
+    ,"note_tr": "Doktor olmayan sağlık çalışanları farklı programlara uygun olabilir; Express Entry, diğer sağlık deneyimlerine sahip adayları genel/program-özel turlar üzerinden davet etmeyi sürdürür (yeni physician-özel kategori dışında).",
+    "note_zh": "非医生类医疗从业者可能适用于其他项目；Express Entry 仍会通过一般/项目专项轮次邀请具有其他医疗工作经验的候选人（不属于新的医生专项类别）。"
   }
 }
