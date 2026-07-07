@@ -1,13 +1,18 @@
+"use client";
+
 import Image from "next/image";
 import img2 from "@/src/assets/report-previews/2.png";
 import img3 from "@/src/assets/report-previews/3.png";
 import img4 from "@/src/assets/report-previews/4.png";
+import { useTranslation } from "@/contexts/language-context";
 
 interface SampleReportMockupProps {
   locale: string;
 }
 
 export function SampleReportMockup({ locale }: SampleReportMockupProps) {
+  const { t } = useTranslation();
+
   function tx<T>(en: T, tr: T, zh: T): T {
     if (locale === "tr") return tr;
     if (locale === "zh-Hans") return zh;
@@ -19,7 +24,7 @@ export function SampleReportMockup({ locale }: SampleReportMockupProps) {
       <div className="pointer-events-none absolute inset-x-6 top-8 -z-10 h-40 rounded-full bg-gradient-to-r from-cyan-200/40 via-sky-100/25 to-emerald-200/40 blur-3xl" />
 
       <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 sm:mb-8 sm:text-xs lg:text-sm">
-        PREMIUM 80-PAGE VISA ROADMAP PREVIEW
+        {t("sampleReport.previewTitle", "PREMIUM 80-PAGE VISA ROADMAP PREVIEW")}
       </p>
 
       <div className="lg:hidden">

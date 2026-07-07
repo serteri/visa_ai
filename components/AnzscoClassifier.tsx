@@ -128,7 +128,7 @@ const DICT: Record<
 // in Chinese (via DICT above) but the CTA itself collapses to the English
 // offer, since there is no separate Chinese guide.
 const CTA_COPY: Record<
-  "tr" | "en",
+  "tr" | "en" | "zh",
   {
     body: (occupationTitle: string | null) => React.ReactNode;
     button: string;
@@ -184,6 +184,28 @@ const CTA_COPY: Record<
     ),
     termsError: "Please accept the legal terms to proceed.",
   },
+  zh: {
+    body: (occupationTitle) => (
+      <>
+        在我们的 80+ 页蓝图中解锁完整策略、州邀请历史和积分优化指南
+        {occupationTitle ? (
+          <>
+            {" "}
+            适用于 <strong>{occupationTitle}</strong>
+          </>
+        ) : null}
+        。
+      </>
+    ),
+    button: "下载完整蓝图 ($9.99)",
+    termsLinkText: "服务条款",
+    termsLabel: (link) => (
+      <>
+        我同意{link}、MARA 法律免责声明以及数据处理政策。（数字化产品一经售出，恕不退款。）
+      </>
+    ),
+    termsError: "请先同意法律条款后再继续。",
+  },
 };
 
 async function extractTextFromPdf(file: File): Promise<string> {
@@ -227,7 +249,7 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
 
   // Only two real product variants exist: Turkish edition, or Global English
   // (which Chinese-speaking visitors also see, per spec).
-  const ctaVariant: "tr" | "en" = locale === "tr" ? "tr" : "en";
+  const ctaVariant: "tr" | "en" | "zh" = locale === "tr" ? "tr" : locale === "zh" ? "zh" : "en";
   const cta = CTA_COPY[ctaVariant];
   const productType = locale === "tr" ? "pdf_book" : "pdf_book_global";
 
