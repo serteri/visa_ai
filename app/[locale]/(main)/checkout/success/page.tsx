@@ -19,9 +19,9 @@ export default function CheckoutSuccessPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && typeof window.fbq === "function") {
-      // All current products (premium, pdf_book, pdf_book_global) are priced at $9.99.
-      // If pricing ever diverges by product again, branch on `product` here.
-      const value = 9.99;
+      // Pricing diverges by product: the readiness report ("premium") is $49,
+      // while the PDF guides (pdf_book, pdf_book_global) remain $9.99.
+      const value = product === "premium" ? 49 : 9.99;
       window.fbq("track", "Purchase", {
         value,
         currency: "USD",

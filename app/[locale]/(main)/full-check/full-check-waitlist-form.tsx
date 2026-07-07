@@ -1172,9 +1172,9 @@ export function FullCheckWaitlistForm({
             </p>
             <p className="text-xs text-amber-700">
               {txt(
-                "Kontenjan dolduğunda rapor $9.99 olacak.",
-                "Report will be $9.99 once spots run out.",
-                "名额用完后报告将收费 $9.99。"
+                "Kontenjan dolduğunda rapor $49 olacak.",
+                "Report will be $49 once spots run out.",
+                "名额用完后报告将收费 $49。"
               )}
             </p>
           </div>
@@ -1201,9 +1201,9 @@ export function FullCheckWaitlistForm({
                   "生成免费准备度报告"
                 )
               : txt(
-                  "Hazırlık raporunuzu oluşturun ($9.99)",
-                  "Generate your readiness report ($9.99)",
-                  "生成准备度报告 ($9.99)"
+                  "Hazırlık raporunuzu oluşturun ($49)",
+                  "Generate your readiness report ($49)",
+                  "生成准备度报告 ($49)"
                 )}
         </Button>
       </form>
@@ -1753,7 +1753,7 @@ export function FullCheckWaitlistForm({
               </div>
 
               <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
-                {rpt("$9.99 单次报告", "$9.99 Tek rapor üreti", "$9.99 for a Single Report")}
+                {rpt("$49 单次报告", "$49 Tek rapor üreti", "$49 for a Single Report")}
               </div>
 
               <Button onClick={handleDownloadPDF} variant="default" className="flex gap-2">

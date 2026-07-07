@@ -224,7 +224,7 @@ export function PremiumFeatureGate({
                       {isTr ? "Özel Erken Erişim" : isZh ? "独家抢先体验" : "Exclusive Early Access"}
                     </p>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm text-muted-foreground line-through">$9.99</p>
+                      <p className="text-sm text-muted-foreground line-through">$49</p>
                       <p className="text-lg font-bold text-emerald-600">
                         {isTr ? "Ücretsiz" : isZh ? "免费" : "Free"}
                       </p>
@@ -247,7 +247,7 @@ export function PremiumFeatureGate({
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     {isTr ? "Premium Rapor" : isZh ? "高级报告" : "Premium Report"}
                   </p>
-                  <p className="text-lg font-bold text-primary">$9.99</p>
+                  <p className="text-lg font-bold text-primary">$49</p>
                 </div>
               )}
             </div>
@@ -338,13 +338,13 @@ export function PremiumFeatureGate({
                       className="h-12 w-full rounded-xl border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
                     >
                       <option value="lead_capture">{isTr ? "Form ile aç (Ücretsiz)" : isZh ? "提交线索表单免费解锁" : "Unlock for FREE (lead capture form)"}</option>
-                      <option value="payment">{isTr ? "Ödeme ile aç ($9.99)" : isZh ? "支付解锁（$9.99）" : "Unlock with payment ($9.99)"}</option>
+                      <option value="payment">{isTr ? "Ödeme ile aç ($49)" : isZh ? "支付解锁（$49）" : "Unlock with payment ($49)"}</option>
                     </select>
                   ) : (
                     <>
                       <input type="hidden" name="unlockMethod" value="payment" />
                       <div className="h-12 flex items-center rounded-xl border border-primary/30 bg-primary/5 px-3 text-sm font-medium text-primary">
-                        {isTr ? "🔓 Ödeme ile aç ($9.99)" : isZh ? "🔓 支付解锁 ($9.99)" : "🔓 Unlock with Payment ($9.99)"}
+                        {isTr ? "🔓 Ödeme ile aç ($49)" : isZh ? "🔓 支付解锁 ($49)" : "🔓 Unlock with Payment ($49)"}
                       </div>
                     </>
                   )}

@@ -36,7 +36,7 @@ export function SampleReportMockup({ locale }: SampleReportMockupProps) {
         <div className="mb-5 flex items-center justify-between">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
             <Sparkles className="h-3 w-3" />
-            {tx("Sample AI Report", "Örnek AI Raporu", "AI 报告示例")}
+            {tx("Premium AI Report Preview", "Premium AI Rapor Önizlemesi", "高级 AI 报告预览")}
           </span>
           <span className="text-xs font-medium text-slate-400">2026</span>
         </div>
@@ -82,7 +82,11 @@ export function SampleReportMockup({ locale }: SampleReportMockupProps) {
         <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-800/50 dark:bg-emerald-900/20">
           <CheckCircle2 className="h-6 w-6 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
-            {tx("Eligible for 189 & 190 Visas", "189 ve 190 Vizeleri için Uygun", "符合 189 和 190 签证资格")}
+            {tx(
+              "Eligible for Subclass 189 & 190 Pathways",
+              "189 ve 190 Alt Sınıf Yolları için Uygun",
+              "符合 189 和 190 类别签证路径资格"
+            )}
           </p>
         </div>
       </div>

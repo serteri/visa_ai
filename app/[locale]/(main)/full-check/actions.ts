@@ -530,7 +530,7 @@ async function createStripeCheckoutSession(input: {
   locale: SupportedLocale;
 }): Promise<{ url: string }> {
   const secretKey = process.env.STRIPE_SECRET_KEY;
-  // Founder reminder: Please remember to create a new $9.99 product in your Stripe Dashboard
+  // Founder reminder: Please remember to create a new $49 product in your Stripe Dashboard
   // and update the STRIPE_PRICE_ID environment variable.
   const priceId = process.env.STRIPE_REPORT_PRICE_ID;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
