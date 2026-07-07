@@ -1,13 +1,9 @@
-import { CheckCircle2, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 interface SampleReportMockupProps {
   locale: string;
 }
 
-/**
- * Pure Tailwind mockup of a premium assessment report — no image assets.
- * Purely illustrative; numbers are fixed sample data, not a live calculation.
- */
 export function SampleReportMockup({ locale }: SampleReportMockupProps) {
   function tx<T>(en: T, tr: T, zh: T): T {
     if (locale === "tr") return tr;
@@ -15,79 +11,75 @@ export function SampleReportMockup({ locale }: SampleReportMockupProps) {
     return en;
   }
 
-  const breakdown = [
-    { label: tx("Age", "Yaş", "年龄"), points: 30 },
-    { label: tx("English", "İngilizce", "英语"), points: 20 },
-    { label: tx("Education", "Eğitim", "学历"), points: 15 },
-    { label: tx("Work Experience", "İş Deneyimi", "工作经验"), points: 10 },
-    { label: tx("Partner Skills", "Partner Becerisi", "配偶技能"), points: 10 },
-  ];
-  const total = breakdown.reduce((sum, row) => sum + row.points, 0);
-  const minimum = 65;
-  const progressPercent = Math.min(100, total);
-
   return (
-    <div className="relative mx-auto w-full max-w-md">
-      {/* Decorative glow behind the card for a premium feel */}
-      <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-emerald-500/20 blur-2xl" />
+    <div className="relative mx-auto w-full max-w-6xl px-2 sm:px-4">
+      <div className="pointer-events-none absolute inset-x-6 top-8 -z-10 h-40 rounded-full bg-gradient-to-r from-cyan-200/40 via-sky-100/25 to-emerald-200/40 blur-3xl" />
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-8">
-        {/* Top badge */}
-        <div className="mb-5 flex items-center justify-between">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
-            <Sparkles className="h-3 w-3" />
-            {tx("Premium AI Report Preview", "Premium AI Rapor Önizlemesi", "高级 AI 报告预览")}
-          </span>
-          <span className="text-xs font-medium text-slate-400">2026</span>
-        </div>
+      <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 sm:mb-8 sm:text-xs lg:text-sm">
+        PREMIUM 80-PAGE VISA ROADMAP PREVIEW
+      </p>
 
-        {/* Fake user profile header */}
-        <div className="mb-6 border-b border-slate-100 pb-5 dark:border-zinc-800">
-          <p className="text-lg font-bold text-slate-900 dark:text-white">
-            {tx("Software Engineer", "Yazılım Mühendisi", "软件工程师")}
-          </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">ANZSCO: 261313</p>
-        </div>
-
-        {/* Points breakdown */}
-        <div className="mb-6 space-y-2.5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-            {tx("Points Breakdown", "Puan Dökümü", "积分明细")}
-          </p>
-          {breakdown.map((row) => (
-            <div key={row.label} className="flex items-center justify-between text-sm">
-              <span className="text-slate-600 dark:text-slate-300">{row.label}</span>
-              <span className="font-semibold text-slate-900 dark:text-white">+{row.points} pts</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Visual progress bar */}
-        <div className="mb-6">
-          <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-2 text-sm font-bold">
-            <span className="text-slate-900 dark:text-white">
-              {tx("Total", "Toplam", "总分")}: {total}/{minimum} {tx("Points", "Puan", "分")}
-            </span>
-            <span className="text-emerald-600 dark:text-emerald-400">{progressPercent}%</span>
+      <div className="lg:hidden">
+        <div className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2">
+          <div className="group relative w-[85%] shrink-0 snap-center overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:z-50 sm:w-[66%]">
+            <Image
+              src="/2.png"
+              alt={tx("Report preview page 1", "Rapor önizleme sayfa 1", "报告预览第 1 页")}
+              width={1200}
+              height={1600}
+              className="h-auto w-full"
+            />
           </div>
-          <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-zinc-800">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"
-              style={{ width: `${progressPercent}%` }}
+          <div className="group relative w-[85%] shrink-0 snap-center overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:z-50 sm:w-[66%]">
+            <Image
+              src="/3.png"
+              alt={tx("Report preview page 2", "Rapor önizleme sayfa 2", "报告预览第 2 页")}
+              width={1200}
+              height={1600}
+              className="h-auto w-full"
+            />
+          </div>
+          <div className="group relative w-[85%] shrink-0 snap-center overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:z-50 sm:w-[66%]">
+            <Image
+              src="/4.png"
+              alt={tx("Report preview page 3", "Rapor önizleme sayfa 3", "报告预览第 3 页")}
+              width={1200}
+              height={1600}
+              className="h-auto w-full"
             />
           </div>
         </div>
+      </div>
 
-        {/* Success indicator */}
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-800/50 dark:bg-emerald-900/20">
-          <CheckCircle2 className="h-6 w-6 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
-            {tx(
-              "Eligible for Subclass 189 & 190 Pathways",
-              "189 ve 190 Alt Sınıf Yolları için Uygun",
-              "符合 189 和 190 类别签证路径资格"
-            )}
-          </p>
+      <div className="relative mx-auto hidden h-[660px] w-full max-w-5xl lg:block">
+        <div className="group absolute left-1/2 top-10 z-20 w-[30%] min-w-[240px] -translate-x-[102%] -rotate-3 transform overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:z-50">
+          <Image
+            src="/2.png"
+            alt={tx("Report preview page 1", "Rapor önizleme sayfa 1", "报告预览第 1 页")}
+            width={1200}
+            height={1600}
+            className="h-auto w-full"
+          />
+        </div>
+
+        <div className="group absolute left-1/2 top-2 z-30 w-[34%] min-w-[280px] -translate-x-1/2 transform overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:z-50">
+          <Image
+            src="/3.png"
+            alt={tx("Report preview page 2", "Rapor önizleme sayfa 2", "报告预览第 2 页")}
+            width={1200}
+            height={1600}
+            className="h-auto w-full"
+          />
+        </div>
+
+        <div className="group absolute left-1/2 top-10 z-20 w-[30%] min-w-[240px] -translate-x-[2%] rotate-3 transform overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:z-50">
+          <Image
+            src="/4.png"
+            alt={tx("Report preview page 3", "Rapor önizleme sayfa 3", "报告预览第 3 页")}
+            width={1200}
+            height={1600}
+            className="h-auto w-full"
+          />
         </div>
       </div>
     </div>
