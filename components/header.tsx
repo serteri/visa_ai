@@ -169,13 +169,6 @@ export function Header({
               <>
                 <Button
                   asChild
-                  variant="ghost"
-                  className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-indigo-600"
-                >
-                  <Link href={`/${locale}/sign-in`}>Sign In</Link>
-                </Button>
-                <Button
-                  asChild
                   className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-4 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
                 >
                   <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
@@ -449,11 +442,6 @@ export function Header({
                   >
                     <Link href={`/${locale}/full-check`} onClick={() => setIsMobileMenuOpen(false)}>
                       {getReportLabel}
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href={`/${locale}/sign-in`} onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign In
                     </Link>
                   </Button>
                 </>
