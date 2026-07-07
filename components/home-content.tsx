@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { BrainCircuit, ClipboardList, EyeOff, Lock, ShieldCheck, Zap } from "lucide-react";
@@ -39,6 +39,13 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
   const locale = params.locale as string;
   const { t } = useTranslation();
 
+  function handleScrollToPdfSection(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    const section = document.getElementById("pdf-download-section");
+    if (!section) return;
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   // Shared free-download counter — drives the CTA copy on BOTH product cards below.
   const [freeDownloadsLeft] = useState(initialFreeDownloadsLeft ?? FREE_DOWNLOADS_FALLBACK);
   const [assessmentSlotsLeft] = useState(initialAssessmentSlotsLeft ?? ASSESSMENT_SLOTS_FALLBACK);
@@ -61,6 +68,22 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
         <div className="absolute right-0 top-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-purple-500/20 blur-[100px] dark:bg-purple-500/10"></div>
 
         <div className="section-shell flex flex-col items-center text-center">
+          <a
+            href="#pdf-download-section"
+            onClick={handleScrollToPdfSection}
+            className="mb-6 inline-flex w-full max-w-3xl items-center justify-center rounded-2xl border border-sky-200/80 bg-gradient-to-r from-cyan-50 via-white to-emerald-50 px-4 py-3 text-center text-sm font-semibold text-slate-800 shadow-lg shadow-sky-100/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-sky-200/70 sm:px-6 sm:py-4 sm:text-base"
+          >
+            {locale === "tr" ? (
+              <>
+                📘 Ücretsiz 80 Sayfalık Avustralya & Kanada PR Kılavuzu 2026 Yayınlandı! <strong className="ml-1">Hemen İndirin →</strong>
+              </>
+            ) : (
+              <>
+                📘 Free 80-Page Australia & Canada PR Guide 2026 is now available! <strong className="ml-1">Get Free Copy →</strong>
+              </>
+            )}
+          </a>
+
           <Badge variant="secondary" className="mb-6 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-indigo-200/50 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800">
             {t("hero.trustBadge")}
           </Badge>
@@ -340,7 +363,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
       </section>
 
       {/* Dual-Product Guide Grid */}
-      <section className="section-shell">
+      <section id="pdf-download-section" className="section-shell scroll-mt-24">
         {/* Scarcity alert banner — total remaining slots across BOTH editions */}
         <div
           className={`mb-6 flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-center text-sm font-semibold shadow-sm ${
