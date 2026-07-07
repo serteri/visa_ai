@@ -1,3 +1,8 @@
+import Image from "next/image";
+import img2 from "@/public/2.png";
+import img3 from "@/public/3.png";
+import img4 from "@/public/4.png";
+
 interface SampleReportMockupProps {
   locale: string;
 }
@@ -20,35 +25,24 @@ export function SampleReportMockup({ locale }: SampleReportMockupProps) {
       <div className="lg:hidden">
         <div className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2">
           <div className="group relative w-[85%] shrink-0 snap-center overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:z-50 sm:w-[66%]">
-            <img
-              src="/2.png"
+            <Image
+              src={img2}
               alt={tx("Report preview page 1", "Rapor önizleme sayfa 1", "报告预览第 1 页")}
-              width={1200}
-              height={1600}
-              loading="eager"
-              decoding="async"
+              priority
               className="block h-auto w-full"
             />
           </div>
           <div className="group relative w-[85%] shrink-0 snap-center overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:z-50 sm:w-[66%]">
-            <img
-              src="/3.png"
+            <Image
+              src={img3}
               alt={tx("Report preview page 2", "Rapor önizleme sayfa 2", "报告预览第 2 页")}
-              width={1200}
-              height={1600}
-              loading="lazy"
-              decoding="async"
               className="block h-auto w-full"
             />
           </div>
           <div className="group relative w-[85%] shrink-0 snap-center overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:z-50 sm:w-[66%]">
-            <img
-              src="/4.png"
+            <Image
+              src={img4}
               alt={tx("Report preview page 3", "Rapor önizleme sayfa 3", "报告预览第 3 页")}
-              width={1200}
-              height={1600}
-              loading="lazy"
-              decoding="async"
               className="block h-auto w-full"
             />
           </div>
@@ -57,37 +51,27 @@ export function SampleReportMockup({ locale }: SampleReportMockupProps) {
 
       <div className="relative mx-auto hidden h-[660px] w-full max-w-5xl overflow-visible lg:block">
         <div className="group absolute left-1/2 top-10 z-20 w-[30%] min-w-[240px] -translate-x-[102%] -rotate-3 transform overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:z-50">
-          <img
-            src="/2.png"
+          <Image
+            src={img2}
             alt={tx("Report preview page 1", "Rapor önizleme sayfa 1", "报告预览第 1 页")}
-            width={1200}
-            height={1600}
-            loading="eager"
-            decoding="async"
+            priority
             className="block h-auto w-full"
           />
         </div>
 
         <div className="group absolute left-1/2 top-2 z-30 w-[34%] min-w-[280px] -translate-x-1/2 transform overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:z-50">
-          <img
-            src="/3.png"
+          <Image
+            src={img3}
             alt={tx("Report preview page 2", "Rapor önizleme sayfa 2", "报告预览第 2 页")}
-            width={1200}
-            height={1600}
-            loading="eager"
-            decoding="async"
+            priority
             className="block h-auto w-full"
           />
         </div>
 
         <div className="group absolute left-1/2 top-10 z-20 w-[30%] min-w-[240px] -translate-x-[2%] rotate-3 transform overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:z-50">
-          <img
-            src="/4.png"
+          <Image
+            src={img4}
             alt={tx("Report preview page 3", "Rapor önizleme sayfa 3", "报告预览第 3 页")}
-            width={1200}
-            height={1600}
-            loading="lazy"
-            decoding="async"
             className="block h-auto w-full"
           />
         </div>
