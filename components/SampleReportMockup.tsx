@@ -1,7 +1,7 @@
 import Image from "next/image";
-import img2 from "@/public/2.png";
-import img3 from "@/public/3.png";
-import img4 from "@/public/4.png";
+import img2 from "../public/2.png";
+import img3 from "../public/3.png";
+import img4 from "../public/4.png";
 
 interface SampleReportMockupProps {
   locale: string;
