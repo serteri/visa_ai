@@ -126,7 +126,9 @@ export default function AgentReferralPage() {
 
                 <div className="space-y-1 sm:col-span-2">
                   <label htmlFor="visaInterest" className="text-sm font-medium">
-                    {isTr ? "Ilgilendiginiz vize" : "Visa interest"}
+                    {isTr
+                      ? "Ilgilendiginiz vize (Yalnizca Avustralya Vize Kategorileri)"
+                      : "Select Australian Visa Subclass (Australia Visa Streams Only)"}
                   </label>
                   <select
                     id="visaInterest"
@@ -143,6 +145,11 @@ export default function AgentReferralPage() {
                     <option value="820_801">Partner visa (820/801)</option>
                     <option value="not sure">not sure</option>
                   </select>
+                  <p className="text-xs text-muted-foreground">
+                    {isTr
+                      ? "Bu form yalnizca Avustralya vize kategorilerini kapsar."
+                      : "This field covers Australia visa streams only."}
+                  </p>
                   <ErrorText message={state.errors?.visaInterest} />
                 </div>
 
