@@ -118,8 +118,16 @@ async function sendReferralNotificationEmail(payload: {
     `submitted date: ${payload.submittedDate}`,
   ];
 
+  // Verified sending domain — matches the pattern used by the main
+  // assessment form (full-check/actions.ts) and the PDF lead action
+  // (api/pdf-download/route.ts). Resend's default onboarding@resend.dev
+  // sandbox sender only delivers to the Resend account owner's own address,
+  // so notifications to REFERRAL_NOTIFICATION_EMAIL were silently dropped
+  // when sent from that sandbox address.
+  const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
+
   await resend.emails.send({
-    from: "Logivisa <onboarding@resend.dev>",
+    from: fromEmail,
     to: [notificationEmail],
     subject: "New visa referral lead",
     text: bodyLines.join("\n"),
