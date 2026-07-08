@@ -65,6 +65,20 @@ export const proxy = auth((req) => {
     return new NextResponse("Forbidden", { status: 403 });
   }
 
+  // Geo-based locale routing for the assessment funnel: Turkish visitors
+  // landing on the prefixless (default English) /full-check entry point are
+  // redirected to the /tr version, preserving all query params (e.g.
+  // ?country=AU). Scoped to the exact prefixless path so it never fires for
+  // /tr/full-check itself, which prevents any redirect loop.
+  if (pathname === "/full-check") {
+    const country = req.headers.get("x-vercel-ip-country");
+    if (country === "TR") {
+      const redirectUrl = new URL("/tr/full-check", req.url);
+      redirectUrl.search = searchParams.toString();
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
   // If visiting '/en' directly or any path starting with '/en/', redirect to prefixless path
   if (pathname === "/en") {
     const url = new URL("/", req.url);
