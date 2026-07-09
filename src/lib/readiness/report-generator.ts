@@ -276,7 +276,11 @@ function matchTrendByOccupation(occupation?: string): TrendRecord {
   return keyword ?? TREND_DATA.occupation_trends[0];
 }
 
-function buildGanttByTimeline(timeline?: string): GanttSection {
+function buildGanttByTimeline(
+  timeline?: string,
+  occupation?: string,
+  country: "AU" | "CA" = "AU"
+): GanttSection {
   const raw = normalize(timeline);
 
   if (raw.includes("0-6") || raw.includes("0 to 6") || raw.includes("6 month")) {
@@ -338,6 +342,40 @@ function buildGanttByTimeline(timeline?: string): GanttSection {
           title: "Application Assembly Window",
           window: "Months 8-12",
           description: "This window generally reflects how quickly the profile can convert into a complete application-ready evidence set.",
+        },
+      ],
+    };
+  }
+
+  if (country === "AU") {
+    const occupationLabel = occupation?.trim() || "your nominated occupation";
+
+    return {
+      timelineBand: "12+ months",
+      steps: [
+        {
+          step: 1,
+          title: "Profile Foundation & English",
+          window: "Quarter 1",
+          description: "Establish baseline points, finalize highest possible English language testing, and gather core identity documents.",
+        },
+        {
+          step: 2,
+          title: "Skills Validation",
+          window: "Quarter 2",
+          description: `Lodge formal skills assessment for ${occupationLabel} with the relevant Australian assessing authority, accounting for potential deducted years of experience.`,
+        },
+        {
+          step: 3,
+          title: "EOI Strategy",
+          window: "Quarter 3",
+          description: "Submit Expression of Interest (EOI) targeting 190 and 491 state nomination pathways based on current quota allocations.",
+        },
+        {
+          step: 4,
+          title: "Visa Lodgement & Processing",
+          window: "Quarter 4",
+          description: "Finalize character/police clearances and medicals immediately upon receiving an Invitation to Apply (ITA).",
         },
       ],
     };
@@ -427,7 +465,7 @@ export function generatePremiumSections(input: {
   const locale = input.locale ?? "en";
 
   if (input.country === "CA") {
-    const gantt = buildGanttByTimeline(input.timeline);
+    const gantt = buildGanttByTimeline(input.timeline, input.occupation, "CA");
     const canadaTrack = inferCanadaActionTrack(locale, input.occupation);
     const city = inferCanadaCity({
       selectedCity: input.selectedCity,
@@ -494,7 +532,7 @@ export function generatePremiumSections(input: {
   const familyProfile = inferFamilyProfile(input.familyStatus);
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
-  const gantt = buildGanttByTimeline(input.timeline);
+  const gantt = buildGanttByTimeline(input.timeline, input.occupation, "AU");
   const methodologyNote = localizeTrendDescription(
     locale,
     locale === "zh-Hans" ? TREND_DATA.methodology_note_zh ?? TREND_DATA.methodology_note : TREND_DATA.methodology_note

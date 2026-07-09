@@ -2964,12 +2964,12 @@ function buildProgressionPathways(
 
   if (items.length === 0) {
     items.push({
-      from: isTr ? "Mevcut bilgiler" : "Current information",
-      to: isTr ? "Daha net yol bağlamı" : "Clearer pathway context",
-      label: isTr ? "Tipik geçiş bağlamı net değil" : "Typical progression context is unclear",
+      from: isTr ? "Mevcut profil" : "Current profile",
+      to: isTr ? "Stratejik nitelikli göç yolu" : "Strategic skilled migration route",
+      label: isTr ? "Nitelikli göç için standart ilerleme" : "Standard progression for skilled professionals",
       explanation: isTr
-        ? "Tipik geçiş yolları, daha net hedef ve vize ilgisi sağlandığında daha anlamlı şekilde gösterilebilir."
-        : "Typical progression pathways can be shown more meaningfully when clearer goal and visa-interest details are provided.",
+        ? "Mevcut ortamda nitelikli profesyoneller için standart ilerleme genellikle olumlu bir Skills Assessment alınmasını, İngilizce puanını Superior seviyeye taşımayı ve hem Eyalet (190) hem de Bölgesel (491) sponsorluklarını hedefleyen stratejik bir Expression of Interest (EOI) sunumunu içerir."
+        : "Standard progression for skilled professionals in the current landscape typically involves securing a positive Skills Assessment, maximizing English scores to Superior, and lodging a strategic Expression of Interest (EOI) targeting both State (190) and Regional (491) sponsorships.",
     });
   }
 
@@ -3031,8 +3031,8 @@ function buildPathwayFriction(
         tr: "İlişki gerekliliklerini sürdürmek bu yol için merkezi önemdedir.",
       },
       general: {
-        en: "More detail is needed before pathway friction can be compared.",
-        tr: "Yol sürtünmesi karşılaştırılmadan önce daha fazla ayrıntı gerekir.",
+        en: "General Skilled Migration (GSM) is highly competitive. Success requires strict alignment between your nominated occupation, your assessing authority's exact requirements, and current state-level demand matrices. Missing specific state ties (like regional work or onshore residency) is the primary friction point.",
+        tr: "Genel Nitelikli Göç (GSM) oldukça rekabetçidir. Başarı; beyan edilen meslek, değerlendirme kurumunun tam gereklilikleri ve güncel eyalet düzeyi talep matrisleri arasında sıkı bir uyum gerektirir. Belirli eyalet bağlarının (bölgesel çalışma veya yerinde ikamet gibi) eksik olması birincil sürtünme noktasıdır.",
       },
     };
     const selected = detail[pathway.subclass] ?? detail.general;
