@@ -2737,6 +2737,7 @@ function buildFinancialRoadmap(
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
   const has482 = subclasses.includes("482");
   const hasNoFunctionalEnglishDependants = hasDependantsWithoutFunctionalEnglish(input);
+  const hasFamilyStatusProvided = Boolean((input.sponsorOrFamily ?? "").trim());
   const variable = isTr ? "Değişken / sağlayıcıya bağlı" : "Variable / depends on provider";
 
   const feeSubclass = subclasses.find((s) => GOV_FEES_EN[s]);
@@ -2763,9 +2764,30 @@ function buildFinancialRoadmap(
         ? "Avustralya göçü için kabul edilen testler şunlardır: IELTS Academic veya General Training (~AUD 385–405), PTE Academic (~AUD 375–395), OET (Occupational English Test, sağlık meslekleri için, ~AUD 587), TOEFL iBT (~AUD 340–390, bazı akışlar için kabul edilir). Competent English için genel eşikler: IELTS her bantta minimum 6.0, PTE her bantta minimum 50. Superior English (IELTS 8.0+) puan tablosunda +20 ek puan sağlar. Sınavlar 2 yıldan uzun süre önce alınmışsa yenilenmesi gerekir."
         : "Tests accepted for Australian migration include: IELTS Academic or General Training (~AUD $385–$405 per attempt), PTE Academic (~AUD $375–$395), OET (Occupational English Test, used by healthcare occupations, ~AUD $587), and TOEFL iBT (~AUD $340–$390, accepted for some streams). Minimum Competent English thresholds: IELTS 6.0 in all four bands, PTE 50 in all bands. Achieving Superior English (IELTS 8.0+ in all four bands or PTE 79+) unlocks +20 additional points in the Australian points test — a significant investment if retesting is needed. Scores must be no more than 3 years old at time of visa grant.",
     },
-    {
-      // Re-labeled as a Critical Compliance Alert (1 July 2026): this is a
-      // mandatory compliance flag, not a routine cost-planning line item.
+  ];
+
+  // Second-instalment risk (18+ dependants without functional English) must
+  // never render as an active, dollar-specific "CRITICAL COMPLIANCE ALERT"
+  // unless the user actually provided family/dependant information. Without
+  // that, there is nothing to assess — showing the alarming headline and a
+  // specific AUD figure regardless was a fabrication, not a real finding.
+  if (!hasFamilyStatusProvided) {
+    items.push({
+      category: isTr
+        ? "Aile/bağımlı durumu bilgisi sağlanmadı"
+        : isZh
+          ? "未提供家庭/受抚养人信息"
+          : "Family/dependant information not provided",
+      estimateType: "variable",
+      amountLabel: isTr ? "Değerlendirilemez" : isZh ? "无法评估" : "Cannot be assessed",
+      explanation: isTr
+        ? "Aile/bağımlı durumu bilgisi sağlanmadığı için ikinci taksit yükümlülükleri değerlendirilemez. 18 yaş ve üzeri bağımlılar Functional English kanıtı sunamazsa kişi başı ikinci taksit ücreti uygulanabilir."
+        : isZh
+          ? "由于未提供家庭/受抚养人信息，无法评估第二期费用义务。若18岁及以上受抚养人无法提供功能性英语证明，可能会产生每人的第二期费用。"
+          : "Family/dependant information not provided — second instalment obligations cannot be assessed. Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant.",
+    });
+  } else if (hasNoFunctionalEnglishDependants) {
+    items.push({
       category: isTr
         ? `🚨 KRİTİK UYUMLULUK UYARISI: 18+ bağımlılar için olası ikinci taksit ücreti ~AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}`
         : isZh
@@ -2776,14 +2798,25 @@ function buildFinancialRoadmap(
         ? `Bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}`
         : `About AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant`,
       explanation: isTr
-        ? hasNoFunctionalEnglishDependants
-          ? `Seçilen aile durumunda (18+ bağımlılarda Functional English yok), ikinci taksit riski aktif görünüyor: bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}.`
-          : "18 yaş ve üzeri bağımlılar Functional English kanıtı sunamazsa kişi başı ikinci taksit ücreti uygulanabilir. Aile durumunuz buna işaret etmiyorsa risk profil bazında değişir."
-        : hasNoFunctionalEnglishDependants
-          ? `Your selected family status indicates no functional English for dependants aged 18+, so the second-instalment risk appears active at about AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant.`
-          : "Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant. If your family status does not indicate this, risk remains profile-dependent.",
-    },
-  ];
+        ? `Seçilen aile durumunda (18+ bağımlılarda Functional English yok), ikinci taksit riski aktif görünüyor: bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}.`
+        : `Your selected family status indicates no functional English for dependants aged 18+, so the second-instalment risk appears active at about AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant.`,
+    });
+  } else {
+    items.push({
+      category: isTr
+        ? "İkinci taksit riski (bağımlı İngilizce durumu)"
+        : isZh
+          ? "第二期费用风险（受抚养人英语状况）"
+          : "Second-instalment risk (dependant English status)",
+      estimateType: "variable",
+      amountLabel: isTr
+        ? `Bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} (belirtilen aile durumunda görünmüyor)`
+        : `About AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant (not indicated by your provided family status)`,
+      explanation: isTr
+        ? "18 yaş ve üzeri bağımlılar Functional English kanıtı sunamazsa kişi başı ikinci taksit ücreti uygulanabilir. Sağladığınız aile durumu bu riski işaret etmiyor, ancak koşullar değişirse yeniden değerlendirilmelidir."
+        : "Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant. Your provided family status does not indicate this risk, but it should be reassessed if circumstances change.",
+    });
+  }
 
   if (hasGraduateVisaPathwayIntent) {
     items.unshift({
