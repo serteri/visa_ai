@@ -1,12 +1,43 @@
 import stateNominationData from "@/src/data/state-nomination-status.json";
 import type {
+  AssessmentState,
   Locale,
+  PathwayComparison,
   ReadinessInput,
   StateMatchLevel,
   StateNominationState,
   StateNominationStatus,
   StateNominationTracker,
 } from "./types";
+
+/** State nomination applies to the 190 (state-nominated) and 491 (regional) subclasses. */
+const STATE_NOMINATION_SUBCLASSES = ["190", "491"];
+
+function buildBlockedReason(
+  locale: Locale,
+  pathwayComparison: PathwayComparison[],
+  assessmentState: AssessmentState
+): string {
+  const blockingPathway = pathwayComparison.find(
+    (p) => STATE_NOMINATION_SUBCLASSES.includes(p.subclass) && p.relevance === "ineligible"
+  );
+
+  if (blockingPathway) {
+    return t(
+      locale,
+      `State nomination relevance cannot be assessed while the underlying visa pathway is ineligible. ${blockingPathway.reason}`,
+      `Alttaki vize yolu uygun olmadigi surece eyalet adayligi ilgisi degerlendirilemez. ${blockingPathway.reason}`,
+      `在基础签证路径不符合资格的情况下，无法评估州担保相关性。${blockingPathway.reason}`
+    );
+  }
+
+  return t(
+    locale,
+    "State nomination relevance cannot be assessed while the underlying visa pathway is unverified. Resolve the missing profile details or occupation verification first.",
+    "Alttaki vize yolu dogrulanmadigi surece eyalet adayligi ilgisi degerlendirilemez. Once eksik profil bilgilerini veya meslek dogrulamasini tamamlayin.",
+    "在基础签证路径尚未核实的情况下，无法评估州担保相关性。请先补全缺失的资料或完成职业核实。"
+  );
+}
 
 type StateDatasetRow = {
   code: StateNominationState["code"];
@@ -284,7 +315,31 @@ function buildRequirements(args: {
   return requirements.slice(0, 3);
 }
 
-export function calculateStateNominationTracker(input: ReadinessInput): StateNominationTracker {
+export function calculateStateNominationTracker(
+  input: ReadinessInput,
+  pathwayComparison: PathwayComparison[],
+  assessmentState: AssessmentState
+): StateNominationTracker {
+  const relevantIneligible = pathwayComparison.some(
+    (p) => STATE_NOMINATION_SUBCLASSES.includes(p.subclass) && p.relevance === "ineligible"
+  );
+  const eligibilityBlocked = relevantIneligible || !assessmentState.canShowNumericRanking;
+
+  if (eligibilityBlocked) {
+    return {
+      states: [],
+      topRecommendedStates: [],
+      eligibilityBlocked: true,
+      blockedReason: buildBlockedReason(input.locale, pathwayComparison, assessmentState),
+      note: t(
+        input.locale,
+        "State nomination settings change frequently. Treat this as a directional eligibility heatmap, not a formal invitation guarantee.",
+        "Eyalet adayligi kosullari sik degisir. Bunu resmi davet garantisi degil, yonlendirici bir uygunluk isi haritasi olarak degerlendirin.",
+        "州担保设置经常变化。请将其视为方向性资格热力图，而不是正式邀请保证。"
+      ),
+    };
+  }
+
   const offshore = isOffshore(input.currentCountry);
   const experienceYears = maxExperienceYears(input);
   const regionalWilling = Boolean(input.regionalWilling);
@@ -363,6 +418,7 @@ export function calculateStateNominationTracker(input: ReadinessInput): StateNom
   return {
     states,
     topRecommendedStates: states.filter((item) => item.matchLevel !== "low").slice(0, 2),
+    eligibilityBlocked: false,
     note: t(
       input.locale,
       "State nomination settings change frequently. Treat this as a directional eligibility heatmap, not a formal invitation guarantee.",

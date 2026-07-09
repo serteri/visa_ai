@@ -1,11 +1,46 @@
 import occupationsData from "@/src/data/occupations.json";
 import type {
+  AssessmentState,
   ChecklistItem,
   Locale,
   LodgementReadyChecklist,
+  PathwayComparison,
   ReadinessInput,
   StateNominationTracker,
 } from "@/lib/readiness/types";
+
+/** GSM points-tested subclasses that lodgement-readiness / EOI-alignment items depend on. */
+const GSM_SUBCLASSES = ["189", "190", "491"];
+
+function getGsmBlockReason(
+  pathwayComparison: PathwayComparison[],
+  assessmentState: AssessmentState,
+  locale: Locale
+): string | undefined {
+  const ineligiblePathway = pathwayComparison.find(
+    (p) => GSM_SUBCLASSES.includes(p.subclass) && p.relevance === "ineligible"
+  );
+
+  if (ineligiblePathway) {
+    return t(
+      locale,
+      `Blocked: profile does not currently meet the Subclass ${ineligiblePathway.subclass} threshold — ${ineligiblePathway.reason}`,
+      `Engellendi: profil su anda Subclass ${ineligiblePathway.subclass} esigini karsilamiyor — ${ineligiblePathway.reason}`,
+      `已阻止：档案目前不满足 Subclass ${ineligiblePathway.subclass} 门槛——${ineligiblePathway.reason}`
+    );
+  }
+
+  if (!assessmentState.canShowNumericRanking) {
+    return t(
+      locale,
+      "Deferred: pathway eligibility is not yet confirmed (missing profile details or occupation verification), so lodgement-stage items cannot be marked ready.",
+      "Ertelendi: yol uygunlugu henuz dogrulanmadi (eksik profil bilgisi veya meslek dogrulamasi), bu nedenle basvuru asamasi maddeleri hazir olarak isaretlenemez.",
+      "已延迟：路径资格尚未确认（缺少资料或职业核实），因此递交阶段的事项暂不能标记为就绪。"
+    );
+  }
+
+  return undefined;
+}
 
 type OccupationRecord = {
   anzsco_code: string;
@@ -76,11 +111,14 @@ function authorityLabel(authority: string, locale: Locale): string {
 
 export function generateChecklist(args: {
   input: ReadinessInput;
+  pathwayComparison: PathwayComparison[];
+  assessmentState: AssessmentState;
   stateNominationTracker?: StateNominationTracker;
   occupationAuthority?: string;
 }): LodgementReadyChecklist {
-  const { input, stateNominationTracker } = args;
+  const { input, pathwayComparison, assessmentState, stateNominationTracker } = args;
   const items: ChecklistItem[] = [];
+  const gsmBlockReason = getGsmBlockReason(pathwayComparison, assessmentState, input.locale);
   const englishTaken = normalize(input.englishTestTaken);
   const englishBand = parseEnglishBand(input.englishLevel);
 
@@ -123,24 +161,38 @@ export function generateChecklist(args: {
     });
   }
 
-  const topState = stateNominationTracker?.topRecommendedStates?.[0];
-  if (topState) {
+  if (gsmBlockReason) {
     items.push({
-      id: `eoi-${topState.code.toLowerCase()}`,
-      priority: "recommended",
+      id: "eoi-blocked",
+      priority: "blocked",
       title: t(
         input.locale,
-        `${topState.name} pathway EOI alignment considerations`,
-        `${topState.name} yolu icin EOI uyum degerlendirmeleri`,
-        `${topState.name} 路径的 EOI 对齐考量`
+        "State/EOI alignment cannot proceed yet",
+        "Eyalet/EOI uyumu henuz ilerletilemez",
+        "州担保/EOI 对齐暂不可进行"
       ),
-      detail: t(
-        input.locale,
-        `${topState.name} is currently indicated as the strongest state nomination signal; EOI settings and evidence packaging are typically reviewed against that pathway's criteria.`,
-        `${topState.name} su anda en guclu eyalet adayligi sinyali olarak gorunmektedir; EOI ayarlari ve belge paketleri genellikle bu yolun kriterleriyle uyumlu olup olmadigi acisindan incelenir.`,
-        `${topState.name} 当前显示为较强的州担保信号；EOI 设置与材料包通常会按该路径标准进行对齐审视。`
-      ),
+      detail: gsmBlockReason,
     });
+  } else {
+    const topState = stateNominationTracker?.topRecommendedStates?.[0];
+    if (topState) {
+      items.push({
+        id: `eoi-${topState.code.toLowerCase()}`,
+        priority: "recommended",
+        title: t(
+          input.locale,
+          `${topState.name} pathway EOI alignment considerations`,
+          `${topState.name} yolu icin EOI uyum degerlendirmeleri`,
+          `${topState.name} 路径的 EOI 对齐考量`
+        ),
+        detail: t(
+          input.locale,
+          `${topState.name} is currently indicated as the strongest state nomination signal; EOI settings and evidence packaging are typically reviewed against that pathway's criteria.`,
+          `${topState.name} su anda en guclu eyalet adayligi sinyali olarak gorunmektedir; EOI ayarlari ve belge paketleri genellikle bu yolun kriterleriyle uyumlu olup olmadigi acisindan incelenir.`,
+          `${topState.name} 当前显示为较强的州担保信号；EOI 设置与材料包通常会按该路径标准进行对齐审视。`
+        ),
+      });
+    }
   }
 
   return {

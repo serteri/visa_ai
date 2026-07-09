@@ -1410,9 +1410,26 @@ export function FullCheckWaitlistForm({
               );
             })()}
 
-            {report.stateNominationTracker && report.stateNominationTracker.states.length > 0 && (
-              <StateHeatmap locale={locale} tracker={report.stateNominationTracker} />
+            {report.stateNominationTracker?.eligibilityBlocked && (
+              <Card className="border-slate-300 bg-slate-50">
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    {rpt("州担保追踪图", "Eyalet Nomination Tracker", "State Nomination Tracker")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    {report.stateNominationTracker.blockedReason}
+                  </p>
+                </CardContent>
+              </Card>
             )}
+
+            {report.stateNominationTracker &&
+              !report.stateNominationTracker.eligibilityBlocked &&
+              report.stateNominationTracker.states.length > 0 && (
+                <StateHeatmap locale={locale} tracker={report.stateNominationTracker} />
+              )}
 
             {report.lodgementReadyChecklist && report.lodgementReadyChecklist.items.length > 0 && (
               <div className="pt-1">

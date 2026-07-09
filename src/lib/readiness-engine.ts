@@ -949,7 +949,11 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   if (input.country === "CA") return base;
 
   const occupation = findOccupationRecord(input);
-  const stateNominationTracker = calculateStateNominationTracker(input);
+  const stateNominationTracker = calculateStateNominationTracker(
+    input,
+    base.pathwayComparison,
+    base.assessmentState
+  );
   const report = {
     ...base,
     rankedPathways: calculateRankedPathways(base, {
@@ -960,6 +964,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     stateNominationTracker,
     lodgementReadyChecklist: generateChecklist({
       input,
+      pathwayComparison: base.pathwayComparison,
+      assessmentState: base.assessmentState,
       stateNominationTracker,
       occupationAuthority: occupation?.authority,
     }),

@@ -10,7 +10,14 @@ type ActionChecklistProps = {
   checklist: LodgementReadyChecklist;
 };
 
-function getPriorityTone(priority: "urgent" | "important" | "recommended") {
+function getPriorityTone(priority: "urgent" | "important" | "recommended" | "blocked") {
+  if (priority === "blocked") {
+    return {
+      dot: "bg-slate-500",
+      badge: "border-slate-300 bg-slate-100 text-slate-900",
+      label: "🚫",
+    };
+  }
   if (priority === "urgent") {
     return {
       dot: "bg-red-500",

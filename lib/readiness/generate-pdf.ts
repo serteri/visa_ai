@@ -178,6 +178,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       urgent: "ACIL",
       important: "ONEMLI",
       ready: "HAZIR",
+      blocked: "ENGELLENDI",
       highlyRecommendedPathway: "Guclu Onerilen Yol",
       alternativeOption: "Alternatif Secenek",
       highRiskLowProbability: "Yuksek Risk / Dusuk Olasilik",
@@ -301,6 +302,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       urgent: "紧急",
       important: "重要",
       ready: "建议",
+      blocked: "已阻止",
       highlyRecommendedPathway: "强烈推荐路径",
       alternativeOption: "替代选项",
       highRiskLowProbability: "高风险 / 低概率",
@@ -423,6 +425,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     urgent: "URGENT",
     important: "IMPORTANT",
     ready: "READY",
+    blocked: "BLOCKED",
     highlyRecommendedPathway: "Highly Recommended Pathway",
     alternativeOption: "Alternative Option",
     highRiskLowProbability: "High Risk / Low Probability",
@@ -2725,6 +2728,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 1;
   }
 
+  function drawStateNominationBlockedNotice() {
+    if (!report.stateNominationTracker?.eligibilityBlocked) return;
+    addHeading(text.stateNominationTracker);
+    addBody(report.stateNominationTracker.blockedReason ?? "");
+    yPosition += 3;
+  }
+
   function drawTopRecommendedStates() {
     const topStates = report.stateNominationTracker?.topRecommendedStates ?? [];
     if (topStates.length === 0) return;
@@ -2912,14 +2922,18 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
           ? COLORS.riskHigh
           : item.priority === "important"
             ? COLORS.riskMedium
-            : COLORS.riskLow;
+            : item.priority === "blocked"
+              ? COLORS.border
+              : COLORS.riskLow;
 
       const priorityLabel =
         item.priority === "urgent"
           ? text.urgent
           : item.priority === "important"
             ? text.important
-            : text.ready;
+            : item.priority === "blocked"
+              ? text.blocked
+              : text.ready;
 
       doc.setDrawColor(156, 163, 175);
       doc.setLineWidth(0.35);
@@ -2973,9 +2987,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   drawVisaViabilityRanking();
   // State nomination tracker is AU-specific; skip entirely for CA reports
   if (report.country !== "CA") {
-    drawStateRadar();
-    drawTopRecommendedStates();
-    drawStateNominationTable();
+    if (report.stateNominationTracker?.eligibilityBlocked) {
+      drawStateNominationBlockedNotice();
+    } else {
+      drawStateRadar();
+      drawTopRecommendedStates();
+      drawStateNominationTable();
+    }
   }
   drawLodgementReadyChecklist();
 

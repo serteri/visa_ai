@@ -288,9 +288,13 @@ export type StateNominationTracker = {
   states: StateNominationState[];
   topRecommendedStates: StateNominationState[];
   note: string;
+  /** True when the underlying 190/491 pathway is ineligible or numeric ranking cannot be shown (assessmentState.canShowNumericRanking is false). Gates all per-state match %/score display — states/topRecommendedStates are empty when true. */
+  eligibilityBlocked: boolean;
+  /** Localized qualitative note shown in place of state-by-state numbers when eligibilityBlocked is true. */
+  blockedReason?: string;
 };
 
-export type ChecklistPriority = "urgent" | "important" | "recommended";
+export type ChecklistPriority = "urgent" | "important" | "recommended" | "blocked";
 
 export type ChecklistItem = {
   id: string;
