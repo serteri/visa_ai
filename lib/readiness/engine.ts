@@ -298,8 +298,10 @@ function detectSubclasses(input: ReadinessInput): string[] {
   if (/\b189\b/.test(pref)) found.add("189");
   if (/\b190\b/.test(pref)) found.add("190");
   if (/\b491\b/.test(pref)) found.add("491");
-  if (/\b820\b/.test(pref)) found.add("820");
-  if (/\b801\b/.test(pref)) found.add("801");
+  // Partner/Family visas (820, 801, 300, 309, 100) are intentionally never
+  // detected or added here. The readiness form does not collect sponsor
+  // citizenship data, so this engine is scoped to General Skilled Migration
+  // (189, 190, 491) and Employer-Sponsored pathways (482, 186, 494) only.
 
   // Study → 500
   if (hasKw(combined, ["study", "student", "course", "university", "college", "school", "eğitim", "öğrenci", "okul"])) {
@@ -360,41 +362,18 @@ function detectSubclasses(input: ReadinessInput): string[] {
     found.add("491");
   }
 
-  // Partner → 820 (the entry-point application stage). 801 (permanent) is added
-  // on top when the text specifically signals the permanent/later stage,
-  // since most partner-pathway applicants are starting at 820.
-  if (
-    hasKw(combined, [
-      "partner",
-      "spouse",
-      "marriage",
-      "married",
-      "de facto",
-      "relationship",
-      "girlfriend",
-      "boyfriend",
-      "820",
-      "801",
-      "eş",
-      "evlilik",
-      "ilişki",
-      "nişan",
-    ])
-  ) {
-    found.add("820");
-  }
-  if (hasKw(combined, ["801", "permanent partner", "kalıcı partner"])) {
-    found.add("801");
-  }
+  // Partner/Family visas (820, 801, 300, 309, 100) are never added to the
+  // candidate list. The readiness form does not collect sponsor citizenship
+  // data, so this engine cannot responsibly evaluate family-sponsored
+  // pathways — it is scoped to General Skilled Migration (189, 190, 491)
+  // and Employer-Sponsored pathways (482, 186, 494) only.
 
   // Work without explicit sponsor and no other pathway → suggest 482 as needs_more_info
   if (
     hasKw(combined, ["work", "çalış", "iş"]) &&
     !found.has("482") &&
     !found.has("189") &&
-    !found.has("500") &&
-    !found.has("820") &&
-    !found.has("801")
+    !found.has("500")
   ) {
     found.add("482");
   }

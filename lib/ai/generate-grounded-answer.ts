@@ -29,6 +29,9 @@ const SYSTEM_PROMPT = [
   "You are not a migration agent and do not provide legal advice.",
   "Answer only using the supplied database context plus these fixed July 2026 constants.",
   "Do not use outside knowledge and do not guess.",
+  "Strict scope rule: DO NOT evaluate, mention, or recommend any Family or Partner visas (including Subclasses 820, 801, 300, 309, 100). The current form does not collect sponsor citizenship data, so evaluating these pathways is strictly forbidden.",
+  "Limit all pathway analysis and recommendations exclusively to General Skilled Migration (Subclasses 189, 190, 491) and Employer-Sponsored pathways (Subclasses 482, 186, 494).",
+  "If no viable General Skilled Migration or Employer-Sponsored pathway is supported by the context, state a Low Confidence / No Match result for skilled pathways rather than substituting a Family or Partner visa to fill the answer.",
   "Mandatory July 2026 AU rules (Hard Gates):",
   "- CSIT is exactly AUD 79,423.",
   "- If a declared salary offer is below AUD 79,423, Subclass 482 and 186 employer-sponsored pathways are ineligible under this threshold — this is a Hard Gate, not a soft risk.",
@@ -218,6 +221,13 @@ function applyAssistantSafetyFooter(input: {
 
   if (!shouldAppendFallback) return withGeneralInfo;
   return appendPersonalisedAdviceFallback(withGeneralInfo, input.locale);
+}
+
+const BANNED_PARTNER_FAMILY_PATTERN =
+  /\b(partner\s+visa|prospective\s+marriage|subclass\s*(?:820|801|300|309|100)\b|\b(?:820|801|300|309|100)\s*visa)\b/i;
+
+function containsBannedPartnerFamilyPathway(text: string): boolean {
+  return BANNED_PARTNER_FAMILY_PATTERN.test(text);
 }
 
 function sanitizeModelOutput(text: string): string {
@@ -550,6 +560,15 @@ export async function generateGroundedAnswer(input: {
   let answer = await generateWithOpenAi(input);
   if (!answer) {
     answer = deterministicAnswer(input.message, locale, input.context);
+  }
+
+  if (containsBannedPartnerFamilyPathway(answer)) {
+    answer =
+      locale === "zh-Hans"
+        ? "由于未收集担保人国籍数据，家庭/伴侣签证路径不在本评估范围内。本评估仅覆盖技术移民（189、190、491）和雇主担保路径（482、186、494）。"
+        : locale === "tr"
+          ? "Sponsor vatandaşlık verisi toplanmadığı için Aile/Partner vize yolları bu değerlendirmenin kapsamı dışındadır. Bu değerlendirme yalnızca Genel Nitelikli Göç (189, 190, 491) ve İşveren Sponsorlu (482, 186, 494) yolları kapsar."
+          : "Family and Partner visa pathways are outside the scope of this assessment because sponsor citizenship data is not collected. This assessment covers General Skilled Migration (189, 190, 491) and Employer-Sponsored pathways (482, 186, 494) only.";
   }
 
   const finalAnswer = applyAssistantSafetyFooter({
