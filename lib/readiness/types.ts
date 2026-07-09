@@ -360,6 +360,10 @@ export type PremiumInvitationTrendEstimate = {
   subclass: "189" | "190" | "491" | "CEC" | "FSW" | "FSTP" | "PNP";
   estimatedPoints: number;
   estimatedWait: string;
+  /** True when this subclass is currently ineligible/unverified for the profile — the estimate is reference data only, not a personal trajectory. */
+  isReferenceOnly?: boolean;
+  /** Localized "Reference data only — ..." explanation, set when isReferenceOnly is true. */
+  referenceOnlyNote?: string;
 };
 
 export type PremiumInvitationTrendSection = {
@@ -387,6 +391,8 @@ export type PremiumGanttStep = {
   title: string;
   window: string;
   description: string;
+  /** True when this step (typically EOI/lodgement) is currently blocked by an ineligible or unverified pathway. */
+  isBlocked?: boolean;
 };
 
 export type PremiumGanttSection = {

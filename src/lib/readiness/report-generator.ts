@@ -1,7 +1,84 @@
 import livingCostsData from "@/src/data/living-costs.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
 import { localizeText, localizeTrendDescription, localizeWaitWindow } from "@/src/lib/readiness/localization";
-import type { Locale } from "@/lib/readiness/types";
+import type { AssessmentState, Locale, PathwayComparison } from "@/lib/readiness/types";
+
+/** GSM points-tested subclasses (AU) that trend/gantt EOI framing depends on. */
+const AU_GSM_SUBCLASSES = ["189", "190", "491"];
+/** CRS-based subclasses (CA) that trend/gantt ITA framing depends on. */
+const CA_CRS_SUBCLASSES = ["CEC", "FSW", "FSTP"];
+
+function findIneligiblePathway(
+  pathwayComparison: PathwayComparison[],
+  country: "AU" | "CA"
+): PathwayComparison | undefined {
+  const relevant = country === "CA" ? CA_CRS_SUBCLASSES : AU_GSM_SUBCLASSES;
+  return pathwayComparison.find((p) => relevant.includes(p.subclass) && p.relevance === "ineligible");
+}
+
+function annotateTrendEstimates(
+  estimates: InvitationTrendEstimate[],
+  pathwayComparison: PathwayComparison[],
+  assessmentState: AssessmentState,
+  locale: Locale
+): InvitationTrendEstimate[] {
+  const uniformlyUnverified = !assessmentState.canShowNumericRanking;
+
+  return estimates.map((estimate) => {
+    const ineligiblePathway = pathwayComparison.find(
+      (p) => p.subclass === estimate.subclass && p.relevance === "ineligible"
+    );
+
+    if (ineligiblePathway) {
+      return {
+        ...estimate,
+        isReferenceOnly: true,
+        referenceOnlyNote: localizeText(
+          locale,
+          `Reference data only — your profile does not currently meet Subclass ${estimate.subclass}'s threshold. ${ineligiblePathway.reason}`
+        ),
+      };
+    }
+
+    if (uniformlyUnverified) {
+      return {
+        ...estimate,
+        isReferenceOnly: true,
+        referenceOnlyNote: localizeText(
+          locale,
+          "Reference data only — pathway eligibility is not yet confirmed (missing profile details or occupation verification)."
+        ),
+      };
+    }
+
+    return estimate;
+  });
+}
+
+/**
+ * Short, single-sentence blocking reason, capped at
+ * roughly one line of PDF card text. The Gantt chart card only renders the
+ * FIRST wrapped line of a step's description (see drawGanttTimeline in
+ * generate-pdf.ts) -- the long, fully-explanatory reason used elsewhere
+ * would get silently truncated mid-sentence there, so this step's
+ * description is REPLACED with this short form rather than prefixed with
+ * the long one.
+ */
+function getEligibilityBlockReasonShort(
+  locale: Locale,
+  pathwayComparison: PathwayComparison[],
+  assessmentState: AssessmentState,
+  country: "AU" | "CA"
+): string | undefined {
+  const ineligiblePathway = findIneligiblePathway(pathwayComparison, country);
+  if (ineligiblePathway) {
+    return localizeText(locale, `BLOCKED — Subclass ${ineligiblePathway.subclass} points threshold not met.`);
+  }
+  if (!assessmentState.canShowNumericRanking) {
+    return localizeText(locale, "BLOCKED — eligibility not yet confirmed.");
+  }
+  return undefined;
+}
 
 export type FamilyProfile = "Single" | "Couple" | "Family of 4";
 
@@ -9,6 +86,10 @@ export type InvitationTrendEstimate = {
   subclass: "189" | "190" | "491" | "CEC" | "FSW" | "FSTP" | "PNP";
   estimatedPoints: number;
   estimatedWait: string;
+  /** True when this subclass is currently ineligible/unverified for the profile — the estimate is reference data only, not a personal trajectory. */
+  isReferenceOnly?: boolean;
+  /** Localized "Reference data only — ..." explanation, set when isReferenceOnly is true. */
+  referenceOnlyNote?: string;
 };
 
 export type InvitationTrendSection = {
@@ -36,6 +117,8 @@ export type GanttStep = {
   title: string;
   window: string;
   description: string;
+  /** True when this step (typically EOI/lodgement) is currently blocked by an ineligible or unverified pathway. */
+  isBlocked?: boolean;
 };
 
 export type GanttSection = {
@@ -276,7 +359,7 @@ function matchTrendByOccupation(occupation?: string): TrendRecord {
   return keyword ?? TREND_DATA.occupation_trends[0];
 }
 
-function buildGanttByTimeline(
+function buildRawGanttSteps(
   timeline?: string,
   occupation?: string,
   country: "AU" | "CA" = "AU",
@@ -429,6 +512,39 @@ function buildGanttByTimeline(
   };
 }
 
+/**
+ * Steps 1-2 (profile foundation / skills validation) stay actionable
+ * regardless of current eligibility -- they're literally how a gap gets
+ * resolved. Steps 3-4 (EOI / lodgement) assume the underlying pathway is
+ * already eligible, so when it isn't, they get marked blocked and their
+ * description REPLACED (not prefixed) with a short blocking reason --
+ * the PDF Gantt card only renders one line of description text, so a long
+ * reason concatenated onto the original text would just get truncated
+ * mid-sentence instead of ever reaching the actual blocking message.
+ */
+function applyEligibilityBlockToSteps(steps: GanttStep[], blockReasonShort: string): GanttStep[] {
+  return steps.map((step, index) => {
+    if (index < 2) return step;
+    return {
+      ...step,
+      isBlocked: true,
+      description: blockReasonShort,
+    };
+  });
+}
+
+function buildGanttByTimeline(
+  timeline?: string,
+  occupation?: string,
+  country: "AU" | "CA" = "AU",
+  hasGraduateVisaPathwayIntent = false,
+  blockReason?: string
+): GanttSection {
+  const section = buildRawGanttSteps(timeline, occupation, country, hasGraduateVisaPathwayIntent);
+  if (!blockReason) return section;
+  return { ...section, steps: applyEligibilityBlockToSteps(section.steps, blockReason) };
+}
+
 function getTrendOccupationGroup(locale: Locale, trend: TrendRecord): string {
   if (locale === "zh-Hans") {
     return trend.occupation_group_zh ?? localizeText(locale, trend.occupation_group);
@@ -479,11 +595,15 @@ export function generatePremiumSections(input: {
   biggestConcern?: string;
   estimatedPoints?: number;
   country?: "AU" | "CA";
+  /** Required so this section can never disagree with the main engine's eligibility verdict — see assessment-state.ts. */
+  pathwayComparison: PathwayComparison[];
+  assessmentState: AssessmentState;
 }): PremiumSections {
   const locale = input.locale ?? "en";
 
   if (input.country === "CA") {
-    const gantt = buildGanttByTimeline(input.timeline, input.occupation, "CA", false);
+    const blockReason = getEligibilityBlockReasonShort(locale, input.pathwayComparison, input.assessmentState, "CA");
+    const gantt = buildGanttByTimeline(input.timeline, input.occupation, "CA", false, blockReason);
     const canadaTrack = inferCanadaActionTrack(locale, input.occupation);
     const city = inferCanadaCity({
       selectedCity: input.selectedCity,
@@ -497,12 +617,17 @@ export function generatePremiumSections(input: {
       historicalInvitationTrends: {
         matchedOccupationGroup: localizeText(locale, inferCanadaOccupationGroup(input.occupation)),
         anzscoCode: extractNocCode(input.occupation),
-        estimates: inferCanadaTrendEstimates({
-          locale,
-          estimatedPoints: input.estimatedPoints,
-          timeline: input.timeline,
-          occupation: input.occupation,
-        }),
+        estimates: annotateTrendEstimates(
+          inferCanadaTrendEstimates({
+            locale,
+            estimatedPoints: input.estimatedPoints,
+            timeline: input.timeline,
+            occupation: input.occupation,
+          }),
+          input.pathwayComparison,
+          input.assessmentState,
+          locale
+        ),
         note: localizeText(
           locale,
           "Express Entry and PNP trend estimates are scenario-based planning references derived from profile signals and timeline assumptions; they are not invitation guarantees."
@@ -550,11 +675,13 @@ export function generatePremiumSections(input: {
   const familyProfile = inferFamilyProfile(input.familyStatus);
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
+  const blockReason = getEligibilityBlockReasonShort(locale, input.pathwayComparison, input.assessmentState, "AU");
   const gantt = buildGanttByTimeline(
     input.timeline,
     input.occupation,
     "AU",
-    input.hasGraduateVisaPathwayIntent === true
+    input.hasGraduateVisaPathwayIntent === true,
+    blockReason
   );
   const methodologyNote = localizeTrendDescription(
     locale,
@@ -566,11 +693,16 @@ export function generatePremiumSections(input: {
     historicalInvitationTrends: {
       matchedOccupationGroup: getTrendOccupationGroup(locale, trend),
       anzscoCode: trend.anzsco_code,
-      estimates: trend.estimates.map((e) => ({
-        subclass: e.subclass,
-        estimatedPoints: e.last_invited_point ?? e.estimated_points,
-        estimatedWait: localizeWaitWindow(locale, e.estimated_wait),
-      })),
+      estimates: annotateTrendEstimates(
+        trend.estimates.map((e) => ({
+          subclass: e.subclass,
+          estimatedPoints: e.last_invited_point ?? e.estimated_points,
+          estimatedWait: localizeWaitWindow(locale, e.estimated_wait),
+        })),
+        input.pathwayComparison,
+        input.assessmentState,
+        locale
+      ),
       note: [
         localizeText(
           locale,

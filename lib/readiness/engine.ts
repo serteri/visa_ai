@@ -3581,6 +3581,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     });
   }
   const occupationIndication = buildCanadaOccupationIndication(input, locale);
+  const assessmentState = buildAssessmentState(input, pathwayComparison, pointsEstimate.estimatedPoints, locale);
 
   const riskIndicators = buildCanadaRiskIndicators({
     locale,
@@ -3650,6 +3651,8 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     selectedCity: input.preferredCity,
     estimatedPoints: pointsEstimate.estimatedPoints,
     country: "CA",
+    pathwayComparison,
+    assessmentState,
   });
   const caFinancialRoadmap = buildCanadaFinancialRoadmap(pathwayCodes, input, locale);
   const caPointsBooster = buildCanadaPointsBoosterSimulator(input, pointsEstimate, locale);
@@ -3755,8 +3758,6 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     currency: "CAD" as const,
     monthly: familyCostRow,
   };
-
-  const assessmentState = buildAssessmentState(input, pathwayComparison, pointsEstimate.estimatedPoints, locale);
 
   return {
     country: "CA",
@@ -4005,6 +4006,9 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     timeline: input.timeline,
     mainGoal: input.mainGoal,
     biggestConcern: input.biggestConcern,
+    country: "AU",
+    pathwayComparison,
+    assessmentState,
   });
   const premiumSections: PremiumSections = {
     ...generatedPremiumSections,

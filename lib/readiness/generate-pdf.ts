@@ -187,6 +187,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       conditionalBadge: "KOSULLU",
       highRiskBadge: "YUKSEK RISK",
       preliminarySignalOnly: "Yalnizca on sinyal",
+      referenceOnly: "yalnizca referans",
       qualitativeFitPotential: "Olasi uyum",
       qualitativeFitUnclear: "Belirsiz uyum",
       qualitativeFitUnlikely: "Olasi degil",
@@ -311,6 +312,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       conditionalBadge: "有条件",
       highRiskBadge: "高风险",
       preliminarySignalOnly: "仅初步信号",
+      referenceOnly: "仅供参考",
       qualitativeFitPotential: "可能匹配",
       qualitativeFitUnclear: "匹配度不明确",
       qualitativeFitUnlikely: "匹配可能性低",
@@ -434,6 +436,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     conditionalBadge: "CONDITIONAL",
     highRiskBadge: "HIGH RISK",
     preliminarySignalOnly: "Preliminary signal only",
+    referenceOnly: "reference only",
     qualitativeFitPotential: "Potential fit",
     qualitativeFitUnclear: "Unclear fit",
     qualitativeFitUnlikely: "Unlikely fit",
@@ -1864,9 +1867,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     steps.forEach((step, idx) => {
       const nodeY = yPosition + idx * stepGap;
       ensurePageSpace(cardH + 4);
+      const stepColor = step.isBlocked ? COLORS.riskHigh : COLORS.accent;
 
       // Node circle (filled)
-      doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setFillColor(stepColor.r, stepColor.g, stepColor.b);
       doc.setDrawColor(255, 255, 255);
       doc.setLineWidth(0.5);
       doc.circle(spineX, nodeY + nodeR, nodeR, "FD");
@@ -1880,18 +1884,18 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.text(numStr, spineX - numW / 2, nodeY + nodeR + 2, { baseline: "middle" });
 
       // Horizontal connector from spine to card
-      doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setDrawColor(stepColor.r, stepColor.g, stepColor.b);
       doc.setLineWidth(0.4);
       doc.line(spineX + nodeR, nodeY + nodeR, cardX - 1, nodeY + nodeR);
 
       // Step card background
-      doc.setFillColor(255, 255, 255);
+      doc.setFillColor(step.isBlocked ? 254 : 255, step.isBlocked ? 242 : 255, step.isBlocked ? 242 : 255);
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
       doc.setLineWidth(0.25);
       doc.roundedRect(cardX, nodeY, cardW, cardH, 1.5, 1.5, "FD");
 
       // Accent left border on card
-      doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setFillColor(stepColor.r, stepColor.g, stepColor.b);
       doc.rect(cardX, nodeY, 1.5, cardH, "F");
 
       // Step title
@@ -1904,11 +1908,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       // Window label
       setBaseFont();
       doc.setFontSize(FONTS.small);
-      doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setTextColor(stepColor.r, stepColor.g, stepColor.b);
       doc.text(safeText(step.window), cardX + 4, nodeY + 11.5);
 
       // Description text (wrapped)
-      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.setTextColor(step.isBlocked ? COLORS.riskHigh.r : COLORS.lightText.r, step.isBlocked ? COLORS.riskHigh.g : COLORS.lightText.g, step.isBlocked ? COLORS.riskHigh.b : COLORS.lightText.b);
+      if (step.isBlocked) setBoldFont();
       const descLines = doc.splitTextToSize(safeText(step.description ?? ""), cardW - 8);
       const descY = nodeY + 16;
       if (descLines.length > 0) {
@@ -3198,15 +3203,22 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
       2
     );
+    const trendEstimates = report.premiumSections.historicalInvitationTrends.estimates;
     drawTable(
       [text.subclass, text.estimatedPoints, text.estimatedWait],
-      report.premiumSections.historicalInvitationTrends.estimates.map((item) => [
-        cleanNum(item.subclass),
+      trendEstimates.map((item) => [
+        cleanNum(item.subclass) + (item.isReferenceOnly ? ` (${text.referenceOnly})` : ""),
         cleanNum(`${item.estimatedPoints}`),
         cleanNum(item.estimatedWait),
       ]),
-      [0.2, 0.3, 0.5]
+      [0.2, 0.3, 0.5],
+      (rowIndex) => (trendEstimates[rowIndex]?.isReferenceOnly ? COLORS.riskMedium : null)
     );
+    trendEstimates
+      .filter((item) => item.isReferenceOnly && item.referenceOnlyNote)
+      .forEach((item) => {
+        addCriticalAlertText(`${item.subclass}: ${item.referenceOnlyNote}`, 2);
+      });
     addSmallText(cleanNum(report.premiumSections.historicalInvitationTrends.note), 2);
 
     // CA: use the dual-row living cost table; AU: single-row as before
