@@ -105,6 +105,9 @@ const MAX_EXPERIENCE_POINTS = 20;
 const STATE_NOMINATION_BONUS_190 = 5;
 const REGIONAL_NOMINATION_BONUS_491 = 15;
 
+const EMPLOYMENT_RELATEDNESS_LIMITATION_WARNING =
+  "Known limitation: closely related occupation employment is not independently validated. Employment points assume the claimed work aligns to the nominated occupation entered.";
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper Functions
 // ─────────────────────────────────────────────────────────────────────────────
@@ -158,13 +161,16 @@ function calculateExperiencePoints(
   onshoreYears: number,
   acsDeductionApplied: boolean
 ): { offshore: number; onshore: number; total: number } {
-  // Apply ACS deduction if necessary
-  const adjustedOffshoreYears = acsDeductionApplied
-    ? Math.max(0, offshoreYears - ACS_OFFSHORE_DEDUCTION_YEARS)
-    : offshoreYears;
+  const adjustedOffshoreYears = offshoreYears;
 
-  // Experience point calculation based on years
-  const getExperiencePoints = (years: number): number => {
+  const getOverseasExperiencePoints = (years: number): number => {
+    if (years < 3) return 0;
+    if (years < 5) return 5;
+    if (years < 8) return 10;
+    return 15;
+  };
+
+  const getAustralianExperiencePoints = (years: number): number => {
     if (years < 1) return 0;
     if (years < 3) return 5;
     if (years < 5) return 10;
@@ -172,8 +178,8 @@ function calculateExperiencePoints(
     return 20;
   };
 
-  const offshorePoints = getExperiencePoints(adjustedOffshoreYears);
-  const onshorePoints = getExperiencePoints(onshoreYears);
+  const offshorePoints = getOverseasExperiencePoints(adjustedOffshoreYears);
+  const onshorePoints = getAustralianExperiencePoints(onshoreYears);
   const totalBeforeCap = offshorePoints + onshorePoints;
   const totalAfterCap = Math.min(totalBeforeCap, MAX_EXPERIENCE_POINTS);
 
@@ -249,6 +255,7 @@ function generateBoosters(
  */
 export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalculatorResult {
   const warnings: string[] = [];
+  const hasEmploymentClaim = input.offshoreExperienceYears > 0 || input.onshoreExperienceYears > 0;
 
   // Get age points
   const agePoints = AGE_POINTS[input.ageRange];
@@ -271,13 +278,6 @@ export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalcula
       occupationAuthority = occupationRecord.authority;
 
       // Check if ACS deduction should apply
-      if (
-        occupationRecord.authority === "ACS" &&
-        input.offshoreExperienceYears > 0
-      ) {
-        acsDeductionApplied = true;
-      }
-
       // Add occupation-specific warnings
       if (occupationRecord.critical_warning) {
         warnings.push(`[${occupationRecord.authority}] ${occupationRecord.critical_warning}`);
@@ -289,12 +289,30 @@ export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalcula
     }
   }
 
-  // Calculate experience points (handles ACS deduction)
-  const experienceData = calculateExperiencePoints(
-    input.offshoreExperienceYears,
-    input.onshoreExperienceYears,
-    acsDeductionApplied
-  );
+  if (hasEmploymentClaim && occupationRecord) {
+    warnings.push(EMPLOYMENT_RELATEDNESS_LIMITATION_WARNING);
+    if (occupationRecord.authority === "ACS" && input.offshoreExperienceYears > 0) {
+      warnings.push(
+        `ACS advisory: official DHA points here use the claimed eligible years (${input.offshoreExperienceYears}). Your separate ACS skills assessment may discount some offshore years for assessment purposes.`
+      );
+    }
+  }
+
+  // Do not award employment points when the nominated occupation cannot be
+  // verified against the occupation dataset.
+  const experienceData = hasEmploymentClaim && !occupationRecord
+    ? { offshore: 0, onshore: 0, total: 0 }
+    : calculateExperiencePoints(
+        input.offshoreExperienceYears,
+        input.onshoreExperienceYears,
+        acsDeductionApplied
+      );
+
+  if (hasEmploymentClaim && !occupationRecord) {
+    warnings.push(
+      "Employment points were not applied because the nominated occupation could not be verified against the occupation dataset. Claims for unrelated or unverified employment are not auto-credited."
+    );
+  }
 
   // Calculate bonus points
   const naatiPoints = input.hasNAATI ? 5 : 0;
@@ -337,13 +355,6 @@ export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalcula
 
   // Check eligibility for points test
   const isEligibleForPointsTest = score189 >= MINIMUM_POINTS_THRESHOLD;
-
-  // Add ACS deduction warning if applied
-  if (acsDeductionApplied) {
-    warnings.unshift(
-      `ACS Deduction Applied: ${ACS_OFFSHORE_DEDUCTION_YEARS} years deducted from offshore experience (${input.offshoreExperienceYears} → ${Math.max(0, input.offshoreExperienceYears - ACS_OFFSHORE_DEDUCTION_YEARS)} years) per ACS assessment rules.`
-    );
-  }
 
   return {
     currentScore: baseScore,

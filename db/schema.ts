@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, jsonb, date, boolean, integer, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, jsonb, date, boolean, integer, index, real } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // NOTE: auth + user dashboard tables (users, accounts, sessions, verification_tokens,
@@ -83,6 +83,8 @@ export const fullCheckWaitlist = pgTable("full_check_waitlist", {
   occupation_confirmed: text("occupation_confirmed"),
   estimated_budget_range: text("estimated_budget_range"),
   timeline: text("timeline"),
+  offshore_experience_years: real("offshore_experience_years"),
+  onshore_experience_years: real("onshore_experience_years"),
   sponsor_or_family: text("sponsor_or_family"),
   biggest_concern: text("biggest_concern"),
   main_goal: text("main_goal"),
@@ -107,6 +109,8 @@ export const leads = pgTable("leads", {
   occupation_confirmed: text("occupation_confirmed"),
   estimated_budget_range: text("estimated_budget_range"),
   timeline: text("timeline"),
+  offshore_experience_years: real("offshore_experience_years"),
+  onshore_experience_years: real("onshore_experience_years"),
   sponsor_or_family: text("sponsor_or_family"),
   biggest_concern: text("biggest_concern"),
   main_goal: text("main_goal"),

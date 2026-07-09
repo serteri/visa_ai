@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { revalidateTag } from "next/cache";
 import Stripe from "stripe";
 import { Resend } from "resend";
+import { z } from "zod";
 
 import { db } from "@/db";
 import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
@@ -88,6 +89,17 @@ export type AdminResetState = {
   message: string;
   deletedCount?: number;
 };
+
+const optionalExperienceYearsSchema = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return undefined;
+    const normalized = String(value).trim();
+    if (!normalized) return undefined;
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : value;
+  },
+  z.number().min(0).max(50).optional()
+);
 
 // ─── Country-specific report schema guards ───────────────────────────────────
 
@@ -285,6 +297,8 @@ async function sendFullCheckAdminEmail(payload: {
   occupationConfirmed: string;
   estimatedBudgetRange: string;
   timeline: string;
+  offshoreExperienceYears?: number;
+  onshoreExperienceYears?: number;
   sponsorOrFamily: string;
   biggestConcern: string;
   mainGoal: string;
@@ -317,6 +331,8 @@ async function sendFullCheckAdminEmail(payload: {
     `occupation confirmed: ${payload.occupationConfirmed || "-"}`,
     `estimated budget range: ${payload.estimatedBudgetRange || "-"}`,
     `timeline: ${payload.timeline || "-"}`,
+    `offshore skilled employment years: ${payload.offshoreExperienceYears ?? "-"}`,
+    `onshore skilled employment years: ${payload.onshoreExperienceYears ?? "-"}`,
     `sponsor/family: ${payload.sponsorOrFamily || "-"}`,
     `biggest concern: ${payload.biggestConcern || "-"}`,
     `main goal: ${payload.mainGoal}`,
@@ -709,6 +725,18 @@ export async function submitFullCheckWaitlist(
     : undefined;
   const annualSalaryAudRaw = String(formData.get("annualSalaryAud") ?? "").trim();
   const annualSalaryAud = annualSalaryAudRaw ? Number(annualSalaryAudRaw) : undefined;
+  const offshoreExperienceYearsResult = optionalExperienceYearsSchema.safeParse(
+    formData.get("offshoreExperienceYears")
+  );
+  const onshoreExperienceYearsResult = optionalExperienceYearsSchema.safeParse(
+    formData.get("onshoreExperienceYears")
+  );
+  const offshoreExperienceYears = offshoreExperienceYearsResult.success
+    ? offshoreExperienceYearsResult.data
+    : undefined;
+  const onshoreExperienceYears = onshoreExperienceYearsResult.success
+    ? onshoreExperienceYearsResult.data
+    : undefined;
   const englishTestTaken = String(formData.get("englishTestTaken") ?? "").trim();
   const occupationConfirmed = String(formData.get("occupationConfirmed") ?? "").trim();
   const hasGraduateVisaPathwayIntentRaw = String(formData.get("hasGraduateVisaPathwayIntent") ?? "").trim();
@@ -779,6 +807,20 @@ export async function submitFullCheckWaitlist(
       : isZh
         ? "请输入有效的年薪数值。"
         : "Enter a valid annual salary amount.";
+  }
+  if (!offshoreExperienceYearsResult.success) {
+    errors.offshoreExperienceYears = isTr
+      ? "Yurt disi deneyim yili 0 veya daha buyuk bir sayi olmalidir."
+      : isZh
+        ? "境外工作年限必须是大于或等于 0 的数字。"
+        : "Offshore experience years must be a number greater than or equal to 0.";
+  }
+  if (!onshoreExperienceYearsResult.success) {
+    errors.onshoreExperienceYears = isTr
+      ? "Avustralya deneyim yili 0 veya daha buyuk bir sayi olmalidir."
+      : isZh
+        ? "澳大利亚境内工作年限必须是大于或等于 0 的数字。"
+        : "Onshore experience years must be a number greater than or equal to 0.";
   }
 
   if (Object.keys(errors).length > 0) {
@@ -942,6 +984,8 @@ export async function submitFullCheckWaitlist(
       annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
         ? annualSalaryAud
         : undefined,
+      offshoreExperienceYears,
+      onshoreExperienceYears,
       englishTestTaken: englishTestTaken || undefined,
       occupationConfirmed: occupationConfirmed || undefined,
       hasGraduateVisaPathwayIntent,
@@ -975,6 +1019,8 @@ export async function submitFullCheckWaitlist(
       occupation_confirmed: occupationConfirmed || null,
       estimated_budget_range: estimatedBudgetRange || null,
       timeline: timeline || null,
+      offshore_experience_years: offshoreExperienceYears ?? null,
+      onshore_experience_years: onshoreExperienceYears ?? null,
       sponsor_or_family: sponsorOrFamily || null,
       biggest_concern: biggestConcern || null,
       main_goal: mainGoal,
@@ -1015,6 +1061,8 @@ export async function submitFullCheckWaitlist(
       annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
         ? annualSalaryAud
         : undefined,
+      offshoreExperienceYears,
+      onshoreExperienceYears,
       englishTestTaken: englishTestTaken || undefined,
       occupationConfirmed: occupationConfirmed || undefined,
       estimatedBudgetRange: estimatedBudgetRange || undefined,
@@ -1040,6 +1088,8 @@ export async function submitFullCheckWaitlist(
       occupation_confirmed: occupationConfirmed || null,
       estimated_budget_range: estimatedBudgetRange || null,
       timeline: timeline || null,
+      offshore_experience_years: offshoreExperienceYears ?? null,
+      onshore_experience_years: onshoreExperienceYears ?? null,
       sponsor_or_family: sponsorOrFamily || null,
       biggest_concern: biggestConcern || null,
       main_goal: mainGoal,
@@ -1088,6 +1138,8 @@ export async function submitFullCheckWaitlist(
           occupationConfirmed,
           estimatedBudgetRange,
           timeline,
+          offshoreExperienceYears,
+          onshoreExperienceYears,
           sponsorOrFamily,
           biggestConcern,
           mainGoal,

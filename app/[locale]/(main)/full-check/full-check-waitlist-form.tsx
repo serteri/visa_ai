@@ -398,6 +398,11 @@ export function FullCheckWaitlistForm({
   const [englishLevel, setEnglishLevel] = useState("");
   const [sponsorFamilyStatus, setSponsorFamilyStatus] = useState("");
   const [annualSalaryAud, setAnnualSalaryAud] = useState("");
+  const experienceHelpText = txt(
+    "Yalnızca davetten önceki son 10 yıl içindeki, aday gösterilen veya yakından ilgili meslekte, haftada en az 20 saatlik nitelikli çalışmayı yazın.",
+    "Count only skilled work in your nominated or closely related occupation, at least 20 hours/week, within 10 years before invitation.",
+    "仅填写获邀前10年内、提名职业或密切相关职业、且每周至少20小时的技术工作年限。"
+  );
 
   // NOC_ALIAS_MAP and filterNoc replaced by module-level NOC_ALIAS_MAP_STATIC
   // and searchNoc() which uses Fuse.js — see top of file.
@@ -1054,6 +1059,52 @@ export function FullCheckWaitlistForm({
             placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")}
           />
           <ErrorText message={state.errors?.annualSalaryAud} />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-offshore-experience-years">
+              {txt(
+                "Avustralya dışındaki nitelikli iş deneyimi (yıl)",
+                "Years of skilled employment outside Australia",
+                "澳大利亚境外技术工作年限"
+              )}
+            </Label>
+            <Input
+              id="waitlist-offshore-experience-years"
+              name="offshoreExperienceYears"
+              type="number"
+              min={0}
+              step="0.5"
+              inputMode="decimal"
+              className={fieldClassName}
+              placeholder={txt("Örn: 5", "E.g., 5", "例如：5")}
+            />
+            <p className="text-xs text-muted-foreground">{experienceHelpText}</p>
+            <ErrorText message={state.errors?.offshoreExperienceYears} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-onshore-experience-years">
+              {txt(
+                "Avustralya içindeki nitelikli iş deneyimi (yıl)",
+                "Years of skilled employment in Australia",
+                "澳大利亚境内技术工作年限"
+              )}
+            </Label>
+            <Input
+              id="waitlist-onshore-experience-years"
+              name="onshoreExperienceYears"
+              type="number"
+              min={0}
+              step="0.5"
+              inputMode="decimal"
+              className={fieldClassName}
+              placeholder={txt("Örn: 2", "E.g., 2", "例如：2")}
+            />
+            <p className="text-xs text-muted-foreground">{experienceHelpText}</p>
+            <ErrorText message={state.errors?.onshoreExperienceYears} />
+          </div>
         </div>
 
         <div className="space-y-2">

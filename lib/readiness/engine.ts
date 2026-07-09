@@ -1890,11 +1890,16 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   if (input.country === "CA") return buildCanadaPointsEstimate(input, locale);
 
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   const ageOption = input.age ? parseAgeOption(input.age) : null;
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
   const hasExperienceInput =
     input.offshoreExperienceYears !== undefined || input.onshoreExperienceYears !== undefined;
   const hasEducationInput = Boolean(input.qualificationLevel);
+  const occupationHasDatasetMatch = Boolean(
+    input.occupation?.trim() && getEligibleSkilledSubclasses(input.occupation).length > 0
+  );
+  const canApplyExperiencePoints = !hasExperienceInput || occupationHasDatasetMatch;
 
   // Bonus factors (specialist education, professional year, community language,
   // regional study), partner points, and state/regional nomination are not yet
@@ -1914,8 +1919,12 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     };
   }
 
-  const overseasEmployment = yearsToOverseasEmploymentOption(input.offshoreExperienceYears);
-  const australianEmployment = yearsToAustralianEmploymentOption(input.onshoreExperienceYears);
+  const overseasEmployment = yearsToOverseasEmploymentOption(
+    canApplyExperiencePoints ? input.offshoreExperienceYears : undefined
+  );
+  const australianEmployment = yearsToAustralianEmploymentOption(
+    canApplyExperiencePoints ? input.onshoreExperienceYears : undefined
+  );
   const education = qualificationToEducationOption(input.qualificationLevel);
 
   const result = calculateAustraliaPoints({
@@ -1952,10 +1961,18 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     hasExperienceInput
       ? {
           label: isTr ? "İstihdam puanı (yurt dışı + Avustralya)" : "Employment points (overseas + Australian)",
-          points: result.breakdown.employmentCombinedAfterCap,
-          note: isTr
-            ? `Yurt dışı: ${input.offshoreExperienceYears ?? 0} yıl, Avustralya: ${input.onshoreExperienceYears ?? 0} yıl`
-            : `Overseas: ${input.offshoreExperienceYears ?? 0} yrs, Australian: ${input.onshoreExperienceYears ?? 0} yrs`,
+          points: canApplyExperiencePoints ? result.breakdown.employmentCombinedAfterCap : 0,
+          note: canApplyExperiencePoints
+            ? (isTr
+                ? `Yurt dışı: ${input.offshoreExperienceYears ?? 0} yıl, Avustralya: ${input.onshoreExperienceYears ?? 0} yıl. Yakından ilgili meslek iddiaları ayrıca doğrulanmaz; deneyimin girilen aday meslekle uyumlu olduğu varsayılır.`
+                : isZh
+                  ? `境外：${input.offshoreExperienceYears ?? 0} 年，澳洲：${input.onshoreExperienceYears ?? 0} 年。系统不会单独核验“密切相关职业”工作经历；默认你填写的工作经历与所填提名职业一致。`
+                  : `Overseas: ${input.offshoreExperienceYears ?? 0} yrs, Australian: ${input.onshoreExperienceYears ?? 0} yrs. Closely related occupation claims are not independently verified; this estimate assumes the declared work aligns to the nominated occupation entered.`)
+            : (isTr
+                ? "Deneyim puanı uygulanmadı: aday meslek veritabanında doğrulanamadı. İlgisiz veya doğrulanmamış iş deneyimi otomatik puanlanmaz."
+                : isZh
+                  ? "未应用工作经验分：提名职业无法在职业数据库中核验。与提名职业无关或无法核验的工作经历不会自动计分。"
+                  : "Employment points were not applied because the nominated occupation could not be verified against the occupation dataset. Unrelated or unverified employment is not auto-credited."),
         }
       : null,
     hasEducationInput
@@ -1972,7 +1989,9 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   const missingStr = missingFactors.join(", ");
   const note = isTr
     ? `Bu, yaş${ageOption ? "" : " (belirtilmedi)"}, İngilizce seviyesi${englishOption ? "" : " (belirtilmedi)"}, iş deneyimi${hasExperienceInput ? "" : " (belirtilmedi)"} ve eğitim düzeyine${hasEducationInput ? "" : " (belirtilmedi)"} dayalı bir tahmindir. Dahil edilmeyen faktörler: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.`
-    : `This estimate is based on age${ageOption ? "" : " (not provided)"}, English level${englishOption ? "" : " (not provided)"}, work experience${hasExperienceInput ? "" : " (not provided)"}, and education level${hasEducationInput ? "" : " (not provided)"}. Factors not included: ${missingStr}. Actual points position depends on individual circumstances.`;
+    : isZh
+      ? `本估算基于年龄${ageOption ? "" : "（未提供）"}、英语水平${englishOption ? "" : "（未提供）"}、工作经验${hasExperienceInput ? "" : "（未提供）"}和学历${hasEducationInput ? "" : "（未提供）"}。未纳入因素：${missingStr}。实际分数取决于个人情况。`
+      : `This estimate is based on age${ageOption ? "" : " (not provided)"}, English level${englishOption ? "" : " (not provided)"}, work experience${hasExperienceInput ? "" : " (not provided)"}, and education level${hasEducationInput ? "" : " (not provided)"}. Factors not included: ${missingStr}. Actual points position depends on individual circumstances.`;
 
   return {
     appliesTo: ["189", "190", "491"],
