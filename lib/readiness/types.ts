@@ -189,18 +189,62 @@ export type RankedPathwayRecommendation =
   | "🌟 Highly Recommended Pathway"
   | "⚖️ Alternative Option"
   | "⚠️ High Risk / Low Probability"
-  | "❌ Ineligible (Compliance Violation)";
+  | "❌ Ineligible (Compliance Violation)"
+  | "🔍 Preliminary Signal Only";
+
+/** Shown instead of a fabricated %/points figure when assessmentState.canShowNumericRanking is false. */
+export type QualitativeFitTier = "Potential fit" | "Unclear fit" | "Unlikely fit";
 
 export type RankedPathway = {
   subclass: "189" | "190" | "491" | "482" | "485" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
   visaLabel: string;
-  matchPercentage: number;
-  pointsSignal: number;
+  /** Only present when assessmentState.canShowNumericRanking is true — a real deterministic figure, never a placeholder. */
+  matchPercentage?: number;
+  /** Only present when assessmentState.canShowNumericRanking is true. */
+  pointsSignal?: number;
+  /** Populated instead of matchPercentage/pointsSignal when data is insufficient for a real points calculation. */
+  qualitativeTier?: QualitativeFitTier;
+  /** True when matchPercentage/pointsSignal were withheld because dataCompletenessLevel is "partial" or "minimal". */
+  isPreliminaryOnly?: boolean;
+  /** "Preliminary signal only — points cannot be calculated until [missing fields] are provided." Set when isPreliminaryOnly is true. */
+  preliminaryNote?: string;
   recommendationTag: RankedPathwayRecommendation;
   /** Hard Gate (1 July 2026): true when a mandatory rule threshold (salary/age) was violated. Forces this entry to the top of the Visa Viability Ranking, rendered in red. */
   isHardIneligible?: boolean;
   /** Localized "Ineligible: ..." warning text, shown under the entry when isHardIneligible is true. */
   ineligibleReason?: string;
+};
+
+export type DataCompletenessLevel = "sufficient" | "partial" | "minimal";
+
+/**
+ * Single source of truth for assessment confidence, computed ONCE per report
+ * generation in the base engine. Every downstream section (Executive
+ * Summary, Visa Viability Ranking, Pathway Comparison, Evidence Snapshot)
+ * must read from this object instead of independently re-deriving whether
+ * enough data exists to show a specific number.
+ */
+export type AssessmentState = {
+  fieldsPresent: {
+    age: boolean;
+    englishLevel: boolean;
+    englishTestEvidence: boolean;
+    occupation: boolean;
+    skillsAssessment: boolean;
+    workExperienceYears: boolean;
+    partnerStatus: boolean;
+    stateNomination: boolean;
+    healthCharacterDocs: boolean;
+  };
+  /** Localized labels for fields in fieldsPresent that are currently false. */
+  missingFieldLabels: string[];
+  dataCompletenessLevel: DataCompletenessLevel;
+  /** Localized "Subclass X: reason" strings for pathways with relevance === "ineligible" (binding regulatory disqualifiers). */
+  hardGateFlags: string[];
+  /** The real deterministic points estimate from buildPointsEstimate, or undefined if age/English were not provided. */
+  estimatedPoints?: number;
+  /** True only when dataCompletenessLevel is "sufficient" AND estimatedPoints is a real calculated value. Gates all numeric %/points display across the report. */
+  canShowNumericRanking: boolean;
 };
 
 export type StateNominationStatus =
@@ -366,6 +410,8 @@ export type ReadinessReport = {
   progressionPathways: ProgressionPathway[];
   pathwayFriction: PathwayFriction[];
   confidenceExplanation: string;
+  /** Single source of truth for assessment confidence; see AssessmentState. */
+  assessmentState: AssessmentState;
   reportIndicators: ReportIndicators;
   primaryGap: string;
   dataCompleteness: DataCompleteness;

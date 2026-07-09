@@ -631,6 +631,12 @@ export function FullCheckWaitlistForm({
     return rpt("高风险", "Yuksek risk", "High risk");
   }
 
+  function getQualitativeTierLabel(tier?: string) {
+    if (tier === "Potential fit") return rpt("可能匹配", "Olasi uyum", "Potential fit");
+    if (tier === "Unclear fit") return rpt("匹配度不明确", "Belirsiz uyum", "Unclear fit");
+    return rpt("匹配可能性低", "Olasi degil", "Unlikely fit");
+  }
+
   function getRankedVisaLabel(subclass: string) {
     if (subclass === "189") return rpt("189 独立技术移民", "189 Yetenekli Bagimsiz", "189 Skilled Independent");
     if (subclass === "190") return rpt("190 州担保技术移民", "190 Eyalet Adaylikli", "190 Skilled Nominated");
@@ -1334,6 +1340,22 @@ export function FullCheckWaitlistForm({
                     ))}
 
                     {rankedPathways.map((item, index) => {
+                      if (item.isPreliminaryOnly) {
+                        return (
+                          <div key={item.subclass} className="rounded-md border border-border/70 p-3">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <p className="text-sm font-semibold text-foreground">
+                                {getRankedVisaLabel(item.subclass)} - {rpt("仅初步信号", "Yalnizca on sinyal", "Preliminary signal only")}
+                              </p>
+                              <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+                                {getQualitativeTierLabel(item.qualitativeTier)}
+                              </span>
+                            </div>
+                            <p className="mt-1 text-xs text-muted-foreground">{item.preliminaryNote}</p>
+                          </div>
+                        );
+                      }
+
                       const barColor =
                         index === 0
                           ? "bg-emerald-500"
@@ -1407,8 +1429,7 @@ export function FullCheckWaitlistForm({
                   <span className="font-medium text-foreground">
                     {rpt("信心：", "Güven:", "Confidence:")} {" "}
                     {getSignalConfidenceLabel(report.signalSnapshot.confidenceLabel)}
-                  </span>{" "}
-                  — {report.signalSnapshot.confidenceExplanation}
+                  </span>
                 </p>
               </CardContent>
             </Card>

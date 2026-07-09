@@ -1,8 +1,9 @@
-import type { ConfidenceLevel, PathwayComparison, RankedPathway, ReadinessReport } from "./types";
+import type { ConfidenceLevel, Locale, PathwayComparison, QualitativeFitTier, RankedPathway, ReadinessReport } from "./types";
 
 type RankedPathwayInput = {
   age?: string;
   currentCountry?: string;
+  locale?: Locale;
 };
 
 function clampPercentage(value: number): number {
@@ -48,10 +49,28 @@ function confidenceToCaScore(level?: ConfidenceLevel): number {
 }
 
 export function buildCaRankedPathways(
-  report: ReadinessReport
+  report: ReadinessReport,
+  locale: Locale = "en"
 ): RankedPathway[] {
   const pathways: PathwayComparison[] = report.pathwayComparison ?? [];
   if (pathways.length === 0) return [];
+
+  if (!report.assessmentState.canShowNumericRanking) {
+    const preliminaryNote = buildPreliminaryNote(report.assessmentState.missingFieldLabels, locale);
+    const raw = pathways
+      .filter((p) => p.subclass && CA_PATHWAY_LABELS[p.subclass])
+      .map((p) => ({
+        subclass: p.subclass as RankedPathway["subclass"],
+        visaLabel: CA_PATHWAY_LABELS[p.subclass] ?? p.visaName ?? p.subclass,
+        qualitativeTier: confidenceToQualitativeTier(p.confidenceLevel),
+        isPreliminaryOnly: true,
+        preliminaryNote,
+      }));
+    const sorted = [...raw].sort(
+      (a, b) => qualitativeTierRank(b.qualitativeTier) - qualitativeTierRank(a.qualitativeTier)
+    );
+    return sorted.map((item) => ({ ...item, recommendationTag: "🔍 Preliminary Signal Only" as const }));
+  }
 
   const crsSignal = report.pointsEstimate?.estimatedPoints ?? 0;
 
@@ -69,7 +88,7 @@ export function buildCaRankedPathways(
 
   if (raw.length === 0) return [];
 
-  const sorted = [...raw].sort((a, b) => b.matchPercentage - a.matchPercentage);
+  const sorted = [...raw].sort((a, b) => b.matchPercentage! - a.matchPercentage!);
   return sorted.map((item, index) => ({
     ...item,
     recommendationTag:
@@ -81,10 +100,74 @@ export function buildCaRankedPathways(
   }));
 }
 
+function confidenceToQualitativeTier(level?: ConfidenceLevel): QualitativeFitTier {
+  if (level === "high") return "Potential fit";
+  if (level === "medium") return "Unclear fit";
+  return "Unlikely fit";
+}
+
+function qualitativeTierRank(tier: QualitativeFitTier): number {
+  if (tier === "Potential fit") return 2;
+  if (tier === "Unclear fit") return 1;
+  return 0;
+}
+
+function buildPreliminaryNote(missingFieldLabels: string[], locale: Locale = "en"): string {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  if (missingFieldLabels.length === 0) {
+    return isTr
+      ? "Yalnızca ön sinyal — bu yol için puan hesaplanamıyor. Ek profil bilgisi sağlayın."
+      : isZh
+        ? "仅初步信号——该路径的分数暂无法计算。请提供更多档案信息。"
+        : "Preliminary signal only — points cannot be calculated for this pathway. Provide additional profile details.";
+  }
+  const missing = missingFieldLabels.join(isZh ? "、" : ", ");
+  return isTr
+    ? `Yalnızca ön sinyal — ${missing} sağlanana kadar puan hesaplanamaz.`
+    : isZh
+      ? `仅初步信号——在提供${missing}之前无法计算分数。`
+      : `Preliminary signal only — points cannot be calculated until ${missing} are provided.`;
+}
+
+/**
+ * Reads assessmentState.canShowNumericRanking (the single source of truth
+ * computed once in the base engine) so this section can never disagree with
+ * the Executive Summary about whether enough data exists for a real number.
+ */
+function calculateQualitativeRankedPathways(report: ReadinessReport, locale: Locale): RankedPathway[] {
+  const preliminaryNote = buildPreliminaryNote(report.assessmentState.missingFieldLabels, locale);
+  const getPathwayConfidence = (subclass: "189" | "190" | "491") =>
+    report.pathwayComparison.find((pathway) => pathway.subclass === subclass)?.confidenceLevel;
+
+  const raw: Array<Omit<RankedPathway, "recommendationTag">> = (["189", "190", "491"] as const).map(
+    (subclass) => ({
+      subclass,
+      visaLabel: `${subclass} Visa`,
+      qualitativeTier: confidenceToQualitativeTier(getPathwayConfidence(subclass)),
+      isPreliminaryOnly: true,
+      preliminaryNote,
+    })
+  );
+
+  const sorted = [...raw].sort(
+    (a, b) => qualitativeTierRank(b.qualitativeTier!) - qualitativeTierRank(a.qualitativeTier!)
+  );
+
+  return sorted.map((item) => ({
+    ...item,
+    recommendationTag: "🔍 Preliminary Signal Only" as const,
+  }));
+}
+
 export function calculateRankedPathways(
   report: ReadinessReport,
   input: RankedPathwayInput
 ): RankedPathway[] {
+  if (!report.assessmentState.canShowNumericRanking) {
+    return calculateQualitativeRankedPathways(report, input.locale ?? "en");
+  }
+
   const pointsEstimate =
     report.pointsEstimate?.estimatedPoints ??
     report.pointsBoosterSimulator?.currentEstimate ??
@@ -137,7 +220,7 @@ export function calculateRankedPathways(
     },
   ];
 
-  const sorted = [...raw].sort((a, b) => b.matchPercentage - a.matchPercentage);
+  const sorted = [...raw].sort((a, b) => b.matchPercentage! - a.matchPercentage!);
   return sorted.map((item, index) => ({
     ...item,
     recommendationTag:

@@ -1,3 +1,4 @@
+import { buildAssessmentState } from "@/lib/readiness/assessment-state";
 import { checkOccupation } from "@/lib/occupations/check-occupation";
 import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
@@ -19,6 +20,7 @@ import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-che
 import { buildRiskIndicators, buildCanadaRiskIndicators } from "./risk-rules";
 import { buildNextSteps, buildCanadaNextSteps } from "./next-steps";
 import type {
+  AssessmentState,
   ConfidenceLevel,
   DataCompleteness,
   DocumentCategory,
@@ -2202,10 +2204,11 @@ function buildExecutiveSummary(
   pathways: PathwayComparison[],
   locale: Locale,
   missingInformation: string[],
-  estimatedPoints?: number
+  assessmentState: AssessmentState
 ): string[] {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
+  const estimatedPoints = assessmentState.canShowNumericRanking ? assessmentState.estimatedPoints : undefined;
   const skilledVisible = pathways.some((pathway) => ["189", "190", "491"].includes(pathway.subclass));
   const pathwayNames = pathways
     .filter((pathway) => pathway.subclass !== "general")
@@ -3737,6 +3740,8 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     monthly: familyCostRow,
   };
 
+  const assessmentState = buildAssessmentState(input, pathwayComparison, pointsEstimate.estimatedPoints, locale);
+
   return {
     country: "CA",
     executiveSummary,
@@ -3750,6 +3755,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     progressionPathways: [],
     pathwayFriction: [],
     confidenceExplanation: signalSnapshot.confidenceExplanation,
+    assessmentState,
     reportIndicators: {
       dataCompletenessScore: dataCompleteness.percentage,
       dataCompletenessLabel: isTr ? "Veri tamlığı" : "Data completeness",
@@ -3893,12 +3899,22 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   );
 
   const keyVisaRequirements = buildKeyVisaRequirements(pathwayComparison);
+  // Single source of truth for assessment confidence — every downstream
+  // section (executive summary language, ranked pathway %/points display,
+  // pathway comparison) reads from this SAME object instead of independently
+  // re-deriving whether there is enough data for a specific number.
+  const assessmentState = buildAssessmentState(
+    input,
+    pathwayComparison,
+    pointsEstimate?.estimatedPoints,
+    locale
+  );
   const executiveSummary = buildExecutiveSummary(
     input,
     pathwayComparison,
     locale,
     missingInformation,
-    pointsEstimate?.estimatedPoints
+    assessmentState
   );
   const pathwayStrengthComparison = buildPathwayStrengthComparison(
     pathwayComparison,
@@ -4004,6 +4020,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     progressionPathways,
     pathwayFriction,
     confidenceExplanation,
+    assessmentState,
     reportIndicators,
     primaryGap,
     dataCompleteness,

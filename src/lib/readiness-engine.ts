@@ -955,6 +955,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     rankedPathways: calculateRankedPathways(base, {
       age: input.age,
       currentCountry: input.currentCountry,
+      locale: input.locale,
     }),
     stateNominationTracker,
     lodgementReadyChecklist: generateChecklist({

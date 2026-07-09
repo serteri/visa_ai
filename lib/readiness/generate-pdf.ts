@@ -185,6 +185,10 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       highPotentialBadge: "YUKSEK POTANSIYEL",
       conditionalBadge: "KOSULLU",
       highRiskBadge: "YUKSEK RISK",
+      preliminarySignalOnly: "Yalnizca on sinyal",
+      qualitativeFitPotential: "Olasi uyum",
+      qualitativeFitUnclear: "Belirsiz uyum",
+      qualitativeFitUnlikely: "Olasi degil",
       coverTitle: "LogiVisa Premium Hazirlik Degerlendirmesi",
       coverSubtitle: "AI destekli goc stratejisi ve uygunluk raporu",
       preparedFor: "Hazirlanan Kisi",
@@ -304,6 +308,10 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       highPotentialBadge: "高潜力",
       conditionalBadge: "有条件",
       highRiskBadge: "高风险",
+      preliminarySignalOnly: "仅初步信号",
+      qualitativeFitPotential: "可能匹配",
+      qualitativeFitUnclear: "匹配度不明确",
+      qualitativeFitUnlikely: "匹配可能性低",
       coverTitle: "\u004c\u006f\u0067\u0069\u0056\u0069\u0073\u0061 \u9ad8\u7ea7\u51c6\u5907\u5ea6\u8bc4\u4f30",
       coverSubtitle: "\u0041\u0049 \u9a71\u52a8\u7684\u79fb\u6c11\u7b56\u7565\u4e0e\u53ef\u884c\u6027\u62a5\u544a",
       preparedFor: "\u4e3a\u4ee5\u4e0b\u7533\u8bf7\u4eba\u51c6\u5907",
@@ -422,6 +430,10 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     highPotentialBadge: "HIGH POTENTIAL",
     conditionalBadge: "CONDITIONAL",
     highRiskBadge: "HIGH RISK",
+    preliminarySignalOnly: "Preliminary signal only",
+    qualitativeFitPotential: "Potential fit",
+    qualitativeFitUnclear: "Unclear fit",
+    qualitativeFitUnlikely: "Unlikely fit",
     coverTitle: "LogiVisa Premium Readiness Assessment",
     coverSubtitle: "AI-Powered Migration Strategy & Viability Report",
     preparedFor: "Prepared for",
@@ -507,15 +519,43 @@ async function toBase64FromArrayBuffer(buffer: ArrayBuffer): Promise<string> {
   return btoa(binary);
 }
 
+function resolveServerOrigin(): string | null {
+  const explicit = process.env.NEXT_PUBLIC_BASE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, "");
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return null;
+}
+
+async function fetchCjkFontFromOrigin(): Promise<string | null> {
+  const origin = resolveServerOrigin();
+  if (!origin) return null;
+  try {
+    const response = await fetch(`${origin}${PDF_CJK_FONT_PUBLIC_PATH}`);
+    if (!response.ok) return null;
+    const arrayBuffer = await response.arrayBuffer();
+    return await toBase64FromArrayBuffer(arrayBuffer);
+  } catch {
+    return null;
+  }
+}
+
 async function loadRuntimeCjkFontBase64(): Promise<string | null> {
   try {
     if (typeof window === "undefined") {
-      const { readFile } = await import("node:fs/promises");
-      const path = await import("node:path");
-      const assetPath = path.join(process.cwd(), ...PDF_CJK_FONT_ASSET_PATH);
-      const publicPath = path.join(process.cwd(), "public", "fonts", "NotoSansSC-Regular.ttf");
-      const fontBuffer = await readFile(assetPath).catch(() => readFile(publicPath));
-      return fontBuffer.toString("base64");
+      try {
+        const { readFile } = await import("node:fs/promises");
+        const path = await import("node:path");
+        const assetPath = path.join(process.cwd(), ...PDF_CJK_FONT_ASSET_PATH);
+        const publicPath = path.join(process.cwd(), "public", "fonts", "NotoSansSC-Regular.ttf");
+        const fontBuffer = await readFile(assetPath).catch(() => readFile(publicPath));
+        return fontBuffer.toString("base64");
+      } catch {
+        // Filesystem read failed — likely because the serverless function's
+        // build trace did not include this large TTF asset. Fall back to an
+        // absolute-URL fetch against the deployed origin, which works from a
+        // server context (unlike a relative fetch("/fonts/...") path).
+        return await fetchCjkFontFromOrigin();
+      }
     }
 
     const response = await fetch(PDF_CJK_FONT_PUBLIC_PATH);
@@ -576,8 +616,14 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   const activeBoldAvailable = cjkRequested ? cjkBoldFontAvailable : true;
 
   function safeText(value: string): string {
-    if (!cjkRequested || cjkFontAvailable) return value;
-    return value.replace(/[^\x00-\x7F]/g, "?");
+    // When the CJK font could not be loaded, effectiveLocale already falls
+    // back to English for static labels. Dynamic report body text may still
+    // be Chinese here — pass it through unmodified rather than replacing
+    // every non-ASCII character with "?", which previously turned entire
+    // report sections into walls of question marks. The base Latin font
+    // will render what it can and silently skip unsupported CJK glyphs,
+    // which is a far less confusing failure mode.
+    return value;
   }
 
   /**
@@ -2496,6 +2542,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (tag.includes("Highly")) return text.highlyRecommendedPathway;
     if (tag.includes("Alternative")) return text.alternativeOption;
     if (tag.includes("High Risk")) return text.highRiskLowProbability;
+    if (tag.includes("Preliminary")) return text.preliminarySignalOnly;
     return safeText(tag.replace(/[^\x00-\x7F]/g, "").trim());
   }
 
@@ -2515,14 +2562,21 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return { label: text.highRiskBadge, color: COLORS.riskHigh };
   }
 
+  function qualitativeTierBadge(tier?: "Potential fit" | "Unclear fit" | "Unlikely fit") {
+    if (tier === "Potential fit") return { label: text.qualitativeFitPotential, color: COLORS.riskLow };
+    if (tier === "Unclear fit") return { label: text.qualitativeFitUnclear, color: COLORS.riskMedium };
+    return { label: text.qualitativeFitUnlikely, color: COLORS.riskHigh };
+  }
+
   function drawVisaViabilityRanking() {
     const computedRankedPathways =
       report.rankedPathways ??
       (report.country === "CA"
-        ? buildCaRankedPathways(report)
+        ? buildCaRankedPathways(report, effectiveLocale)
         : calculateRankedPathways(report, {
             age: userInputSummary.age,
             currentCountry: userInputSummary.currentCountry,
+            locale: effectiveLocale,
           }));
 
     // Hard Gate (1 July 2026): ineligible pathways are unconditionally pinned
@@ -2577,6 +2631,42 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         return;
       }
 
+      if (item.isPreliminaryOnly) {
+        const rowHeight = 16;
+        ensurePageSpace(rowHeight + 2);
+        const topY = yPosition;
+        const badge = qualitativeTierBadge(item.qualitativeTier);
+
+        doc.setFillColor(255, 255, 255);
+        doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+        doc.setLineWidth(0.25);
+        doc.roundedRect(margin, topY, contentWidth, rowHeight, 1.2, 1.2, "FD");
+
+        setBoldFont();
+        doc.setFontSize(FONTS.body);
+        doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+        doc.text(safeText(`${item.visaLabel} - ${text.preliminarySignalOnly}`), margin + 2.5, topY + 5.2);
+
+        const badgeWidth = Math.min(45, Math.max(24, doc.getTextWidth(safeText(badge.label)) + 7));
+        doc.setFillColor(badge.color.r, badge.color.g, badge.color.b);
+        doc.roundedRect(margin + contentWidth - badgeWidth - 2.5, topY + 2.4, badgeWidth, 5.6, 1.4, 1.4, "F");
+        doc.setFontSize(6.8);
+        doc.setTextColor(255, 255, 255);
+        doc.text(safeText(badge.label), margin + contentWidth - badgeWidth + 1, topY + 6.2);
+
+        setBaseFont();
+        doc.setFontSize(FONTS.small);
+        doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+        const noteLines = doc.splitTextToSize(
+          safeText(item.preliminaryNote ?? ""),
+          contentWidth - 5
+        );
+        doc.text(noteLines.slice(0, 2), margin + 2.5, topY + 9.6, { lineHeightFactor: 1.18 });
+
+        yPosition += rowHeight + 2;
+        return;
+      }
+
       const rank = viableRank;
       viableRank += 1;
 
@@ -2584,7 +2674,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       ensurePageSpace(rowHeight + 2);
 
       const topY = yPosition;
-      const badge = viabilityBadge(item.matchPercentage);
+      const badge = viabilityBadge(item.matchPercentage!);
       doc.setFillColor(255, 255, 255);
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
       doc.setLineWidth(0.25);
@@ -2593,7 +2683,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       setBoldFont();
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.text(safeText(`${item.visaLabel} - ${item.matchPercentage}% ${text.match}`), margin + 2.5, topY + 5.2);
+      doc.text(safeText(`${item.visaLabel} - ${item.matchPercentage!}% ${text.match}`), margin + 2.5, topY + 5.2);
 
       const badgeWidth = Math.min(45, Math.max(24, doc.getTextWidth(safeText(badge.label)) + 7));
       doc.setFillColor(badge.color.r, badge.color.g, badge.color.b);
@@ -2606,7 +2696,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
       doc.text(
-        safeText(`${formatRecommendationTag(item.recommendationTag)}  (${text.pointsSignal}: ${item.pointsSignal})`),
+        safeText(`${formatRecommendationTag(item.recommendationTag)}  (${text.pointsSignal}: ${item.pointsSignal!})`),
         margin + 2.5,
         topY + 9.6
       );
@@ -2619,7 +2709,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
       doc.roundedRect(barX, barY, barW, barH, 0.6, 0.6, "F");
 
-      const fillW = (barW * item.matchPercentage) / 100;
+      const fillW = (barW * item.matchPercentage!) / 100;
       const barColor =
         rank === 0
           ? COLORS.riskLow
@@ -2898,7 +2988,6 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         : text.noClearSecondarySignal,
     ],
     [text.confidence, formatSignalConfidence(report.signalSnapshot.confidenceLabel)],
-    [text.confidenceExplanation, report.signalSnapshot.confidenceExplanation],
   ]);
 
   addPremiumKeyValueContainer(
