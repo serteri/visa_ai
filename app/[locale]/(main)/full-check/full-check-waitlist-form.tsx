@@ -1120,6 +1120,26 @@ export function FullCheckWaitlistForm({
           </div>
         </div>
 
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-graduate-visa-intent">
+            {txt(
+              "Şu anda Avustralya'da uluslararası öğrenci misiniz veya 485 Mezun Vizesi başvurmayı planlıyor musunuz? (opsiyonel)",
+              "Are you currently an international student in Australia or planning to apply for a 485 Graduate Visa? (optional)",
+              "您目前是否是在澳大利亚的国际学生，或计划申请485毕业生签证？（可选）"
+            )}
+          </Label>
+          <select
+            id="waitlist-graduate-visa-intent"
+            name="hasGraduateVisaPathwayIntent"
+            defaultValue=""
+            className={selectClassName}
+          >
+            <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+            <option value="yes">{txt("Evet", "Yes", "是")}</option>
+            <option value="no">{txt("Hayır", "No", "否")}</option>
+          </select>
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="waitlist-budget-range">

@@ -711,6 +711,13 @@ export async function submitFullCheckWaitlist(
   const annualSalaryAud = annualSalaryAudRaw ? Number(annualSalaryAudRaw) : undefined;
   const englishTestTaken = String(formData.get("englishTestTaken") ?? "").trim();
   const occupationConfirmed = String(formData.get("occupationConfirmed") ?? "").trim();
+  const hasGraduateVisaPathwayIntentRaw = String(formData.get("hasGraduateVisaPathwayIntent") ?? "").trim();
+  const hasGraduateVisaPathwayIntent =
+    hasGraduateVisaPathwayIntentRaw === "yes"
+      ? true
+      : hasGraduateVisaPathwayIntentRaw === "no"
+        ? false
+        : undefined;
   const estimatedBudgetRange = String(formData.get("estimatedBudgetRange") ?? "").trim();
   const timeline = String(formData.get("timeline") ?? "").trim();
   const sponsorOrFamily = String(formData.get("sponsorOrFamily") ?? "").trim();
@@ -937,6 +944,7 @@ export async function submitFullCheckWaitlist(
         : undefined,
       englishTestTaken: englishTestTaken || undefined,
       occupationConfirmed: occupationConfirmed || undefined,
+      hasGraduateVisaPathwayIntent,
       estimatedBudgetRange: estimatedBudgetRange || undefined,
       timeline: timeline || undefined,
       sponsorOrFamily: sponsorOrFamily || undefined,
