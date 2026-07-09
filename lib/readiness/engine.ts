@@ -296,7 +296,6 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // Explicit subclass numbers first
   const pref = norm(input.preferredPathway ?? "");
   if (/\b500\b/.test(pref)) found.add("500");
-  if (/\b485\b/.test(pref)) found.add("485");
   if (/\b482\b/.test(pref)) found.add("482");
   if (/\b189\b/.test(pref)) found.add("189");
   if (/\b190\b/.test(pref)) found.add("190");
@@ -313,27 +312,6 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // Study → 500
   if (hasKw(combined, ["study", "student", "course", "university", "college", "school", "eğitim", "öğrenci", "okul"])) {
     found.add("500");
-  }
-
-  // Graduate/post-study → 485
-  if (
-    hasKw(combined, [
-      "485",
-      "graduate visa",
-      "post study",
-      "post-study",
-      "after study",
-      "temporary graduate",
-      "graduated",
-      "graduate work",
-      "485 visa",
-      "mezun",
-      "geçici mezun",
-    ]) ||
-    (hasKw(combined, ["study", "student", "eğitim", "öğrenci"]) &&
-      hasKw(norm(input.currentCountry ?? ""), ["australia", "avustralya"]))
-  ) {
-    found.add("485");
   }
 
   // Sponsor/employer → 482
@@ -2755,6 +2733,7 @@ function buildFinancialRoadmap(
 ): FinancialRoadmapItem[] {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
+  const hasGraduateVisaPathwayIntent = input.hasGraduateVisaPathwayIntent === true;
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
   const has482 = subclasses.includes("482");
   const hasNoFunctionalEnglishDependants = hasDependantsWithoutFunctionalEnglish(input);
@@ -2805,6 +2784,16 @@ function buildFinancialRoadmap(
           : "Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant. If your family status does not indicate this, risk remains profile-dependent.",
     },
   ];
+
+  if (hasGraduateVisaPathwayIntent) {
+    items.unshift({
+      category: "CRITICAL FINANCIAL ALERT: Temporary Graduate Visa (Subclass 485)",
+      estimateType: "official_fee",
+      amountLabel: "AUD 5,750",
+      explanation:
+        "CRITICAL FINANCIAL ALERT: Note that as of the July 2026 schedule, the base application charge for the Temporary Graduate Visa (Subclass 485) has risen sharply to 5,750 AUD. Maximizing this costly visa window for targeted 190/491 PR points optimization is highly critical.",
+    });
+  }
 
   if (hasSkilled || has482) {
     items.push({
@@ -2867,11 +2856,23 @@ function buildFinancialRoadmap(
 
 function buildProgressionPathways(
   subclasses: string[],
-  locale: Locale
+  locale: Locale,
+  hasGraduateVisaPathwayIntent = false
 ): ProgressionPathway[] {
   const isTr = locale === "tr";
   const items: ProgressionPathway[] = [];
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
+
+  if (hasGraduateVisaPathwayIntent) {
+    items.push({
+      from: isTr ? "Mevcut profil" : "Current profile",
+      to: isTr ? "485 köprüsü → 189/190/491" : "485 bridge → 189/190/491",
+      label: isTr ? "485 köprü stratejisi" : "485 bridge strategy",
+      explanation: isTr
+        ? "485 geçici mezun vizesi, Avustralya iş deneyimi biriktirmek ve eyalet adaylığı şartlarına yaklaşmak için stratejik bir köprü olarak kullanılabilir; bu yalnızca geçiş bağlamıdır, bağımsız bir PR yolu değildir."
+        : "The 485 Temporary Graduate Visa can be used as a strategic bridge to accumulate Australian work experience and move closer to state nomination requirements; it is contextual transition logic, not a standalone PR pathway.",
+    });
+  }
 
   if (subclasses.includes("500")) {
     items.push({
@@ -3921,7 +3922,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   );
   const progressionPathways = buildProgressionPathways(
     detectedSubclasses,
-    locale
+    locale,
+    input.hasGraduateVisaPathwayIntent === true
   );
   const pathwayFriction = buildPathwayFriction(
     pathwayComparison,

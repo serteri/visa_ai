@@ -15,6 +15,7 @@ export type ReadinessInput = {
   occupationConfirmed?: string;
   estimatedBudgetRange?: string;
   timeline?: string;
+  hasGraduateVisaPathwayIntent?: boolean;
   sponsorOrFamily?: string;
   annualSalaryAud?: number;
   preferredPathway?: string;

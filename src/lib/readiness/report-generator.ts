@@ -279,7 +279,8 @@ function matchTrendByOccupation(occupation?: string): TrendRecord {
 function buildGanttByTimeline(
   timeline?: string,
   occupation?: string,
-  country: "AU" | "CA" = "AU"
+  country: "AU" | "CA" = "AU",
+  hasGraduateVisaPathwayIntent = false
 ): GanttSection {
   const raw = normalize(timeline);
 
@@ -349,35 +350,51 @@ function buildGanttByTimeline(
 
   if (country === "AU") {
     const occupationLabel = occupation?.trim() || "your nominated occupation";
+    const steps = [
+      {
+        step: 1,
+        title: "Profile Foundation & English",
+        window: "Quarter 1",
+        description: "Establish baseline points, finalize highest possible English language testing, and gather core identity documents.",
+      },
+      {
+        step: 2,
+        title: "Skills Validation",
+        window: "Quarter 2",
+        description: `Lodge formal skills assessment for ${occupationLabel} with the relevant Australian assessing authority, accounting for potential deducted years of experience.`,
+      },
+      {
+        step: 3,
+        title: "EOI Strategy",
+        window: "Quarter 3",
+        description: "Submit Expression of Interest (EOI) targeting 190 and 491 state nomination pathways based on current quota allocations.",
+      },
+      {
+        step: 4,
+        title: "Visa Lodgement & Processing",
+        window: "Quarter 4",
+        description: "Finalize character/police clearances and medicals immediately upon receiving an Invitation to Apply (ITA).",
+      },
+    ];
+
+    if (hasGraduateVisaPathwayIntent) {
+      steps[0] = {
+        ...steps[0],
+        title: "Profile Foundation & 485 Bridge",
+        description:
+          "Bridge to PR (Subclass 485): Utilize your Temporary Graduate Visa timeline (Post-Higher Education or Post-Vocational stream) to accumulate crucial Australian work experience and bridge the gap toward state nomination requirements. Keep English testing and identity documents aligned with the 485-to-190/491 transition plan.",
+      };
+      steps[1] = {
+        ...steps[1],
+        title: "Skills Validation & 485 Work-Experience Window",
+        description:
+          `Use the 485 bridge to strengthen Australian work-history evidence while you lodge the formal skills assessment for ${occupationLabel}; this keeps your Q2 activity aligned with a 190/491 nomination pathway rather than treating 485 as a standalone end point.`,
+      };
+    }
 
     return {
       timelineBand: "12+ months",
-      steps: [
-        {
-          step: 1,
-          title: "Profile Foundation & English",
-          window: "Quarter 1",
-          description: "Establish baseline points, finalize highest possible English language testing, and gather core identity documents.",
-        },
-        {
-          step: 2,
-          title: "Skills Validation",
-          window: "Quarter 2",
-          description: `Lodge formal skills assessment for ${occupationLabel} with the relevant Australian assessing authority, accounting for potential deducted years of experience.`,
-        },
-        {
-          step: 3,
-          title: "EOI Strategy",
-          window: "Quarter 3",
-          description: "Submit Expression of Interest (EOI) targeting 190 and 491 state nomination pathways based on current quota allocations.",
-        },
-        {
-          step: 4,
-          title: "Visa Lodgement & Processing",
-          window: "Quarter 4",
-          description: "Finalize character/police clearances and medicals immediately upon receiving an Invitation to Apply (ITA).",
-        },
-      ],
+      steps,
     };
   }
 
@@ -457,6 +474,7 @@ export function generatePremiumSections(input: {
   selectedCity?: string;
   familyStatus?: string;
   timeline?: string;
+  hasGraduateVisaPathwayIntent?: boolean;
   mainGoal?: string;
   biggestConcern?: string;
   estimatedPoints?: number;
@@ -465,7 +483,7 @@ export function generatePremiumSections(input: {
   const locale = input.locale ?? "en";
 
   if (input.country === "CA") {
-    const gantt = buildGanttByTimeline(input.timeline, input.occupation, "CA");
+    const gantt = buildGanttByTimeline(input.timeline, input.occupation, "CA", false);
     const canadaTrack = inferCanadaActionTrack(locale, input.occupation);
     const city = inferCanadaCity({
       selectedCity: input.selectedCity,
@@ -532,7 +550,12 @@ export function generatePremiumSections(input: {
   const familyProfile = inferFamilyProfile(input.familyStatus);
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
-  const gantt = buildGanttByTimeline(input.timeline, input.occupation, "AU");
+  const gantt = buildGanttByTimeline(
+    input.timeline,
+    input.occupation,
+    "AU",
+    input.hasGraduateVisaPathwayIntent === true
+  );
   const methodologyNote = localizeTrendDescription(
     locale,
     locale === "zh-Hans" ? TREND_DATA.methodology_note_zh ?? TREND_DATA.methodology_note : TREND_DATA.methodology_note
