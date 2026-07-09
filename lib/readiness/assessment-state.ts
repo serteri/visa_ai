@@ -1,4 +1,5 @@
 import { findOccupationRecord, getEligibleSkilledSubclasses } from "./occupation-eligibility";
+import { getEmploymentDataSignals } from "./employment-signals";
 import type {
   AssessmentState,
   DataCompletenessLevel,
@@ -88,13 +89,14 @@ export function buildAssessmentState(
   estimatedPoints: number | undefined,
   locale: Locale
 ): AssessmentState {
+  const employmentSignals = getEmploymentDataSignals(input);
   const fieldsPresent: AssessmentState["fieldsPresent"] = {
     age: Boolean(input.age),
     englishLevel: Boolean(input.englishLevel),
     englishTestEvidence: (input.englishTestTaken ?? "").trim().toLowerCase() === "yes",
     occupation: Boolean(input.occupation),
     skillsAssessment: (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes",
-    workExperienceYears: input.offshoreExperienceYears !== undefined || input.onshoreExperienceYears !== undefined,
+    workExperienceYears: employmentSignals.workExperienceYearsConfirmed,
     partnerStatus: false,
     stateNomination: false,
     healthCharacterDocs: false,
@@ -146,6 +148,8 @@ export function buildAssessmentState(
     occupationEligibility === "eligible";
 
   return {
+    employmentDataProvided: employmentSignals.employmentDataProvided,
+    employmentDataConfirmed: employmentSignals.workExperienceYearsConfirmed,
     fieldsPresent,
     missingFieldLabels,
     dataCompletenessLevel,

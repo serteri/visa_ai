@@ -1,4 +1,9 @@
 import { buildAssessmentState } from "@/lib/readiness/assessment-state";
+import {
+  appendEmploymentCaveat,
+  buildEmploymentExperienceCaveat,
+  getEmploymentDataSignals,
+} from "@/lib/readiness/employment-signals";
 import { checkOccupation } from "@/lib/occupations/check-occupation";
 import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
@@ -269,13 +274,16 @@ function formatIneligibleAgeReason(locale: Locale, declaredAge: number): string 
 function formatIneligibleLowPointsReason(
   locale: Locale,
   estimatedPoints: number,
-  englishLevel?: string
+  englishLevel?: string,
+  input?: ReadinessInput
 ): string {
   const base = t(locale, "ineligible.lowPoints", { points: estimatedPoints });
   const normalizedEnglish = (englishLevel ?? "").trim().toLowerCase();
   const hasRoomToImproveEnglish = normalizedEnglish === "none" || normalizedEnglish === "competent";
-  if (!hasRoomToImproveEnglish) return base;
-  return `${base} ${t(locale, "suggestion.improveEnglish")}`;
+  const withEnglishSuggestion = hasRoomToImproveEnglish
+    ? `${base} ${t(locale, "suggestion.improveEnglish")}`
+    : base;
+  return input ? appendEmploymentCaveat(withEnglishSuggestion, locale, getEmploymentDataSignals(input)) : withEnglishSuggestion;
 }
 
 // ─── Pathway detection ────────────────────────────────────────────────────────
@@ -907,7 +915,7 @@ function getPathwaySpecificRisks(
 
   if (["189", "190", "491"].includes(subclass)) {
     if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
-      risks.push(formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel));
+      risks.push(formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel, input));
     }
     if (!input.occupation) {
       risks.push(
@@ -1207,7 +1215,7 @@ function buildPathwayEntry(
     if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
-      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel);
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel, input);
     } else {
       relevance = input.occupation ? "possible" : "needs_more_information";
       reason = isTr
@@ -1218,7 +1226,7 @@ function buildPathwayEntry(
     if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
-      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel);
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel, input);
     } else {
       relevance = input.occupation ? "possible" : "needs_more_information";
       reason = isTr
@@ -1229,7 +1237,7 @@ function buildPathwayEntry(
     if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
-      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel);
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel, input);
     } else {
       relevance = input.occupation ? "possible" : "needs_more_information";
       reason = isTr
@@ -2594,6 +2602,7 @@ function buildEvidenceReadiness(
   const has485 = subclasses.includes("485");
   const has482 = subclasses.includes("482");
   const hasPartner = (subclasses.includes("820") || subclasses.includes("801"));
+  const employmentSignals = getEmploymentDataSignals(input);
   const items: EvidenceReadinessItem[] = [
     {
       category: isTr ? "Kimlik ve pasaport" : "Identity and passport",
@@ -2671,6 +2680,15 @@ function buildEvidenceReadiness(
     });
   }
 
+  const employmentCaveat = buildEmploymentExperienceCaveat(locale, employmentSignals);
+  if (hasSkilled && employmentCaveat) {
+    items.push({
+      category: isTr ? "İstihdam deneyimi sinyali" : locale === "zh-Hans" ? "工作经验信号" : "Employment experience signal",
+      status: employmentSignals.bothBlank ? "missing" : "unclear",
+      explanation: employmentCaveat,
+    });
+  }
+
   items.push({
     category: isTr ? "Sağlık, karakter ve çeviri belgeleri" : "Health, character, and translation documents",
     status: "typically_required",
@@ -2696,6 +2714,7 @@ function buildPointsBoosterSimulator(
   const scenarios: PointsBoosterSimulator["scenarios"] = [];
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
   const ageOption = input.age ? parseAgeOption(input.age) : null;
+  const employmentSignals = getEmploymentDataSignals(input);
 
   // Superior English: +20 points vs Proficient, +10 vs Competent
   // (Schedule 6A of the Migration Regulations 1994: Competent=0, Proficient=10, Superior=20)
@@ -2812,14 +2831,15 @@ function buildPointsBoosterSimulator(
   }
 
   const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
+  const employmentCaveat = buildEmploymentExperienceCaveat(locale, employmentSignals);
   return {
     currentEstimate,
     scenarios,
     note: isTr
-      ? `Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`
+      ? `Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}`
       : locale === "zh-Hans"
-        ? `澳大利亚积分表（Migration Regulations 1994, Schedule 6A）采用固定分值。以下情景基于官方积分系数。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`
-        : `The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`,
+        ? `澳大利亚积分表（Migration Regulations 1994, Schedule 6A）采用固定分值。以下情景基于官方积分系数。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}`
+        : `The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}`,
   };
 }
 

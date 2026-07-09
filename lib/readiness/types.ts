@@ -241,6 +241,8 @@ export type OccupationEligibility = "eligible" | "ineligible" | "unverified";
  * enough data exists to show a specific number.
  */
 export type AssessmentState = {
+  employmentDataProvided: boolean;
+  employmentDataConfirmed: boolean;
   fieldsPresent: {
     age: boolean;
     englishLevel: boolean;
