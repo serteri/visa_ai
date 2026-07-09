@@ -37,7 +37,7 @@ const trVisaFields: LocaleVisaFieldsMap = {
     purpose:
       "Core Skills Occupation List'te yer alan bir meslek için onaylı işveren sponsoruyla Avustralya'da geçici çalışma",
     stay_period: "4 yıla kadar. Hong Kong pasaport sahipleri 5 yıla kadar kalabilir.",
-    cost: "Asıl başvuru sahibi ve 18+ bağımlılar için AUD 3.210'dan başlar. 18 yaş altı bağımlılar için AUD 805.",
+    cost: "Asıl başvuru sahibi ve 18+ bağımlılar için AUD 4.015'ten başlar. 18 yaş altı bağımlılar için AUD 1.005.",
     work_rights:
       "Atanan meslekte onaylı sponsor için çalışma. Bazı durumlarda sponsorun ilişkili kuruluşunda çalışma mümkündür.",
   },
@@ -46,7 +46,7 @@ const trVisaFields: LocaleVisaFieldsMap = {
     category: "Kalıcı Nitelikli Göç",
     purpose: "Davetli nitelikli çalışan olarak Avustralya'nın her yerinde kalıcı yaşamak ve çalışmak",
     stay_period: "Kalıcı",
-    cost: "Asıl başvuru sahibi için AUD 4.910'dan başlar",
+    cost: "Asıl başvuru sahibi için AUD 6.135'ten başlar",
     work_rights: "Avustralya'nın her yerinde çalışma ve eğitim",
   },
   "190": {
@@ -55,7 +55,7 @@ const trVisaFields: LocaleVisaFieldsMap = {
     purpose:
       "Avustralya eyalet veya bölge yönetimi tarafından aday gösterilen nitelikli çalışan olarak kalıcı yaşamak ve çalışmak",
     stay_period: "Kalıcı",
-    cost: "Asıl başvuru sahibi için AUD 4.910'dan başlar",
+    cost: "Asıl başvuru sahibi için AUD 6.140'tan başlar",
     work_rights: "Avustralya'nın her yerinde çalışma ve eğitim",
   },
   "491": {
@@ -64,7 +64,7 @@ const trVisaFields: LocaleVisaFieldsMap = {
     purpose:
       "Nitelikli çalışan olarak Avustralya'nın belirlenmiş bölgesel alanlarında yaşamak, çalışmak ve eğitim görmek",
     stay_period: "5 yıl",
-    cost: "Asıl başvuru sahibi için AUD 4.910'dan başlar. Aile üyeleri ve ikinci taksit için ek ücretler olabilir.",
+    cost: "Asıl başvuru sahibi için AUD 6.140'tan başlar. Aile üyeleri ve ikinci taksit için ek ücretler olabilir.",
     work_rights: "Avustralya'nın belirlenmiş bölgesel alanlarında yaşama, çalışma ve eğitim.",
   },
   "820": {
@@ -74,7 +74,7 @@ const trVisaFields: LocaleVisaFieldsMap = {
       "Avustralya vatandaşı, daimi oturum sahibi veya uygun Yeni Zelanda vatandaşı partnerin eşine/fiili partnerine Avustralya'da geçici yaşama ve kalıcı aşamaya ilerleme imkanı sağlar",
     stay_period: "Kalıcı Partner vizesi 801 sonuçlanana veya geri çekilene kadar geçici",
     cost:
-      "Çoğu başvuru sahibi için AUD 9.365'ten başlar. Subclass 300 sahipleri için AUD 1.560'tan, bazı eski subclass 300 sahipleri için AUD 1.980'den başlar.",
+      "Çoğu başvuru sahibi için AUD 11.710'dan başlar. Subclass 300 sahipleri için AUD 1.955'ten, bazı eski subclass 300 sahipleri için AUD 2.475'ten başlar.",
     work_rights: "Kalıcı Partner vizesi değerlendirilirken Avustralya'da yaşama, çalışma ve eğitim.",
   },
   "801": {
@@ -113,7 +113,7 @@ const zhHansVisaFields: LocaleVisaFieldsMap = {
     category: "工作",
     purpose: "在获批雇主担保下，以核心技能职业清单中的职业在澳大利亚临时工作",
     stay_period: "最长4年。香港护照持有人最长可达5年。",
-    cost: "主申请人及18岁以上附属申请人每人 AUD 3,210 起；18岁以下每人 AUD 805。",
+    cost: "主申请人及18岁以上附属申请人每人 AUD 4,015 起；18岁以下每人 AUD 1,005。",
     work_rights: "在提名职业中为获批担保雇主工作；部分情况下可为关联实体工作。",
   },
   "189": {
@@ -121,7 +121,7 @@ const zhHansVisaFields: LocaleVisaFieldsMap = {
     category: "永久技术移民",
     purpose: "作为受邀技术人员在澳大利亚任何地区永久生活和工作",
     stay_period: "永久",
-    cost: "主申请人 AUD 4,910 起",
+    cost: "主申请人 AUD 6,135 起",
     work_rights: "可在澳大利亚任何地区工作和学习",
   },
   "190": {
@@ -129,7 +129,7 @@ const zhHansVisaFields: LocaleVisaFieldsMap = {
     category: "永久技术移民",
     purpose: "作为州或领地提名的技术人员在澳大利亚永久生活和工作",
     stay_period: "永久",
-    cost: "主申请人 AUD 4,910 起",
+    cost: "主申请人 AUD 6,140 起",
     work_rights: "可在澳大利亚任何地区工作和学习",
   },
   "491": {
@@ -137,7 +137,7 @@ const zhHansVisaFields: LocaleVisaFieldsMap = {
     category: "偏远地区技术移民",
     purpose: "作为技术人员在澳大利亚指定偏远地区生活、工作和学习",
     stay_period: "5年",
-    cost: "主申请人 AUD 4,910 起；家庭成员及第二笔费用可能另计。",
+    cost: "主申请人 AUD 6,140 起；家庭成员及第二笔费用可能另计。",
     work_rights: "可在澳大利亚指定偏远地区生活、工作和学习。",
   },
   "820": {
@@ -147,7 +147,7 @@ const zhHansVisaFields: LocaleVisaFieldsMap = {
       "允许澳大利亚公民、永久居民或符合条件的新西兰公民的配偶/事实伴侣在澳临时居留，并过渡到永久居留",
     stay_period: "临时，直至永久伴侣签证 801 完成审理或撤回",
     cost:
-      "多数申请人 AUD 9,365 起。300 子类持有人 AUD 1,560 起，部分原 300 子类持有人 AUD 1,980 起。",
+      "多数申请人 AUD 11,710 起。300 子类持有人 AUD 1,955 起，部分原 300 子类持有人 AUD 2,475 起。",
     work_rights: "在永久伴侣签证审理期间可在澳生活、工作和学习。",
   },
   "801": {

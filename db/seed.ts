@@ -198,7 +198,7 @@ const skillsInDemand482Data = {
   purpose:
     "Work in Australia temporarily for an approved employer sponsor in an occupation listed on the Core Skills Occupation List.",
   stay_period: "Up to 4 years. Hong Kong passport holders may stay up to 5 years.",
-  cost: "From AUD 3,210 for the main applicant and each dependant 18 years or over. AUD 805 for each dependant under 18.",
+  cost: "From AUD 4,015 for the main applicant and each dependant 18 years or over. AUD 1,005 for each dependant under 18.",
   work_rights:
     "Work in Australia for the approved sponsor in the nominated occupation. In some cases, work may be for an associated entity of the sponsor.",
   source_url: SID_482_SOURCE_URL,
@@ -371,7 +371,7 @@ const skilledIndependent189Data = {
   category: "Permanent Skilled Migration",
   purpose: "Live and work permanently anywhere in Australia as an invited skilled worker.",
   stay_period: "Permanently",
-  cost: "From AUD 4,910 for the main applicant",
+  cost: "From AUD 6,135 for the main applicant",
   work_rights: "Work and study anywhere in Australia",
   source_url: SI_189_SOURCE_URL,
   last_checked: new Date("2026-04-25"),
@@ -463,7 +463,7 @@ const skilledNominated190Data = {
   purpose:
     "Live and work permanently in Australia as a skilled worker nominated by an Australian state or territory government.",
   stay_period: "Permanently",
-  cost: "From AUD 4,910 for the main applicant",
+  cost: "From AUD 6,140 for the main applicant",
   work_rights: "Work and study anywhere in Australia",
   source_url: SN_190_SOURCE_URL,
   last_checked: new Date("2026-04-25"),
@@ -706,7 +706,7 @@ const skilledWorkRegional491Data = {
   category: "Regional Skilled Migration",
   purpose: "Live, work and study in a designated regional area of Australia as a skilled worker.",
   stay_period: "5 years",
-  cost: "From AUD 4,910 for the main applicant. Additional charges may apply for family members and second instalment charges.",
+  cost: "From AUD 6,140 for the main applicant. Additional charges may apply for family members and second instalment charges.",
   work_rights: "Live, work and study in a designated regional area of Australia.",
   source_url: SWR_491_SOURCE_URL,
   last_checked: new Date("2026-04-25"),
@@ -940,7 +940,7 @@ const partnerVisa820801Data = {
     "Allows the de facto partner or spouse of an Australian citizen, Australian permanent resident, or eligible New Zealand citizen to live in Australia temporarily and progress toward permanent residency.",
   stay_period: "Temporary until the permanent Partner visa subclass 801 is finalised or withdrawn",
   cost:
-    "From AUD 9,365 for most applicants. From AUD 1,560 for Prospective Marriage visa subclass 300 holders. From AUD 1,980 for some former Prospective Marriage visa subclass 300 holders.",
+    "From AUD 11,710 for most applicants. From AUD 1,955 for Prospective Marriage visa subclass 300 holders. From AUD 2,475 for some former Prospective Marriage visa subclass 300 holders.",
   work_rights: "Live, work and study in Australia while the permanent Partner visa is processed.",
   key_requirements: [
     "Be in a genuine relationship with a spouse or de facto partner who is an Australian citizen, Australian permanent resident, or eligible New Zealand citizen",
@@ -1959,7 +1959,7 @@ async function seed() {
       category: skilledWorkRegional491Data.category,
       purpose: skilledWorkRegional491Data.purpose,
       stay_period: skilledWorkRegional491Data.stay_period,
-      cost: "From AUD 4,910 for the main applicant",
+      cost: "From AUD 6,140 for the main applicant",
       work_rights: "Live, work and study in a designated regional area of Australia",
       source_url: skilledWorkRegional491Data.source_url,
       last_checked: toIsoDate(skilledWorkRegional491Data.last_checked),
@@ -2053,7 +2053,7 @@ async function seed() {
       purpose: partnerVisa820801Data.purpose,
       stay_period: partnerVisa820801Data.stay_period,
       cost:
-        "From AUD 9,365 for most applicants; from AUD 1,560 for Prospective Marriage visa subclass 300 holders",
+        "From AUD 11,710 for most applicants; from AUD 1,955 for Prospective Marriage visa subclass 300 holders",
       work_rights:
         "Live, work and study in Australia while the permanent Partner visa is processed",
       source_url: PARTNER_820_801_SOURCE_URL,

@@ -2767,20 +2767,20 @@ const GOV_FEES_EN: Record<string, string> = {
   "500": "From AUD 2,000 (unless exempt)",
   "482": "From AUD 4,015 (base application charge)",
   "485": "From AUD 4,600",
-  "189": "From about AUD 6,140 (main applicant)",
+  "189": "From AUD 6,135 (main applicant)",
   "190": "From about AUD 6,140 (main applicant)",
-  "491": "From AUD 4,910 (main applicant)",
-  "820": "From AUD 9,365 (most applicants) — covers both the temporary (820) and permanent (801) stages",
+  "491": "From about AUD 6,140 (main applicant)",
+  "820": "From AUD 11,710 (most applicants) — covers both the temporary (820) and permanent (801) stages",
   "801": "No separate fee — already paid as part of the subclass 820 application",
 };
 const GOV_FEES_TR: Record<string, string> = {
   "500": "AUD 2.000'den itibaren (muaf olmayan başvurular için)",
   "482": "AUD 4.015'ten itibaren (temel başvuru ücreti)",
   "485": "AUD 4.600'dan itibaren",
-  "189": "Yaklaşık AUD 6.140'tan itibaren (ana başvurucu)",
+  "189": "AUD 6.135'ten itibaren (ana başvurucu)",
   "190": "Yaklaşık AUD 6.140'tan itibaren (ana başvurucu)",
-  "491": "AUD 4.910'dan itibaren (ana başvurucu)",
-  "820": "AUD 9.365'ten itibaren (çoğu başvurucu) — geçici (820) ve kalıcı (801) aşamaları kapsar",
+  "491": "Yaklaşık AUD 6.140'tan itibaren (ana başvurucu)",
+  "820": "AUD 11.710'dan itibaren (çoğu başvurucu) — geçici (820) ve kalıcı (801) aşamaları kapsar",
   "801": "Ayrı bir ücret yok — subclass 820 başvurusu kapsamında ödenmiştir",
 };
 

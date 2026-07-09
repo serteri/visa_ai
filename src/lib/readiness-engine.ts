@@ -539,7 +539,8 @@ const ZH_FINANCIAL_CATEGORY_MAP: Record<string, string> = {
 };
 
 const ZH_FINANCIAL_AMOUNT_MAP: Record<string, string> = {
-  "From AUD 4,910 (main applicant)": "主申请人约 4,910 澳元起",
+  "From about AUD 6,140 (main applicant)": "主申请人约 6,140 澳元起",
+  "From AUD 6,135 (main applicant)": "主申请人 6,135 澳元起",
   "Variable / depends on provider": "视服务机构而定",
   "Variable / depends on assessing authority": "视评估机构而定",
   "Variable / depends on country and provider": "视所在国家和服务机构而定",
