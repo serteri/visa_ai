@@ -218,6 +218,18 @@ export type RankedPathway = {
 export type DataCompletenessLevel = "sufficient" | "partial" | "minimal";
 
 /**
+ * - "eligible": at least one occupation-dataset match exists and at least
+ *   one of its relevantVisas overlaps the GSM subclasses (189/190/491).
+ * - "ineligible": at least one occupation-dataset match exists, but none of
+ *   the matches' relevantVisas overlap 189/190/491 (a real match was found
+ *   and confirmed not relevant to skilled independent/nominated/regional).
+ * - "unverified": no occupation-dataset match at all. This does NOT mean
+ *   the occupation is invalid — only that the stored dataset didn't
+ *   recognize it.
+ */
+export type OccupationEligibility = "eligible" | "ineligible" | "unverified";
+
+/**
  * Single source of truth for assessment confidence, computed ONCE per report
  * generation in the base engine. Every downstream section (Executive
  * Summary, Visa Viability Ranking, Pathway Comparison, Evidence Snapshot)
@@ -243,7 +255,11 @@ export type AssessmentState = {
   hardGateFlags: string[];
   /** The real deterministic points estimate from buildPointsEstimate, or undefined if age/English were not provided. */
   estimatedPoints?: number;
-  /** True only when dataCompletenessLevel is "sufficient" AND estimatedPoints is a real calculated value. Gates all numeric %/points display across the report. */
+  /** See OccupationEligibility. "unverified" when no occupation was provided at all. */
+  occupationEligibility: OccupationEligibility;
+  /** Localized explanation for occupationEligibility, shown in place of a numeric ranking when it is "ineligible" or "unverified". */
+  occupationEligibilityReason: string;
+  /** True only when dataCompletenessLevel is "sufficient", estimatedPoints is a real calculated value, AND occupationEligibility is "eligible". Gates all numeric %/points display across the report. */
   canShowNumericRanking: boolean;
 };
 
@@ -396,6 +412,7 @@ export type ReadinessReport = {
   /** Defaults to "AU" when omitted, preserving existing behavior. */
   country?: "AU" | "CA";
   executiveSummary: string[];
+  detectedSubclasses?: string[];
   rankedPathways?: RankedPathway[];
   stateNominationTracker?: StateNominationTracker;
   lodgementReadyChecklist?: LodgementReadyChecklist;

@@ -1,4 +1,53 @@
-import type { AssessmentState, DataCompletenessLevel, Locale, PathwayComparison, ReadinessInput } from "./types";
+import { findOccupationRecord, getEligibleSkilledSubclasses } from "./occupation-eligibility";
+import type {
+  AssessmentState,
+  DataCompletenessLevel,
+  Locale,
+  OccupationEligibility,
+  PathwayComparison,
+  ReadinessInput,
+} from "./types";
+
+/**
+ * Backed by the 691-entry ANZSCO dataset (src/data/occupations.json), not
+ * the small 19-entry SKILLED_OCCUPATIONS seed used for general-info Q&A —
+ * that seed is too sparse to gate a paid report's numeric ranking on
+ * (common occupations like "Software Engineer" have no entry in it).
+ */
+function buildOccupationEligibility(
+  occupation: string | undefined,
+  locale: Locale
+): { occupationEligibility: OccupationEligibility; occupationEligibilityReason: string } {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const record = findOccupationRecord(occupation);
+
+  if (!record) {
+    return {
+      occupationEligibility: "unverified",
+      occupationEligibilityReason: isTr
+        ? "Bu meslek, meslek veritabanımızda doğrulanamadı. Bu, mesleğin uygun olmadığı anlamına gelmez — lütfen resmi ANZSCO/nitelikli meslek listesini kontrol edin veya kayıtlı bir göç danışmanına danışın."
+        : isZh
+          ? "我们无法在职业数据库中核实该职业。这并不代表该职业不符合资格——请通过官方 ANZSCO/技术职业清单确认，或咨询注册移民代理。"
+          : "We could not verify this occupation against our occupation database. This does not necessarily mean it's ineligible — please confirm using the official ANZSCO/skilled occupation list or consult a registered migration agent.",
+    };
+  }
+
+  const eligibleSubclasses = getEligibleSkilledSubclasses(occupation);
+
+  if (eligibleSubclasses.length > 0) {
+    return { occupationEligibility: "eligible", occupationEligibilityReason: "" };
+  }
+
+  return {
+    occupationEligibility: "ineligible",
+    occupationEligibilityReason: isTr
+      ? `"${record.occupation_name}" (ANZSCO ${record.anzsco_code}) mesleği, 189/190/491 için ilgili nitelikli meslek listesinde (MLTSSL/STSOL/ROL) görünmüyor.`
+      : isZh
+        ? `"${record.occupation_name}"（ANZSCO ${record.anzsco_code}）似乎不在 189/190/491 相关的技术职业清单（MLTSSL/STSOL/ROL）上。`
+        : `"${record.occupation_name}" (ANZSCO ${record.anzsco_code}) does not appear to be on the relevant skilled occupation list (MLTSSL/STSOL/ROL) for 189/190/491.`,
+  };
+}
 
 function fieldLabel(key: keyof AssessmentState["fieldsPresent"], locale: Locale): string {
   const isTr = locale === "tr";
@@ -82,7 +131,19 @@ export function buildAssessmentState(
           : `Subclass ${pathway.subclass}: ${pathway.reason}`
     );
 
-  const canShowNumericRanking = dataCompletenessLevel === "sufficient" && estimatedPoints !== undefined;
+  // This gate is scoped to AU's ANZSCO-based GSM subclasses (189/190/491).
+  // Canada's occupation matching uses NOC codes against CEC/FSW/FSTP, which
+  // this check has no basis to evaluate, so CA is exempt (vacuously eligible)
+  // rather than being incorrectly blocked by an AU-specific subclass list.
+  const { occupationEligibility, occupationEligibilityReason } =
+    input.country === "CA"
+      ? { occupationEligibility: "eligible" as const, occupationEligibilityReason: "" }
+      : buildOccupationEligibility(input.occupation, locale);
+
+  const canShowNumericRanking =
+    dataCompletenessLevel === "sufficient" &&
+    estimatedPoints !== undefined &&
+    occupationEligibility === "eligible";
 
   return {
     fieldsPresent,
@@ -90,6 +151,8 @@ export function buildAssessmentState(
     dataCompletenessLevel,
     hardGateFlags,
     estimatedPoints,
+    occupationEligibility,
+    occupationEligibilityReason,
     canShowNumericRanking,
   };
 }

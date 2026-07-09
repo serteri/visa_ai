@@ -1,4 +1,12 @@
-import type { ConfidenceLevel, Locale, PathwayComparison, QualitativeFitTier, RankedPathway, ReadinessReport } from "./types";
+import type {
+  AssessmentState,
+  ConfidenceLevel,
+  Locale,
+  PathwayComparison,
+  QualitativeFitTier,
+  RankedPathway,
+  ReadinessReport,
+} from "./types";
 
 type RankedPathwayInput = {
   age?: string;
@@ -56,13 +64,13 @@ export function buildCaRankedPathways(
   if (pathways.length === 0) return [];
 
   if (!report.assessmentState.canShowNumericRanking) {
-    const preliminaryNote = buildPreliminaryNote(report.assessmentState.missingFieldLabels, locale);
+    const { note: preliminaryNote, forcedTier } = resolveQualitativeNote(report.assessmentState, locale);
     const raw = pathways
       .filter((p) => p.subclass && CA_PATHWAY_LABELS[p.subclass])
       .map((p) => ({
         subclass: p.subclass as RankedPathway["subclass"],
         visaLabel: CA_PATHWAY_LABELS[p.subclass] ?? p.visaName ?? p.subclass,
-        qualitativeTier: confidenceToQualitativeTier(p.confidenceLevel),
+        qualitativeTier: forcedTier ?? confidenceToQualitativeTier(p.confidenceLevel),
         isPreliminaryOnly: true,
         preliminaryNote,
       }));
@@ -131,12 +139,38 @@ function buildPreliminaryNote(missingFieldLabels: string[], locale: Locale = "en
 }
 
 /**
+ * Picks the correct user-facing message for a gated (non-numeric) pathway.
+ * "ineligible" and "unverified" occupation findings are distinct facts and
+ * must not collapse into the generic "missing profile fields" message:
+ * - ineligible: a real occupation-dataset match was found and confirmed
+ *   NOT relevant to 189/190/491 — the pathway is genuinely unlikely to fit.
+ * - unverified (occupation was typed but not found in the dataset): we
+ *   simply don't know either way — the pathway's fit is unclear, not ruled
+ *   out.
+ * - otherwise: fall back to the generic missing-fields explanation (covers
+ *   the case where occupation itself was never entered, and CA reports
+ *   which are exempt from this AU-specific occupation-eligibility check).
+ */
+function resolveQualitativeNote(
+  assessmentState: AssessmentState,
+  locale: Locale
+): { note: string; forcedTier?: QualitativeFitTier } {
+  if (assessmentState.occupationEligibility === "ineligible") {
+    return { note: assessmentState.occupationEligibilityReason, forcedTier: "Unlikely fit" };
+  }
+  if (assessmentState.occupationEligibility === "unverified" && assessmentState.fieldsPresent.occupation) {
+    return { note: assessmentState.occupationEligibilityReason, forcedTier: "Unclear fit" };
+  }
+  return { note: buildPreliminaryNote(assessmentState.missingFieldLabels, locale) };
+}
+
+/**
  * Reads assessmentState.canShowNumericRanking (the single source of truth
  * computed once in the base engine) so this section can never disagree with
  * the Executive Summary about whether enough data exists for a real number.
  */
 function calculateQualitativeRankedPathways(report: ReadinessReport, locale: Locale): RankedPathway[] {
-  const preliminaryNote = buildPreliminaryNote(report.assessmentState.missingFieldLabels, locale);
+  const { note: preliminaryNote, forcedTier } = resolveQualitativeNote(report.assessmentState, locale);
   const getPathwayConfidence = (subclass: "189" | "190" | "491") =>
     report.pathwayComparison.find((pathway) => pathway.subclass === subclass)?.confidenceLevel;
 
@@ -144,7 +178,7 @@ function calculateQualitativeRankedPathways(report: ReadinessReport, locale: Loc
     (subclass) => ({
       subclass,
       visaLabel: `${subclass} Visa`,
-      qualitativeTier: confidenceToQualitativeTier(getPathwayConfidence(subclass)),
+      qualitativeTier: forcedTier ?? confidenceToQualitativeTier(getPathwayConfidence(subclass)),
       isPreliminaryOnly: true,
       preliminaryNote,
     })
@@ -164,7 +198,12 @@ export function calculateRankedPathways(
   report: ReadinessReport,
   input: RankedPathwayInput
 ): RankedPathway[] {
-  if (!report.assessmentState.canShowNumericRanking) {
+  const detectedSubclasses = report.detectedSubclasses ?? report.pathwayComparison.map((pathway) => pathway.subclass);
+  const skilledDetected = detectedSubclasses.some((subclass) =>
+    ["189", "190", "491"].includes(subclass)
+  );
+
+  if (!report.assessmentState.canShowNumericRanking || !skilledDetected) {
     return calculateQualitativeRankedPathways(report, input.locale ?? "en");
   }
 

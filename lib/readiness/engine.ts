@@ -15,6 +15,7 @@ import expressEntryConfig from "@/src/data/countries/ca/express-entry.json";
 import enTranslations from "@/public/locales/en.json";
 import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
+import { getEligibleSkilledSubclasses } from "./occupation-eligibility";
 import { generatePremiumSections } from "@/src/lib/readiness/report-generator";
 import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-checklists";
 import { buildRiskIndicators, buildCanadaRiskIndicators } from "./risk-rules";
@@ -305,6 +306,10 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // citizenship data, so this engine is scoped to General Skilled Migration
   // (189, 190, 491) and Employer-Sponsored pathways (482, 186, 494) only.
 
+  for (const subclass of getEligibleSkilledSubclasses(input.occupation)) {
+    found.add(subclass);
+  }
+
   // Study → 500
   if (hasKw(combined, ["study", "student", "course", "university", "college", "school", "eğitim", "öğrenci", "okul"])) {
     found.add("500");
@@ -334,29 +339,6 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // Sponsor/employer → 482
   if (hasKw(combined, ["482", "employer", "sponsor", "sponsored", "job offer", "işveren", "sponsorlu"])) {
     found.add("482");
-  }
-
-  // Skilled/PR → 189, 190, 491
-  if (
-    hasKw(combined, [
-      "pr",
-      "permanent",
-      "skilled",
-      "points",
-      "migrate",
-      "migration",
-      "189",
-      "190",
-      "491",
-      "nitelikli",
-      "puan",
-      "kalıcı",
-      "göç",
-    ])
-  ) {
-    found.add("189");
-    found.add("190");
-    found.add("491");
   }
 
   // Regional → also ensure 491
@@ -4012,6 +3994,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     signalSnapshot,
     primaryLimitingFactor,
     positionChangers,
+    detectedSubclasses,
     pathwayComparison,
     pathwayStrengthComparison,
     evidenceReadiness,
