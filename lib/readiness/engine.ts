@@ -1787,7 +1787,64 @@ function yearsToAustralianEmploymentOption(years: number | undefined): Australia
   return "lt1";
 }
 
-function qualificationToEducationOption(level: ReadinessInput["qualificationLevel"]): EducationOption {
+function isAustralianQualification(input: ReadinessInput): boolean {
+  return input.qualificationAwardedInAustralia === true;
+}
+
+function isRegionalAustralianQualification(input: ReadinessInput): boolean {
+  return isAustralianQualification(input) && input.qualificationRegionalAustralia === true;
+}
+
+function isResearchOrDoctorateQualification(level: ReadinessInput["qualificationLevel"]): boolean {
+  return (
+    level === "Master's Degree (Research)" ||
+    level === "PhD/Doctorate" ||
+    level === "PhD"
+  );
+}
+
+function hasSpecialistEducationClaim(input: ReadinessInput): boolean {
+  return (
+    isAustralianQualification(input) &&
+    isResearchOrDoctorateQualification(input.qualificationLevel) &&
+    input.specialistEducationStemResponse === "yes"
+  );
+}
+
+function isProfessionalYearRelevantOccupation(input: ReadinessInput): boolean {
+  const occupation = (input.occupation ?? "").trim().toLowerCase();
+  if (!occupation) return false;
+  return (
+    occupation.includes("account") ||
+    occupation.includes("audit") ||
+    occupation.includes("ict") ||
+    occupation.includes("software") ||
+    occupation.includes("developer") ||
+    occupation.includes("programmer") ||
+    occupation.includes("engineer") ||
+    occupation.includes("engineering") ||
+    occupation.includes("information technology")
+  );
+}
+
+function buildAustralianOriginPointsDisclaimer(input: ReadinessInput, locale: Locale): string | undefined {
+  const hasAustralianEmploymentPoints = (input.onshoreExperienceYears ?? 0) > 0;
+  const hasAustralianStudyPoints = isAustralianQualification(input);
+  if (!hasAustralianEmploymentPoints && !hasAustralianStudyPoints) return undefined;
+
+  if (locale === "tr") {
+    return "Avustralya kaynaklı puan notu: Avustralya iş deneyimi puanları yalnızca davetten önceki 10 yıl içinde, haftada en az 20 saat, substantive vize veya Bridging A/B vizesiyle yapılan nitelikli çalışma için geçerlidir. Avustralya study / regional study puanları ise Australian study requirement'i karşılayan ve bölgesel puan için uzaktan eğitim olmayan belirlenmiş bölgesel kampüste tamamlanan eğitim varsayımıyla hesaplanır.";
+  }
+  if (locale === "zh-Hans") {
+    return "澳大利亚来源积分说明：澳洲工作经验分仅适用于获邀前10年内、每周至少20小时、且在 substantive 签证或 Bridging A/B 签证期间完成的技术工作。Australian study / regional study 分则基于满足 Australian study requirement，且偏远地区分对应课程在指定偏远地区实体校区完成、非远程教学的前提。";
+  }
+  return "Australian-origin points note: Australian employment points apply only where the skilled work was completed within 10 years before invitation, for at least 20 hours per week, while holding a substantive visa or Bridging A/B visa. Australian study / regional study points assume the qualification satisfied the Australian study requirement and, for regional points, was completed at a designated regional campus rather than by distance education.";
+}
+
+function qualificationToEducationOption(
+  level: ReadinessInput["qualificationLevel"],
+  awardedInAustralia: boolean
+): EducationOption {
   if (level === "PhD/Doctorate" || level === "PhD") return "doctorate";
   if (
     level === "Bachelor's Degree" ||
@@ -1797,7 +1854,9 @@ function qualificationToEducationOption(level: ReadinessInput["qualificationLeve
   ) {
     return "bachelor_or_higher";
   }
-  if (level === "Diploma") return "australian_diploma_or_trade";
+  if ((level === "Diploma" || level === "Certificate") && awardedInAustralia) {
+    return "australian_diploma_or_trade";
+  }
   return "none_or_unsure";
 }
 
@@ -1901,12 +1960,11 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   );
   const canApplyExperiencePoints = !hasExperienceInput || occupationHasDatasetMatch;
 
-  // Bonus factors (specialist education, professional year, community language,
-  // regional study), partner points, and state/regional nomination are not yet
-  // collected on the intake form, so they remain excluded from this estimate.
   const missingFactors = isTr
-    ? ["Bonus faktörler", "Partner durumu"]
-    : ["Bonus factors", "Partner status"];
+    ? ["NAATI / topluluk dili", "Mesleki Yıl", "Partner durumu", "Eyalet / bölgesel adaylık"]
+    : isZh
+      ? ["NAATI / 社区语言", "Professional Year", "伴侣状态", "州 / 偏远地区提名"]
+      : ["NAATI / community language", "Professional Year", "Partner status", "State / regional nomination"];
 
   if (!ageOption && !englishOption) {
     return {
@@ -1925,7 +1983,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   const australianEmployment = yearsToAustralianEmploymentOption(
     canApplyExperiencePoints ? input.onshoreExperienceYears : undefined
   );
-  const education = qualificationToEducationOption(input.qualificationLevel);
+  const education = qualificationToEducationOption(input.qualificationLevel, isAustralianQualification(input));
+  const specialistEducation = hasSpecialistEducationClaim(input);
+  const australianStudyRequirement = isAustralianQualification(input);
+  const regionalStudy = isRegionalAustralianQualification(input);
 
   const result = calculateAustraliaPoints({
     age: ageOption ?? "18_24",
@@ -1933,11 +1994,11 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     overseasEmployment,
     australianEmployment,
     education,
-    specialistEducation: false,
-    australianStudyRequirement: false,
+    specialistEducation,
+    australianStudyRequirement,
     professionalYear: false,
     credentialledCommunityLanguage: false,
-    regionalStudy: false,
+    regionalStudy,
     partner: "none_or_unsure",
     hasStateNomination190: false,
     hasNominationOrSponsorship491: false,
@@ -1982,16 +2043,63 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           note: input.qualificationLevel,
         }
       : null,
+    australianStudyRequirement
+      ? {
+          label: isTr ? "Avustralya study requirement puanı" : "Australian study requirement points",
+          points: result.breakdown.bonus.australianStudyRequirement,
+          note: isTr
+            ? "Avustralya kurumunda tamamlanan yeterlilik"
+            : isZh
+              ? "在澳大利亚教育机构完成的学历"
+              : "Qualification completed at an Australian institution",
+        }
+      : null,
+    regionalStudy
+      ? {
+          label: isTr ? "Bölgesel Avustralya öğrenim puanı" : "Regional Australia study points",
+          points: result.breakdown.bonus.regionalStudy,
+          note: isTr
+            ? "Belirlenmiş bölgesel kampüs, uzaktan eğitim değil"
+            : isZh
+              ? "指定偏远地区实体校区，非远程教学"
+              : "Designated regional campus, not distance education",
+        }
+      : null,
+    isResearchOrDoctorateQualification(input.qualificationLevel)
+      ? {
+          label: isTr ? "Uzmanlık eğitimi (STEM) puanı" : "Specialist education (STEM) points",
+          points: result.breakdown.bonus.specialistEducation,
+          note:
+            input.specialistEducationStemResponse === "yes"
+              ? isTr
+                ? "Kullanıcı STEM alanını açıkça onayladı"
+                : isZh
+                  ? "用户明确确认属于 STEM 研究学位"
+                  : "User explicitly confirmed an eligible STEM research degree"
+              : input.specialistEducationStemResponse === "not_sure"
+                ? isTr
+                  ? "Emin değilim → +10 uygulanmadı"
+                  : isZh
+                    ? "不确定 → 未授予 +10"
+                    : "Not sure -> +10 not awarded"
+                : isTr
+                  ? "Açık 'Evet' yanıtı olmadığı için +10 uygulanmadı"
+                  : isZh
+                    ? "未收到明确“是”回答，因此未授予 +10"
+                    : "No explicit 'Yes' confirmation, so +10 was not awarded",
+        }
+      : null,
   ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
 
   const missingStr = missingFactors.join(", ");
+  const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
   const note = isTr
-    ? `Bu, yaş${ageOption ? "" : " (belirtilmedi)"}, İngilizce seviyesi${englishOption ? "" : " (belirtilmedi)"}, iş deneyimi${hasExperienceInput ? "" : " (belirtilmedi)"} ve eğitim düzeyine${hasEducationInput ? "" : " (belirtilmedi)"} dayalı bir tahmindir. Dahil edilmeyen faktörler: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.`
+    ? `Bu, yaş${ageOption ? "" : " (belirtilmedi)"}, İngilizce seviyesi${englishOption ? "" : " (belirtilmedi)"}, iş deneyimi${hasExperienceInput ? "" : " (belirtilmedi)"} ve eğitim düzeyine${hasEducationInput ? "" : " (belirtilmedi)"} dayalı bir tahmindir. Dahil edilmeyen faktörler: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`
     : isZh
-      ? `本估算基于年龄${ageOption ? "" : "（未提供）"}、英语水平${englishOption ? "" : "（未提供）"}、工作经验${hasExperienceInput ? "" : "（未提供）"}和学历${hasEducationInput ? "" : "（未提供）"}。未纳入因素：${missingStr}。实际分数取决于个人情况。`
-      : `This estimate is based on age${ageOption ? "" : " (not provided)"}, English level${englishOption ? "" : " (not provided)"}, work experience${hasExperienceInput ? "" : " (not provided)"}, and education level${hasEducationInput ? "" : " (not provided)"}. Factors not included: ${missingStr}. Actual points position depends on individual circumstances.`;
+      ? `本估算基于年龄${ageOption ? "" : "（未提供）"}、英语水平${englishOption ? "" : "（未提供）"}、工作经验${hasExperienceInput ? "" : "（未提供）"}和学历${hasEducationInput ? "" : "（未提供）"}。未纳入因素：${missingStr}。实际分数取决于个人情况。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`
+      : `This estimate is based on age${ageOption ? "" : " (not provided)"}, English level${englishOption ? "" : " (not provided)"}, work experience${hasExperienceInput ? "" : " (not provided)"}, and education level${hasEducationInput ? "" : " (not provided)"}. Factors not included: ${missingStr}. Actual points position depends on individual circumstances.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`;
 
   return {
     appliesTo: ["189", "190", "491"],
@@ -2628,16 +2736,18 @@ function buildPointsBoosterSimulator(
   });
 
   // Professional Year: +5 points
-  scenarios.push({
-    label: isTr
-      ? "Avustralya'da Mesleki Yıl (Professional Year) — +5 puan"
-      : "Australian Professional Year program — +5 points",
-    estimatedChange: 5,
-    resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
-    explanation: isTr
-      ? "Avustralya'da muhasebe, BT veya mühendislik alanında tamamlanan Mesleki Yıl programı +5 bonus puan ekler. Program genellikle 12 ay sürer ve yaklaşık AUD 7,000–10,000 maliyeti vardır. Yalnızca Avustralya'daki son mezunlar veya uluslararası mezunlar için geçerlidir."
-      : "Completing an Australian Professional Year (PY) program in accounting, IT, or engineering adds exactly +5 bonus points. The program runs for 44 weeks: 36 weeks structured training + 8 weeks workplace internship. Cost: ~AUD $7,000–$10,000 depending on provider. Open to international graduates currently in Australia on a valid visa. Approved providers: IT → ACS-approved institutions; Accounting → FPA, CPA Australia, or ICAA-affiliated programs; Engineering → Engineers Australia-approved providers. The 8-week internship must be with a registered Australian employer in the relevant field. The PY also satisfies the '12 months Australian study' criterion some state 190 programs require for onshore applicants. It additionally builds a local professional network and Australian workplace references — both valuable for post-visa employment.",
-  });
+  if (isProfessionalYearRelevantOccupation(input)) {
+    scenarios.push({
+      label: isTr
+        ? "Avustralya'da Mesleki Yıl (Professional Year) — +5 puan"
+        : "Australian Professional Year program — +5 points",
+      estimatedChange: 5,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
+      explanation: isTr
+        ? "Avustralya'da muhasebe, BT veya mühendislik alanında tamamlanan Mesleki Yıl programı +5 bonus puan ekler. Program genellikle 12 ay sürer ve yaklaşık AUD 7,000–10,000 maliyeti vardır. Yalnızca Avustralya'daki son mezunlar veya uluslararası mezunlar için geçerlidir."
+        : "Completing an Australian Professional Year (PY) program in accounting, IT, or engineering adds exactly +5 bonus points. The program runs for 44 weeks: 36 weeks structured training + 8 weeks workplace internship. Cost: ~AUD $7,000–$10,000 depending on provider. Open to international graduates currently in Australia on a valid visa. Approved providers: IT → ACS-approved institutions; Accounting → FPA, CPA Australia, or ICAA-affiliated programs; Engineering → Engineers Australia-approved providers. The 8-week internship must be with a registered Australian employer in the relevant field. The PY also satisfies the '12 months Australian study' criterion some state 190 programs require for onshore applicants. It additionally builds a local professional network and Australian workplace references — both valuable for post-visa employment.",
+    });
+  }
 
   // Partner/single applicant factor: +10 points
   scenarios.push({
@@ -2679,18 +2789,6 @@ function buildPointsBoosterSimulator(
     });
   }
 
-  // Study in regional Australia: +5 points
-  scenarios.push({
-    label: isTr
-      ? "Avustralya bölgesel bölgesinde öğrenim — +5 puan"
-      : "Study in a regional area of Australia — +5 points",
-    estimatedChange: 5,
-    resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
-    explanation: isTr
-      ? "Avustralya'nın bölgesel bir bölgesinde (Kategori 2 veya Kategori 3 posta kodu) en az 2 yıllık kayıtlı öğrenim tamamlanması +5 bonus puan sağlar. Yalnızca 1 Ocak 2018 veya sonrasında başlayan öğrenim için geçerlidir."
-      : "Completing at least 2 years of registered full-time study at an institution in a Category 2 or Category 3 postcode (ABS geographic classification) adds exactly +5 bonus points, provided study commenced on or after 1 January 2018. This excludes Sydney, Melbourne, Brisbane, Perth, and Adelaide campuses. Eligible regional universities include University of Wollongong, University of Newcastle, Deakin University (Waurn Ponds), Charles Sturt University, University of Southern Queensland, and others. Both bachelor's and postgraduate (master's or PhD) degrees qualify. Study undertaken entirely online does not qualify, even if the institution is regionally based.",
-  });
-
   if (ageOption === "18_24") {
     scenarios.push({
       label: isTr ? "Yaş bandı (18–24): şu anki maksimum puan" : "Age band (18–24): current maximum points",
@@ -2713,12 +2811,15 @@ function buildPointsBoosterSimulator(
     });
   }
 
+  const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
   return {
     currentEstimate,
     scenarios,
     note: isTr
-      ? "Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır."
-      : "The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.",
+      ? `Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`
+      : locale === "zh-Hans"
+        ? `澳大利亚积分表（Migration Regulations 1994, Schedule 6A）采用固定分值。以下情景基于官方积分系数。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`
+        : `The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`,
   };
 }
 

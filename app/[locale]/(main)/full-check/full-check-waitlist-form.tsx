@@ -398,11 +398,18 @@ export function FullCheckWaitlistForm({
   const [englishLevel, setEnglishLevel] = useState("");
   const [sponsorFamilyStatus, setSponsorFamilyStatus] = useState("");
   const [annualSalaryAud, setAnnualSalaryAud] = useState("");
+  const [qualificationAwardedInAustralia, setQualificationAwardedInAustralia] = useState("");
+  const [qualificationRegionalAustralia, setQualificationRegionalAustralia] = useState("");
+  const [specialistEducationStemResponse, setSpecialistEducationStemResponse] = useState("");
   const experienceHelpText = txt(
     "Yalnızca davetten önceki son 10 yıl içindeki, aday gösterilen veya yakından ilgili meslekte, haftada en az 20 saatlik nitelikli çalışmayı yazın.",
     "Count only skilled work in your nominated or closely related occupation, at least 20 hours/week, within 10 years before invitation.",
     "仅填写获邀前10年内、提名职业或密切相关职业、且每周至少20小时的技术工作年限。"
   );
+  const isResearchOrDoctorateQualification =
+    qualificationLevel === "Master's Degree (Research)" ||
+    qualificationLevel === "PhD/Doctorate" ||
+    qualificationLevel === "PhD";
 
   // NOC_ALIAS_MAP and filterNoc replaced by module-level NOC_ALIAS_MAP_STATIC
   // and searchNoc() which uses Fuse.js — see top of file.
@@ -1043,6 +1050,98 @@ export function FullCheckWaitlistForm({
           <input type="hidden" name="qualificationLevel" value={qualificationLevel} />
           <ErrorText message={state.errors?.qualificationLevel} />
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="waitlist-qualification-awarded-in-australia">
+            {txt(
+              "Bu yeterliliği bir Avustralya kurumunda tamamladınız mı?",
+              "Did you complete this qualification at an Australian institution?",
+              "你是否在澳大利亚教育机构完成了这一学历？"
+            )}
+          </Label>
+          <select
+            id="waitlist-qualification-awarded-in-australia"
+            name="qualificationAwardedInAustralia"
+            value={qualificationAwardedInAustralia}
+            onChange={(e) => {
+              const next = e.target.value;
+              setQualificationAwardedInAustralia(next);
+              if (next !== "yes") {
+                setQualificationRegionalAustralia("");
+                setSpecialistEducationStemResponse("");
+              }
+            }}
+            className={selectClassName}
+          >
+            <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+            <option value="yes">{txt("Evet", "Yes", "是")}</option>
+            <option value="no">{txt("Hayır", "No", "否")}</option>
+          </select>
+          <p className="text-xs text-muted-foreground">
+            {txt(
+              "Bu yanıt, Australian study requirement (+5) ve varsa regional study (+5) puanlarını belirler.",
+              "This answer drives the Australian study requirement (+5) and, if relevant, regional study (+5) points.",
+              "此答案将决定 Australian study requirement（+5）以及如适用的 regional study（+5）积分。"
+            )}
+          </p>
+          <ErrorText message={state.errors?.qualificationAwardedInAustralia} />
+        </div>
+
+        {qualificationAwardedInAustralia === "yes" && (
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-qualification-regional-australia">
+              {txt(
+                "Bu eğitim, Avustralya'nın belirlenmiş bölgesel bir kampüsünde mi tamamlandı? (uzaktan/online değil)",
+                "Was this study completed at a campus in a designated regional area of Australia (not distance/online)?",
+                "该学习是否在澳大利亚指定偏远地区的实体校区完成（非远程/在线）？"
+              )}
+            </Label>
+            <select
+              id="waitlist-qualification-regional-australia"
+              name="qualificationRegionalAustralia"
+              value={qualificationRegionalAustralia}
+              onChange={(e) => setQualificationRegionalAustralia(e.target.value)}
+              className={selectClassName}
+            >
+              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+              <option value="yes">{txt("Evet", "Yes", "是")}</option>
+              <option value="no">{txt("Hayır", "No", "否")}</option>
+            </select>
+            <ErrorText message={state.errors?.qualificationRegionalAustralia} />
+          </div>
+        )}
+
+        {qualificationAwardedInAustralia === "yes" && isResearchOrDoctorateQualification && (
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-specialist-education-stem-response">
+              {txt(
+                "Bu araştırma derecesi şu alanlardan birinde miydi: doğa/fizik bilimleri, matematik, bilgisayar bilimi/BT veya mühendislik ve ilgili teknoloji?",
+                "Was this research degree in one of these fields: natural/physical sciences, mathematics, computer science/IT, or engineering and related technology?",
+                "该研究型学位是否属于以下领域之一：自然/物理科学、数学、计算机科学/信息技术、或工程及相关技术？"
+              )}
+            </Label>
+            <select
+              id="waitlist-specialist-education-stem-response"
+              name="specialistEducationStemResponse"
+              value={specialistEducationStemResponse}
+              onChange={(e) => setSpecialistEducationStemResponse(e.target.value)}
+              className={selectClassName}
+            >
+              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+              <option value="yes">{txt("Evet", "Yes", "是")}</option>
+              <option value="no">{txt("Hayır", "No", "否")}</option>
+              <option value="not_sure">{txt("Emin değilim", "Not sure", "不确定")}</option>
+            </select>
+            <p className="text-xs text-muted-foreground">
+              {txt(
+                "Specialist education +10 puanı yalnızca açıkça 'Evet' cevabı verildiğinde uygulanır.",
+                "The specialist education +10 is awarded only on an explicit 'Yes' response.",
+                "Specialist education +10 只有在明确回答“是”时才会计入。"
+              )}
+            </p>
+            <ErrorText message={state.errors?.specialistEducationStemResponse} />
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-salary-aud">{txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}</Label>

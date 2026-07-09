@@ -151,6 +151,12 @@ function normalizeQualificationLevelForPoints(
   }
 }
 
+function isResearchOrDoctorateQualification(
+  level?: ReadinessInput["qualificationLevel"]
+): boolean {
+  return level === "Master's Degree (Research)" || level === "PhD/Doctorate" || level === "PhD";
+}
+
 function computeBestKnownScore(input: ReadinessInput, base: ReadinessReport, occupationCode?: string): number {
   const ageRange = parseAgeRange(input.age);
   const englishLevel = parseEnglishLevel(input.englishLevel);
@@ -163,6 +169,10 @@ function computeBestKnownScore(input: ReadinessInput, base: ReadinessReport, occ
     ageRange,
     englishLevel,
     qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
+    researchDegreeEligibleForSpecialistEducation: isResearchOrDoctorateQualification(input.qualificationLevel),
+    qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
+    qualificationRegionalAustralia: input.qualificationRegionalAustralia,
+    specialistEducationStemResponse: input.specialistEducationStemResponse,
     offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
     onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
     anzscoCode: occupationCode,
@@ -197,6 +207,10 @@ function computeUserPointsBySubclass(input: ReadinessInput, base: ReadinessRepor
     ageRange,
     englishLevel,
     qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
+    researchDegreeEligibleForSpecialistEducation: isResearchOrDoctorateQualification(input.qualificationLevel),
+    qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
+    qualificationRegionalAustralia: input.qualificationRegionalAustralia,
+    specialistEducationStemResponse: input.specialistEducationStemResponse,
     offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
     onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
     anzscoCode: occupationCode,
@@ -306,6 +320,10 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport, 
         ageRange,
         englishLevel,
         qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
+        researchDegreeEligibleForSpecialistEducation: isResearchOrDoctorateQualification(input.qualificationLevel),
+        qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
+        qualificationRegionalAustralia: input.qualificationRegionalAustralia,
+        specialistEducationStemResponse: input.specialistEducationStemResponse,
         offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
         onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
         anzscoCode: occupationCode,

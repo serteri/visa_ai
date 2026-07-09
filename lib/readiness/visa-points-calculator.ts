@@ -13,6 +13,10 @@ export interface PointsCalculatorInput {
   ageRange: AgeRange;
   englishLevel: EnglishLevel;
   qualificationLevel: QualificationLevel;
+  researchDegreeEligibleForSpecialistEducation?: boolean;
+  qualificationAwardedInAustralia?: boolean;
+  qualificationRegionalAustralia?: boolean;
+  specialistEducationStemResponse?: "yes" | "no" | "not_sure";
   offshoreExperienceYears: number;
   onshoreExperienceYears: number;
   anzscoCode?: string;
@@ -27,6 +31,8 @@ export interface PointsBreakdown {
   age: number;
   english: number;
   education: number;
+  australianStudyRequirement: number;
+  specialistEducation: number;
   experienceOffshore: number;
   experienceOnshore: number;
   experienceTotal: number;
@@ -94,8 +100,8 @@ const ENGLISH_POINTS: Record<EnglishLevel, number> = {
 const EDUCATION_POINTS: Record<QualificationLevel, number> = {
   PhD: 20,
   Bachelor: 15,
-  Diploma: 10,
-  Certificate: 10,
+  Diploma: 0,
+  Certificate: 0,
   Other: 0,
 };
 
@@ -190,13 +196,47 @@ function calculateExperiencePoints(
   };
 }
 
+function getEducationPoints(input: PointsCalculatorInput): number {
+  if (input.qualificationLevel === "Diploma" || input.qualificationLevel === "Certificate") {
+    return input.qualificationAwardedInAustralia ? 10 : 0;
+  }
+  return EDUCATION_POINTS[input.qualificationLevel];
+}
+
+function getAustralianStudyRequirementPoints(input: PointsCalculatorInput): number {
+  return input.qualificationAwardedInAustralia ? 5 : 0;
+}
+
+function getSpecialistEducationPoints(input: PointsCalculatorInput): number {
+  if (!input.researchDegreeEligibleForSpecialistEducation) return 0;
+  if (!input.qualificationAwardedInAustralia) return 0;
+  return input.specialistEducationStemResponse === "yes" ? 10 : 0;
+}
+
+function isProfessionalYearRelevantOccupation(input: PointsCalculatorInput, authority?: string): boolean {
+  if (authority === "ACS") return true;
+  const occupation = (input.occupationName ?? "").toLowerCase();
+  return (
+    authority?.toLowerCase().includes("engineers australia") === true ||
+    occupation.includes("account") ||
+    occupation.includes("audit") ||
+    occupation.includes("software") ||
+    occupation.includes("developer") ||
+    occupation.includes("programmer") ||
+    occupation.includes("engineer") ||
+    occupation.includes("information technology") ||
+    occupation.includes("ict")
+  );
+}
+
 /**
  * Generates booster scenarios based on current input
  */
 function generateBoosters(
   input: PointsCalculatorInput,
   currentScore: number,
-  breakdown: PointsBreakdown
+  breakdown: PointsBreakdown,
+  occupationAuthority?: string
 ): BoosterScenario[] {
   const boosters: BoosterScenario[] = [];
 
@@ -210,12 +250,19 @@ function generateBoosters(
     });
   }
 
-  // NAATI or Professional Year Boost
-  if (!input.hasNAATI && !input.hasProfessionalYear) {
+  if (!input.hasNAATI) {
     boosters.push({
-      title: "NAATI or Professional Year Scenario",
+      title: "NAATI CCL Scenario",
       potentialPoints: 5,
-      description: `If a NAATI CCL or Professional Year variable were added, the points model would add +5 points. Current score + 5 = ${currentScore + 5}`,
+      description: `If a NAATI CCL variable were added, the points model would add +5 points. Current score + 5 = ${currentScore + 5}`,
+    });
+  }
+
+  if (!input.hasProfessionalYear && isProfessionalYearRelevantOccupation(input, occupationAuthority)) {
+    boosters.push({
+      title: "Professional Year Scenario",
+      potentialPoints: 5,
+      description: `If an Australian Professional Year variable were added for this occupation family, the points model would add +5 points. Current score + 5 = ${currentScore + 5}`,
     });
   }
 
@@ -264,7 +311,7 @@ export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalcula
   const englishPoints = ENGLISH_POINTS[input.englishLevel];
 
   // Get education points
-  const educationPoints = EDUCATION_POINTS[input.qualificationLevel];
+  const educationPoints = getEducationPoints(input);
 
   // Look up occupation and determine if ACS deduction applies
   let occupationRecord: OccupationRecord | null = null;
@@ -315,11 +362,22 @@ export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalcula
   }
 
   // Calculate bonus points
+  const australianStudyRequirementPoints = getAustralianStudyRequirementPoints(input);
+  const specialistEducationPoints = getSpecialistEducationPoints(input);
   const naatiPoints = input.hasNAATI ? 5 : 0;
   const professionalYearPoints = input.hasProfessionalYear ? 5 : 0;
-  const regionalStudyPoints = input.hasRegionalStudy ? 5 : 0;
+  const regionalStudyPoints = input.hasRegionalStudy
+    ? 5
+    : input.qualificationAwardedInAustralia && input.qualificationRegionalAustralia
+      ? 5
+      : 0;
   const partnerPoints = input.partnerSkilled ? 10 : 0;
-  const bonusTotal = naatiPoints + professionalYearPoints + regionalStudyPoints;
+  const bonusTotal =
+    australianStudyRequirementPoints +
+    specialistEducationPoints +
+    naatiPoints +
+    professionalYearPoints +
+    regionalStudyPoints;
 
   // Calculate base score (without state/regional nomination bonuses)
   const baseScore =
@@ -340,6 +398,8 @@ export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalcula
     age: agePoints,
     english: englishPoints,
     education: educationPoints,
+    australianStudyRequirement: australianStudyRequirementPoints,
+    specialistEducation: specialistEducationPoints,
     experienceOffshore: experienceData.offshore,
     experienceOnshore: experienceData.onshore,
     experienceTotal: experienceData.total,
@@ -351,7 +411,7 @@ export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalcula
   };
 
   // Generate booster scenarios
-  const boosters = generateBoosters(input, baseScore, breakdown);
+  const boosters = generateBoosters(input, baseScore, breakdown, occupationAuthority);
 
   // Check eligibility for points test
   const isEligibleForPointsTest = score189 >= MINIMUM_POINTS_THRESHOLD;
@@ -390,6 +450,8 @@ export function formatPointsResult(result: PointsCalculatorResult): string {
     `  Age:                    ${result.breakdown.age} points (${result.breakdown.age > 0 ? "✓" : "✗"})`,
     `  English:                ${result.breakdown.english} points`,
     `  Education:              ${result.breakdown.education} points`,
+    `  Australian Study:       ${result.breakdown.australianStudyRequirement} points`,
+    `  Specialist Education:   ${result.breakdown.specialistEducation} points`,
     `  Experience (Total):     ${result.breakdown.experienceTotal} points`,
     `    - Offshore:           ${result.breakdown.experienceOffshore} points`,
     `    - Onshore:            ${result.breakdown.experienceOnshore} points`,

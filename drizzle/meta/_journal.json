@@ -50,6 +50,13 @@
       "when": 1783436400000,
       "tag": "0006_work_experience_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1783440000000,
+      "tag": "0007_education_points_fields",
+      "breakpoints": true
     }
   ]
 }

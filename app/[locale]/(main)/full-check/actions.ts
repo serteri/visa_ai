@@ -101,6 +101,24 @@ const optionalExperienceYearsSchema = z.preprocess(
   z.number().min(0).max(50).optional()
 );
 
+const optionalYesNoSchema = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return undefined;
+    const normalized = String(value).trim();
+    return normalized ? normalized : undefined;
+  },
+  z.enum(["yes", "no"]).optional()
+);
+
+const optionalYesNoNotSureSchema = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return undefined;
+    const normalized = String(value).trim();
+    return normalized ? normalized : undefined;
+  },
+  z.enum(["yes", "no", "not_sure"]).optional()
+);
+
 // ─── Country-specific report schema guards ───────────────────────────────────
 
 const AU_PATHWAY_SUBCLASSES = new Set(["500", "485", "482", "189", "190", "491", "820", "801", "general"]);
@@ -297,6 +315,9 @@ async function sendFullCheckAdminEmail(payload: {
   occupationConfirmed: string;
   estimatedBudgetRange: string;
   timeline: string;
+  qualificationAwardedInAustralia?: boolean;
+  qualificationRegionalAustralia?: boolean;
+  specialistEducationStemResponse?: "yes" | "no" | "not_sure";
   offshoreExperienceYears?: number;
   onshoreExperienceYears?: number;
   sponsorOrFamily: string;
@@ -331,6 +352,9 @@ async function sendFullCheckAdminEmail(payload: {
     `occupation confirmed: ${payload.occupationConfirmed || "-"}`,
     `estimated budget range: ${payload.estimatedBudgetRange || "-"}`,
     `timeline: ${payload.timeline || "-"}`,
+    `qualification completed at Australian institution: ${payload.qualificationAwardedInAustralia ?? "-"}`,
+    `qualification completed at regional Australian campus: ${payload.qualificationRegionalAustralia ?? "-"}`,
+    `specialist education STEM response: ${payload.specialistEducationStemResponse ?? "-"}`,
     `offshore skilled employment years: ${payload.offshoreExperienceYears ?? "-"}`,
     `onshore skilled employment years: ${payload.onshoreExperienceYears ?? "-"}`,
     `sponsor/family: ${payload.sponsorOrFamily || "-"}`,
@@ -725,6 +749,36 @@ export async function submitFullCheckWaitlist(
     : undefined;
   const annualSalaryAudRaw = String(formData.get("annualSalaryAud") ?? "").trim();
   const annualSalaryAud = annualSalaryAudRaw ? Number(annualSalaryAudRaw) : undefined;
+  const qualificationAwardedInAustraliaResult = optionalYesNoSchema.safeParse(
+    formData.get("qualificationAwardedInAustralia")
+  );
+  const qualificationRegionalAustraliaResult = optionalYesNoSchema.safeParse(
+    formData.get("qualificationRegionalAustralia")
+  );
+  const specialistEducationStemResponseResult = optionalYesNoNotSureSchema.safeParse(
+    formData.get("specialistEducationStemResponse")
+  );
+  const qualificationAwardedInAustralia = qualificationAwardedInAustraliaResult.success
+    ? qualificationAwardedInAustraliaResult.data === "yes"
+      ? true
+      : qualificationAwardedInAustraliaResult.data === "no"
+        ? false
+        : undefined
+    : undefined;
+  const qualificationRegionalAustralia = qualificationAwardedInAustralia
+    ? qualificationRegionalAustraliaResult.success
+      ? qualificationRegionalAustraliaResult.data === "yes"
+        ? true
+        : qualificationRegionalAustraliaResult.data === "no"
+          ? false
+          : undefined
+      : undefined
+    : undefined;
+  const specialistEducationStemResponse = qualificationAwardedInAustralia
+    ? specialistEducationStemResponseResult.success
+      ? specialistEducationStemResponseResult.data
+      : undefined
+    : undefined;
   const offshoreExperienceYearsResult = optionalExperienceYearsSchema.safeParse(
     formData.get("offshoreExperienceYears")
   );
@@ -821,6 +875,33 @@ export async function submitFullCheckWaitlist(
       : isZh
         ? "澳大利亚境内工作年限必须是大于或等于 0 的数字。"
         : "Onshore experience years must be a number greater than or equal to 0.";
+  }
+  if (!qualificationAwardedInAustraliaResult.success) {
+    errors.qualificationAwardedInAustralia = isTr
+      ? "Avustralya kurumunda tamamlama bilgisi geçersiz."
+      : isZh
+        ? "澳大利亚院校完成情况无效。"
+        : "Australian institution answer is invalid.";
+  }
+  if (qualificationAwardedInAustralia === true && !qualificationRegionalAustraliaResult.success) {
+    errors.qualificationRegionalAustralia = isTr
+      ? "Bölgesel kampüs bilgisi geçersiz."
+      : isZh
+        ? "偏远地区校区答案无效。"
+        : "Regional Australia answer is invalid.";
+  }
+  if (qualificationAwardedInAustralia === true) {
+    const isResearchOrDoctorateQualification =
+      qualificationLevel === "Master's Degree (Research)" ||
+      qualificationLevel === "PhD/Doctorate" ||
+      qualificationLevel === "PhD";
+    if (isResearchOrDoctorateQualification && !specialistEducationStemResponseResult.success) {
+      errors.specialistEducationStemResponse = isTr
+        ? "Uzmanlık eğitimi alanı yanıtı geçersiz."
+        : isZh
+          ? "专业教育领域答案无效。"
+          : "Specialist education field answer is invalid.";
+    }
   }
 
   if (Object.keys(errors).length > 0) {
@@ -984,6 +1065,9 @@ export async function submitFullCheckWaitlist(
       annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
         ? annualSalaryAud
         : undefined,
+      qualificationAwardedInAustralia,
+      qualificationRegionalAustralia,
+      specialistEducationStemResponse,
       offshoreExperienceYears,
       onshoreExperienceYears,
       englishTestTaken: englishTestTaken || undefined,
@@ -1019,6 +1103,9 @@ export async function submitFullCheckWaitlist(
       occupation_confirmed: occupationConfirmed || null,
       estimated_budget_range: estimatedBudgetRange || null,
       timeline: timeline || null,
+      qualification_awarded_in_australia: qualificationAwardedInAustralia ?? null,
+      qualification_regional_australia: qualificationRegionalAustralia ?? null,
+      specialist_education_stem_response: specialistEducationStemResponse ?? null,
       offshore_experience_years: offshoreExperienceYears ?? null,
       onshore_experience_years: onshoreExperienceYears ?? null,
       sponsor_or_family: sponsorOrFamily || null,
@@ -1061,6 +1148,9 @@ export async function submitFullCheckWaitlist(
       annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
         ? annualSalaryAud
         : undefined,
+      qualificationAwardedInAustralia,
+      qualificationRegionalAustralia,
+      specialistEducationStemResponse,
       offshoreExperienceYears,
       onshoreExperienceYears,
       englishTestTaken: englishTestTaken || undefined,
@@ -1088,6 +1178,9 @@ export async function submitFullCheckWaitlist(
       occupation_confirmed: occupationConfirmed || null,
       estimated_budget_range: estimatedBudgetRange || null,
       timeline: timeline || null,
+      qualification_awarded_in_australia: qualificationAwardedInAustralia ?? null,
+      qualification_regional_australia: qualificationRegionalAustralia ?? null,
+      specialist_education_stem_response: specialistEducationStemResponse ?? null,
       offshore_experience_years: offshoreExperienceYears ?? null,
       onshore_experience_years: onshoreExperienceYears ?? null,
       sponsor_or_family: sponsorOrFamily || null,
@@ -1138,6 +1231,9 @@ export async function submitFullCheckWaitlist(
           occupationConfirmed,
           estimatedBudgetRange,
           timeline,
+          qualificationAwardedInAustralia,
+          qualificationRegionalAustralia,
+          specialistEducationStemResponse,
           offshoreExperienceYears,
           onshoreExperienceYears,
           sponsorOrFamily,

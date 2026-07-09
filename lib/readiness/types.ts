@@ -31,6 +31,9 @@ export type ReadinessInput = {
     | "Diploma"
     | "Certificate"
     | "Other";
+  qualificationAwardedInAustralia?: boolean;
+  qualificationRegionalAustralia?: boolean;
+  specialistEducationStemResponse?: "yes" | "no" | "not_sure";
   offshoreExperienceYears?: number;
   onshoreExperienceYears?: number;
   regionalWilling?: boolean;
