@@ -8,26 +8,27 @@ import { getUniqueOccupations } from "@/lib/occupations/seo";
 import { prisma } from "@/lib/prisma";
 
 const FALLBACK_FREE_LIMIT = 50;
-const FALLBACK_MISSING_USAGE_LIMIT = parseInt(
-  process.env.FALLBACK_MAX_FREE_REPORTS ?? "14",
-  10
-);
 
-function isLikelyInternalOrTestEmail(email: string): boolean {
-  const normalized = email.trim().toLowerCase();
-  if (!normalized || !normalized.includes("@")) return true;
-
-  const [localPart, domain] = normalized.split("@");
-  if (!localPart || !domain) return true;
-
-  if (["example.com", "providershield.com.au", "localhost"].includes(domain)) return true;
-  if (domain.endsWith(".test") || domain.includes("mailinator")) return true;
-
-  const testTokenRegex = /(^|[^a-z])(test|qa|milestone|dummy|fake|sample|internal|staging)([^a-z]|$)/i;
-  return testTokenRegex.test(localPart) || testTokenRegex.test(domain);
+function getKnownTestEmailSet(): Set<string> {
+  return new Set(
+    (process.env.KNOWN_TEST_EMAILS ?? "")
+      .split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean)
+  );
 }
 
-async function countFallbackConsumedFreeUsers(adminEmails: Set<string>): Promise<number> {
+function getExcludedEmailSet(): Set<string> {
+  const adminEmails = new Set(
+    (process.env.ADMIN_EMAILS ?? "")
+      .split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean)
+  );
+  return new Set([...adminEmails, ...getKnownTestEmailSet()]);
+}
+
+async function countFallbackConsumedFreeUsers(excludedEmails: Set<string>): Promise<number> {
   const rows = await prisma.userReport.findMany({
     where: { source: "full_check" },
     select: {
@@ -43,8 +44,7 @@ async function countFallbackConsumedFreeUsers(adminEmails: Set<string>): Promise
   for (const row of rows) {
     const email = row.email?.trim().toLowerCase() ?? "";
     if (!email) continue;
-    if (adminEmails.has(email)) continue;
-    if (isLikelyInternalOrTestEmail(email)) continue;
+    if (excludedEmails.has(email)) continue;
 
     const hasClaimedFreeSlot =
       row.isUnlocked === true ||
@@ -120,13 +120,8 @@ export const getCachedPdfLeadDownloadStats = unstable_cache(
 
 export const getCachedFullCheckUsage = unstable_cache(
   async () => {
-    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? `${FALLBACK_FREE_LIMIT}`, 10);
-    const adminEmails = new Set(
-      (process.env.ADMIN_EMAILS ?? "")
-        .split(",")
-        .map((item) => item.trim().toLowerCase())
-        .filter(Boolean)
-    );
+    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "14", 10);
+    const excludedEmails = getExcludedEmailSet();
     let usageRows: Array<{ freeReportsUsed: number | null; isFreeActive: boolean | null }> = [];
 
     try {
@@ -139,15 +134,12 @@ export const getCachedFullCheckUsage = unstable_cache(
         .where(eq(fullCheckUsage.id, 1))
         .limit(1);
     } catch {
-      const fallbackLimit = Number.isFinite(FALLBACK_MISSING_USAGE_LIMIT)
-        ? FALLBACK_MISSING_USAGE_LIMIT
-        : 14;
-      const consumed = await countFallbackConsumedFreeUsers(adminEmails);
+      const consumed = await countFallbackConsumedFreeUsers(excludedEmails);
 
-      const remainingSpots = Math.max(0, fallbackLimit - consumed);
+      const remainingSpots = Math.max(0, maxFree - consumed);
 
       return {
-        maxFree: fallbackLimit,
+        maxFree,
         remainingSpots,
         isFreeActive: remainingSpots > 0,
       };
