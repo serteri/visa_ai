@@ -171,6 +171,11 @@ type FreeBetaStatus = {
   usageTrackingUnavailable?: boolean;
 };
 
+const FALLBACK_FREE_REPORTS_LIMIT = parseInt(
+  process.env.FALLBACK_MAX_FREE_REPORTS ?? "14",
+  10
+);
+
 function isMissingRelationError(error: unknown, relationName: string): boolean {
   const target = relationName.toLowerCase();
 
@@ -192,6 +197,7 @@ function isMissingRelationError(error: unknown, relationName: string): boolean {
 async function getFreeBetaStatus(): Promise<FreeBetaStatus> {
   const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
   const freeBetaEnabled = process.env.NEXT_PUBLIC_IS_FREE_BETA !== "false";
+  const adminEmails = Array.from(getAdminEmailSet());
 
   try {
     // Ensure singleton usage row exists for environments where seed hasn't run yet.
@@ -226,11 +232,18 @@ async function getFreeBetaStatus(): Promise<FreeBetaStatus> {
     return { isFreeActive: active, freeReportsUsed: used, freeLimit: maxFree };
   } catch (error) {
     if (isMissingRelationError(error, "full_check_usage")) {
-      console.warn("full_check_usage table missing; falling back to env-only free beta mode.");
+      console.warn("full_check_usage table missing; falling back to user_reports-based counter.");
+
+      const fallbackLimit = Number.isFinite(FALLBACK_FREE_REPORTS_LIMIT)
+        ? FALLBACK_FREE_REPORTS_LIMIT
+        : 14;
+      const consumed = await countFallbackConsumedFreeUsers(new Set(adminEmails));
+      const remaining = Math.max(0, fallbackLimit - consumed);
+
       return {
-        isFreeActive: freeBetaEnabled,
-        freeReportsUsed: 0,
-        freeLimit: maxFree,
+        isFreeActive: freeBetaEnabled && remaining > 0,
+        freeReportsUsed: consumed,
+        freeLimit: fallbackLimit,
         usageTrackingUnavailable: true,
       };
     }
@@ -260,6 +273,52 @@ function getAdminEmailSet(): Set<string> {
       .map((item) => item.trim().toLowerCase())
       .filter(Boolean)
   );
+}
+
+function isLikelyInternalOrTestEmail(email: string): boolean {
+  const normalized = email.trim().toLowerCase();
+  if (!normalized || !normalized.includes("@")) return true;
+
+  const [localPart, domain] = normalized.split("@");
+  if (!localPart || !domain) return true;
+
+  if (["example.com", "providershield.com.au", "localhost"].includes(domain)) return true;
+  if (domain.endsWith(".test") || domain.includes("mailinator")) return true;
+
+  const testTokenRegex = /(^|[^a-z])(test|qa|milestone|dummy|fake|sample|internal|staging)([^a-z]|$)/i;
+  return testTokenRegex.test(localPart) || testTokenRegex.test(domain);
+}
+
+async function countFallbackConsumedFreeUsers(adminEmails: Set<string>): Promise<number> {
+  const rows = await prisma.userReport.findMany({
+    where: { source: "full_check" },
+    select: {
+      email: true,
+      isUnlocked: true,
+      paymentStatus: true,
+      unlockMethod: true,
+    },
+  });
+
+  const consumedUsers = new Set<string>();
+
+  for (const row of rows) {
+    const email = row.email?.trim().toLowerCase() ?? "";
+    if (!email) continue;
+    if (adminEmails.has(email)) continue;
+    if (isLikelyInternalOrTestEmail(email)) continue;
+
+    const hasClaimedFreeSlot =
+      row.isUnlocked === true ||
+      row.paymentStatus === "beta_free" ||
+      row.unlockMethod === "beta_free";
+
+    if (hasClaimedFreeSlot) {
+      consumedUsers.add(email);
+    }
+  }
+
+  return consumedUsers.size;
 }
 
 function isAdminWhitelistedEmail(email: string): boolean {

@@ -1951,9 +1951,9 @@ export function FullCheckWaitlistForm({
             <CardContent className="space-y-4">
               <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-primary">
                 {rpt(
-                  "高级 PDF 报告（25+ 页深度分析）",
-                  "Premium PDF Report (25+ Sayfalik Derin Analiz)",
-                  "Premium PDF Report (25+ Pages of Deep Analysis)"
+                  "高级 PDF 报告（多模块深度分析）",
+                  "Premium PDF Report (Cok Bolumlu Derin Analiz)",
+                  "Premium PDF Report (Comprehensive Multi-Section Analysis)"
                 )}
               </div>
 

@@ -1,4 +1,5 @@
 import type { Locale, ReadinessInput } from "./types";
+import type { CaveatDetailLevel } from "./employment-signals";
 
 export type SpecialistEducationSignals = {
   /** True when the profile even qualifies to be asked the STEM field question (research/doctorate + Australian-awarded). */
@@ -37,11 +38,22 @@ export function getSpecialistEducationSignals(input: ReadinessInput): Specialist
 
 export function buildSpecialistEducationCaveat(
   locale: Locale,
-  signals: SpecialistEducationSignals
+  signals: SpecialistEducationSignals,
+  detail: CaveatDetailLevel = "long"
 ): string | undefined {
   if (!signals.unconfirmed) return undefined;
 
   if (signals.notSure) {
+    if (detail === "short") {
+      if (locale === "tr") {
+        return "Uzmanlık eğitimi (STEM) alanı onaylanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.";
+      }
+      if (locale === "zh-Hans") {
+        return "Specialist education（STEM）尚未确认——详情请参见“材料准备度摘要”部分。";
+      }
+      return "Specialist education (STEM field) remains unconfirmed — see Evidence Readiness section for details.";
+    }
+
     if (locale === "tr") {
       return "Uzmanlık eğitimi (STEM) alanı 'Emin değilim' olarak işaretlendi — +10 puan uygulanmadı ve durum onaylanmamış olarak işaretlendi. Alanı doğrulayabilirseniz yanıtınızı güncelleyin.";
     }
@@ -49,6 +61,16 @@ export function buildSpecialistEducationCaveat(
       return "Specialist education（STEM）领域回答为“不确定”——未授予 +10 分，该项标记为未确认。如能确认该研究领域，请更新你的回答。";
     }
     return "Specialist education (STEM field) was marked \"Not sure\" — the +10 point was not applied and this remains unconfirmed. If you can confirm the field of study, update your answer for a more accurate result.";
+  }
+
+  if (detail === "short") {
+    if (locale === "tr") {
+      return "Uzmanlık eğitimi (STEM) alanı yanıtı onaylanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.";
+    }
+    if (locale === "zh-Hans") {
+      return "Specialist education（STEM）未确认——详情请参见“材料准备度摘要”部分。";
+    }
+    return "Specialist education (STEM field) remains unconfirmed — see Evidence Readiness section for details.";
   }
 
   if (locale === "tr") {
@@ -63,8 +85,9 @@ export function buildSpecialistEducationCaveat(
 export function appendSpecialistEducationCaveat(
   base: string,
   locale: Locale,
-  signals: SpecialistEducationSignals
+  signals: SpecialistEducationSignals,
+  detail: CaveatDetailLevel = "long"
 ): string {
-  const caveat = buildSpecialistEducationCaveat(locale, signals);
+  const caveat = buildSpecialistEducationCaveat(locale, signals, detail);
   return caveat ? `${base} ${caveat}` : base;
 }

@@ -1,5 +1,7 @@
 import type { Locale, ReadinessInput } from "./types";
 
+export type CaveatDetailLevel = "short" | "long";
+
 export type EmploymentDataSignals = {
   offshoreAnswered: boolean;
   onshoreAnswered: boolean;
@@ -45,9 +47,20 @@ export function buildEmploymentReferenceTable(locale: Locale): string {
 
 export function buildEmploymentExperienceCaveat(
   locale: Locale,
-  signals: EmploymentDataSignals
+  signals: EmploymentDataSignals,
+  detail: CaveatDetailLevel = "long"
 ): string | undefined {
   if (signals.bothBlank) {
+    if (detail === "short") {
+      if (locale === "tr") {
+        return "İş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.";
+      }
+      if (locale === "zh-Hans") {
+        return "未提供工作经验——详情请参见“材料准备度摘要”部分。";
+      }
+      return "Employment experience not provided — see Evidence Readiness section for details.";
+    }
+
     if (locale === "tr") {
       return `İş deneyimi sağlanmadı — bu durum sonucu önemli ölçüde değiştirebilir. Nitelikli iş deneyimi toplamda 20 puana kadar katkı sağlayabilir (üst sınır uygulanır). ${buildEmploymentReferenceTable(locale)} İlgili deneyiminiz varsa daha doğru bir sonuç için bu alanları doldurun; mevcut puanınız şu anda sıfır deneyim varsayar.`;
     }
@@ -58,6 +71,16 @@ export function buildEmploymentExperienceCaveat(
   }
 
   if (signals.missingOnshore && !signals.missingOffshore) {
+    if (detail === "short") {
+      if (locale === "tr") {
+        return "Avustralya iş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.";
+      }
+      if (locale === "zh-Hans") {
+        return "未提供澳大利亚工作经验——详情请参见“材料准备度摘要”部分。";
+      }
+      return "Australian employment experience not provided — see Evidence Readiness section for details.";
+    }
+
     if (locale === "tr") {
       return "Avustralya iş deneyimi sağlanmadı — uygunsa burada en fazla 20 puana kadar ek katkı olabilir. Avustralya tablo bandı: 1-3 yıl +5, 3-5 yıl +10, 5-8 yıl +15, 8+ yıl +20. Birleşik üst sınır yine 20 puandır.";
     }
@@ -68,6 +91,16 @@ export function buildEmploymentExperienceCaveat(
   }
 
   if (signals.missingOffshore && !signals.missingOnshore) {
+    if (detail === "short") {
+      if (locale === "tr") {
+        return "Yurtdışı iş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.";
+      }
+      if (locale === "zh-Hans") {
+        return "未提供海外工作经验——详情请参见“材料准备度摘要”部分。";
+      }
+      return "Overseas employment experience not provided — see Evidence Readiness section for details.";
+    }
+
     if (locale === "tr") {
       return "Yurtdışı iş deneyimi sağlanmadı — uygunsa burada en fazla 15 puana kadar ek katkı olabilir. Yurtdışı tablo bandı: 3-5 yıl +5, 5-8 yıl +10, 8+ yıl +15. Birleşik üst sınır 20 puandır.";
     }
@@ -80,7 +113,12 @@ export function buildEmploymentExperienceCaveat(
   return undefined;
 }
 
-export function appendEmploymentCaveat(base: string, locale: Locale, signals: EmploymentDataSignals): string {
-  const caveat = buildEmploymentExperienceCaveat(locale, signals);
+export function appendEmploymentCaveat(
+  base: string,
+  locale: Locale,
+  signals: EmploymentDataSignals,
+  detail: CaveatDetailLevel = "long"
+): string {
+  const caveat = buildEmploymentExperienceCaveat(locale, signals, detail);
   return caveat ? `${base} ${caveat}` : base;
 }

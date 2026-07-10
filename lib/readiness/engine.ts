@@ -265,6 +265,35 @@ function formatIneligibleAgeReason(locale: Locale, declaredAge: number): string 
   return t(locale, "ineligible.ageReason", { age: declaredAge, ageLimit: limit });
 }
 
+function stripShortCaveatReferences(reason: string): string {
+  // Keep the short caveat where it is intentionally surfaced (ranking/state/checklist),
+  // but remove it from derivative summary/comparison blocks to avoid report bloat.
+  const shortCaveats = [
+    "Employment experience not provided — see Evidence Readiness section for details.",
+    "Australian employment experience not provided — see Evidence Readiness section for details.",
+    "Overseas employment experience not provided — see Evidence Readiness section for details.",
+    "Specialist education (STEM field) remains unconfirmed — see Evidence Readiness section for details.",
+    "İş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
+    "Avustralya iş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
+    "Yurtdışı iş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
+    "Uzmanlık eğitimi (STEM) alanı onaylanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
+    "Uzmanlık eğitimi (STEM) alanı yanıtı onaylanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
+    "未提供工作经验——详情请参见“材料准备度摘要”部分。",
+    "未提供澳大利亚工作经验——详情请参见“材料准备度摘要”部分。",
+    "未提供海外工作经验——详情请参见“材料准备度摘要”部分。",
+    "Specialist education（STEM）尚未确认——详情请参见“材料准备度摘要”部分。",
+    "Specialist education（STEM）未确认——详情请参见“材料准备度摘要”部分。",
+  ];
+
+  let next = reason;
+  for (const caveat of shortCaveats) {
+    next = next.replaceAll(` ${caveat}`, "");
+    next = next.replaceAll(caveat, "");
+  }
+
+  return next.replace(/\s{2,}/g, " ").trim();
+}
+
 /**
  * Hard Gate: Skilled Migration (189/190/491) pathways require an estimated
  * base points-test score of at least 65. Below this, the pathway is
@@ -287,7 +316,9 @@ function formatIneligibleLowPointsReason(
   const withEnglishSuggestion = hasRoomToImproveEnglish
     ? `${base} ${t(locale, "suggestion.improveEnglish")}`
     : base;
-  return input ? appendEmploymentCaveat(withEnglishSuggestion, locale, getEmploymentDataSignals(input)) : withEnglishSuggestion;
+  return input
+    ? appendEmploymentCaveat(withEnglishSuggestion, locale, getEmploymentDataSignals(input), "short")
+    : withEnglishSuggestion;
 }
 
 // ─── Pathway detection ────────────────────────────────────────────────────────
@@ -2107,7 +2138,11 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
 
   const missingStr = missingFactors.join(", ");
   const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
-  const specialistEducationNoteCaveat = buildSpecialistEducationCaveat(locale, getSpecialistEducationSignals(input));
+  const specialistEducationNoteCaveat = buildSpecialistEducationCaveat(
+    locale,
+    getSpecialistEducationSignals(input),
+    "short"
+  );
   const note = isTr
     ? `Bu, yaş${ageOption ? "" : " (belirtilmedi)"}, İngilizce seviyesi${englishOption ? "" : " (belirtilmedi)"}, iş deneyimi${hasExperienceInput ? "" : " (belirtilmedi)"} ve eğitim düzeyine${hasEducationInput ? "" : " (belirtilmedi)"} dayalı bir tahmindir. Dahil edilmeyen faktörler: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`
     : isZh
@@ -2320,13 +2355,14 @@ function buildExecutiveSummary(
   // determinations, not softened "may be possible" language, and are
   // placed first so they cannot be missed or outranked by softer signals.
   const ineligiblePathways = pathways.filter((pathway) => pathway.relevance === "ineligible");
-  const ineligibleLines = ineligiblePathways.map((pathway) =>
-    isTr
-      ? `Alt sınıf ${pathway.subclass}: ${pathway.reason}`
+  const ineligibleLines = ineligiblePathways.map((pathway) => {
+    const displayReason = stripShortCaveatReferences(pathway.reason);
+    return isTr
+      ? `Alt sınıf ${pathway.subclass}: ${displayReason}`
       : isZh
-        ? `子类别 ${pathway.subclass}：${pathway.reason}`
-        : `Subclass ${pathway.subclass}: ${pathway.reason}`
-  );
+        ? `子类别 ${pathway.subclass}：${displayReason}`
+        : `Subclass ${pathway.subclass}: ${displayReason}`;
+  });
 
   if (isTr) {
     return [
@@ -2592,7 +2628,10 @@ function buildPathwayStrengthComparison(
       // Hard Gate (1 July 2026): overrides the strength breakdown with a bold
       // red compliance-violation reason shown as the first item in the PDF.
       isHardIneligible: pathway.relevance === "ineligible",
-      ineligibleReason: pathway.relevance === "ineligible" ? pathway.reason : undefined,
+      ineligibleReason:
+        pathway.relevance === "ineligible"
+          ? stripShortCaveatReferences(pathway.reason)
+          : undefined,
     };
   });
 }
@@ -2850,16 +2889,19 @@ function buildPointsBoosterSimulator(
   }
 
   const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
-  const employmentCaveat = buildEmploymentExperienceCaveat(locale, employmentSignals);
-  const specialistEducationCaveat = buildSpecialistEducationCaveat(locale, getSpecialistEducationSignals(input));
+  const specialistEducationCaveat = buildSpecialistEducationCaveat(
+    locale,
+    getSpecialistEducationSignals(input),
+    "short"
+  );
   return {
     currentEstimate,
     scenarios,
     note: isTr
-      ? `Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`
+      ? `Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`
       : locale === "zh-Hans"
-        ? `澳大利亚积分表（Migration Regulations 1994, Schedule 6A）采用固定分值。以下情景基于官方积分系数。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`
-        : `The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`,
+        ? `澳大利亚积分表（Migration Regulations 1994, Schedule 6A）采用固定分值。以下情景基于官方积分系数。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`
+        : `The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`,
   };
 }
 
@@ -3170,7 +3212,7 @@ function buildPathwayFriction(
       return {
         pathway: visaLabel,
         frictionType: isTr ? "🚨 KRİTİK UYUMLULUK UYARISI" : isZh ? "🚨 关键合规警报" : "🚨 CRITICAL COMPLIANCE ALERT",
-        explanation: pathway.reason,
+        explanation: stripShortCaveatReferences(pathway.reason),
         isHardIneligible: true,
       };
     }
