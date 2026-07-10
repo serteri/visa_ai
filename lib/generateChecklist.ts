@@ -129,13 +129,13 @@ export function generateChecklist(args: {
       title: t(
         input.locale,
         "English test readiness signal",
-        "Ingilizce sinav hazirlik sinyali",
+        "Dil sınavı hazırlık sinyali",
         "英语考试准备信号"
       ),
       detail: t(
         input.locale,
         "English exam readiness is typically one of the first evidence areas considered when English test data is missing or currently below stronger migration target bands.",
-        "Ingilizce test verisi eksik oldugunda veya daha guclu goc hedef bantlarinin altinda kaldiginda, Ingilizce sinav hazirligi genellikle ilk kanit alanlarindan biri olarak degerlendirilir.",
+        "Dil test verisi eksik olduğunda veya daha güçlü vize hedef bantlarının altında kalındığında, dil sınavı hazırlığı genellikle ilk kanıt alanlarından biri olarak incelenir.",
         "当英语考试数据缺失或低于较强目标区间时，PTE/IELTS 预约通常被视为基础准备步骤。"
       ),
     });
@@ -149,13 +149,13 @@ export function generateChecklist(args: {
       title: t(
         input.locale,
         `Skills assessment pathway alignment with ${authorityLabel(authority, input.locale)}`,
-        `${authorityLabel(authority, input.locale)} ile beceri degerlendirmesi yol uyumu`,
+        `${authorityLabel(authority, input.locale)} ile beceri incelemesi yol uyumu`,
         `${authorityLabel(authority, input.locale)} 的技能评估路径对齐`
       ),
       detail: t(
         input.locale,
         "Skills assessment timing can influence points claims, nomination readiness, and progression from planning context to a lodgement-capable profile.",
-        "Beceri degerlendirmesi zamanlamasi; puan iddialari, adaylik hazirligi ve planlama baglamindan basvuruya hazir profile gecis uzerinde etkili olabilir.",
+        "Beceri incelemesi zamanlaması; puan iddiaları, adaylık hazırlığı ve planlama bağlamından başvuruya hazır profile geçiş üzerinde etkili olabilir.",
         "技能评估时间点可能影响加分主张、州担保准备度，以及从规划阶段过渡到可递交状态的节奏。"
       ),
     });
@@ -168,7 +168,7 @@ export function generateChecklist(args: {
       title: t(
         input.locale,
         "State/EOI alignment cannot proceed yet",
-        "Eyalet/EOI uyumu henuz ilerletilemez",
+        "Eyalet/EOI uyumu henüz ilerletilemez",
         "州担保/EOI 对齐暂不可进行"
       ),
       detail: gsmBlockReason,
@@ -182,13 +182,13 @@ export function generateChecklist(args: {
         title: t(
           input.locale,
           `${topState.name} pathway EOI alignment considerations`,
-          `${topState.name} yolu icin EOI uyum degerlendirmeleri`,
+          `${topState.name} yolu için EOI uyum incelemeleri`,
           `${topState.name} 路径的 EOI 对齐考量`
         ),
         detail: t(
           input.locale,
           `${topState.name} is currently indicated as the strongest state nomination signal; EOI settings and evidence packaging are typically reviewed against that pathway's criteria.`,
-          `${topState.name} su anda en guclu eyalet adayligi sinyali olarak gorunmektedir; EOI ayarlari ve belge paketleri genellikle bu yolun kriterleriyle uyumlu olup olmadigi acisindan incelenir.`,
+          `${topState.name} şu anda en güçlü eyalet adaylığı sinyali olarak görünmektedir; EOI ayarları ve belge paketleri genellikle bu yolun kriterleriyle uyumlu olup olmadığı açısından incelenir.`,
           `${topState.name} 当前显示为较强的州担保信号；EOI 设置与材料包通常会按该路径标准进行对齐审视。`
         ),
       });
@@ -200,7 +200,7 @@ export function generateChecklist(args: {
     note: t(
       input.locale,
       "This checklist is an educational planning reference and can be refreshed whenever points, English results, or state pathway context changes.",
-      "Bu kontrol listesi egitim amacli planlama referansidir; puan, Ingilizce sonucu veya eyalet yolu baglami degistikce guncellenebilir.",
+      "Bu kontrol listesi eğitim amaçlı planlama referansıdır; puan, dil sonucu veya eyalet yolu bağlamı değiştikçe güncellenebilir.",
       "此清单为教育性质的规划参考；当分数、英语结果或州路径背景变化时可同步更新。"
     ),
   };
