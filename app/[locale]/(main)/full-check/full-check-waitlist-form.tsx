@@ -29,12 +29,14 @@ import { StateHeatmap } from "@/components/StateHeatmap";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
+import anzscoListRaw from "@/src/data/anzsco-list.json";
 import Fuse from "fuse.js";
 
 // ── NOC Fuzzy Search Setup ────────────────────────────────────────────────────
 // Built once at module level so every keystroke hits a pre-built index.
 
 type NocEntry = { code: string; title: string; teer: number };
+type AnzscoEntry = { code: string; title: string; title_tr?: string; title_zh?: string };
 
 // Maps official NOC title keywords → everyday synonyms used by applicants.
 // Merged into the search index so "doctor" → "physician", "dev" → "software", etc.
@@ -159,6 +161,61 @@ function searchNoc(query: string): NocEntry[] {
   for (const r of fuseResults) addEntry(r.item);
 
   return merged.slice(0, 14);
+}
+
+const ANZSCO_INDEX = anzscoListRaw as AnzscoEntry[];
+
+function foldLookupValue(value?: string): string {
+  return (value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[ıİ]/g, "i")
+    .replace(/[şŞ]/g, "s")
+    .replace(/[ğĞ]/g, "g")
+    .replace(/[çÇ]/g, "c")
+    .replace(/[öÖ]/g, "o")
+    .replace(/[üÜ]/g, "u")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
+function getLocalizedAnzscoTitle(entry: AnzscoEntry, locale: string): string {
+  if (locale === "tr") return entry.title_tr ?? entry.title;
+  if (locale === "zh-Hans") return entry.title_zh ?? entry.title;
+  return entry.title;
+}
+
+function resolveAnzscoEntry(value?: string): AnzscoEntry | undefined {
+  const trimmed = (value ?? "").trim();
+  if (!trimmed) return undefined;
+
+  const explicitCode = trimmed.match(/(\d{6})/)?.[1];
+  if (explicitCode) {
+    const codeMatch = ANZSCO_INDEX.find((entry) => entry.code === explicitCode);
+    if (codeMatch) return codeMatch;
+  }
+
+  const folded = foldLookupValue(trimmed);
+  if (!folded) return undefined;
+
+  return ANZSCO_INDEX.find((entry) => {
+    const candidates = [entry.title, entry.title_tr, entry.title_zh, `${entry.title} (${entry.code})`, `${entry.title_tr ?? ""} (${entry.code})`, `${entry.title_zh ?? ""} (${entry.code})`];
+    return candidates.some((candidate) => foldLookupValue(candidate) === folded);
+  });
+}
+
+function searchAnzsco(query: string, locale: string): AnzscoEntry[] {
+  const foldedQuery = foldLookupValue(query);
+  if (foldedQuery.length < 2) return [];
+
+  return ANZSCO_INDEX.filter((entry) => {
+    const localizedTitle = getLocalizedAnzscoTitle(entry, locale);
+    return [entry.code, entry.title, localizedTitle, entry.title_tr, entry.title_zh]
+      .filter(Boolean)
+      .some((candidate) => foldLookupValue(candidate).includes(foldedQuery));
+  }).slice(0, 14);
 }
 
 
@@ -372,6 +429,7 @@ export function FullCheckWaitlistForm({
   const [selectedCountry, setSelectedCountry] = useState<SupportedCountry>(
     isSupportedCountry(initialValues.targetCountry) ? initialValues.targetCountry : defaultCountry
   );
+  const initialAnzscoEntry = resolveAnzscoEntry(initialValues.occupation);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
   const [analysisStepIndex, setAnalysisStepIndex] = useState(0);
@@ -394,6 +452,12 @@ export function FullCheckWaitlistForm({
   const [nocTeer, setNocTeer] = useState<number | null>(null);
   const [nocResults, setNocResults] = useState<NocEntry[]>([]);
   const [nocOpen, setNocOpen] = useState(false);
+  const [anzscoSearch, setAnzscoSearch] = useState(
+    initialAnzscoEntry ? getLocalizedAnzscoTitle(initialAnzscoEntry, locale) : (initialValues.occupation ?? "")
+  );
+  const [anzscoCode, setAnzscoCode] = useState(initialAnzscoEntry?.code ?? "");
+  const [anzscoResults, setAnzscoResults] = useState<AnzscoEntry[]>([]);
+  const [anzscoOpen, setAnzscoOpen] = useState(false);
   const [qualificationLevel, setQualificationLevel] = useState("");
   const [englishLevel, setEnglishLevel] = useState("");
   const [sponsorFamilyStatus, setSponsorFamilyStatus] = useState("");
@@ -410,6 +474,11 @@ export function FullCheckWaitlistForm({
     qualificationLevel === "Master's Degree (Research)" ||
     qualificationLevel === "PhD/Doctorate" ||
     qualificationLevel === "PhD";
+  const resolvedAnzscoEntry = resolveAnzscoEntry(anzscoCode || anzscoSearch);
+  const submittedOccupationValue =
+    selectedCountry === "AU"
+      ? resolvedAnzscoEntry?.code ?? anzscoSearch
+      : nocSearch;
 
   // NOC_ALIAS_MAP and filterNoc replaced by module-level NOC_ALIAS_MAP_STATIC
   // and searchNoc() which uses Fuse.js — see top of file.
@@ -1007,13 +1076,56 @@ export function FullCheckWaitlistForm({
               )}
             </div>
           ) : (
-            <Input
-              id="waitlist-occupation"
-              name="occupation"
-              defaultValue={initialValues.occupation ?? ""}
-              className={fieldClassName}
-              placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
-            />
+            <div className="relative">
+              <input
+                id="waitlist-occupation"
+                type="text"
+                value={anzscoSearch}
+                autoComplete="off"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAnzscoSearch(value);
+                  setAnzscoCode("");
+                  setAnzscoResults(searchAnzsco(value, locale));
+                  setAnzscoOpen(true);
+                }}
+                onBlur={() => setTimeout(() => setAnzscoOpen(false), 150)}
+                onFocus={() => {
+                  if (anzscoSearch.length >= 2) {
+                    setAnzscoResults(searchAnzsco(anzscoSearch, locale));
+                    setAnzscoOpen(true);
+                  }
+                }}
+                className={fieldClassName + " w-full"}
+                placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
+              />
+              <input type="hidden" name="occupation" value={submittedOccupationValue} />
+              {resolvedAnzscoEntry && (
+                <p className="mt-1 text-xs text-emerald-700">
+                  {txt("Seçildi:", "Selected:", "已选：")} {resolvedAnzscoEntry.code} · {getLocalizedAnzscoTitle(resolvedAnzscoEntry, locale)}
+                </p>
+              )}
+              {anzscoOpen && anzscoResults.length > 0 && (
+                <ul className="absolute z-50 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg text-sm">
+                  {anzscoResults.map((entry) => (
+                    <li
+                      key={entry.code}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setAnzscoSearch(getLocalizedAnzscoTitle(entry, locale));
+                        setAnzscoCode(entry.code);
+                        setAnzscoOpen(false);
+                        setAnzscoResults([]);
+                      }}
+                      className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted"
+                    >
+                      <span>{getLocalizedAnzscoTitle(entry, locale)}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">{entry.code}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           )}
         </div>
 

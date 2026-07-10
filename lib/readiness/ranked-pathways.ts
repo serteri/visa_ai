@@ -14,6 +14,12 @@ type RankedPathwayInput = {
   locale?: Locale;
 };
 
+const AU_RANKED_VISA_LABELS: Record<"189" | "190" | "491", Record<Locale, string>> = {
+  "189": { en: "189 Visa", tr: "189 Vizesi", "zh-Hans": "189 签证" },
+  "190": { en: "190 Visa", tr: "190 Vizesi", "zh-Hans": "190 签证" },
+  "491": { en: "491 Visa", tr: "491 Vizesi", "zh-Hans": "491 签证" },
+};
+
 function clampPercentage(value: number): number {
   return Math.max(0, Math.min(98, Math.round(value)));
 }
@@ -40,14 +46,48 @@ function confidenceToBaseScore(level?: ConfidenceLevel): number {
   return 55;
 }
 
-const CA_PATHWAY_LABELS: Record<string, string> = {
-  CEC: "Canadian Experience Class (CEC)",
-  FSW: "Federal Skilled Worker (FSW)",
-  FSTP: "Federal Skilled Trades (FSTP)",
-  PNP: "Provincial Nominee Program (PNP)",
-  AIP: "Atlantic Immigration Program (AIP)",
-  FAMILY_SPONSORSHIP: "Family Sponsorship",
+const CA_PATHWAY_LABELS: Record<string, Record<Locale, string>> = {
+  CEC: {
+    en: "Canadian Experience Class (CEC)",
+    tr: "Canadian Experience Class (CEC)",
+    "zh-Hans": "加拿大经验类 (CEC)",
+  },
+  FSW: {
+    en: "Federal Skilled Worker (FSW)",
+    tr: "Federal Skilled Worker (FSW)",
+    "zh-Hans": "联邦技术工人类 (FSW)",
+  },
+  FSTP: {
+    en: "Federal Skilled Trades (FSTP)",
+    tr: "Federal Skilled Trades (FSTP)",
+    "zh-Hans": "联邦技工类 (FSTP)",
+  },
+  PNP: {
+    en: "Provincial Nominee Program (PNP)",
+    tr: "Provincial Nominee Program (PNP)",
+    "zh-Hans": "省提名计划 (PNP)",
+  },
+  AIP: {
+    en: "Atlantic Immigration Program (AIP)",
+    tr: "Atlantic Immigration Program (AIP)",
+    "zh-Hans": "大西洋移民计划 (AIP)",
+  },
+  FAMILY_SPONSORSHIP: {
+    en: "Family Sponsorship",
+    tr: "Aile Sponsorluğu",
+    "zh-Hans": "家庭担保",
+  },
 };
+
+function getLocalizedPathwayLabel(subclass: string, locale: Locale, fallback?: string): string {
+  if (subclass in AU_RANKED_VISA_LABELS) {
+    return AU_RANKED_VISA_LABELS[subclass as keyof typeof AU_RANKED_VISA_LABELS][locale];
+  }
+
+  const localizedCaLabel = CA_PATHWAY_LABELS[subclass];
+  if (localizedCaLabel) return localizedCaLabel[locale];
+  return fallback ?? subclass;
+}
 
 function confidenceToCaScore(level?: ConfidenceLevel): number {
   if (level === "high") return 72;
@@ -69,7 +109,7 @@ export function buildCaRankedPathways(
       .filter((p) => p.subclass && CA_PATHWAY_LABELS[p.subclass])
       .map((p) => ({
         subclass: p.subclass as RankedPathway["subclass"],
-        visaLabel: CA_PATHWAY_LABELS[p.subclass] ?? p.visaName ?? p.subclass,
+        visaLabel: getLocalizedPathwayLabel(p.subclass, locale, p.visaName ?? p.subclass),
         qualitativeTier: forcedTier ?? confidenceToQualitativeTier(p.confidenceLevel),
         isPreliminaryOnly: true,
         preliminaryNote,
@@ -88,7 +128,7 @@ export function buildCaRankedPathways(
       const base = confidenceToCaScore(p.confidenceLevel);
       return {
         subclass: p.subclass as RankedPathway["subclass"],
-        visaLabel: CA_PATHWAY_LABELS[p.subclass] ?? p.visaName ?? p.subclass,
+        visaLabel: getLocalizedPathwayLabel(p.subclass, locale, p.visaName ?? p.subclass),
         matchPercentage: clampPercentage(base),
         pointsSignal: crsSignal,
       };
@@ -177,7 +217,7 @@ function calculateQualitativeRankedPathways(report: ReadinessReport, locale: Loc
   const raw: Array<Omit<RankedPathway, "recommendationTag">> = (["189", "190", "491"] as const).map(
     (subclass) => ({
       subclass,
-      visaLabel: `${subclass} Visa`,
+      visaLabel: getLocalizedPathwayLabel(subclass, locale, `${subclass} Visa`),
       qualitativeTier: forcedTier ?? confidenceToQualitativeTier(getPathwayConfidence(subclass)),
       isPreliminaryOnly: true,
       preliminaryNote,
@@ -241,19 +281,19 @@ export function calculateRankedPathways(
   const raw: Array<Omit<RankedPathway, "recommendationTag">> = [
     {
       subclass: "189",
-      visaLabel: "189 Visa",
+      visaLabel: getLocalizedPathwayLabel("189", input.locale ?? "en", "189 Visa"),
       matchPercentage: score189,
       pointsSignal: pointsEstimate,
     },
     {
       subclass: "190",
-      visaLabel: "190 Visa",
+      visaLabel: getLocalizedPathwayLabel("190", input.locale ?? "en", "190 Visa"),
       matchPercentage: score190,
       pointsSignal: pointsEstimate,
     },
     {
       subclass: "491",
-      visaLabel: "491 Visa",
+      visaLabel: getLocalizedPathwayLabel("491", input.locale ?? "en", "491 Visa"),
       matchPercentage: score491,
       pointsSignal: pointsSignal491,
     },
