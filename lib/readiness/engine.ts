@@ -4,6 +4,10 @@ import {
   buildEmploymentExperienceCaveat,
   getEmploymentDataSignals,
 } from "@/lib/readiness/employment-signals";
+import {
+  buildSpecialistEducationCaveat,
+  getSpecialistEducationSignals,
+} from "@/lib/readiness/education-signals";
 import { checkOccupation } from "@/lib/occupations/check-occupation";
 import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
@@ -2103,11 +2107,12 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
 
   const missingStr = missingFactors.join(", ");
   const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
+  const specialistEducationNoteCaveat = buildSpecialistEducationCaveat(locale, getSpecialistEducationSignals(input));
   const note = isTr
-    ? `Bu, yaş${ageOption ? "" : " (belirtilmedi)"}, İngilizce seviyesi${englishOption ? "" : " (belirtilmedi)"}, iş deneyimi${hasExperienceInput ? "" : " (belirtilmedi)"} ve eğitim düzeyine${hasEducationInput ? "" : " (belirtilmedi)"} dayalı bir tahmindir. Dahil edilmeyen faktörler: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`
+    ? `Bu, yaş${ageOption ? "" : " (belirtilmedi)"}, İngilizce seviyesi${englishOption ? "" : " (belirtilmedi)"}, iş deneyimi${hasExperienceInput ? "" : " (belirtilmedi)"} ve eğitim düzeyine${hasEducationInput ? "" : " (belirtilmedi)"} dayalı bir tahmindir. Dahil edilmeyen faktörler: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`
     : isZh
-      ? `本估算基于年龄${ageOption ? "" : "（未提供）"}、英语水平${englishOption ? "" : "（未提供）"}、工作经验${hasExperienceInput ? "" : "（未提供）"}和学历${hasEducationInput ? "" : "（未提供）"}。未纳入因素：${missingStr}。实际分数取决于个人情况。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`
-      : `This estimate is based on age${ageOption ? "" : " (not provided)"}, English level${englishOption ? "" : " (not provided)"}, work experience${hasExperienceInput ? "" : " (not provided)"}, and education level${hasEducationInput ? "" : " (not provided)"}. Factors not included: ${missingStr}. Actual points position depends on individual circumstances.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}`;
+      ? `本估算基于年龄${ageOption ? "" : "（未提供）"}、英语水平${englishOption ? "" : "（未提供）"}、工作经验${hasExperienceInput ? "" : "（未提供）"}和学历${hasEducationInput ? "" : "（未提供）"}。未纳入因素：${missingStr}。实际分数取决于个人情况。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`
+      : `This estimate is based on age${ageOption ? "" : " (not provided)"}, English level${englishOption ? "" : " (not provided)"}, work experience${hasExperienceInput ? "" : " (not provided)"}, and education level${hasEducationInput ? "" : " (not provided)"}. Factors not included: ${missingStr}. Actual points position depends on individual circumstances.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`;
 
   return {
     appliesTo: ["189", "190", "491"],
@@ -2689,6 +2694,20 @@ function buildEvidenceReadiness(
     });
   }
 
+  const specialistEducationSignals = getSpecialistEducationSignals(input);
+  const specialistEducationCaveat = buildSpecialistEducationCaveat(locale, specialistEducationSignals);
+  if (hasSkilled && specialistEducationCaveat) {
+    items.push({
+      category: isTr
+        ? "Uzmanlık eğitimi (STEM) sinyali"
+        : locale === "zh-Hans"
+          ? "Specialist education（STEM）信号"
+          : "Specialist education (STEM) signal",
+      status: specialistEducationSignals.notSure ? "unclear" : "missing",
+      explanation: specialistEducationCaveat,
+    });
+  }
+
   items.push({
     category: isTr ? "Sağlık, karakter ve çeviri belgeleri" : "Health, character, and translation documents",
     status: "typically_required",
@@ -2832,14 +2851,15 @@ function buildPointsBoosterSimulator(
 
   const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
   const employmentCaveat = buildEmploymentExperienceCaveat(locale, employmentSignals);
+  const specialistEducationCaveat = buildSpecialistEducationCaveat(locale, getSpecialistEducationSignals(input));
   return {
     currentEstimate,
     scenarios,
     note: isTr
-      ? `Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}`
+      ? `Avustralya puan tablosu (Schedule 6A, Migration Regulations 1994) doğrudan nümerik kazanımlar içerir. Aşağıdaki senaryolar resmi puan tablosu katsayılarına dayanmaktadır.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`
       : locale === "zh-Hans"
-        ? `澳大利亚积分表（Migration Regulations 1994, Schedule 6A）采用固定分值。以下情景基于官方积分系数。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}`
-        : `The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}`,
+        ? `澳大利亚积分表（Migration Regulations 1994, Schedule 6A）采用固定分值。以下情景基于官方积分系数。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`
+        : `The Australian points test (Schedule 6A, Migration Regulations 1994) uses fixed numerical gains per factor. Scenarios below are based on official points table coefficients — not estimates.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${employmentCaveat ? ` ${employmentCaveat}` : ""}${specialistEducationCaveat ? ` ${specialistEducationCaveat}` : ""}`,
   };
 }
 

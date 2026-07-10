@@ -690,6 +690,14 @@ export function FullCheckWaitlistForm({
       label: txt("Lise", "High School", "高中"),
     },
     {
+      value: "Certificate",
+      label: txt("Sertifika", "Certificate", "证书"),
+    },
+    {
+      value: "Diploma",
+      label: txt("Diploma / Meslek Yeterliliği", "Diploma / Trade Qualification", "文凭 / 技工资格"),
+    },
+    {
       value: "Bachelor's Degree",
       label: txt("Lisans Derecesi", "Bachelor's Degree", "学士学位"),
     },
