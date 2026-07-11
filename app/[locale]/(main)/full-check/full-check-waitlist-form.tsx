@@ -165,6 +165,15 @@ function searchNoc(query: string): NocEntry[] {
 
 const ANZSCO_INDEX = anzscoListRaw as AnzscoEntry[];
 
+const ANZSCO_SEARCH_ALIAS_MAP: Record<string, string[]> = {
+  doktor: ["pratisyen hekim", "uzman hekim", "medical practitioners", "specialist physician"],
+  doctor: ["general practitioner", "medical practitioners", "specialist physician", "physician"],
+  physician: ["general practitioner", "specialist physician", "medical practitioners"],
+  hekim: ["pratisyen hekim", "uzman hekim", "medical practitioners", "specialist physician"],
+  医生: ["全科医生", "专科医生", "specialist physician", "general practitioner"],
+  醫生: ["全科医生", "专科医生", "specialist physician", "general practitioner"],
+};
+
 function foldLookupValue(value?: string): string {
   return (value ?? "")
     .trim()
@@ -210,11 +219,20 @@ function searchAnzsco(query: string, locale: string): AnzscoEntry[] {
   const foldedQuery = foldLookupValue(query);
   if (foldedQuery.length < 2) return [];
 
+  const aliasTerms = ANZSCO_SEARCH_ALIAS_MAP[foldedQuery] ?? [];
+  const searchTerms = [
+    foldedQuery,
+    ...aliasTerms.map((term) => foldLookupValue(term)).filter(Boolean),
+  ];
+
   return ANZSCO_INDEX.filter((entry) => {
     const localizedTitle = getLocalizedAnzscoTitle(entry, locale);
     return [entry.code, entry.title, localizedTitle, entry.title_tr, entry.title_zh]
       .filter(Boolean)
-      .some((candidate) => foldLookupValue(candidate).includes(foldedQuery));
+      .some((candidate) => {
+        const foldedCandidate = foldLookupValue(candidate);
+        return searchTerms.some((term) => foldedCandidate.includes(term));
+      });
   }).slice(0, 14);
 }
 

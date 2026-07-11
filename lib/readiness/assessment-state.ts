@@ -1,4 +1,4 @@
-import { findOccupationRecord, getEligibleSkilledSubclasses } from "./occupation-eligibility";
+import { findOccupationRecord, getEligibleSkilledSubclasses, isAmbiguousOccupationAlias } from "./occupation-eligibility";
 import { getEmploymentDataSignals } from "./employment-signals";
 import type {
   AssessmentState,
@@ -24,6 +24,17 @@ function buildOccupationEligibility(
   const record = findOccupationRecord(occupation);
 
   if (!record) {
+    if (isAmbiguousOccupationAlias(occupation)) {
+      return {
+        occupationEligibility: "unverified",
+        occupationEligibilityReason: isTr
+          ? "Girilen meslek ifadesi birden fazla ANZSCO kaydına karşılık geliyor (ör. Pratisyen Hekim, Uzman Hekim). Lütfen daha spesifik bir meslek seçin veya açılır listeden doğru kaydı seçin."
+          : isZh
+            ? "输入的职业称谓可能对应多个 ANZSCO 条目（例如全科医生、专科医生）。请提供更具体的职业名称，或从下拉列表选择正确条目。"
+            : "The entered occupation term maps to multiple ANZSCO records (e.g., General Practitioner, Specialist Physician). Please provide a more specific occupation or select the correct entry from the dropdown.",
+      };
+    }
+
     return {
       occupationEligibility: "unverified",
       occupationEligibilityReason: isTr

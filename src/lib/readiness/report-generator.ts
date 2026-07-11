@@ -1,6 +1,6 @@
 import livingCostsData from "@/src/data/living-costs.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
-import { localizeText, localizeTrendDescription, localizeWaitWindow } from "@/src/lib/readiness/localization";
+import { localizeText, localizeTrendDescription, localizeWaitWindow, t3 } from "@/src/lib/readiness/localization";
 import type { AssessmentState, Locale, PathwayComparison } from "@/lib/readiness/types";
 
 /** GSM points-tested subclasses (AU) that trend/gantt EOI framing depends on. */
@@ -61,9 +61,11 @@ function annotateTrendEstimates(
       return {
         ...estimate,
         isReferenceOnly: true,
-        referenceOnlyNote: localizeText(
+        referenceOnlyNote: t3(
           locale,
-          `Reference data only — your profile does not currently meet Subclass ${estimate.subclass}'s threshold. ${ineligibleReason}`
+          `Reference data only - your profile does not currently meet Subclass ${estimate.subclass}'s threshold. ${ineligibleReason}`,
+          `Yalnızca referans verisi - profiliniz şu anda Subclass ${estimate.subclass} eşiğini karşılamıyor. ${ineligibleReason}`,
+          `仅供参考数据 - 您的档案目前尚未达到 Subclass ${estimate.subclass} 的门槛。${ineligibleReason}`
         ),
       };
     }
@@ -72,9 +74,11 @@ function annotateTrendEstimates(
       return {
         ...estimate,
         isReferenceOnly: true,
-        referenceOnlyNote: localizeText(
+        referenceOnlyNote: t3(
           locale,
-          "Reference data only — pathway eligibility is not yet confirmed (missing profile details or occupation verification)."
+          "Reference data only - pathway eligibility is not yet confirmed (missing profile details or occupation verification).",
+          "Yalnızca referans verisi - yol uygunluğu henüz doğrulanmadı (profil ayrıntıları veya meslek doğrulaması eksik).",
+          "仅供参考数据 - 路径资格尚未确认（缺少档案细节或职业核验）。"
         ),
       };
     }
@@ -100,10 +104,20 @@ function getEligibilityBlockReasonShort(
 ): string | undefined {
   const ineligiblePathway = findIneligiblePathway(pathwayComparison, country);
   if (ineligiblePathway) {
-    return localizeText(locale, `BLOCKED — Subclass ${ineligiblePathway.subclass} points threshold not met.`);
+    return t3(
+      locale,
+      `BLOCKED - Subclass ${ineligiblePathway.subclass} points threshold not met.`,
+      `ENGELLİ - Subclass ${ineligiblePathway.subclass} puan eşiği karşılanmadı.`,
+      `已阻断 - 未达到 Subclass ${ineligiblePathway.subclass} 的分数门槛。`
+    );
   }
   if (!assessmentState.canShowNumericRanking) {
-    return localizeText(locale, "BLOCKED — eligibility not yet confirmed.");
+    return t3(
+      locale,
+      "BLOCKED - eligibility not yet confirmed.",
+      "ENGELLİ - uygunluk henüz doğrulanmadı.",
+      "已阻断 - 资格尚未确认。"
+    );
   }
   return undefined;
 }
@@ -361,10 +375,10 @@ function inferCanadaActionTrack(locale: Locale, occupation?: string): { title: s
   };
 }
 
-function matchTrendByOccupation(occupation?: string): TrendRecord {
+function matchTrendByOccupation(occupation?: string): TrendRecord | undefined {
   const query = normalize(occupation);
   if (!query) {
-    return TREND_DATA.occupation_trends[0];
+    return undefined;
   }
 
   const exact = TREND_DATA.occupation_trends.find(
@@ -384,7 +398,7 @@ function matchTrendByOccupation(occupation?: string): TrendRecord {
     return query.split(/\s+/).some((word) => word.length > 3 && source.includes(word));
   });
 
-  return keyword ?? TREND_DATA.occupation_trends[0];
+  return keyword;
 }
 
 function buildRawGanttSteps(
@@ -460,7 +474,6 @@ function buildRawGanttSteps(
   }
 
   if (country === "AU") {
-    const occupationLabel = occupation?.trim() || "your nominated occupation";
     const steps = [
       {
         step: 1,
@@ -472,7 +485,8 @@ function buildRawGanttSteps(
         step: 2,
         title: "Skills Validation",
         window: "Quarter 2",
-        description: `Lodge formal skills assessment for ${occupationLabel} with the relevant Australian assessing authority, accounting for potential deducted years of experience.`,
+          description:
+            "Lodge formal skills assessment for {occupation} with the relevant Australian assessing authority, accounting for potential deducted years of experience.",
       },
       {
         step: 3,
@@ -499,7 +513,7 @@ function buildRawGanttSteps(
         ...steps[1],
         title: "Skills Validation & 485 Work-Experience Window",
         description:
-          `Use the 485 bridge to strengthen Australian work-history evidence while you lodge the formal skills assessment for ${occupationLabel}; this keeps your Q2 activity aligned with a 190/491 nomination pathway rather than treating 485 as a standalone end point.`,
+          "Use the 485 bridge to strengthen Australian work-history evidence while you lodge the formal skills assessment for {occupation}; this keeps your Q2 activity aligned with a 190/491 nomination pathway rather than treating 485 as a standalone end point.",
       };
     }
 
@@ -716,29 +730,44 @@ export function generatePremiumSections(input: {
     locale === "zh-Hans" ? TREND_DATA.methodology_note_zh ?? TREND_DATA.methodology_note : TREND_DATA.methodology_note
   );
   const livingCostMethodologyNote = getLivingCostMethodologyNote(locale);
+  const occupationLabel = input.occupation?.trim() || localizeText(locale, "your nominated occupation");
+
+  const unavailableTrendMessage = localizeText(
+    locale,
+    "Historical trend data unavailable - occupation not yet verified against our database."
+  );
+
+  const historicalInvitationTrends = trend
+    ? {
+        matchedOccupationGroup: getTrendOccupationGroup(locale, trend),
+        anzscoCode: trend.anzsco_code,
+        estimates: annotateTrendEstimates(
+          trend.estimates.map((e) => ({
+            subclass: e.subclass,
+            estimatedPoints: e.last_invited_point ?? e.estimated_points,
+            estimatedWait: localizeWaitWindow(locale, e.estimated_wait),
+          })),
+          input.pathwayComparison,
+          input.assessmentState,
+          locale
+        ),
+        note: [
+          localizeText(
+            locale,
+            "Trend estimates are analytical planning references only and do not guarantee invitation outcomes."
+          ),
+          methodologyNote,
+        ].filter(Boolean).join(" "),
+      }
+    : {
+        matchedOccupationGroup: unavailableTrendMessage,
+        anzscoCode: "",
+        estimates: [],
+        note: unavailableTrendMessage,
+      };
 
   return {
-    historicalInvitationTrends: {
-      matchedOccupationGroup: getTrendOccupationGroup(locale, trend),
-      anzscoCode: trend.anzsco_code,
-      estimates: annotateTrendEstimates(
-        trend.estimates.map((e) => ({
-          subclass: e.subclass,
-          estimatedPoints: e.last_invited_point ?? e.estimated_points,
-          estimatedWait: localizeWaitWindow(locale, e.estimated_wait),
-        })),
-        input.pathwayComparison,
-        input.assessmentState,
-        locale
-      ),
-      note: [
-        localizeText(
-          locale,
-          "Trend estimates are analytical planning references only and do not guarantee invitation outcomes."
-        ),
-        methodologyNote,
-      ].filter(Boolean).join(" "),
-    },
+    historicalInvitationTrends,
     livingCostProjection: {
       city: getLocalizedCity(locale, city),
       familyProfile: getLocalizedFamilyProfile(locale, familyProfile),
@@ -758,7 +787,7 @@ export function generatePremiumSections(input: {
         ...step,
         title: localizeText(locale, step.title),
         window: localizeWaitWindow(locale, step.window),
-        description: localizeText(locale, step.description),
+        description: localizeText(locale, step.description).replaceAll("{occupation}", occupationLabel),
       })),
       timelineBand: localizeWaitWindow(locale, gantt.timelineBand),
     },
