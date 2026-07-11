@@ -14,14 +14,20 @@ type LocaleCase = {
 };
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
-const adminEmail = (process.env.ADMIN_EMAILS ?? "")
-  .split(",")
-  .map((value) => value.trim())
-  .find(Boolean);
+function resolveAdminEmail(): string {
+  const candidate = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .find(Boolean);
 
-if (!adminEmail) {
-  throw new Error("ADMIN_EMAILS is required for submission verification.");
+  if (!candidate) {
+    throw new Error("ADMIN_EMAILS is required for submission verification.");
+  }
+
+  return candidate;
 }
+
+const adminEmail = resolveAdminEmail();
 
 const cases: LocaleCase[] = [
   {
@@ -73,13 +79,12 @@ async function waitForReport(fullName: string) {
 async function runCase(browser: import("playwright").Browser, testCase: LocaleCase) {
   const page = await browser.newPage();
   const timestamp = Date.now();
-  const email = adminEmail;
   const fullName = `Locale Smoke ${testCase.label} ${timestamp}`;
 
   await page.goto(`${BASE_URL}/${testCase.locale}/full-check`, { waitUntil: "networkidle" });
 
   await page.fill("#waitlist-full-name", fullName);
-  await page.fill("#waitlist-email", email);
+  await page.fill("#waitlist-email", adminEmail);
   await page.fill("#waitlist-current-country", testCase.currentCountry);
   await page.fill("#waitlist-main-goal", testCase.mainGoal);
   await page.fill("#waitlist-passport-country", testCase.passportCountry);
