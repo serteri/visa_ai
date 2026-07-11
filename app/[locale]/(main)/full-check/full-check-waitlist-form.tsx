@@ -225,15 +225,39 @@ function searchAnzsco(query: string, locale: string): AnzscoEntry[] {
     ...aliasTerms.map((term) => foldLookupValue(term)).filter(Boolean),
   ];
 
-  return ANZSCO_INDEX.filter((entry) => {
+  const maxResults = locale === "tr" || locale === "zh-Hans" ? 80 : 14;
+
+  const scoredResults = ANZSCO_INDEX.map((entry) => {
     const localizedTitle = getLocalizedAnzscoTitle(entry, locale);
-    return [entry.code, entry.title, localizedTitle, entry.title_tr, entry.title_zh]
-      .filter(Boolean)
-      .some((candidate) => {
-        const foldedCandidate = foldLookupValue(candidate);
-        return searchTerms.some((term) => foldedCandidate.includes(term));
-      });
-  }).slice(0, 14);
+    const foldedLocalizedTitle = foldLookupValue(localizedTitle);
+    const foldedEnglishTitle = foldLookupValue(entry.title);
+    const foldedCode = foldLookupValue(entry.code);
+
+    let bestScore = Number.POSITIVE_INFINITY;
+    for (const term of searchTerms) {
+      if (!term) continue;
+      if (foldedCode === term) bestScore = Math.min(bestScore, 0);
+      if (foldedLocalizedTitle === term) bestScore = Math.min(bestScore, 1);
+      if (foldedEnglishTitle === term) bestScore = Math.min(bestScore, 2);
+      if (foldedLocalizedTitle.startsWith(term)) bestScore = Math.min(bestScore, 3);
+      if (foldedEnglishTitle.startsWith(term)) bestScore = Math.min(bestScore, 4);
+      if (foldedLocalizedTitle.includes(term)) bestScore = Math.min(bestScore, 5);
+      if (foldedEnglishTitle.includes(term)) bestScore = Math.min(bestScore, 6);
+    }
+
+    return { entry, score: bestScore, localizedTitle };
+  })
+    .filter(({ score }) => Number.isFinite(score))
+    .sort((a, b) => {
+      if (a.score !== b.score) return a.score - b.score;
+
+      const byLocalizedTitle = a.localizedTitle.localeCompare(b.localizedTitle, locale);
+      if (byLocalizedTitle !== 0) return byLocalizedTitle;
+
+      return a.entry.code.localeCompare(b.entry.code);
+    });
+
+  return scoredResults.slice(0, maxResults).map(({ entry }) => entry);
 }
 
 
