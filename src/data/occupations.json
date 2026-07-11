@@ -1756,18 +1756,6 @@
       ]
     },
     {
-      "anzsco_code": "233413",
-      "occupation_name": "Mechanical Engineer",
-      "authority": "Engineers Australia",
-      "min_qualification": "AQF Bachelor degree (Engineering)",
-      "post_qual_experience_years": 0,
-      "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
-      "critical_warning": "EA CDR pathway can fail on plagiarism or insufficient competency evidence.",
-      "visa_lists": [
-        "MLTSSL"
-      ]
-    },
-    {
       "anzsco_code": "233414",
       "occupation_name": "Production Engineer",
       "authority": "Engineers Australia",

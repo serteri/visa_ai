@@ -1950,19 +1950,6 @@
     ]
   },
   {
-    "code": "233413",
-    "title": "Mechanical Engineer",
-    "title_tr": "Makine Mühendisi",
-    "title_zh": "机械工程师",
-    "skillLevel": "Skill Level 1",
-    "duties": [
-      "Analyses technical and business requirements to design fit-for-purpose Mechanical Engineer solutions.",
-      "Builds, tests, deploys and maintains systems, tools or platforms used in day-to-day operations.",
-      "Monitors performance, investigates incidents and resolves defects to maintain service reliability.",
-      "Produces technical documentation and supports governance, security and change management processes."
-    ]
-  },
-  {
     "code": "233414",
     "title": "Production Engineer",
     "title_tr": "Üretim Mühendisi",
