@@ -1,4 +1,4 @@
-import { eq, inArray, count } from "drizzle-orm";
+import { eq, inArray, notInArray, and, count } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 import { db } from "@/db";
@@ -100,10 +100,18 @@ export const getCachedGuideDownloadStats = unstable_cache(
 export const getCachedPdfLeadDownloadStats = unstable_cache(
   async () => {
     const allSlugs = Object.values(PDF_SLUGS);
+    // Excludes admin/known-test emails so internal testing never depletes the
+    // public-facing "free slots left" counter — same exclusion set already
+    // used by getCachedFullCheckUsage below.
+    const excludedEmails = Array.from(getExcludedEmailSet());
+    const where =
+      excludedEmails.length > 0
+        ? and(inArray(pdfDownloads.pdf_slug, allSlugs), notInArray(pdfDownloads.email, excludedEmails))
+        : inArray(pdfDownloads.pdf_slug, allSlugs);
     const [totalRow] = await db
       .select({ value: count() })
       .from(pdfDownloads)
-      .where(inArray(pdfDownloads.pdf_slug, allSlugs));
+      .where(where);
 
     const totalDownloads = Number(totalRow?.value ?? 0);
     const freeRemaining = Math.max(0, PDF_FREE_LIMIT - totalDownloads);

@@ -4,7 +4,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 import { db } from "@/db";
 import { pdfDownloads } from "@/db/schema";
-import { eq, and, inArray, count } from "drizzle-orm";
+import { eq, and, inArray, notInArray, count } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +17,25 @@ export const PDF_SLUGS = {
 } as const;
 
 export type PdfProduct = keyof typeof PDF_SLUGS;
+
+// Admin/test emails are excluded from the public free-slot counter, mirroring
+// the same exclusion already applied to the full-check usage counter (see
+// app/[locale]/(main)/full-check/actions.ts and lib/cache/public-read-models.ts).
+function getExcludedEmailSet(): Set<string> {
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+  const knownTestEmails = (process.env.KNOWN_TEST_EMAILS ?? "")
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+  return new Set([...adminEmails, ...knownTestEmails]);
+}
+
+function isExcludedEmail(email: string): boolean {
+  return getExcludedEmailSet().has(email.trim().toLowerCase());
+}
 
 const ALL_SLUGS = Object.values(PDF_SLUGS);
 
@@ -41,19 +60,29 @@ function getClientIp(req: NextRequest): string {
   );
 }
 
+// Counts real (non-admin/test) downloads across both guides. The public
+// "free slots left" counter must never be depleted by internal testing.
+async function countRealTotalDownloads(): Promise<number> {
+  const excluded = Array.from(getExcludedEmailSet());
+  const where =
+    excluded.length > 0
+      ? and(inArray(pdfDownloads.pdf_slug, ALL_SLUGS), notInArray(pdfDownloads.email, excluded))
+      : inArray(pdfDownloads.pdf_slug, ALL_SLUGS);
+
+  const [totalRow] = await db.select({ value: count() }).from(pdfDownloads).where(where);
+  return Number(totalRow?.value ?? 0);
+}
+
 // GET: check current status (shared free slots remaining, already downloaded THIS slug from this IP)
 export async function GET(req: NextRequest) {
   try {
     const ip = getClientIp(req);
     const slug = resolveSlug(req.nextUrl.searchParams.get("slug"));
 
-    // Shared pool: count downloads across BOTH guides against the combined free limit.
-    const [totalRow] = await db
-      .select({ value: count() })
-      .from(pdfDownloads)
-      .where(inArray(pdfDownloads.pdf_slug, ALL_SLUGS));
-
-    const totalDownloads = Number(totalRow?.value ?? 0);
+    // Shared pool: count downloads across BOTH guides against the combined free
+    // limit, excluding admin/known-test emails so internal testing never
+    // depletes the public-facing counter.
+    const totalDownloads = await countRealTotalDownloads();
     const freeRemaining = Math.max(0, FREE_LIMIT - totalDownloads);
     const isFree = totalDownloads < FREE_LIMIT;
 
@@ -101,6 +130,7 @@ export async function POST(req: NextRequest) {
 
     const { full_name, email, phone, slug: rawSlug, termsAcceptedAt } = parsed.data;
     const slug = resolveSlug(rawSlug ?? null);
+    const isExcluded = isExcludedEmail(email);
 
     // Server-side enforcement of the Terms gate -- the client already blocks
     // submission without consent, but the API must not trust that alone.
@@ -112,35 +142,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Block duplicate IPs — scoped per guide, so a visitor can claim each guide once.
-    const [ipRow] = await db
-      .select({ value: count() })
-      .from(pdfDownloads)
-      .where(
-        and(eq(pdfDownloads.ip_address, ip), eq(pdfDownloads.pdf_slug, slug))
-      );
+    // Block duplicate IPs — scoped per guide, so a visitor can claim each guide
+    // once. Admin/test emails bypass this so the same tester can re-download
+    // repeatedly, mirroring the isAdmin bypass in full-check/actions.ts.
+    if (!isExcluded) {
+      const [ipRow] = await db
+        .select({ value: count() })
+        .from(pdfDownloads)
+        .where(
+          and(eq(pdfDownloads.ip_address, ip), eq(pdfDownloads.pdf_slug, slug))
+        );
 
-    if (Number(ipRow?.value ?? 0) > 0) {
-      return Response.json(
-        { error: "Bu IP adresinden daha önce indirildi.", alreadyDownloaded: true },
-        { status: 409 }
-      );
+      if (Number(ipRow?.value ?? 0) > 0) {
+        return Response.json(
+          { error: "Bu IP adresinden daha önce indirildi.", alreadyDownloaded: true },
+          { status: 409 }
+        );
+      }
     }
 
-    // Check free limit — shared pool across both guides.
-    const [totalRow] = await db
-      .select({ value: count() })
-      .from(pdfDownloads)
-      .where(inArray(pdfDownloads.pdf_slug, ALL_SLUGS));
+    // Check free limit — shared pool across both guides, excluding admin/test
+    // downloads from the count. Admin/test emails also bypass the gate itself
+    // and do not consume a real free slot.
+    if (!isExcluded) {
+      const totalDownloads = await countRealTotalDownloads();
+      const isFree = totalDownloads < FREE_LIMIT;
 
-    const totalDownloads = Number(totalRow?.value ?? 0);
-    const isFree = totalDownloads < FREE_LIMIT;
-
-    if (!isFree) {
-      return Response.json(
-        { error: "Ücretsiz indirme kotası doldu.", paymentRequired: true },
-        { status: 402 }
-      );
+      if (!isFree) {
+        return Response.json(
+          { error: "Ücretsiz indirme kotası doldu.", paymentRequired: true },
+          { status: 402 }
+        );
+      }
     }
 
     // Save record
