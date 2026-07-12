@@ -260,7 +260,11 @@
       "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue)",
       "PowerShell(Get-Process -Id 15792)",
       "PowerShell(Stop-Process -Id 15792 -Force)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(cp \"public/avustralya-pr-rehberi-2026.pdf\" \"scratch/pdf-edit-test/tr-BACKUP-before-round2.pdf\")",
+      "Bash(cp \"public/australia-guide-2026.pdf\" \"scratch/pdf-edit-test/en-BACKUP-before-round2.pdf\")",
+      "Bash(cp \"scratch/pdf-edit-test/tr-live-new2.pdf\" \"public/avustralya-pr-rehberi-2026.pdf\")",
+      "Bash(cp \"scratch/pdf-edit-test/en-live-new2.pdf\" \"public/australia-guide-2026.pdf\")"
     ]
   }
 }

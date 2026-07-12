@@ -23,10 +23,14 @@ function getAuthToken(request: NextRequest): string | null {
   return fromQuery?.trim() || null;
 }
 
+// Strips surrounding quote characters in addition to whitespace: if an env
+// var value like ADMIN_EMAILS="a@b.com,c@d.com" gets pasted verbatim
+// (quotes included) into a dashboard UI, trim() alone won't remove the
+// quotes, silently breaking every email in the list.
 function parseEmailList(raw: string | undefined): string[] {
   return (raw ?? "")
     .split(",")
-    .map((value) => value.trim().toLowerCase())
+    .map((value) => value.trim().replace(/^["']+|["']+$/g, "").trim().toLowerCase())
     .filter(Boolean);
 }
 

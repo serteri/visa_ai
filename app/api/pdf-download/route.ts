@@ -21,15 +21,23 @@ export type PdfProduct = keyof typeof PDF_SLUGS;
 // Admin/test emails are excluded from the public free-slot counter, mirroring
 // the same exclusion already applied to the full-check usage counter (see
 // app/[locale]/(main)/full-check/actions.ts and lib/cache/public-read-models.ts).
+//
+// Strips surrounding quote characters in addition to whitespace: env vars are
+// often authored locally as ADMIN_EMAILS="a@b.com,c@d.com" (quotes are shell/
+// dotenv syntax, stripped automatically by dotenv) but if that same string is
+// pasted verbatim into a dashboard UI (e.g. Vercel's env var field), the
+// quotes become part of the literal value — trim() alone won't remove them,
+// silently breaking every email in the list.
+function parseEmailList(raw: string | undefined): string[] {
+  return (raw ?? "")
+    .split(",")
+    .map((item) => item.trim().replace(/^["']+|["']+$/g, "").trim().toLowerCase())
+    .filter(Boolean);
+}
+
 function getExcludedEmailSet(): Set<string> {
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((item) => item.trim().toLowerCase())
-    .filter(Boolean);
-  const knownTestEmails = (process.env.KNOWN_TEST_EMAILS ?? "")
-    .split(",")
-    .map((item) => item.trim().toLowerCase())
-    .filter(Boolean);
+  const adminEmails = parseEmailList(process.env.ADMIN_EMAILS);
+  const knownTestEmails = parseEmailList(process.env.KNOWN_TEST_EMAILS);
   return new Set([...adminEmails, ...knownTestEmails]);
 }
 

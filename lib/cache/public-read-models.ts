@@ -9,22 +9,23 @@ import { prisma } from "@/lib/prisma";
 
 const FALLBACK_FREE_LIMIT = 50;
 
+// Strips surrounding quote characters in addition to whitespace: if an env
+// var value like ADMIN_EMAILS="a@b.com,c@d.com" gets pasted verbatim
+// (quotes included) into a dashboard UI, trim() alone won't remove the
+// quotes, silently breaking every email in the list.
+function parseEmailList(raw: string | undefined): string[] {
+  return (raw ?? "")
+    .split(",")
+    .map((item) => item.trim().replace(/^["']+|["']+$/g, "").trim().toLowerCase())
+    .filter(Boolean);
+}
+
 function getKnownTestEmailSet(): Set<string> {
-  return new Set(
-    (process.env.KNOWN_TEST_EMAILS ?? "")
-      .split(",")
-      .map((item) => item.trim().toLowerCase())
-      .filter(Boolean)
-  );
+  return new Set(parseEmailList(process.env.KNOWN_TEST_EMAILS));
 }
 
 function getExcludedEmailSet(): Set<string> {
-  const adminEmails = new Set(
-    (process.env.ADMIN_EMAILS ?? "")
-      .split(",")
-      .map((item) => item.trim().toLowerCase())
-      .filter(Boolean)
-  );
+  const adminEmails = new Set(parseEmailList(process.env.ADMIN_EMAILS));
   return new Set([...adminEmails, ...getKnownTestEmailSet()]);
 }
 
