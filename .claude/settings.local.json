@@ -202,7 +202,31 @@
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/data/guides.json','utf8'\\)\\); console.log\\('JSON OK'\\)\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('public/locales/en.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('public/locales/tr.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('public/locales/zh-Hans.json','utf8'\\)\\); console.log\\('JSON OK'\\)\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('public/locales/en.json','utf8'\\)\\); console.log\\('OK'\\)\")",
-      "Bash(node -e \"console.log\\(Object.keys\\(require\\('pdf-parse'\\)\\)\\)\")"
+      "Bash(node -e \"console.log\\(Object.keys\\(require\\('pdf-parse'\\)\\)\\)\")",
+      "Bash(curl -s -o /dev/null -w \"no-header: %{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/full-check?country=AU\")",
+      "Bash(curl -s -o /dev/null -w \"TR-header: %{http_code} -> %{redirect_url}\\\\n\" -H \"x-vercel-ip-country: TR\" \"http://localhost:3000/full-check?country=AU\")",
+      "Bash(curl -s -o /dev/null -w \"AU-header: %{http_code} -> %{redirect_url}\\\\n\" -H \"x-vercel-ip-country: AU\" \"http://localhost:3000/full-check?country=AU\")",
+      "Bash(curl -s -o /dev/null -w \"already-tr: %{http_code} -> %{redirect_url}\\\\n\" -H \"x-vercel-ip-country: TR\" \"http://localhost:3000/tr/full-check?country=AU\")",
+      "Bash(curl -s -L -o /dev/null -w \"followed: %{http_code} final_url=%{url_effective} redirects=%{num_redirects}\\\\n\" -H \"x-vercel-ip-country: TR\" \"http://localhost:3000/full-check?country=AU\")",
+      "WebFetch(domain:immi.homeaffairs.gov.au)",
+      "Bash(awk '/addHeading\\\\\\(text\\\\.confidenceExplanation\\\\\\)/,/^  }/' lib/readiness/generate-pdf.ts)",
+      "Bash(vercel --version)",
+      "Bash(git commit --allow-empty -m ' *)",
+      "Bash(xargs -I{} du -b {})",
+      "Bash(grep -n \"const gantt = buildGanttByTimeline\\(\\\\s*$\\\\|estimates: trend.estimates.map\" src/lib/readiness/report-generator.ts)",
+      "Bash(mkdir -p scratch)",
+      "Bash(rm -f \"C:/Users/serte/Desktop/visa_ai/scripts/_tmp-verify-premium-sections.ts\" \"C:/Users/serte/Desktop/visa_ai/scratch/_verify_ineligible.pdf\" \"C:/Users/serte/Desktop/visa_ai/scratch/_verify_eligible.pdf\")",
+      "Bash(git worktree *)",
+      "Bash(git branch *)",
+      "Bash(rm scratch/debug-occupation-233512.mjs scratch/debug-occupation-233512.ts scratch/debug-meslek-field.ts scratch/debug-meslek-field2.ts scratch/debug-meslek-field3.ts scratch/debug-meslek-field4.ts scratch/debug-trends.ts scratch/verify-233512-fixes.ts)",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Bash(awk 'NR==1613,NR==2135' \"app/[locale]/\\(main\\)/full-check/full-check-waitlist-form.tsx\")",
+      "Bash(grep -n \"^\\\\s*</div>\\\\s*$\")",
+      "Bash(sed -i 's|pdf-parse/lib/pdf-parse.js|pdf-parse|' scratch/extract-pdf-text.mjs)",
+      "Bash(node scratch/extract-pdf-text.mjs)",
+      "Bash(sed -i 's|import pdfParse from \"pdf-parse\";|import pkg from \"pdf-parse\"; const pdfParse = pkg.default \\\\|\\\\| pkg;|' scratch/extract-pdf-text.mjs)",
+      "Bash(grep -n '} \\(\\\\${' lib/readiness/generate-pdf.ts)",
+      "Bash(node scratch/extract-pdf-text.cjs)"
     ]
   }
 }

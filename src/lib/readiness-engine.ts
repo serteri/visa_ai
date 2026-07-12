@@ -12,6 +12,7 @@ import {
   type QualificationLevel,
 } from "@/lib/readiness/visa-points-calculator";
 import { localizeOccupationWarning, localizeText, t3 } from "@/src/lib/readiness/localization";
+import { canonicalizeOccupationInput, findOccupationRecord as findCanonicalOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import type {
   DocumentCategory,
   ConfidenceLevel,
@@ -59,7 +60,6 @@ type RequirementsDataset = {
 };
 
 const TREND_ROWS = (visaTrendsData as { occupation_trends: TrendRecord[] }).occupation_trends;
-const OCCUPATION_ROWS = (occupationsData as { occupations: OccupationRecord[] }).occupations;
 const REQUIREMENTS = documentRequirementsData as RequirementsDataset;
 
 function normalize(value?: string): string {
@@ -73,29 +73,18 @@ function parseAnzscoCode(occupation?: string): string | undefined {
 }
 
 function findOccupationRecord(input: ReadinessInput): OccupationRecord | undefined {
-  const code = parseAnzscoCode(input.occupation);
-  if (code) {
-    const byCode = OCCUPATION_ROWS.find((row) => row.anzsco_code === code);
-    if (byCode) return byCode;
-  }
-
-  const q = normalize(input.occupation);
-  if (!q) return undefined;
-
-  const exact = OCCUPATION_ROWS.find((row) => normalize(row.occupation_name) === q);
-  if (exact) return exact;
-
-  return OCCUPATION_ROWS.find((row) => normalize(row.occupation_name).includes(q));
+  return findCanonicalOccupationRecord(canonicalizeOccupationInput(input.occupation)) as OccupationRecord | undefined;
 }
 
 function findTrendRecord(input: ReadinessInput, occupation?: OccupationRecord): TrendRecord | undefined {
-  const code = occupation?.anzsco_code ?? parseAnzscoCode(input.occupation);
+  const canonicalOccupation = canonicalizeOccupationInput(input.occupation);
+  const code = occupation?.anzsco_code ?? parseAnzscoCode(canonicalOccupation);
   if (code) {
     const byCode = TREND_ROWS.find((row) => row.anzsco_code === code);
     if (byCode) return byCode;
   }
 
-  const q = normalize(input.occupation);
+  const q = normalize(canonicalOccupation);
   if (!q) return undefined;
 
   const exact = TREND_ROWS.find(
@@ -176,7 +165,7 @@ function computeBestKnownScore(input: ReadinessInput, base: ReadinessReport, occ
     offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
     onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
     anzscoCode: occupationCode,
-    occupationName: input.occupation,
+    occupationName: canonicalizeOccupationInput(input.occupation),
     hasNAATI: false,
     hasProfessionalYear: false,
     hasRegionalStudy: false,
@@ -214,7 +203,7 @@ function computeUserPointsBySubclass(input: ReadinessInput, base: ReadinessRepor
     offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
     onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
     anzscoCode: occupationCode,
-    occupationName: input.occupation,
+    occupationName: canonicalizeOccupationInput(input.occupation),
     hasNAATI: false,
     hasProfessionalYear: false,
     hasRegionalStudy: false,
@@ -343,7 +332,7 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport, 
 
   if (lowPointsGap) {
     return [
-      t3(locale, "Data analysis indicates a material gap between the current points profile and recent invitation references, with English score weight acting as a major variable.", "Veri analizi, mevcut puan profili ile yakin donem davet referanslari arasinda belirgin bir fark oldugunu ve Ingilizce puan agirliginin ana degiskenlerden biri oldugunu gostermektedir.", "数据分析显示，当前分数画像与近期邀请参考之间存在明显差距，其中英语分值权重是主要变量之一。"),
+      t3(locale, "Data analysis indicates a material gap between the current points profile and recent invitation references, with English score weight acting as a major variable.", "Veri analizi, mevcut puan profili ile yakın dönem davet referansları arasında belirgin bir fark olduğunu ve dil puanı ağırlığının ana değişkenlerden biri olduğunu göstermektedir.", "数据分析显示，当前分数画像与近期邀请参考之间存在明显差距，其中英语分值权重是主要变量之一。"),
       t3(locale, "Scenario modelling shows that +5 to +15 point changes linked to nomination or language-related variables can materially alter the comparative position.", "Senaryo modellemesi, adaylik veya dil baglantili degiskenlerdeki +5 ile +15 puanlik farklarin karsilastirmali konumu anlamli bicimde degistirebildigini gostermektedir.", "情景建模显示，与提名或语言相关变量有关的 +5 至 +15 分变化，可能明显改变相对位置。"),
       t3(locale, "Historical invitation movement suggests EOI competitiveness is more sensitive when score uplift variables are not yet reflected in the profile.", "Tarihsel davet hareketleri, puan artisi degiskenleri profile yansimadiginda EOI rekabet baskisinin arttigini gostermektedir.", "历史邀请走势显示，当加分变量尚未反映到档案中时，EOI 竞争压力会更高。"),
     ];
@@ -361,7 +350,7 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport, 
     return [
       t3(locale, "Occupation alignment remains unresolved, so ANZSCO matching and work-history classification are still driving uncertainty in the dataset.", "Meslek uyumu henuz netlesmedigi icin ANZSCO eslestirmesi ve is gecmisi siniflamasi veri setindeki belirsizligin ana kaynaklari olmaya devam etmektedir.", "职业匹配尚未明确，因此 ANZSCO 匹配和工作经历分类仍是数据集不确定性的主要来源。"),
       t3(locale, "Skills-assessment evidence quality is a dominant variable because occupation coding and evidence structure affect how the profile is interpreted in comparison models.", "Meslek kodlamasi ve kanit yapisi, profilin karsilastirma modellerinde nasil yorumlandigini etkiledigi icin skills-assessment kanit kalitesi baskin bir degiskendir.", "由于职业编码和证据结构会影响档案在比较模型中的解释方式，技能评估证据质量是主导变量。"),
-      t3(locale, "Sequence uncertainty across English, assessment, and EOI milestones is currently reducing reporting confidence for skilled-pathway comparisons.", "Ingilizce, assessment ve EOI kilometre taslari arasindaki sira belirsizligi, nitelikli yol karsilastirmalari icin raporlama guvenini azaltmaktadir.", "英语、评估与 EOI 里程碑之间的顺序不确定性，当前正在降低技术路径比较的报告置信度。"),
+      t3(locale, "Sequence uncertainty across English, assessment, and EOI milestones is currently reducing reporting confidence for skilled-pathway comparisons.", "Dil, assessment ve EOI kilometre taşları arasındaki sıra belirsizliği, nitelikli yol karşılaştırmaları için raporlama güvenini azaltmaktadır.", "英语、评估与 EOI 里程碑之间的顺序不确定性，当前正在降低技术路径比较的报告置信度。"),
     ];
   }
 
@@ -446,7 +435,7 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
 
   const english = parseEnglishLevel(input.englishLevel);
   if (english === "Superior") {
-    successSignals.push(t3(locale, "The dataset records a high English-score profile, which improves relative positioning in points-tested comparisons.", "Veri seti, yuksek Ingilizce puanli bir profili kaydetmektedir; bu durum puan testli karsilastirmalarda goreli konumu iyilestirir.", "数据集中记录的是高英语分档案，这会改善打分制比较中的相对位置。"));
+    successSignals.push(t3(locale, "The dataset records a high English-score profile, which improves relative positioning in points-tested comparisons.", "Veri seti, yüksek dil puanlı bir profili kaydetmektedir; bu durum puan testli karşılaştırmalarda göreli konumu iyileştirir.", "数据集中记录的是高英语分档案，这会改善打分制比较中的相对位置。"));
   }
   if ((input.offshoreExperienceYears ?? 0) >= 5) {
     successSignals.push(t3(locale, "Sustained offshore experience increases profile depth within the comparison model.", "Surdurulebilir yurtdisi deneyimi, karsilastirma modeli icinde profil derinligini artirir.", "持续的境外经验会提高比较模型中的档案深度。"));

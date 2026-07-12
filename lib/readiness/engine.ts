@@ -24,7 +24,7 @@ import expressEntryConfig from "@/src/data/countries/ca/express-entry.json";
 import enTranslations from "@/public/locales/en.json";
 import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
-import { getEligibleSkilledSubclasses } from "./occupation-eligibility";
+import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections } from "@/src/lib/readiness/report-generator";
 import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-checklists";
 import { buildRiskIndicators, buildCanadaRiskIndicators } from "./risk-rules";
@@ -1483,7 +1483,7 @@ function buildDataCompleteness(
       label: isTr ? "Yaş" : "Age",
     },
     {
-      value: input.occupation,
+      value: resolveOccupationDisplayName(input.occupation, locale),
       label: isTr ? "Meslek" : "Occupation",
     },
     {
@@ -1935,7 +1935,7 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
       estimatedPoints: undefined,
       breakdown: [],
       note: isTr
-        ? "CRS tahmini için yas ve Ingilizce seviyesi saglanmadi. Puan hesaplamasi mevcut degil."
+        ? "CRS tahmini için yaş ve İngilizce seviyesi sağlanmadı. Puan hesaplaması mevcut değil."
         : "Age and English level were not provided. A CRS estimate is not available.",
     };
   }
@@ -1960,14 +1960,14 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
   const breakdown = [
     ageBracket
       ? {
-          label: isTr ? "Yas puani" : "Age points",
+          label: isTr ? "Yaş puanı" : "Age points",
           points: result.breakdown.coreHumanCapital.age,
           note: input.age,
         }
       : null,
     englishOption
       ? {
-          label: isTr ? "Ingilizce seviyesi puani (CLB tahmini)" : "English level points (estimated CLB)",
+          label: isTr ? "İngilizce seviyesi puanı (CLB tahmini)" : "English level points (estimated CLB)",
           points: result.breakdown.coreHumanCapital.firstLanguage,
           note: input.englishLevel,
         }
@@ -1977,7 +1977,7 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
   const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
 
   const note = isTr
-    ? `Bu yalnizca yas${ageBracket ? "" : " (belirtilmedi)"} ve Ingilizce seviyesine${englishOption ? "" : " (belirtilmedi)"} dayali kismi bir CRS tahminidir (config v${result.configVersion}). Egitim, Kanada/yurt disi is tecrubesi, es faktorleri ve ek puanlar dahil degildir. Gercek CRS puaniniz IRCC'nin resmi Express Entry hesaplayicisiyla dogrulanmalidir.`
+    ? `Bu yalnızca yaş${ageBracket ? "" : " (belirtilmedi)"} ve İngilizce seviyesine${englishOption ? "" : " (belirtilmedi)"} dayalı kısmi bir CRS tahminidir (config v${result.configVersion}). Eğitim, Kanada/yurt dışı iş tecrübesi, eş faktörleri ve ek puanlar dahil değildir. Gerçek CRS puanınız IRCC'nin resmi Express Entry hesaplayıcısıyla doğrulanmalıdır.`
     : `This is a partial CRS estimate (config v${result.configVersion}) based on age${ageBracket ? "" : " (not provided)"} and English level${englishOption ? "" : " (not provided)"} only. Education, Canadian/foreign work experience, spouse factors, and additional points are not included. Verify your actual CRS score against IRCC's official Express Entry calculator.`;
 
   return {
@@ -2173,7 +2173,7 @@ function buildCanadaOccupationIndication(
       occupation: input.occupation,
       matches: [],
       note: isTr
-        ? `"${input.occupation}" su anda NOC veritabanimizda bulunamadi. Bu, meslegin gecersiz oldugu anlamina gelmez — derlememiz henuz tum NOC 2021 kategorilerini kapsamiyor. Lutfen IRCC'nin resmi NOC arama aracini kullanin: https://noc.esdc.gc.ca/Structure/NocWelcome`
+        ? `"${input.occupation}" şu anda NOC veritabanımızda bulunamadı. Bu, mesleğin geçersiz olduğu anlamına gelmez — derlememiz henüz tüm NOC 2021 kategorilerini kapsamıyor. Lütfen IRCC'nin resmi NOC arama aracını kullanın: https://noc.esdc.gc.ca/Structure/NocWelcome`
         : `"${input.occupation}" was not found in our NOC database yet. This does not mean the occupation is invalid — our NOC compilation does not yet cover every NOC 2021 category. Please use IRCC's official NOC search tool: https://noc.esdc.gc.ca/Structure/NocWelcome`,
     };
   }
@@ -2210,7 +2210,7 @@ function buildCanadaOccupationIndication(
       : `NOC Code confirmed: ${topMatch.code} — ${topMatch.title} (TEER ${topMatch.teer} / ${skillLabel}). May qualify for ${pathways}.${dutiesText} ${ecaBody}`;
   } else {
     note = isTr
-      ? `NOC verilerinde ${result.matches.length} olasi meslek eslesmesi bulundu (TEER ${topMatch?.teer ?? "?"}). Bu yalnizca genel bilgi amaclidir; resmi bir ECA veya NOC dogrulamasi ayri bir suractir.`
+      ? `NOC verilerinde ${result.matches.length} olası meslek eşleşmesi bulundu (TEER ${topMatch?.teer ?? "?"}). Bu yalnızca genel bilgi amaçlıdır; resmi bir ECA veya NOC doğrulaması ayrı bir süreçtir.`
       : `${result.matches.length} possible NOC match(es) found in NOC 2021 V1.0 (TEER ${topMatch?.teer ?? "?"}). This is general information only; the confirmed NOC code, ECA body selection, and duty-matching strategy require verification against your specific credentials and IRCC's current requirements.`;
   }
 
@@ -2238,20 +2238,21 @@ function buildOccupationIndication(
 
   if (!input.occupation) return undefined;
 
-  const result = checkOccupation({ occupation: input.occupation });
+  const displayOccupation = resolveOccupationDisplayName(input.occupation, locale);
+  const result = checkOccupation({ occupation: displayOccupation });
 
   if (result.matches.length === 0) {
     return {
-      occupation: input.occupation,
+      occupation: displayOccupation,
       matches: [],
       note: isTr
-        ? `"${input.occupation}" için stored occupation verilerinde eşleşme bulunamadı. Bu, mesleğin listede olmadığı anlamına gelmez; resmi kaynakların incelenmesi önerilir.`
-        : `No matches were found in the stored occupation data for "${input.occupation}". This does not mean the occupation is not listed. Reviewing official sources may be relevant.`,
+        ? `"${displayOccupation}" için stored occupation verilerinde eşleşme bulunamadı. Bu, mesleğin listede olmadığı anlamına gelmez; resmi kaynakların incelenmesi önerilir.`
+        : `No matches were found in the stored occupation data for "${displayOccupation}". This does not mean the occupation is not listed. Reviewing official sources may be relevant.`,
     };
   }
 
   return {
-    occupation: result.query,
+    occupation: displayOccupation,
     matches: result.matches.map((m) => ({
       title: m.title,
       relevantVisas: m.relevantVisas,
@@ -2317,7 +2318,7 @@ function buildDisclaimer(locale: Locale, country: "AU" | "CA" = "AU"): string {
     return expressEntryConfig.disclaimerText[locale === "tr" ? "tr" : "en"];
   }
   return locale === "tr"
-    ? "Bu rapor otomatik bir veri analizidir ve göcmenlik tavsiyesi teskil etmez. Resmi basvurulariniz icin kayitli bir MARA acentesine danisin."
+    ? "Bu rapor otomatik bir veri analizidir ve göçmenlik tavsiyesi teşkil etmez. Resmi başvurularınız için kayıtlı bir MARA acentesine danışın."
     : locale === "zh-Hans"
       ? "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。"
       : "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).";
@@ -3292,11 +3293,12 @@ function buildConfidenceExplanation(
   }
 
   if (missingCore >= 3 && skillsClear) {
+    const occupationDisplay = resolveOccupationDisplayName(input.occupation, locale);
     return isTr
-      ? `Güven düzeyi daha güçlüdür çünkü yaş (${input.age}), İngilizce seviyesi, meslek (${input.occupation}) ve pasaport ülkesi (${input.passportCountry}) sağlanmıştır; bazı yol-özel kanıtlar hâlâ ayrıca incelenir${estimatedPoints !== undefined ? ` (tahmini temel puan: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
+      ? `Güven düzeyi daha güçlüdür çünkü yaş (${input.age}), İngilizce seviyesi, meslek (${occupationDisplay}) ve pasaport ülkesi (${input.passportCountry}) sağlanmıştır; bazı yol-özel kanıtlar hâlâ ayrıca incelenir${estimatedPoints !== undefined ? ` (tahmini temel puan: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
       : isZh
-        ? `由于已提供年龄（${input.age}）、英语水平、职业（${input.occupation}）和护照国家（${input.passportCountry}），置信度较强；部分路径特定证据仍需单独复核${estimatedPoints !== undefined ? `（当前加分信号：${estimatedPoints}）` : ""}。本内容仅为一般信息。`
-        : `Confidence is stronger because age (${input.age}), English level, occupation (${input.occupation}), and passport country (${input.passportCountry}) are provided, while some pathway-specific evidence still needs separate review${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. This is general information only.`;
+        ? `由于已提供年龄（${input.age}）、英语水平、职业（${occupationDisplay}）和护照国家（${input.passportCountry}），置信度较强；部分路径特定证据仍需单独复核${estimatedPoints !== undefined ? `（当前加分信号：${estimatedPoints}）` : ""}。本内容仅为一般信息。`
+        : `Confidence is stronger because age (${input.age}), English level, occupation (${occupationDisplay}), and passport country (${input.passportCountry}) are provided, while some pathway-specific evidence still needs separate review${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. This is general information only.`;
   }
 
   return isTr
@@ -3746,36 +3748,36 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
           ? "省提名计划 (PNP)"
           : "Provincial Nominee Program (PNP)",
       reason: isTr
-        ? "Bu pathway icin eyalet-bazli PNP sinyali, profil verisine dayali genel CEC/FSW/FSTP karsilastirmasiyla birlikte sunulur."
+        ? "Bu pathway için eyalet-bazlı PNP sinyali, profil verisine dayalı genel CEC/FSW/FSTP karşılaştırmasıyla birlikte sunulur."
         : isZh
           ? "该路径的省级PNP信号将与基于CRS的CEC/FSW/FSTP综合对比一并呈现。"
           : "This pathway uses profile-driven provincial nomination signals together with a general CRS-based CEC/FSW/FSTP comparison.",
       relevance: "not_enough_information",
       confidenceLevel: "low",
       confidenceExplanation: isTr
-        ? "PNP altyapisi eyalet/bolge bazinda henuz tamamlanmadigi icin guven duzeyi dusuktur."
+        ? "PNP altyapısı eyalet/bölge bazında henüz tamamlanmadığı için güven düzeyi düşüktür."
         : isZh
           ? "由于按省/地区的PNP分析尚未完成，当前置信度较低。"
           : "Confidence is low because province/territory-level PNP analysis is not complete yet.",
       difficulty: "high",
       requirementType: isTr
-        ? "Eyalet/bolge bazli PNP kriterleri"
+        ? "Eyalet/bölge bazlı PNP kriterleri"
         : isZh
           ? "省/地区级PNP标准"
           : "Province/territory-level PNP criteria",
       userRelativePosition: isTr
-        ? "PNP icin goreli konum bu surumde olculmemektedir; yalnizca genel CRS sinyali sunulur."
+        ? "PNP için göreli konum bu sürümde ölçülmemektedir; yalnızca genel CRS sinyali sunulur."
         : isZh
           ? "当前版本无法评估PNP相对位置；仅提供通用CRS信号。"
           : "Relative position for PNP is not measured in this version; only a general CRS signal is provided.",
       keyRequirements: isTr
-        ? ["Hedef eyalet secimi", "Eyalet stream uygunluk kontrolu", "Eyalet bazli belge seti"]
+        ? ["Hedef eyalet seçimi", "Eyalet stream uygunluk kontrolü", "Eyalet bazlı belge seti"]
         : isZh
           ? ["目标省份选择", "省提名通道资格核验", "省级材料清单"]
           : ["Target province selection", "Provincial stream eligibility check", "Province-specific document set"],
       pathwaySpecificRisks: [
         isTr
-          ? "Bu gecici gorunum, eyalet stream kriterlerini yansitmaz."
+          ? "Bu geçici görünüm, eyalet stream kriterlerini yansıtmaz."
           : isZh
             ? "该临时视图不代表各省具体通道标准。"
             : "This temporary view does not represent province-specific stream criteria.",
@@ -3796,12 +3798,12 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     riskIndicators.unshift({
       level: "medium",
       title: isTr
-        ? "PNP sinyali genis profil varsayimlariyla yorumlanmali"
+        ? "PNP sinyali geniş profil varsayımlarıyla yorumlanmalı"
         : isZh
           ? "PNP信号需结合个人资料综合解读"
           : "PNP signals should be interpreted with full profile context",
       explanation: isTr
-        ? "PNP secildiginde rapor, eyalet/bolge streamlerini tek tek degil; genel CRS tabanli CEC/FSW/FSTP karsilastirmasi ile birlikte yorumlar."
+        ? "PNP seçildiğinde rapor, eyalet/bölge streamlerini tek tek değil; genel CRS tabanlı CEC/FSW/FSTP karşılaştırması ile birlikte yorumlar."
         : isZh
           ? "选择PNP时，报告会结合通用CRS下的CEC/FSW/FSTP信号进行综合判断，而不是逐一展开省/地区通道。"
           : "When PNP is selected, the report combines general CRS-based CEC/FSW/FSTP signals instead of drilling into each province/territory stream.",
@@ -3832,7 +3834,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   if (hasPnpInterest) {
     suggestedNextSteps.unshift(
       isTr
-        ? "PNP hedefi icin 2-3 oncelikli eyalet secip stream kosullarini ve meslek kodu uyumunu ayri bir kontrol listesiyle eslestirin."
+        ? "PNP hedefi için 2-3 öncelikli eyalet seçip stream koşullarını ve meslek kodu uyumunu ayrı bir kontrol listesiyle eşleştirin."
         : isZh
           ? "如以PNP为重点，请先锁定2-3个目标省份，并将通道要求与职业代码逐项核对。"
           : "If PNP is a focus, shortlist 2-3 target provinces and map each stream's requirements against your occupation code and evidence set."
@@ -3895,7 +3897,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   if (hasPnpInterest) {
     executiveSummary.unshift(
       isTr
-        ? "PNP secimi algilandi: rapor, il bazli stream sinyallerini genel CRS ve CEC/FSW/FSTP karsilastirmasiyla birlikte yorumlar."
+        ? "PNP seçimi algılandı: rapor, il bazlı stream sinyallerini genel CRS ve CEC/FSW/FSTP karşılaştırmasıyla birlikte yorumlar."
         : isZh
           ? "已识别PNP偏好：报告将省提名信号与通用CRS及CEC/FSW/FSTP对比联合解读。"
           : "PNP preference detected: the report interprets provincial nomination signals alongside general CRS and CEC/FSW/FSTP comparisons."

@@ -133,7 +133,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
       level: "high",
       title: isTr ? "Yetenekli yol: yaş faktörü" : "Skilled pathway: age factor",
       explanation: isTr
-        ? "Puan tablosu verisi, 45 yas ve uzeri profillerde yas bileseninin sifirlandigini gostermektedir; bu durum puan testli yollardaki goreli rekabeti zayiflatabilir."
+         ? "Puan tablosu verisi, 45 yaş ve üzeri profillerde yaş bileşeninin sıfırlandığını göstermektedir; bu durum puan testli yollardaki göreli rekabeti zayıflatabilir."
         : "Points-table data shows the age component falls to zero for profiles aged 45 or over, which can weaken relative competitiveness in points-tested pathways."
     });
   }
@@ -145,7 +145,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
         ? "Yetenekli yol: İngilizce seviyesi belirtilmedi"
         : "Skilled pathway: English level not provided",
       explanation: isTr
-        ? "Ingilizce seviyesi verisi olmadiginda, puan hesaplama modeli ve tarihsel davet karsilastirmasi eksik kalir."
+         ? "İngilizce seviyesi verisi olmadığında, puan hesaplama modeli ve tarihsel davet karşılaştırması eksik kalır."
         : "Without English-level data, the points model and historical invitation comparison remain incomplete."
     });
   }
@@ -157,7 +157,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
         ? "Yetenekli yol: meslek belirtilmedi"
         : "Skilled pathway: occupation not provided",
       explanation: isTr
-        ? "Meslek verisi olmadiginda, beceri degerlendirmesi ve meslek listesi uyumu icin gerekli karsilastirma katmani olusmaz."
+         ? "Meslek verisi olmadığında, beceri değerlendirmesi ve meslek listesi uyumu için gerekli karşılaştırma katmanı oluşmaz."
         : "Without occupation data, the comparison layer needed for skills-assessment and occupation-list alignment does not form."
     });
   }
@@ -169,7 +169,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
         ? "482 vizesi: sponsor bilgisi eksik"
         : "482 visa: sponsor information not provided",
       explanation: isTr
-        ? "482 yolunda isveren sponsorlugu ana veri degiskenlerinden biridir; sponsor baglami olmadiginda rol uyumu ve yol gucu sinyalleri zayif kalir."
+         ? "482 yolunda işveren sponsorluğu ana veri değişkenlerinden biridir; sponsor bağlamı olmadığında rol uyumu ve yol gücü sinyalleri zayıf kalır."
         : "Employer sponsorship is a core data variable for the 482 pathway; without sponsor context, role-alignment and pathway-strength signals remain weak."
     });
   }
@@ -181,7 +181,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
         ? "Partner yolu: sponsor/partner bilgisi eksik"
         : "Partner pathway: sponsor or partner information not provided",
       explanation: isTr
-        ? "Partner yolunda sponsorluk ve iliski baglami temel veri girdileridir; bu bilgiler eksik oldugunda karsilastirmali sinyal zayiflar."
+         ? "Partner yolunda sponsorluk ve ilişki bağlamı temel veri girdileridir; bu bilgiler eksik olduğunda karşılaştırmalı sinyal zayıflar."
         : "Sponsorship and relationship context are core data inputs for the partner pathway; when they are missing, the comparative signal weakens."
     });
   }
@@ -193,7 +193,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
         ? "Puan tahmini eşiğin altında"
         : "Points-table position below minimum threshold",
       explanation: isTr
-        ? `Mevcut veri setine gore tahmini temel puan ${ctx.estimatedPoints}. Tarihsel davet referanslari ve minimum esikler daha yuksek rekabet baskisina isaret edebilir.`
+         ? `Mevcut veri setine göre tahmini temel puan ${ctx.estimatedPoints}. Tarihsel davet referansları ve minimum eşikler daha yüksek rekabet baskısına işaret edebilir.`
         : `Based on the current dataset, estimated base points are ${ctx.estimatedPoints}. Historical invitation references and minimum thresholds may indicate higher competitive pressure.`
     });
   }
@@ -205,7 +205,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
         ? "Ülke ve pasaport bilgisi eksik"
         : "Country and passport information not provided",
       explanation: isTr
-        ? "Bulunulan ulke ve pasaport ulkesi, bazi yollarin kural seti ve veri kapsaminda fark yaratabilir; bu bilgiler olmadan analiz kapsamı daralir."
+         ? "Bulunulan ülke ve pasaport ülkesi, bazı yolların kural seti ve veri kapsamında fark yaratabilir; bu bilgiler olmadan analiz kapsamı daralır."
         : "Current country and passport country can change the rule set and data context for some pathways; without them, the analysis scope narrows."
     });
   }
@@ -215,7 +215,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
       level: "medium",
       title: isTr ? "Belge hazırlığı endişesi" : "Document readiness concern",
       explanation: isTr
-        ? "Girilen endise, belge hazirligi ve kanit tamlik duzeyinin bu analizde belirgin bir degisken oldugunu gostermektedir."
+         ? "Girilen endişe, belge hazırlığı ve kanıt tamlık düzeyinin bu analizde belirgin bir değişken olduğunu göstermektedir."
         : "The stated concern indicates document readiness and evidence completeness are material variables in this analysis."
     });
   }
@@ -227,7 +227,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
         ? "Mevcut bilgiye dayalı risk göstergeleri sınırlı"
         : "Limited risk indicators based on available information",
       explanation: isTr
-        ? "Mevcut veri seti, baskin bir risk sinyali uretmiyor; ek veri girisleri karsilastirma hassasiyetini artirabilir."
+         ? "Mevcut veri seti, baskın bir risk sinyali üretmiyor; ek veri girişleri karşılaştırma hassasiyetini artırabilir."
         : "The current dataset does not produce a dominant risk signal; additional inputs may increase comparison precision."
     });
   }

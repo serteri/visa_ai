@@ -19,6 +19,7 @@ import {
   updateFullCheckProgress,
 } from "@/lib/full-check-progress";
 import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
+import { canonicalizeOccupationInput } from "@/lib/readiness/occupation-eligibility";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import {
   createUserReport,
@@ -774,7 +775,8 @@ export async function submitFullCheckWaitlist(
   const mainGoal = String(formData.get("mainGoal") ?? "").trim();
   const passportCountry = String(formData.get("passportCountry") ?? "").trim();
   const age = String(formData.get("age") ?? "").trim();
-  const occupation = String(formData.get("occupation") ?? "").trim();
+  const occupationRaw = String(formData.get("occupation") ?? "").trim();
+  const occupation = canonicalizeOccupationInput(occupationRaw);
   const englishLevelRaw = String(formData.get("englishLevel") ?? "").trim();
   const englishLevelOptions = ["none", "competent", "proficient", "superior"];
   const englishLevel = englishLevelOptions.includes(englishLevelRaw) ? englishLevelRaw : "";

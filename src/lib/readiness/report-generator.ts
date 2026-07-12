@@ -1,6 +1,7 @@
 import livingCostsData from "@/src/data/living-costs.json";
 import visaTrendsData from "@/src/data/visa-trends.json";
 import { localizeText, localizeTrendDescription, localizeWaitWindow, t3 } from "@/src/lib/readiness/localization";
+import { resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import type { AssessmentState, Locale, PathwayComparison } from "@/lib/readiness/types";
 
 /** GSM points-tested subclasses (AU) that trend/gantt EOI framing depends on. */
@@ -381,6 +382,12 @@ function matchTrendByOccupation(occupation?: string): TrendRecord | undefined {
     return undefined;
   }
 
+  const codeMatch = occupation?.match(/(\d{6})/)?.[1];
+  if (codeMatch) {
+    const byCode = TREND_DATA.occupation_trends.find((row) => row.anzsco_code === codeMatch);
+    if (byCode) return byCode;
+  }
+
   const exact = TREND_DATA.occupation_trends.find(
     (row) => normalize(row.occupation_group) === query || normalize(row.occupation_group_zh) === query
   );
@@ -588,6 +595,9 @@ function buildGanttByTimeline(
 }
 
 function getTrendOccupationGroup(locale: Locale, trend: TrendRecord): string {
+  const resolved = trend.anzsco_code ? resolveOccupationDisplayName(trend.anzsco_code, locale) : undefined;
+  if (resolved) return resolved;
+
   if (locale === "zh-Hans") {
     return trend.occupation_group_zh ?? localizeText(locale, trend.occupation_group);
   }
@@ -730,7 +740,8 @@ export function generatePremiumSections(input: {
     locale === "zh-Hans" ? TREND_DATA.methodology_note_zh ?? TREND_DATA.methodology_note : TREND_DATA.methodology_note
   );
   const livingCostMethodologyNote = getLivingCostMethodologyNote(locale);
-  const occupationLabel = input.occupation?.trim() || localizeText(locale, "your nominated occupation");
+  const occupationLabel =
+    resolveOccupationDisplayName(input.occupation, locale) || localizeText(locale, "your nominated occupation");
 
   const unavailableTrendMessage = localizeText(
     locale,

@@ -129,6 +129,31 @@ export function canonicalizeOccupationInput(occupation?: string): string {
   return `${record.occupation_name} (${record.anzsco_code})`;
 }
 
+const LOCALIZED_BY_CODE = new Map(LOCALIZED_ROWS.map((row) => [row.code, row]));
+
+/**
+ * Resolves a raw occupation value (which may now be a bare ANZSCO code, e.g.
+ * "233512", since the intake form submits codes for AU) to a human-readable,
+ * locale-appropriate display name. Falls back to the raw input if no record
+ * is found, so unmatched/free-text entries still render something.
+ */
+export function resolveOccupationDisplayName(occupation?: string, locale?: "en" | "tr" | "zh-Hans"): string {
+  const raw = (occupation ?? "").trim();
+  if (!raw) return raw;
+
+  const record = findOccupationRecord(raw);
+  if (!record) return raw;
+
+  const localized = LOCALIZED_BY_CODE.get(record.anzsco_code);
+  if (localized) {
+    if (locale === "tr" && localized.title_tr) return localized.title_tr;
+    if (locale === "zh-Hans" && localized.title_zh) return localized.title_zh;
+    return localized.title;
+  }
+
+  return record.occupation_name;
+}
+
 export function getEligibleSkilledSubclasses(occupation?: string): SkilledSubclass[] {
   const record = findOccupationRecord(occupation);
   if (!record) return [];

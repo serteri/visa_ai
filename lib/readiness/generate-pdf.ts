@@ -4,6 +4,7 @@ import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { frictionBandLabel } from "@/src/lib/readiness/localization";
+import { resolveOccupationDisplayName } from "./occupation-eligibility";
 import type { ReadinessReport, RankedPathway } from "./types";
 
 const COLORS = {
@@ -580,7 +581,13 @@ async function loadRuntimeCjkBoldFontBase64(): Promise<string | null> {
 }
 
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
-  const { report, locale, userInputSummary } = input;
+  const { report, locale, userInputSummary: rawUserInputSummary } = input;
+  const userInputSummary = {
+    ...rawUserInputSummary,
+    occupation: rawUserInputSummary.occupation
+      ? resolveOccupationDisplayName(rawUserInputSummary.occupation, locale)
+      : rawUserInputSummary.occupation,
+  };
   const cjkRequested = locale === "zh-Hans";
   const runtimeCjkFont = cjkRequested ? await loadRuntimeCjkFontBase64() : null;
   const runtimeCjkBoldFont = cjkRequested ? await loadRuntimeCjkBoldFontBase64() : null;

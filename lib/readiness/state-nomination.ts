@@ -162,7 +162,7 @@ function buildSummary(args: {
     return t(
       locale,
       `${row.name} mainly favours onshore applicants, so your offshore position weakens this option.`,
-      `${row.name} esas olarak onshore basvuru sahiplerini tercih ediyor; offshore durumda oldugunuz icin bu secenek zayifliyor.`,
+      `${row.name} esas olarak onshore başvuru sahiplerini tercih ediyor; offshore durumda olduğunuz için bu seçenek zayıflıyor.`,
       `${row.name} 主要偏向境内申请人，因此你的境外状态会削弱这个选项。`
     );
   }
@@ -171,7 +171,7 @@ function buildSummary(args: {
     return t(
       locale,
       `${row.name} is one of the stronger nomination fits based on your profile, current location, and occupation signal.`,
-      `${row.name}, profiliniz, bulundugunuz yer ve meslek sinyalinize gore daha guclu aday eyaletlerden biri.`,
+      `${row.name}, profiliniz, bulunduğunuz yer ve meslek sinyalinize göre daha güçlü aday eyaletlerden biri.`,
       `${row.name} 根据你的资料、所在地和职业信号，属于更强的提名匹配州之一。`
     );
   }
@@ -180,7 +180,7 @@ function buildSummary(args: {
     return t(
       locale,
       `${row.name} remains possible, but it looks conditional on profile gaps such as points, English, state ties, or work experience.`,
-      `${row.name} halen mumkun gorunuyor, ancak puan, Ingilizce, eyalet baglantisi veya deneyim gibi profil bosluklarina bagli.`,
+      `${row.name} halen mümkün görünüyor, ancak puan, İngilizce, eyalet bağlantısı veya deneyim gibi profil boşluklarına bağlı.`,
       `${row.name} 仍有可能，但更依赖分数、英语、州联系或工作经验等条件缺口。`
     );
   }
@@ -191,8 +191,8 @@ function buildSummary(args: {
       ? `${row.name} has a usable nomination pathway, but it still looks competitive and condition-based.`
       : `${row.name} is not closed, but your occupation signal looks weaker there right now.`,
     occupationIsPriority
-      ? `${row.name} tarafinda kullanilabilir bir nomination yolu var, ancak rekabetci ve kosullu gorunuyor.`
-      : `${row.name} kapali degil, ancak meslek sinyaliniz bu eyalette su an daha zayif gorunuyor.`,
+      ? `${row.name} tarafında kullanılabilir bir nomination yolu var, ancak rekabetçi ve koşullu görünüyor.`
+      : `${row.name} kapalı değil, ancak meslek sinyaliniz bu eyalette şu an daha zayıf görünüyor.`,
     occupationIsPriority
       ? `${row.name} 存在可用提名路径，但整体仍偏竞争性且附带条件。`
       : `${row.name} 并未关闭，但你的职业信号在该州目前偏弱。`
@@ -234,7 +234,7 @@ function buildRequirements(args: {
       t(
         locale,
         `Target at least ${row.minimumExperienceYears} years of relevant experience.`,
-        `En az ${row.minimumExperienceYears} yil ilgili deneyim hedefleyin.`,
+        `En az ${row.minimumExperienceYears} yıl ilgili deneyim hedefleyin.`,
         `建议至少具备 ${row.minimumExperienceYears} 年相关经验。`
       )
     );
@@ -245,7 +245,7 @@ function buildRequirements(args: {
       t(
         locale,
         `Profile looks safer from about ${row.minimumPoints}+ points in this state.`,
-        `Bu eyalette profil genellikle ${row.minimumPoints}+ puan civarinda daha guvenli gorunur.`,
+        `Bu eyalette profil genellikle ${row.minimumPoints}+ puan civarında daha güvenli görünür.`,
         `在该州通常约 ${row.minimumPoints}+ 分会更稳。`
       )
     );
@@ -256,7 +256,7 @@ function buildRequirements(args: {
       t(
         locale,
         `English signal should ideally reach ${row.minimumEnglish} level.`,
-        `Ingilizce sinyalinin ideal olarak ${row.minimumEnglish} seviyesine ulasmasi gerekir.`,
+        `İngilizce sinyalinin ideal olarak ${row.minimumEnglish} seviyesine ulaşması gerekir.`,
         `英语信号最好达到 ${row.minimumEnglish} 水平。`
       )
     );
@@ -267,7 +267,7 @@ function buildRequirements(args: {
       t(
         locale,
         "Regional commitment would materially improve this state pathway.",
-        "Regional taahhut bu eyalet yolunu belirgin sekilde guclendirir.",
+        "Regional taahhüt bu eyalet yolunu belirgin şekilde güçlendirir.",
         "愿意去偏远地区会显著增强该州路径。"
       )
     );
@@ -278,7 +278,7 @@ function buildRequirements(args: {
       t(
         locale,
         "Your occupation is not a clear priority keyword match in this state.",
-        "Mesleginiz bu eyalette acik bir oncelik eslesmesi vermiyor.",
+        "Mesleğiniz bu eyalette açık bir öncelik eşleşmesi vermiyor.",
         "你的职业在该州中不属于明显优先关键词匹配。"
       )
     );
@@ -289,7 +289,7 @@ function buildRequirements(args: {
       t(
         locale,
         "Offshore intake appears more selective than standard nomination streams.",
-        "Offshore alim standart nomination akislarina gore daha secici gorunuyor.",
+        "Offshore alım standart nomination akışlarına göre daha seçici görünüyor.",
         "境外配额看起来比常规提名渠道更严格。"
       )
     );
@@ -300,7 +300,7 @@ function buildRequirements(args: {
       t(
         locale,
         "Local residence or strong in-state ties would materially improve the nomination case.",
-        "Yerel ikamet veya guclu eyalet baglari nomination ihtimalini belirgin sekilde artirir.",
+        "Yerel ikamet veya güçlü eyalet bağları nomination ihtimalini belirgin şekilde artırır.",
         "本地居住或较强州联系会明显增强提名机会。"
       )
     );
