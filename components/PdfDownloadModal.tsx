@@ -306,28 +306,27 @@ export function PdfDownloadModal({
               {tx("Kapat", "Close", "关闭")}
             </Button>
           </div>
-        ) : alreadyDownloaded ? (
-          <div className="space-y-3 py-4 text-center">
-            <p className="text-amber-700 font-medium">
-              {tx(
-                "Bu IP adresinden zaten indirildi.",
-                "Already downloaded from this IP address.",
-                "该 IP 地址已下载过。"
-              )}
-            </p>
-            <p className="text-sm text-slate-500">
-              {tx(
-                "Her IP adresinden yalnizca bir kez indirilebilir.",
-                "Only one download is allowed per IP address.",
-                "每个 IP 地址仅允许下载一次。"
-              )}
-            </p>
-            <Button variant="outline" onClick={handleClose} className="w-full">
-              {tx("Kapat", "Close", "关闭")}
-            </Button>
-          </div>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="space-y-4 mt-2">
+            {/*
+              Non-blocking notice only — the IP-based `alreadyDownloaded` flag
+              from GET is known before any email is entered, so it can only
+              ever be a heads-up here. The real, authoritative check (which
+              also applies the admin/test bypass) happens server-side in POST
+              once the email is known; that's what actually gates the
+              download. Hard-blocking the form at this stage would make the
+              admin/test bypass unreachable, since the form itself would
+              never render for a previously-used IP.
+            */}
+            {alreadyDownloaded && (
+              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                {tx(
+                  "Bu IP adresinden daha once bir indirme yapilmis gibi gorunuyor. Normal kullanicilar icin yalnizca 1 indirme hakki vardir.",
+                  "It looks like this IP already downloaded a guide. Regular visitors get one download per IP.",
+                  "该 IP 似乎已下载过指南。普通访客每个 IP 仅可下载一次。"
+                )}
+              </p>
+            )}
             <div className="space-y-1">
               <Label htmlFor="full_name">{tx("Ad Soyad", "Full Name", "姓名")}</Label>
               <Input
