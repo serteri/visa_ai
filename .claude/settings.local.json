@@ -264,7 +264,16 @@
       "Bash(cp \"public/avustralya-pr-rehberi-2026.pdf\" \"scratch/pdf-edit-test/tr-BACKUP-before-round2.pdf\")",
       "Bash(cp \"public/australia-guide-2026.pdf\" \"scratch/pdf-edit-test/en-BACKUP-before-round2.pdf\")",
       "Bash(cp \"scratch/pdf-edit-test/tr-live-new2.pdf\" \"public/avustralya-pr-rehberi-2026.pdf\")",
-      "Bash(cp \"scratch/pdf-edit-test/en-live-new2.pdf\" \"public/australia-guide-2026.pdf\")"
+      "Bash(cp \"scratch/pdf-edit-test/en-live-new2.pdf\" \"public/australia-guide-2026.pdf\")",
+      "PowerShell(Stop-Process -Id 61132 -Force)",
+      "Bash(rm -f scratch/verify-lead-tiers.ts)",
+      "Bash(rm -f scratch/check-lead-tier-row.ts scratch/check-hot-row.ts scratch/check-cold-row.ts scratch/add-lead-tier-columns.ts)",
+      "Bash(echo \"TYPECHECK_EXIT=$?\")",
+      "Bash(ls CLAUDE.md)",
+      "Bash(ls .claude/)",
+      "Bash(cp prisma/schema.prisma scratch/schema.prisma.backup-before-pull)",
+      "Bash(grep -n \"^//\\\\|commented\" prisma/schema.prisma)",
+      "PowerShell(Stop-Process -Id 75748 -Force)"
     ]
   }
 }

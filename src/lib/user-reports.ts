@@ -9,6 +9,8 @@ export type CreateUserReportInput = {
   locale: Locale;
   leadScore?: number;
   leadTier?: string;
+  /** Points-based internal lead tier ("Hot" | "Warm" | "Cold") — distinct from leadTier above. */
+  pointsTier?: string;
   report: ReadinessReport;
   input: ReadinessInput;
   ipAddress?: string;
@@ -36,12 +38,13 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
         locale,
         lead_score,
         lead_tier,
+        points_tier,
         payment_status,
         report_json,
         input_json,
         ip_address
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'pending',$9::jsonb,$10::jsonb,$11)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending',$10::jsonb,$11::jsonb,$12)
       RETURNING id
     `,
     reportId,
@@ -52,12 +55,20 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
     input.locale,
     input.leadScore ?? null,
     input.leadTier ?? null,
+    input.pointsTier ?? null,
     JSON.stringify(input.report),
     JSON.stringify(input.input),
     input.ipAddress ?? null
   );
 
   return { id: row[0].id };
+}
+
+export async function markInternalLeadEmailSent(reportId: string): Promise<void> {
+  await prisma.$executeRawUnsafe(
+    `UPDATE user_reports SET internal_lead_email_sent = TRUE WHERE id::text = $1::text`,
+    reportId
+  );
 }
 
 export async function getUserReportById(reportId: string): Promise<{

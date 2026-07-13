@@ -19,11 +19,13 @@ import {
   updateFullCheckProgress,
 } from "@/lib/full-check-progress";
 import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
-import { canonicalizeOccupationInput } from "@/lib/readiness/occupation-eligibility";
+import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
+import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import {
   createUserReport,
   getUserReportById,
+  markInternalLeadEmailSent,
   markUserReportUnlocked,
   type UnlockMethod,
 } from "@/src/lib/user-reports";
@@ -420,6 +422,65 @@ async function sendFullCheckAdminEmail(payload: {
     subject: `🔥 New Assessment Completed: ${payload.fullName || "Unknown"}`,
     text: bodyLines.join("\n"),
   });
+}
+
+// Internal-only lead-scoring notification (Hot/Warm tiers, never Cold — see
+// computeInternalLeadTier). Distinct from sendFullCheckAdminEmail above:
+// this one is deliberately framed as an unverified self-reported signal for
+// an agent to re-verify, not a confirmed qualification claim, since none of
+// this data has document/test evidence attached at the free-tier stage.
+async function sendInternalLeadTierEmail(payload: {
+  tier: "Hot" | "Warm";
+  fullName: string;
+  email: string;
+  phone?: string;
+  occupationDisplay: string;
+  country: string;
+  preferredPathway: string;
+  estimatedPoints?: number;
+  englishLevel: string;
+  englishTestTaken: string;
+  reportLink: string;
+}): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const notificationEmail = process.env.INTERNAL_LEAD_NOTIFICATION_EMAIL || "hello@logivisa.com";
+
+  if (!apiKey) return false;
+
+  const resend = new Resend(apiKey);
+  const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
+
+  const englishTestConfirmed = payload.englishTestTaken.trim().toLowerCase() === "yes";
+  const englishWarningLine = !englishTestConfirmed
+    ? `⚠️ No English test evidence on file — self-reported "${payload.englishLevel || "unspecified"}" band is unverified; a lower actual result could drop this profile below threshold.`
+    : null;
+
+  const bodyLines = [
+    "Self-reported potential match — not verified. Confirm occupation, English test evidence, and employment history directly with the candidate before proceeding.",
+    "",
+    `Tier: ${payload.tier}`,
+    "",
+    `Name: ${payload.fullName || "-"}`,
+    `Email: ${payload.email}`,
+    `Phone: ${payload.phone && payload.phone.trim() ? payload.phone : "Not yet provided"}`,
+    `Occupation: ${payload.occupationDisplay || "-"}`,
+    `Country / pathway: ${payload.country} — ${payload.preferredPathway || "-"}`,
+    `Self-reported points estimate: ${payload.estimatedPoints ?? "-"}`,
+    `English level (self-reported): ${payload.englishLevel || "-"}`,
+    `English test taken: ${payload.englishTestTaken || "not answered"}`,
+    "",
+    ...(englishWarningLine ? [englishWarningLine, ""] : []),
+    `Full report: ${payload.reportLink}`,
+  ];
+
+  await resend.emails.send({
+    from: fromEmail,
+    to: [notificationEmail],
+    subject: `${payload.tier === "Hot" ? "🔥" : "🌤️"} ${payload.tier} lead: ${payload.fullName || "Unknown"} (self-reported, unverified)`,
+    text: bodyLines.join("\n"),
+  });
+
+  return true;
 }
 
 async function sendFullCheckConfirmationEmail(payload: {
@@ -1177,6 +1238,35 @@ export async function submitFullCheckWaitlist(
     await updateFullCheckProgress(analysisProgressId, "applying_deductions");
   }
 
+  const readinessInputForReport: ReadinessInput = {
+    locale: resolvedLocale,
+    country: targetCountry,
+    mainGoal,
+    currentCountry: currentCountry || undefined,
+    passportCountry,
+    age,
+    occupation: occupation || undefined,
+    englishLevel: englishLevel || undefined,
+    qualificationLevel,
+    annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
+      ? annualSalaryAud
+      : undefined,
+    qualificationAwardedInAustralia,
+    qualificationRegionalAustralia,
+    specialistEducationStemResponse,
+    offshoreExperienceYears,
+    onshoreExperienceYears,
+    englishTestTaken: englishTestTaken || undefined,
+    occupationConfirmed: occupationConfirmed || undefined,
+    estimatedBudgetRange: estimatedBudgetRange || undefined,
+    timeline: timeline || undefined,
+    sponsorOrFamily: sponsorOrFamily || undefined,
+    preferredPathway: visaInterest || undefined,
+    biggestConcern: biggestConcern || undefined,
+  };
+
+  const internalLeadTier = computeInternalLeadTier(readinessInputForReport, generatedReport.assessmentState);
+
   const reportRecord = await createUserReport({
     fullName,
     email,
@@ -1185,34 +1275,10 @@ export async function submitFullCheckWaitlist(
     locale: resolvedLocale,
     leadScore: leadQuality.leadScore,
     leadTier: leadQuality.leadTier,
+    pointsTier: internalLeadTier,
     report: generatedReport,
     ipAddress: clientIp !== "unknown" ? clientIp : undefined,
-    input: {
-      locale: resolvedLocale,
-      country: targetCountry,
-      mainGoal,
-      currentCountry: currentCountry || undefined,
-      passportCountry,
-      age,
-      occupation: occupation || undefined,
-      englishLevel: englishLevel || undefined,
-      qualificationLevel,
-      annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
-        ? annualSalaryAud
-        : undefined,
-      qualificationAwardedInAustralia,
-      qualificationRegionalAustralia,
-      specialistEducationStemResponse,
-      offshoreExperienceYears,
-      onshoreExperienceYears,
-      englishTestTaken: englishTestTaken || undefined,
-      occupationConfirmed: occupationConfirmed || undefined,
-      estimatedBudgetRange: estimatedBudgetRange || undefined,
-      timeline: timeline || undefined,
-      sponsorOrFamily: sponsorOrFamily || undefined,
-      preferredPathway: visaInterest || undefined,
-      biggestConcern: biggestConcern || undefined,
-    },
+    input: readinessInputForReport,
   });
 
   try {
@@ -1299,6 +1365,23 @@ export async function submitFullCheckWaitlist(
       reportLink,
       locale: resolvedLocale,
     }).catch((err) => console.error("Customer report email failed (non-blocking):", err)),
+    internalLeadTier === "Cold"
+      ? Promise.resolve()
+      : sendInternalLeadTierEmail({
+          tier: internalLeadTier,
+          fullName,
+          email,
+          phone: undefined, // not collected at initial submission — surfaced as "Not yet provided"
+          occupationDisplay: resolveOccupationDisplayName(occupation, resolvedLocale),
+          country: targetCountry,
+          preferredPathway: visaInterest,
+          estimatedPoints: generatedReport.assessmentState.estimatedPoints,
+          englishLevel,
+          englishTestTaken,
+          reportLink,
+        })
+          .then((sent) => (sent ? markInternalLeadEmailSent(reportRecord.id) : undefined))
+          .catch((err) => console.error("Internal lead-tier email failed (non-blocking):", err)),
   ]);
 
   if (analysisProgressId) {

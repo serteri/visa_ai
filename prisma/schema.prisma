@@ -1,3 +1,30 @@
+// ─────────────────────────────────────────────────────────────────────────
+// ⚠️  TWO ORMS, ONE DATABASE — READ BEFORE RUNNING ANY `prisma db push` OR
+// `prisma migrate` COMMAND.
+//
+// This database is shared between Prisma (this file) and Drizzle
+// (db/schema.ts). The tables below are Drizzle-owned — Prisma only knows
+// about them because they were introspected via `prisma db pull` and
+// marked `@@ignore` so Prisma Client won't expose them and `db push` won't
+// try to drop/alter them:
+//   - agent_referrals
+//   - agents
+//   - contact_messages
+//   - pdf_downloads
+//
+// NEVER run `prisma db push --accept-data-loss` without reading the diff
+// first. If it proposes dropping any table, STOP — it means either a new
+// Drizzle table needs the same @@ignore treatment (re-run `prisma db pull`
+// to pick it up, then re-add `@@ignore`), or something is genuinely wrong.
+// Prefer a targeted `ALTER TABLE` for schema changes to this file's own
+// models over a full `db push` when in doubt.
+//
+// Drizzle also declares a few tables that don't exist in the live database
+// yet (full_check_usage, full_check_waitlist, leads, visa_types,
+// visa_structured_data, source_snapshots) — those are handled gracefully
+// as optional/missing by application code and are not Prisma's concern.
+// ─────────────────────────────────────────────────────────────────────────
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,44 +35,49 @@ datasource db {
 }
 
 model UserReport {
-  id             String   @id @default(uuid())
-  fullName       String?  @map("full_name")
-  email          String
-  phone          String?
-  ipAddress      String?  @map("ip_address")
-  preferredPath  String?  @map("preferred_path")
-  source         String   @default("full_check")
-  locale         String   @default("en")
-  leadScore      Int?     @map("lead_score")
-  leadTier       String?  @map("lead_tier")
-  paymentStatus  String   @default("pending") @map("payment_status")
-  unlockMethod   String?  @map("unlock_method")
-  isUnlocked     Boolean  @default(false) @map("is_unlocked")
-  pdfSent        Boolean  @default(false) @map("pdf_sent")
-  reportJson     Json     @map("report_json")
-  inputJson      Json     @map("input_json")
-  createdAt      DateTime @default(now()) @map("created_at")
-  unlockedAt     DateTime? @map("unlocked_at")
+  id                    String    @id @default(uuid())
+  fullName              String?   @map("full_name")
+  email                 String
+  phone                 String?
+  preferredPath         String?   @map("preferred_path")
+  source                String    @default("full_check")
+  locale                String    @default("en")
+  leadScore             Int?      @map("lead_score")
+  leadTier              String?   @map("lead_tier")
+  paymentStatus         String    @default("pending") @map("payment_status")
+  unlockMethod          String?   @map("unlock_method")
+  isUnlocked            Boolean   @default(false) @map("is_unlocked")
+  pdfSent               Boolean   @default(false) @map("pdf_sent")
+  reportJson            Json      @map("report_json")
+  inputJson             Json      @map("input_json")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  unlockedAt            DateTime? @map("unlocked_at")
+  ipAddress             String?   @map("ip_address")
+  // Points-based internal lead tier (Hot/Warm/Cold, from estimatedPoints +
+  // occupationEligibility) — distinct from leadScore/leadTier above, which
+  // is a separate, unrelated form-completeness/intent scorer. Cold is never
+  // persisted as a truthy email-sent flag since no email is sent for Cold.
+  pointsTier            String?   @map("points_tier")
+  internalLeadEmailSent Boolean?  @default(false) @map("internal_lead_email_sent")
 
   @@map("user_reports")
 }
 
 model User {
-  id            String    @id @default(uuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  password      String?
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
-  accounts           Account[]
-  sessions           Session[]
-  savedCalculations  SavedCalculation[]
-  savedQuizResults   SavedQuizResult[]
-  savedReports       SavedReport[]
-  visaTrackings      VisaTracking[]
+  id                String             @id @default(uuid())
+  name              String?
+  email             String             @unique
+  emailVerified     DateTime?          @map("email_verified")
+  image             String?
+  password          String?
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  accounts          Account[]
+  savedCalculations SavedCalculation[]
+  savedQuizResults  SavedQuizResult[]
+  savedReports      SavedReport[]
+  sessions          Session[]
+  visaTrackings     VisaTracking[]
 
   @@map("users")
 }
@@ -56,12 +88,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -91,12 +123,12 @@ model VerificationToken {
 model SavedCalculation {
   id            String   @id @default(uuid())
   userId        String   @map("user_id")
-  country       String   @default("AU") @map("country")
-  configVersion String?  @map("config_version")
   visaSubclass  String?  @map("visa_subclass")
   totalPoints   Int      @map("total_points")
   breakdown     Json?
   createdAt     DateTime @default(now()) @map("created_at")
+  country       String   @default("AU") @map("country")
+  configVersion String?  @map("config_version")
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("saved_calculations")
@@ -111,12 +143,14 @@ model GuideDownload {
   locale    String   @default("tr")
   ipAddress String?  @map("ip_address")
   createdAt DateTime @default(now()) @map("created_at")
+
   @@map("guide_downloads")
 }
 
 model GuideConfig {
   id           String @id @default("main")
   maxDownloads Int    @default(20) @map("max_downloads")
+
   @@map("guide_config")
 }
 
@@ -192,9 +226,6 @@ model EoiRound {
 model ExpressEntryDraw {
   id                String    @id @default(uuid())
   drawDate          DateTime  @map("draw_date")
-  // Free text, not an enum: IRCC's category-based draws (e.g. "category_healthcare",
-  // "category_french") are an open-ended, evolving list (see knownPendingChanges in
-  // src/data/countries/ca/express-entry.json) on top of CEC/FSW/FSTP/PNP/general.
   programType       String    @map("program_type")
   crsScoreCutoff    Int?      @map("crs_score_cutoff")
   invitationsIssued Int       @map("invitations_issued")
@@ -218,4 +249,79 @@ model CaEoiRound {
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("ca_eoi_rounds")
+}
+
+// Drizzle-owned (see db/schema.ts's agentReferrals) — declared here only so
+// `prisma db push` recognizes this table and never proposes dropping it.
+// @@ignore means Prisma Client does not expose CRUD for this model; do not
+// write to it via Prisma.
+model agent_referrals {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  full_name           String
+  email               String
+  phone               String?
+  country_of_passport String
+  current_country     String
+  preferred_language  String
+  visa_interest       String
+  short_message       String
+  consent             Boolean
+  status              String?   @default("new")
+  assigned_agent_id   String?   @db.Uuid
+  assigned_at         DateTime? @db.Timestamp(6)
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  agents              agents?   @relation(fields: [assigned_agent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "agent_referrals_assigned_agent_id_agents_id_fk")
+
+  @@ignore
+}
+
+// Drizzle-owned (see db/schema.ts's agents) — same as agent_referrals above.
+model agents {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  full_name       String
+  business_name   String?
+  email           String
+  phone           String?
+  marn            String?
+  languages       Json?
+  specialties     Json?
+  locations       Json?
+  active          Boolean?          @default(true)
+  notes           String?
+  created_at      DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?         @default(now()) @db.Timestamp(6)
+  agent_referrals agent_referrals[]
+
+  @@ignore
+}
+
+// Drizzle-owned (see db/schema.ts's contactMessages) — same as above.
+model contact_messages {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  full_name  String
+  email      String
+  phone      String?
+  message    String
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([email])
+  @@ignore
+}
+
+// Drizzle-owned (see db/schema.ts's pdfDownloads) — same as above. This is
+// the table involved in the earlier `prisma db push` near-miss.
+model pdf_downloads {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  full_name         String
+  email             String
+  phone             String
+  ip_address        String
+  pdf_slug          String    @default("avustralya-pr-rehberi-2026")
+  is_paid           Boolean?  @default(false)
+  terms_accepted_at DateTime  @db.Timestamp(6)
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([email])
+  @@index([ip_address], map: "pdf_downloads_ip_idx")
+  @@ignore
 }
