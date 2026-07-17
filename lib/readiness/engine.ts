@@ -302,35 +302,12 @@ function shortIneligibleReference(locale: Locale): string {
  * and employment data don't vary by subclass — so the Visa Viability Ranking
  * renders them ONCE beneath the three rows instead of repeating them per row.
  */
-function buildIneligibleFactorsPointer(locale: Locale, hasEnglish: boolean, hasEmployment: boolean): string | undefined {
-  if (!hasEnglish && !hasEmployment) return undefined;
-  const isTr = locale === "tr";
-  const isZh = locale === "zh-Hans";
-  const both = hasEnglish && hasEmployment;
-
-  if (isTr) {
-    const factor = both ? "İngilizce ve iş deneyimi faktörleri" : hasEnglish ? "İngilizce faktörü" : "İş deneyimi faktörü";
-    return `(${factor} de geçerli — aşağıdaki nota bakın.)`;
-  }
-  if (isZh) {
-    const factor = both ? "英语与工作经验因素" : hasEnglish ? "英语因素" : "工作经验因素";
-    return `（${factor}同样适用——见下方说明。）`;
-  }
-  // English: keep subject/verb agreement (plural "factors ... apply" vs singular "factor ... applies").
-  const clause = both
-    ? "English and employment factors also apply"
-    : hasEnglish
-      ? "English factor also applies"
-      : "Employment factor also applies";
-  return `(${clause} — see the note below.)`;
-}
-
 function buildIneligibleLowPointsParts(
   locale: Locale,
   estimatedPoints: number,
   englishLevel?: string,
   input?: ReadinessInput
-): { pointsLine: string; sharedNotes: string[]; factorsPointer?: string } {
+): { pointsLine: string; sharedNotes: string[] } {
   const pointsLine = t(locale, "ineligible.lowPoints", { points: estimatedPoints });
   const normalizedEnglish = (englishLevel ?? "").trim().toLowerCase();
   const hasRoomToImproveEnglish = normalizedEnglish === "none" || normalizedEnglish === "competent";
@@ -339,17 +316,12 @@ function buildIneligibleLowPointsParts(
   if (hasRoomToImproveEnglish) {
     sharedNotes.push(t(locale, "suggestion.improveEnglish"));
   }
-  let hasEmploymentCaveat = false;
   if (input) {
     const employmentCaveat = buildEmploymentExperienceCaveat(locale, getEmploymentDataSignals(input), "short");
-    if (employmentCaveat) {
-      sharedNotes.push(employmentCaveat);
-      hasEmploymentCaveat = true;
-    }
+    if (employmentCaveat) sharedNotes.push(employmentCaveat);
   }
 
-  const factorsPointer = buildIneligibleFactorsPointer(locale, hasRoomToImproveEnglish, hasEmploymentCaveat);
-  return { pointsLine, sharedNotes, factorsPointer };
+  return { pointsLine, sharedNotes };
 }
 
 function formatIneligibleLowPointsReason(
@@ -1357,15 +1329,12 @@ function buildPathwayEntry(
 
   // Split form of the low-points reason: the points line is subclass-specific
   // (rendered per row), the shared notes are profile-level (rendered once).
-  // The factors pointer is a short per-row hint so a row still self-contextualizes.
   let ineligiblePointsLine: string | undefined;
   let ineligibleSharedNotes: string[] | undefined;
-  let ineligibleFactorsPointer: string | undefined;
   if (isLowPointsIneligible && estimatedPoints !== undefined) {
     const parts = buildIneligibleLowPointsParts(locale, estimatedPoints, input.englishLevel, input);
     ineligiblePointsLine = parts.pointsLine;
     ineligibleSharedNotes = parts.sharedNotes;
-    ineligibleFactorsPointer = parts.factorsPointer;
   }
 
   const forcedIneligibleByRule =
@@ -1427,7 +1396,6 @@ function buildPathwayEntry(
     pathwaySpecificRisks,
     ineligiblePointsLine,
     ineligibleSharedNotes,
-    ineligibleFactorsPointer,
   };
 }
 
