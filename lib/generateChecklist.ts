@@ -24,9 +24,9 @@ function getGsmBlockReason(
   if (ineligiblePathway) {
     return t(
       locale,
-      `Blocked: profile does not currently meet the Subclass ${ineligiblePathway.subclass} threshold — ${ineligiblePathway.reason}`,
-      `Engellendi: profil su anda Subclass ${ineligiblePathway.subclass} esigini karsilamiyor — ${ineligiblePathway.reason}`,
-      `已阻止：档案目前不满足 Subclass ${ineligiblePathway.subclass} 门槛——${ineligiblePathway.reason}`
+      `Blocked: profile does not currently meet the Subclass ${ineligiblePathway.subclass} threshold. See the Visa Viability Ranking section for the full reason.`,
+      `Engellendi: profil su anda Subclass ${ineligiblePathway.subclass} esigini karsilamiyor. Tam neden icin Vize Uygulanabilirlik Siralamasi bolumune bakin.`,
+      `已阻止：档案目前不满足 Subclass ${ineligiblePathway.subclass} 门槛。完整原因见"签证可行性排名"部分。`
     );
   }
 

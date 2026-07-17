@@ -17,33 +17,6 @@ function findIneligiblePathway(
   return pathwayComparison.find((p) => relevant.includes(p.subclass) && p.relevance === "ineligible");
 }
 
-function stripShortCaveatReferences(reason: string): string {
-  const shortCaveats = [
-    "Employment experience not provided — see Evidence Readiness section for details.",
-    "Australian employment experience not provided — see Evidence Readiness section for details.",
-    "Overseas employment experience not provided — see Evidence Readiness section for details.",
-    "Specialist education (STEM field) remains unconfirmed — see Evidence Readiness section for details.",
-    "İş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "Avustralya iş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "Yurtdışı iş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "Uzmanlık eğitimi (STEM) alanı onaylanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "Uzmanlık eğitimi (STEM) alanı yanıtı onaylanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "未提供工作经验——详情请参见“材料准备度摘要”部分。",
-    "未提供澳大利亚工作经验——详情请参见“材料准备度摘要”部分。",
-    "未提供海外工作经验——详情请参见“材料准备度摘要”部分。",
-    "Specialist education（STEM）尚未确认——详情请参见“材料准备度摘要”部分。",
-    "Specialist education（STEM）未确认——详情请参见“材料准备度摘要”部分。",
-  ];
-
-  let next = reason;
-  for (const caveat of shortCaveats) {
-    next = next.replaceAll(` ${caveat}`, "");
-    next = next.replaceAll(caveat, "");
-  }
-
-  return next.replace(/\s{2,}/g, " ").trim();
-}
-
 function annotateTrendEstimates(
   estimates: InvitationTrendEstimate[],
   pathwayComparison: PathwayComparison[],
@@ -58,15 +31,14 @@ function annotateTrendEstimates(
     );
 
     if (ineligiblePathway) {
-      const ineligibleReason = stripShortCaveatReferences(ineligiblePathway.reason);
       return {
         ...estimate,
         isReferenceOnly: true,
         referenceOnlyNote: t3(
           locale,
-          `Reference data only - your profile does not currently meet Subclass ${estimate.subclass}'s threshold. ${ineligibleReason}`,
-          `Yalnızca referans verisi - profiliniz şu anda Subclass ${estimate.subclass} eşiğini karşılamıyor. ${ineligibleReason}`,
-          `仅供参考数据 - 您的档案目前尚未达到 Subclass ${estimate.subclass} 的门槛。${ineligibleReason}`
+          `Reference data only - your profile does not currently meet Subclass ${estimate.subclass}'s threshold. See the Visa Viability Ranking section for the full reason.`,
+          `Yalnızca referans verisi - profiliniz şu anda Subclass ${estimate.subclass} eşiğini karşılamıyor. Tam neden için Vize Uygulanabilirlik Sıralaması bölümüne bakın.`,
+          `仅供参考数据 - 您的档案目前尚未达到 Subclass ${estimate.subclass} 的门槛。完整原因见"签证可行性排名"部分。`
         ),
       };
     }

@@ -265,33 +265,24 @@ function formatIneligibleAgeReason(locale: Locale, declaredAge: number): string 
   return t(locale, "ineligible.ageReason", { age: declaredAge, ageLimit: limit });
 }
 
-function stripShortCaveatReferences(reason: string): string {
-  // Keep the short caveat where it is intentionally surfaced (ranking/state/checklist),
-  // but remove it from derivative summary/comparison blocks to avoid report bloat.
-  const shortCaveats = [
-    "Employment experience not provided — see Evidence Readiness section for details.",
-    "Australian employment experience not provided — see Evidence Readiness section for details.",
-    "Overseas employment experience not provided — see Evidence Readiness section for details.",
-    "Specialist education (STEM field) remains unconfirmed — see Evidence Readiness section for details.",
-    "İş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "Avustralya iş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "Yurtdışı iş deneyimi sağlanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "Uzmanlık eğitimi (STEM) alanı onaylanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "Uzmanlık eğitimi (STEM) alanı yanıtı onaylanmadı — ayrıntılar için Kanıt/Bilgi Hazırlık Özeti bölümüne bakın.",
-    "未提供工作经验——详情请参见“材料准备度摘要”部分。",
-    "未提供澳大利亚工作经验——详情请参见“材料准备度摘要”部分。",
-    "未提供海外工作经验——详情请参见“材料准备度摘要”部分。",
-    "Specialist education（STEM）尚未确认——详情请参见“材料准备度摘要”部分。",
-    "Specialist education（STEM）未确认——详情请参见“材料准备度摘要”部分。",
-  ];
-
-  let next = reason;
-  for (const caveat of shortCaveats) {
-    next = next.replaceAll(` ${caveat}`, "");
-    next = next.replaceAll(caveat, "");
-  }
-
-  return next.replace(/\s{2,}/g, " ").trim();
+/**
+ * Short pointer used everywhere EXCEPT the Visa Viability Ranking section,
+ * which is the single canonical place the full per-subclass ineligibility
+ * reason (points + Mathematical Projection text) is rendered. Every other
+ * section that references an ineligible pathway's reason should use this
+ * instead of the full reason string, to avoid repeating the same ~40-word
+ * paragraph across Executive Summary, Pathway Strength Comparison, Pathway
+ * Friction, the Lodgement-Ready Checklist, State Nomination Tracker, and
+ * Historical Invitation Trends.
+ */
+function shortIneligibleReference(locale: Locale): string {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  return isTr
+    ? "Uygun değil — tam neden için Vize Uygulanabilirlik Sıralaması bölümüne bakın."
+    : isZh
+      ? "不符合资格——完整原因见“签证可行性排名”部分。"
+      : "Ineligible — see the Visa Viability Ranking section for the full reason.";
 }
 
 /**
@@ -2335,6 +2326,48 @@ function buildKeyVisaRequirements(
     }));
 }
 
+function buildIneligibleSummaryLine(
+  ineligiblePathways: PathwayComparison[],
+  locale: Locale,
+  estimatedPoints?: number
+): string | null {
+  if (ineligiblePathways.length === 0) return null;
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const subclasses = ineligiblePathways.map((pathway) => pathway.subclass);
+  const list = subclasses.join("/");
+  const allPointsBased =
+    estimatedPoints !== undefined &&
+    ineligiblePathways.every((pathway) => ["189", "190", "491"].includes(pathway.subclass));
+
+  if (allPointsBased) {
+    const skilledLabel =
+      subclasses.length === 3
+        ? isTr
+          ? "Üç puan testli yolun (189/190/491) tümü"
+          : isZh
+            ? "全部三个打分制路径（189/190/491）"
+            : "All three skilled subclasses (189/190/491)"
+        : isTr
+          ? `Alt sınıf ${list}`
+          : isZh
+            ? `子类别 ${list}`
+            : `Subclass ${list}`;
+
+    return isTr
+      ? `${skilledLabel} şu anda uygun değil — ${estimatedPoints} puan / ${SKILLED_MIGRATION_MIN_POINTS} puan gerekli. Ayrıntılar için aşağıdaki Vize Uygulanabilirlik Sıralamasına bakın.`
+      : isZh
+        ? `${skilledLabel}当前不符合资格——${estimatedPoints} 分，需 ${SKILLED_MIGRATION_MIN_POINTS} 分。详情见下方“签证可行性排名”。`
+        : `${skilledLabel} currently ineligible — ${estimatedPoints} pts vs ${SKILLED_MIGRATION_MIN_POINTS} required. See the Visa Viability Ranking below for details.`;
+  }
+
+  return isTr
+    ? `Alt sınıf ${list} şu anda uygun değil. Ayrıntılar için aşağıdaki Vize Uygulanabilirlik Sıralamasına bakın.`
+    : isZh
+      ? `子类别 ${list} 当前不符合资格。详情见下方“签证可行性排名”。`
+      : `Subclass ${list} currently ineligible. See the Visa Viability Ranking below for details.`;
+}
+
 function buildExecutiveSummary(
   input: ReadinessInput,
   pathways: PathwayComparison[],
@@ -2355,15 +2388,15 @@ function buildExecutiveSummary(
   // Hard Gate (1 July 2026): ineligible pathways are reported as flat
   // determinations, not softened "may be possible" language, and are
   // placed first so they cannot be missed or outranked by softer signals.
+  //
+  // The full per-subclass reason (points + Mathematical Projection text) is
+  // shown once, canonically, in the Visa Viability Ranking section below --
+  // repeating that ~40-word paragraph once per subclass here as well is
+  // pure duplication, so the Executive Summary gets a single brief line
+  // instead.
   const ineligiblePathways = pathways.filter((pathway) => pathway.relevance === "ineligible");
-  const ineligibleLines = ineligiblePathways.map((pathway) => {
-    const displayReason = stripShortCaveatReferences(pathway.reason);
-    return isTr
-      ? `Alt sınıf ${pathway.subclass}: ${displayReason}`
-      : isZh
-        ? `子类别 ${pathway.subclass}：${displayReason}`
-        : `Subclass ${pathway.subclass}: ${displayReason}`;
-  });
+  const ineligibleSummaryLine = buildIneligibleSummaryLine(ineligiblePathways, locale, estimatedPoints);
+  const ineligibleLines = ineligibleSummaryLine ? [ineligibleSummaryLine] : [];
 
   if (isTr) {
     return [
@@ -2631,7 +2664,7 @@ function buildPathwayStrengthComparison(
       isHardIneligible: pathway.relevance === "ineligible",
       ineligibleReason:
         pathway.relevance === "ineligible"
-          ? stripShortCaveatReferences(pathway.reason)
+          ? shortIneligibleReference(locale)
           : undefined,
     };
   });
@@ -3213,7 +3246,7 @@ function buildPathwayFriction(
       return {
         pathway: visaLabel,
         frictionType: isTr ? "🚨 KRİTİK UYUMLULUK UYARISI" : isZh ? "🚨 关键合规警报" : "🚨 CRITICAL COMPLIANCE ALERT",
-        explanation: stripShortCaveatReferences(pathway.reason),
+        explanation: shortIneligibleReference(locale),
         isHardIneligible: true,
       };
     }

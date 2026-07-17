@@ -2611,7 +2611,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     let viableRank = 0;
     rankedPathways.forEach((item) => {
       if (item.isHardIneligible) {
-        const rowHeight = 20;
+        setBaseFont();
+        doc.setFontSize(FONTS.small);
+        const reasonLineHeight = 3.6;
+        const reasonLines: string[] = doc.splitTextToSize(safeText(item.ineligibleReason ?? ""), contentWidth - 10);
+        // Row height grows with the wrapped reason text so the full reason
+        // is always visible -- it must never be silently cut off mid-sentence.
+        const rowHeight = Math.max(20, 10 + reasonLines.length * reasonLineHeight + 2);
         ensurePageSpace(rowHeight + 2);
         const topY = yPosition;
         const red = COLORS.riskHigh;
@@ -2639,8 +2645,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         setBaseFont();
         doc.setFontSize(FONTS.small);
         doc.setTextColor(red.r, red.g, red.b);
-        const reasonLines = doc.splitTextToSize(safeText(item.ineligibleReason ?? ""), contentWidth - 10);
-        doc.text(reasonLines.slice(0, 2), margin + 6, topY + 10, { lineHeightFactor: 1.18 });
+        doc.text(reasonLines, margin + 6, topY + 10, { lineHeightFactor: 1.18 });
 
         yPosition += rowHeight + 2;
         return;
