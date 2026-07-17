@@ -486,10 +486,13 @@ function buildIneligiblePathwayEntries(report: ReadinessReport): RankedPathway[]
       pointsSignal: 0,
       recommendationTag: "❌ Ineligible (Compliance Violation)" as const,
       isHardIneligible: true,
-      // Per-row text is the subclass-specific points line when available
+      // Per-row text is the subclass-specific points line plus a short pointer
+      // to the shared note (so the row self-contextualizes) when available
       // (189/190/491 on points); age/salary gates (485/482) keep their full
       // reason since they have no shared profile-level notes to hoist.
-      ineligibleReason: p.ineligiblePointsLine ?? p.reason,
+      ineligibleReason: p.ineligiblePointsLine
+        ? [p.ineligiblePointsLine, p.ineligibleFactorsPointer].filter(Boolean).join(" ")
+        : p.reason,
       ineligibleSharedNotes: p.ineligibleSharedNotes,
     }));
 }
@@ -2672,10 +2675,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         setBaseFont();
         doc.setFontSize(FONTS.small);
         const reasonLineHeight = 3.6;
+        const reasonTopOffset = 12; // clears the badge (which ends at topY + 8) so the reason never sits under it
         const reasonLines: string[] = doc.splitTextToSize(safeText(item.ineligibleReason ?? ""), contentWidth - 10);
         // Row height grows with the wrapped reason text so the full reason
         // is always visible -- it must never be silently cut off mid-sentence.
-        const rowHeight = Math.max(16, 10 + reasonLines.length * reasonLineHeight + 2);
+        const rowHeight = Math.max(18, reasonTopOffset + reasonLines.length * reasonLineHeight);
         ensurePageSpace(rowHeight + 2);
         const topY = yPosition;
         const red = COLORS.riskHigh;
@@ -2703,7 +2707,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         setBaseFont();
         doc.setFontSize(FONTS.small);
         doc.setTextColor(red.r, red.g, red.b);
-        doc.text(reasonLines, margin + 6, topY + 10, { lineHeightFactor: 1.18 });
+        doc.text(reasonLines, margin + 6, topY + reasonTopOffset, { lineHeightFactor: 1.18 });
 
         yPosition += rowHeight + 2;
 

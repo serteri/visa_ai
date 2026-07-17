@@ -77,6 +77,12 @@ export type PathwayComparison = {
    * rows rather than repeated per subclass. Only set alongside ineligiblePointsLine.
    */
   ineligibleSharedNotes?: string[];
+  /**
+   * Short per-row hint (e.g. "(English and employment factors also apply — see
+   * the note below.)") appended to the points line so each subclass row still
+   * self-contextualizes without repeating the full shared-note sentences.
+   */
+  ineligibleFactorsPointer?: string;
 };
 
 export type ComparisonDifficulty = "low" | "medium" | "high";
