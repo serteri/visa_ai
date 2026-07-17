@@ -486,7 +486,11 @@ function buildIneligiblePathwayEntries(report: ReadinessReport): RankedPathway[]
       pointsSignal: 0,
       recommendationTag: "❌ Ineligible (Compliance Violation)" as const,
       isHardIneligible: true,
-      ineligibleReason: p.reason,
+      // Per-row text is the subclass-specific points line when available
+      // (189/190/491 on points); age/salary gates (485/482) keep their full
+      // reason since they have no shared profile-level notes to hoist.
+      ineligibleReason: p.ineligiblePointsLine ?? p.reason,
+      ineligibleSharedNotes: p.ineligibleSharedNotes,
     }));
 }
 
@@ -2608,6 +2612,60 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addHeading(text.visaViabilityRanking);
     ensurePageSpace(55);
 
+    // Profile-level notes (English projection, employment caveat) are identical
+    // across the ineligible points-tested subclasses, so they are rendered ONCE
+    // in a shared box beneath the rows rather than repeated in every row.
+    const hardIneligibleEntries = rankedPathways.filter((rp) => rp.isHardIneligible);
+    const sharedIneligibleNotes =
+      hardIneligibleEntries.find((rp) => rp.ineligibleSharedNotes && rp.ineligibleSharedNotes.length > 0)
+        ?.ineligibleSharedNotes ?? [];
+    const lastIneligibleSubclass = hardIneligibleEntries[hardIneligibleEntries.length - 1]?.subclass;
+
+    function drawSharedIneligibleNotesBox(notes: string[]) {
+      const intro =
+        effectiveLocale === "tr"
+          ? "Not — yukarıdaki puan testli alt sınıfların (189/190/491) tümü için geçerlidir:"
+          : effectiveLocale === "zh-Hans"
+            ? "注意——以下内容适用于上述所有打分制子类别（189/190/491）："
+            : "Note — the following applies to all points-tested subclasses (189/190/491) above:";
+
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      const introLines: string[] = doc.splitTextToSize(safeText(intro), contentWidth - 10);
+      const noteLineGroups = notes.map((note) => doc.splitTextToSize(safeText(`• ${note}`), contentWidth - 10) as string[]);
+      const totalNoteLines = noteLineGroups.reduce((sum, lines) => sum + lines.length, 0);
+      const noteLineHeight = 3.8;
+      const boxHeight = 6 + introLines.length * noteLineHeight + totalNoteLines * noteLineHeight + 3;
+      ensurePageSpace(boxHeight + 2);
+      const topY = yPosition;
+
+      doc.setFillColor(COLORS.zebra.r, COLORS.zebra.g, COLORS.zebra.b);
+      doc.setDrawColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(margin, topY, contentWidth, boxHeight, 1.2, 1.2, "FD");
+
+      let cursorY = topY + 5;
+      setBoldFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
+      introLines.forEach((line: string) => {
+        doc.text(safeText(line), margin + 5, cursorY);
+        cursorY += noteLineHeight;
+      });
+
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      noteLineGroups.forEach((lines) => {
+        lines.forEach((line: string) => {
+          doc.text(safeText(line), margin + 5, cursorY);
+          cursorY += noteLineHeight;
+        });
+      });
+
+      yPosition += boxHeight + 2;
+    }
+
     let viableRank = 0;
     rankedPathways.forEach((item) => {
       if (item.isHardIneligible) {
@@ -2617,7 +2675,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         const reasonLines: string[] = doc.splitTextToSize(safeText(item.ineligibleReason ?? ""), contentWidth - 10);
         // Row height grows with the wrapped reason text so the full reason
         // is always visible -- it must never be silently cut off mid-sentence.
-        const rowHeight = Math.max(20, 10 + reasonLines.length * reasonLineHeight + 2);
+        const rowHeight = Math.max(16, 10 + reasonLines.length * reasonLineHeight + 2);
         ensurePageSpace(rowHeight + 2);
         const topY = yPosition;
         const red = COLORS.riskHigh;
@@ -2648,6 +2706,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         doc.text(reasonLines, margin + 6, topY + 10, { lineHeightFactor: 1.18 });
 
         yPosition += rowHeight + 2;
+
+        // After the final ineligible row, render the shared profile-level notes once.
+        if (item.subclass === lastIneligibleSubclass && sharedIneligibleNotes.length > 0) {
+          drawSharedIneligibleNotesBox(sharedIneligibleNotes);
+        }
         return;
       }
 

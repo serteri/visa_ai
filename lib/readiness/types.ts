@@ -64,6 +64,19 @@ export type PathwayComparison = {
   userRelativePosition: string;
   keyRequirements: string[];
   pathwaySpecificRisks: string[];
+  /**
+   * Subclass-specific part of a low-points ineligibility reason (the points
+   * comparison), split out from the profile-level shared notes so the Visa
+   * Viability Ranking can render this per row. Only set for 189/190/491 when
+   * ineligible on points; `reason` still holds the full concatenated form.
+   */
+  ineligiblePointsLine?: string;
+  /**
+   * Profile-level notes (English "Mathematical Projection", employment caveat)
+   * shared identically across 189/190/491 — rendered once beneath the ranking
+   * rows rather than repeated per subclass. Only set alongside ineligiblePointsLine.
+   */
+  ineligibleSharedNotes?: string[];
 };
 
 export type ComparisonDifficulty = "low" | "medium" | "high";
@@ -215,8 +228,10 @@ export type RankedPathway = {
   recommendationTag: RankedPathwayRecommendation;
   /** Hard Gate (1 July 2026): true when a mandatory rule threshold (salary/age) was violated. Forces this entry to the top of the Visa Viability Ranking, rendered in red. */
   isHardIneligible?: boolean;
-  /** Localized "Ineligible: ..." warning text, shown under the entry when isHardIneligible is true. */
+  /** Localized "Ineligible: ..." warning text, shown under the entry when isHardIneligible is true. For low-points subclasses this is the per-subclass points line only; the shared notes below carry the profile-level recommendations. */
   ineligibleReason?: string;
+  /** Profile-level notes (English projection, employment caveat) shared across 189/190/491 — rendered once beneath the ranking rows, not per row. */
+  ineligibleSharedNotes?: string[];
 };
 
 export type DataCompletenessLevel = "sufficient" | "partial" | "minimal";

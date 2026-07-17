@@ -38,7 +38,7 @@ function annotateTrendEstimates(
           locale,
           `Reference data only - your profile does not currently meet Subclass ${estimate.subclass}'s threshold. See the Visa Viability Ranking section for the full reason.`,
           `Yalnızca referans verisi - profiliniz şu anda Subclass ${estimate.subclass} eşiğini karşılamıyor. Tam neden için Vize Uygulanabilirlik Sıralaması bölümüne bakın.`,
-          `仅供参考数据 - 您的档案目前尚未达到 Subclass ${estimate.subclass} 的门槛。完整原因见"签证可行性排名"部分。`
+          `仅供参考数据 - 您的档案目前尚未达到 Subclass ${estimate.subclass} 的门槛。完整原因见"签证可行性排序"部分。`
         ),
       };
     }

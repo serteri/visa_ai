@@ -27,7 +27,7 @@ function buildBlockedReason(
       locale,
       `State nomination relevance cannot be assessed while the underlying visa pathway is ineligible. See the Visa Viability Ranking section for the full reason.`,
       `Alttaki vize yolu uygun olmadigi surece eyalet adayligi ilgisi degerlendirilemez. Tam neden icin Vize Uygulanabilirlik Siralamasi bolumune bakin.`,
-      `在基础签证路径不符合资格的情况下，无法评估州担保相关性。完整原因见"签证可行性排名"部分。`
+      `在基础签证路径不符合资格的情况下，无法评估州担保相关性。完整原因见"签证可行性排序"部分。`
     );
   }
 

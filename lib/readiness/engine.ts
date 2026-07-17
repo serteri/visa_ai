@@ -1,6 +1,5 @@
 import { buildAssessmentState } from "@/lib/readiness/assessment-state";
 import {
-  appendEmploymentCaveat,
   buildEmploymentExperienceCaveat,
   getEmploymentDataSignals,
 } from "@/lib/readiness/employment-signals";
@@ -281,7 +280,7 @@ function shortIneligibleReference(locale: Locale): string {
   return isTr
     ? "Uygun değil — tam neden için Vize Uygulanabilirlik Sıralaması bölümüne bakın."
     : isZh
-      ? "不符合资格——完整原因见“签证可行性排名”部分。"
+      ? "不符合资格——完整原因见“签证可行性排序”部分。"
       : "Ineligible — see the Visa Viability Ranking section for the full reason.";
 }
 
@@ -295,21 +294,47 @@ function shortIneligibleReference(locale: Locale): string {
  * appended — framed strictly as a points calculation, not an eligibility or
  * invitation guarantee.
  */
+/**
+ * Splits the low-points ineligibility reason into its subclass-specific part
+ * (the points comparison) and its profile-level shared notes (the English
+ * "Mathematical Projection" and the employment-experience caveat). The shared
+ * notes are identical across 189/190/491 for a given profile — English level
+ * and employment data don't vary by subclass — so the Visa Viability Ranking
+ * renders them ONCE beneath the three rows instead of repeating them per row.
+ */
+function buildIneligibleLowPointsParts(
+  locale: Locale,
+  estimatedPoints: number,
+  englishLevel?: string,
+  input?: ReadinessInput
+): { pointsLine: string; sharedNotes: string[] } {
+  const pointsLine = t(locale, "ineligible.lowPoints", { points: estimatedPoints });
+  const normalizedEnglish = (englishLevel ?? "").trim().toLowerCase();
+  const hasRoomToImproveEnglish = normalizedEnglish === "none" || normalizedEnglish === "competent";
+
+  const sharedNotes: string[] = [];
+  if (hasRoomToImproveEnglish) {
+    sharedNotes.push(t(locale, "suggestion.improveEnglish"));
+  }
+  if (input) {
+    const employmentCaveat = buildEmploymentExperienceCaveat(locale, getEmploymentDataSignals(input), "short");
+    if (employmentCaveat) sharedNotes.push(employmentCaveat);
+  }
+
+  return { pointsLine, sharedNotes };
+}
+
 function formatIneligibleLowPointsReason(
   locale: Locale,
   estimatedPoints: number,
   englishLevel?: string,
   input?: ReadinessInput
 ): string {
-  const base = t(locale, "ineligible.lowPoints", { points: estimatedPoints });
-  const normalizedEnglish = (englishLevel ?? "").trim().toLowerCase();
-  const hasRoomToImproveEnglish = normalizedEnglish === "none" || normalizedEnglish === "competent";
-  const withEnglishSuggestion = hasRoomToImproveEnglish
-    ? `${base} ${t(locale, "suggestion.improveEnglish")}`
-    : base;
-  return input
-    ? appendEmploymentCaveat(withEnglishSuggestion, locale, getEmploymentDataSignals(input), "short")
-    : withEnglishSuggestion;
+  // Kept as the single concatenated form for the `reason` field (used by
+  // fallbacks and assessment-state); composed from the same parts so it can
+  // never drift from the split rendering in the Visa Viability Ranking.
+  const { pointsLine, sharedNotes } = buildIneligibleLowPointsParts(locale, estimatedPoints, englishLevel, input);
+  return [pointsLine, ...sharedNotes].join(" ");
 }
 
 // ─── Pathway detection ────────────────────────────────────────────────────────
@@ -1301,6 +1326,17 @@ function buildPathwayEntry(
     ["189", "190", "491"].includes(subclass) &&
     estimatedPoints !== undefined &&
     estimatedPoints < SKILLED_MIGRATION_MIN_POINTS;
+
+  // Split form of the low-points reason: the points line is subclass-specific
+  // (rendered per row), the shared notes are profile-level (rendered once).
+  let ineligiblePointsLine: string | undefined;
+  let ineligibleSharedNotes: string[] | undefined;
+  if (isLowPointsIneligible && estimatedPoints !== undefined) {
+    const parts = buildIneligibleLowPointsParts(locale, estimatedPoints, input.englishLevel, input);
+    ineligiblePointsLine = parts.pointsLine;
+    ineligibleSharedNotes = parts.sharedNotes;
+  }
+
   const forcedIneligibleByRule =
     (subclass === "485" && (hardAgeGate?.isHardIneligible || ageGate?.isAboveLimit)) ||
     (subclass === "482" && salaryGate?.isBelowCsit) ||
@@ -1358,6 +1394,8 @@ function buildPathwayEntry(
     userRelativePosition,
     keyRequirements,
     pathwaySpecificRisks,
+    ineligiblePointsLine,
+    ineligibleSharedNotes,
   };
 }
 
@@ -2357,14 +2395,14 @@ function buildIneligibleSummaryLine(
     return isTr
       ? `${skilledLabel} şu anda uygun değil — ${estimatedPoints} puan / ${SKILLED_MIGRATION_MIN_POINTS} puan gerekli. Ayrıntılar için aşağıdaki Vize Uygulanabilirlik Sıralamasına bakın.`
       : isZh
-        ? `${skilledLabel}当前不符合资格——${estimatedPoints} 分，需 ${SKILLED_MIGRATION_MIN_POINTS} 分。详情见下方“签证可行性排名”。`
+        ? `${skilledLabel}当前不符合资格——${estimatedPoints} 分，需 ${SKILLED_MIGRATION_MIN_POINTS} 分。详情见下方“签证可行性排序”。`
         : `${skilledLabel} currently ineligible — ${estimatedPoints} pts vs ${SKILLED_MIGRATION_MIN_POINTS} required. See the Visa Viability Ranking below for details.`;
   }
 
   return isTr
     ? `Alt sınıf ${list} şu anda uygun değil. Ayrıntılar için aşağıdaki Vize Uygulanabilirlik Sıralamasına bakın.`
     : isZh
-      ? `子类别 ${list} 当前不符合资格。详情见下方“签证可行性排名”。`
+      ? `子类别 ${list} 当前不符合资格。详情见下方“签证可行性排序”。`
       : `Subclass ${list} currently ineligible. See the Visa Viability Ranking below for details.`;
 }
 
