@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/rbac";
 import { signOutAction } from "./actions";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function PortalLayout({
   children,
@@ -50,6 +51,7 @@ export default async function PortalLayout({
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+      <Toaster />
     </div>
   );
 }

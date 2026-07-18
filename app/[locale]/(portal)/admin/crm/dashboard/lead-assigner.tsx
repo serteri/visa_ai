@@ -1,7 +1,24 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { assignLeadToAgent } from "../actions";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type Agent = {
   id: string;
@@ -16,6 +33,64 @@ type Lead = {
   pointsTier: string | null;
 };
 
+function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
+  const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const handleSelect = (agentId: string) => {
+    setOpen(false);
+    startTransition(async () => {
+      try {
+        await assignLeadToAgent(lead.id, agentId);
+        toast.success(`Lead successfully assigned.`);
+      } catch (e) {
+        toast.error("Failed to assign lead.");
+      }
+    });
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between"
+          disabled={isPending}
+        >
+          {isPending ? "Assigning..." : "Select an agent..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command>
+          <CommandInput placeholder="Search agents..." />
+          <CommandList>
+            <CommandEmpty>No agent found.</CommandEmpty>
+            <CommandGroup>
+              {agents.map((agent) => (
+                <CommandItem
+                  key={agent.id}
+                  value={agent.name ?? agent.email}
+                  onSelect={() => handleSelect(agent.id)}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4 opacity-0" // We don't track selected state since it disappears from the list
+                    )}
+                  />
+                  {agent.name ?? agent.email}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function LeadAssigner({
   unassignedLeads,
   agents,
@@ -23,8 +98,6 @@ export function LeadAssigner({
   unassignedLeads: Lead[];
   agents: Agent[];
 }) {
-  const [isPending, startTransition] = useTransition();
-
   if (unassignedLeads.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-slate-500">
@@ -51,28 +124,7 @@ export function LeadAssigner({
               <td className="px-4 py-3 text-slate-600">{lead.email}</td>
               <td className="px-4 py-3 font-semibold">{lead.pointsTier || "—"}</td>
               <td className="px-4 py-3">
-                <select
-                  disabled={isPending}
-                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
-                  defaultValue=""
-                  onChange={(e) => {
-                    const agentId = e.target.value;
-                    if (agentId) {
-                      startTransition(async () => {
-                        await assignLeadToAgent(lead.id, agentId);
-                      });
-                    }
-                  }}
-                >
-                  <option value="" disabled>
-                    Select an agent...
-                  </option>
-                  {agents.map((agent) => (
-                    <option key={agent.id} value={agent.id}>
-                      {agent.name ?? agent.email}
-                    </option>
-                  ))}
-                </select>
+                <AgentSelect lead={lead} agents={agents} />
               </td>
             </tr>
           ))}
