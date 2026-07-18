@@ -33,7 +33,7 @@ type Lead = {
   pointsTier: string | null;
 };
 
-function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
+function AgentCombobox({ lead, agents }: { lead: Lead; agents: Agent[] }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -42,8 +42,8 @@ function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
     startTransition(async () => {
       try {
         await assignLeadToAgent(lead.id, agentId);
-        toast.success(`Lead successfully assigned.`);
-      } catch (e) {
+        toast.success("Lead successfully assigned.");
+      } catch {
         toast.error("Failed to assign lead.");
       }
     });
@@ -51,17 +51,19 @@ function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-          disabled={isPending}
-        >
-          {isPending ? "Assigning..." : "Select an agent..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-[200px] justify-between"
+            disabled={isPending}
+          />
+        }
+      >
+        {isPending ? "Assigning..." : "Select an agent..."}
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
@@ -75,11 +77,7 @@ function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
                   value={agent.name ?? agent.email}
                   onSelect={() => handleSelect(agent.id)}
                 >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4 opacity-0" // We don't track selected state since it disappears from the list
-                    )}
-                  />
+                  <Check className={cn("mr-2 h-4 w-4 opacity-0")} />
                   {agent.name ?? agent.email}
                 </CommandItem>
               ))}
@@ -124,7 +122,7 @@ export function LeadAssigner({
               <td className="px-4 py-3 text-slate-600">{lead.email}</td>
               <td className="px-4 py-3 font-semibold">{lead.pointsTier || "—"}</td>
               <td className="px-4 py-3">
-                <AgentSelect lead={lead} agents={agents} />
+                <AgentCombobox lead={lead} agents={agents} />
               </td>
             </tr>
           ))}
