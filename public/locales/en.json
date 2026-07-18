@@ -22,7 +22,8 @@
       "firstName": "First Name",
       "lastName": "Last Name",
       "email": "Email",
-      "phone": "Phone (optional)",
+      "phone": "Phone Number",
+      "phoneRequired": "Phone number is required.",
       "submitButton": "Free Download"
     },
     "spamDisclaimer": "We don't send spam. You can unsubscribe at any time.",

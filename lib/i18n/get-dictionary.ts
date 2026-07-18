@@ -29,6 +29,7 @@ export interface GuidePageDictionary {
     lastName: string;
     email: string;
     phone: string;
+    phoneRequired: string;
     submitButton: string;
   };
   spamDisclaimer: string;

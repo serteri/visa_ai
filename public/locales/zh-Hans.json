@@ -20,7 +20,8 @@
       "firstName": "名",
       "lastName": "姓",
       "email": "电子邮件",
-      "phone": "电话（可选）",
+      "phone": "手机号",
+      "phoneRequired": "手机号为必填项。",
       "submitButton": "免费下载"
     },
     "spamDisclaimer": "我们不发送垃圾邮件。您可以随时退订。",

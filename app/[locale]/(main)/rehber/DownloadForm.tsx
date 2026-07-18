@@ -43,6 +43,12 @@ export function DownloadForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    // Phone is now required — block submission (and the PDF) when empty.
+    if (!phone.trim()) {
+      setError(translations.guidePage.form.phoneRequired)
+      return
+    }
+
     setIsSubmitting(true)
     setError(null)
 
@@ -188,12 +194,16 @@ export function DownloadForm({
           />
         </div>
         <div>
-          <Label htmlFor="phone">{translations.guidePage.form.phone}</Label>
+          <Label htmlFor="phone">
+            {translations.guidePage.form.phone}
+            <span className="text-red-500 ml-1">*</span>
+          </Label>
           <Input
             id="phone"
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            required
             disabled={limitReached || isSubmitting}
           />
         </div>

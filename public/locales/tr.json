@@ -22,7 +22,8 @@
       "firstName": "Ad",
       "lastName": "Soyad",
       "email": "E-posta",
-      "phone": "Telefon",
+      "phone": "Telefon Numarası",
+      "phoneRequired": "Telefon numarası zorunludur.",
       "submitButton": "Ücretsiz İndir"
     },
     "spamDisclaimer": "Spam göndermiyoruz. İstediğiniz zaman çıkabilirsiniz.",

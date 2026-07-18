@@ -30,6 +30,7 @@ const STRICT_EMAIL_REGEX =
 type FieldErrors = {
   full_name?: string;
   email?: string;
+  phone?: string;
 };
 
 interface PdfStatus {
@@ -107,9 +108,9 @@ export function PdfDownloadModal({
     setFieldErrors((prev) => (prev[name as keyof FieldErrors] ? { ...prev, [name]: undefined } : prev));
   }
 
-  // Level 1 frontend validation: Full Name is required, Email is required and
-  // must pass a strict format check, Phone is optional. Runs before the
-  // request is sent so bad input never reaches the API.
+  // Level 1 frontend validation: Full Name, Email and Phone are all required;
+  // Email must also pass a strict format check. Runs before the request is sent
+  // so bad input never reaches the API.
   function validate(): FieldErrors {
     const nextErrors: FieldErrors = {};
 
@@ -125,6 +126,10 @@ export function PdfDownloadModal({
         "Enter a valid email address.",
         "请输入有效的邮箱地址。"
       );
+    }
+
+    if (!form.phone.trim()) {
+      nextErrors.phone = tx("Telefon numarası zorunludur.", "Phone number is required.", "手机号为必填项。");
     }
 
     return nextErrors;
@@ -368,18 +373,22 @@ export function PdfDownloadModal({
             </div>
             <div className="space-y-1">
               <Label htmlFor="phone">
-                {tx("Telefon Numarası", "Phone Number", "手机号")}{" "}
-                <span className="text-slate-400 font-normal">{tx("(opsiyonel)", "(optional)", "（选填）")}</span>
+                {tx("Telefon Numarası", "Phone Number", "手机号")}
+                <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
                 id="phone"
                 name="phone"
                 type="tel"
+                required
                 placeholder={tx("+90 555 000 0000", "+61 412 345 678", "+86 138 0013 8000")}
                 value={form.phone}
                 onChange={handleChange}
+                aria-invalid={Boolean(fieldErrors.phone)}
+                className={fieldErrors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}
                 disabled={loading || !isFree}
               />
+              {fieldErrors.phone && <p className="text-xs text-red-600">{fieldErrors.phone}</p>}
             </div>
 
             {error && (
