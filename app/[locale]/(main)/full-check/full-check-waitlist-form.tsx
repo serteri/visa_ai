@@ -267,7 +267,7 @@ function searchAnzsco(query: string, locale: string): AnzscoEntry[] {
   return scoredResults.slice(0, maxResults).map(({ entry }) => {
     const record = findOccupationRecord(entry.code);
     const isOnSkilledList = record
-      ? (record.visa_lists ?? []).some((l) => ["MLTSSL", "STSOL", "ROL"].includes(l))
+      ? (record.visa_lists ?? []).some((l) => ["MLTSSL", "STSOL", "ROL", "CSOL"].includes(l))
       : false;
     return {
       ...entry,
