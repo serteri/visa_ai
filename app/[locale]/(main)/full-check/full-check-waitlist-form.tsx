@@ -862,14 +862,19 @@ export function FullCheckWaitlistForm({
         </p>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-full-name">{txt("Ad soyad", "Full name", "姓名")}</Label>
+          <Label htmlFor="waitlist-full-name">
+            {txt("Ad soyad", "Full name", "姓名")}
+            <RequiredMark />
+          </Label>
           <Input
             id="waitlist-full-name"
             name="fullName"
+            required
             {...noAutofill("fullName")}
             className={fieldClassName}
             placeholder={txt("Adınız", "Your name", "请输入姓名")}
           />
+          <ErrorText message={state.errors?.fullName} />
         </div>
 
         <div className="space-y-2">
@@ -999,6 +1004,7 @@ export function FullCheckWaitlistForm({
         <div className="space-y-2">
           <Label htmlFor="waitlist-occupation">
             {txt("Meslek", "Occupation", "职业")}
+            <RequiredMark />
             {selectedCountry === "CA" && (
               <span className="ml-1.5 text-xs text-muted-foreground font-normal">
                 {txt("(NOC 2021 araması)", "(NOC 2021 search)", "（NOC 2021 搜索）")}
@@ -1114,6 +1120,7 @@ export function FullCheckWaitlistForm({
               )}
             </div>
           )}
+          <ErrorText message={state.errors?.occupation} />
         </div>
 
         <div className="space-y-2">

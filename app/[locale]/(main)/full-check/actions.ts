@@ -941,6 +941,8 @@ export async function submitFullCheckWaitlist(
   }
   if (!age) errors.age = isTr ? "Yas gereklidir." : isZh ? "年龄为必填项。" : "Age is required.";
   if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : isZh ? "主要目标为必填项。" : "Main goal is required.";
+  if (!fullName) errors.fullName = isTr ? "Ad soyad gereklidir." : isZh ? "姓名为必填项。" : "Full name is required.";
+  if (!occupation) errors.occupation = isTr ? "Meslek gereklidir." : isZh ? "职业为必填项。" : "Occupation is required.";
   if (!qualificationLevel) {
     errors.qualificationLevel = isTr
       ? "Egitim seviyesi gereklidir."
