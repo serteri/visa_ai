@@ -2,7 +2,7 @@
   "nav.home": "Home",
   "nav.checker": "Visa Checker",
   "nav.legal": "Legal",
-  "mandatory_fields_warning": "Filling out these fields is mandatory.",
+  "mandatory_fields_warning": "Fields marked with an asterisk (*) are mandatory.",
   "ineligible.salaryReason": "Ineligible: Salary: {{salary}} AUD vs Threshold: {{threshold}} AUD.",
   "ineligible.ageReason": "Ineligible: Age: {{age}} vs Limit: {{ageLimit}}.",
   "ineligible.lowPoints": "Ineligible: Total Points: {{points}} vs Minimum Required: 65.",

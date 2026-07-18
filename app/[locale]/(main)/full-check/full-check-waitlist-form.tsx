@@ -937,15 +937,20 @@ export function FullCheckWaitlistForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-current-country">{txt("Bulunduğunuz ülke", "Current country", "当前国家")}</Label>
+          <Label htmlFor="waitlist-current-country">
+            {txt("Bulunduğunuz ülke", "Current country", "当前国家")}
+            <RequiredMark />
+          </Label>
           <Input
             id="waitlist-current-country"
             name="currentCountry"
+            required
             defaultValue={initialValues.currentCountry ?? ""}
             {...noAutofill("currentCountry")}
             className={fieldClassName}
             placeholder={txt("Avustralya, Türkiye, Hindistan veya başka bir ülke", "Australia, Turkiye, India, or elsewhere", "例如：澳大利亚、中国、土耳其等")}
           />
+          <ErrorText message={state.errors?.currentCountry} />
         </div>
 
         <div className="space-y-2">

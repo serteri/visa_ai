@@ -943,6 +943,7 @@ export async function submitFullCheckWaitlist(
   if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : isZh ? "主要目标为必填项。" : "Main goal is required.";
   if (!fullName) errors.fullName = isTr ? "Ad soyad gereklidir." : isZh ? "姓名为必填项。" : "Full name is required.";
   if (!occupation) errors.occupation = isTr ? "Meslek gereklidir." : isZh ? "职业为必填项。" : "Occupation is required.";
+  if (!currentCountry) errors.currentCountry = isTr ? "Bulundugunuz ulke gereklidir." : isZh ? "当前国家为必填项。" : "Current country is required.";
   if (!qualificationLevel) {
     errors.qualificationLevel = isTr
       ? "Egitim seviyesi gereklidir."
