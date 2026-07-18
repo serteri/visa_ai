@@ -290,7 +290,18 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/agent/lead/xyz\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/en/admin/dashboard\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/en/tools/points-calculator\")",
-      "Bash(curl -s -o /dev/null -w \"final:%{http_code} %{url_effective} redirects:%{num_redirects}\\\\n\" -L --max-redirs 5 \"http://localhost:3000/admin/dashboard\")"
+      "Bash(curl -s -o /dev/null -w \"final:%{http_code} %{url_effective} redirects:%{num_redirects}\\\\n\" -L --max-redirs 5 \"http://localhost:3000/admin/dashboard\")",
+      "Bash(cd \"C:/Users/serte/Desktop\" && ls -la \"Skilled Occupation List.md\" && echo \"--- lines/words ---\" && wc -l \"Skilled Occupation List.md\" && echo \"--- first 60 lines ---\" && head -60 \"Skilled Occupation List.md\")",
+      "Bash(cd \"C:/Users/serte/Desktop/visa_ai\" && mkdir -p src/data/sources && cp \"C:/Users/serte/Desktop/Skilled Occupation List.md\" \"src/data/sources/skilled-occupation-list.md\" && echo \"copied \\($\\(wc -l < src/data/sources/skilled-occupation-list.md\\) lines\\)\")",
+      "Bash(node -e 'const p=require\\(\"./package.json\"\\);const d={...p.dependencies,...p.devDependencies};console.log\\(\"jspdf:\",d.jspdf||\"no\"\\);console.log\\(\"jspdf-autotable:\",d[\"jspdf-autotable\"]||\"no\"\\);')",
+      "Bash(rm -f src/data/occupations.backup.json scratch/verify-occ-pdf.mjs)",
+      "Bash(node -e *)",
+      "Bash(node -e 'const a=require\\(\"./src/data/anzsco-list.json\"\\); console.log\\(\"count:\",a.length\\); console.log\\(JSON.stringify\\(a[0]\\)\\); const withTr=a.filter\\(x=>x.title_tr\\).length, withZh=a.filter\\(x=>x.title_zh\\).length; console.log\\(\"with tr:\",withTr,\"| with zh:\",withZh\\);')",
+      "Bash(cp src/data/anzsco-list.json src/data/anzsco-list.backup.json)",
+      "Bash(rm -f src/data/anzsco-list.backup.json)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type} %{size_download} bytes\\\\n\" \"http://localhost:3000/australia-skilled-occupation-list-2026.pdf\")",
+      "Bash(cp src/data/anzsco-list.json src/data/anzsco-list.pre-batch01.json)",
+      "Bash(rm -f src/data/anzsco-list.pre-batch01.json)"
     ]
   }
 }
