@@ -17,6 +17,8 @@ type Occupation = {
   title_zh?: string;
   skillLevel: string;
   duties: string[];
+  duties_tr?: string[];
+  duties_zh?: string[];
 };
 
 const OCCUPATIONS = anzscoList as Occupation[];
@@ -31,6 +33,14 @@ function getLocalizedTitle(o: Occupation, locale: string): string {
   if (locale === "tr") return o.title_tr ?? o.title;
   if (locale === "zh-Hans") return o.title_zh ?? o.title;
   return o.title;
+}
+
+// Localized duties fall back to English until tr/zh duty translations are
+// backfilled for that occupation (see scripts/i18n/anzsco-batch-*.ts).
+function getLocalizedDuties(o: Occupation, locale: string): string[] {
+  if (locale === "tr" && o.duties_tr?.length) return o.duties_tr;
+  if (locale === "zh-Hans" && o.duties_zh?.length) return o.duties_zh;
+  return o.duties;
 }
 const POPULAR_CODES = [
   "261313", // Software Engineer (ICT)
@@ -231,7 +241,7 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                       <div className="mt-6">
                         <h3 className="text-lg font-bold text-slate-950">{t("af.detail.tasks")}</h3>
                         <ul className="mt-4 space-y-3">
-                          {selectedOccupation.duties.map((duty) => (
+                          {getLocalizedDuties(selectedOccupation, locale).map((duty) => (
                             <li key={duty} className="flex gap-3 text-sm leading-6 text-slate-700">
                               <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-700" />
                               <span>{duty}</span>
