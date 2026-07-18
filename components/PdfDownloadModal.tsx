@@ -184,11 +184,19 @@ export function PdfDownloadModal({
             )
           );
         } else if (data.paymentRequired) {
+          // Slots ran out between opening the modal and submitting — flip to the
+          // paid Stripe path in place (isFree:false swaps the form for the
+          // checkout button below) instead of dead-ending on a contact message.
+          setStatus((prev) =>
+            prev
+              ? { ...prev, isFree: false, freeRemaining: 0 }
+              : { isFree: false, freeRemaining: 0, totalDownloads: 0, alreadyDownloaded: false }
+          );
           setError(
             tx(
-              "Ucretsiz indirme kotasi dolmustur. Satin almak icin lutfen bizimle iletisime gecin: info@logivisa.com",
-              "The free download quota is full. To purchase, contact us: info@logivisa.com",
-              "免费名额已满。如需购买，请联系我们：info@logivisa.com"
+              "Ücretsiz kota az önce doldu — aşağıdan $9.99 ile satın alabilirsiniz.",
+              "The free quota just filled up — you can purchase below for $9.99.",
+              "免费名额刚刚用完 — 可在下方以 $9.99 购买。"
             )
           );
         } else {

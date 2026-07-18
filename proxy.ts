@@ -29,6 +29,11 @@ function getLocale(request: NextRequest): string {
 }
 
 function isRootAdminPath(pathname: string): boolean {
+  // The legacy ops admin is forced under /en/admin. The new role-based CRM
+  // admin (/admin/crm) is deliberately excluded so it stays prefixless like the
+  // rest of the app — forcing it under /en collides with the next.config
+  // /en/:path* → /:path* redirect and causes a redirect loop.
+  if (pathname.startsWith("/admin/crm")) return false;
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
@@ -38,6 +43,30 @@ function isLocaleAdminPath(pathname: string): boolean {
 
 function isDashboardPath(pathname: string): boolean {
   return /^\/(en|tr|zh-Hans)\/dashboard(?:\/.*)?$/.test(pathname);
+}
+
+function localeFromPath(pathname: string): "en" | "tr" | "zh-Hans" {
+  if (pathname.startsWith("/tr/") || pathname === "/tr") return "tr";
+  if (pathname.startsWith("/zh-Hans/") || pathname === "/zh-Hans") return "zh-Hans";
+  return "en";
+}
+
+// New role-based CRM portal. The AGENT portal (English) is prefixless
+// (/agent/...); the ADMIN portal always carries the locale prefix
+// (/en/admin/... — proxy normalizes bare /admin to /en/admin above), so its
+// matcher requires a leading locale. Legacy /admin/{leads,agents,referrals,...}
+// pages are deliberately excluded so they keep their ADMIN_TOKEN gate.
+function portalRoleForPath(pathname: string): "AGENT" | "ADMIN" | null {
+  if (/^\/(?:tr\/|zh-Hans\/)?agent(?:\/.*)?$/.test(pathname)) return "AGENT";
+  if (/^\/(?:en|tr|zh-Hans)\/admin\/crm(?:\/.*)?$/.test(pathname)) return "ADMIN";
+  return null;
+}
+
+function portalHomeForRole(role: string | undefined, locale: string): string {
+  if (role === "ADMIN") return `/${locale}/admin/crm/dashboard`;
+  const prefix = locale === "en" ? "" : `/${locale}`;
+  if (role === "AGENT") return `${prefix}/agent/dashboard`;
+  return `${prefix}/dashboard`;
 }
 
 export const proxy = auth((req) => {
@@ -107,6 +136,32 @@ export const proxy = auth((req) => {
     const redirectUrl = new URL(targetPath, req.url);
     redirectUrl.search = searchParams.toString();
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // ── Role-based CRM portal protection (runs BEFORE the legacy ADMIN_TOKEN
+  //    gate so the new /admin/dashboard + /admin/agent pages are governed by
+  //    role, not the shared admin password). Prefixless /admin was already
+  //    normalized to /en/admin above, so admin paths here carry a locale. ──
+  const portalRole = portalRoleForPath(pathname);
+  if (portalRole) {
+    const locale = localeFromPath(pathname);
+    const sessionRole = req.auth?.user?.role;
+    if (!req.auth?.user) {
+      const target = searchParams.toString() ? `${pathname}?${searchParams}` : pathname;
+      const loginBase = locale === "en" ? "/login" : `/${locale}/login`;
+      const loginUrl = new URL(loginBase, req.url);
+      loginUrl.searchParams.set("callbackUrl", target);
+      return NextResponse.redirect(loginUrl);
+    }
+    if (sessionRole !== portalRole) {
+      return NextResponse.redirect(new URL(portalHomeForRole(sessionRole, locale), req.url));
+    }
+    // Authorized. Locale-prefixed paths (all admin, plus tr/zh-Hans agent)
+    // short-circuit like the legacy admin block to skip the /en rewrite; the
+    // English prefixless agent path falls through to the rewrite below.
+    if (/^\/(?:en|tr|zh-Hans)\//.test(pathname)) {
+      return NextResponse.next();
+    }
   }
 
   if (isLocaleAdminPath(pathname)) {

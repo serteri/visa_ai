@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, FileText, Loader2, UploadCloud, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
+import { PdfDownloadModal, type PdfProduct } from "@/components/PdfDownloadModal";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 
 type ClassifyResult = {
@@ -242,6 +242,8 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
+  const [showGuideModal, setShowGuideModal] = useState(false);
+  const [slotStatus, setSlotStatus] = useState<{ isFree: boolean; freeRemaining: number } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const t = DICT[locale];
@@ -251,18 +253,37 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
   // (which Chinese-speaking visitors also see, per spec).
   const ctaVariant: "tr" | "en" | "zh" = locale === "tr" ? "tr" : locale === "zh" ? "zh" : "en";
   const cta = CTA_COPY[ctaVariant];
-  const productType = locale === "tr" ? "pdf_book" : "pdf_book_global";
 
-  // Gate passed to StripeCheckoutButton -- runs at click time, blocks the
-  // Stripe redirect (not just the UI) if the checkbox hasn't been checked.
-  function handleBeforeCheckout(): boolean {
-    if (!isTermsAccepted) {
-      setTermsError(true);
-      return false;
-    }
-    setTermsError(false);
-    return true;
-  }
+  // The guide is delivered through the SAME PdfDownloadModal + /api/pdf-download
+  // pipeline the homepage uses, so the 18-slot pool (FREE_LIMIT, admin/test
+  // exclusion) is shared: a free grab here counts against the same counter, and
+  // once it is exhausted the modal falls back to the existing $9.99 Stripe
+  // checkout automatically. Turkish locale -> Turkish guide, everything else ->
+  // the Global English guide.
+  const modalProduct: PdfProduct = locale === "tr" ? "turkish" : "global";
+  const modalSlug = modalProduct === "turkish" ? "avustralya-pr-rehberi-2026" : "australia-guide-2026";
+
+  // Read the shared slot counter so the CTA can reflect free-vs-paid before the
+  // modal opens. The modal re-fetches on open and remains the source of truth;
+  // this is only for the CTA copy. Default (null) is treated as "free" so the
+  // optimistic path shows the free CTA while loading.
+  useEffect(() => {
+    if (status !== "result") return;
+    let cancelled = false;
+    fetch(`/api/pdf-download?slug=${modalSlug}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!cancelled) setSlotStatus({ isFree: Boolean(d.isFree), freeRemaining: Number(d.freeRemaining ?? 0) });
+      })
+      .catch(() => {
+        /* CTA falls back to the optimistic free label; modal still enforces. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status, modalSlug]);
+
+  const slotsExhausted = slotStatus?.isFree === false;
 
   // Thin wrapper around the shared TermsGate component (also used by
   // PdfDownloadModal) so both consumers stay in sync rather than drifting
@@ -475,27 +496,43 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
               </div>
             )}
 
-            {/* Sales CTA — shown regardless of match outcome */}
+            {/* Sales CTA — shown regardless of match outcome. Delivery and the
+                free-vs-paid decision are handled by the shared PdfDownloadModal
+                (same 18-slot pool + Stripe fallback as the homepage). */}
             <div className="rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50 p-6">
               <p className="text-base font-semibold leading-relaxed text-slate-900">
                 {cta.body(result.match_found ? result.occupation_title : null)}
               </p>
 
-              <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-3xl font-black text-indigo-700">$9.99</span>
-                <span className="text-base font-medium text-slate-400 line-through">$29.99</span>
-              </div>
+              {slotsExhausted ? (
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="text-3xl font-black text-indigo-700">$9.99</span>
+                  <span className="text-base font-medium text-slate-400 line-through">$29.99</span>
+                </div>
+              ) : (
+                <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-sm font-bold text-emerald-700">
+                  {locale === "tr"
+                    ? `🎁 Ücretsiz — ${slotStatus?.freeRemaining ?? ""} slot kaldı`
+                    : locale === "zh"
+                      ? `🎁 免费 — 剩 ${slotStatus?.freeRemaining ?? ""} 个名额`
+                      : `🎁 Free while slots last — ${slotStatus?.freeRemaining ?? ""} left`}
+                </div>
+              )}
 
-              <div className="mt-4 space-y-2">
-                {renderTermsGate()}
-
-                <StripeCheckoutButton
-                  productType={productType}
-                  locale={STRIPE_LOCALE[locale]}
-                  className="w-full bg-indigo-600 py-6 text-base font-bold text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 sm:w-auto"
-                  label={cta.button}
-                  onBeforeCheckout={handleBeforeCheckout}
-                />
+              <div className="mt-4">
+                <Button
+                  type="button"
+                  onClick={() => setShowGuideModal(true)}
+                  className="w-full bg-indigo-600 py-6 text-base font-bold text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700"
+                >
+                  {slotsExhausted
+                    ? cta.button
+                    : locale === "tr"
+                      ? "📘 Rehberi Ücretsiz Al"
+                      : locale === "zh"
+                        ? "📘 免费获取蓝图"
+                        : "📘 Get the Blueprint — Free"}
+                </Button>
               </div>
             </div>
 
@@ -505,6 +542,13 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
           </div>
         )}
       </CardContent>
+
+      <PdfDownloadModal
+        locale={STRIPE_LOCALE[locale]}
+        product={modalProduct}
+        open={showGuideModal}
+        onClose={() => setShowGuideModal(false)}
+      />
     </Card>
   );
 }

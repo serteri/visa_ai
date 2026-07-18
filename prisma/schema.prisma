@@ -50,6 +50,10 @@ model UserReport {
   pdfSent               Boolean   @default(false) @map("pdf_sent")
   reportJson            Json      @map("report_json")
   inputJson             Json      @map("input_json")
+  // CRM: the AGENT (User) this lead is routed to. Nullable — unassigned leads
+  // sit in the pool until an admin/agent claims them.
+  agentId               String?   @map("agent_id")
+  agent                 User?     @relation("AgentAssignedLeads", fields: [agentId], references: [id], onDelete: SetNull)
   createdAt             DateTime  @default(now()) @map("created_at")
   unlockedAt            DateTime? @map("unlocked_at")
   ipAddress             String?   @map("ip_address")
@@ -70,6 +74,10 @@ model User {
   emailVerified     DateTime?          @map("email_verified")
   image             String?
   password          String?
+  // CRM role-based access control. USER = consumer (default), AGENT = migration
+  // agent with a lead portal, ADMIN = internal operator. Route protection keys
+  // off this in proxy.ts + per-page requireRole() checks.
+  role              String             @default("USER")
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   accounts          Account[]
@@ -78,6 +86,7 @@ model User {
   savedReports      SavedReport[]
   sessions          Session[]
   visaTrackings     VisaTracking[]
+  assignedLeads     UserReport[]       @relation("AgentAssignedLeads")
 
   @@map("users")
 }

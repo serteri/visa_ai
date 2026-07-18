@@ -273,7 +273,24 @@
       "Bash(ls .claude/)",
       "Bash(cp prisma/schema.prisma scratch/schema.prisma.backup-before-pull)",
       "Bash(grep -n \"^//\\\\|commented\" prisma/schema.prisma)",
-      "PowerShell(Stop-Process -Id 75748 -Force)"
+      "PowerShell(Stop-Process -Id 75748 -Force)",
+      "Bash(git log *)",
+      "Bash(awk -F: '$1<1300')",
+      "Bash(awk -F: '$1>1300 && $1<4300')",
+      "Bash(node -e \"console.log\\(require.resolve\\('pdf-parse'\\)\\)\")",
+      "Bash(curl -sS -i -X POST \"https://www.logivisa.com/api/checkout\" -H \"Content-Type: application/json\" -H \"Origin: https://www.logivisa.com\" -d '{\"productType\":\"pdf_book_global\",\"locale\":\"en\"}' --max-time 30)",
+      "Bash(npx --yes vercel whoami)",
+      "Bash(npx --yes vercel env ls production)",
+      "Bash(npx --yes vercel env ls)",
+      "Bash(curl -sS \"http://localhost:3000/api/pdf-download?slug=australia-guide-2026\" --max-time 20)",
+      "Bash(curl -sS -X POST \"http://localhost:3000/api/pdf-download\" -H \"Content-Type: application/json\" -H \"x-forwarded-for: 203.0.113.99\" -d \"{\\\\\"full_name\\\\\":\\\\\"Boundary Test\\\\\",\\\\\"email\\\\\":\\\\\"boundary-test-$\\(date +%s\\)@example.com\\\\\",\\\\\"slug\\\\\":\\\\\"australia-guide-2026\\\\\",\\\\\"termsAcceptedAt\\\\\":\\\\\"$\\(date -u +%Y-%m-%dT%H:%M:%SZ\\)\\\\\"}\" -w \"\\\\nHTTP %{http_code}\\\\n\" --max-time 20)",
+      "Bash(grep -iE '^\\(pdfjs-dist|pdf-parse|pdf-lib\\)$')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/admin/crm/dashboard\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/en/admin/crm/dashboard\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/agent/lead/xyz\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/en/admin/dashboard\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"http://localhost:3000/en/tools/points-calculator\")",
+      "Bash(curl -s -o /dev/null -w \"final:%{http_code} %{url_effective} redirects:%{num_redirects}\\\\n\" -L --max-redirs 5 \"http://localhost:3000/admin/dashboard\")"
     ]
   }
 }

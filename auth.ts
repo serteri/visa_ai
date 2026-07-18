@@ -28,17 +28,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) return null;
 
-        return { id: user.id, name: user.name, email: user.email, image: user.image };
+        return { id: user.id, name: user.name, email: user.email, image: user.image, role: user.role };
       },
     }),
   ],
   callbacks: {
     jwt({ token, user }) {
       if (user?.id) token.sub = user.id;
+      // Persist the role in the JWT on sign-in. `user` carries it from the
+      // Credentials authorize() above and from the Prisma adapter (Google),
+      // both of which include the users.role column. On later requests `user`
+      // is undefined and the existing token.role is preserved.
+      if (user && "role" in user && user.role) token.role = user.role as string;
       return token;
     },
     session({ session, token }) {
       if (token.sub) session.user.id = token.sub;
+      if (token.role) session.user.role = token.role as string;
       return session;
     },
   },

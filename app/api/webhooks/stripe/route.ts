@@ -7,6 +7,7 @@ import {
   getStripeWebhookSecret,
   type StripeProductType,
 } from "@/lib/stripe";
+import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
 
 export const dynamic = "force-dynamic";
 
@@ -43,18 +44,56 @@ async function handlePremiumPurchase(session: Stripe.Checkout.Session) {
   }
 }
 
-async function handlePdfBookPurchase(session: Stripe.Checkout.Session) {
+// Maps the purchased product to the correct guide file. Turkish edition
+// (pdf_book) -> Turkish PDF; Global English edition (pdf_book_global) -> English
+// PDF. Any other product type is not a PDF purchase and returns null.
+function resolvePdfSlug(productType: StripeProductType | undefined): string | null {
+  if (productType === "pdf_book") return PDF_SLUGS.turkish;
+  if (productType === "pdf_book_global") return PDF_SLUGS.global;
+  return null;
+}
+
+async function handlePdfBookPurchase(
+  session: Stripe.Checkout.Session,
+  productType: StripeProductType
+) {
   const metadata = (session.metadata || {}) as CheckoutSessionMeta;
   const email =
     metadata.email?.trim() ||
     session.customer_email?.trim() ||
+    session.customer_details?.email?.trim() ||
     undefined;
+  // Stripe collects the buyer's name during checkout; fall back to a neutral
+  // greeting rather than leaving the email addressed to nobody.
+  const fullName = session.customer_details?.name?.trim() || "there";
 
-  // Placeholder logic for PDF fulfillment.
-  // Replace with: send email with signed URL / unlock download record in DB.
-  console.log("[stripe webhook] pdf_book purchase", {
+  const slug = resolvePdfSlug(productType);
+  if (!slug) {
+    console.error("[stripe webhook] pdf purchase with unmappable productType", {
+      sessionId: session.id,
+      productType,
+    });
+    return;
+  }
+
+  if (!email) {
+    console.error("[stripe webhook] pdf purchase missing customer email — cannot deliver", {
+      sessionId: session.id,
+      productType,
+      slug,
+    });
+    return;
+  }
+
+  const result = await sendPdfDeliveryEmail({ fullName, email, slug });
+  console.log("[stripe webhook] pdf delivery", {
     sessionId: session.id,
+    productType,
+    slug,
     email,
+    sent: result.sent,
+    pdfUrl: result.pdfUrl,
+    skippedReason: result.skippedReason,
   });
 }
 
@@ -90,8 +129,8 @@ export async function POST(request: NextRequest) {
 
       if (productType === "premium") {
         await handlePremiumPurchase(session);
-      } else if (productType === "pdf_book") {
-        await handlePdfBookPurchase(session);
+      } else if (productType === "pdf_book" || productType === "pdf_book_global") {
+        await handlePdfBookPurchase(session, productType);
       } else {
         console.warn("[stripe webhook] checkout.session.completed without known productType", {
           sessionId: session.id,
