@@ -619,6 +619,75 @@ function toSentenceCase(value: string): string {
   );
 }
 
+/**
+ * Canonical English country names, derived once from Intl.DisplayNames over all
+ * ISO 3166-1 alpha-2 codes so we don't hand-maintain a ~250-entry list. Used to
+ * re-capitalise country names that appear mid-sentence in free text (the goal),
+ * where sentence-casing alone would leave a proper noun like "australia"
+ * lowercase. Longest names first so multi-word matches ("Papua New Guinea") win
+ * before their substrings ("Guinea").
+ */
+const COUNTRY_NAMES: string[] = (() => {
+  try {
+    const display = new Intl.DisplayNames(["en"], { type: "region" });
+    const names = new Set<string>();
+    for (let a = 65; a <= 90; a += 1) {
+      for (let b = 65; b <= 90; b += 1) {
+        const code = String.fromCharCode(a, b);
+        const name = display.of(code);
+        if (name && name !== code && /^[A-Za-z][A-Za-z .'’&()-]+$/.test(name)) {
+          names.add(name);
+        }
+      }
+    }
+    return [...names].sort((x, y) => y.length - x.length);
+  } catch {
+    return ["Australia", "Canada", "United States", "United Kingdom", "New Zealand", "Turkey", "India", "China", "Germany", "France"];
+  }
+})();
+
+// Informal / abbreviated country forms users commonly type, mapped to a
+// display form. Applied after the canonical pass.
+const COUNTRY_ALIASES: Record<string, string> = {
+  usa: "USA",
+  uk: "UK",
+  uae: "UAE",
+  turkey: "Turkey",
+  turkiye: "Türkiye",
+  england: "England",
+  scotland: "Scotland",
+  wales: "Wales",
+  holland: "Netherlands",
+};
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Capitalises country names wherever they appear in free text so proper nouns
+ * read correctly even mid-sentence: "move to australia" → "move to Australia".
+ */
+function capitalizeCountryNames(value: string): string {
+  let out = value;
+  for (const name of COUNTRY_NAMES) {
+    try {
+      out = out.replace(new RegExp(`\\b${escapeRegExp(name)}\\b`, "gi"), name);
+    } catch {
+      // Skip any name that produces an invalid regex (accented edge cases).
+    }
+  }
+  for (const [alias, canonical] of Object.entries(COUNTRY_ALIASES)) {
+    out = out.replace(new RegExp(`\\b${escapeRegExp(alias)}\\b`, "gi"), canonical);
+  }
+  return out;
+}
+
+/** Sentence-case the goal, then fix country capitalisation within it. */
+function formatGoalText(value: string): string {
+  return capitalizeCountryNames(toSentenceCase(value));
+}
+
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
   const { report, locale, userInputSummary: rawUserInputSummary } = input;
   const userInputSummary = {
@@ -631,7 +700,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       ? toDisplayCase(rawUserInputSummary.passportCountry)
       : rawUserInputSummary.passportCountry,
     mainGoal: rawUserInputSummary.mainGoal
-      ? toSentenceCase(rawUserInputSummary.mainGoal)
+      ? formatGoalText(rawUserInputSummary.mainGoal)
       : rawUserInputSummary.mainGoal,
     occupation: rawUserInputSummary.occupation
       ? resolveOccupationDisplayName(rawUserInputSummary.occupation, locale)
