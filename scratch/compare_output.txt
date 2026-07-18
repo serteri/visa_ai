@@ -1,0 +1,162 @@
+DIFF: 233911 - Aeronautical Engineer
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 233912 - Agricultural Engineer
+  Extracted: lists=["CSOL","MLTSSL","ROL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL","ROL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 234112 - Agricultural Scientist
+  Extracted: lists=["MLTSSL"], visas=["186","189","190","407","485","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["MLTSSL"], visas=["189","190","407","485","489","491","494"], auth=VETASSESS
+DIFF: 334112 - Airconditioning and Mechanical Services Plumber
+  Extracted: lists=["MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["TRA"]
+  Current:   lists=["MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=
+DIFF: 232111 - Architect
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=
+DIFF: 271111 - Barrister
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Legal admissions authority of a state or territory"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Legal admissions authority of a state or territory
+DIFF: 233913 - Biomedical Engineer
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 234514 - Biotechnologist
+  Extracted: lists=["MLTSSL"], visas=["186","189","190","407","485","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["MLTSSL"], visas=["189","190","407","485","489","491","494"], auth=VETASSESS
+DIFF: 212212 - Book or Script Editor
+  Extracted: lists=["CSOL","STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=VETASSESS
+DIFF: 312999 - Building and Engineering Technicians nec
+  Extracted: lists=["CSOL","ROL"], visas=["186","407","482","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["CSOL","ROL"], visas=["186","407","482","489","491","494"], auth=VETASSESS Engineers Australia
+DIFF: 394112 - Cabinet Maker
+  Extracted: lists=["CSOL","TRA"], visas=["186","482"], auth=["TRA"]
+  Current:   lists=["CSOL"], visas=["186","482"], auth=TRA
+DIFF: 394111 - Cabinetmaker
+  Extracted: lists=["MLTSSL","TRA"], visas=["186","189","190","407","482","485","489","491","494"], auth=["TRA"]
+  Current:   lists=["MLTSSL"], visas=["189","190","407","485","489","491","494"], auth=TRA
+DIFF: 141111 - Cafe or Restaurant Manager
+  Extracted: lists=["CSOL","STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=VETASSESS
+DIFF: 399512 - Camera Operator (Film, Television or Video)
+  Extracted: lists=["STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=
+DIFF: 233111 - Chemical Engineer
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 134111 - Child Care Centre Manager
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["ACECQA"]
+  Current:   lists=["MLTSSL"], visas=["189","190","407","485","489","491","494"], auth=ACECQA
+DIFF: 421111 - Child Care Worker
+  Extracted: lists=["CSOL"], visas=["186","482"], auth=["ACECQA"]
+  Current:   lists=["CSOL","ROL"], visas=["186","482","494"], auth=ACECQA
+DIFF: 421111 - Child Care Worker (group leaders only)
+  Extracted: lists=["ROL"], visas=["494"], auth=["ACECQA"]
+  Current:   lists=["CSOL","ROL"], visas=["186","482","494"], auth=ACECQA
+DIFF: 252111 - Chiropractor
+  Extracted: lists=["MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["MLTSSL"], visas=["189","190","407","485","489","491","494"], auth=
+DIFF: 233211 - Civil Engineer
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 312211 - Civil Engineering Draftsperson
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia VETASSESS
+DIFF: 222111 - Commodities Trader
+  Extracted: lists=["CSOL","STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=VETASSESS
+DIFF: 411711 - Community Worker
+  Extracted: lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=["ACWA"]
+  Current:   lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=Community Work Australia
+DIFF: 149311 - Conference and Event Organiser
+  Extracted: lists=["CSOL","STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=VETASSESS
+DIFF: 351411 - Cook
+  Extracted: lists=["CSOL","STSOL","TRA"], visas=["186","190","407","482","489","491","494"], auth=["TRA"]
+  Current:   lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=TRA
+DIFF: 212411 - Copywriter
+  Extracted: lists=["CSOL","STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=VETASSESS
+DIFF: 149212 - Customer Service Manager
+  Extracted: lists=["CSOL","STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=VETASSESS
+DIFF: 211112 - Dancer or Choreographer
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","485","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["MLTSSL"], visas=["189","190","407","485","489","491","494"], auth=VETASSESS
+DIFF: 411211 - Dental Hygienist
+  Extracted: lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["CSOL","ROL"], visas=["186","407","482","489","491","494"], auth=VETASSESS
+DIFF: 411212 - Dental Prosthetist
+  Extracted: lists=["CSOL","ROL"], visas=["186","494"], auth=["VETASSESS"]
+  Current:   lists=["CSOL","ROL"], visas=["186","482","494"], auth=TRA
+DIFF: 411214 - Dental Therapist
+  Extracted: lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["CSOL","ROL"], visas=["186","407","482","489","491","494"], auth=VETASSESS
+DIFF: 252312 - Dentist
+  Extracted: lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=["ADC"]
+  Current:   lists=["CSOL","ROL"], visas=["186","407","482","489","491","494"], auth=ADC
+DIFF: 253917 - Diagnostic and Interventional Radiologist
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["MedBA"]
+  Current:   lists=["MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=MedB
+DIFF: 212312 - Director (Film, Television, Radio or Stage)
+  Extracted: lists=["CSOL","STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=VETASSESS
+DIFF: 411712 - Disabilities Service Officer
+  Extracted: lists=["STSOL"], visas=["190","407","489","491","494"], auth=["Community Work Australia"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=Community Work Australia
+DIFF: 361111 - Dog Handler or Trainer
+  Extracted: lists=["STSOL"], visas=["190","407","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=VETASSESS
+DIFF: 393213 - Dressmaker or Tailor
+  Extracted: lists=["CSOL","STSOL"], visas=["190","407","489","491","494"], auth=["TRA"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=TRA
+DIFF: 224311 - Economist
+  Extracted: lists=["MLTSSL"], visas=["189","190","407","485","489","491","491","494"], auth=["VETASSESS"]
+  Current:   lists=["MLTSSL"], visas=["189","190","407","485","489","491","494"], auth=VETASSESS
+DIFF: 233311 - Electrical Engineer
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 312311 - Electrical Engineering Draftsperson
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 312312 - Electrical Engineering Technician
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=TRA
+DIFF: 312411 - Electronic Engineering Draftsperson
+  Extracted: lists=["ROL"], visas=["494"], auth=["Engineers Australia"]
+  Current:   lists=["ROL"], visas=["494"], auth=Engineers Australia
+DIFF: 312412 - Electronic Engineering Technician
+  Extracted: lists=["CSOL","ROL"], visas=["186","482","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","ROL"], visas=["186","482","494"], auth=TRA
+DIFF: 233411 - Electronics Engineer
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 133211 - Engineering Manager
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia IML
+DIFF: 233999 - Engineering Professionals nec
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 233914 - Engineering Technologist
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 233915 - Environment Engineer
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["Engineers Australia"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=Engineers Australia
+DIFF: 139912 - Environmental Manager
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","190","407","482","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=VETASSESS
+DIFF: 234313 - Environmental Research Scientist
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","189","190","407","482","485","489","491","494"], auth=["VETASSESS"]
+  Current:   lists=["MLTSSL"], visas=["189","190","407","485","489","491","494"], auth=VETASSESS
+DIFF: 149913 - Facilities Manager
+  Extracted: lists=["ROL"], visas=["494"], auth=["VETASSESS"]
+  Current:   lists=["STSOL"], visas=["190","407","489","491","494"], auth=VETASSESS
+DIFF: 134411 - Faculty Head
+  Extracted: lists=["CSOL","MLTSSL"], visas=["186","407","482","491","494"], auth=["VETASSESS"]
+  Current:   lists=["CSOL","MLTSSL"], visas=["186","407","482","494"], auth=VETASSESS
+DIFF: 411713 - Family Support Worker
+  Extracted: lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=["Community Work Australia"]
+  Current:   lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=Community Work Au
+DIFF: 322113 - Farrier
+  Extracted: lists=["CSOL","ROL"], visas=["186","190","407","482","489","491","494"], auth=["TRA"]
+  Current:   lists=["CSOL","STSOL"], visas=["186","190","407","482","489","491","494"], auth=TRA

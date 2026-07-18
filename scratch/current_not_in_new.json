@@ -1,0 +1,2591 @@
+[
+  {
+    "code": "342111",
+    "name": "Airconditioning and Refrigeration Mechanic",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "271214",
+    "name": "Intellectual Property Lawyer",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311115",
+    "name": "Irrigation Designer",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "362712",
+    "name": "Irrigation Technician",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "452413",
+    "name": "Jockey",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "331213",
+    "name": "Joiner",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212499",
+    "name": "Journalists and Other Writers nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "271299",
+    "name": "Judicial and Other Legal Professionals nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "361115",
+    "name": "Kennel Hand",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "232112",
+    "name": "Landscape Architect",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "362711",
+    "name": "Landscape Gardener",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "599214",
+    "name": "Law Clerk",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "393112",
+    "name": "Leather Goods Maker",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "599112",
+    "name": "Legal Executive",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "521212",
+    "name": "Legal Secretary",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "224912",
+    "name": "Liaison Officer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399312",
+    "name": "Library Technician",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "141411",
+    "name": "Licensed Club Manager",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "452414",
+    "name": "Lifeguard",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "121399",
+    "name": "Livestock Farmers nec",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399514",
+    "name": "Make Up Artist",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "221112",
+    "name": "Management Accountant",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224713",
+    "name": "Management Consultant",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "133411",
+    "name": "Manufacturer",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "231215",
+    "name": "Marine Surveyor",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "231299",
+    "name": "Marine Transport Professionals nec",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "225112",
+    "name": "Market Research Analyst",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224112",
+    "name": "Mathematician",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212112",
+    "name": "Media Producer (excluding Video)",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "311299",
+    "name": "Medical Technicians nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "322114",
+    "name": "Metal Casting Trades Worker",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "322311",
+    "name": "Metal Fabricator",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "323299",
+    "name": "Metal Fitters and Machinists nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "322115",
+    "name": "Metal Polisher",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "312912",
+    "name": "Metallurgical or Materials Technician",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234912",
+    "name": "Metallurgist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234913",
+    "name": "Meteorologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234517",
+    "name": "Microbiologist",
+    "lists": [
+      "MLTSSL"
+    ],
+    "visa_subclasses": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "241311",
+    "name": "Middle School Teacher",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254111",
+    "name": "Midwife",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224913",
+    "name": "Migration Agent (Aus) \\\\ Immigration Consultant (NZ)",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "312913",
+    "name": "Mine Deputy",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "233611",
+    "name": "Mining Engineer (excluding Petroleum)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "272211",
+    "name": "Minister of Religion",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "407"
+    ]
+  },
+  {
+    "code": "121411",
+    "name": "Mixed Crop and Livestock Farmer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121216",
+    "name": "Mixed Crop Farmer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121317",
+    "name": "Mixed Livestock Farmer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "411412",
+    "name": "Mothercraft Nurse",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "321211",
+    "name": "Motor Mechanic (General)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "211299",
+    "name": "Music Professionals nec",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399515",
+    "name": "Musical Instrument Maker or Repairer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "251213",
+    "name": "Nuclear Medicine Technologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "362411",
+    "name": "Nurseryperson",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "134212",
+    "name": "Nursing Clinical Director",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311214",
+    "name": "Operating Theatre Technician",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399914",
+    "name": "Optical Mechanic",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "272313",
+    "name": "Organisational Psychologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "251412",
+    "name": "Orthoptist",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "312914",
+    "name": "Other Draftsperson",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "452317",
+    "name": "Other Sports Coach or Instructor",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "452323",
+    "name": "Other Sports Official",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "421114",
+    "name": "Out of School Hours Care Worker",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "324111",
+    "name": "Panelbeater",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234314",
+    "name": "Park Ranger",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "224914",
+    "name": "Patents Examiner",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253915",
+    "name": "Pathologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311216",
+    "name": "Pathology Collector",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "261317",
+    "name": "Penetration Tester",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "399599",
+    "name": "Performing Arts Technicians nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "361113",
+    "name": "Pet Groomer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "211311",
+    "name": "Photographer",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399915",
+    "name": "Photographer's Assistant",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "394212",
+    "name": "Picture Framer",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "399916",
+    "name": "Plastics Technician",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "334116",
+    "name": "Plumber (General)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "312115",
+    "name": "Plumbing Inspector",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "132411",
+    "name": "Policy and Planning Manager",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "142115",
+    "name": "Post Office Manager",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121321",
+    "name": "Poultry Farmer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "512299",
+    "name": "Practice Managers nec",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "311399",
+    "name": "Primary Products Assurance and Inspection Officers nec",
+    "lists": [
+      "CSOL",
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311314",
+    "name": "Primary Products Quality Assurance Officer",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "392111",
+    "name": "Print Finisher",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "249299",
+    "name": "Private Tutors and Teachers nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "233513",
+    "name": "Production or Plant Engineer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212315",
+    "name": "Program Director (Television or Radio)",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "139916",
+    "name": "Quality Assurance Manager",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311313",
+    "name": "Quarantine Officer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "253918",
+    "name": "Radiation Oncologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212414",
+    "name": "Radio Journalist",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "212113",
+    "name": "Radio Presenter",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "313211",
+    "name": "Radiocommunications Technician",
+    "lists": [
+      "MLTSSL"
+    ],
+    "visa_subclasses": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "149412",
+    "name": "Railway Station Manager",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "612113",
+    "name": "Real Estate Agency Principal (Aus) \\\\ Real Estate Agency Licensee (NZ)",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "612114",
+    "name": "Real Estate Agent",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "224214",
+    "name": "Records Manager",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "272612",
+    "name": "Recreation Officer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "134412",
+    "name": "Regional Education Manager",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254417",
+    "name": "Registered Nurse (Disability and Rehabilitation)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254421",
+    "name": "Registered Nurse (Medical Practice)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254424",
+    "name": "Registered Nurse (Surgical)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "139917",
+    "name": "Regulatory Affairs Manager",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "411715",
+    "name": "Residential Care Officer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234612",
+    "name": "Respiratory Scientist",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "311217",
+    "name": "Respiratory Technician",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "639211",
+    "name": "Retail Buyer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "141912",
+    "name": "Retirement Village Manager",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "312611",
+    "name": "Safety Inspector",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "393113",
+    "name": "Sail Maker",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "225411",
+    "name": "Sales Representative (Industrial Products)",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "311414",
+    "name": "School Laboratory Technician",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "134311",
+    "name": "School Principal",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311499",
+    "name": "Science Technicians nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "392112",
+    "name": "Screen Printer",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "211413",
+    "name": "Sculptor",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "521211",
+    "name": "Secretary (General)",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "442216",
+    "name": "Security Consultant",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "361211",
+    "name": "Shearer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "121322",
+    "name": "Sheep Farmer",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "322211",
+    "name": "Sheetmetal Trades Worker",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399112",
+    "name": "Shipwright",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "393114",
+    "name": "Shoemaker",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "399611",
+    "name": "Signwriter",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "211214",
+    "name": "Singer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "392312",
+    "name": "Small Offset Printer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "272499",
+    "name": "Social Professionals nec",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399516",
+    "name": "Sound Technician",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "241599",
+    "name": "Special Education Teachers nec",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "139999",
+    "name": "Specialist Managers nec",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253311",
+    "name": "Specialist Physician (General Medicine)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253399",
+    "name": "Specialist Physicians nec",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "252712",
+    "name": "Speech Pathologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "139915",
+    "name": "Sports Administrator",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "149113",
+    "name": "Sports Centre Manager",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "452321",
+    "name": "Sports Development Officer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "452322",
+    "name": "Sports Umpire",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "452499",
+    "name": "Sportspersons nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212316",
+    "name": "Stage Manager",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224116",
+    "name": "Statistician",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "611112",
+    "name": "Stock and Station Agent",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "222213",
+    "name": "Stockbroking Dealer",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "272115",
+    "name": "Student Counsellor",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121217",
+    "name": "Sugar Cane Grower",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224714",
+    "name": "Supply Chain Analyst",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "312116",
+    "name": "Surveying or Spatial Science Technician",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "241513",
+    "name": "Teacher of the Sight Impaired",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "342212",
+    "name": "Technical Cable Jointer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212317",
+    "name": "Technical Director",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212415",
+    "name": "Technical Writer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399999",
+    "name": "Technicians and Trades Workers nec",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "313212",
+    "name": "Telecommunications Field Engineer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "342413",
+    "name": "Telecommunications Linesworker",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399517",
+    "name": "Television Equipment Operator",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "212416",
+    "name": "Television Journalist",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212114",
+    "name": "Television Presenter",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "451412",
+    "name": "Tour Guide",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "252214",
+    "name": "Traditional Chinese Medicine Practitioner",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "149413",
+    "name": "Transport Company Manager",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "233215",
+    "name": "Transport Engineer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "142116",
+    "name": "Travel Agency Manager",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "451799",
+    "name": "Travel Attendants nec",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "362512",
+    "name": "Tree Worker",
+    "lists": [
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "599215",
+    "name": "Trust Officer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "121218",
+    "name": "Turf Grower",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "253518",
+    "name": "Urologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224512",
+    "name": "Valuer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253521",
+    "name": "Vascular Surgeon",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121221",
+    "name": "Vegetable Grower",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212318",
+    "name": "Video Producer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "323316",
+    "name": "Watch and Clock Maker and Repairer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "313113",
+    "name": "Web Administrator",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "134214",
+    "name": "Welfare Centre Manager",
+    "lists": [
+      "MLTSSL"
+    ],
+    "visa_subclasses": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "272613",
+    "name": "Welfare Worker",
+    "lists": [
+      "STSOL"
+    ],
+    "visa_subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "394213",
+    "name": "Wood Machinist",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "394299",
+    "name": "Wood Machinists and Other Wood Trades Workers nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "394214",
+    "name": "Wood Turner",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "639212",
+    "name": "Wool Buyer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "399917",
+    "name": "Wool Classer",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "361114",
+    "name": "Zookeeper",
+    "lists": [
+      "ROL"
+    ],
+    "visa_subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234522",
+    "name": "Zoologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visa_subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  }
+]

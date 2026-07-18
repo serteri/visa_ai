@@ -1,0 +1,5041 @@
+[
+  {
+    "code": "451621",
+    "name": "Accommodation Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "421113",
+    "name": "Accounts Clerk",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "421114",
+    "name": "Accounts Payable Specialist",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "421115",
+    "name": "Accounts Receivable Specialist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "224112",
+    "name": "Actuarial Specialist",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "131211",
+    "name": "Advertising Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "225112",
+    "name": "Advertising Manager",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "282111",
+    "name": "Aeroplane Pilot",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "261326",
+    "name": "AI Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "391312",
+    "name": "Air Conditioning Mechanic",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "282116",
+    "name": "Air Traffic Controller",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "342111",
+    "name": "Airconditioning and Refrigeration Mechanic",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "342112",
+    "name": "Airconditioning and Refrigeration Mechanic (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "282113",
+    "name": "Aircraft Maintenance Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "252120",
+    "name": "Anaesthetic Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253611",
+    "name": "Anaesthetist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "234512",
+    "name": "Anatomist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "251914",
+    "name": "Animal Health Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "121216",
+    "name": "Aquaculture Farmer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "131212",
+    "name": "Aquaculture Farmer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "311216",
+    "name": "Aquaculture Farmer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "341814",
+    "name": "Aquatic Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234812",
+    "name": "Astronomer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "452113",
+    "name": "Baker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "351113",
+    "name": "Baker (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451113",
+    "name": "Bartender",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451312",
+    "name": "Beautician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "261323",
+    "name": "Big Data Specialist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233117",
+    "name": "Biomedical Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "311313",
+    "name": "Biosecurity Officer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "322211",
+    "name": "Body Maker",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "391114",
+    "name": "Boilermaker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "391213",
+    "name": "Bookbinder",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "421116",
+    "name": "Bookkeeper",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321811",
+    "name": "Bricklayer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "331114",
+    "name": "Bricklayer (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "431112",
+    "name": "Bricklayer Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "342514",
+    "name": "Broadband Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "312912",
+    "name": "Building and Construction Technician",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "452115",
+    "name": "Butcher",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "342512",
+    "name": "Cable Installer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "343112",
+    "name": "Cable Jointer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "149214",
+    "name": "Caf? or Restaurant Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253331",
+    "name": "Cardiologist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "252117",
+    "name": "Cardiology Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411512",
+    "name": "Carer",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "331217",
+    "name": "Carpenter (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321814",
+    "name": "Carpenter and Joiner",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "431113",
+    "name": "Carpenter Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "331299",
+    "name": "Carpenters and Joiners nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451115",
+    "name": "Chambermaid",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "452111",
+    "name": "Chef",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "351312",
+    "name": "Chef (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "111212",
+    "name": "Chief Information Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "111213",
+    "name": "Chief Technology Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253413",
+    "name": "Child Psychiatrist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411312",
+    "name": "Childcare Assistant",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "451116",
+    "name": "Cleaner",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "252812",
+    "name": "Clinical Psychologist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "261327",
+    "name": "Cloud Architect",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451712",
+    "name": "Commercial Cleaning Supervisor",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "263223",
+    "name": "Communications Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272713",
+    "name": "Community Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "151113",
+    "name": "Conservation Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234223",
+    "name": "Conservation Scientist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "131111",
+    "name": "Construction Manager",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "452112",
+    "name": "Cook",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "351412",
+    "name": "Cook (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "252813",
+    "name": "Counselling Psychologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "213212",
+    "name": "Counsellor",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "261330",
+    "name": "Cyber Security Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "131215",
+    "name": "Dairy Farmer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "261322",
+    "name": "Data Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "261324",
+    "name": "Data Scientist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "261321",
+    "name": "Database Designer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "352112",
+    "name": "Delicatessen Counter Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253712",
+    "name": "Dental Specialist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253711",
+    "name": "Dentist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "253332",
+    "name": "Dermatologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "139915",
+    "name": "Development Director",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "261328",
+    "name": "DevOps Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "252116",
+    "name": "Dialysis Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321112",
+    "name": "Diesel Motor Mechanic",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "252613",
+    "name": "Dietitian",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "411412",
+    "name": "Disability Support Assistant",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "399112",
+    "name": "Diver (Professional)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254213",
+    "name": "Divisional Nurse Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "241611",
+    "name": "Early Childhood Teacher",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "234222",
+    "name": "Ecological Scientist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "252814",
+    "name": "Educational Psychologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272313",
+    "name": "Educational Psychologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "342212",
+    "name": "Electrical Linesworker (Apprentice)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "342399",
+    "name": "Electronics and Telecommunications Trades Workers nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233312",
+    "name": "Electronics Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "253333",
+    "name": "Endocrinologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233617",
+    "name": "Energy Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254319",
+    "name": "Enrolled Nurse (Assistive Care)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254313",
+    "name": "Enrolled Nurse (Child and Family Health)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254314",
+    "name": "Enrolled Nurse (Community Health)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254315",
+    "name": "Enrolled Nurse (Developmental Disability)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254316",
+    "name": "Enrolled Nurse (Mental Health)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254318",
+    "name": "Enrolled Nurse (Mixed)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254317",
+    "name": "Enrolled Nurse (Surgical)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254399",
+    "name": "Enrolled Nurses nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233118",
+    "name": "Environmental Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "151111",
+    "name": "Environmental Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234221",
+    "name": "Environmental Scientist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321614",
+    "name": "Factory Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272715",
+    "name": "Family Counsellor",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "332313",
+    "name": "Fibrous Plasterer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "121112",
+    "name": "Finance Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451515",
+    "name": "Firefighter",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "399113",
+    "name": "Fishing Guide",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "281114",
+    "name": "Fishing Vessel Master",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "281115",
+    "name": "Fishing Vessel Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "352111",
+    "name": "Fishmonger",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "341812",
+    "name": "Fitness Instructor",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "323299",
+    "name": "Fitters and Related Workers nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "282114",
+    "name": "Flight Engineer",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "231311",
+    "name": "Flying Instructor",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "282115",
+    "name": "Flying Instructor",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "253412",
+    "name": "Forensic Psychiatrist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "151112",
+    "name": "Forestry Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "399115",
+    "name": "Forestry Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "399114",
+    "name": "Game Keeper",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "393112",
+    "name": "Garment Maker",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "391313",
+    "name": "Gas Fitter",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253334",
+    "name": "Gastroenterologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "431111",
+    "name": "General Construction Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234813",
+    "name": "Geographer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "333112",
+    "name": "Glazier (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "225315",
+    "name": "Graphic Artist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "352113",
+    "name": "Greengrocer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451212",
+    "name": "Hairdressing Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "351313",
+    "name": "Head Chef",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411614",
+    "name": "Heavy Vehicle Driver",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "231411",
+    "name": "Helicopter Pilot",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "282112",
+    "name": "Helicopter Pilot",
+    "lists": [
+      "ROL"
+    ]
+  },
+  {
+    "code": "263218",
+    "name": "Help Desk Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "232112",
+    "name": "Heritage Architect",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "252313",
+    "name": "Homoeopath",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "131213",
+    "name": "Horticultural Farmer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "149213",
+    "name": "Hotel or Accommodation Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451114",
+    "name": "Housekeeper",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451623",
+    "name": "Housekeeper",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451622",
+    "name": "Housekeeping Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234814",
+    "name": "Hydrologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "313299",
+    "name": "ICT Support and Test Technicians nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "313211",
+    "name": "ICT Support Technician",
+    "lists": [
+      "MLTSSL"
+    ],
+    "subclasses": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "313212",
+    "name": "ICT Systems Test Engineer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "312414",
+    "name": "ICT Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "225316",
+    "name": "Illustrator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "232215",
+    "name": "Industrial Designer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233412",
+    "name": "Industrial Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "132212",
+    "name": "Industrial Relations Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "263215",
+    "name": "Infrastructure Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "271214",
+    "name": "Intellectual Property Lawyer",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "232116",
+    "name": "Interior Designer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "311115",
+    "name": "Irrigation Designer",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "362712",
+    "name": "Irrigation Technician",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "263214",
+    "name": "IT Operations Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "121212",
+    "name": "IT Project Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "263220",
+    "name": "IT Support Supervisor",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "452413",
+    "name": "Jockey",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "331213",
+    "name": "Joiner",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212499",
+    "name": "Journalists and Other Writers nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "271299",
+    "name": "Judicial and Other Legal Professionals nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "361115",
+    "name": "Kennel Hand",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "351413",
+    "name": "Kitchen Hand",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "151114",
+    "name": "Land Reclamation Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "232113",
+    "name": "Landscape Architect",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "232211",
+    "name": "Landscape Architect",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "362711",
+    "name": "Landscape Gardener",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "599214",
+    "name": "Law Clerk",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "393114",
+    "name": "Leather Worker",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "599112",
+    "name": "Legal Executive",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "212112",
+    "name": "Legal Practitioner",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "521212",
+    "name": "Legal Secretary",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "224912",
+    "name": "Liaison Officer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399312",
+    "name": "Library Technician",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "141411",
+    "name": "Licensed Club Manager",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "452414",
+    "name": "Lifeguard",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "451624",
+    "name": "Linen Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "391214",
+    "name": "Lithographer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "131214",
+    "name": "Livestock Farmer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "311214",
+    "name": "Livestock Farmer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121399",
+    "name": "Livestock Farmers nec",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "344111",
+    "name": "Locksmith",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "344112",
+    "name": "Locksmith (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "344199",
+    "name": "Locksmiths and Safe Specialists nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "261325",
+    "name": "Machine Learning Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321612",
+    "name": "Machine Tool Operator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "399514",
+    "name": "Make Up Artist",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "221112",
+    "name": "Management Accountant",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224713",
+    "name": "Management Consultant",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "139999",
+    "name": "Managers nec",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "133411",
+    "name": "Manufacturer",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "342213",
+    "name": "Manufacturing Machine Operator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "281113",
+    "name": "Marine Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234224",
+    "name": "Marine Scientist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "231215",
+    "name": "Marine Surveyor",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "231299",
+    "name": "Marine Transport Professionals nec",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "451411",
+    "name": "Massage Therapist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "225312",
+    "name": "Media Producer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "251813",
+    "name": "Medical Radiation Therapist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "272512",
+    "name": "Medical Social Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "311299",
+    "name": "Medical Technicians nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "322114",
+    "name": "Metal Casting Trades Worker",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "322311",
+    "name": "Metal Fabricator",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "322115",
+    "name": "Metal Polisher",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "391113",
+    "name": "Metal Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234912",
+    "name": "Metallurgist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234225",
+    "name": "Meteorologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234913",
+    "name": "Meteorologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234517",
+    "name": "Microbiologist",
+    "lists": [
+      "MLTSSL"
+    ],
+    "subclasses": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "241311",
+    "name": "Middle School Teacher",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254111",
+    "name": "Midwife",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224913",
+    "name": "Migration Agent / Immigration Consultant",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "233115",
+    "name": "Mining Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "233918",
+    "name": "Mining Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "233611",
+    "name": "Mining Engineer (excluding Petroleum)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "312612",
+    "name": "Mining Technician (Coal)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "312611",
+    "name": "Mining Technician (General)",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "312613",
+    "name": "Mining Technician (Oil and Gas)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272211",
+    "name": "Minister of Religion",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "407"
+    ]
+  },
+  {
+    "code": "121411",
+    "name": "Mixed Crop and Livestock Farmer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121317",
+    "name": "Mixed Livestock Farmer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "321211",
+    "name": "Motor Mechanic (General)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "321113",
+    "name": "Motorcycle Mechanic",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "211299",
+    "name": "Music Professionals nec",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399515",
+    "name": "Musical Instrument Maker or Repairer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "252214",
+    "name": "Naturopath",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "342513",
+    "name": "NBN Installer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253335",
+    "name": "Nephrologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "263222",
+    "name": "Network Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "312415",
+    "name": "Network Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253336",
+    "name": "Neurologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "251217",
+    "name": "Nuclear Medicine Technician",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "251213",
+    "name": "Nuclear Medicine Technologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254214",
+    "name": "Nurse Educator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254215",
+    "name": "Nurse Researcher",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "362411",
+    "name": "Nurseryperson",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "134212",
+    "name": "Nursing Clinical Director",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "252614",
+    "name": "Nutritionist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253813",
+    "name": "Ocularist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253337",
+    "name": "Oncologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "252119",
+    "name": "Operating Theatre Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "399914",
+    "name": "Optical Mechanic",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "251611",
+    "name": "Optometrist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "253812",
+    "name": "Optometrist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "232314",
+    "name": "Orchestra Conductor",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "252815",
+    "name": "Organisational Psychologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "251711",
+    "name": "Orthoptist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "251412",
+    "name": "Orthoptist",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "252113",
+    "name": "Osteopath",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "312914",
+    "name": "Other Draftsperson",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "452317",
+    "name": "Other Sports Coach or Instructor",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "452323",
+    "name": "Other Sports Official",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "332212",
+    "name": "Painter",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "332213",
+    "name": "Painter (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "431114",
+    "name": "Painter Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "324111",
+    "name": "Panelbeater",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "151115",
+    "name": "Parks and Recreational Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "452114",
+    "name": "Pastrycook",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "224914",
+    "name": "Patents Examiner",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234612",
+    "name": "Pathologist",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "253915",
+    "name": "Pathologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121113",
+    "name": "Payroll Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "261317",
+    "name": "Penetration Tester",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "399599",
+    "name": "Performing Arts Technicians nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "361113",
+    "name": "Pet Groomer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "233116",
+    "name": "Petroleum Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "312711",
+    "name": "Petroleum Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "225313",
+    "name": "Photographer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "211311",
+    "name": "Photographer",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399915",
+    "name": "Photographer's Assistant",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "234811",
+    "name": "Physicist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "394212",
+    "name": "Picture Framer",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "332311",
+    "name": "Plasterer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "332314",
+    "name": "Plasterer (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "431115",
+    "name": "Plasterer Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "333299",
+    "name": "Plastering Trades Workers nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "342214",
+    "name": "Plastics Machine Operator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "399916",
+    "name": "Plastics Technician",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "332112",
+    "name": "Plumber",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "312715",
+    "name": "Plumber (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "332116",
+    "name": "Plumber (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "334116",
+    "name": "Plumber (Apprentice)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "312712",
+    "name": "Plumber (Drainage)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "332113",
+    "name": "Plumber (Drainage)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "312713",
+    "name": "Plumber (Gasfitter)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "332114",
+    "name": "Plumber (Gasfitter)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "312714",
+    "name": "Plumber (Roof Plumber)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "332115",
+    "name": "Plumber (Roof Plumber)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "431116",
+    "name": "Plumber Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "334199",
+    "name": "Plumbers and Related Trades Workers nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "312115",
+    "name": "Plumbing Inspector",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "251812",
+    "name": "Podiatrist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "132411",
+    "name": "Policy and Planning Manager",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "142115",
+    "name": "Post Office Manager",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121321",
+    "name": "Poultry Farmer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "233313",
+    "name": "Power Systems Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233618",
+    "name": "Power Systems Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "512299",
+    "name": "Practice Managers nec",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "241612",
+    "name": "Preschool Teacher",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "311399",
+    "name": "Primary Products Assurance and Inspection Officers nec",
+    "lists": [
+      "CSOL",
+      "STSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311314",
+    "name": "Primary Products Quality Assurance Officer",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "241211",
+    "name": "Primary School Teacher",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "241212",
+    "name": "Primary School Teacher",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "241711",
+    "name": "Primary School Teacher (Art)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "241712",
+    "name": "Primary School Teacher (English)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "241713",
+    "name": "Primary School Teacher (Mathematics)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "241714",
+    "name": "Primary School Teacher (Science)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "392111",
+    "name": "Print Finisher",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "391211",
+    "name": "Printer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "391212",
+    "name": "Printing Machine Operator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451511",
+    "name": "Prison Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "249299",
+    "name": "Private Tutors and Teachers nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "272711",
+    "name": "Probation Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "352114",
+    "name": "Produce Merchant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233414",
+    "name": "Production Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "321613",
+    "name": "Production Machine Operator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233513",
+    "name": "Production or Plant Engineer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212315",
+    "name": "Program Director (Television or Radio)",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "132313",
+    "name": "Program Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "131312",
+    "name": "Project Manager (Engineering/Construction)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "225414",
+    "name": "Property Consultant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451512",
+    "name": "Protective Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "213111",
+    "name": "Psychologist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "252811",
+    "name": "Psychologist (General)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "225115",
+    "name": "Public Relations Professional",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "391314",
+    "name": "Pump Operator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "139916",
+    "name": "Quality Assurance Manager",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253918",
+    "name": "Radiation Oncologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "251216",
+    "name": "Radiation Safety Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "212414",
+    "name": "Radio Journalist",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "251811",
+    "name": "Radiographer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "251215",
+    "name": "Radiotherapy Technologist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "149412",
+    "name": "Railway Station Manager",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "234214",
+    "name": "Ranger",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "612113",
+    "name": "Real Estate Agency Principal / Real Estate Agency Licensee",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "225411",
+    "name": "Real Estate Agent",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "612114",
+    "name": "Real Estate Agent",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "225413",
+    "name": "Real Estate Valuer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "224214",
+    "name": "Records Manager",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "341813",
+    "name": "Recreation Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272612",
+    "name": "Recreation Officer / Recreation Coordinator",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "252114",
+    "name": "Reflexologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "391311",
+    "name": "Refrigeration Mechanic",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "134412",
+    "name": "Regional Education Manager",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254216",
+    "name": "Registered Nurse (Critical Care and Emergency)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254426",
+    "name": "Registered Nurse (Developmental Disability)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "254417",
+    "name": "Registered Nurse (Disability and Rehabilitation)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254217",
+    "name": "Registered Nurse (Family and Community Health)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254517",
+    "name": "Registered Nurse (Intensive Care Unit)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254513",
+    "name": "Registered Nurse (Maternity)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254421",
+    "name": "Registered Nurse (Medical Practice)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "254218",
+    "name": "Registered Nurse (Medical)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254427",
+    "name": "Registered Nurse (Mental Health)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254514",
+    "name": "Registered Nurse (Neonatal)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254515",
+    "name": "Registered Nurse (Paediatric)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254511",
+    "name": "Registered Nurse (Palliative Care)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254219",
+    "name": "Registered Nurse (Perioperative)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254428",
+    "name": "Registered Nurse (Perioperative)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254516",
+    "name": "Registered Nurse (Psychiatric)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254512",
+    "name": "Registered Nurse (Rehabilitation)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "254424",
+    "name": "Registered Nurse (Surgical)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "242212",
+    "name": "Registered Nurse Educator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "242311",
+    "name": "Registered Training Organisation Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "139917",
+    "name": "Regulatory Affairs Manager",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "252115",
+    "name": "Renal Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233616",
+    "name": "Renewable Energy Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "132312",
+    "name": "Research Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "234916",
+    "name": "Research Scientist (General)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411715",
+    "name": "Residential Care Officer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253338",
+    "name": "Respiratory Medicine Specialist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "252118",
+    "name": "Respiratory Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "311217",
+    "name": "Respiratory Technician",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "639211",
+    "name": "Retail Buyer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "149215",
+    "name": "Retail Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411122",
+    "name": "Retail Salesperson",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "141912",
+    "name": "Retirement Village Manager",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "253339",
+    "name": "Rheumatologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "331214",
+    "name": "Roof Carpenter",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411121",
+    "name": "Sales Assistant (General)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "134311",
+    "name": "School Principal",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311499",
+    "name": "Science Technicians nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "392112",
+    "name": "Screen Printer",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "211413",
+    "name": "Sculptor",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "241312",
+    "name": "Secondary School Teacher",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "241313",
+    "name": "Secondary School Teacher (English)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "241316",
+    "name": "Secondary School Teacher (Languages)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "241314",
+    "name": "Secondary School Teacher (Mathematics)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "241315",
+    "name": "Secondary School Teacher (Science)",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "521211",
+    "name": "Secretary (General)",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "451514",
+    "name": "Security Consultant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "442216",
+    "name": "Security Consultant",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "451513",
+    "name": "Security Guard",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "263217",
+    "name": "Service Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411123",
+    "name": "Service Station Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "361211",
+    "name": "Shearer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "121322",
+    "name": "Sheep Farmer",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "396111",
+    "name": "Sheetmetal Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "281111",
+    "name": "Ship's Master",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "281112",
+    "name": "Ship's Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411124",
+    "name": "Shop Assistant",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "331215",
+    "name": "Shopfitter",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "399611",
+    "name": "Signwriter",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "211214",
+    "name": "Singer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "261329",
+    "name": "Site Reliability Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321114",
+    "name": "Small Engine Mechanic",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "392312",
+    "name": "Small Offset Printer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "272499",
+    "name": "Social Professionals nec",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "213211",
+    "name": "Social Worker",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "261113",
+    "name": "Software Architect",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233119",
+    "name": "Software Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "234314",
+    "name": "Soil Scientist",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "233615",
+    "name": "Solar Engineer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "212113",
+    "name": "Solicitor",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "332312",
+    "name": "Solid Plasterer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "251814",
+    "name": "Sonographer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "399516",
+    "name": "Sound Technician",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "241715",
+    "name": "Special Education Teacher",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "241515",
+    "name": "Special Education Teacher (Behaviour Disordered)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "241516",
+    "name": "Special Education Teacher (Gifted Students)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "241513",
+    "name": "Special Education Teacher (Physically Disabled)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "241517",
+    "name": "Special Education Teacher (Speech and Language Disordered)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "241514",
+    "name": "Special Education Teacher (Visually Impaired)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "241599",
+    "name": "Special Education Teachers nec",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253311",
+    "name": "Specialist Physician (General Medicine)",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253399",
+    "name": "Specialist Physicians nec",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "252712",
+    "name": "Speech Pathologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "252713",
+    "name": "Speech Pathologist",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "252816",
+    "name": "Sport and Exercise Psychologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272315",
+    "name": "Sport and Exercise Psychologist",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "149113",
+    "name": "Sports Centre Manager",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "341811",
+    "name": "Sports Coach",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "452321",
+    "name": "Sports Development Officer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "452322",
+    "name": "Sports Umpire",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "452499",
+    "name": "Sportspersons nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212316",
+    "name": "Stage Manager",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "224113",
+    "name": "Statistician",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "224116",
+    "name": "Statistician",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "611112",
+    "name": "Stock and Station Agent",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "222213",
+    "name": "Stockbroking Dealer",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "321813",
+    "name": "Stone Fixer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "331113",
+    "name": "Stone Fixer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321812",
+    "name": "Stonemason",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "391112",
+    "name": "Structural Steel Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272115",
+    "name": "Student Counsellor",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "343114",
+    "name": "Submarine Cable Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "121217",
+    "name": "Sugar Cane Grower",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "311414",
+    "name": "Supervisor (Mining)",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "121114",
+    "name": "Supply and Distribution Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "224714",
+    "name": "Supply Chain Analyst",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "312116",
+    "name": "Surveying or Spatial Science Technician",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "312913",
+    "name": "Surveying or Spatial Science Technician",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "263216",
+    "name": "Systems Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "411612",
+    "name": "Taxi Driver",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "212317",
+    "name": "Technical Director",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "263221",
+    "name": "Technical Support Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "225116",
+    "name": "Technical Writer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "212415",
+    "name": "Technical Writer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "399999",
+    "name": "Technicians and Trades Workers nec",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "233114",
+    "name": "Telecommunications Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "233917",
+    "name": "Telecommunications Engineer",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "343111",
+    "name": "Telecommunications Linesworker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "342413",
+    "name": "Telecommunications Linesworker / Telecommunications Line Mechanic",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "312413",
+    "name": "Telecommunications Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "342511",
+    "name": "Telephone Installer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "343113",
+    "name": "Telephone Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "399517",
+    "name": "Television Equipment Operator",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "212416",
+    "name": "Television Journalist",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "212114",
+    "name": "Television Presenter",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "393113",
+    "name": "Textile Worker",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "331216",
+    "name": "Timber Framer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "231312",
+    "name": "Tour Guide",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "451412",
+    "name": "Tour Guide",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "232114",
+    "name": "Town Planner",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "132213",
+    "name": "Training and Development Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "242312",
+    "name": "Training and Development Professional",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "149413",
+    "name": "Transport Company Manager",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "233215",
+    "name": "Transport Engineer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "142116",
+    "name": "Travel Agency Manager",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482",
+      "494"
+    ]
+  },
+  {
+    "code": "451799",
+    "name": "Travel Attendants nec",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "362512",
+    "name": "Tree Worker",
+    "lists": [
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "482"
+    ]
+  },
+  {
+    "code": "411613",
+    "name": "Truck Driver",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "599215",
+    "name": "Trust Officer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "121218",
+    "name": "Turf Grower",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "251218",
+    "name": "Ultrasound Technician",
+    "lists": [
+      "MLTSSL"
+    ]
+  },
+  {
+    "code": "395111",
+    "name": "Upholsterer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "395112",
+    "name": "Upholsterer (Apprentice)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "232115",
+    "name": "Urban Designer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "253518",
+    "name": "Urologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "263219",
+    "name": "User Support Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "224512",
+    "name": "Valuer",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "253521",
+    "name": "Vascular Surgeon",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "121221",
+    "name": "Vegetable Grower",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "324299",
+    "name": "Vehicle and Related Trades Workers nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321215",
+    "name": "Vehicle Service Adviser",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "324112",
+    "name": "Vehicle Trimmer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "324113",
+    "name": "Vehicle Upholsterer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "324213",
+    "name": "Vehicle Upholsterer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "251913",
+    "name": "Veterinary Surgeon",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "225314",
+    "name": "Video Editor",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "212318",
+    "name": "Video Producer",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "451112",
+    "name": "Waiter",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "149216",
+    "name": "Warehouse Manager",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "323316",
+    "name": "Watch and Clock Maker and Repairer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "313113",
+    "name": "Web Administrator",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "232216",
+    "name": "Web Designer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "396112",
+    "name": "Welder",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "321611",
+    "name": "Welding Machine Operator",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "134214",
+    "name": "Welfare Centre Manager",
+    "lists": [
+      "MLTSSL"
+    ],
+    "subclasses": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "272712",
+    "name": "Welfare Officer",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272613",
+    "name": "Welfare Worker",
+    "lists": [
+      "STSOL"
+    ],
+    "subclasses": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "272617",
+    "name": "Welfare Worker (Aged Care)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272614",
+    "name": "Welfare Worker (Child Protection)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272615",
+    "name": "Welfare Worker (Community Care)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "272616",
+    "name": "Welfare Worker (Disability Support)",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "233614",
+    "name": "Wind Turbine Technician",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "394213",
+    "name": "Wood Machinist",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "394299",
+    "name": "Wood Machinists and Other Wood Trades Workers nec",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "190",
+      "407",
+      "482",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "394199",
+    "name": "Wood Trades Workers nec",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "394214",
+    "name": "Wood Turner",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "639212",
+    "name": "Wool Buyer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "399917",
+    "name": "Wool Classer",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "494"
+    ]
+  },
+  {
+    "code": "272714",
+    "name": "Youth Worker",
+    "lists": [
+      "STSOL"
+    ]
+  },
+  {
+    "code": "361114",
+    "name": "Zookeeper",
+    "lists": [
+      "ROL"
+    ],
+    "subclasses": [
+      "407",
+      "489",
+      "491",
+      "494"
+    ]
+  },
+  {
+    "code": "234522",
+    "name": "Zoologist",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "subclasses": [
+      "186",
+      "189",
+      "190",
+      "407",
+      "482",
+      "485",
+      "489",
+      "491",
+      "494"
+    ]
+  }
+]

@@ -1,0 +1,4004 @@
+[
+  {
+    "occupation": "Aboriginal and Torres Strait Islander Health Worker",
+    "anzscoCode": "411511",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Accommodation and Hospitality Managers nec",
+    "anzscoCode": "141999",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Accountant (General)",
+    "anzscoCode": "221111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "CAANZ",
+      "CPAA",
+      "IPA"
+    ]
+  },
+  {
+    "occupation": "Actor",
+    "anzscoCode": "211111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Actors, Dancers and Other Entertainers nec",
+    "anzscoCode": "211199",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Actuary",
+    "anzscoCode": "224111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Acupuncturist",
+    "anzscoCode": "252211",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "CMBA"
+    ]
+  },
+  {
+    "occupation": "Advertising Manager",
+    "anzscoCode": "131113",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "IML"
+    ]
+  },
+  {
+    "occupation": "Advertising Specialist",
+    "anzscoCode": "225111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Aeronautical Engineer",
+    "anzscoCode": "233911",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Aeroplane Pilot",
+    "anzscoCode": "231111",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "CASA"
+    ]
+  },
+  {
+    "occupation": "Agricultural and Agritech Technician",
+    "anzscoCode": "311112",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Agricultural Consultant",
+    "anzscoCode": "234111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Agricultural Engineer",
+    "anzscoCode": "233912",
+    "lists": [
+      "MLTSSL",
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Agricultural Research Scientist",
+    "anzscoCode": "234114",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Agricultural Scientist",
+    "anzscoCode": "234112",
+    "lists": [
+      "MLTSSL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Agricultural Technician",
+    "anzscoCode": "311111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Agronomist",
+    "anzscoCode": "234115",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Air Transport Professionals nec",
+    "anzscoCode": "231199",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Airconditioning and Mechanical Services Plumber",
+    "anzscoCode": "334112",
+    "lists": [
+      "MLTSSL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Aircraft Maintenance Engineer (Avionics)",
+    "anzscoCode": "323111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Aircraft Maintenance Engineer (Mechanical)",
+    "anzscoCode": "323112",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Aircraft Maintenance Engineer (Structures)",
+    "anzscoCode": "323113",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Ambulance Officer",
+    "anzscoCode": "411111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Amusement Centre Manager",
+    "anzscoCode": "149111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Anaesthetic Technician",
+    "anzscoCode": "311211",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Anaesthetist",
+    "anzscoCode": "253211",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "MedBA"
+    ]
+  },
+  {
+    "occupation": "Analyst Programmer",
+    "anzscoCode": "261311",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Animal Attendants and Trainers nec",
+    "anzscoCode": "361199",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Animal Husbandry Technician",
+    "anzscoCode": "311113",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Antique Dealer",
+    "anzscoCode": "142112",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Apiarist",
+    "anzscoCode": "121311",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Apparel Cutter",
+    "anzscoCode": "393211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Aquaculture Farmer",
+    "anzscoCode": "121111",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Aquaculture or Fisheries Scientist",
+    "anzscoCode": "234116",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Aquaculture or Fisheries Technician",
+    "anzscoCode": "311114",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Arborist",
+    "anzscoCode": "362511",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Archaeologist",
+    "anzscoCode": "272414",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Architect",
+    "anzscoCode": "232111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Architectural Draftsperson",
+    "anzscoCode": "312111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Architectural, Building and Surveying Technicians nec",
+    "anzscoCode": "312199",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Archivist",
+    "anzscoCode": "224211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Art Director (Film, Television or Stage)",
+    "anzscoCode": "212311",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Art Teacher (Private Tuition)",
+    "anzscoCode": "249211",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Artistic Director",
+    "anzscoCode": "212111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Arts Administrator or Manager",
+    "anzscoCode": "139911",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Auctioneer",
+    "anzscoCode": "611111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Audiologist",
+    "anzscoCode": "252711",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Author",
+    "anzscoCode": "212211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Automotive Electrician",
+    "anzscoCode": "321111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Baker",
+    "anzscoCode": "351111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Barrister",
+    "anzscoCode": "271111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Legal admissions authority of a state or territory"
+    ]
+  },
+  {
+    "occupation": "Beauty Therapist",
+    "anzscoCode": "451111",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Bed and Breakfast Operator",
+    "anzscoCode": "141911",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Beef Cattle Farmer",
+    "anzscoCode": "121312",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Betting Agency Manager",
+    "anzscoCode": "142113",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Biochemist",
+    "anzscoCode": "234513",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Biomedical Engineer",
+    "anzscoCode": "233913",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Biotechnologist",
+    "anzscoCode": "234514",
+    "lists": [
+      "MLTSSL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Blacksmith",
+    "anzscoCode": "322111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Boarding Kennel or Cattery Operator",
+    "anzscoCode": "149911",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Boat Builder and Repairer",
+    "anzscoCode": "399111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Book or Script Editor",
+    "anzscoCode": "212212",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Botanist",
+    "anzscoCode": "234515",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Bricklayer",
+    "anzscoCode": "331111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Broadcast Transmitter Operator",
+    "anzscoCode": "399511",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Building and Engineering Technicians nec",
+    "anzscoCode": "312999",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Building Associate",
+    "anzscoCode": "312112",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Building Inspector",
+    "anzscoCode": "312113",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Business Broker",
+    "anzscoCode": "612111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Business Machine Mechanic",
+    "anzscoCode": "342311",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Butcher or Smallgoods Maker",
+    "anzscoCode": "351211",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Cabinet Maker",
+    "anzscoCode": "394112",
+    "lists": [
+      "CSOL",
+      "TRA"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Cabinetmaker",
+    "anzscoCode": "394111",
+    "lists": [
+      "MLTSSL",
+      "TRA"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Cabler (Data and Telecommunications)",
+    "anzscoCode": "342411",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Cafe or Restaurant Manager",
+    "anzscoCode": "141111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Call or Contact Centre Manager",
+    "anzscoCode": "149211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Call or Contact Centre Team Leader",
+    "anzscoCode": "541111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Camera Operator (Film, Television or Video)",
+    "anzscoCode": "399512",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Canvas Goods Fabricator",
+    "anzscoCode": "393111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Caravan Park and Camping Ground Manager",
+    "anzscoCode": "141211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Cardiac Technician",
+    "anzscoCode": "311212",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Cardiologist",
+    "anzscoCode": "253312",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "MedBA"
+    ]
+  },
+  {
+    "occupation": "Cardiothoracic Surgeon",
+    "anzscoCode": "253512",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "MedBA"
+    ]
+  },
+  {
+    "occupation": "Careers Counsellor",
+    "anzscoCode": "272111",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Carpenter",
+    "anzscoCode": "331212",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Carpenter and Joiner",
+    "anzscoCode": "331211",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Cartographer",
+    "anzscoCode": "232213",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Chef",
+    "anzscoCode": "351311",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Chemical Engineer",
+    "anzscoCode": "233111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Chemical Plant Operator",
+    "anzscoCode": "399211",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Chemist",
+    "anzscoCode": "234211",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Chemistry Technician",
+    "anzscoCode": "311411",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Chief Executive or Managing Director",
+    "anzscoCode": "111111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "IML"
+    ]
+  },
+  {
+    "occupation": "Chief Information Officer",
+    "anzscoCode": "135111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Child Care Centre Manager",
+    "anzscoCode": "134111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACECQA"
+    ]
+  },
+  {
+    "occupation": "Child Care Worker",
+    "anzscoCode": "421111",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACECQA"
+    ]
+  },
+  {
+    "occupation": "Child Care Worker (group leaders only)",
+    "anzscoCode": "421111",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "ACECQA"
+    ]
+  },
+  {
+    "occupation": "Chiropractor",
+    "anzscoCode": "252111",
+    "lists": [
+      "MLTSSL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Cinema or Theatre Manager",
+    "anzscoCode": "149912",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Civil Engineer",
+    "anzscoCode": "233211",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Civil Engineering Draftsperson",
+    "anzscoCode": "312211",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Civil Engineering Technician",
+    "anzscoCode": "312212",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Clerk of Court",
+    "anzscoCode": "599211",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Clinical Coder",
+    "anzscoCode": "599915",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Clinical Haematologist",
+    "anzscoCode": "253313",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "MedBA"
+    ]
+  },
+  {
+    "occupation": "Clinical Psychologist",
+    "anzscoCode": "272311",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "APS"
+    ]
+  },
+  {
+    "occupation": "Clothing Patternmaker",
+    "anzscoCode": "393212",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Clothing Trades Workers nec",
+    "anzscoCode": "393299",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Commodities Trader",
+    "anzscoCode": "222111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Communications Operator",
+    "anzscoCode": "342312",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Community Arts Worker",
+    "anzscoCode": "272611",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Community Worker",
+    "anzscoCode": "411711",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACWA"
+    ]
+  },
+  {
+    "occupation": "Company Secretary",
+    "anzscoCode": "221211",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Complementary Health Therapists nec",
+    "anzscoCode": "252299",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Composer",
+    "anzscoCode": "211211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Computer Network and Systems Engineer",
+    "anzscoCode": "263111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Conference and Event Organiser",
+    "anzscoCode": "149311",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Conservation Officer",
+    "anzscoCode": "234311",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Conservator",
+    "anzscoCode": "234911",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Construction Estimator",
+    "anzscoCode": "312114",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Construction Project Manager",
+    "anzscoCode": "133111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Content Creator (Marketing)",
+    "anzscoCode": "225114",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Contract Administrator",
+    "anzscoCode": "511111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Conveyancer",
+    "anzscoCode": "599111",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Cook",
+    "anzscoCode": "351411",
+    "lists": [
+      "STSOL",
+      "CSOL",
+      "TRA"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Copywriter",
+    "anzscoCode": "212411",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Corporate General Manager",
+    "anzscoCode": "111211",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "IML"
+    ]
+  },
+  {
+    "occupation": "Corporate Services Manager",
+    "anzscoCode": "132111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Corporate Treasurer",
+    "anzscoCode": "221212",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "CAANZ",
+      "CPAA",
+      "IPA"
+    ]
+  },
+  {
+    "occupation": "Cotton Grower",
+    "anzscoCode": "121211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Counsellors nec",
+    "anzscoCode": "272199",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Court Bailiff or Sheriff (Aus) / Court Collections Officer (NZ)",
+    "anzscoCode": "599212",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Court Orderly (Aus) / Court Registry Officer (NZ)",
+    "anzscoCode": "599213",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Crop Farmers nec",
+    "anzscoCode": "121299",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Customer Service Manager",
+    "anzscoCode": "149212",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Cyber Governance Risk and Compliance Specialist",
+    "anzscoCode": "262114",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Cyber Security Advice and Assessment Specialist",
+    "anzscoCode": "262115",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Cyber Security Analyst",
+    "anzscoCode": "262116",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Cyber Security Architect",
+    "anzscoCode": "262117",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Cyber Security Engineer",
+    "anzscoCode": "261315",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Cyber Security Operations Coordinator",
+    "anzscoCode": "262118",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Dairy Cattle Farmer",
+    "anzscoCode": "121313",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dance Teacher (Private Tuition)",
+    "anzscoCode": "249212",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dancer or Choreographer",
+    "anzscoCode": "211112",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Data Analyst",
+    "anzscoCode": "224114",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Data Scientist",
+    "anzscoCode": "224115",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Database Administrator",
+    "anzscoCode": "262111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Deer Farmer",
+    "anzscoCode": "121314",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dental Hygienist",
+    "anzscoCode": "411211",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dental Prosthetist",
+    "anzscoCode": "411212",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dental Specialist",
+    "anzscoCode": "252311",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ADC"
+    ]
+  },
+  {
+    "occupation": "Dental Technician",
+    "anzscoCode": "411213",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Dental Therapist",
+    "anzscoCode": "411214",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dentist",
+    "anzscoCode": "252312",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ADC"
+    ]
+  },
+  {
+    "occupation": "Dermatologist",
+    "anzscoCode": "253911",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "MedBA"
+    ]
+  },
+  {
+    "occupation": "Developer Programmer",
+    "anzscoCode": "261312",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "DevOps Engineer",
+    "anzscoCode": "261316",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACS"
+    ]
+  },
+  {
+    "occupation": "Diagnostic and Interventional Radiologist",
+    "anzscoCode": "253917",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "MedBA"
+    ]
+  },
+  {
+    "occupation": "Diesel Motor Mechanic",
+    "anzscoCode": "321212",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Dietitian",
+    "anzscoCode": "251111",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "DAA"
+    ]
+  },
+  {
+    "occupation": "Director (Film, Television, Radio or Stage)",
+    "anzscoCode": "212312",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Director of Photography",
+    "anzscoCode": "212313",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Disabilities Service Officer",
+    "anzscoCode": "411712",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "Community Work Australia"
+    ]
+  },
+  {
+    "occupation": "Diver",
+    "anzscoCode": "399911",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Diversional Therapist",
+    "anzscoCode": "411311",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Diving Instructor (Open Water)",
+    "anzscoCode": "452311",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dog Handler or Trainer",
+    "anzscoCode": "361111",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dog or Horse Racing Official",
+    "anzscoCode": "452318",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Drainer",
+    "anzscoCode": "334113",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Drama Teacher (Private Tuition)",
+    "anzscoCode": "249213",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Dressmaker or Tailor",
+    "anzscoCode": "393213",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Driving Instructor",
+    "anzscoCode": "451211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Drug and Alcohol Counsellor",
+    "anzscoCode": "272112",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Early Childhood (Pre-primary School) Teacher",
+    "anzscoCode": "241111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ACECQA"
+    ]
+  },
+  {
+    "occupation": "Earth Science Technician",
+    "anzscoCode": "311412",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Economist",
+    "anzscoCode": "224311",
+    "lists": [
+      "MLTSSL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Education Adviser",
+    "anzscoCode": "249111",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Education Managers nec",
+    "anzscoCode": "134499",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Education Reviewer",
+    "anzscoCode": "249112",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Educational Psychologist",
+    "anzscoCode": "272312",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "APS"
+    ]
+  },
+  {
+    "occupation": "Electorate Officer",
+    "anzscoCode": "224911",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Electrical Engineer",
+    "anzscoCode": "233311",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Electrical Engineering Draftsperson",
+    "anzscoCode": "312311",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Electrical Engineering Technician",
+    "anzscoCode": "312312",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Electrical Linesworker",
+    "anzscoCode": "342211",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Electrician (General)",
+    "anzscoCode": "341111",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Electrician (Special Class)",
+    "anzscoCode": "341112",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Electronic Engineering Draftsperson",
+    "anzscoCode": "312411",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Electronic Engineering Technician",
+    "anzscoCode": "312412",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Electronic Equipment Trades Worker",
+    "anzscoCode": "342313",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Electronic Instrument Trades Worker (General)",
+    "anzscoCode": "342314",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Electronic Instrument Trades Worker (Special Class)",
+    "anzscoCode": "342315",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Electronics Engineer",
+    "anzscoCode": "233411",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Electroplater",
+    "anzscoCode": "322112",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Emergency Medicine Specialist",
+    "anzscoCode": "253912",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "MedBA"
+    ]
+  },
+  {
+    "occupation": "Emergency Service Worker",
+    "anzscoCode": "441211",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Endocrinologist",
+    "anzscoCode": "253315",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "MedBA"
+    ]
+  },
+  {
+    "occupation": "Engineering Manager",
+    "anzscoCode": "133211",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Engineering Patternmaker",
+    "anzscoCode": "323411",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Engineering Professionals nec",
+    "anzscoCode": "233999",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Engineering Technologist",
+    "anzscoCode": "233914",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Engraver",
+    "anzscoCode": "323311",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  },
+  {
+    "occupation": "Enrolled Nurse",
+    "anzscoCode": "411411",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "ANMAC"
+    ]
+  },
+  {
+    "occupation": "Entertainer or Variety Artist",
+    "anzscoCode": "211113",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Entomologist",
+    "anzscoCode": "234521",
+    "lists": [
+      "CSOL"
+    ],
+    "visaTypes": [
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Environment Consultant",
+    "anzscoCode": "234312",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Environment Engineer",
+    "anzscoCode": "233915",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Engineers Australia"
+    ]
+  },
+  {
+    "occupation": "Environmental Health Officer",
+    "anzscoCode": "251311",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Environmental Manager",
+    "anzscoCode": "139912",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Environmental Research Scientist",
+    "anzscoCode": "234313",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "190",
+      "489",
+      "485",
+      "189",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Environmental Scientists nec",
+    "anzscoCode": "234399",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "190",
+      "489",
+      "485",
+      "189",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Equipment Hire Manager",
+    "anzscoCode": "149915",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Exercise Physiologist",
+    "anzscoCode": "234915",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "External Auditor",
+    "anzscoCode": "221213",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "491",
+      "494",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "CAANZ",
+      "CPAA",
+      "IPA"
+    ]
+  },
+  {
+    "occupation": "Facilities Manager",
+    "anzscoCode": "149913",
+    "lists": [
+      "ROL"
+    ],
+    "visaTypes": [
+      "494"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Faculty Head",
+    "anzscoCode": "134411",
+    "lists": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "407",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Family and Marriage Counsellor",
+    "anzscoCode": "272113",
+    "lists": [
+      "STSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "assessingAuthorities": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "occupation": "Family Support Worker",
+    "anzscoCode": "411713",
+    "lists": [
+      "STSOL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "Community Work Australia"
+    ]
+  },
+  {
+    "occupation": "Farrier",
+    "anzscoCode": "322113",
+    "lists": [
+      "ROL",
+      "CSOL"
+    ],
+    "visaTypes": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "assessingAuthorities": [
+      "TRA"
+    ]
+  }
+]
