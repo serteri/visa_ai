@@ -24,6 +24,7 @@ import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, is
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
+import { useTranslation } from "@/contexts/language-context";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
@@ -279,6 +280,33 @@ function ErrorText({ message }: { message?: string }) {
   return <p className="text-xs text-red-600">{message}</p>;
 }
 
+// Red asterisk shown next to the label of every mandatory field.
+function RequiredMark() {
+  return (
+    <span className="text-red-500 ml-1" aria-hidden="true">
+      *
+    </span>
+  );
+}
+
+// Robust cross-browser autofill suppression. Chrome/Edge frequently ignore
+// autoComplete="off", but they disable autofill for a field whose token they
+// don't recognise, so each field gets a distinct non-standard token (kept
+// constant here so server and client render the same markup — no hydration
+// mismatch). The data-* attributes opt the field out of the common password
+// managers (LastPass, 1Password, Dashlane) as well.
+function noAutofill(field: string) {
+  return {
+    autoComplete: `no-fill-${field}`,
+    autoCorrect: "off",
+    autoCapitalize: "off",
+    spellCheck: false,
+    "data-lpignore": "true",
+    "data-1p-ignore": "true",
+    "data-form-type": "other",
+  } as const;
+}
+
 function PathwayDetailCard({
   title,
   confidenceLabel,
@@ -434,6 +462,7 @@ export function FullCheckWaitlistForm({
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
+  const { t } = useTranslation();
   const txt = (trText: string, enText: string, zhText: string) =>
     isTr ? trText : isZh ? zhText : enText;
   const rpt = (zhText: string, trText: string, enText: string) =>
@@ -821,32 +850,39 @@ export function FullCheckWaitlistForm({
       )}
 
       {!shouldHideIntakeForm && (
-      <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4 overflow-visible" noValidate>
+      <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4 overflow-visible" autoComplete="off" noValidate>
         <input type="hidden" name="routeLocale" value={locale} />
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="preferredLanguage" value={locale} />
         <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
         <input type="hidden" name="analysisProgressId" value={analysisProgressId} />
 
+        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+          {t("mandatory_fields_warning")}
+        </p>
+
         <div className="space-y-2">
           <Label htmlFor="waitlist-full-name">{txt("Ad soyad", "Full name", "姓名")}</Label>
           <Input
             id="waitlist-full-name"
             name="fullName"
-            autoComplete="name"
+            {...noAutofill("fullName")}
             className={fieldClassName}
             placeholder={txt("Adınız", "Your name", "请输入姓名")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-email">{txt("E-posta adresi", "Email address", "邮箱地址")}</Label>
+          <Label htmlFor="waitlist-email">
+            {txt("E-posta adresi", "Email address", "邮箱地址")}
+            <RequiredMark />
+          </Label>
           <Input
             id="waitlist-email"
             name="email"
             type="email"
             placeholder="you@example.com"
-            autoComplete="email"
+            {...noAutofill("email")}
             className={fieldClassName}
             required
           />
@@ -901,18 +937,22 @@ export function FullCheckWaitlistForm({
             id="waitlist-current-country"
             name="currentCountry"
             defaultValue={initialValues.currentCountry ?? ""}
-            autoComplete="country-name"
+            {...noAutofill("currentCountry")}
             className={fieldClassName}
             placeholder={txt("Avustralya, Türkiye, Hindistan veya başka bir ülke", "Australia, Turkiye, India, or elsewhere", "例如：澳大利亚、中国、土耳其等")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-main-goal">{txt("Ana hedef", "Main goal", "主要目标")}</Label>
+          <Label htmlFor="waitlist-main-goal">
+            {txt("Ana hedef", "Main goal", "主要目标")}
+            <RequiredMark />
+          </Label>
           <Textarea
             id="waitlist-main-goal"
             name="mainGoal"
             defaultValue={initialValues.mainGoal ?? ""}
+            {...noAutofill("mainGoal")}
             className="min-h-28 rounded-xl border-border/70 bg-background/80 px-4 py-3 shadow-sm transition focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             placeholder={txt("Raporun hangi konuda yardımcı olmasını istediğinizi belirtin", "Tell us what you want the report to help with", "请说明你希望报告重点解决的问题")}
             rows={3}
@@ -923,11 +963,15 @@ export function FullCheckWaitlistForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="waitlist-passport-country">{txt("Pasaport ülkesi", "Passport country", "护照国家")}</Label>
+            <Label htmlFor="waitlist-passport-country">
+              {txt("Pasaport ülkesi", "Passport country", "护照国家")}
+              <RequiredMark />
+            </Label>
             <Input
               id="waitlist-passport-country"
               name="passportCountry"
               required
+              {...noAutofill("passportCountry")}
               className={fieldClassName}
               placeholder={txt("Ülke adı", "Country name", "国家名称")}
             />
@@ -935,12 +979,16 @@ export function FullCheckWaitlistForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="waitlist-age">{txt("Yaş", "Age", "年龄")}</Label>
+            <Label htmlFor="waitlist-age">
+              {txt("Yaş", "Age", "年龄")}
+              <RequiredMark />
+            </Label>
             <Input
               id="waitlist-age"
               name="age"
               type="number"
               required
+              {...noAutofill("age")}
               className={fieldClassName}
               placeholder={txt("Örn: 28", "E.g., 28", "例如：28")}
             />
@@ -963,7 +1011,7 @@ export function FullCheckWaitlistForm({
                 id="waitlist-occupation"
                 type="text"
                 value={nocSearch}
-                autoComplete="off"
+                {...noAutofill("occupation")}
                 onChange={(e) => {
                   const v = e.target.value;
                   setNocSearch(v);
@@ -1020,7 +1068,7 @@ export function FullCheckWaitlistForm({
                 id="waitlist-occupation"
                 type="text"
                 value={anzscoSearch}
-                autoComplete="off"
+                {...noAutofill("occupation")}
                 onChange={(e) => {
                   const value = e.target.value;
                   setAnzscoSearch(value);
@@ -1069,7 +1117,10 @@ export function FullCheckWaitlistForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-english">{txt("İngilizce seviyesi", "English level", "英语水平")}</Label>
+          <Label htmlFor="waitlist-english">
+            {txt("İngilizce seviyesi", "English level", "英语水平")}
+            <RequiredMark />
+          </Label>
           <Select value={englishLevel} onValueChange={setEnglishLevel}>
             <SelectTrigger id="waitlist-english" className={fieldClassName}>
               <SelectValue
@@ -1091,6 +1142,7 @@ export function FullCheckWaitlistForm({
         <div className="space-y-2">
           <Label htmlFor="waitlist-education">
             {txt("En yüksek eğitim seviyesi", "Highest Education Level", "最高学历")}
+            <RequiredMark />
           </Label>
           <Select value={qualificationLevel} onValueChange={setQualificationLevel}>
             <SelectTrigger id="waitlist-education" className={fieldClassName}>
@@ -1203,7 +1255,10 @@ export function FullCheckWaitlistForm({
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-salary-aud">{txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}</Label>
+          <Label htmlFor="waitlist-salary-aud">
+            {txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}
+            <RequiredMark />
+          </Label>
           <Input
             id="waitlist-salary-aud"
             name="annualSalaryAud"
@@ -1213,6 +1268,7 @@ export function FullCheckWaitlistForm({
             inputMode="numeric"
             value={annualSalaryAud}
             onChange={(e) => setAnnualSalaryAud(e.target.value)}
+            {...noAutofill("annualSalaryAud")}
             className={fieldClassName}
             placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")}
           />
@@ -1235,6 +1291,7 @@ export function FullCheckWaitlistForm({
               min={0}
               step="0.5"
               inputMode="decimal"
+              {...noAutofill("offshoreExperienceYears")}
               className={fieldClassName}
               placeholder={txt("Örn: 5", "E.g., 5", "例如：5")}
             />
@@ -1257,6 +1314,7 @@ export function FullCheckWaitlistForm({
               min={0}
               step="0.5"
               inputMode="decimal"
+              {...noAutofill("onshoreExperienceYears")}
               className={fieldClassName}
               placeholder={txt("Örn: 2", "E.g., 2", "例如：2")}
             />
@@ -1266,7 +1324,10 @@ export function FullCheckWaitlistForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="waitlist-sponsor">{txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}</Label>
+          <Label htmlFor="waitlist-sponsor">
+            {txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}
+            <RequiredMark />
+          </Label>
           <Select value={sponsorFamilyStatus} onValueChange={setSponsorFamilyStatus}>
             <SelectTrigger id="waitlist-sponsor" className={fieldClassName}>
               <SelectValue
@@ -1290,6 +1351,7 @@ export function FullCheckWaitlistForm({
           <Input
             id="waitlist-concern"
             name="biggestConcern"
+            {...noAutofill("biggestConcern")}
             className={fieldClassName}
             placeholder={txt("Örn: Belgeler, Puan, Dil testi", "E.g., Documents, Points, English test", "例如：材料、分数、英语考试")}
           />
@@ -1357,6 +1419,7 @@ export function FullCheckWaitlistForm({
             <Input
               id="waitlist-budget-range"
               name="estimatedBudgetRange"
+              {...noAutofill("estimatedBudgetRange")}
               className={fieldClassName}
               placeholder={txt(
                 `Orn: 10k-20k ${budgetCurrency}`,
@@ -1425,6 +1488,10 @@ export function FullCheckWaitlistForm({
           label={termsLabel}
           errorText={termsErrorText}
         />
+
+        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+          {t("mandatory_fields_warning")}
+        </p>
 
         <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
           {isPending

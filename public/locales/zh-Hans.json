@@ -1,5 +1,6 @@
 {
   "nav.home": "首页",
+  "mandatory_fields_warning": "填写这些字段为必填项。",
   "ineligible.salaryReason": "不符合资格：薪资：{{salary}} AUD 对比 门槛：{{threshold}} AUD。",
   "ineligible.ageReason": "不符合资格：年龄：{{age}} 对比 上限：{{ageLimit}}。",
   "ineligible.lowPoints": "不符合资格：总分：{{points}} 对比 最低要求：65。",
