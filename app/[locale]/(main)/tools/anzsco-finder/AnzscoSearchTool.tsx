@@ -180,9 +180,11 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                               {getLocalizedTitle(occ, locale)}
                             </p>
                           </div>
-                          <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
-                            {occ.skillLevel}
-                          </span>
+                          {occ.skillLevel ? (
+                            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
+                              {occ.skillLevel}
+                            </span>
+                          ) : null}
                         </div>
                       </button>
                     );
@@ -209,9 +211,11 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                             {getLocalizedTitle(selectedOccupation, locale)}
                           </h2>
                         </div>
-                        <div className="rounded-full border border-cyan-200/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
-                          {selectedOccupation.skillLevel}
-                        </div>
+                        {selectedOccupation.skillLevel ? (
+                          <div className="rounded-full border border-cyan-200/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
+                            {selectedOccupation.skillLevel}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
 
@@ -232,8 +236,9 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                             {t("af.detail.skillLevel")}
                           </div>
                           <p className="mt-2 text-3xl font-bold text-slate-950">
-                            {t("af.detail.levelPrefix")}{" "}
-                            {selectedOccupation.skillLevel.match(/\d+/)?.[0] ?? ""}
+                            {selectedOccupation.skillLevel
+                              ? `${t("af.detail.levelPrefix")} ${selectedOccupation.skillLevel.match(/\d+/)?.[0] ?? ""}`
+                              : "—"}
                           </p>
                         </div>
                       </div>

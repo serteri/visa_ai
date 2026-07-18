@@ -28,7 +28,7 @@
   {
     "code": "141999",
     "title": "Accommodation and Hospitality Managers nec",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Plans, organises and directs the operations of accommodation and hospitality establishments.",
       "Manages staff, budgets, bookings and guest services to meet quality and safety standards.",
@@ -575,7 +575,7 @@
   {
     "code": "149111",
     "title": "Amusement Centre Manager",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Directs the daily operation of an amusement or entertainment centre.",
       "Manages staff, attractions, ticketing and customer safety.",
@@ -649,7 +649,7 @@
   {
     "code": "361199",
     "title": "Animal Attendants and Trainers nec",
-    "skillLevel": "Skill Level 4",
+    "skillLevel": "",
     "duties": [
       "Feeds, cleans and monitors the health and wellbeing of animals.",
       "Trains or conditions animals for handling, work, sport or display.",
@@ -684,7 +684,7 @@
   {
     "code": "142112",
     "title": "Antique Dealer",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Buys, values and sells antiques and collectable items.",
       "Authenticates provenance and condition and sets pricing.",
@@ -706,7 +706,7 @@
   {
     "code": "121311",
     "title": "Apiarist",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "Skill Level 1",
     "duties": [
       "Establishes and maintains beehives to produce honey and other bee products.",
       "Monitors colony health, disease and queen breeding.",
@@ -728,7 +728,7 @@
   {
     "code": "393211",
     "title": "Apparel Cutter",
-    "skillLevel": "Skill Level 4",
+    "skillLevel": "",
     "duties": [
       "Lays out and cuts fabric to patterns for garment manufacture.",
       "Operates cutting tools and machinery to specification.",
@@ -876,7 +876,7 @@
   {
     "code": "362511",
     "title": "Arborist",
-    "skillLevel": "Skill Level 3",
+    "skillLevel": "",
     "duties": [
       "Prunes, treats and removes trees to maintain health and public safety.",
       "Assesses tree condition, disease and structural risk.",
@@ -898,7 +898,7 @@
   {
     "code": "272414",
     "title": "Archaeologist",
-    "skillLevel": "Skill Level 1",
+    "skillLevel": "",
     "duties": [
       "Investigates past human activity through excavation and analysis of material remains.",
       "Records, dates and interprets sites and artefacts.",
@@ -933,7 +933,7 @@
   {
     "code": "312111",
     "title": "Architectural Draftsperson",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "Skill Level 1",
     "duties": [
       "Prepares detailed architectural drawings and plans from designs and specifications.",
       "Uses CAD software to produce construction and presentation documents.",
@@ -955,7 +955,7 @@
   {
     "code": "312199",
     "title": "Architectural, Building and Surveying Technicians nec",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "Skill Level 1",
     "duties": [
       "Provides technical support in architecture, building and surveying projects.",
       "Assists with drawings, measurements, testing and site inspections.",
@@ -977,7 +977,7 @@
   {
     "code": "249211",
     "title": "Art Teacher (Private Tuition)",
-    "skillLevel": "Skill Level 1",
+    "skillLevel": "",
     "duties": [
       "Provides private tuition in visual or performing arts.",
       "Plans lessons and develops students' technique and creativity.",
@@ -1012,7 +1012,7 @@
   {
     "code": "611111",
     "title": "Auctioneer",
-    "skillLevel": "Skill Level 3",
+    "skillLevel": "",
     "duties": [
       "Conducts auctions and invites and acknowledges bids from buyers.",
       "Values and catalogues goods or property for sale.",
@@ -1190,7 +1190,7 @@
   {
     "code": "141911",
     "title": "Bed and Breakfast Operator",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Operates a bed and breakfast providing short-term guest accommodation.",
       "Manages bookings, housekeeping, catering and guest services.",
@@ -1212,7 +1212,7 @@
   {
     "code": "142113",
     "title": "Betting Agency Manager",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Manages the operation of a betting or wagering agency.",
       "Supervises staff, transactions and responsible-gambling compliance.",
@@ -1299,7 +1299,7 @@
   {
     "code": "149911",
     "title": "Boarding Kennel or Cattery Operator",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Operates a boarding kennel or cattery caring for animals.",
       "Manages bookings, feeding, hygiene and animal welfare.",
@@ -1538,7 +1538,7 @@
   {
     "code": "612111",
     "title": "Business Broker",
-    "skillLevel": "Skill Level 3",
+    "skillLevel": "",
     "duties": [
       "Arranges the sale and purchase of businesses on behalf of clients.",
       "Values businesses and markets them to prospective buyers.",
@@ -1664,7 +1664,7 @@
   {
     "code": "541111",
     "title": "Call or Contact Centre Team Leader",
-    "skillLevel": "Skill Level 4",
+    "skillLevel": "",
     "duties": [
       "Supervises a team of call or contact centre operators.",
       "Monitors service levels, quality and performance targets.",
@@ -1699,7 +1699,7 @@
   {
     "code": "141211",
     "title": "Caravan Park and Camping Ground Manager",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Manages the operation of a caravan park or camping ground.",
       "Handles bookings, site allocation, facilities and guest services.",
@@ -1903,7 +1903,7 @@
   {
     "code": "399211",
     "title": "Chemical Plant Operator",
-    "skillLevel": "Skill Level 4",
+    "skillLevel": "",
     "duties": [
       "Operates and controls chemical processing plant and equipment.",
       "Monitors reactions, gauges and process parameters.",
@@ -2055,7 +2055,7 @@
   {
     "code": "149912",
     "title": "Cinema or Theatre Manager",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Directs the operation of a cinema or theatre venue.",
       "Manages programming, staff, ticketing and patron services.",
@@ -2142,7 +2142,7 @@
   {
     "code": "599211",
     "title": "Clerk of Court",
-    "skillLevel": "Skill Level 3",
+    "skillLevel": "",
     "duties": [
       "Manages court records, filings and case documentation.",
       "Administers oaths and supports court proceedings.",
@@ -2203,7 +2203,7 @@
   {
     "code": "393212",
     "title": "Clothing Patternmaker",
-    "skillLevel": "Skill Level 3",
+    "skillLevel": "",
     "duties": [
       "Develops and grades patterns for garment production.",
       "Interprets designs into accurate pattern pieces and sizes.",
@@ -2225,7 +2225,7 @@
   {
     "code": "393299",
     "title": "Clothing Trades Workers nec",
-    "skillLevel": "Skill Level 4",
+    "skillLevel": "",
     "duties": [
       "Performs specialised tasks in garment and textile production.",
       "Operates machinery and hand tools to make or finish clothing.",
@@ -2273,7 +2273,7 @@
   {
     "code": "222111",
     "title": "Commodities Trader",
-    "skillLevel": "Skill Level 1",
+    "skillLevel": "",
     "duties": [
       "Buys and sells commodities and related contracts on behalf of clients or firms.",
       "Analyses markets, prices and risk to inform trading decisions.",
@@ -2391,7 +2391,7 @@
   {
     "code": "149311",
     "title": "Conference and Event Organiser",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Plans, coordinates and delivers conferences and events.",
       "Manages venues, suppliers, budgets and schedules.",
@@ -2522,7 +2522,7 @@
   {
     "code": "599111",
     "title": "Conveyancer",
-    "skillLevel": "Skill Level 2",
+    "skillLevel": "",
     "duties": [
       "Prepares and processes legal documents for property transfers.",
       "Conducts title searches and liaises with parties and authorities.",
@@ -2701,7 +2701,7 @@
   {
     "code": "599212",
     "title": "Court Bailiff or Sheriff (Aus) \\\\ Court Collections Officer (NZ)",
-    "skillLevel": "Skill Level 3",
+    "skillLevel": "",
     "duties": [
       "Serves legal documents and enforces court orders.",
       "Recovers debts or property and maintains order in court.",
@@ -2723,7 +2723,7 @@
   {
     "code": "599213",
     "title": "Court Orderly (Aus) \\\\ Court Registry Officer (NZ)",
-    "skillLevel": "Skill Level 3",
+    "skillLevel": "",
     "duties": [
       "Maintains order and supports proceedings in the courtroom.",
       "Assists judicial officers, parties and witnesses.",
@@ -2780,25 +2780,25 @@
   {
     "code": "262114",
     "title": "Cyber Governance Risk and Compliance Specialist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "262115",
     "title": "Cyber Security Advice and Assessment Specialist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "262116",
     "title": "Cyber Security Analyst",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "262117",
     "title": "Cyber Security Architect",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -2817,7 +2817,7 @@
   {
     "code": "262118",
     "title": "Cyber Security Operations Coordinator",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -2894,7 +2894,7 @@
   {
     "code": "224114",
     "title": "Data Analyst",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -2952,7 +2952,7 @@
   {
     "code": "121314",
     "title": "Deer Farmer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -2984,13 +2984,13 @@
   {
     "code": "411213",
     "title": "Dental Technician",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "411214",
     "title": "Dental Therapist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3087,7 +3087,7 @@
   {
     "code": "253917",
     "title": "Diagnostic and Interventional Radiologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3145,13 +3145,13 @@
   {
     "code": "212312",
     "title": "Director (Film, Television, Radio or Stage)",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "212313",
     "title": "Director of Photography",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3277,7 +3277,7 @@
   {
     "code": "272112",
     "title": "Drug and Alcohol Counsellor",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3328,7 +3328,7 @@
   {
     "code": "134499",
     "title": "Education Managers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3366,7 +3366,7 @@
   {
     "code": "224911",
     "title": "Electorate Officer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3528,7 +3528,7 @@
   {
     "code": "342315",
     "title": "Electronic Instrument Trades Worker (Special Class)",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3599,7 +3599,7 @@
   {
     "code": "253912",
     "title": "Emergency Medicine Specialist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3695,7 +3695,7 @@
   {
     "code": "323311",
     "title": "Engraver",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -3844,7 +3844,7 @@
   {
     "code": "234521",
     "title": "Entomologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4018,7 +4018,7 @@
   {
     "code": "272113",
     "title": "Family and Marriage Counsellor",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4095,13 +4095,13 @@
   {
     "code": "212314",
     "title": "Film and Video Editor",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "212399",
     "title": "Film, Television, Radio and Stage Directors nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4145,7 +4145,7 @@
   {
     "code": "222299",
     "title": "Financial Dealers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4529,31 +4529,31 @@
   {
     "code": "451399",
     "title": "Funeral Workers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "394211",
     "title": "Furniture Finisher",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "222212",
     "title": "Futures Trader",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "224212",
     "title": "Gallery or Museum Curator",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "399311",
     "title": "Gallery or Museum Technician",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4740,7 +4740,7 @@
   {
     "code": "121315",
     "title": "Goat Farmer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4752,7 +4752,7 @@
   {
     "code": "121215",
     "title": "Grape Grower",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4822,7 +4822,7 @@
   {
     "code": "323312",
     "title": "Gunsmith",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4885,7 +4885,7 @@
   {
     "code": "134299",
     "title": "Health and Welfare Services Managers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -4904,13 +4904,13 @@
   {
     "code": "251999",
     "title": "Health Diagnostic and Promotion Professionals nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "224213",
     "title": "Health Information Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -5019,7 +5019,7 @@
   {
     "code": "121316",
     "title": "Horse Breeder",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -5172,13 +5172,13 @@
   {
     "code": "234413",
     "title": "Hydrogeologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "311415",
     "title": "Hydrographer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -5216,7 +5216,7 @@
   {
     "code": "135199",
     "title": "ICT Managers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -5261,7 +5261,7 @@
   {
     "code": "225213",
     "title": "ICT Sales Representative",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -5593,7 +5593,7 @@
   {
     "code": "311115",
     "title": "Irrigation Designer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -5682,7 +5682,7 @@
   {
     "code": "212499",
     "title": "Journalists and Other Writers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -5854,7 +5854,7 @@
   {
     "code": "224912",
     "title": "Liaison Officer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -5917,7 +5917,7 @@
   {
     "code": "399513",
     "title": "Light Technician",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 3",
     "duties": []
   },
   {
@@ -5988,7 +5988,7 @@
   {
     "code": "121399",
     "title": "Livestock Farmers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6059,7 +6059,7 @@
   {
     "code": "399514",
     "title": "Make Up Artist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 3",
     "duties": []
   },
   {
@@ -6175,13 +6175,13 @@
   {
     "code": "231215",
     "title": "Marine Surveyor",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "231299",
     "title": "Marine Transport Professionals nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6375,13 +6375,13 @@
   {
     "code": "311299",
     "title": "Medical Technicians nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "322114",
     "title": "Metal Casting Trades Worker",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6413,13 +6413,13 @@
   {
     "code": "323214",
     "title": "Metal Machinist (First Class)",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "322115",
     "title": "Metal Polisher",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6438,7 +6438,7 @@
   {
     "code": "234912",
     "title": "Metallurgist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6496,7 +6496,7 @@
   {
     "code": "224913",
     "title": "Migration Agent (Aus) \\\\ Immigration Consultant (NZ)",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6605,7 +6605,7 @@
   {
     "code": "121317",
     "title": "Mixed Livestock Farmer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6663,7 +6663,7 @@
   {
     "code": "232413",
     "title": "Multimedia Designer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6682,13 +6682,13 @@
   {
     "code": "211212",
     "title": "Music Director",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "211299",
     "title": "Music Professionals nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6700,7 +6700,7 @@
   {
     "code": "399515",
     "title": "Musical Instrument Maker or Repairer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 3",
     "duties": []
   },
   {
@@ -6719,7 +6719,7 @@
   {
     "code": "211213",
     "title": "Musician (Instrumental)",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6868,7 +6868,7 @@
   {
     "code": "212412",
     "title": "Newspaper or Periodical Editor",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6945,7 +6945,7 @@
   {
     "code": "134212",
     "title": "Nursing Clinical Director",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -6977,13 +6977,13 @@
   {
     "code": "253913",
     "title": "Obstetrician and Gynaecologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "251312",
     "title": "Occupational Health and Safety Adviser",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7060,7 +7060,7 @@
   {
     "code": "253914",
     "title": "Ophthalmologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7130,7 +7130,7 @@
   {
     "code": "224712",
     "title": "Organisation and Methods Analyst",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7201,7 +7201,7 @@
   {
     "code": "312914",
     "title": "Other Draftsperson",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7219,13 +7219,13 @@
   {
     "code": "253515",
     "title": "Otorhinolaryngologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "253516",
     "title": "Paediatric Surgeon",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7393,7 +7393,7 @@
   {
     "code": "224914",
     "title": "Patents Examiner",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7425,13 +7425,13 @@
   {
     "code": "261317",
     "title": "Penetration Tester",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "399599",
     "title": "Performing Arts Technicians nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 3",
     "duties": []
   },
   {
@@ -7546,13 +7546,13 @@
   {
     "code": "394212",
     "title": "Picture Framer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "121318",
     "title": "Pig Farmer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7610,7 +7610,7 @@
   {
     "code": "253517",
     "title": "Plastic and Reconstructive Surgeon",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7830,7 +7830,7 @@
   {
     "code": "312115",
     "title": "Plumbing Inspector",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7886,7 +7886,7 @@
   {
     "code": "121321",
     "title": "Poultry Farmer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7930,7 +7930,7 @@
   {
     "code": "323314",
     "title": "Precision Instrument Maker and Repairer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -7949,13 +7949,13 @@
   {
     "code": "322312",
     "title": "Pressure Welder",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 3",
     "duties": []
   },
   {
     "code": "134213",
     "title": "Primary Health Organisation Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8070,7 +8070,7 @@
   {
     "code": "212413",
     "title": "Print Journalist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8140,7 +8140,7 @@
   {
     "code": "133612",
     "title": "Procurement Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8229,7 +8229,7 @@
   {
     "code": "212315",
     "title": "Program Director (Television or Radio)",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8261,7 +8261,7 @@
   {
     "code": "133112",
     "title": "Project Builder",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8397,13 +8397,13 @@
   {
     "code": "272399",
     "title": "Psychologists nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "131114",
     "title": "Public Relations Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8493,7 +8493,7 @@
   {
     "code": "253918",
     "title": "Radiation Oncologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8525,7 +8525,7 @@
   {
     "code": "212414",
     "title": "Radio Journalist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8614,7 +8614,7 @@
   {
     "code": "224214",
     "title": "Records Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8633,7 +8633,7 @@
   {
     "code": "223112",
     "title": "Recruitment Consultant",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8665,7 +8665,7 @@
   {
     "code": "134412",
     "title": "Regional Education Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -8775,7 +8775,7 @@
   {
     "code": "254417",
     "title": "Registered Nurse (Disability and Rehabilitation)",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -9067,13 +9067,13 @@
   {
     "code": "139917",
     "title": "Regulatory Affairs Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "272114",
     "title": "Rehabilitation Counsellor",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -9176,7 +9176,7 @@
   {
     "code": "234612",
     "title": "Respiratory Scientist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -9220,7 +9220,7 @@
   {
     "code": "251513",
     "title": "Retail Pharmacist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -9303,13 +9303,13 @@
   {
     "code": "225411",
     "title": "Sales Representative (Industrial Products)",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "323315",
     "title": "Saw Doctor",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -9354,7 +9354,7 @@
   {
     "code": "311499",
     "title": "Science Technicians nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -9540,7 +9540,7 @@
   {
     "code": "121322",
     "title": "Sheep Farmer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -9895,7 +9895,7 @@
   {
     "code": "399516",
     "title": "Sound Technician",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 3",
     "duties": []
   },
   {
@@ -9992,7 +9992,7 @@
   {
     "code": "241599",
     "title": "Special Education Teachers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10282,7 +10282,7 @@
   {
     "code": "212316",
     "title": "Stage Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10307,7 +10307,7 @@
   {
     "code": "222213",
     "title": "Stockbroking Dealer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10391,7 +10391,7 @@
   {
     "code": "272115",
     "title": "Student Counsellor",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10410,7 +10410,7 @@
   {
     "code": "121217",
     "title": "Sugar Cane Grower",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10455,7 +10455,7 @@
   {
     "code": "224714",
     "title": "Supply Chain Analyst",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10590,13 +10590,13 @@
   {
     "code": "212317",
     "title": "Technical Director",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "225499",
     "title": "Technical Sales Representatives nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10647,7 +10647,7 @@
   {
     "code": "342412",
     "title": "Telecommunications Cable Jointer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10692,7 +10692,7 @@
   {
     "code": "313212",
     "title": "Telecommunications Field Engineer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10737,7 +10737,7 @@
   {
     "code": "313214",
     "title": "Telecommunications Technical Officer or Technologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10782,19 +10782,19 @@
   {
     "code": "399517",
     "title": "Television Equipment Operator",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 3",
     "duties": []
   },
   {
     "code": "212416",
     "title": "Television Journalist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "212114",
     "title": "Television Presenter",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10819,7 +10819,7 @@
   {
     "code": "323215",
     "title": "Textile, Clothing and Footwear Mechanic",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10940,7 +10940,7 @@
   {
     "code": "451799",
     "title": "Travel Attendants nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -10984,7 +10984,7 @@
   {
     "code": "121218",
     "title": "Turf Grower",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -11094,7 +11094,7 @@
   {
     "code": "253518",
     "title": "Urologist",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -11126,13 +11126,13 @@
   {
     "code": "253521",
     "title": "Vascular Surgeon",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
     "code": "121221",
     "title": "Vegetable Grower",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -11326,7 +11326,7 @@
   {
     "code": "212318",
     "title": "Video Producer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -11370,7 +11370,7 @@
   {
     "code": "323316",
     "title": "Watch and Clock Maker and Repairer",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -11447,7 +11447,7 @@
   {
     "code": "134214",
     "title": "Welfare Centre Manager",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -11563,7 +11563,7 @@
   {
     "code": "394299",
     "title": "Wood Machinists and Other Wood Trades Workers nec",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -11582,7 +11582,7 @@
   {
     "code": "394214",
     "title": "Wood Turner",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
@@ -11600,7 +11600,7 @@
   {
     "code": "223113",
     "title": "Workplace Relations Adviser",
-    "skillLevel": "",
+    "skillLevel": "Skill Level 1",
     "duties": []
   },
   {
