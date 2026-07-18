@@ -17,6 +17,21 @@ export function GlobalDisclaimerFooter() {
       >
         {t("footer.contact")}
       </Link>
+
+      {/* Official Resources — permanent link to the official occupation list PDF */}
+      <div className="mt-3 border-t border-border/50 pt-3">
+        <p className="font-semibold uppercase tracking-wide text-foreground/60">
+          {t("footer.officialResources")}
+        </p>
+        <a
+          href="/australia-skilled-occupation-list-2026.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-1 inline-block font-medium text-foreground/70 underline underline-offset-2 hover:text-foreground"
+        >
+          {t("footer.officialListPdf")}
+        </a>
+      </div>
     </footer>
   );
 }

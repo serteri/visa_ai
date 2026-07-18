@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
-import { ArrowRight, BadgeCheck, BriefcaseBusiness, Search } from "lucide-react";
+import { ArrowRight, BadgeCheck, BriefcaseBusiness, Download, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +20,9 @@ type Occupation = {
 };
 
 const OCCUPATIONS = anzscoList as Occupation[];
+
+// Public lead-magnet PDF of the full official Skilled Occupation List.
+const OFFICIAL_LIST_PDF = "/australia-skilled-occupation-list-2026.pdf";
 
 // Falls back to the canonical English title whenever a locale-specific
 // translation hasn't been added yet for that occupation (see Task 3 --
@@ -117,6 +120,19 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                 className="h-16 rounded-xl border-slate-300 bg-slate-50 pl-14 pr-5 text-lg shadow-inner focus-visible:border-cyan-700 focus-visible:ring-cyan-700/15"
                 aria-label={t("af.searchPlaceholder")}
               />
+            </div>
+
+            {/* Lead magnet: download the full official occupation list as PDF */}
+            <div className="mt-4 flex justify-center sm:justify-start">
+              <a
+                href={OFFICIAL_LIST_PDF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 rounded-xl border border-cyan-700 bg-cyan-700 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-900/15 transition-all hover:bg-cyan-800 hover:shadow-cyan-900/25"
+              >
+                <Download className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+                {t("af.downloadOfficialPdf")}
+              </a>
             </div>
 
             <div className="mt-6 grid gap-5 lg:grid-cols-[0.9fr_1.5fr]">
