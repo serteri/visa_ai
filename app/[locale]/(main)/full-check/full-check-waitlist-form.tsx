@@ -27,6 +27,8 @@ import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { useTranslation } from "@/contexts/language-context";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
+import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
+import { Badge } from "@/components/ui/badge";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
 import anzscoListRaw from "@/src/data/anzsco-list.json";
 import Fuse from "fuse.js";
@@ -35,7 +37,13 @@ import Fuse from "fuse.js";
 // Built once at module level so every keystroke hits a pre-built index.
 
 type NocEntry = { code: string; title: string; teer: number };
-type AnzscoEntry = { code: string; title: string; title_tr?: string; title_zh?: string };
+type AnzscoEntry = {
+  code: string;
+  title: string;
+  title_tr?: string;
+  title_zh?: string;
+  isOnSkilledList?: boolean;
+};
 
 // Maps official NOC title keywords → everyday synonyms used by applicants.
 // Merged into the search index so "doctor" → "physician", "dev" → "software", etc.
@@ -256,7 +264,16 @@ function searchAnzsco(query: string, locale: string): AnzscoEntry[] {
       return a.entry.code.localeCompare(b.entry.code);
     });
 
-  return scoredResults.slice(0, maxResults).map(({ entry }) => entry);
+  return scoredResults.slice(0, maxResults).map(({ entry }) => {
+    const record = findOccupationRecord(entry.code);
+    const isOnSkilledList = record
+      ? (record.visa_lists ?? []).some((l) => ["MLTSSL", "STSOL", "ROL"].includes(l))
+      : false;
+    return {
+      ...entry,
+      isOnSkilledList,
+    };
+  });
 }
 
 
@@ -1105,22 +1122,34 @@ export function FullCheckWaitlistForm({
               )}
               {anzscoOpen && anzscoResults.length > 0 && (
                 <ul className="absolute z-50 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg text-sm">
-                  {anzscoResults.map((entry) => (
-                    <li
-                      key={entry.code}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        setAnzscoSearch(getLocalizedAnzscoTitle(entry, locale));
-                        setAnzscoCode(entry.code);
-                        setAnzscoOpen(false);
-                        setAnzscoResults([]);
-                      }}
-                      className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted"
-                    >
-                      <span>{getLocalizedAnzscoTitle(entry, locale)}</span>
-                      <span className="shrink-0 text-xs text-muted-foreground">{entry.code}</span>
-                    </li>
-                  ))}
+                  {anzscoResults.map((entry) => {
+                    const nameStyle = entry.isOnSkilledList === false ? "text-muted-foreground" : "text-foreground font-medium";
+                    return (
+                      <li
+                        key={entry.code}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          setAnzscoSearch(getLocalizedAnzscoTitle(entry, locale));
+                          setAnzscoCode(entry.code);
+                          setAnzscoOpen(false);
+                          setAnzscoResults([]);
+                        }}
+                        className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`${nameStyle} truncate`}>
+                            {getLocalizedAnzscoTitle(entry, locale)}
+                          </span>
+                          {entry.isOnSkilledList === false && (
+                            <Badge variant="outline" className="shrink-0 scale-90 border-slate-200 bg-slate-50 text-slate-500 font-normal">
+                              {txt("Nitelikli Listede Değil", "Not on Skilled List", "不在主要职业清单上")}
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="shrink-0 text-xs text-muted-foreground">{entry.code}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>
