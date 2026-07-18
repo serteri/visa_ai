@@ -586,10 +586,53 @@ async function loadRuntimeCjkBoldFontBase64(): Promise<string | null> {
   return null;
 }
 
+/**
+ * Title-cases proper-noun fields (names, countries) for the premium report:
+ * "australia" → "Australia", "steve" → "Steve", "new south wales" →
+ * "New South Wales". Short all-caps tokens are treated as acronyms and left
+ * intact ("USA", "UAE", "UK"), and hyphen/slash-separated names are cased on
+ * each part ("jean-luc" → "Jean-Luc").
+ */
+function toDisplayCase(value: string): string {
+  return value
+    .trim()
+    .split(/(\s+|[-/])/)
+    .map((token) => {
+      if (/^\s+$/.test(token) || token === "-" || token === "/") return token;
+      if (token.length <= 3 && /[A-Z]/.test(token) && token === token.toUpperCase()) return token;
+      return token.charAt(0).toUpperCase() + token.slice(1).toLowerCase();
+    })
+    .join("");
+}
+
+/**
+ * Sentence-cases free-text fields (the goal): capitalises the first letter of
+ * the string and of each sentence/line, without forcing the rest to lower case
+ * so mid-sentence proper nouns the user typed are preserved.
+ */
+function toSentenceCase(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+  return trimmed.replace(
+    /(^|[.!?]\s+|\n\s*)([a-zà-ɏ])/g,
+    (_match, sep: string, ch: string) => sep + ch.toUpperCase()
+  );
+}
+
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
   const { report, locale, userInputSummary: rawUserInputSummary } = input;
   const userInputSummary = {
     ...rawUserInputSummary,
+    name: rawUserInputSummary.name ? toDisplayCase(rawUserInputSummary.name) : rawUserInputSummary.name,
+    currentCountry: rawUserInputSummary.currentCountry
+      ? toDisplayCase(rawUserInputSummary.currentCountry)
+      : rawUserInputSummary.currentCountry,
+    passportCountry: rawUserInputSummary.passportCountry
+      ? toDisplayCase(rawUserInputSummary.passportCountry)
+      : rawUserInputSummary.passportCountry,
+    mainGoal: rawUserInputSummary.mainGoal
+      ? toSentenceCase(rawUserInputSummary.mainGoal)
+      : rawUserInputSummary.mainGoal,
     occupation: rawUserInputSummary.occupation
       ? resolveOccupationDisplayName(rawUserInputSummary.occupation, locale)
       : rawUserInputSummary.occupation,
@@ -3269,16 +3312,22 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.pathwayFriction.length > 0) {
     addHeading(text.pathwayFriction);
-    report.pathwayFriction.forEach((item) => {
-      if (item.isHardIneligible) {
-        // Hard Gate (1 July 2026): rendered as a bold red compliance alert
-        // instead of a routine friction note.
-        addCriticalAlertText(`${item.pathway}: ${item.frictionType}`);
-        addCriticalAlertText(item.explanation, 4);
-      } else {
-        addBody(`${item.pathway}: ${item.frictionType}`);
-        addSmallText(item.explanation, 4);
-      }
+    const hardIneligibleFriction = report.pathwayFriction.filter((item) => item.isHardIneligible);
+    const routineFriction = report.pathwayFriction.filter((item) => !item.isHardIneligible);
+    // Hard Gate (1 July 2026): the "🚨 CRITICAL COMPLIANCE ALERT" banner is
+    // shown ONCE at the top of the section, then each ineligible pathway gets
+    // its own tailored one-line explanation — instead of repeating the same
+    // alert + generic pointer verbatim under every subclass.
+    if (hardIneligibleFriction.length > 0) {
+      addCriticalAlertText(text.criticalComplianceAlertLabel);
+      hardIneligibleFriction.forEach((item) => {
+        addCriticalAlertText(`${item.pathway}: ${item.explanation}`, 4);
+      });
+      yPosition += 1;
+    }
+    routineFriction.forEach((item) => {
+      addBody(`${item.pathway}: ${item.frictionType}`);
+      addSmallText(item.explanation, 4);
     });
     yPosition += 3;
   }

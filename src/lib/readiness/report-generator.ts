@@ -554,14 +554,94 @@ function applyEligibilityBlockToSteps(steps: GanttStep[], blockReasonShort: stri
   });
 }
 
+/**
+ * Premium remediation path (AU points shortfall): instead of leaving Steps 3-4
+ * as a "BLOCKED - points threshold not met" dead end, populate them with the
+ * concrete, points-bearing recovery actions that actually close the gap. The
+ * English step is skipped when the user is already at Superior, in which case
+ * Step 3 pivots to skilled-experience/partner points. Returns one entry per
+ * blocked step (Steps 3 and 4).
+ */
+function buildAuPointsRemediationSteps(
+  locale: Locale,
+  englishLevel?: string,
+  estimatedPoints?: number
+): Array<{ title: string; description: string }> {
+  const level = (englishLevel ?? "").trim().toLowerCase();
+  const alreadySuperior = level === "superior";
+  const gap = typeof estimatedPoints === "number" ? Math.max(0, 65 - estimatedPoints) : undefined;
+  const gapText = typeof gap === "number" && gap > 0 ? ` (~${gap}-point gap)` : "";
+  const gapTextTr = typeof gap === "number" && gap > 0 ? ` (~${gap} puanlık açık)` : "";
+  const gapTextZh = typeof gap === "number" && gap > 0 ? `（约 ${gap} 分差距）` : "";
+
+  const q3 = alreadySuperior
+    ? {
+        title: t3(locale, "Recovery: Skilled Experience Points", "Toparlanma: Nitelikli Deneyim Puanı", "补分：技术工作经验加分"),
+        description: t3(
+          locale,
+          `Bank additional skilled-employment points and finalize your Skills Assessment${gapText}: each further year of assessed experience can add +5, and 8+ years reaches the +15 tier.`,
+          `Ek nitelikli istihdam puanı biriktirin ve Beceri Değerlendirmenizi tamamlayın${gapTextTr}: değerlendirilen her ek yıl +5, 8+ yıl ise +15 kademesine ulaşır.`,
+          `积累更多技术工作经验加分并完成技能评估${gapTextZh}：每增加一年被认可的经验可加 +5，满 8 年可达 +15 档。`
+        ),
+      }
+    : {
+        title: t3(locale, "Recovery: Book English Retest", "Toparlanma: İngilizce Sınavını Planla", "补分：预约英语重考"),
+        description: t3(
+          locale,
+          `Book a PTE/IELTS sitting to lift your English to Superior for up to +20 points${gapText} — the single fastest lever to close the points gap.`,
+          `İngilizceyi Superior seviyesine çıkarmak için bir PTE/IELTS sınavı planlayın (en fazla +20 puan)${gapTextTr} — puan açığını kapatmanın en hızlı yolu.`,
+          `预约 PTE/IELTS 考试，将英语提升至 Superior，最多可加 +20 分${gapTextZh}——这是缩小分差最快的杠杆。`
+        ),
+      };
+
+  const q4 = {
+    title: t3(locale, "Recovery: Stack Secondary Boosters", "Toparlanma: İkincil Puan Kaynakları", "补分：叠加次要加分项"),
+    description: t3(
+      locale,
+      "Stack further points: enrol in NAATI CCL for +5, and lodge a 491 regional EOI for +15 via state nomination, to move your score toward the 65-point pass mark.",
+      "Ek puanları biriktirin: +5 için NAATI CCL'e kaydolun ve eyalet aday gösterimiyle +15 için 491 bölgesel EOI sunun; puanınızı 65 baraj puanına yaklaştırın.",
+      "叠加更多加分：报名 NAATI CCL 加 +5，并通过州担保提交 491 偏远地区 EOI 加 +15，使分数向 65 分及格线靠拢。"
+    ),
+  };
+
+  return [q3, q4];
+}
+
+/**
+ * Replaces the blocked Steps 3-4 with actionable remediation entries (keeping
+ * each step's original quarter window). Unlike applyEligibilityBlockToSteps,
+ * these steps are NOT marked blocked — they are the recovery plan.
+ */
+function applyRemediationToSteps(
+  steps: GanttStep[],
+  remediation: Array<{ title: string; description: string }>
+): GanttStep[] {
+  return steps.map((step, index) => {
+    if (index < 2) return step;
+    const entry = remediation[index - 2];
+    if (!entry) return step;
+    return {
+      ...step,
+      isBlocked: false,
+      title: entry.title,
+      description: entry.description,
+    };
+  });
+}
+
 function buildGanttByTimeline(
   timeline?: string,
   occupation?: string,
   country: "AU" | "CA" = "AU",
   hasGraduateVisaPathwayIntent = false,
-  blockReason?: string
+  blockReason?: string,
+  remediationSteps?: Array<{ title: string; description: string }>
 ): GanttSection {
   const section = buildRawGanttSteps(timeline, occupation, country, hasGraduateVisaPathwayIntent);
+  // Prefer an actionable remediation path over a bare "BLOCKED" dead end.
+  if (remediationSteps && remediationSteps.length > 0) {
+    return { ...section, steps: applyRemediationToSteps(section.steps, remediationSteps) };
+  }
   if (!blockReason) return section;
   return { ...section, steps: applyEligibilityBlockToSteps(section.steps, blockReason) };
 }
@@ -618,6 +698,7 @@ export function generatePremiumSections(input: {
   mainGoal?: string;
   biggestConcern?: string;
   estimatedPoints?: number;
+  englishLevel?: string;
   country?: "AU" | "CA";
   /** Required so this section can never disagree with the main engine's eligibility verdict — see assessment-state.ts. */
   pathwayComparison: PathwayComparison[];
@@ -700,12 +781,20 @@ export function generatePremiumSections(input: {
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
   const blockReason = getEligibilityBlockReasonShort(locale, input.pathwayComparison, input.assessmentState, "AU");
+  // When the block is specifically an AU points shortfall (not an unverified
+  // profile), replace the blocked Steps 3-4 with a concrete points-recovery
+  // path rather than a "BLOCKED" dead end.
+  const auPointsShortfall = findIneligiblePathway(input.pathwayComparison, "AU");
+  const remediationSteps = auPointsShortfall
+    ? buildAuPointsRemediationSteps(locale, input.englishLevel, input.estimatedPoints)
+    : undefined;
   const gantt = buildGanttByTimeline(
     input.timeline,
     input.occupation,
     "AU",
     input.hasGraduateVisaPathwayIntent === true,
-    blockReason
+    blockReason,
+    remediationSteps
   );
   const methodologyNote = localizeTrendDescription(
     locale,

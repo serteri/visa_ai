@@ -285,6 +285,40 @@ function shortIneligibleReference(locale: Locale): string {
 }
 
 /**
+ * Per-subclass friction explanation for ineligible pathways. Replaces the
+ * identical `shortIneligibleReference` string that was previously repeated
+ * verbatim under every ineligible visa (189/190/491) in the Reality Check
+ * section. Each pathway now gets a distinct, plain-language sentence so the
+ * report reads as tailored analysis rather than a copy-pasted robotic block;
+ * the "🚨 CRITICAL COMPLIANCE ALERT" banner itself is shown once at the top of
+ * the section by the PDF/UI layer.
+ */
+function customIneligibleFrictionExplanation(locale: Locale, subclass: string): string {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const bySubclass: Record<string, { en: string; tr: string; zh: string }> = {
+    "189": {
+      en: "Subclass 189 is fully points-tested with no sponsor or nominator to offset a shortfall, so it stays out of reach until your estimated score clears the 65-point pass mark.",
+      tr: "Subclass 189 tamamen puana dayalıdır ve açığı kapatacak bir sponsor veya aday gösterici yoktur; bu nedenle tahmini puanınız 65 baraj puanını geçene kadar erişilemez kalır.",
+      zh: "189 类完全依赖打分，且没有担保方或提名方来弥补分差，因此在预估分数达到 65 分及格线之前无法申请。",
+    },
+    "190": {
+      en: "Subclass 190 adds state nomination (+5) on top of the points test, but that boost still leaves your base score below the binding 65-point threshold on its own.",
+      tr: "Subclass 190, puan testinin üzerine eyalet aday gösterimi (+5) ekler; ancak bu katkı tek başına temel puanınızı bağlayıcı 65 puan eşiğinin altında bırakır.",
+      zh: "190 类在打分基础上增加州担保（+5），但仅凭这一加分，您的基础分数仍低于具有约束力的 65 分门槛。",
+    },
+    "491": {
+      en: "Subclass 491 carries the largest single boost via regional nomination (+15), making it the most realistic route back to eligibility once you close the remaining points gap.",
+      tr: "Subclass 491, bölgesel aday gösterimi (+15) ile en büyük tekil puan katkısını sağlar; kalan puan açığını kapattığınızda uygunluğa dönmenin en gerçekçi yoludur.",
+      zh: "491 类通过偏远地区提名（+15）提供最大的单项加分，在您补齐剩余分差后，是恢复资格最现实的途径。",
+    },
+  };
+  const entry = bySubclass[subclass];
+  if (!entry) return shortIneligibleReference(locale);
+  return isTr ? entry.tr : isZh ? entry.zh : entry.en;
+}
+
+/**
  * Hard Gate: Skilled Migration (189/190/491) pathways require an estimated
  * base points-test score of at least 65. Below this, the pathway is
  * unconditionally ineligible regardless of any other "possible" signal.
@@ -2474,13 +2508,28 @@ function buildExecutiveSummary(
   ];
 }
 
+/**
+ * English evidence only counts as "provided" when a real proficiency tier is
+ * on file. The intake sends englishLevel="none" for "no test / expired", and
+ * englishTestTaken can be "no" — both are non-empty strings, so the previous
+ * `Boolean(input.englishLevel || input.englishTestTaken)` check treated them as
+ * truthy and mislabelled these profiles as "Provided". This maps them
+ * accurately to missing.
+ */
+function hasRealEnglishEvidence(input: ReadinessInput): boolean {
+  const level = (input.englishLevel ?? "").trim().toLowerCase();
+  if (level === "competent" || level === "proficient" || level === "superior") return true;
+  if (level === "none" || level === "") return false;
+  return input.englishTestTaken === "yes";
+}
+
 // Per-pathway evidence status items based on form input
 function getEvidenceStatusItems(
   subclass: string,
   input: ReadinessInput,
   isTr: boolean
 ): Array<{ label: string; status: "provided" | "missing" | "unclear" | "typically_required" }> {
-  const hasEnglish = Boolean(input.englishLevel || input.englishTestTaken);
+  const hasEnglish = hasRealEnglishEvidence(input);
   const hasOccupation = Boolean(input.occupation);
   const hasSponsor = hasSponsorContext(input.sponsorOrFamily);
   const skillsStatus: "provided" | "missing" | "unclear" =
@@ -3284,7 +3333,7 @@ function buildPathwayFriction(
       return {
         pathway: visaLabel,
         frictionType: isTr ? "🚨 KRİTİK UYUMLULUK UYARISI" : isZh ? "🚨 关键合规警报" : "🚨 CRITICAL COMPLIANCE ALERT",
-        explanation: shortIneligibleReference(locale),
+        explanation: customIneligibleFrictionExplanation(locale, pathway.subclass),
         isHardIneligible: true,
       };
     }
@@ -3892,7 +3941,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     locale,
     pathwayCodes,
     hasOccupation: Boolean(input.occupation),
-    hasEnglish: Boolean(input.englishLevel),
+    hasEnglish: hasRealEnglishEvidence(input),
     hasMissingInfo: missingInformation.length > 0,
   });
   const sparseStrategy = buildCanadaSparseStrategy({
@@ -4266,7 +4315,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     locale,
     pathways: pathwayComparison,
     hasOccupation: Boolean(input.occupation),
-    hasEnglish: Boolean(input.englishLevel),
+    hasEnglish: hasRealEnglishEvidence(input),
     hasSkilledPathway,
     hasPartnerPathway: (detectedSubclasses.includes("820") || detectedSubclasses.includes("801")),
     has482Pathway: detectedSubclasses.includes("482"),
@@ -4281,6 +4330,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     timeline: input.timeline,
     mainGoal: input.mainGoal,
     biggestConcern: input.biggestConcern,
+    estimatedPoints: pointsEstimate?.estimatedPoints,
+    englishLevel: input.englishLevel,
     country: "AU",
     pathwayComparison,
     assessmentState,
