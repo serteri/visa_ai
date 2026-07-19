@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/rbac";
-import { claimLead } from "@/lib/crm/leads";
+import { claimLead, getAgentLead } from "@/lib/crm/leads";
+import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
 
 export async function claimLeadAction(locale: string, leadId: string): Promise<void> {
   const prefix = locale === "en" ? "" : `/${locale}`;
@@ -19,6 +20,22 @@ export async function claimLeadAction(locale: string, leadId: string): Promise<v
   revalidatePath(`${prefix}/agent/dashboard`);
 
   if (claimed) {
+    // Best-effort notification -- the claim itself already succeeded above,
+    // so a broken RESEND_API_KEY or a send failure must never block the
+    // redirect into the lead the agent just claimed.
+    try {
+      const lead = await getAgentLead(user.id, leadId);
+      if (lead && user.email) {
+        await sendAgentAssignedEmail({
+          agentEmail: user.email,
+          agentName: user.name,
+          leadName: lead.fullName || lead.email,
+          status: lead.docStatus ?? "New",
+        });
+      }
+    } catch (error) {
+      console.error("[claimLeadAction] Notification email failed (non-blocking):", error);
+    }
     redirect(`${prefix}/agent/lead/${leadId}`);
   }
 }
