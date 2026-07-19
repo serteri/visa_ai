@@ -36,7 +36,7 @@ export function homePathForRole(role: Role, locale: string): string {
   // token-gated ops admin at /admin/dashboard.
   if (role === "ADMIN") return `/${locale}/admin/crm/dashboard`;
   const prefix = locale === "en" ? "" : `/${locale}`;
-  if (role === "AGENT") return `${prefix}/agent/dashboard`;
+  if (role === "AGENT") return `${prefix}/agent/pool`;
   return `${prefix}/dashboard`;
 }
 

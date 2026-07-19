@@ -82,7 +82,7 @@ function portalRoleForPath(pathname: string): "AGENT" | "ADMIN" | null {
 function portalHomeForRole(role: string | undefined, locale: string): string {
   if (role === "ADMIN") return `/${locale}/admin/crm/dashboard`;
   const prefix = locale === "en" ? "" : `/${locale}`;
-  if (role === "AGENT") return `${prefix}/agent/dashboard`;
+  if (role === "AGENT") return `${prefix}/agent/pool`;
   return `${prefix}/dashboard`;
 }
 

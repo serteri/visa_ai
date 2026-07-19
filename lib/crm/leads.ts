@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
 import { isMissingColumnError } from "@/lib/db/missing-relation";
 
-export const DOC_STATUSES = ["New", "Missing Documents", "In Review", "Approved"] as const;
+export const DOC_STATUSES = ["New", "Contacted", "Documents Pending", "Approved", "Rejected"] as const;
 export type DocStatus = (typeof DOC_STATUSES)[number];
 
 // ── Lead lists / details (agent-scoped) ─────────────────────────────────────

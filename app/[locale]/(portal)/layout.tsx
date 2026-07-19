@@ -21,7 +21,7 @@ export default async function PortalLayout({
     user?.role === "ADMIN"
       ? `/${locale}/admin/crm/dashboard`
       : user?.role === "AGENT"
-        ? `${prefix}/agent/dashboard`
+        ? `${prefix}/agent/pool`
         : `${prefix}/`;
 
   return (
