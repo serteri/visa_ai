@@ -5,7 +5,9 @@ import { z } from "zod";
 import { db } from "@/db";
 import { pdfDownloads } from "@/db/schema";
 import { eq, and, inArray, notInArray, count } from "drizzle-orm";
-import { PDF_SLUGS, type PdfProduct, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
+import { PDF_SLUGS, PDF_LEAD_CATEGORY, type PdfProduct, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
+import { prisma } from "@/lib/prisma";
+import { PDF_LEAD_SOURCE, marketForSlug } from "@/lib/crm/pdf-lead-sources";
 
 export const dynamic = "force-dynamic";
 
@@ -48,14 +50,16 @@ const ALL_SLUGS = Object.values(PDF_SLUGS);
 
 function resolveSlug(value: string | null): string {
   if (value === PDF_SLUGS.global) return PDF_SLUGS.global;
+  if (value === PDF_SLUGS.occupation) return PDF_SLUGS.occupation;
   return PDF_SLUGS.turkish;
 }
 
 const pdfDownloadSchema = z.object({
   full_name: z.string().trim().min(1, "Full name is required."),
   email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
-  phone: z.string().trim().optional().default(""),
+  phone: z.string().trim().min(1, "Phone number is required."),
   slug: z.string().optional(),
+  category: z.string().optional(),
   termsAcceptedAt: z.string().min(1, "Terms acceptance timestamp is required."),
 });
 
@@ -135,8 +139,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { full_name, email, phone, slug: rawSlug, termsAcceptedAt } = parsed.data;
+    const { full_name, email, phone, slug: rawSlug, category: rawCategory, termsAcceptedAt } = parsed.data;
     const slug = resolveSlug(rawSlug ?? null);
+    // The CRM lead-source bucket is derived from the slug (source of truth)
+    // rather than trusted from the client; the client-sent `category` is only
+    // used as a display fallback if the slug is somehow unrecognized.
+    const category = PDF_LEAD_CATEGORY[slug] ?? rawCategory ?? "Unknown";
     const isExcluded = isExcludedEmail(email);
 
     // Server-side enforcement of the Terms gate -- the client already blocks
@@ -197,6 +205,27 @@ export async function POST(req: NextRequest) {
 
     revalidateTag("public-guide-download-stats", "max");
 
+    // Drop this lead into the Agent CRM pool (unassigned; agents claim it from
+    // /agent/pool). Best-effort -- the Drizzle pdfDownloads row above is the
+    // system of record for the download itself, so a CRM-side failure here
+    // must not fail the request or block PDF delivery.
+    prisma.userReport
+      .create({
+        data: {
+          fullName: full_name.trim(),
+          email: normalizedEmail,
+          phone: phone.trim(),
+          source: PDF_LEAD_SOURCE[slug] ?? "pdf_global_guide",
+          market: marketForSlug(slug),
+          paymentStatus: "n/a",
+          isUnlocked: true,
+          reportJson: {},
+          inputJson: {},
+          ipAddress: ip,
+        },
+      })
+      .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err));
+
     // Delivery Trap: the guide is emailed to the user instead of being
     // returned as a direct browser download. Fired concurrently with the
     // admin notification (rather than awaited sequentially) and not awaited
@@ -212,6 +241,7 @@ export async function POST(req: NextRequest) {
         email: normalizedEmail,
         phone: phone.trim(),
         slug,
+        category,
       }).catch((err) => console.error("[pdf-download] Admin notification failed (non-blocking):", err)),
     ]);
 
@@ -227,6 +257,7 @@ async function sendPdfLeadAdminEmail(params: {
   email: string;
   phone: string;
   slug: string;
+  category: string;
 }): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const notificationEmail = process.env.PDF_LEAD_NOTIFICATION_EMAIL || "serter@logivisa.com";
@@ -242,10 +273,11 @@ async function sendPdfLeadAdminEmail(params: {
   await resend.emails.send({
     from: fromEmail,
     to: [notificationEmail],
-    subject: "🚀 New Lead: PDF Guide Download",
+    subject: `🚀 New Lead: PDF Guide Download [${params.category}]`,
     text: [
       "A new PDF guide lead has been captured.",
       "",
+      `Category: ${params.category}`,
       `Name: ${params.fullName}`,
       `Email: ${params.email}`,
       `Phone: ${params.phone || "-"}`,

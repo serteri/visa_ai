@@ -7,7 +7,27 @@ import { Resend } from "resend";
 export const PDF_SLUGS = {
   turkish: "avustralya-pr-rehberi-2026",
   global: "australia-guide-2026",
+  occupation: "australia-skilled-occupation-list-2026",
 } as const;
+
+// CRM lead-source bucket for each guide slug -- the three categories the
+// business classifies every PDF-download lead into.
+export const PDF_LEAD_CATEGORY: Record<string, string> = {
+  [PDF_SLUGS.turkish]: "Turkish Guide",
+  [PDF_SLUGS.global]: "Global Guide",
+  [PDF_SLUGS.occupation]: "2026 Official Occupation List",
+};
+
+// Human-readable guide name per slug, used in the delivery email copy.
+const PDF_DISPLAY_NAME: Record<string, string> = {
+  [PDF_SLUGS.turkish]: "Australia PR Guide 2026",
+  [PDF_SLUGS.global]: "Australia Migration Blueprint",
+  [PDF_SLUGS.occupation]: "2026 Official Skilled Occupation List",
+};
+
+function displayNameForSlug(slug: string): string {
+  return PDF_DISPLAY_NAME[slug] ?? "Australia PR Guide 2026";
+}
 
 export type PdfProduct = keyof typeof PDF_SLUGS;
 
@@ -43,13 +63,13 @@ export function resolvePdfUrl(slug: string): string {
   return `${appBaseUrl}/${slug}.pdf`;
 }
 
-function buildDeliveryEmailHtml(params: { fullName: string; pdfUrl: string }): string {
+function buildDeliveryEmailHtml(params: { fullName: string; pdfUrl: string; displayName: string }): string {
   const safeName = escapeHtml(params.fullName);
   return `
     <div style="font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; color: #18181b;">
       <p style="font-size: 24px; margin: 0 0 16px;">👋 Hi ${safeName},</p>
       <p style="font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
-        Thanks for requesting the <strong>Australia PR Guide 2026</strong>! We're excited to help you on
+        Thanks for requesting the <strong>${params.displayName}</strong>! We're excited to help you on
         your migration journey. Your guide is ready and waiting below.
       </p>
       <div style="text-align: center; margin: 32px 0;">
@@ -57,7 +77,7 @@ function buildDeliveryEmailHtml(params: { fullName: string; pdfUrl: string }): s
           href="${params.pdfUrl}"
           style="display: inline-block; background: linear-gradient(90deg, #6366f1, #9333ea); color: #ffffff; text-decoration: none; font-weight: 700; padding: 14px 28px; border-radius: 10px; font-size: 16px;"
         >
-          📘 Download Your Australia PR Guide 2026
+          📘 Download Your ${params.displayName}
         </a>
       </div>
       <p style="font-size: 14px; line-height: 1.6; color: #52525b; margin: 0 0 8px;">
@@ -81,6 +101,7 @@ function buildDeliveryEmailHtml(params: { fullName: string; pdfUrl: string }): s
  */
 export function buildPdfDeliveryEmail(params: { fullName: string; email: string; slug: string }): PdfDeliveryEmail {
   const pdfUrl = resolvePdfUrl(params.slug);
+  const displayName = displayNameForSlug(params.slug);
   // Verified sending domain — override via FROM_EMAIL once a domain is
   // verified in the Resend dashboard; falls back to the project's own
   // domain rather than Resend's shared sandbox sender.
@@ -89,12 +110,12 @@ export function buildPdfDeliveryEmail(params: { fullName: string; email: string;
   return {
     from: fromEmail,
     to: [params.email],
-    subject: "Your Australia PR Guide 2026 is ready 🎉",
-    html: buildDeliveryEmailHtml({ fullName: params.fullName, pdfUrl }),
+    subject: `Your ${displayName} is ready 🎉`,
+    html: buildDeliveryEmailHtml({ fullName: params.fullName, pdfUrl, displayName }),
     text: [
       `Hi ${params.fullName},`,
       "",
-      "Thanks for requesting the Australia PR Guide 2026! You can download it here:",
+      `Thanks for requesting the ${displayName}! You can download it here:`,
       pdfUrl,
       "",
       "If the link doesn't work, just reply to this email and we'll resend it.",

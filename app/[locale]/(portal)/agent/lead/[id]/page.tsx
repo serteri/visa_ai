@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
 import { getAgentLead, splitName } from "@/lib/crm/leads";
 import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
+import { WorkflowForm } from "./workflow-form";
 
 export const metadata: Metadata = {
   title: "Lead detail · LogiVisa Portal",
@@ -73,6 +74,20 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
             <DetailRow label="Source" value={lead.source} />
             <DetailRow label="Received" value={lead.createdAt.toLocaleString(locale)} />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Workflow</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <WorkflowForm
+            locale={locale}
+            leadId={id}
+            initialDocStatus={lead.docStatus ?? "New"}
+            initialNotes={lead.agentNotes ?? ""}
+          />
         </CardContent>
       </Card>
 

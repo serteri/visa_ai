@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
+import { COUNTRY_CODES, defaultCountryCodeForLocale, dialForCountryCode } from "@/lib/country-codes";
 import {
   Dialog,
   DialogContent,
@@ -14,11 +16,22 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-export type PdfProduct = "turkish" | "global";
+export type PdfProduct = "turkish" | "global" | "occupation";
 
 const PDF_SLUGS: Record<PdfProduct, string> = {
   turkish: "avustralya-pr-rehberi-2026",
   global: "australia-guide-2026",
+  occupation: "australia-skilled-occupation-list-2026",
+};
+
+// Lead-source bucket the CRM classifies this submission into, keyed off which
+// guide the modal instance is serving. Sent to the API alongside the form so
+// the admin notification/lead record can tag it without re-deriving it from
+// the slug downstream.
+const LEAD_CATEGORY: Record<PdfProduct, string> = {
+  turkish: "Turkish Guide",
+  global: "Global Guide",
+  occupation: "2026 Official Occupation List",
 };
 
 // Strict RFC-5322-ish format check (Level 1 frontend validation) — deliberately
@@ -57,6 +70,7 @@ export function PdfDownloadModal({
   const slug = PDF_SLUGS[product];
   const [status, setStatus] = useState<PdfStatus | null>(null);
   const [form, setForm] = useState({ full_name: "", email: "", phone: "" });
+  const [countryIso, setCountryIso] = useState(() => defaultCountryCodeForLocale(locale));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -86,6 +100,7 @@ export function PdfDownloadModal({
   // different guide (Australia vs Canada) sharing this same component.
   function resetFormState() {
     setForm({ full_name: "", email: "", phone: "" });
+    setCountryIso(defaultCountryCodeForLocale(locale));
     setFieldErrors({});
     setError("");
     setSuccess(false);
@@ -128,8 +143,15 @@ export function PdfDownloadModal({
       );
     }
 
-    if (!form.phone.trim()) {
+    const phoneDigits = form.phone.replace(/[^0-9]/g, "");
+    if (!phoneDigits) {
       nextErrors.phone = tx("Telefon numarası zorunludur.", "Phone number is required.", "手机号为必填项。");
+    } else if (phoneDigits.length < 6) {
+      nextErrors.phone = tx(
+        "Geçerli bir telefon numarası girin.",
+        "Enter a valid phone number.",
+        "请输入有效的手机号。"
+      );
     }
 
     return nextErrors;
@@ -175,7 +197,13 @@ export function PdfDownloadModal({
       const res = await fetch("/api/pdf-download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, slug, termsAcceptedAt }),
+        body: JSON.stringify({
+          ...form,
+          phone: `${dialForCountryCode(countryIso)} ${form.phone.trim()}`,
+          slug,
+          category: LEAD_CATEGORY[product],
+          termsAcceptedAt,
+        }),
       });
       const data = await res.json();
 
@@ -241,7 +269,13 @@ export function PdfDownloadModal({
           "🌏 The Ultimate Australia Migration Blueprint",
           "🌏 终极澳大利亚移民蓝图"
         )
-      : tx("📘 Avustralya PR Rehberi 2026", "📘 Australia PR Guide 2026", "📘 澳大利亚 PR 指南 2026");
+      : product === "occupation"
+        ? tx(
+            "📋 2026 Resmi Meslek Listesi",
+            "📋 2026 Official Occupation List",
+            "📋 2026 官方职业清单"
+          )
+        : tx("📘 Avustralya PR Rehberi 2026", "📘 Australia PR Guide 2026", "📘 澳大利亚 PR 指南 2026");
 
   const descriptionText =
     product === "global"
@@ -250,11 +284,17 @@ export function PdfDownloadModal({
           "Download the global English guide covering skilled migration and the Student Visa (Subclass 500) bridge, with 2026 cost-of-living data.",
           "下载涵盖技术移民和学生签证（500 类别）路径的全球英文指南，附 2026 年生活成本数据。"
         )
-      : tx(
-          "Ucretsiz Turkce PDF rehberini indirin. Gercek verilerle hazirlanmis kapsamli kalici oturma izni kilavuzu.",
-          "Download the free Turkish PDF guide. A comprehensive permanent residency guide built on real data.",
-          "下载免费的土耳其语 PDF 指南。基于真实数据整理的永久居留申请全流程指南。"
-        );
+      : product === "occupation"
+        ? tx(
+            "Avustralya'nin tam resmi kalifiye meslek listesini PDF olarak indirin.",
+            "Download the full official Australian Skilled Occupation List as a PDF.",
+            "下载完整的澳大利亚官方技术职业清单 PDF。"
+          )
+        : tx(
+            "Ucretsiz Turkce PDF rehberini indirin. Gercek verilerle hazirlanmis kapsamli kalici oturma izni kilavuzu.",
+            "Download the free Turkish PDF guide. A comprehensive permanent residency guide built on real data.",
+            "下载免费的土耳其语 PDF 指南。基于真实数据整理的永久居留申请全流程指南。"
+          );
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
@@ -376,18 +416,36 @@ export function PdfDownloadModal({
                 {tx("Telefon Numarası", "Phone Number", "手机号")}
                 <span className="text-red-500 ml-1">*</span>
               </Label>
-              <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-                placeholder={tx("+90 555 000 0000", "+61 412 345 678", "+86 138 0013 8000")}
-                value={form.phone}
-                onChange={handleChange}
-                aria-invalid={Boolean(fieldErrors.phone)}
-                className={fieldErrors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}
-                disabled={loading || !isFree}
-              />
+              <div className="flex gap-2">
+                <Select
+                  value={countryIso}
+                  onValueChange={setCountryIso}
+                  disabled={loading || !isFree}
+                >
+                  <SelectTrigger className="w-28 shrink-0" aria-label={tx("Ülke kodu", "Country code", "国家区号")}>
+                    <SelectValue>{dialForCountryCode(countryIso)}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRY_CODES.map((c) => (
+                      <SelectItem key={c.code} value={c.code}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  placeholder={tx("555 000 0000", "412 345 678", "138 0013 8000")}
+                  value={form.phone}
+                  onChange={handleChange}
+                  aria-invalid={Boolean(fieldErrors.phone)}
+                  className={fieldErrors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}
+                  disabled={loading || !isFree}
+                />
+              </div>
               {fieldErrors.phone && <p className="text-xs text-red-600">{fieldErrors.phone}</p>}
             </div>
 

@@ -8,6 +8,42 @@ import { agentReferrals, agents, fullCheckWaitlist, visaTypes } from "@/db/schem
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
+import { isMissingRelationError } from "@/lib/db/missing-relation";
+
+type WaitlistLead = typeof fullCheckWaitlist.$inferSelect;
+
+// full_check_waitlist and visa_types are declared in db/schema.ts but don't
+// exist in the live database yet (see CLAUDE.md) -- this page 500'd because
+// it queried them unconditionally. Fall back to empty/zero instead of
+// crashing, matching the pattern already used in full-check/actions.ts.
+async function getWaitlistTotal(): Promise<number> {
+  try {
+    const [row] = await db.select({ value: count() }).from(fullCheckWaitlist);
+    return row?.value ?? 0;
+  } catch (error) {
+    if (isMissingRelationError(error, "full_check_waitlist")) return 0;
+    throw error;
+  }
+}
+
+async function getWaitlistLeads(): Promise<WaitlistLead[]> {
+  try {
+    return await db.select().from(fullCheckWaitlist).orderBy(desc(fullCheckWaitlist.created_at));
+  } catch (error) {
+    if (isMissingRelationError(error, "full_check_waitlist")) return [];
+    throw error;
+  }
+}
+
+async function getVisaTotal(): Promise<number> {
+  try {
+    const [row] = await db.select({ value: count() }).from(visaTypes);
+    return row?.value ?? 0;
+  } catch (error) {
+    if (isMissingRelationError(error, "visa_types")) return 0;
+    throw error;
+  }
+}
 
 const KNOWN_SOURCES = ["full_check", "results", "readiness-preview", "homepage", "unknown"];
 
@@ -25,15 +61,15 @@ function sourceLabel(source: string): string {
 }
 
 async function getDashboardData() {
-  const [waitlistTotal] = await db.select({ value: count() }).from(fullCheckWaitlist);
-  const [referralTotal] = await db.select({ value: count() }).from(agentReferrals);
-  const [agentTotal] = await db.select({ value: count() }).from(agents);
-  const [visaTotal] = await db.select({ value: count() }).from(visaTypes);
-
-  const waitlistLeads = await db
-    .select()
-    .from(fullCheckWaitlist)
-    .orderBy(desc(fullCheckWaitlist.created_at));
+  const [waitlistTotal, referralTotalRow, agentTotalRow, visaTotal, waitlistLeads] = await Promise.all([
+    getWaitlistTotal(),
+    db.select({ value: count() }).from(agentReferrals),
+    db.select({ value: count() }).from(agents),
+    getVisaTotal(),
+    getWaitlistLeads(),
+  ]);
+  const referralTotal = referralTotalRow[0];
+  const agentTotal = agentTotalRow[0];
 
   const sourceCounts = KNOWN_SOURCES.map((source) => ({
     source,
@@ -62,10 +98,10 @@ async function getDashboardData() {
   const maxGuideDownloads = guideConfig?.maxDownloads || 20;
 
   return {
-    waitlistTotal: waitlistTotal?.value ?? 0,
+    waitlistTotal,
     referralTotal: referralTotal?.value ?? 0,
     agentTotal: agentTotal?.value ?? 0,
-    visaTotal: visaTotal?.value ?? 0,
+    visaTotal,
     highIntentTotal: highIntentLeads.length,
     sourceCounts,
     recentLeads: waitlistLeads.slice(0, 10),

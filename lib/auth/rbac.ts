@@ -9,6 +9,8 @@ export type SessionUser = {
   name?: string | null;
   email?: string | null;
   role: Role;
+  /** Lead-pool scope for AGENT accounts -- "TR" or "GLOBAL". Unused otherwise. */
+  market?: string | null;
 };
 
 /** Normalizes the raw session into a typed user (or null if unauthenticated). */
@@ -20,6 +22,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     name: session.user.name,
     email: session.user.email,
     role: (session.user.role as Role) ?? "USER",
+    market: session.user.market ?? null,
   };
 }
 

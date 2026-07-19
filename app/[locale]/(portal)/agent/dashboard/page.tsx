@@ -64,12 +64,17 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Agent</p>
-        <h1 className="text-2xl font-bold">My assigned leads</h1>
-        <p className="text-sm text-slate-500">
-          Signed in as {user.name ?? user.email}. Showing only leads routed to you.
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Agent</p>
+          <h1 className="text-2xl font-bold">My assigned leads</h1>
+          <p className="text-sm text-slate-500">
+            Signed in as {user.name ?? user.email}. Showing only leads routed to you.
+          </p>
+        </div>
+        <Link href={`${prefix}/agent/pool`} className="text-sm font-medium text-indigo-600 hover:underline">
+          Lead pool →
+        </Link>
       </div>
 
       <Card>
@@ -112,6 +117,7 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
                     <th className="px-4 py-3 font-semibold">Email</th>
                     <th className="px-4 py-3 font-semibold">Phone</th>
                     <th className="px-4 py-3 font-semibold">Tier</th>
+                    <th className="px-4 py-3 font-semibold">Doc status</th>
                     <th className="px-4 py-3 font-semibold">Received</th>
                     <th className="px-4 py-3 font-semibold sr-only">Action</th>
                   </tr>
@@ -135,6 +141,7 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
                             {tierEmoji(lead.pointsTier)} {lead.pointsTier ?? "Unassigned"}
                           </span>
                         </td>
+                        <td className="px-4 py-3 text-slate-600">{lead.docStatus ?? "New"}</td>
                         <td className="px-4 py-3 text-slate-500">
                           {lead.createdAt.toLocaleDateString(locale)}
                         </td>

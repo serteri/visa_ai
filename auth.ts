@@ -28,7 +28,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) return null;
 
-        return { id: user.id, name: user.name, email: user.email, image: user.image, role: user.role };
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
+          market: user.market,
+        };
       },
     }),
   ],
@@ -40,11 +47,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // both of which include the users.role column. On later requests `user`
       // is undefined and the existing token.role is preserved.
       if (user && "role" in user && user.role) token.role = user.role as string;
+      if (user && "market" in user && user.market) token.market = user.market as string;
       return token;
     },
     session({ session, token }) {
       if (token.sub) session.user.id = token.sub;
       if (token.role) session.user.role = token.role as string;
+      if (token.market) session.user.market = token.market as string;
       return session;
     },
   },

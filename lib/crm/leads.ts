@@ -1,4 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
+
+export const DOC_STATUSES = ["New", "Missing Documents", "In Review", "Approved"] as const;
+export type DocStatus = (typeof DOC_STATUSES)[number];
 
 // ── Lead lists / details (agent-scoped) ─────────────────────────────────────
 
@@ -24,6 +28,7 @@ export async function getAgentLeads(
       phone: true,
       pointsTier: true,
       source: true,
+      docStatus: true,
       createdAt: true,
     },
   });
@@ -48,6 +53,9 @@ export async function getAgentLead(agentId: string, leadId: string) {
       createdAt: true,
       reportJson: true,
       inputJson: true,
+      docStatus: true,
+      agentNotes: true,
+      market: true,
     },
   });
 }
@@ -101,7 +109,7 @@ export async function getAgents() {
   return prisma.user.findMany({
     where: { role: "AGENT" },
     orderBy: { createdAt: "desc" },
-    select: { id: true, name: true, email: true, image: true, createdAt: true },
+    select: { id: true, name: true, email: true, image: true, market: true, createdAt: true },
   });
 }
 
@@ -122,6 +130,55 @@ export function splitName(fullName?: string | null): { firstName: string; lastNa
   if (parts.length === 1) return { firstName: parts[0], lastName: "" };
   return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
 }
+// ── Agent Lead Pool (PDF-guide leads, unassigned) ───────────────────────────
+//
+// Global Guide + Occupation List leads sit in a shared pool any agent can
+// claim from. Turkish Guide leads are Turkey-market only -- filtered out
+// here unless the requesting agent's `market` is "TR", so a global agent
+// never even sees them in the pool query, not just in the UI.
+export async function getLeadPool(agentMarket: string | null | undefined) {
+  return prisma.userReport.findMany({
+    where: {
+      agentId: null,
+      source: { in: PDF_LEAD_SOURCES },
+      ...(agentMarket === "TR" ? {} : { market: { not: "TR" } }),
+    },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      phone: true,
+      source: true,
+      market: true,
+      docStatus: true,
+      createdAt: true,
+    },
+  });
+}
+
+/** Claims a pool lead for the given agent -- no-ops (returns false) if it was already claimed. */
+export async function claimLead(agentId: string, leadId: string): Promise<boolean> {
+  const result = await prisma.userReport.updateMany({
+    where: { id: leadId, agentId: null },
+    data: { agentId },
+  });
+  return result.count > 0;
+}
+
+/** Updates doc-review status and/or internal notes -- scoped to the owning agent. */
+export async function updateLeadWorkflow(
+  agentId: string,
+  leadId: string,
+  data: { docStatus?: string; agentNotes?: string }
+): Promise<boolean> {
+  const result = await prisma.userReport.updateMany({
+    where: { id: leadId, agentId },
+    data,
+  });
+  return result.count > 0;
+}
+
 export async function getUnassignedLeads() {
   return prisma.userReport.findMany({
     where: { agentId: null },

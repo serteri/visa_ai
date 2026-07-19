@@ -63,6 +63,15 @@ model UserReport {
   // persisted as a truthy email-sent flag since no email is sent for Cold.
   pointsTier            String?   @map("points_tier")
   internalLeadEmailSent Boolean?  @default(false) @map("internal_lead_email_sent")
+  // Agent CRM workflow: document/skills-assessment review status and free-text
+  // internal notes, both editable only by the agent this lead is assigned to
+  // (see requireOwnedLead in lib/crm/leads.ts). market scopes which agents can
+  // see/claim the lead from the shared pool -- "TR" for Turkish Guide leads
+  // (Turkey-market agents only), null/"GLOBAL" for Global Guide + Occupation
+  // List leads (any agent).
+  docStatus             String?   @default("New") @map("doc_status")
+  agentNotes            String?   @map("agent_notes")
+  market                String?   @default("GLOBAL")
 
   @@map("user_reports")
 }
@@ -78,6 +87,10 @@ model User {
   // agent with a lead portal, ADMIN = internal operator. Route protection keys
   // off this in proxy.ts + per-page requireRole() checks.
   role              String             @default("USER")
+  // Which lead pool an AGENT account can see/claim from -- "TR" grants access
+  // to Turkish Guide leads; other agents only see the Global Guide + Occupation
+  // List pool. Unused for USER/ADMIN roles.
+  market            String?            @map("market")
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   accounts          Account[]

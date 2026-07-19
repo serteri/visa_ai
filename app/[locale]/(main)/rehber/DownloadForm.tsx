@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Icons } from "@/components/icons"
 import Link from "next/link"
 import type { Dictionary } from "@/lib/i18n/get-dictionary"
+import { COUNTRY_CODES, defaultCountryCodeForLocale, dialForCountryCode } from "@/lib/country-codes"
 
 interface DownloadFormProps {
   translations: Dictionary
@@ -30,6 +32,7 @@ export function DownloadForm({
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [countryIso, setCountryIso] = useState(() => defaultCountryCodeForLocale(locale))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -56,7 +59,7 @@ export function DownloadForm({
       firstName,
       lastName,
       email,
-      phone,
+      phone: `${dialForCountryCode(countryIso)} ${phone.trim()}`,
       locale,
     })
 
@@ -198,14 +201,28 @@ export function DownloadForm({
             {translations.guidePage.form.phone}
             <span className="text-red-500 ml-1">*</span>
           </Label>
-          <Input
-            id="phone"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-            disabled={limitReached || isSubmitting}
-          />
+          <div className="flex gap-2">
+            <Select value={countryIso} onValueChange={setCountryIso} disabled={limitReached || isSubmitting}>
+              <SelectTrigger className="w-28 shrink-0">
+                <SelectValue>{dialForCountryCode(countryIso)}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {COUNTRY_CODES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              id="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              disabled={limitReached || isSubmitting}
+            />
+          </div>
         </div>
 
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

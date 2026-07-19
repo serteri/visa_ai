@@ -41,8 +41,13 @@ function isLocaleAdminPath(pathname: string): boolean {
   return /^\/(en|tr|zh-Hans)\/admin(?:\/.*)?$/.test(pathname);
 }
 
+// Locale prefix is optional: next.config's permanent "/en/*" -> "/*" redirect
+// strips it before proxy ever sees English traffic, so a check that required
+// an explicit "en/" here would never fire and would silently bypass this gate
+// for the (unprefixed) English routes -- only tr/zh-Hans traffic keeps a
+// visible prefix. Matching with or without it closes that gap.
 function isDashboardPath(pathname: string): boolean {
-  return /^\/(en|tr|zh-Hans)\/dashboard(?:\/.*)?$/.test(pathname);
+  return /^\/(?:en\/|tr\/|zh-Hans\/)?dashboard(?:\/.*)?$/.test(pathname);
 }
 
 function localeFromPath(pathname: string): "en" | "tr" | "zh-Hans" {
@@ -52,13 +57,16 @@ function localeFromPath(pathname: string): "en" | "tr" | "zh-Hans" {
 }
 
 // New role-based CRM portal. The AGENT portal (English) is prefixless
-// (/agent/...); the ADMIN portal always carries the locale prefix
-// (/en/admin/... — proxy normalizes bare /admin to /en/admin above), so its
-// matcher requires a leading locale. Legacy /admin/{leads,agents,referrals,...}
-// pages are deliberately excluded so they keep their ADMIN_TOKEN gate.
+// (/agent/...); the ADMIN portal is served under /admin/crm, prefixless for
+// English and locale-prefixed for tr/zh-Hans. Locale prefix is optional in
+// both regexes below for the same reason as isDashboardPath above: real
+// English traffic reaches proxy already stripped of "/en" by next.config, so
+// requiring it here would leave this gate permanently dead for English.
+// Legacy /admin/{leads,agents,referrals,...} pages are deliberately excluded
+// (via the "admin/crm" match) so they keep their separate ADMIN_TOKEN gate.
 function portalRoleForPath(pathname: string): "AGENT" | "ADMIN" | null {
-  if (/^\/(?:tr\/|zh-Hans\/)?agent(?:\/.*)?$/.test(pathname)) return "AGENT";
-  if (/^\/(?:en|tr|zh-Hans)\/admin\/crm(?:\/.*)?$/.test(pathname)) return "ADMIN";
+  if (/^\/(?:en\/|tr\/|zh-Hans\/)?agent(?:\/.*)?$/.test(pathname)) return "AGENT";
+  if (/^\/(?:(?:en|tr|zh-Hans)\/)?admin\/crm(?:\/.*)?$/.test(pathname)) return "ADMIN";
   return null;
 }
 
@@ -132,10 +140,31 @@ export const proxy = auth((req) => {
   }
 
   if (isRootAdminPath(pathname)) {
-    const targetPath = pathname === "/admin" ? "/en/admin/dashboard" : `/en${pathname}`;
-    const redirectUrl = new URL(targetPath, req.url);
-    redirectUrl.search = searchParams.toString();
-    return NextResponse.redirect(redirectUrl);
+    // "/admin" alone needs a real URL change (add "/dashboard"), so it stays a
+    // redirect -- but to a prefixless target, since next.config permanently
+    // redirects any "/en/*" URL back to "/*", which would otherwise bounce
+    // this straight into a loop with that rule.
+    if (pathname === "/admin") {
+      const redirectUrl = new URL("/admin/dashboard", req.url);
+      redirectUrl.search = searchParams.toString();
+      return NextResponse.redirect(redirectUrl);
+    }
+    // Same ADMIN_TOKEN gate as isLocaleAdminPath below. Required here too:
+    // prefixless English admin paths resolve entirely within this branch (via
+    // rewrite, not a fresh request) and never reach isLocaleAdminPath, which
+    // only ever sees explicit "/tr/admin" or "/zh-Hans/admin" traffic.
+    const configuredAdminToken = process.env.ADMIN_TOKEN?.trim();
+    const providedAdminToken = searchParams.get("ADMIN_TOKEN")?.trim();
+    if (configuredAdminToken && providedAdminToken !== configuredAdminToken) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+    // Already-full admin paths (e.g. "/admin/dashboard") just need to resolve
+    // to their /en/* route internally, like every other English path below --
+    // a rewrite keeps the URL prefixless and never touches next.config's
+    // "/en/*" redirect, avoiding the loop.
+    const rewriteUrl = new URL(`/en${pathname}`, req.url);
+    rewriteUrl.search = searchParams.toString();
+    return NextResponse.rewrite(rewriteUrl);
   }
 
   // ── Role-based CRM portal protection (runs BEFORE the legacy ADMIN_TOKEN
