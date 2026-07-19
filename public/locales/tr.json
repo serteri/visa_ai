@@ -17,14 +17,14 @@
     "bullet3": "Puan hesaplama örnekleri ve senaryolar",
     "bullet4": "Adım adım başvuru kontrol listesi",
     "remainingCopies": "Kalan: {{remaining}} / {{max}} ücretsiz kopya",
-    "limitReachedMessage": "Tüm ücretsiz kopyalar dağıtıldı — yakında ücretli versiyonu için bizi takip edin",
+    "limitReachedMessage": "Bu turdaki tüm kopyalar talep edildi — yenileri için yakında tekrar kontrol edin!",
     "form": {
       "firstName": "Ad",
       "lastName": "Soyad",
       "email": "E-posta",
       "phone": "Telefon Numarası",
       "phoneRequired": "Telefon numarası zorunludur.",
-      "submitButton": "Ücretsiz İndir"
+      "submitButton": "Rehberimi E-postama Gönder"
     },
     "spamDisclaimer": "Spam göndermiyoruz. İstediğiniz zaman çıkabilirsiniz.",
     "successMessage": "✅ Rehber e-posta adresinize gönderildi!",

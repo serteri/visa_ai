@@ -259,7 +259,6 @@ export function PdfDownloadModal({
   }
 
   const isFree = status?.isFree ?? true;
-  const freeRemaining = status?.freeRemaining ?? 18;
   const alreadyDownloaded = status?.alreadyDownloaded ?? false;
 
   const titleText =
@@ -317,15 +316,17 @@ export function PdfDownloadModal({
           >
             {isFree ? (
               <>
-                {tx(
-                  "✅ Ilk 18 indirme ",
-                  "✅ The first 18 downloads are ",
-                  "✅ 前 18 次下载"
-                )}
-                <strong>{tx("ucretsiz", "free", "免费")}</strong>
-                {tx(" — ", " - ", "，还剩 ")}
-                <strong>{freeRemaining}</strong>
-                {tx(" slot kaldi!", " spots left!", " 个名额！")}
+                {product === "occupation"
+                  ? tx(
+                      "✅ Kapsamlı ve güncel Avustralya Kalifiye Meslek Listesi'ni beceri seviyeleri ve vize türleriyle birlikte edinin.",
+                      "✅ Get the comprehensive, up-to-date Australian Skilled Occupation List with skill levels and visa types.",
+                      "✅ 获取最全面、最新的澳大利亚技术职业清单，包含技能等级和签证类型。"
+                    )
+                  : tx(
+                      "✅ Kapsamlı ve güncel 2026 rehberini hemen edinin.",
+                      "✅ Get the comprehensive, up-to-date 2026 guide right away.",
+                      "✅ 立即获取全面、最新的 2026 指南。"
+                    )}
               </>
             ) : (
               <>
@@ -466,15 +467,15 @@ export function PdfDownloadModal({
               label={tx(
                 <>
                   <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme
-                  politikalarını okudum, onaylıyorum. (Dijital ürünlerde iade yapılmaz.)
+                  politikalarını okudum, onaylıyorum.
                 </>,
                 <>
                   I agree to the <TermsGateLink>Terms of Service</TermsGateLink> and data
-                  processing policies. (No refunds on digital products.)
+                  processing policies.
                 </>,
                 <>
                   我已阅读并同意<TermsGateLink>服务条款</TermsGateLink>
-                  和数据处理政策。（数字产品不支持退款。）
+                  和数据处理政策。
                 </>
               )}
               errorText={tx(
@@ -492,7 +493,7 @@ export function PdfDownloadModal({
               >
                 {loading
                   ? tx("Gönderiliyor...", "Sending...", "发送中...")
-                  : tx("📥 Ucretsiz Indir", "📥 Free Download", "📥 免费下载")}
+                  : tx("📥 Listeyi E-postama Gönder", "📥 Send My PDF Guide", "📥 发送我的PDF指南")}
               </Button>
             ) : (
               <StripeCheckoutButton

@@ -17,14 +17,14 @@
     "bullet3": "✅ Points calculation examples and scenarios",
     "bullet4": "✅ Step-by-step application checklist",
     "remainingCopies": "Remaining: {{remaining}} / {{max}} free copies",
-    "limitReachedMessage": "All free copies distributed — follow us for the paid version coming soon",
+    "limitReachedMessage": "All copies for this round have been claimed — check back soon for more!",
     "form": {
       "firstName": "First Name",
       "lastName": "Last Name",
       "email": "Email",
       "phone": "Phone Number",
       "phoneRequired": "Phone number is required.",
-      "submitButton": "Free Download"
+      "submitButton": "Send My PDF Guide"
     },
     "spamDisclaimer": "We don't send spam. You can unsubscribe at any time.",
     "successMessage": "✅ Guide sent to your email address!",

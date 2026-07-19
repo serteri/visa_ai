@@ -15,14 +15,14 @@
     "bullet3": "✅ 积分计算示例和场景",
     "bullet4": "✅ 逐步申请清单",
     "remainingCopies": "剩余：{{remaining}} / {{max}} 份免费副本",
-    "limitReachedMessage": "所有免费副本已分发完毕 — 请关注我们即将推出的付费版本",
+    "limitReachedMessage": "本轮名额已全部领完 — 请稍后再来查看新名额！",
     "form": {
       "firstName": "名",
       "lastName": "姓",
       "email": "电子邮件",
       "phone": "手机号",
       "phoneRequired": "手机号为必填项。",
-      "submitButton": "免费下载"
+      "submitButton": "发送我的PDF指南"
     },
     "spamDisclaimer": "我们不发送垃圾邮件。您可以随时退订。",
     "successMessage": "✅ 指南已发送到您的电子邮件地址！",
