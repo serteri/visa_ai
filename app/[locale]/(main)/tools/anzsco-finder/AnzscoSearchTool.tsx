@@ -138,7 +138,11 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
             <div className="mt-4 flex justify-center sm:justify-start">
               <button
                 type="button"
-                onClick={() => setPdfModalOpen(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setPdfModalOpen(true);
+                }}
                 className="group inline-flex items-center gap-2 rounded-xl border border-cyan-700 bg-cyan-700 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-900/15 transition-all hover:bg-cyan-800 hover:shadow-cyan-900/25"
               >
                 <Download className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />

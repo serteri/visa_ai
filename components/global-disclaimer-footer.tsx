@@ -29,7 +29,11 @@ export function GlobalDisclaimerFooter() {
         </p>
         <button
           type="button"
-          onClick={() => setPdfModalOpen(true)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setPdfModalOpen(true);
+          }}
           className="mt-1 inline-block font-medium text-foreground/70 underline underline-offset-2 hover:text-foreground"
         >
           {t("footer.officialListPdf")}
