@@ -30,7 +30,12 @@ type CategoryPick = {
 const BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000").trim();
 
 const OCCUPATIONS = (occupationsData as { occupations: OccupationRow[] }).occupations;
-const LOCALIZED = anzscoListData as LocalizedRow[];
+const LOCALIZED = (anzscoListData as any[]).map((row) => ({
+  code: row.code,
+  title: row.title_en || row.title || "",
+  title_tr: row.title_tr,
+  title_zh: row.title_zh,
+})) as LocalizedRow[];
 const LOCALIZED_BY_CODE = new Map(LOCALIZED.map((row) => [row.code, row]));
 const OCCUPATIONS_IN_AUTOCOMPLETE = OCCUPATIONS.filter((row) => LOCALIZED_BY_CODE.has(row.anzsco_code));
 

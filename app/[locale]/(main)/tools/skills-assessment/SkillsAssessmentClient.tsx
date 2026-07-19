@@ -27,7 +27,15 @@ type AssessingBody = {
   color: string;
 };
 
-const OCCUPATIONS = anzscoList as Occupation[];
+const OCCUPATIONS = (anzscoList as any[]).map((o) => ({
+  code: o.code,
+  title: o.title_en || o.title || "",
+  title_tr: o.title_tr,
+  title_zh: o.title_zh,
+  keywords: o.keywords || [],
+  skillLevel: String(o.skillLevel || ""),
+  duties: o.duties_en || o.duties || [],
+})) as (Occupation & { title_tr?: string; title_zh?: string; keywords?: string[] })[];
 const { assessingBodies, occupationMapping } = assessingData as {
   assessingBodies: Record<string, AssessingBody>;
   occupationMapping: Record<string, string>;
@@ -97,6 +105,12 @@ for (const bodyKey of Object.values(occupationMapping)) {
   bodyCounts[bodyKey] = (bodyCounts[bodyKey] ?? 0) + 1;
 }
 
+function getLocalizedTitle(o: any, locale: string): string {
+  if (locale === "tr") return o.title_tr || o.title;
+  if (locale === "zh-Hans") return o.title_zh || o.title;
+  return o.title;
+}
+
 export function SkillsAssessmentClient({ locale }: { locale: string }) {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
@@ -110,7 +124,12 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
     const q = query.trim().toLowerCase();
     if (!q) return [];
     return OCCUPATIONS.filter(
-      (o) => o.title.toLowerCase().includes(q) || o.code.includes(q)
+      (o) =>
+        o.title.toLowerCase().includes(q) ||
+        o.title_tr?.toLowerCase().includes(q) ||
+        o.title_zh?.toLowerCase().includes(q) ||
+        o.code.includes(q) ||
+        o.keywords?.some((kw) => kw.toLowerCase().includes(q))
     ).slice(0, 8);
   }, [query]);
 
@@ -132,7 +151,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
 
   function selectOccupation(occ: Occupation) {
     setSelected(occ);
-    setQuery(occ.title);
+    setQuery(getLocalizedTitle(occ, locale));
     setDropdownOpen(false);
   }
 
@@ -210,7 +229,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                           <span className="text-xs font-semibold text-indigo-600">
                             {occ.code}
                           </span>
-                          <p className="mt-0.5 text-sm font-medium text-slate-800">{occ.title}</p>
+                          <p className="mt-0.5 text-sm font-medium text-slate-800">{getLocalizedTitle(occ, locale)}</p>
                         </div>
                         {body && (
                           <span
@@ -244,16 +263,32 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                         ANZSCO {selected.code}
                       </p>
-                      <h2 className="mt-1 text-2xl font-bold text-slate-900">{selected.title}</h2>
+                      <h2 className="mt-1 text-2xl font-bold text-slate-900">{getLocalizedTitle(selected, locale)}</h2>
                     </div>
                     <span
                       className={`rounded-full border px-3 py-1 text-xs font-semibold ${
                         COLOR_MAP[selectedBody.color] ?? COLOR_MAP.slate
                       }`}
                     >
-                      {selected.skillLevel}
+                      Skill Level {selected.skillLevel}
                     </span>
                   </div>
+
+                  {selected.duties && selected.duties.length > 0 && (
+                    <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        {t("sa.duties", "Key Duties")}
+                      </p>
+                      <ul className="mt-2 space-y-2">
+                        {selected.duties.map((duty, idx) => (
+                          <li key={idx} className="flex gap-2.5 text-sm leading-relaxed text-slate-650">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
+                            <span>{duty}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   <div className="my-5 h-px bg-slate-100" />
 
@@ -341,7 +376,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
                 <p className="font-semibold text-amber-800">
                   {t("sa.noMappingPrefix", "No assessing body mapped for")} {" "}
-                  <span className="font-bold">{selected.title}</span> ({selected.code})
+                  <span className="font-bold">{getLocalizedTitle(selected, locale)}</span> ({selected.code})
                 </p>
                 <p className="mt-1 text-sm text-amber-700">
                   {t("sa.noMappingText", "This occupation may be assessed by VETASSESS or may not require a skills assessment for all visa types. Check with the Department of Home Affairs or a registered migration agent.")}

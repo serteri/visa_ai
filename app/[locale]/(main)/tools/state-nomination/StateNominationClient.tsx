@@ -9,7 +9,17 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/contexts/language-context";
 
 import statesData from "@/src/data/states.json";
-import anzscoData from "@/src/data/anzsco-list.json";
+import anzscoRaw from "@/src/data/anzsco-list.json";
+
+const anzscoData = (anzscoRaw as any[]).map((o) => ({
+  code: o.code,
+  title: o.title_en || o.title || "",
+  title_tr: o.title_tr,
+  title_zh: o.title_zh,
+  keywords: o.keywords || [],
+  skillLevel: o.skillLevel,
+  duties: o.duties_en || o.duties || [],
+}));
 
 type State = (typeof statesData.states)[0];
 type Occupation = (typeof anzscoData)[0];
@@ -66,6 +76,12 @@ const FAQ_ITEMS = [
   { q: "sn.faq.q4", a: "sn.faq.a4" },
 ];
 
+function getLocalizedTitle(o: any, locale: string): string {
+  if (locale === "tr") return o.title_tr || o.title;
+  if (locale === "zh-Hans") return o.title_zh || o.title;
+  return o.title;
+}
+
 export function StateNominationClient({ locale }: { locale: string }) {
   const { t } = useTranslation();
   const [selectedOccupationCode, setSelectedOccupationCode] = useState<string>("");
@@ -79,7 +95,14 @@ export function StateNominationClient({ locale }: { locale: string }) {
     if (!occupationSearch) return [];
     const search = occupationSearch.toLowerCase();
     return anzscoData
-      .filter((occ) => occ.code.includes(search) || occ.title.toLowerCase().includes(search))
+      .filter(
+        (occ) =>
+          occ.code.includes(search) ||
+          occ.title.toLowerCase().includes(search) ||
+          occ.title_tr?.toLowerCase().includes(search) ||
+          occ.title_zh?.toLowerCase().includes(search) ||
+          occ.keywords?.some((kw: string) => kw.toLowerCase().includes(search))
+      )
       .slice(0, 8);
   }, [occupationSearch]);
 
@@ -172,7 +195,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                             onClick={() => {
                               setSelectedOccupationCode(occ.code);
                               setOccupationSearch(
-                                `${occ.code} - ${occ.title}`
+                                `${occ.code} - ${getLocalizedTitle(occ, locale)}`
                               );
                               setShowOccupationDropdown(false);
                             }}
@@ -182,7 +205,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                               {occ.code}
                             </div>
                             <div className="text-xs text-slate-500 dark:text-slate-400">
-                              {occ.title}
+                              {getLocalizedTitle(occ, locale)}
                             </div>
                           </button>
                         ))}

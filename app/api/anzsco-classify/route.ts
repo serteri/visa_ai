@@ -9,7 +9,12 @@ type Occupation = {
   duties: string[];
 };
 
-const OCCUPATIONS = anzscoList as Occupation[];
+const OCCUPATIONS = (anzscoList as any[]).map((o) => ({
+  code: o.code,
+  title: o.title_en || o.title || "",
+  skillLevel: String(o.skillLevel || ""),
+  duties: o.duties_en || o.duties || [],
+})) as Occupation[];
 const VALID_CODES = new Set(OCCUPATIONS.map((o) => o.code));
 const CODE_TO_TITLE = new Map(OCCUPATIONS.map((o) => [o.code, o.title]));
 

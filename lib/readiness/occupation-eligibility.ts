@@ -28,7 +28,12 @@ const AMBIGUOUS_GENERIC_TERMS = new Set([
 ]);
 
 const OCCUPATION_ROWS = (occupationsData as { occupations: OccupationRecord[] }).occupations;
-const LOCALIZED_ROWS = anzscoListData as LocalizedAnzscoRecord[];
+const LOCALIZED_ROWS = (anzscoListData as any[]).map(row => ({
+  code: row.code,
+  title: row.title_en || row.title || "",
+  title_tr: row.title_tr,
+  title_zh: row.title_zh,
+})) as LocalizedAnzscoRecord[];
 
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();

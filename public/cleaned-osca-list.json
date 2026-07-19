@@ -2,149 +2,281 @@
   {
     "code": "111131",
     "title_en": "Corporate Services Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kurumsal Hizmetler Müdürü",
+    "title_zh": "企业服务经理",
     "keywords": [
       "Business Services Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee corporate services operations to ensure efficiency and compliance.",
+      "Develop and implement policies and procedures for corporate governance.",
+      "Manage budgets and resources to optimize service delivery."
+    ],
+    "duties_tr": [
+      "Kurumsal hizmetler operasyonlarını verimlilik ve uyum sağlamak için denetler.",
+      "Kurumsal yönetim için politika ve prosedürler geliştirir ve uygular.",
+      "Hizmet sunumunu optimize etmek için bütçeleri ve kaynakları yönetir."
+    ],
+    "duties_zh": [
+      "监督企业服务运营以确保效率和合规性。",
+      "制定和实施企业治理的政策和程序。",
+      "管理预算和资源以优化服务交付。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "111231",
     "title_en": "Finance Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Finans Müdürü",
+    "title_zh": "财务经理",
     "keywords": [
       "Chief Financial Officer",
       "Finance Director",
       "Financial Administrator",
       "Financial Controller"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage financial planning, reporting, and analysis activities.",
+      "Ensure compliance with financial regulations and standards.",
+      "Oversee budgeting processes and financial forecasting."
+    ],
+    "duties_tr": [
+      "Finansal planlama, raporlama ve analiz faaliyetlerini yönetir.",
+      "Finansal düzenlemelere ve standartlara uyumu sağlar.",
+      "Bütçeleme süreçlerini ve finansal tahminleri denetler."
+    ],
+    "duties_zh": [
+      "管理财务规划、报告和分析活动。",
+      "确保遵守财务法规和标准。",
+      "监督预算流程和财务预测。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "111331",
     "title_en": "Human Resources Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İnsan Kaynakları Müdürü",
+    "title_zh": "人力资源经理",
     "keywords": [
       "Employee Relations Manager",
       "HR Manager",
       "People and Culture Manager",
       "Training and Development Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and implement HR strategies aligned with business goals.",
+      "Manage recruitment, training, and employee development programs.",
+      "Ensure compliance with employment laws and regulations."
+    ],
+    "duties_tr": [
+      "İş hedefleriyle uyumlu insan kaynakları stratejileri geliştirir ve uygular.",
+      "İşe alım, eğitim ve çalışan gelişim programlarını yönetir.",
+      "İstihdam yasalarına ve düzenlemelerine uyumu sağlar."
+    ],
+    "duties_zh": [
+      "制定和实施与业务目标一致的人力资源战略。",
+      "管理招聘、培训和员工发展计划。",
+      "确保遵守劳动法律和法规。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "111431",
     "title_en": "Policy and Planning Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Politika ve Planlama Müdürü",
+    "title_zh": "政策与规划经理",
     "keywords": [
       "Public Policy Manager",
       "Strategic Planning Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Lead the development of strategic plans and policies.",
+      "Conduct research and analysis to inform policy decisions.",
+      "Collaborate with stakeholders to ensure effective implementation."
+    ],
+    "duties_tr": [
+      "Stratejik planların ve politikaların geliştirilmesine liderlik eder.",
+      "Politika kararlarını bilgilendirmek için araştırma ve analiz yapar.",
+      "Etkili uygulamayı sağlamak için paydaşlarla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "领导战略计划和政策的制定。",
+      "进行研究和分析以为政策决策提供信息。",
+      "与利益相关者合作以确保有效实施。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "111531",
     "title_en": "Research and Development Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Araştırma ve Geliştirme Müdürü",
+    "title_zh": "研发经理",
     "keywords": [
       "R & D Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee research and development projects to drive innovation.",
+      "Manage teams to develop new products and technologies.",
+      "Ensure alignment of R&D activities with business objectives."
+    ],
+    "duties_tr": [
+      "Yeniliği teşvik etmek için araştırma ve geliştirme projelerini denetler.",
+      "Yeni ürünler ve teknolojiler geliştirmek için ekipleri yönetir.",
+      "Ar-Ge faaliyetlerinin iş hedefleriyle uyumunu sağlar."
+    ],
+    "duties_zh": [
+      "监督研发项目以推动创新。",
+      "管理团队开发新产品和技术。",
+      "确保研发活动与业务目标一致。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "111631",
     "title_en": "Quality Assurance Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kalite Güvence Müdürü",
+    "title_zh": "质量保证经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and implement quality assurance policies and procedures.",
+      "Conduct audits and assessments to ensure compliance with standards.",
+      "Lead continuous improvement initiatives to enhance product quality."
+    ],
+    "duties_tr": [
+      "Kalite güvence politikaları ve prosedürleri geliştirir ve uygular.",
+      "Standartlara uyumu sağlamak için denetimler ve değerlendirmeler yapar.",
+      "Ürün kalitesini artırmak için sürekli iyileştirme girişimlerine liderlik eder."
+    ],
+    "duties_zh": [
+      "制定和实施质量保证政策和程序。",
+      "进行审核和评估以确保符合标准。",
+      "领导持续改进计划以提高产品质量。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "111632",
     "title_en": "Regulatory Affairs Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Regülasyon İşleri Müdürü",
+    "title_zh": "法规事务经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Ensure compliance with regulatory requirements and standards.",
+      "Develop and implement regulatory strategies and policies.",
+      "Advise management on regulatory issues and risks."
+    ],
+    "duties_tr": [
+      "Regülasyon gereklilikleri ve standartlarına uyumu sağlar.",
+      "Regülasyon stratejileri ve politikaları geliştirir ve uygular.",
+      "Yönetimi regülasyon sorunları ve riskleri konusunda bilgilendirir."
+    ],
+    "duties_zh": [
+      "确保遵守监管要求和标准。",
+      "制定和实施监管策略和政策。",
+      "就监管问题和风险向管理层提供建议。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "111633",
     "title_en": "Work Health and Safety Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İş Sağlığı ve Güvenliği Müdürü",
+    "title_zh": "职业健康与安全经理",
     "keywords": [
       "Occupational Health and Safety Manager",
       "WHS Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and implement workplace health and safety policies.",
+      "Conduct risk assessments and safety audits.",
+      "Ensure compliance with health and safety regulations."
+    ],
+    "duties_tr": [
+      "İş yeri sağlık ve güvenlik politikaları geliştirir ve uygular.",
+      "Risk değerlendirmeleri ve güvenlik denetimleri yapar.",
+      "Sağlık ve güvenlik düzenlemelerine uyumu sağlar."
+    ],
+    "duties_zh": [
+      "制定和实施工作场所健康与安全政策。",
+      "进行风险评估和安全审核。",
+      "确保遵守健康与安全法规。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "112131",
     "title_en": "Advertising Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Reklam Müdürü",
+    "title_zh": "广告经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and execute advertising strategies to promote products.",
+      "Manage advertising budgets and allocate resources effectively.",
+      "Analyze market trends to inform advertising campaigns."
+    ],
+    "duties_tr": [
+      "Ürünleri tanıtmak için reklam stratejileri geliştirir ve uygular.",
+      "Reklam bütçelerini yönetir ve kaynakları etkili bir şekilde tahsis eder.",
+      "Reklam kampanyalarını bilgilendirmek için piyasa trendlerini analiz eder."
+    ],
+    "duties_zh": [
+      "制定和执行广告策略以推广产品。",
+      "管理广告预算并有效分配资源。",
+      "分析市场趋势以指导广告活动。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "112132",
     "title_en": "Business Development Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İş Geliştirme Müdürü",
+    "title_zh": "业务发展经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Identify and pursue new business opportunities.",
+      "Develop strategic partnerships to enhance business growth.",
+      "Analyze market conditions to inform business strategies."
+    ],
+    "duties_tr": [
+      "Yeni iş fırsatlarını belirler ve takip eder.",
+      "İş büyümesini artırmak için stratejik ortaklıklar geliştirir.",
+      "İş stratejilerini bilgilendirmek için piyasa koşullarını analiz eder."
+    ],
+    "duties_zh": [
+      "识别并追求新的商业机会。",
+      "建立战略合作伙伴关系以促进业务增长。",
+      "分析市场状况以指导商业策略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "112133",
     "title_en": "Sales and Marketing Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Satış ve Pazarlama Müdürü",
+    "title_zh": "销售与市场经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and implement sales and marketing strategies.",
+      "Manage sales teams to achieve revenue targets.",
+      "Analyze customer feedback to improve products and services."
+    ],
+    "duties_tr": [
+      "Satış ve pazarlama stratejileri geliştirir ve uygular.",
+      "Gelir hedeflerine ulaşmak için satış ekiplerini yönetir.",
+      "Ürünleri ve hizmetleri geliştirmek için müşteri geri bildirimlerini analiz eder."
+    ],
+    "duties_zh": [
+      "制定和实施销售与市场策略。",
+      "管理销售团队以实现收入目标。",
+      "分析客户反馈以改进产品和服务。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "112231",
     "title_en": "Communications Manager (Public Relations)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İletişim Müdürü (Halkla İlişkiler)",
+    "title_zh": "传播经理（公共关系）",
     "keywords": [
       "Community Relations Manager",
       "Corporate Affairs Manager",
@@ -154,114 +286,210 @@
       "Public Affairs Manager",
       "Public Relations Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and manage public relations strategies and campaigns.",
+      "Build and maintain relationships with media and stakeholders.",
+      "Monitor public opinion and media coverage."
+    ],
+    "duties_tr": [
+      "Halkla ilişkiler stratejileri ve kampanyaları geliştirir ve yönetir.",
+      "Medya ve paydaşlarla ilişkiler kurar ve sürdürür.",
+      "Kamuoyunu ve medya kapsamını izler."
+    ],
+    "duties_zh": [
+      "制定和管理公共关系策略和活动。",
+      "与媒体和利益相关者建立和维护关系。",
+      "监测公众舆论和媒体报道。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "113131",
     "title_en": "Chief Information Officer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Baş Bilgi Sorumlusu",
+    "title_zh": "首席信息官",
     "keywords": [
       "Chief Technology Officer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee the organization's information technology strategy.",
+      "Manage IT resources and budgets to support business operations.",
+      "Ensure data security and compliance with regulations."
+    ],
+    "duties_tr": [
+      "Kuruluşun bilgi teknolojisi stratejisini denetler.",
+      "İşletme operasyonlarını desteklemek için BT kaynaklarını ve bütçelerini yönetir.",
+      "Veri güvenliğini ve düzenlemelere uyumu sağlar."
+    ],
+    "duties_zh": [
+      "监督组织的信息技术战略。",
+      "管理IT资源和预算以支持业务运营。",
+      "确保数据安全和遵守法规。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "113132",
     "title_en": "Chief Information Security Officer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Baş Bilgi Güvenliği Sorumlusu",
+    "title_zh": "首席信息安全官",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and implement information security policies and protocols.",
+      "Conduct risk assessments to identify vulnerabilities.",
+      "Ensure compliance with data protection regulations."
+    ],
+    "duties_tr": [
+      "Bilgi güvenliği politikaları ve protokolleri geliştirir ve uygular.",
+      "Zayıflıkları belirlemek için risk değerlendirmeleri yapar.",
+      "Veri koruma düzenlemelerine uyumu sağlar."
+    ],
+    "duties_zh": [
+      "制定和实施信息安全政策和协议。",
+      "进行风险评估以识别漏洞。",
+      "确保遵守数据保护法规。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "113231",
     "title_en": "ICT Operations Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "BT Operasyonları Müdürü",
+    "title_zh": "信息与通信技术运营经理",
     "keywords": [
       "Application Support Manager",
       "ICT Support Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage daily IT operations to ensure service delivery.",
+      "Oversee IT infrastructure and support services.",
+      "Implement IT policies and procedures for operational efficiency."
+    ],
+    "duties_tr": [
+      "Hizmet sunumunu sağlamak için günlük BT operasyonlarını yönetir.",
+      "BT altyapısını ve destek hizmetlerini denetler.",
+      "Operasyonel verimlilik için BT politikalarını ve prosedürlerini uygular."
+    ],
+    "duties_zh": [
+      "管理日常IT运营以确保服务交付。",
+      "监督IT基础设施和支持服务。",
+      "实施IT政策和程序以提高运营效率。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "113232",
     "title_en": "ICT Project Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "BT Proje Müdürü",
+    "title_zh": "信息与通信技术项目经理",
     "keywords": [
       "ICT Program Manager",
       "ICT Security Project Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Plan and manage IT projects to meet business objectives.",
+      "Coordinate project teams and resources for successful delivery.",
+      "Monitor project progress and report on outcomes."
+    ],
+    "duties_tr": [
+      "İş hedeflerini karşılamak için BT projelerini planlar ve yönetir.",
+      "Başarılı teslimat için proje ekiplerini ve kaynaklarını koordine eder.",
+      "Proje ilerlemesini izler ve sonuçları raporlar."
+    ],
+    "duties_zh": [
+      "规划和管理IT项目以满足业务目标。",
+      "协调项目团队和资源以确保成功交付。",
+      "监控项目进展并报告结果。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "113233",
     "title_en": "ICT Service Delivery Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "BT Hizmet Teslim Müdürü",
+    "title_zh": "信息与通信技术服务交付经理",
     "keywords": [
       "ICT Service Desk Manager",
       "ICT Service Manager",
       "ICT Service Owner"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee the delivery of IT services to meet user needs.",
+      "Manage service level agreements and performance metrics.",
+      "Implement continuous improvement initiatives for service quality."
+    ],
+    "duties_tr": [
+      "Kullanıcı ihtiyaçlarını karşılamak için BT hizmetlerinin teslimatını denetler.",
+      "Hizmet düzeyi anlaşmalarını ve performans ölçütlerini yönetir.",
+      "Hizmet kalitesi için sürekli iyileştirme girişimlerini uygular."
+    ],
+    "duties_zh": [
+      "监督IT服务的交付以满足用户需求。",
+      "管理服务水平协议和绩效指标。",
+      "实施持续改进计划以提高服务质量。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "113299",
     "title_en": "ICT Managers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "BT Müdürleri nec",
+    "title_zh": "其他信息与通信技术经理",
     "keywords": [
       "Digital Product Owner",
       "ICT Architecture Manager",
       "ICT Business Intelligence Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage various IT functions and teams within the organization.",
+      "Develop strategies to enhance IT service delivery.",
+      "Ensure compliance with industry standards and best practices."
+    ],
+    "duties_tr": [
+      "Kuruluş içindeki çeşitli BT işlevlerini ve ekiplerini yönetir.",
+      "BT hizmet sunumunu artırmak için stratejiler geliştirir.",
+      "Sektör standartlarına ve en iyi uygulamalara uyumu sağlar."
+    ],
+    "duties_zh": [
+      "管理组织内的各种IT职能和团队。",
+      "制定策略以增强IT服务交付。",
+      "确保遵守行业标准和最佳实践。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "121131",
     "title_en": "Chief Executive or Managing Director",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İcra veya Genel Müdür",
+    "title_zh": "首席执行官或常务董事",
     "keywords": [
       "Chief Executive Officer",
       "Director-General",
       "Executive Director",
       "Secretary (Government Department)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Lead the organization in achieving its strategic objectives.",
+      "Manage overall operations and resources effectively.",
+      "Represent the organization to stakeholders and the public."
+    ],
+    "duties_tr": [
+      "Kuruluşu stratejik hedeflerine ulaşması için yönlendirir.",
+      "Genel operasyonları ve kaynakları etkili bir şekilde yönetir.",
+      "Kuruluşu paydaşlara ve kamuya temsil eder."
+    ],
+    "duties_zh": [
+      "领导组织实现其战略目标。",
+      "有效管理整体运营和资源。",
+      "代表组织与利益相关者和公众沟通。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "121231",
     "title_en": "Corporate General Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kurumsal Genel Müdür",
+    "title_zh": "企业总经理",
     "keywords": [
       "Assistant Commissioner (Police)",
       "Chief Operating Officer",
@@ -270,42 +498,78 @@
       "Managing Editor",
       "Trade Union Secretary"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee daily operations and ensure organizational efficiency.",
+      "Develop and implement business strategies to achieve goals.",
+      "Manage budgets and resources to optimize performance."
+    ],
+    "duties_tr": [
+      "Günlük operasyonları denetler ve kurumsal verimliliği sağlar.",
+      "Hedeflere ulaşmak için iş stratejileri geliştirir ve uygular.",
+      "Performansı optimize etmek için bütçeleri ve kaynakları yönetir."
+    ],
+    "duties_zh": [
+      "监督日常运营并确保组织效率。",
+      "制定和实施商业战略以实现目标。",
+      "管理预算和资源以优化绩效。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "121232",
     "title_en": "Defence Force Senior Officer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Savunma Kuvvetleri Kıdemli Subayı",
+    "title_zh": "国防军高级军官",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Lead and manage military operations and personnel.",
+      "Develop strategies for national defense and security.",
+      "Ensure compliance with military regulations and standards."
+    ],
+    "duties_tr": [
+      "Askeri operasyonları ve personeli yönetir ve yönlendirir.",
+      "Ulusal savunma ve güvenlik stratejileri geliştirir.",
+      "Askeri düzenlemelere ve standartlara uyumu sağlar."
+    ],
+    "duties_zh": [
+      "领导和管理军事行动和人员。",
+      "制定国家防御和安全战略。",
+      "确保遵守军事法规和标准。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "121331",
     "title_en": "Local Government Legislator",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Yerel Yönetim Yasama Üyesi",
+    "title_zh": "地方政府立法者",
     "keywords": [
       "Alderman",
       "Councillor",
       "Mayor"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and enact local government legislation.",
+      "Represent the interests of the community in decision-making.",
+      "Engage with constituents to address their concerns."
+    ],
+    "duties_tr": [
+      "Yerel yönetim yasalarını geliştirir ve yürürlüğe koyar.",
+      "Karar alma süreçlerinde toplumun çıkarlarını temsil eder.",
+      "Seçmenlerle etkileşimde bulunarak endişelerini giderir."
+    ],
+    "duties_zh": [
+      "制定和颁布地方政府立法。",
+      "在决策中代表社区的利益。",
+      "与选民互动以解决他们的关切。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "121332",
     "title_en": "Member of Parliament",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Parlamento Üyesi",
+    "title_zh": "国会议员",
     "keywords": [
       "Chief Minister",
       "Government Minister",
@@ -316,134 +580,254 @@
       "Prime Minister",
       "Senator"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Represent constituents in legislative processes.",
+      "Develop and advocate for policies that benefit the public.",
+      "Engage with the community to gather feedback and concerns."
+    ],
+    "duties_tr": [
+      "Yasama süreçlerinde seçmenleri temsil eder.",
+      "Kamuya fayda sağlayan politikaları geliştirir ve savunur.",
+      "Geri bildirim ve endişeleri toplamak için toplumla etkileşimde bulunur."
+    ],
+    "duties_zh": [
+      "在立法过程中代表选民。",
+      "制定并倡导有利于公众的政策。",
+      "与社区互动以收集反馈和关切。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "121399",
     "title_en": "Legislators nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Yasama Üyeleri nec",
+    "title_zh": "其他立法者",
     "keywords": [
       "Aboriginal Community Council Member",
       "Councillor, Aboriginal Land Council"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Participate in legislative processes and decision-making.",
+      "Advocate for policies that address community needs.",
+      "Engage with stakeholders to gather input and feedback."
+    ],
+    "duties_tr": [
+      "Yasama süreçlerine ve karar alma süreçlerine katılır.",
+      "Toplum ihtiyaçlarını karşılayan politikaları savunur.",
+      "Geri bildirim toplamak için paydaşlarla etkileşimde bulunur."
+    ],
+    "duties_zh": [
+      "参与立法过程和决策。",
+      "倡导满足社区需求的政策。",
+      "与利益相关者互动以收集意见和反馈。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "131131",
     "title_en": "Construction Project Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İnşaat Proje Müdürü",
+    "title_zh": "建筑项目经理",
     "keywords": [
       "Building and Construction Manager",
       "Shipbuilding Program Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Plan and oversee construction projects from inception to completion.",
+      "Manage project budgets, schedules, and resources effectively.",
+      "Ensure compliance with building codes and safety regulations."
+    ],
+    "duties_tr": [
+      "İnşaat projelerini başlangıçtan tamamlanmaya kadar planlar ve denetler.",
+      "Proje bütçelerini, takvimlerini ve kaynaklarını etkili bir şekilde yönetir.",
+      "İnşaat kodlarına ve güvenlik düzenlemelerine uyumu sağlar."
+    ],
+    "duties_zh": [
+      "从开始到完成规划和监督建筑项目。",
+      "有效管理项目预算、时间表和资源。",
+      "确保遵守建筑规范和安全法规。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "131231",
     "title_en": "Engineering Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Mühendislik Müdürü",
+    "title_zh": "工程经理",
     "keywords": [
       "Infrastructure Asset Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Lead engineering teams to design and develop projects.",
+      "Ensure compliance with engineering standards and regulations.",
+      "Manage project timelines and deliverables effectively."
+    ],
+    "duties_tr": [
+      "Mühendislik ekiplerini projeleri tasarlamak ve geliştirmek için yönlendirir.",
+      "Mühendislik standartlarına ve düzenlemelerine uyumu sağlar.",
+      "Proje zaman çizelgelerini ve teslimatlarını etkili bir şekilde yönetir."
+    ],
+    "duties_zh": [
+      "领导工程团队设计和开发项目。",
+      "确保遵守工程标准和法规。",
+      "有效管理项目时间表和交付物。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "131331",
     "title_en": "Project Builder",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Proje Yüklenicisi",
+    "title_zh": "项目承包商",
     "keywords": [
       "Professional Builder"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage construction contracts and subcontractors.",
+      "Ensure projects are completed on time and within budget.",
+      "Coordinate project activities and resources effectively."
+    ],
+    "duties_tr": [
+      "İnşaat sözleşmelerini ve alt yüklenicileri yönetir.",
+      "Projelerin zamanında ve bütçeye uygun olarak tamamlanmasını sağlar.",
+      "Proje faaliyetlerini ve kaynaklarını etkili bir şekilde koordine eder."
+    ],
+    "duties_zh": [
+      "管理建筑合同和分包商。",
+      "确保项目按时完成并在预算内。",
+      "有效协调项目活动和资源。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "131431",
     "title_en": "Property Developer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Gayrimenkul Geliştiricisi",
+    "title_zh": "房地产开发商",
     "keywords": [
       "Property Development Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Identify and evaluate potential real estate development opportunities.",
+      "Manage the planning and execution of development projects.",
+      "Ensure compliance with zoning laws and regulations."
+    ],
+    "duties_tr": [
+      "Potansiyel gayrimenkul geliştirme fırsatlarını belirler ve değerlendirir.",
+      "Geliştirme projelerinin planlamasını ve yürütülmesini yönetir.",
+      "İmar yasalarına ve düzenlemelerine uyumu sağlar."
+    ],
+    "duties_zh": [
+      "识别和评估潜在的房地产开发机会。",
+      "管理开发项目的规划和执行。",
+      "确保遵守分区法律和法规。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "131931",
     "title_en": "Surveying Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Haritacılık Müdürü",
+    "title_zh": "测量经理",
     "keywords": [
       "Construction Surveying Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee surveying projects and ensure accuracy of data.",
+      "Manage surveying teams and resources effectively.",
+      "Ensure compliance with surveying standards and regulations."
+    ],
+    "duties_tr": [
+      "Haritacılık projelerini denetler ve verilerin doğruluğunu sağlar.",
+      "Haritacılık ekiplerini ve kaynaklarını etkili bir şekilde yönetir.",
+      "Haritacılık standartlarına ve düzenlemelerine uyumu sağlar."
+    ],
+    "duties_zh": [
+      "监督测量项目并确保数据的准确性。",
+      "有效管理测量团队和资源。",
+      "确保遵守测量标准和法规。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "131999",
     "title_en": "Construction and Engineering Managers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İnşaat ve Mühendislik Müdürleri nec",
+    "title_zh": "其他建筑和工程经理",
     "keywords": [
       "Town Planning Director"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage various construction and engineering projects.",
+      "Ensure compliance with industry standards and regulations.",
+      "Coordinate project teams and resources for successful outcomes."
+    ],
+    "duties_tr": [
+      "Çeşitli inşaat ve mühendislik projelerini yönetir.",
+      "Sektör standartlarına ve düzenlemelerine uyumu sağlar.",
+      "Başarılı sonuçlar için proje ekiplerini ve kaynaklarını koordine eder."
+    ],
+    "duties_zh": [
+      "管理各种建筑和工程项目。",
+      "确保遵守行业标准和法规。",
+      "协调项目团队和资源以取得成功的结果。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "132131",
     "title_en": "Manufacturer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Üretici",
+    "title_zh": "制造商",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee the manufacturing process to ensure efficiency and quality.",
+      "Implement production schedules and monitor inventory levels.",
+      "Coordinate with suppliers and manage production staff."
+    ],
+    "duties_tr": [
+      "Üretim sürecini verimlilik ve kaliteyi sağlamak için denetler.",
+      "Üretim programlarını uygular ve envanter seviyelerini izler.",
+      "Tedarikçilerle koordinasyon sağlar ve üretim personelini yönetir."
+    ],
+    "duties_zh": [
+      "监督制造过程以确保效率和质量。",
+      "实施生产计划并监控库存水平。",
+      "与供应商协调并管理生产人员。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "132231",
     "title_en": "Forest Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Orman Yöneticisi",
+    "title_zh": "森林经理",
     "keywords": [
       "Harvest Manager (Forestry)",
       "Operations Manager (Forestry)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage forest resources to ensure sustainable practices.",
+      "Develop and implement forest management plans.",
+      "Monitor forest health and biodiversity."
+    ],
+    "duties_tr": [
+      "Sürdürülebilir uygulamaları sağlamak için orman kaynaklarını yönetir.",
+      "Orman yönetim planları geliştirir ve uygular.",
+      "Orman sağlığını ve biyolojik çeşitliliği izler."
+    ],
+    "duties_zh": [
+      "管理森林资源以确保可持续实践。",
+      "制定并实施森林管理计划。",
+      "监测森林健康和生物多样性。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "132232",
     "title_en": "Production Manager (Manufacturing)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Üretim Müdürü (İmalat)",
+    "title_zh": "生产经理（制造业）",
     "keywords": [
       "Clothing or Textile Production Manager",
       "Operations Manager (Production)",
@@ -452,16 +836,28 @@
       "Timber Production Manager",
       "Works Manager (Manufacturing)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee daily manufacturing operations and staff.",
+      "Ensure compliance with safety and quality standards.",
+      "Analyze production data to improve efficiency."
+    ],
+    "duties_tr": [
+      "Günlük imalat operasyonlarını ve personeli denetler.",
+      "Güvenlik ve kalite standartlarına uyumu sağlar.",
+      "Verimliliği artırmak için üretim verilerini analiz eder."
+    ],
+    "duties_zh": [
+      "监督日常制造操作和员工。",
+      "确保遵守安全和质量标准。",
+      "分析生产数据以提高效率。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "132233",
     "title_en": "Production Manager (Mining)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Üretim Müdürü (Madencilik)",
+    "title_zh": "生产经理（采矿）",
     "keywords": [
       "Mine Manager",
       "Mine Superintendent",
@@ -469,52 +865,100 @@
       "Quarry Manager (Open Pit Mining)",
       "Underground Mining Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage mining production processes and workforce.",
+      "Ensure adherence to environmental and safety regulations.",
+      "Develop strategies to optimize resource extraction."
+    ],
+    "duties_tr": [
+      "Madencilik üretim süreçlerini ve iş gücünü yönetir.",
+      "Çevresel ve güvenlik düzenlemelerine uyumu sağlar.",
+      "Kaynak çıkarımını optimize etmek için stratejiler geliştirir."
+    ],
+    "duties_zh": [
+      "管理采矿生产过程和劳动力。",
+      "确保遵守环境和安全法规。",
+      "制定优化资源开采的策略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "133131",
     "title_en": "Importer or Exporter",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İthalatçı veya İhracatçı",
+    "title_zh": "进口商或出口商",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Facilitate international trade by managing import and export activities.",
+      "Negotiate contracts and terms with suppliers and customers.",
+      "Ensure compliance with customs regulations and documentation."
+    ],
+    "duties_tr": [
+      "İthalat ve ihracat faaliyetlerini yöneterek uluslararası ticareti kolaylaştırır.",
+      "Tedarikçiler ve müşterilerle sözleşmeleri ve şartları müzakere eder.",
+      "Gümrük düzenlemelerine ve belgelerine uyumu sağlar."
+    ],
+    "duties_zh": [
+      "通过管理进出口活动促进国际贸易。",
+      "与供应商和客户谈判合同和条款。",
+      "确保遵守海关法规和文件。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "133132",
     "title_en": "Wholesaler",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Toptancı",
+    "title_zh": "批发商",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Purchase goods in bulk and distribute to retailers.",
+      "Manage inventory levels and supply chain logistics.",
+      "Develop relationships with suppliers and customers."
+    ],
+    "duties_tr": [
+      "Ürünleri toptan satın alır ve perakendecilere dağıtır.",
+      "Envanter seviyelerini ve tedarik zinciri lojistiğini yönetir.",
+      "Tedarikçiler ve müşterilerle ilişkiler geliştirir."
+    ],
+    "duties_zh": [
+      "批量购买商品并分发给零售商。",
+      "管理库存水平和供应链物流。",
+      "与供应商和客户建立关系。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "133231",
     "title_en": "Procurement Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Satın Alma Müdürü",
+    "title_zh": "采购经理",
     "keywords": [
       "Procurement Category Manager",
       "Purchasing Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee procurement processes and supplier relationships.",
+      "Develop and implement purchasing strategies.",
+      "Monitor market trends and pricing for cost efficiency."
+    ],
+    "duties_tr": [
+      "Satın alma süreçlerini ve tedarikçi ilişkilerini denetler.",
+      "Satın alma stratejileri geliştirir ve uygular.",
+      "Maliyet verimliliği için piyasa trendlerini ve fiyatlandırmayı izler."
+    ],
+    "duties_zh": [
+      "监督采购流程和供应商关系。",
+      "制定并实施采购策略。",
+      "监测市场趋势和定价以提高成本效率。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "133331",
     "title_en": "Supply and Distribution Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tedarik ve Dağıtım Müdürü",
+    "title_zh": "供应和分配经理",
     "keywords": [
       "Agricultural Goods Logistics Manager",
       "Logistics Manager",
@@ -524,120 +968,228 @@
       "Supply Officer (Navy)",
       "Transport Corps Officer (Army)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage supply chain operations and distribution networks.",
+      "Ensure timely delivery of products to customers.",
+      "Optimize logistics and inventory management."
+    ],
+    "duties_tr": [
+      "Tedarik zinciri operasyonlarını ve dağıtım ağlarını yönetir.",
+      "Ürünlerin müşterilere zamanında teslimatını sağlar.",
+      "Lojistik ve envanter yönetimini optimize eder."
+    ],
+    "duties_zh": [
+      "管理供应链运营和分配网络。",
+      "确保产品及时交付给客户。",
+      "优化物流和库存管理。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141131",
     "title_en": "Assistant School Principal",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Okul Müdür Yardımcısı",
+    "title_zh": "副校长",
     "keywords": [
       "Deputy School Principal"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist the principal in managing school operations.",
+      "Support curriculum development and teacher performance.",
+      "Foster a positive learning environment for students."
+    ],
+    "duties_tr": [
+      "Okul operasyonlarını yönetmede müdüre yardımcı olur.",
+      "Müfredat geliştirme ve öğretmen performansını destekler.",
+      "Öğrenciler için olumlu bir öğrenme ortamı oluşturur."
+    ],
+    "duties_zh": [
+      "协助校长管理学校运营。",
+      "支持课程开发和教师绩效。",
+      "为学生营造积极的学习环境。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141132",
     "title_en": "School Principal",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Okul Müdürü",
+    "title_zh": "校长",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Lead the school in academic and administrative functions.",
+      "Develop policies to enhance student learning outcomes.",
+      "Engage with parents and the community for support."
+    ],
+    "duties_tr": [
+      "Okulu akademik ve idari işlevlerde yönlendirir.",
+      "Öğrenci öğrenme sonuçlarını artırmak için politikalar geliştirir.",
+      "Destek için ebeveynler ve toplulukla etkileşimde bulunur."
+    ],
+    "duties_zh": [
+      "领导学校的学术和行政职能。",
+      "制定政策以提高学生学习成果。",
+      "与家长和社区互动以获得支持。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141231",
     "title_en": "Children's Education and Care Service Director",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çocuk Eğitimi ve Bakım Hizmetleri Müdürü",
+    "title_zh": "儿童教育和护理服务主任",
     "keywords": [
       "Early Childhood Education and Care Service Manager",
       "Out of School Hours Care Coordinator",
       "Preschool Director"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee early childhood education and care programs.",
+      "Ensure compliance with regulatory standards and policies.",
+      "Manage staff and resources for effective service delivery."
+    ],
+    "duties_tr": [
+      "Erken çocukluk eğitimi ve bakım programlarını denetler.",
+      "Düzenleyici standartlara ve politikalara uyumu sağlar.",
+      "Etkili hizmet sunumu için personel ve kaynakları yönetir."
+    ],
+    "duties_zh": [
+      "监督早期儿童教育和护理项目。",
+      "确保遵守监管标准和政策。",
+      "管理人员和资源以有效提供服务。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141331",
     "title_en": "Aged Care Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Yaşlı Bakım Müdürü",
+    "title_zh": "老年护理经理",
     "keywords": [
       "Aged Care Director",
       "Aged Care Operations Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage aged care facilities and services.",
+      "Ensure compliance with health and safety regulations.",
+      "Develop care plans tailored to individual needs."
+    ],
+    "duties_tr": [
+      "Yaşlı bakım tesislerini ve hizmetlerini yönetir.",
+      "Sağlık ve güvenlik düzenlemelerine uyumu sağlar.",
+      "Bireysel ihtiyaçlara göre bakım planları geliştirir."
+    ],
+    "duties_zh": [
+      "管理老年护理设施和服务。",
+      "确保遵守健康和安全法规。",
+      "制定符合个人需求的护理计划。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141332",
     "title_en": "Director of Nursing / Midwifery",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Hemşirelik / Ebelik Müdürü",
+    "title_zh": "护理/助产经理",
     "keywords": [
       "Assistant Director of Nursing",
       "Deputy Director of Nursing"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee nursing and midwifery services in healthcare settings.",
+      "Ensure compliance with clinical standards and regulations.",
+      "Manage staff training and development programs."
+    ],
+    "duties_tr": [
+      "Sağlık hizmetlerinde hemşirelik ve ebe hizmetlerini denetler.",
+      "Klinik standartlara ve düzenlemelere uyumu sağlar.",
+      "Personel eğitimi ve gelişim programlarını yönetir."
+    ],
+    "duties_zh": [
+      "监督医疗环境中的护理和助产服务。",
+      "确保遵守临床标准和法规。",
+      "管理员工培训和发展计划。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141333",
     "title_en": "Medical Administrator",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tıbbi Yönetici",
+    "title_zh": "医疗管理员",
     "keywords": [
       "Director of Clinical Services",
       "Director of Medical Services",
       "Medical Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage healthcare facilities and services.",
+      "Ensure compliance with healthcare regulations and policies.",
+      "Develop and implement operational strategies for efficiency."
+    ],
+    "duties_tr": [
+      "Sağlık tesislerini ve hizmetlerini yönetir.",
+      "Sağlık düzenlemelerine ve politikalara uyumu sağlar.",
+      "Verimlilik için operasyonel stratejiler geliştirir ve uygular."
+    ],
+    "duties_zh": [
+      "管理医疗设施和服务。",
+      "确保遵守医疗法规和政策。",
+      "制定并实施提高效率的运营策略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141334",
     "title_en": "Paramedic Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Paramedik Müdürü",
+    "title_zh": "急救经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee emergency medical services and personnel.",
+      "Ensure compliance with emergency response protocols.",
+      "Develop training programs for emergency responders."
+    ],
+    "duties_tr": [
+      "Acil tıbbi hizmetleri ve personeli denetler.",
+      "Acil müdahale protokollerine uyumu sağlar.",
+      "Acil müdahale ekipleri için eğitim programları geliştirir."
+    ],
+    "duties_zh": [
+      "监督紧急医疗服务和人员。",
+      "确保遵守紧急响应协议。",
+      "为紧急响应人员制定培训计划。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141335",
     "title_en": "Welfare Centre Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sosyal Hizmet Merkezi Müdürü",
+    "title_zh": "福利中心经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage operations of social welfare services.",
+      "Ensure compliance with social service regulations.",
+      "Develop community programs to support vulnerable populations."
+    ],
+    "duties_tr": [
+      "Sosyal hizmetlerin operasyonlarını yönetir.",
+      "Sosyal hizmet düzenlemelerine uyumu sağlar.",
+      "Savunmasız grupları desteklemek için topluluk programları geliştirir."
+    ],
+    "duties_zh": [
+      "管理社会福利服务的运营。",
+      "确保遵守社会服务法规。",
+      "开发支持弱势群体的社区项目。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141399",
     "title_en": "Health and Welfare Service Managers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sağlık ve Sosyal Hizmet Yöneticileri nec",
+    "title_zh": "健康和福利服务经理 nec",
     "keywords": [
       "Chief Radiographer",
       "Director of Pharmacy",
@@ -647,42 +1199,78 @@
       "Manager of Allied Health Services",
       "Manager of Child Protection Services"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage various health and welfare services.",
+      "Ensure compliance with relevant regulations and standards.",
+      "Develop policies to improve service delivery."
+    ],
+    "duties_tr": [
+      "Çeşitli sağlık ve sosyal hizmetleri yönetir.",
+      "İlgili düzenlemelere ve standartlara uyumu sağlar.",
+      "Hizmet sunumunu iyileştirmek için politikalar geliştirir."
+    ],
+    "duties_zh": [
+      "管理各种健康和福利服务。",
+      "确保遵守相关法规和标准。",
+      "制定改善服务交付的政策。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141431",
     "title_en": "Faculty Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Fakülte Müdürü",
+    "title_zh": "院系主任",
     "keywords": [
       "Academic Manager (RTO)",
       "Dean (University)",
       "Head Teacher (TAFE)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee academic programs and faculty performance.",
+      "Manage departmental budgets and resources.",
+      "Foster collaboration among faculty and staff."
+    ],
+    "duties_tr": [
+      "Akademik programları ve fakülte performansını denetler.",
+      "Bölüm bütçelerini ve kaynaklarını yönetir.",
+      "Fakülte ve personel arasında işbirliğini teşvik eder."
+    ],
+    "duties_zh": [
+      "监督学术项目和教职员工绩效。",
+      "管理部门预算和资源。",
+      "促进教职员工之间的合作。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141432",
     "title_en": "Regional Education Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Bölgesel Eğitim Müdürü",
+    "title_zh": "区域教育经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage educational programs across multiple schools.",
+      "Ensure alignment with educational standards and policies.",
+      "Engage with community stakeholders for program support."
+    ],
+    "duties_tr": [
+      "Birden fazla okulda eğitim programlarını yönetir.",
+      "Eğitim standartları ve politikaları ile uyumu sağlar.",
+      "Program desteği için topluluk paydaşlarıyla etkileşimde bulunur."
+    ],
+    "duties_zh": [
+      "管理多个学校的教育项目。",
+      "确保与教育标准和政策的一致性。",
+      "与社区利益相关者互动以获得项目支持。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "141499",
     "title_en": "Education Managers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Eğitim Yöneticileri nec",
+    "title_zh": "教育经理 nec",
     "keywords": [
       "Director of Studies",
       "Head of Student Wellbeing",
@@ -691,137 +1279,269 @@
       "TAFE Registrar",
       "University Registrar"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage various educational initiatives and programs.",
+      "Ensure compliance with educational regulations and standards.",
+      "Develop strategies to enhance student engagement."
+    ],
+    "duties_tr": [
+      "Çeşitli eğitim girişimlerini ve programlarını yönetir.",
+      "Eğitim düzenlemelerine ve standartlarına uyumu sağlar.",
+      "Öğrenci katılımını artırmak için stratejiler geliştirir."
+    ],
+    "duties_zh": [
+      "管理各种教育倡议和项目。",
+      "确保遵守教育法规和标准。",
+      "制定增强学生参与的策略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149131",
     "title_en": "Arts Administrator or Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sanat Yöneticisi veya Yönetici",
+    "title_zh": "艺术管理员或经理",
     "keywords": [
       "Art Gallery Director",
       "Community Arts Centre Manager",
       "Cultural Centre Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage arts programs and initiatives within organizations.",
+      "Develop partnerships with artists and cultural institutions.",
+      "Oversee budgets and funding for arts projects."
+    ],
+    "duties_tr": [
+      "Kuruluşlar içinde sanat programlarını ve girişimlerini yönetir.",
+      "Sanatçılar ve kültürel kurumlarla ortaklıklar geliştirir.",
+      "Sanat projeleri için bütçeleri ve fonlamayı denetler."
+    ],
+    "duties_zh": [
+      "管理组织内的艺术项目和倡议。",
+      "与艺术家和文化机构建立合作关系。",
+      "监督艺术项目的预算和资金。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149132",
     "title_en": "Library Services Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kütüphane Hizmetleri Müdürü",
+    "title_zh": "图书馆服务经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee library operations and services.",
+      "Manage staff and resources for effective service delivery.",
+      "Develop programs to promote literacy and community engagement."
+    ],
+    "duties_tr": [
+      "Kütüphane operasyonlarını ve hizmetlerini denetler.",
+      "Etkili hizmet sunumu için personel ve kaynakları yönetir.",
+      "Okuryazarlığı ve topluluk katılımını teşvik eden programlar geliştirir."
+    ],
+    "duties_zh": [
+      "监督图书馆运营和服务。",
+      "管理人员和资源以有效提供服务。",
+      "开发促进识字和社区参与的项目。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149133",
     "title_en": "Sports Administrator",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Spor Yöneticisi",
+    "title_zh": "体育管理员",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage sports programs and events within organizations.",
+      "Develop partnerships with sports organizations and sponsors.",
+      "Oversee budgets and funding for sports initiatives."
+    ],
+    "duties_tr": [
+      "Kuruluşlar içinde spor programlarını ve etkinliklerini yönetir.",
+      "Spor organizasyonları ve sponsorlarla ortaklıklar geliştirir.",
+      "Spor girişimleri için bütçeleri ve fonlamayı denetler."
+    ],
+    "duties_zh": [
+      "管理组织内的体育项目和活动。",
+      "与体育组织和赞助商建立合作关系。",
+      "监督体育倡议的预算和资金。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149199",
     "title_en": "Arts, Culture and Sports Administrators nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sanat, Kültür ve Spor Yöneticileri nec",
+    "title_zh": "艺术、文化和体育管理员 nec",
     "keywords": [
       "Bishop",
       "Museum Director",
       "Recording Studio Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage various arts, culture, and sports initiatives.",
+      "Ensure compliance with relevant regulations and standards.",
+      "Develop strategies to enhance community participation."
+    ],
+    "duties_tr": [
+      "Çeşitli sanat, kültür ve spor girişimlerini yönetir.",
+      "İlgili düzenlemelere ve standartlara uyumu sağlar.",
+      "Topluluk katılımını artırmak için stratejiler geliştirir."
+    ],
+    "duties_zh": [
+      "管理各种艺术、文化和体育倡议。",
+      "确保遵守相关法规和标准。",
+      "制定增强社区参与的策略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149231",
     "title_en": "Commissioned Defence Force Officer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Komisyonlu Savunma Gücü Subayı",
+    "title_zh": "委任国防军官",
     "keywords": [
       "Artillery Officer (Army)",
       "General Service Officer (Army)",
       "Infantry Officer (Army)",
       "Military Police Officer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Lead and manage defense operations and personnel.",
+      "Ensure compliance with military regulations and protocols.",
+      "Develop training programs for military staff."
+    ],
+    "duties_tr": [
+      "Savunma operasyonlarını ve personeli yönetir.",
+      "Askeri düzenlemelere ve protokollere uyumu sağlar.",
+      "Askeri personel için eğitim programları geliştirir."
+    ],
+    "duties_zh": [
+      "领导和管理国防行动和人员。",
+      "确保遵守军事法规和协议。",
+      "为军事人员制定培训计划。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149232",
     "title_en": "Commissioned Fire Officer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Komisyonlu İtfaiye Subayı",
+    "title_zh": "委任消防员",
     "keywords": [
       "Inspector (Fire Services)",
       "Superintendent (Fire Services)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage firefighting operations and emergency response.",
+      "Ensure compliance with fire safety regulations.",
+      "Develop training programs for firefighting personnel."
+    ],
+    "duties_tr": [
+      "Yangın söndürme operasyonlarını ve acil müdahaleyi yönetir.",
+      "Yangın güvenliği düzenlemelerine uyumu sağlar.",
+      "Yangın söndürme personeli için eğitim programları geliştirir."
+    ],
+    "duties_zh": [
+      "管理消防行动和紧急响应。",
+      "确保遵守消防安全法规。",
+      "为消防人员制定培训计划。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149233",
     "title_en": "Commissioned Police Officer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Komisyonlu Polis Subayı",
+    "title_zh": "委任警官",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Lead police operations and manage personnel.",
+      "Ensure compliance with law enforcement regulations.",
+      "Develop community policing strategies and programs."
+    ],
+    "duties_tr": [
+      "Polis operasyonlarını yönetir ve personeli yönetir.",
+      "Hukuk uygulama düzenlemelerine uyumu sağlar.",
+      "Toplum polisliği stratejileri ve programları geliştirir."
+    ],
+    "duties_zh": [
+      "领导警务行动并管理人员。",
+      "确保遵守执法法规。",
+      "制定社区警务策略和计划。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149331",
     "title_en": "Environmental Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çevre Yöneticisi",
+    "title_zh": "环境经理",
     "keywords": [
       "Environment and Sustainability Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage environmental programs and initiatives.",
+      "Ensure compliance with environmental regulations.",
+      "Develop strategies for sustainability and conservation."
+    ],
+    "duties_tr": [
+      "Çevresel programları ve girişimleri yönetir.",
+      "Çevresel düzenlemelere uyumu sağlar.",
+      "Sürdürülebilirlik ve koruma için stratejiler geliştirir."
+    ],
+    "duties_zh": [
+      "管理环境项目和倡议。",
+      "确保遵守环境法规。",
+      "制定可持续性和保护策略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149332",
     "title_en": "Exploration Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Keşif Müdürü",
+    "title_zh": "勘探经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee exploration activities and teams.",
+      "Ensure compliance with safety and environmental standards.",
+      "Develop exploration strategies and project plans."
+    ],
+    "duties_tr": [
+      "Keşif faaliyetlerini ve ekipleri denetler.",
+      "Güvenlik ve çevresel standartlara uyumu sağlar.",
+      "Keşif stratejileri ve proje planları geliştirir."
+    ],
+    "duties_zh": [
+      "监督勘探活动和团队。",
+      "确保遵守安全和环境标准。",
+      "制定勘探策略和项目计划。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "149333",
     "title_en": "Laboratory Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Laboratuvar Müdürü",
+    "title_zh": "实验室经理",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage laboratory operations and staff.",
+      "Ensure compliance with safety and quality standards.",
+      "Develop and implement laboratory protocols and procedures."
+    ],
+    "duties_tr": [
+      "Laboratuvar operasyonlarını ve personeli yönetir.",
+      "Güvenlik ve kalite standartlarına uyumu sağlar.",
+      "Laboratuvar protokollerini ve prosedürlerini geliştirir ve uygular."
+    ],
+    "duties_zh": [
+      "管理实验室运营和人员。",
+      "确保遵守安全和质量标准。",
+      "制定并实施实验室协议和程序。"
+    ],
     "skillLevel": 1
   },
   {
@@ -2473,97 +3193,181 @@
   {
     "code": "223531",
     "title_en": "Asset Manager (Property)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Varlık Yöneticisi (Gayrimenkul)",
+    "title_zh": "资产经理（物业）",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage and oversee property investments to maximize returns.",
+      "Conduct market research to identify investment opportunities.",
+      "Prepare financial reports and forecasts for property performance."
+    ],
+    "duties_tr": [
+      "Yatırımları en üst düzeye çıkarmak için gayrimenkul yatırımlarını yönetmek ve denetlemek.",
+      "Yatırım fırsatlarını belirlemek için piyasa araştırması yapmak.",
+      "Gayrimenkul performansı için mali raporlar ve tahminler hazırlamak."
+    ],
+    "duties_zh": [
+      "管理和监督物业投资以最大化回报。",
+      "进行市场研究以识别投资机会。",
+      "准备物业表现的财务报告和预测。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "223532",
     "title_en": "Valuer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Değerleme Uzmanı",
+    "title_zh": "评估师",
     "keywords": [
       "Plant and Machinery Valuer",
       "Property Valuer",
       "Real Estate Valuer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assess property values for sales, purchases, and financing.",
+      "Prepare detailed appraisal reports based on market analysis.",
+      "Provide expert advice on property investment decisions."
+    ],
+    "duties_tr": [
+      "Satış, alım ve finansman için gayrimenkul değerlerini değerlendirmek.",
+      "Piyasa analizi temelinde ayrıntılı değerleme raporları hazırlamak.",
+      "Gayrimenkul yatırım kararları hakkında uzman tavsiyesi vermek."
+    ],
+    "duties_zh": [
+      "评估销售、购买和融资的物业价值。",
+      "根据市场分析准备详细的评估报告。",
+      "就物业投资决策提供专家建议。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "223931",
     "title_en": "Company Secretary",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Şirket Sekreteri",
+    "title_zh": "公司秘书",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Ensure compliance with corporate governance regulations.",
+      "Maintain company records and prepare meeting minutes.",
+      "Coordinate communication between the board and stakeholders."
+    ],
+    "duties_tr": [
+      "Şirket yönetimi düzenlemelerine uyumu sağlamak.",
+      "Şirket kayıtlarını tutmak ve toplantı tutanaklarını hazırlamak.",
+      "Yönetim kurulu ile paydaşlar arasında iletişimi koordine etmek."
+    ],
+    "duties_zh": [
+      "确保遵守公司治理法规。",
+      "维护公司记录并准备会议纪要。",
+      "协调董事会与利益相关者之间的沟通。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "223932",
     "title_en": "Cost Controller",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Maliyet Kontrolörü",
+    "title_zh": "成本控制员",
     "keywords": [
       "Project Cost Controller"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Monitor and analyze project costs to ensure budget adherence.",
+      "Prepare cost reports and forecasts for management review.",
+      "Identify cost-saving opportunities and recommend solutions."
+    ],
+    "duties_tr": [
+      "Bütçe uyumunu sağlamak için proje maliyetlerini izlemek ve analiz etmek.",
+      "Yönetim incelemesi için maliyet raporları ve tahminleri hazırlamak.",
+      "Maliyet tasarrufu fırsatlarını belirlemek ve çözümler önermek."
+    ],
+    "duties_zh": [
+      "监控和分析项目成本以确保预算遵守。",
+      "为管理审查准备成本报告和预测。",
+      "识别节省成本的机会并推荐解决方案。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "223933",
     "title_en": "Health Information Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sağlık Bilgi Yöneticisi",
+    "title_zh": "健康信息经理",
     "keywords": [
       "Clinical Data Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage health information systems to ensure data accuracy.",
+      "Develop policies for data management and privacy compliance.",
+      "Train staff on health information protocols and systems."
+    ],
+    "duties_tr": [
+      "Veri doğruluğunu sağlamak için sağlık bilgi sistemlerini yönetmek.",
+      "Veri yönetimi ve gizlilik uyumu için politikalar geliştirmek.",
+      "Sağlık bilgi protokolleri ve sistemleri konusunda personeli eğitmek."
+    ],
+    "duties_zh": [
+      "管理健康信息系统以确保数据准确性。",
+      "制定数据管理和隐私合规政策。",
+      "对员工进行健康信息协议和系统的培训。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "223934",
     "title_en": "Patents Examiner",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Patent İnceleyicisi",
+    "title_zh": "专利审查员",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Examine patent applications for compliance with legal standards.",
+      "Conduct research to assess the novelty of inventions.",
+      "Prepare reports and recommendations for patent approval."
+    ],
+    "duties_tr": [
+      "Patent başvurularını yasal standartlara uygunluk açısından incelemek.",
+      "İcatların yenilikçiliğini değerlendirmek için araştırma yapmak.",
+      "Patent onayı için raporlar ve öneriler hazırlamak."
+    ],
+    "duties_zh": [
+      "检查专利申请是否符合法律标准。",
+      "进行研究以评估发明的新颖性。",
+      "准备专利批准的报告和建议。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "223935",
     "title_en": "Records or Information Manager",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kayıt veya Bilgi Yöneticisi",
+    "title_zh": "记录或信息经理",
     "keywords": [
       "Configuration Management Technician",
       "Freedom of Information Officer",
       "Information Management Officer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee the management of organizational records and information.",
+      "Ensure compliance with data protection regulations.",
+      "Develop and implement information management policies."
+    ],
+    "duties_tr": [
+      "Kurumsal kayıtların ve bilgilerin yönetimini denetlemek.",
+      "Veri koruma düzenlemelerine uyumu sağlamak.",
+      "Bilgi yönetimi politikalarını geliştirmek ve uygulamak."
+    ],
+    "duties_zh": [
+      "监督组织记录和信息的管理。",
+      "确保遵守数据保护法规。",
+      "制定并实施信息管理政策。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "223999",
     "title_en": "Information and Organisation Professionals nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Bilgi ve Organizasyon Profesyonelleri nec",
+    "title_zh": "信息和组织专业人员其他",
     "keywords": [
       "Campaigner",
       "Copyright Manager",
@@ -2573,101 +3377,185 @@
       "Museum Registrar",
       "Privacy Officer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Provide specialized knowledge in various information fields.",
+      "Assist organizations in optimizing their information systems.",
+      "Conduct training sessions on information management best practices."
+    ],
+    "duties_tr": [
+      "Çeşitli bilgi alanlarında uzmanlık bilgisi sağlamak.",
+      "Kuruluşların bilgi sistemlerini optimize etmelerine yardımcı olmak.",
+      "Bilgi yönetimi en iyi uygulamaları konusunda eğitim oturumları düzenlemek."
+    ],
+    "duties_zh": [
+      "在各个信息领域提供专业知识。",
+      "协助组织优化其信息系统。",
+      "进行信息管理最佳实践的培训课程。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231131",
     "title_en": "Actor",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Aktör",
+    "title_zh": "演员",
     "keywords": [
       "Voice Actor"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Perform in theatrical productions, films, or television.",
+      "Interpret characters and deliver lines convincingly.",
+      "Collaborate with directors and other actors to enhance performances."
+    ],
+    "duties_tr": [
+      "Tiyatro prodüksiyonlarında, filmlerde veya televizyonda performans sergilemek.",
+      "Karakterleri yorumlamak ve replikleri inandırıcı bir şekilde iletmek.",
+      "Performansları geliştirmek için yönetmenler ve diğer aktörlerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "在戏剧制作、电影或电视中表演。",
+      "生动地诠释角色并传达台词。",
+      "与导演和其他演员合作以增强表演。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231132",
     "title_en": "Circus Performer or Trainer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sirk Performansı veya Eğitmeni",
+    "title_zh": "马戏团表演者或训练师",
     "keywords": [
       "Circus Coach"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Perform acrobatic acts and other circus performances.",
+      "Train animals for performances and ensure their welfare.",
+      "Collaborate with other performers to create engaging shows."
+    ],
+    "duties_tr": [
+      "Akrobatik gösteriler ve diğer sirk performansları sergilemek.",
+      "Performanslar için hayvanları eğitmek ve refahlarını sağlamak.",
+      "Etkileyici gösteriler oluşturmak için diğer sanatçılarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "表演杂技和其他马戏表演。",
+      "训练动物进行表演并确保其福利。",
+      "与其他表演者合作创造引人入胜的节目。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231133",
     "title_en": "Content Creator (Social Media)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "İçerik Üreticisi (Sosyal Medya)",
+    "title_zh": "内容创作者（社交媒体）",
     "keywords": [
       "Live Streamer",
       "Social Media Influencer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Create engaging content for social media platforms.",
+      "Analyze audience engagement and adjust strategies accordingly.",
+      "Collaborate with brands to develop promotional campaigns."
+    ],
+    "duties_tr": [
+      "Sosyal medya platformları için ilgi çekici içerikler oluşturmak.",
+      "Hedef kitle etkileşimini analiz etmek ve stratejileri buna göre ayarlamak.",
+      "Tanıtım kampanyaları geliştirmek için markalarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "为社交媒体平台创建引人入胜的内容。",
+      "分析观众参与度并相应调整策略。",
+      "与品牌合作开发促销活动。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231134",
     "title_en": "Dancer or Choreographer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Dansçı veya Koreograf",
+    "title_zh": "舞者或编舞者",
     "keywords": [
       "Ballet Dancer",
       "Contemporary or Modern Dancer",
       "Exotic Dancer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Perform dance routines in various styles and settings.",
+      "Choreograph and design dance sequences for productions.",
+      "Collaborate with other artists to enhance performances."
+    ],
+    "duties_tr": [
+      "Çeşitli stiller ve ortamlarda dans rutinleri sergilemek.",
+      "Prodüksiyonlar için dans dizilerini koreografik olarak tasarlamak.",
+      "Performansları geliştirmek için diğer sanatçılarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "在各种风格和环境中表演舞蹈例程。",
+      "为制作编排和设计舞蹈序列。",
+      "与其他艺术家合作以增强表演。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231135",
     "title_en": "Entertainer or Variety Performer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Eğlence Sanatçısı veya Çeşitli Performans Sanatçısı",
+    "title_zh": "娱乐表演者或多样化表演者",
     "keywords": [
       "Comedian",
       "Magician/Illusionist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Perform a variety of entertainment acts for audiences.",
+      "Engage with the audience to enhance their experience.",
+      "Collaborate with other performers to create unique shows."
+    ],
+    "duties_tr": [
+      "İzleyiciler için çeşitli eğlence gösterileri sergilemek.",
+      "İzleyicilerle etkileşimde bulunarak deneyimlerini geliştirmek.",
+      "Eşsiz gösteriler oluşturmak için diğer sanatçılarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "为观众表演各种娱乐节目。",
+      "与观众互动以增强他们的体验。",
+      "与其他表演者合作创造独特的节目。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231199",
     "title_en": "Actors, Dancers and Other Entertainers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Aktörler, Dansçılar ve Diğer Eğlenceler nec",
+    "title_zh": "演员、舞者和其他娱乐人员其他",
     "keywords": [
       "Extra (Film or Television)",
       "Motivational Speaker",
       "Public Speaker",
       "Stunt Performer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Perform various roles in entertainment productions.",
+      "Adapt performances based on audience feedback.",
+      "Collaborate with creative teams to enhance artistic vision."
+    ],
+    "duties_tr": [
+      "Eğlence prodüksiyonlarında çeşitli roller üstlenmek.",
+      "Performansları izleyici geri bildirimine göre uyarlamak.",
+      "Sanatsal vizyonu geliştirmek için yaratıcı ekiplerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "在娱乐制作中扮演各种角色。",
+      "根据观众反馈调整表演。",
+      "与创意团队合作以增强艺术愿景。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231231",
     "title_en": "Author",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Yazar",
+    "title_zh": "作者",
     "keywords": [
       "Novelist",
       "Playwright",
@@ -2675,40 +3563,76 @@
       "Screenwriter",
       "Script Writer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Create original written content for various formats.",
+      "Research topics to ensure accuracy and depth.",
+      "Edit and revise manuscripts for publication."
+    ],
+    "duties_tr": [
+      "Çeşitli formatlar için özgün yazılı içerikler oluşturmak.",
+      "Doğruluk ve derinlik sağlamak için konuları araştırmak.",
+      "Yayın için el yazmalarını düzenlemek ve gözden geçirmek."
+    ],
+    "duties_zh": [
+      "为各种格式创作原创书面内容。",
+      "研究主题以确保准确性和深度。",
+      "编辑和修订手稿以供出版。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231232",
     "title_en": "Book or Script Editor",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kitap veya Senaryo Editörü",
+    "title_zh": "书籍或剧本编辑",
     "keywords": [
       "Script Coordinator"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Edit manuscripts for clarity, coherence, and style.",
+      "Provide feedback to authors on content and structure.",
+      "Collaborate with publishing teams to finalize works."
+    ],
+    "duties_tr": [
+      "El yazmalarını netlik, tutarlılık ve stil açısından düzenlemek.",
+      "Yazarlar için içerik ve yapı hakkında geri bildirim sağlamak.",
+      "Eserleri sonlandırmak için yayın ekipleriyle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "编辑手稿以确保清晰、一致和风格。",
+      "向作者提供内容和结构的反馈。",
+      "与出版团队合作以最终确定作品。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231331",
     "title_en": "Copywriter",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Metin Yazarı",
+    "title_zh": "文案撰写人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Create persuasive written content for marketing purposes.",
+      "Collaborate with designers to develop engaging campaigns.",
+      "Research target audiences to tailor messaging effectively."
+    ],
+    "duties_tr": [
+      "Pazarlama amaçları için ikna edici yazılı içerikler oluşturmak.",
+      "Etkileyici kampanyalar geliştirmek için tasarımcılarla işbirliği yapmak.",
+      "Mesajları etkili bir şekilde uyarlamak için hedef kitleleri araştırmak."
+    ],
+    "duties_zh": [
+      "为营销目的创建有说服力的书面内容。",
+      "与设计师合作开发引人入胜的活动。",
+      "研究目标受众以有效调整信息。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231332",
     "title_en": "Journalist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Gazeteci",
+    "title_zh": "记者",
     "keywords": [
       "Digital or Online Journalist",
       "News Reporter",
@@ -2716,41 +3640,77 @@
       "Radio Journalist",
       "Television Journalist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Investigate news stories and report findings accurately.",
+      "Conduct interviews and gather information from sources.",
+      "Write articles for publication in various media outlets."
+    ],
+    "duties_tr": [
+      "Haber hikayelerini araştırmak ve bulguları doğru bir şekilde raporlamak.",
+      "Röportajlar yapmak ve kaynaklardan bilgi toplamak.",
+      "Çeşitli medya kuruluşları için makaleler yazmak."
+    ],
+    "duties_zh": [
+      "调查新闻故事并准确报告发现。",
+      "进行采访并从来源收集信息。",
+      "为各种媒体撰写文章。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231333",
     "title_en": "Print or Digital Content Editor",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Basılı veya Dijital İçerik Editörü",
+    "title_zh": "印刷或数字内容编辑",
     "keywords": [
       "News Editor",
       "Subeditor"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Edit and curate content for print and digital platforms.",
+      "Ensure content aligns with editorial guidelines and standards.",
+      "Collaborate with writers and designers to enhance publications."
+    ],
+    "duties_tr": [
+      "Basılı ve dijital platformlar için içerikleri düzenlemek ve derlemek.",
+      "İçeriğin editoryal yönergeler ve standartlarla uyumlu olmasını sağlamak.",
+      "Yayınları geliştirmek için yazarlar ve tasarımcılarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "编辑和策划印刷和数字平台的内容。",
+      "确保内容符合编辑指南和标准。",
+      "与作者和设计师合作以增强出版物。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231334",
     "title_en": "Technical Writer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Teknik Yazar",
+    "title_zh": "技术作家",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Create technical documentation for products and services.",
+      "Translate complex information into clear and concise language.",
+      "Collaborate with engineers to ensure accuracy of content."
+    ],
+    "duties_tr": [
+      "Ürünler ve hizmetler için teknik belgeler oluşturmak.",
+      "Karmaşık bilgileri net ve öz bir dile çevirmek.",
+      "İçeriğin doğruluğunu sağlamak için mühendislerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "为产品和服务创建技术文档。",
+      "将复杂信息翻译成清晰简洁的语言。",
+      "与工程师合作以确保内容的准确性。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231399",
     "title_en": "Journalists and Other Writers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Gazeteciler ve Diğer Yazarlar nec",
+    "title_zh": "记者和其他作家其他",
     "keywords": [
       "Blogger",
       "Book Indexer",
@@ -2761,98 +3721,182 @@
       "Speech Writer",
       "Television Researcher"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Produce written content across various genres and formats.",
+      "Research and analyze topics to provide informed perspectives.",
+      "Edit and refine submissions for clarity and impact."
+    ],
+    "duties_tr": [
+      "Çeşitli türler ve formatlarda yazılı içerik üretmek.",
+      "Bilgilendirilmiş bakış açıları sağlamak için konuları araştırmak ve analiz etmek.",
+      "Açıklık ve etki için gönderimleri düzenlemek ve geliştirmek."
+    ],
+    "duties_zh": [
+      "在各种体裁和格式中制作书面内容。",
+      "研究和分析主题以提供知情的观点。",
+      "编辑和完善提交以确保清晰和影响。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231431",
     "title_en": "Artistic Director",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sanat Yönetmeni",
+    "title_zh": "艺术总监",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee the artistic vision and direction of productions.",
+      "Collaborate with creative teams to develop concepts.",
+      "Manage budgets and resources for artistic projects."
+    ],
+    "duties_tr": [
+      "Prodüksiyonların sanatsal vizyonunu ve yönünü denetlemek.",
+      "Kavramlar geliştirmek için yaratıcı ekiplerle işbirliği yapmak.",
+      "Sanatsal projeler için bütçeleri ve kaynakları yönetmek."
+    ],
+    "duties_zh": [
+      "监督制作的艺术愿景和方向。",
+      "与创意团队合作开发概念。",
+      "管理艺术项目的预算和资源。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231432",
     "title_en": "Audio or Live Performance Director",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ses veya Canlı Performans Yönetmeni",
+    "title_zh": "音频或现场表演导演",
     "keywords": [
       "Radio Director",
       "Theatre Director"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Direct audio and live performances for productions.",
+      "Coordinate sound design and technical elements.",
+      "Ensure high-quality sound and performance standards."
+    ],
+    "duties_tr": [
+      "Prodüksiyonlar için ses ve canlı performansları yönetmek.",
+      "Ses tasarımını ve teknik unsurları koordine etmek.",
+      "Yüksek kaliteli ses ve performans standartlarını sağlamak."
+    ],
+    "duties_zh": [
+      "为制作指导音频和现场表演。",
+      "协调声音设计和技术元素。",
+      "确保高质量的声音和表演标准。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231433",
     "title_en": "Cinematographer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Görüntü Yönetmeni",
+    "title_zh": "摄影师",
     "keywords": [
       "Director of Photography"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Plan and execute visual storytelling for productions.",
+      "Collaborate with directors to achieve artistic goals.",
+      "Manage camera crews and equipment for shoots."
+    ],
+    "duties_tr": [
+      "Prodüksiyonlar için görsel hikaye anlatımını planlamak ve uygulamak.",
+      "Sanatsal hedeflere ulaşmak için yönetmenlerle işbirliği yapmak.",
+      "Çekimler için kamera ekiplerini ve ekipmanını yönetmek."
+    ],
+    "duties_zh": [
+      "为制作计划和执行视觉叙事。",
+      "与导演合作以实现艺术目标。",
+      "管理拍摄的摄影师和设备。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231434",
     "title_en": "Film and Video Editor",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Film ve Video Editörü",
+    "title_zh": "电影和视频编辑",
     "keywords": [
       "Animation Editor",
       "Visual Effects Editor"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Edit film and video footage to create cohesive narratives.",
+      "Collaborate with directors to refine storytelling.",
+      "Ensure technical quality and adherence to deadlines."
+    ],
+    "duties_tr": [
+      "Bütünleşik anlatılar oluşturmak için film ve video görüntülerini düzenlemek.",
+      "Hikaye anlatımını geliştirmek için yönetmenlerle işbirliği yapmak.",
+      "Teknik kalitenin sağlanması ve son tarihlere uyum sağlamak."
+    ],
+    "duties_zh": [
+      "编辑电影和视频素材以创建连贯的叙述。",
+      "与导演合作以完善叙事。",
+      "确保技术质量和遵守截止日期。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231435",
     "title_en": "Production Manager (Screen or Live Performance)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Prodüksiyon Müdürü (Ekran veya Canlı Performans)",
+    "title_zh": "制作经理（屏幕或现场表演）",
     "keywords": [
       "Location Manager",
       "Post-Production Supervisor",
       "Stage Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage all aspects of production for screen or live events.",
+      "Coordinate schedules, budgets, and resources effectively.",
+      "Ensure smooth execution of performances and productions."
+    ],
+    "duties_tr": [
+      "Ekran veya canlı etkinlikler için prodüksiyonun tüm yönlerini yönetmek.",
+      "Programları, bütçeleri ve kaynakları etkili bir şekilde koordine etmek.",
+      "Performansların ve prodüksiyonların sorunsuz bir şekilde gerçekleştirilmesini sağlamak."
+    ],
+    "duties_zh": [
+      "管理屏幕或现场活动的所有制作方面。",
+      "有效协调时间表、预算和资源。",
+      "确保表演和制作的顺利执行。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231436",
     "title_en": "Screen Director",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ekran Yönetmeni",
+    "title_zh": "导演",
     "keywords": [
       "Film Director",
       "Filmmaker",
       "Television Director"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Direct and oversee the creative aspects of productions.",
+      "Work closely with actors and crew to achieve vision.",
+      "Manage rehearsals and coordinate performance schedules."
+    ],
+    "duties_tr": [
+      "Prodüksiyonların yaratıcı yönlerini yönetmek ve denetlemek.",
+      "Vizyonu gerçekleştirmek için aktörler ve ekip ile yakın çalışmak.",
+      "Provaları yönetmek ve performans programlarını koordine etmek."
+    ],
+    "duties_zh": [
+      "指导和监督制作的创意方面。",
+      "与演员和工作人员密切合作以实现愿景。",
+      "管理排练并协调演出时间表。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231437",
     "title_en": "Screen or Live Performance Designer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ekran veya Canlı Performans Tasarımcısı",
+    "title_zh": "屏幕或现场表演设计师",
     "keywords": [
       "Art Director (Screen)",
       "Costume Designer",
@@ -2860,70 +3904,130 @@
       "Production Designer (Screen)",
       "Set Designer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design sets and costumes for productions.",
+      "Collaborate with directors to realize artistic concepts.",
+      "Ensure designs meet production requirements and budgets."
+    ],
+    "duties_tr": [
+      "Prodüksiyonlar için sahne ve kostüm tasarımı yapmak.",
+      "Sanatsal kavramları gerçekleştirmek için yönetmenlerle işbirliği yapmak.",
+      "Tasarımın prodüksiyon gereksinimlerini ve bütçelerini karşıladığından emin olmak."
+    ],
+    "duties_zh": [
+      "为制作设计布景和服装。",
+      "与导演合作实现艺术概念。",
+      "确保设计符合制作要求和预算。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231438",
     "title_en": "Technical Director",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Teknik Yönetmen",
+    "title_zh": "技术总监",
     "keywords": [
       "Technical Producer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee technical aspects of productions and performances.",
+      "Manage technical crews and equipment for events.",
+      "Ensure safety and compliance with industry standards."
+    ],
+    "duties_tr": [
+      "Prodüksiyonların ve performansların teknik yönlerini denetlemek.",
+      "Etkinlikler için teknik ekipleri ve ekipmanları yönetmek.",
+      "Güvenlik ve endüstri standartlarına uyumu sağlamak."
+    ],
+    "duties_zh": [
+      "监督制作和表演的技术方面。",
+      "管理活动的技术团队和设备。",
+      "确保安全和遵守行业标准。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231499",
     "title_en": "Media Directors and Designers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Medya Yönetmenleri ve Tasarımcıları nec",
+    "title_zh": "媒体导演和设计师其他",
     "keywords": [
       "Casting Director",
       "Lighting Director"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Direct media projects and oversee production processes.",
+      "Collaborate with creative teams to develop innovative content.",
+      "Manage budgets and resources for media productions."
+    ],
+    "duties_tr": [
+      "Medya projelerini yönetmek ve prodüksiyon süreçlerini denetlemek.",
+      "Yenilikçi içerikler geliştirmek için yaratıcı ekiplerle işbirliği yapmak.",
+      "Medya prodüksiyonları için bütçeleri ve kaynakları yönetmek."
+    ],
+    "duties_zh": [
+      "指导媒体项目并监督制作过程。",
+      "与创意团队合作开发创新内容。",
+      "管理媒体制作的预算和资源。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231531",
     "title_en": "Audio Producer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ses Prodüktörü",
+    "title_zh": "音频制作人",
     "keywords": [
       "Music Producer",
       "Radio Producer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Produce and edit audio content for various media platforms.",
+      "Collaborate with artists and technical staff to achieve desired sound quality.",
+      "Manage recording sessions and oversee post-production processes."
+    ],
+    "duties_tr": [
+      "Çeşitli medya platformları için ses içeriği üretir ve düzenler.",
+      "İstenilen ses kalitesini sağlamak için sanatçılar ve teknik ekip ile işbirliği yapar.",
+      "Kayıt oturumlarını yönetir ve sonrası üretim süreçlerini denetler."
+    ],
+    "duties_zh": [
+      "为各种媒体平台制作和编辑音频内容。",
+      "与艺术家和技术人员合作以实现所需的音质。",
+      "管理录音会话并监督后期制作过程。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231532",
     "title_en": "Live Performance Producer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Canlı Performans Prodüktörü",
+    "title_zh": "现场表演制作人",
     "keywords": [
       "Theatre Producer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Plan and coordinate live performances and events.",
+      "Oversee technical requirements and ensure smooth execution.",
+      "Work with performers and crew to enhance audience experience."
+    ],
+    "duties_tr": [
+      "Canlı performansları ve etkinlikleri planlar ve koordine eder.",
+      "Teknik gereksinimleri denetler ve sorunsuz bir yürütme sağlar.",
+      "İzleyici deneyimini artırmak için sanatçılar ve ekip ile çalışır."
+    ],
+    "duties_zh": [
+      "策划和协调现场表演和活动。",
+      "监督技术要求并确保顺利执行。",
+      "与表演者和工作人员合作以增强观众体验。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231533",
     "title_en": "Screen Producer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ekran Prodüktörü",
+    "title_zh": "影视制作人",
     "keywords": [
       "Executive Producer (Screen)",
       "Film Producer",
@@ -2931,45 +4035,81 @@
       "Post Producer",
       "Television Producer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage the production of film, television, or digital content.",
+      "Coordinate between departments to ensure project completion.",
+      "Supervise budgets and schedules to meet production goals."
+    ],
+    "duties_tr": [
+      "Film, televizyon veya dijital içerik üretimini yönetir.",
+      "Proje tamamlanmasını sağlamak için departmanlar arasında koordinasyon sağlar.",
+      "Üretim hedeflerine ulaşmak için bütçeleri ve takvimleri denetler."
+    ],
+    "duties_zh": [
+      "管理电影、电视或数字内容的制作。",
+      "在部门之间协调以确保项目完成。",
+      "监督预算和时间表以达到制作目标。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231631",
     "title_en": "Composer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Besteci",
+    "title_zh": "作曲家",
     "keywords": [
       "Screen Composer",
       "Songwriter"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Compose original music for various media and performances.",
+      "Collaborate with artists to create arrangements and scores.",
+      "Revise compositions based on feedback and performance requirements."
+    ],
+    "duties_tr": [
+      "Çeşitli medya ve performanslar için özgün müzik besteler.",
+      "Düzenlemeler ve notalar oluşturmak için sanatçılarla işbirliği yapar.",
+      "Geri bildirim ve performans gereksinimlerine göre besteleri revize eder."
+    ],
+    "duties_zh": [
+      "为各种媒体和表演创作原创音乐。",
+      "与艺术家合作创作编曲和乐谱。",
+      "根据反馈和表演要求修订作品。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231632",
     "title_en": "Music Director",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Müzik Direktörü",
+    "title_zh": "音乐导演",
     "keywords": [
       "Band Leader",
       "Choral Director",
       "Orchestra Conductor"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Lead musical performances and oversee artistic direction.",
+      "Coordinate rehearsals and manage musical arrangements.",
+      "Collaborate with performers to enhance overall sound quality."
+    ],
+    "duties_tr": [
+      "Müzikal performansları yönetir ve sanatsal yönlendirmeyi denetler.",
+      "Provaları koordine eder ve müzikal düzenlemeleri yönetir.",
+      "Genel ses kalitesini artırmak için sanatçılarla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "领导音乐表演并监督艺术方向。",
+      "协调排练并管理音乐编排。",
+      "与表演者合作以提高整体音质。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231633",
     "title_en": "Musician (Instrumental)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Müzisyen (Enstrümantal)",
+    "title_zh": "乐器演奏家",
     "keywords": [
       "Drummer",
       "Guitarist",
@@ -2977,16 +4117,28 @@
       "Pianist",
       "Violinist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Perform music using one or more musical instruments.",
+      "Collaborate with other musicians to create cohesive performances.",
+      "Participate in rehearsals and contribute to musical arrangements."
+    ],
+    "duties_tr": [
+      "Bir veya daha fazla müzik aleti kullanarak müzik icra eder.",
+      "Diğer müzisyenlerle işbirliği yaparak uyumlu performanslar oluşturur.",
+      "Provalara katılır ve müzikal düzenlemelere katkıda bulunur."
+    ],
+    "duties_zh": [
+      "使用一种或多种乐器演奏音乐。",
+      "与其他音乐家合作创造协调的表演。",
+      "参加排练并为音乐编排做出贡献。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231634",
     "title_en": "Singer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Şarkıcı",
+    "title_zh": "歌手",
     "keywords": [
       "Band Singer",
       "Chorister",
@@ -2997,66 +4149,126 @@
       "Rock Singer",
       "Vocalist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Perform vocal music in various styles and genres.",
+      "Collaborate with musicians and producers to enhance performances.",
+      "Participate in recording sessions and live performances."
+    ],
+    "duties_tr": [
+      "Çeşitli tarz ve türlerde vokal müzik icra eder.",
+      "Performansları artırmak için müzisyenler ve prodüktörlerle işbirliği yapar.",
+      "Kayıt oturumları ve canlı performanslara katılır."
+    ],
+    "duties_zh": [
+      "以各种风格和流派演唱音乐。",
+      "与音乐家和制作人合作以增强表演。",
+      "参加录音会和现场表演。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231699",
     "title_en": "Music Professionals nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Müzik Profesyonelleri nec",
+    "title_zh": "其他音乐专业人员",
     "keywords": [
       "Disc Jockey (Club)",
       "Music Researcher",
       "Repetiteur"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Engage in various music-related activities and roles.",
+      "Support the music industry through diverse functions.",
+      "Collaborate with artists and organizations to promote music."
+    ],
+    "duties_tr": [
+      "Çeşitli müzikle ilgili faaliyetler ve rollerle ilgilenir.",
+      "Farklı işlevlerle müzik endüstrisini destekler.",
+      "Müziği teşvik etmek için sanatçılar ve organizasyonlarla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "参与各种与音乐相关的活动和角色。",
+      "通过多种职能支持音乐产业。",
+      "与艺术家和组织合作以促进音乐。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231731",
     "title_en": "Painter (Visual Arts)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Resim Sanatçısı",
+    "title_zh": "视觉艺术家",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Create original artworks using various painting techniques.",
+      "Exhibit artworks in galleries and public spaces.",
+      "Collaborate with clients to fulfill artistic visions."
+    ],
+    "duties_tr": [
+      "Çeşitli boyama teknikleri kullanarak özgün sanat eserleri yaratır.",
+      "Sanat eserlerini galerilerde ve kamusal alanlarda sergiler.",
+      "Sanatsal vizyonları gerçekleştirmek için müşterilerle işbirliği yapar."
+    ],
+    "duties_zh": [
+      "使用各种绘画技术创作原创艺术作品。",
+      "在画廊和公共场所展出艺术作品。",
+      "与客户合作实现艺术愿景。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231732",
     "title_en": "Potter or Ceramic Artist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çömlekçi veya Seramik Sanatçısı",
+    "title_zh": "陶艺家或陶瓷艺术家",
     "keywords": [
       "Ceramicist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Create ceramic artworks using various techniques.",
+      "Design and produce functional and decorative pottery.",
+      "Exhibit works in galleries and craft fairs."
+    ],
+    "duties_tr": [
+      "Çeşitli teknikler kullanarak seramik sanat eserleri yaratır.",
+      "Fonksiyonel ve dekoratif çömlek tasarlar ve üretir.",
+      "Eserlerini galerilerde ve el sanatları fuarlarında sergiler."
+    ],
+    "duties_zh": [
+      "使用各种技术创作陶瓷艺术作品。",
+      "设计和制作功能性和装饰性陶器。",
+      "在画廊和工艺展上展出作品。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231733",
     "title_en": "Sculptor",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Heykeltıraş",
+    "title_zh": "雕塑家",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Create sculptures using various materials and techniques.",
+      "Exhibit sculptures in galleries and public spaces.",
+      "Collaborate with clients to design custom pieces."
+    ],
+    "duties_tr": [
+      "Çeşitli malzemeler ve teknikler kullanarak heykeller yaratır.",
+      "Heykelleri galerilerde ve kamusal alanlarda sergiler.",
+      "Özel parçalar tasarlamak için müşterilerle işbirliği yapar."
+    ],
+    "duties_zh": [
+      "使用各种材料和技术创作雕塑。",
+      "在画廊和公共场所展出雕塑。",
+      "与客户合作设计定制作品。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231799",
     "title_en": "Visual Arts and Crafts Professionals nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Görsel Sanatlar ve El Sanatları Profesyonelleri nec",
+    "title_zh": "其他视觉艺术和工艺专业人员",
     "keywords": [
       "Doll Artist",
       "Glass Artist",
@@ -3067,47 +4279,83 @@
       "Scenic Artist",
       "Textile Artist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Engage in various visual arts and crafts activities.",
+      "Support the development of artistic projects.",
+      "Collaborate with other artists and organizations."
+    ],
+    "duties_tr": [
+      "Çeşitli görsel sanatlar ve el sanatları faaliyetlerinde yer alır.",
+      "Sanatsal projelerin gelişimini destekler.",
+      "Diğer sanatçılar ve organizasyonlarla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "参与各种视觉艺术和工艺活动。",
+      "支持艺术项目的发展。",
+      "与其他艺术家和组织合作。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231931",
     "title_en": "Community Arts Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Toplum Sanatları Çalışanı",
+    "title_zh": "社区艺术工作者",
     "keywords": [
       "Community Artist",
       "Community Arts Officer",
       "Community Cultural Development Officer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Facilitate community arts programs and initiatives.",
+      "Engage with diverse community groups to promote participation.",
+      "Evaluate the impact of arts programs on community well-being."
+    ],
+    "duties_tr": [
+      "Toplum sanatları programları ve girişimlerini kolaylaştırır.",
+      "Katılımı teşvik etmek için çeşitli topluluk gruplarıyla etkileşimde bulunur.",
+      "Sanat programlarının topluluk refahı üzerindeki etkisini değerlendirir."
+    ],
+    "duties_zh": [
+      "促进社区艺术项目和倡议。",
+      "与不同社区团体互动以促进参与。",
+      "评估艺术项目对社区福祉的影响。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "231932",
     "title_en": "Media Presenter",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Medya Sunucusu",
+    "title_zh": "媒体主持人",
     "keywords": [
       "Podcaster",
       "Radio Presenter",
       "Sports Commentator",
       "Television Presenter"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Present information and entertainment across various media platforms.",
+      "Engage with audiences to enhance viewer experience.",
+      "Research and prepare content for broadcasts and segments."
+    ],
+    "duties_tr": [
+      "Çeşitli medya platformlarında bilgi ve eğlence sunar.",
+      "İzleyici deneyimini artırmak için izleyicilerle etkileşimde bulunur.",
+      "Yayınlar ve bölümler için içerik araştırır ve hazırlar."
+    ],
+    "duties_zh": [
+      "在各种媒体平台上呈现信息和娱乐。",
+      "与观众互动以增强观众体验。",
+      "研究并准备广播和节目的内容。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232131",
     "title_en": "Librarian",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kütüphaneci",
+    "title_zh": "图书馆员",
     "keywords": [
       "Children's and Youth Services Librarian",
       "Health Librarian",
@@ -3116,16 +4364,28 @@
       "Reference and Research Librarian",
       "Systems Librarian"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage library resources and services for users.",
+      "Assist patrons in locating and accessing information.",
+      "Develop programs to promote literacy and learning."
+    ],
+    "duties_tr": [
+      "Kütüphane kaynaklarını ve hizmetlerini kullanıcılar için yönetir.",
+      "Kullanıcılara bilgi bulma ve erişim konusunda yardımcı olur.",
+      "Okuryazarlığı ve öğrenmeyi teşvik eden programlar geliştirir."
+    ],
+    "duties_zh": [
+      "管理图书馆资源和用户服务。",
+      "协助读者查找和获取信息。",
+      "开发促进读写能力和学习的项目。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232231",
     "title_en": "Religious Leader",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Dini Lider",
+    "title_zh": "宗教领袖",
     "keywords": [
       "Aboriginal and Torres Strait Islander Ceremonial Celebrant",
       "Chaplain",
@@ -3139,42 +4399,78 @@
       "Rabbi",
       "Salvation Army Commissioned Officer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Provide spiritual guidance and support to community members.",
+      "Organize religious services and community events.",
+      "Promote interfaith dialogue and understanding."
+    ],
+    "duties_tr": [
+      "Toplum üyelerine ruhsal rehberlik ve destek sağlar.",
+      "Dini hizmetleri ve topluluk etkinliklerini organize eder.",
+      "Dinler arası diyalog ve anlayışı teşvik eder."
+    ],
+    "duties_zh": [
+      "为社区成员提供精神指导和支持。",
+      "组织宗教服务和社区活动。",
+      "促进宗教间对话和理解。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232331",
     "title_en": "Archaeologist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Arkeolog",
+    "title_zh": "考古学家",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct excavations and analyze archaeological sites.",
+      "Research historical artifacts and cultural heritage.",
+      "Publish findings and contribute to academic knowledge."
+    ],
+    "duties_tr": [
+      "Kazılar yapar ve arkeolojik alanları analiz eder.",
+      "Tarihi eserler ve kültürel miras araştırır.",
+      "Bulguları yayımlar ve akademik bilgiye katkıda bulunur."
+    ],
+    "duties_zh": [
+      "进行挖掘并分析考古遗址。",
+      "研究历史文物和文化遗产。",
+      "发表研究成果并为学术知识做出贡献。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232332",
     "title_en": "Archivist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Arşivci",
+    "title_zh": "档案管理员",
     "keywords": [
       "Digital Archivist",
       "Media Archivist",
       "School Archivist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Organize and maintain archival collections and records.",
+      "Preserve historical documents and artifacts.",
+      "Assist researchers in accessing archival materials."
+    ],
+    "duties_tr": [
+      "Arşiv koleksiyonlarını ve kayıtlarını organize eder ve korur.",
+      "Tarihi belgeleri ve eserleri korur.",
+      "Araştırmacılara arşiv materyallerine erişim konusunda yardımcı olur."
+    ],
+    "duties_zh": [
+      "组织和维护档案馆的收藏和记录。",
+      "保护历史文献和文物。",
+      "协助研究人员获取档案材料。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232333",
     "title_en": "Economist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ekonomist",
+    "title_zh": "经济学家",
     "keywords": [
       "Agricultural Economist",
       "Econometrician",
@@ -3186,58 +4482,106 @@
       "Land Economist",
       "Taxation Economist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Analyze economic data and trends to inform policy.",
+      "Conduct research on economic issues and theories.",
+      "Publish reports and provide recommendations based on findings."
+    ],
+    "duties_tr": [
+      "Politika geliştirmek için ekonomik verileri ve eğilimleri analiz eder.",
+      "Ekonomik konular ve teoriler üzerine araştırmalar yapar.",
+      "Bulgulara dayanarak raporlar yayımlar ve önerilerde bulunur."
+    ],
+    "duties_zh": [
+      "分析经济数据和趋势以指导政策。",
+      "对经济问题和理论进行研究。",
+      "根据研究结果发布报告并提供建议。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232334",
     "title_en": "Gallery or Museum Curator",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Galeri veya Müze Küratörü",
+    "title_zh": "画廊或博物馆策展人",
     "keywords": [
       "Art Curator"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Curate exhibitions and manage collections in galleries or museums.",
+      "Research and select artworks for display.",
+      "Engage with the public to promote cultural understanding."
+    ],
+    "duties_tr": [
+      "Galerilerde veya müzelerde sergileri düzenler ve koleksiyonları yönetir.",
+      "Sergilenmek üzere sanat eserlerini araştırır ve seçer.",
+      "Kültürel anlayışı teşvik etmek için halkla etkileşimde bulunur."
+    ],
+    "duties_zh": [
+      "策划展览并管理画廊或博物馆的收藏。",
+      "研究并选择展出作品。",
+      "与公众互动以促进文化理解。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232335",
     "title_en": "Heritage Consultant",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kültürel Miras Danışmanı",
+    "title_zh": "文化遗产顾问",
     "keywords": [
       "Aboriginal and Torres Strait Islander Heritage Surveyor",
       "Cultural Heritage Officer",
       "Heritage Adviser"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Advise on the preservation and management of cultural heritage.",
+      "Conduct assessments of heritage sites and artifacts.",
+      "Collaborate with stakeholders to develop conservation strategies."
+    ],
+    "duties_tr": [
+      "Kültürel mirasın korunması ve yönetimi konusunda danışmanlık yapar.",
+      "Miras alanları ve eserleri üzerine değerlendirmeler yapar.",
+      "Koruma stratejileri geliştirmek için paydaşlarla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "就文化遗产的保护和管理提供建议。",
+      "对遗产遗址和文物进行评估。",
+      "与利益相关者合作制定保护策略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232336",
     "title_en": "Historian",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tarihçi",
+    "title_zh": "历史学家",
     "keywords": [
       "Academic Historian",
       "Professional Historian"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Research historical events and analyze their significance.",
+      "Publish findings in academic journals and books.",
+      "Contribute to public understanding of history through education."
+    ],
+    "duties_tr": [
+      "Tarihi olayları araştırır ve önemlerini analiz eder.",
+      "Bulguları akademik dergilerde ve kitaplarda yayımlar.",
+      "Eğitim yoluyla tarih anlayışına katkıda bulunur."
+    ],
+    "duties_zh": [
+      "研究历史事件并分析其重要性。",
+      "在学术期刊和书籍中发表研究成果。",
+      "通过教育促进公众对历史的理解。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "232399",
     "title_en": "Social Science and Related Professionals nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sosyal Bilimler ve İlgili Profesyoneller nec",
+    "title_zh": "其他社会科学及相关专业人员",
     "keywords": [
       "Anthropologist",
       "Criminologist",
@@ -3247,98 +4591,194 @@
       "Political Scientist",
       "Sociologist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Engage in various social science research and analysis.",
+      "Support community initiatives through research and evaluation.",
+      "Collaborate with other professionals to address social issues."
+    ],
+    "duties_tr": [
+      "Çeşitli sosyal bilimler araştırmaları ve analizleri ile ilgilenir.",
+      "Araştırma ve değerlendirme yoluyla topluluk girişimlerini destekler.",
+      "Sosyal sorunları ele almak için diğer profesyonellerle işbirliği yapar."
+    ],
+    "duties_zh": [
+      "参与各种社会科学研究和分析。",
+      "通过研究和评估支持社区倡议。",
+      "与其他专业人士合作解决社会问题。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "241131",
     "title_en": "Architect",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Mimar",
+    "title_zh": "建筑师",
     "keywords": [
       "Conservation or Heritage Architect",
       "Design Architect",
       "Project Architect"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design buildings and structures that meet client needs.",
+      "Prepare detailed drawings and specifications for construction.",
+      "Collaborate with engineers and contractors throughout the project."
+    ],
+    "duties_tr": [
+      "Müşteri ihtiyaçlarını karşılayan binalar ve yapılar tasarlar.",
+      "İnşaat için ayrıntılı çizimler ve spesifikasyonlar hazırlar.",
+      "Proje boyunca mühendisler ve yüklenicilerle işbirliği yapar."
+    ],
+    "duties_zh": [
+      "设计满足客户需求的建筑物和结构。",
+      "为施工准备详细的图纸和规格。",
+      "在整个项目中与工程师和承包商合作。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "241132",
     "title_en": "Landscape Architect",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Peyzaj Mimar",
+    "title_zh": "景观建筑师",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design outdoor spaces that enhance environmental quality.",
+      "Plan and implement landscaping projects for public and private areas.",
+      "Collaborate with architects and urban planners on design projects."
+    ],
+    "duties_tr": [
+      "Çevresel kalitedi artıran açık alanlar tasarlar.",
+      "Kamu ve özel alanlar için peyzaj projeleri planlar ve uygular.",
+      "Tasarım projelerinde mimarlarla ve şehir plancılarıyla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "设计提升环境质量的户外空间。",
+      "为公共和私人区域规划和实施景观项目。",
+      "与建筑师和城市规划师合作进行设计项目。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "241133",
     "title_en": "Urban Designer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kentsel Tasarımcı",
+    "title_zh": "城市设计师",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop urban designs that promote sustainable communities.",
+      "Analyze land use and zoning regulations for projects.",
+      "Collaborate with stakeholders to create functional public spaces."
+    ],
+    "duties_tr": [
+      "Sürdürülebilir toplulukları teşvik eden kentsel tasarımlar geliştirir.",
+      "Projeler için arazi kullanımı ve imar düzenlemelerini analiz eder.",
+      "Fonksiyonel kamusal alanlar oluşturmak için paydaşlarla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "开发促进可持续社区的城市设计。",
+      "分析项目的土地使用和分区法规。",
+      "与利益相关者合作创建功能性公共空间。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "241231",
     "title_en": "Cartographer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Haritacı",
+    "title_zh": "制图师",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Create maps and spatial data for various applications.",
+      "Analyze geographic information to support planning and decision-making.",
+      "Collaborate with surveyors and planners on mapping projects."
+    ],
+    "duties_tr": [
+      "Çeşitli uygulamalar için haritalar ve mekansal veriler oluşturur.",
+      "Planlama ve karar verme süreçlerini desteklemek için coğrafi bilgileri analiz eder.",
+      "Harita projelerinde ölçüm uzmanları ve planlamacılarla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "为各种应用创建地图和空间数据。",
+      "分析地理信息以支持规划和决策。",
+      "与测量师和规划师合作进行制图项目。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "241232",
     "title_en": "Engineering Surveyor",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Mühendislik Ölçümcüsü",
+    "title_zh": "工程测量师",
     "keywords": [
       "Construction Surveyor"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct engineering surveys for construction and development projects.",
+      "Provide accurate measurements and data for project planning.",
+      "Collaborate with engineers to ensure project specifications are met."
+    ],
+    "duties_tr": [
+      "İnşaat ve geliştirme projeleri için mühendislik ölçümleri yapar.",
+      "Proje planlaması için doğru ölçümler ve veriler sağlar.",
+      "Proje spesifikasyonlarının karşılandığından emin olmak için mühendislerle işbirliği yapar."
+    ],
+    "duties_zh": [
+      "进行建筑和开发项目的工程测量。",
+      "为项目规划提供准确的测量和数据。",
+      "与工程师合作确保满足项目规范。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "241233",
     "title_en": "Geospatial Specialist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Coğrafi Bilgi Uzmanı",
+    "title_zh": "地理空间专家",
     "keywords": [
       "Geospatial Analyst",
       "GIS Consultant",
       "GIS Manager"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Analyze spatial data to support geographic information systems.",
+      "Develop maps and models for various applications.",
+      "Collaborate with stakeholders to enhance data accuracy."
+    ],
+    "duties_tr": [
+      "Coğrafi bilgi sistemlerini desteklemek için mekansal verileri analiz eder.",
+      "Çeşitli uygulamalar için haritalar ve modeller geliştirir.",
+      "Veri doğruluğunu artırmak için paydaşlarla işbirliği yapar."
+    ],
+    "duties_zh": [
+      "分析空间数据以支持地理信息系统。",
+      "为各种应用开发地图和模型。",
+      "与利益相关者合作提高数据准确性。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "241234",
     "title_en": "Land Surveyor",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Arazi Ölçümcüsü",
+    "title_zh": "土地测量师",
     "keywords": [
       "Registered or Licensed Land Surveyor"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct land surveys to determine property boundaries.",
+      "Prepare survey reports and maps for legal and development purposes.",
+      "Collaborate with landowners and developers on survey projects."
+    ],
+    "duties_tr": [
+      "Mülk sınırlarını belirlemek için arazi ölçümleri yapar.",
+      "Hukuki ve geliştirme amaçları için ölçüm raporları ve haritalar hazırlar.",
+      "Ölçüm projelerinde arazi sahipleri ve geliştiricilerle işbirliği yapar."
+    ],
+    "duties_zh": [
+      "进行土地测量以确定财产边界。",
+      "为法律和开发目的准备测量报告和地图。",
+      "与土地所有者和开发商合作进行测量项目。"
+    ],
     "skillLevel": 1
   },
   {
@@ -3768,64 +5208,112 @@
   {
     "code": "243533",
     "title_en": "Production or Plant Engineer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Üretim veya Tesis Mühendisi",
+    "title_zh": "生产或工厂工程师",
     "keywords": [
       "Automation and Control Engineer (Production or Plant)",
       "Automation Engineer (Production or Plant)",
       "Control Systems Engineer (Production or Plant)",
       "Maintenance Engineer (Shipbuilding)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design and optimize production processes to improve efficiency.",
+      "Oversee plant operations and ensure compliance with safety standards.",
+      "Collaborate with cross-functional teams to implement engineering solutions."
+    ],
+    "duties_tr": [
+      "Verimliliği artırmak için üretim süreçlerini tasarlamak ve optimize etmek.",
+      "Tesis operasyonlarını denetlemek ve güvenlik standartlarına uyumu sağlamak.",
+      "Mühendislik çözümlerini uygulamak için çok disiplinli ekiplerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "设计和优化生产过程以提高效率。",
+      "监督工厂运营并确保遵守安全标准。",
+      "与跨职能团队合作实施工程解决方案。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243631",
     "title_en": "Mining Engineer (excluding Petroleum)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Madencilik Mühendisi (Petrol Hariç)",
+    "title_zh": "矿业工程师（不包括石油）",
     "keywords": [
       "Drill and Blast Engineer (Mining)",
       "Process Engineer (Mining)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Plan and design mining operations to maximize resource extraction.",
+      "Conduct feasibility studies and assess environmental impacts.",
+      "Ensure compliance with mining regulations and safety standards."
+    ],
+    "duties_tr": [
+      "Kaynak çıkarımını en üst düzeye çıkarmak için madencilik operasyonlarını planlamak ve tasarlamak.",
+      "Fizibilite çalışmaları yapmak ve çevresel etkileri değerlendirmek.",
+      "Madencilik düzenlemeleri ve güvenlik standartlarına uyumu sağlamak."
+    ],
+    "duties_zh": [
+      "规划和设计采矿操作以最大化资源提取。",
+      "进行可行性研究并评估环境影响。",
+      "确保遵守采矿法规和安全标准。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243632",
     "title_en": "Petroleum Engineer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Petrol Mühendisi",
+    "title_zh": "石油工程师",
     "keywords": [
       "Drilling Engineer (Petroleum)",
       "Reservoir Engineer",
       "Subsea Engineer (Oil and Gas)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design and develop methods for extracting oil and gas.",
+      "Analyze geological data to determine drilling locations.",
+      "Monitor production rates and implement optimization strategies."
+    ],
+    "duties_tr": [
+      "Petrol ve gaz çıkarma yöntemlerini tasarlamak ve geliştirmek.",
+      "Delme yerlerini belirlemek için jeolojik verileri analiz etmek.",
+      "Üretim oranlarını izlemek ve optimizasyon stratejileri uygulamak."
+    ],
+    "duties_zh": [
+      "设计和开发石油和天然气提取方法。",
+      "分析地质数据以确定钻探位置。",
+      "监测生产率并实施优化策略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243931",
     "title_en": "Acoustic Engineer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Akustik Mühendisi",
+    "title_zh": "声学工程师",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design and analyze sound systems for various applications.",
+      "Conduct research on sound propagation and acoustics.",
+      "Develop noise control solutions for industrial environments."
+    ],
+    "duties_tr": [
+      "Çeşitli uygulamalar için ses sistemlerini tasarlamak ve analiz etmek.",
+      "Ses yayılımı ve akustik üzerine araştırmalar yapmak.",
+      "Endüstriyel ortamlarda gürültü kontrol çözümleri geliştirmek."
+    ],
+    "duties_zh": [
+      "为各种应用设计和分析声音系统。",
+      "进行声传播和声学研究。",
+      "为工业环境开发噪声控制解决方案。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243932",
     "title_en": "Aerospace Engineer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Havacılık Mühendisi",
+    "title_zh": "航空航天工程师",
     "keywords": [
       "Aeronautical Engineer",
       "Aerospace Engineer Officer - Aeronautical (Navy, Air Force)",
@@ -3833,32 +5321,56 @@
       "Aerospace Engineer Officer - Electronics (Air Force)",
       "Propulsion Engineer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design aircraft and spacecraft systems and components.",
+      "Conduct tests and evaluations to ensure safety and performance.",
+      "Collaborate with teams to develop innovative aerospace technologies."
+    ],
+    "duties_tr": [
+      "Uçak ve uzay aracı sistemleri ile bileşenlerini tasarlamak.",
+      "Güvenlik ve performansı sağlamak için testler ve değerlendirmeler yapmak.",
+      "Yenilikçi havacılık teknolojileri geliştirmek için ekiplerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "设计飞机和航天器系统及组件。",
+      "进行测试和评估以确保安全和性能。",
+      "与团队合作开发创新的航空航天技术。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243933",
     "title_en": "Biomedical Engineer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Biyomedikal Mühendisi",
+    "title_zh": "生物医学工程师",
     "keywords": [
       "Bioengineer",
       "Clinical Engineer",
       "Medical Engineer",
       "Medical Equipment or Device Engineer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop medical devices and technologies for healthcare.",
+      "Conduct research to improve patient care and outcomes.",
+      "Collaborate with healthcare professionals to implement solutions."
+    ],
+    "duties_tr": [
+      "Sağlık hizmetleri için tıbbi cihazlar ve teknolojiler geliştirmek.",
+      "Hasta bakımını ve sonuçlarını iyileştirmek için araştırmalar yapmak.",
+      "Çözümleri uygulamak için sağlık profesyonelleri ile işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "开发医疗设备和技术以改善医疗保健。",
+      "进行研究以改善患者护理和结果。",
+      "与医疗专业人员合作实施解决方案。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243934",
     "title_en": "Engineering Technologist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Mühendislik Teknoloğu",
+    "title_zh": "工程技术人员",
     "keywords": [
       "Biomedical Engineering Technologist",
       "Industrial Engineering Technologist",
@@ -3866,64 +5378,124 @@
       "Safety Engineering Technologist",
       "Structural Engineering Technologist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Apply engineering principles to solve technical problems.",
+      "Assist in the design and development of engineering projects.",
+      "Conduct tests and evaluations to ensure project success."
+    ],
+    "duties_tr": [
+      "Teknik sorunları çözmek için mühendislik ilkelerini uygulamak.",
+      "Mühendislik projelerinin tasarım ve geliştirilmesine yardımcı olmak.",
+      "Proje başarısını sağlamak için testler ve değerlendirmeler yapmak."
+    ],
+    "duties_zh": [
+      "应用工程原理解决技术问题。",
+      "协助设计和开发工程项目。",
+      "进行测试和评估以确保项目成功。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243935",
     "title_en": "Environmental Engineer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çevre Mühendisi",
+    "title_zh": "环境工程师",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design solutions to environmental challenges and issues.",
+      "Conduct assessments to evaluate environmental impacts.",
+      "Collaborate with stakeholders to promote sustainability initiatives."
+    ],
+    "duties_tr": [
+      "Çevresel zorluklar ve sorunlar için çözümler tasarlamak.",
+      "Çevresel etkileri değerlendirmek için değerlendirmeler yapmak.",
+      "Sürdürülebilirlik girişimlerini teşvik etmek için paydaşlarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "设计解决环境挑战和问题的方案。",
+      "进行评估以评估环境影响。",
+      "与利益相关者合作促进可持续发展倡议。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243936",
     "title_en": "Fire Safety Engineer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Yangın Güvenliği Mühendisi",
+    "title_zh": "消防安全工程师",
     "keywords": [
       "Fire Protection Engineer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design fire protection systems and safety protocols.",
+      "Conduct fire risk assessments and safety audits.",
+      "Collaborate with emergency services to enhance safety measures."
+    ],
+    "duties_tr": [
+      "Yangın koruma sistemleri ve güvenlik protokolleri tasarlamak.",
+      "Yangın riski değerlendirmeleri ve güvenlik denetimleri yapmak.",
+      "Güvenlik önlemlerini artırmak için acil durum hizmetleri ile işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "设计消防保护系统和安全协议。",
+      "进行火灾风险评估和安全审计。",
+      "与应急服务合作以增强安全措施。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243937",
     "title_en": "Mechatronics Engineer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Mekatronik Mühendisi",
+    "title_zh": "机电一体化工程师",
     "keywords": [
       "Robotics Engineer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design and develop automated systems and robotics.",
+      "Integrate mechanical, electronic, and software components.",
+      "Conduct testing and troubleshooting of mechatronic systems."
+    ],
+    "duties_tr": [
+      "Otomatik sistemler ve robotlar tasarlamak ve geliştirmek.",
+      "Mekanik, elektronik ve yazılım bileşenlerini entegre etmek.",
+      "Mekatronik sistemlerin testlerini yapmak ve sorun gidermek."
+    ],
+    "duties_zh": [
+      "设计和开发自动化系统和机器人。",
+      "集成机械、电子和软件组件。",
+      "进行机电一体化系统的测试和故障排除。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243938",
     "title_en": "Naval Architect",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Gemi Mühendisi",
+    "title_zh": "船舶设计师",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Design and analyze marine vessels and structures.",
+      "Conduct stability and performance assessments.",
+      "Collaborate with teams to ensure compliance with maritime regulations."
+    ],
+    "duties_tr": [
+      "Deniz araçları ve yapıları tasarlamak ve analiz etmek.",
+      "Stabilite ve performans değerlendirmeleri yapmak.",
+      "Denizcilik düzenlemelerine uyumu sağlamak için ekiplerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "设计和分析海洋船舶和结构。",
+      "进行稳定性和性能评估。",
+      "与团队合作确保遵守海事法规。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "243999",
     "title_en": "Engineering Professionals nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Mühendislik Profesyonelleri nec",
+    "title_zh": "其他工程专业人员",
     "keywords": [
       "Agricultural Engineer",
       "Calibration Engineer",
@@ -3931,216 +5503,408 @@
       "Safety Engineer",
       "Test and Activation Engineer (Naval Shipbuilding)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Provide engineering expertise across various sectors.",
+      "Conduct research and development for innovative solutions.",
+      "Collaborate with teams to address engineering challenges."
+    ],
+    "duties_tr": [
+      "Çeşitli sektörlerde mühendislik uzmanlığı sağlamak.",
+      "Yenilikçi çözümler için araştırma ve geliştirme yapmak.",
+      "Mühendislik zorluklarını ele almak için ekiplerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "在各个行业提供工程专业知识。",
+      "进行研究和开发以寻找创新解决方案。",
+      "与团队合作解决工程挑战。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244131",
     "title_en": "Agricultural Consultant",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tarım Danışmanı",
+    "title_zh": "农业顾问",
     "keywords": [
       "Agricultural Adviser",
       "Agricultural Extension Officer",
       "Landcare Officer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Provide expert advice on agricultural practices and technologies.",
+      "Conduct research to improve crop yields and sustainability.",
+      "Assist farmers in implementing best practices and innovations."
+    ],
+    "duties_tr": [
+      "Tarım uygulamaları ve teknolojileri konusunda uzman tavsiyesi sağlamak.",
+      "Meyve ve sebze verimlerini ve sürdürülebilirliği artırmak için araştırmalar yapmak.",
+      "Çiftçilere en iyi uygulamaları ve yenilikleri uygulamalarında yardımcı olmak."
+    ],
+    "duties_zh": [
+      "就农业实践和技术提供专家建议。",
+      "进行研究以提高作物产量和可持续性。",
+      "协助农民实施最佳实践和创新。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244132",
     "title_en": "Agricultural Research Scientist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tarım Araştırma Bilimcisi",
+    "title_zh": "农业研究科学家",
     "keywords": [
       "Agricultural Scientist",
       "Research Agronomist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct research on agricultural systems and practices.",
+      "Analyze data to improve agricultural productivity.",
+      "Collaborate with stakeholders to develop sustainable solutions."
+    ],
+    "duties_tr": [
+      "Tarım sistemleri ve uygulamaları üzerine araştırmalar yapmak.",
+      "Tarım verimliliğini artırmak için verileri analiz etmek.",
+      "Sürdürülebilir çözümler geliştirmek için paydaşlarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "对农业系统和实践进行研究。",
+      "分析数据以提高农业生产力。",
+      "与利益相关者合作开发可持续解决方案。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244133",
     "title_en": "Agronomist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tarla Bilimci",
+    "title_zh": "农艺师",
     "keywords": [
       "Animal Nutritionist",
       "Sales Agronomist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Research and develop methods to enhance crop production.",
+      "Advise on soil management and crop rotation practices.",
+      "Collaborate with farmers to implement sustainable agriculture techniques."
+    ],
+    "duties_tr": [
+      "Tarım üretimini artırmak için yöntemler araştırmak ve geliştirmek.",
+      "Toprak yönetimi ve ürün rotasyonu uygulamaları konusunda tavsiyelerde bulunmak.",
+      "Sürdürülebilir tarım tekniklerini uygulamak için çiftçilerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "研究和开发提高作物生产的方法。",
+      "就土壤管理和作物轮作实践提供建议。",
+      "与农民合作实施可持续农业技术。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244134",
     "title_en": "Aquaculture or Fisheries Scientist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Su Ürünleri veya Balıkçılık Bilimcisi",
+    "title_zh": "水产或渔业科学家",
     "keywords": [
       "Aquaculture or Fisheries Research Scientist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct research on aquatic ecosystems and species.",
+      "Develop sustainable fishing practices and policies.",
+      "Collaborate with communities to promote aquaculture initiatives."
+    ],
+    "duties_tr": [
+      "Su ekosistemleri ve türleri üzerine araştırmalar yapmak.",
+      "Sürdürülebilir balıkçılık uygulamaları ve politikaları geliştirmek.",
+      "Su ürünleri yetiştiriciliği girişimlerini teşvik etmek için topluluklarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "对水生生态系统和物种进行研究。",
+      "制定可持续渔业实践和政策。",
+      "与社区合作促进水产养殖倡议。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244135",
     "title_en": "Forester",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ormancı",
+    "title_zh": "林务员",
     "keywords": [
       "Forestry Consultant",
       "Research Forester"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage forest resources and promote sustainable practices.",
+      "Conduct research on forest ecosystems and biodiversity.",
+      "Collaborate with stakeholders to develop conservation strategies."
+    ],
+    "duties_tr": [
+      "Orman kaynaklarını yönetmek ve sürdürülebilir uygulamaları teşvik etmek.",
+      "Orman ekosistemleri ve biyolojik çeşitlilik üzerine araştırmalar yapmak.",
+      "Koruma stratejileri geliştirmek için paydaşlarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "管理森林资源并促进可持续实践。",
+      "对森林生态系统和生物多样性进行研究。",
+      "与利益相关者合作制定保护战略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244231",
     "title_en": "Chemist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kimyager",
+    "title_zh": "化学家",
     "keywords": [
       "Analytical Chemist",
       "Industrial Chemist",
       "Quality Control Chemist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct experiments to analyze chemical compounds and reactions.",
+      "Develop new materials and products through research.",
+      "Collaborate with industries to apply chemical knowledge."
+    ],
+    "duties_tr": [
+      "Kimyasal bileşenleri ve tepkimeleri analiz etmek için deneyler yapmak.",
+      "Araştırma yoluyla yeni malzemeler ve ürünler geliştirmek.",
+      "Kimyasal bilgiyi uygulamak için sanayilerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "进行实验以分析化合物和反应。",
+      "通过研究开发新材料和产品。",
+      "与行业合作应用化学知识。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244232",
     "title_en": "Food Technologist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Gıda Teknoloğu",
+    "title_zh": "食品技术专家",
     "keywords": [
       "Food Scientist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and improve food processing techniques and products.",
+      "Conduct research on food safety and quality assurance.",
+      "Collaborate with food industries to enhance product development."
+    ],
+    "duties_tr": [
+      "Gıda işleme tekniklerini ve ürünlerini geliştirmek ve iyileştirmek.",
+      "Gıda güvenliği ve kalite güvencesi üzerine araştırmalar yapmak.",
+      "Ürün geliştirmeyi artırmak için gıda sanayileri ile işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "开发和改进食品加工技术和产品。",
+      "进行食品安全和质量保证的研究。",
+      "与食品行业合作以增强产品开发。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244233",
     "title_en": "Winemaker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Şarap Üreticisi",
+    "title_zh": "酿酒师",
     "keywords": [
       "Oenologist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee the wine production process from grape to bottle.",
+      "Conduct quality control tests to ensure product standards.",
+      "Develop new wine varieties and blends through experimentation."
+    ],
+    "duties_tr": [
+      "Üzümden şişeye kadar şarap üretim sürecini denetlemek.",
+      "Ürün standartlarını sağlamak için kalite kontrol testleri yapmak.",
+      "Deneyler yoluyla yeni şarap çeşitleri ve karışımları geliştirmek."
+    ],
+    "duties_zh": [
+      "监督从葡萄到瓶子的葡萄酒生产过程。",
+      "进行质量控制测试以确保产品标准。",
+      "通过实验开发新葡萄酒品种和混合。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244331",
     "title_en": "Aboriginal and Torres Strait Islander Land and Sea Ranger",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Aborjin ve Torres Boğazı Adalıları Arazi ve Deniz Koruma Görevlisi",
+    "title_zh": "土著和托雷斯海峡岛屿土地和海洋护林员",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage and protect land and sea resources in Indigenous areas.",
+      "Conduct cultural heritage assessments and promote conservation.",
+      "Collaborate with communities to implement land management practices."
+    ],
+    "duties_tr": [
+      "Yerel alanlarda arazi ve deniz kaynaklarını yönetmek ve korumak.",
+      "Kültürel miras değerlendirmeleri yapmak ve korumayı teşvik etmek.",
+      "Arazi yönetimi uygulamalarını uygulamak için topluluklarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "管理和保护土著地区的土地和海洋资源。",
+      "进行文化遗产评估并促进保护。",
+      "与社区合作实施土地管理实践。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244332",
     "title_en": "Conservation Officer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Koruma Görevlisi",
+    "title_zh": "保护官员",
     "keywords": [
       "Environmental Officer",
       "Landcare Facilitator"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Develop and implement conservation policies and programs.",
+      "Conduct assessments of natural resources and biodiversity.",
+      "Collaborate with stakeholders to promote environmental protection."
+    ],
+    "duties_tr": [
+      "Koruma politikaları ve programları geliştirmek ve uygulamak.",
+      "Doğal kaynaklar ve biyolojik çeşitlilik değerlendirmeleri yapmak.",
+      "Çevre korumayı teşvik etmek için paydaşlarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "制定和实施保护政策和计划。",
+      "对自然资源和生物多样性进行评估。",
+      "与利益相关者合作促进环境保护。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244333",
     "title_en": "Ecologist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ekolog",
+    "title_zh": "生态学家",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct research on ecosystems and environmental interactions.",
+      "Analyze data to assess ecological health and sustainability.",
+      "Collaborate with communities to promote conservation efforts."
+    ],
+    "duties_tr": [
+      "Ekosistemler ve çevresel etkileşimler üzerine araştırmalar yapmak.",
+      "Ekolojik sağlık ve sürdürülebilirliği değerlendirmek için verileri analiz etmek.",
+      "Koruma çabalarını teşvik etmek için topluluklarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "对生态系统和环境相互作用进行研究。",
+      "分析数据以评估生态健康和可持续性。",
+      "与社区合作促进保护工作。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244334",
     "title_en": "Park Ranger",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Park Görevlisi",
+    "title_zh": "公园护林员",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage and maintain park facilities and natural resources.",
+      "Conduct educational programs and community outreach.",
+      "Collaborate with stakeholders to promote conservation initiatives."
+    ],
+    "duties_tr": [
+      "Park tesislerini ve doğal kaynakları yönetmek ve bakımını yapmak.",
+      "Eğitim programları ve topluluk etkinlikleri düzenlemek.",
+      "Koruma girişimlerini teşvik etmek için paydaşlarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "管理和维护公园设施和自然资源。",
+      "开展教育项目和社区外展活动。",
+      "与利益相关者合作促进保护倡议。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244431",
     "title_en": "Environmental Consultant",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çevre Danışmanı",
+    "title_zh": "环境顾问",
     "keywords": [
       "Closure Planner",
       "Environmental Adviser"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Provide expert advice on environmental management practices.",
+      "Conduct assessments to evaluate environmental compliance.",
+      "Collaborate with organizations to develop sustainability strategies."
+    ],
+    "duties_tr": [
+      "Çevre yönetimi uygulamaları konusunda uzman tavsiyesi sağlamak.",
+      "Çevresel uyumu değerlendirmek için değerlendirmeler yapmak.",
+      "Sürdürülebilirlik stratejileri geliştirmek için kuruluşlarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "就环境管理实践提供专家建议。",
+      "进行评估以评估环境合规性。",
+      "与组织合作制定可持续发展战略。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244432",
     "title_en": "Environmental Research Scientist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çevre Araştırma Bilimcisi",
+    "title_zh": "环境研究科学家",
     "keywords": [
       "Environmental Scientist",
       "Water Quality Analyst"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct research on environmental issues and solutions.",
+      "Analyze data to assess environmental impacts.",
+      "Collaborate with stakeholders to promote environmental awareness."
+    ],
+    "duties_tr": [
+      "Çevresel sorunlar ve çözümler üzerine araştırmalar yapmak.",
+      "Çevresel etkileri değerlendirmek için verileri analiz etmek.",
+      "Çevresel farkındalığı artırmak için paydaşlarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "对环境问题和解决方案进行研究。",
+      "分析数据以评估环境影响。",
+      "与利益相关者合作促进环境意识。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244499",
     "title_en": "Environmental Consultants and Scientists nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çevre Danışmanları ve Bilim İnsanları nec",
+    "title_zh": "其他环境顾问和科学家",
     "keywords": [
       "Environmental Educator",
       "Soil Scientist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Provide environmental expertise across various sectors.",
+      "Conduct research and development for innovative environmental solutions.",
+      "Collaborate with teams to address environmental challenges."
+    ],
+    "duties_tr": [
+      "Çeşitli sektörlerde çevresel uzmanlık sağlamak.",
+      "Yenilikçi çevresel çözümler için araştırma ve geliştirme yapmak.",
+      "Çevresel zorlukları ele almak için ekiplerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "在各个行业提供环境专业知识。",
+      "进行研究和开发以寻找创新的环境解决方案。",
+      "与团队合作解决环境挑战。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244531",
     "title_en": "Geologist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Jeolog",
+    "title_zh": "地质学家",
     "keywords": [
       "Engineering Geologist",
       "Exploration Geologist",
@@ -4150,36 +5914,72 @@
       "Project Geologist",
       "Research Geologist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct geological surveys and assessments.",
+      "Analyze geological data to understand earth processes.",
+      "Collaborate with industries to apply geological knowledge."
+    ],
+    "duties_tr": [
+      "Jeolojik araştırmalar ve değerlendirmeler yapmak.",
+      "Yer süreçlerini anlamak için jeolojik verileri analiz etmek.",
+      "Jeolojik bilgiyi uygulamak için sanayilerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "进行地质调查和评估。",
+      "分析地质数据以理解地球过程。",
+      "与行业合作应用地质知识。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244532",
     "title_en": "Geophysicist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Jeofizikçi",
+    "title_zh": "地球物理学家",
     "keywords": [
       "Oceanographer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct geophysical surveys to study subsurface conditions.",
+      "Analyze geophysical data to assess natural resources.",
+      "Collaborate with teams to develop geophysical exploration techniques."
+    ],
+    "duties_tr": [
+      "Yer altı koşullarını incelemek için jeofizik araştırmalar yapmak.",
+      "Doğal kaynakları değerlendirmek için jeofizik verileri analiz etmek.",
+      "Jeofizik keşif tekniklerini geliştirmek için ekiplerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "进行地球物理调查以研究地下条件。",
+      "分析地球物理数据以评估自然资源。",
+      "与团队合作开发地球物理勘探技术。"
+    ],
     "skillLevel": 1
   },
   {
     "code": "244533",
     "title_en": "Hydrologist",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Hidrolog",
+    "title_zh": "水文学家",
     "keywords": [
       "Groundwater Modeller",
       "Hydrogeologist"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Study the distribution and movement of water in the environment.",
+      "Conduct research on water quality and availability.",
+      "Collaborate with stakeholders to manage water resources."
+    ],
+    "duties_tr": [
+      "Çevrede suyun dağılımını ve hareketini incelemek.",
+      "Su kalitesi ve mevcudiyeti üzerine araştırmalar yapmak.",
+      "Su kaynaklarını yönetmek için paydaşlarla işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "研究环境中水的分布和运动。",
+      "进行水质和可用性研究。",
+      "与利益相关者合作管理水资源。"
+    ],
     "skillLevel": 1
   },
   {
@@ -8216,94 +10016,178 @@
   {
     "code": "343233",
     "title_en": "Senior Dairy Cattle Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kıdemli Süt Sığırı Çiftliği Çalışanı",
+    "title_zh": "高级奶牛农场工人",
     "keywords": [
       "Dairy Herd Manager",
       "Production Manager (Dairy Cattle) (Skill Level 2)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee daily operations of dairy cattle farm including feeding and milking.",
+      "Monitor animal health and welfare, ensuring compliance with industry standards.",
+      "Assist in managing farm staff and training new employees."
+    ],
+    "duties_tr": [
+      "Süt sığırı çiftliğinin günlük operasyonlarını, besleme ve sağım dahil, denetlemek.",
+      "Hayvan sağlığını ve refahını izlemek, sektör standartlarına uyumu sağlamak.",
+      "Çiftlik personelini yönetmeye yardımcı olmak ve yeni çalışanları eğitmek."
+    ],
+    "duties_zh": [
+      "监督奶牛农场的日常运营，包括喂养和挤奶。",
+      "监测动物健康和福利，确保符合行业标准。",
+      "协助管理农场员工并培训新员工。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "343234",
     "title_en": "Senior Horse Stable or Stud Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kıdemli At Ahırı veya Yetiştiricisi Çalışanı",
+    "title_zh": "高级马厩或种马工人",
     "keywords": [
       "Stable Foreperson"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage the care and feeding of horses in a stable environment.",
+      "Ensure proper training and exercise routines for horses.",
+      "Supervise stable staff and assist in administrative tasks."
+    ],
+    "duties_tr": [
+      "Ahır ortamında atların bakımını ve beslenmesini yönetmek.",
+      "Atlar için uygun eğitim ve egzersiz rutinlerini sağlamak.",
+      "Ahır personelini denetlemek ve idari görevlerde yardımcı olmak."
+    ],
+    "duties_zh": [
+      "管理马厩环境中马匹的护理和喂养。",
+      "确保马匹的适当训练和锻炼程序。",
+      "监督马厩员工并协助行政任务。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "343235",
     "title_en": "Senior Piggery Stockperson",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kıdemli Domuz Yetiştiricisi",
+    "title_zh": "高级养猪工",
     "keywords": [
       "Senior Piggery Attendant"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Oversee the daily management of pig farming operations.",
+      "Monitor pig health and implement biosecurity measures.",
+      "Coordinate feeding schedules and breeding programs."
+    ],
+    "duties_tr": [
+      "Domuz çiftliği operasyonlarının günlük yönetimini denetlemek.",
+      "Domuz sağlığını izlemek ve biyogüvenlik önlemlerini uygulamak.",
+      "Besleme programlarını ve üreme programlarını koordine etmek."
+    ],
+    "duties_zh": [
+      "监督养猪操作的日常管理。",
+      "监测猪的健康并实施生物安全措施。",
+      "协调喂养时间表和繁殖计划。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "343236",
     "title_en": "Senior Sheep Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kıdemli Koyun Çiftliği Çalışanı",
+    "title_zh": "高级羊农场工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Manage sheep feeding, health checks, and shearing schedules.",
+      "Ensure compliance with animal welfare regulations.",
+      "Assist in the breeding and flock management processes."
+    ],
+    "duties_tr": [
+      "Koyunların beslenmesi, sağlık kontrolleri ve yün kesim programlarını yönetmek.",
+      "Hayvan refahı düzenlemelerine uyumu sağlamak.",
+      "Üreme ve sürü yönetimi süreçlerine yardımcı olmak."
+    ],
+    "duties_zh": [
+      "管理羊的喂养、健康检查和剪毛时间表。",
+      "确保遵守动物福利法规。",
+      "协助繁殖和羊群管理过程。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "343299",
     "title_en": "Senior Livestock Farm Workers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kıdemli Hayvancılık Çiftliği Çalışanları (Diğer)",
+    "title_zh": "其他高级畜牧业农场工人",
     "keywords": [
       "Senior Poultry Farm Worker"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the management of various livestock farming operations.",
+      "Monitor animal health and ensure compliance with safety standards.",
+      "Coordinate daily feeding and care routines for livestock."
+    ],
+    "duties_tr": [
+      "Çeşitli hayvancılık çiftliği operasyonlarının yönetimine yardımcı olmak.",
+      "Hayvan sağlığını izlemek ve güvenlik standartlarına uyumu sağlamak.",
+      "Hayvanlar için günlük besleme ve bakım rutinlerini koordine etmek."
+    ],
+    "duties_zh": [
+      "协助管理各种畜牧业操作。",
+      "监测动物健康并确保遵守安全标准。",
+      "协调牲畜的日常喂养和护理程序。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "343331",
     "title_en": "Shearer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kırkımcı",
+    "title_zh": "剪羊毛工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Perform shearing of sheep to harvest wool efficiently.",
+      "Ensure the welfare of sheep during the shearing process.",
+      "Maintain and operate shearing equipment safely."
+    ],
+    "duties_tr": [
+      "Yün hasadı için koyunları verimli bir şekilde kırkım yapmak.",
+      "Kırkım sürecinde koyunların refahını sağlamak.",
+      "Kırkım ekipmanını güvenli bir şekilde bakımını yapmak ve kullanmak."
+    ],
+    "duties_zh": [
+      "高效地为羊剪毛以收获羊毛。",
+      "确保剪毛过程中羊的福利。",
+      "安全地维护和操作剪毛设备。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "343332",
     "title_en": "Wool Classer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Yün Sınıflandırıcısı",
+    "title_zh": "羊毛分级工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Classify and grade wool based on quality and characteristics.",
+      "Ensure proper handling and storage of wool products.",
+      "Maintain records of wool classifications and sales."
+    ],
+    "duties_tr": [
+      "Yünü kalite ve özelliklerine göre sınıflandırmak ve derecelendirmek.",
+      "Yün ürünlerinin uygun bir şekilde işlenmesini ve depolanmasını sağlamak.",
+      "Yün sınıflandırmaları ve satışları ile ilgili kayıtları tutmak."
+    ],
+    "duties_zh": [
+      "根据质量和特征对羊毛进行分类和分级。",
+      "确保羊毛产品的正确处理和存储。",
+      "维护羊毛分类和销售记录。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351131",
     "title_en": "Automotive Technician (General)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Otomotiv Teknisyeni (Genel)",
+    "title_zh": "汽车技术员（普通）",
     "keywords": [
       "Automatic Transmission Mechanic",
       "Forklift Technician",
@@ -8312,173 +10196,329 @@
       "Roadside Mechanic",
       "Vehicle Mechanic (Army)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Diagnose and repair mechanical issues in vehicles.",
+      "Perform routine maintenance and inspections on various vehicles.",
+      "Maintain accurate records of repairs and services performed."
+    ],
+    "duties_tr": [
+      "Araçlardaki mekanik sorunları teşhis etmek ve onarmak.",
+      "Çeşitli araçlar üzerinde rutin bakım ve kontroller yapmak.",
+      "Yapılan onarımlar ve hizmetlerle ilgili doğru kayıtlar tutmak."
+    ],
+    "duties_zh": [
+      "诊断和修理车辆的机械问题。",
+      "对各种车辆进行例行维护和检查。",
+      "保持准确的维修和服务记录。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351231",
     "title_en": "Automotive Electrician",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Otomotiv Elektrikçisi",
+    "title_zh": "汽车电工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair electrical systems in vehicles.",
+      "Diagnose electrical faults and perform necessary repairs.",
+      "Ensure compliance with safety standards in electrical work."
+    ],
+    "duties_tr": [
+      "Araçlardaki elektrik sistemlerini kurmak ve onarmak.",
+      "Elektrik arızalarını teşhis etmek ve gerekli onarımları yapmak.",
+      "Elektrik işlerinde güvenlik standartlarına uyumu sağlamak."
+    ],
+    "duties_zh": [
+      "安装和修理车辆中的电气系统。",
+      "诊断电气故障并进行必要的修理。",
+      "确保电气工作符合安全标准。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351331",
     "title_en": "Panelbeater",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kaporta Ustası",
+    "title_zh": "车身修理工",
     "keywords": [
       "Collision Repairer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Repair and replace damaged vehicle body parts.",
+      "Perform bodywork and painting to restore vehicle appearance.",
+      "Ensure quality control of repairs and finishes."
+    ],
+    "duties_tr": [
+      "Hasar görmüş araç gövde parçalarını onarmak ve değiştirmek.",
+      "Araç görünümünü restore etmek için gövde işçiliği ve boyama yapmak.",
+      "Onarımların ve yüzeylerin kalite kontrolünü sağlamak."
+    ],
+    "duties_zh": [
+      "修理和更换损坏的车辆车身部件。",
+      "进行车身修复和喷漆以恢复车辆外观。",
+      "确保维修和表面的质量控制。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351431",
     "title_en": "Agricultural Mechanic",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tarım Mekaniği",
+    "title_zh": "农业机械师",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Maintain and repair agricultural machinery and equipment.",
+      "Diagnose mechanical issues and perform necessary repairs.",
+      "Ensure machinery operates efficiently and safely."
+    ],
+    "duties_tr": [
+      "Tarım makineleri ve ekipmanlarının bakımını ve onarımını yapmak.",
+      "Mekanik sorunları teşhis etmek ve gerekli onarımları yapmak.",
+      "Makinelerin verimli ve güvenli bir şekilde çalışmasını sağlamak."
+    ],
+    "duties_zh": [
+      "维护和修理农业机械和设备。",
+      "诊断机械问题并进行必要的修理。",
+      "确保机械高效安全地运行。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351432",
     "title_en": "Bicycle Technician",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Bisiklet Teknisyeni",
+    "title_zh": "自行车技术员",
     "keywords": [
       "Bicycle Mechanic",
       "Bicycle Repairer",
       "Electric Bike (e-bike) Technician"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Repair and maintain bicycles to ensure safe operation.",
+      "Diagnose issues and replace defective parts as needed.",
+      "Provide customer service and advice on bicycle care."
+    ],
+    "duties_tr": [
+      "Bisikletleri onarıp bakımını yaparak güvenli çalışmasını sağlamak.",
+      "Sorunları teşhis etmek ve gerektiğinde arızalı parçaları değiştirmek.",
+      "Müşteri hizmeti sağlamak ve bisiklet bakımı hakkında tavsiyelerde bulunmak."
+    ],
+    "duties_zh": [
+      "修理和维护自行车以确保安全操作。",
+      "诊断问题并根据需要更换有缺陷的部件。",
+      "提供客户服务并就自行车保养提供建议。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351433",
     "title_en": "Diesel Technician",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Dizel Teknisyeni",
+    "title_zh": "柴油技术员",
     "keywords": [
       "Automotive Heavy Mechanic",
       "Diesel Motor Mechanic"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Diagnose and repair diesel engine systems.",
+      "Perform routine maintenance on diesel-powered vehicles.",
+      "Ensure compliance with environmental regulations in repairs."
+    ],
+    "duties_tr": [
+      "Dizel motor sistemlerini teşhis etmek ve onarmak.",
+      "Dizel motorlu araçlar üzerinde rutin bakım yapmak.",
+      "Onarımlarda çevre düzenlemelerine uyumu sağlamak."
+    ],
+    "duties_zh": [
+      "诊断和修理柴油发动机系统。",
+      "对柴油动力车辆进行例行维护。",
+      "确保维修符合环境法规。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351434",
     "title_en": "Electric Vehicle Technician",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Elektrikli Araç Teknisyeni",
+    "title_zh": "电动车技术员",
     "keywords": [
       "EV Technician"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Repair and maintain electric vehicle systems.",
+      "Diagnose electrical issues and perform necessary repairs.",
+      "Stay updated on electric vehicle technology advancements."
+    ],
+    "duties_tr": [
+      "Elektrikli araç sistemlerini onarıp bakımını yapmak.",
+      "Elektrik sorunlarını teşhis etmek ve gerekli onarımları yapmak.",
+      "Elektrikli araç teknolojisindeki gelişmeleri takip etmek."
+    ],
+    "duties_zh": [
+      "修理和维护电动车系统。",
+      "诊断电气问题并进行必要的修理。",
+      "跟上电动车技术的进步。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351435",
     "title_en": "Marine Technician",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Deniz Teknisyeni",
+    "title_zh": "海洋技术员",
     "keywords": [
       "Marine Mechanic"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Maintain and repair marine engines and systems.",
+      "Diagnose mechanical issues in marine vessels.",
+      "Ensure compliance with maritime safety regulations."
+    ],
+    "duties_tr": [
+      "Deniz motorları ve sistemlerinin bakımını ve onarımını yapmak.",
+      "Deniz araçlarındaki mekanik sorunları teşhis etmek.",
+      "Deniz güvenliği düzenlemelerine uyumu sağlamak."
+    ],
+    "duties_zh": [
+      "维护和修理海洋发动机和系统。",
+      "诊断海洋船只的机械问题。",
+      "确保遵守海事安全法规。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351436",
     "title_en": "Motorcycle Technician",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Motosiklet Teknisyeni",
+    "title_zh": "摩托车技术员",
     "keywords": [
       "Motorcycle Mechanic"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Repair and maintain motorcycles for optimal performance.",
+      "Diagnose issues and replace parts as necessary.",
+      "Provide customer service and advice on motorcycle care."
+    ],
+    "duties_tr": [
+      "Motosikletleri en iyi performans için onarıp bakımını yapmak.",
+      "Sorunları teşhis etmek ve gerektiğinde parçaları değiştirmek.",
+      "Müşteri hizmeti sağlamak ve motosiklet bakımı hakkında tavsiyelerde bulunmak."
+    ],
+    "duties_zh": [
+      "修理和维护摩托车以获得最佳性能。",
+      "诊断问题并根据需要更换零件。",
+      "提供客户服务并就摩托车保养提供建议。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351437",
     "title_en": "Small Engine Technician",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Küçük Motor Teknisyeni",
+    "title_zh": "小型发动机技术员",
     "keywords": [
       "Lawnmower Mechanic",
       "Small Engine Mechanic"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Repair and maintain small engine equipment.",
+      "Diagnose mechanical issues and perform necessary repairs.",
+      "Ensure equipment operates efficiently and safely."
+    ],
+    "duties_tr": [
+      "Küçük motor ekipmanlarının onarımını ve bakımını yapmak.",
+      "Mekanik sorunları teşhis etmek ve gerekli onarımları yapmak.",
+      "Ekipmanın verimli ve güvenli bir şekilde çalışmasını sağlamak."
+    ],
+    "duties_zh": [
+      "修理和维护小型发动机设备。",
+      "诊断机械问题并进行必要的修理。",
+      "确保设备高效安全地运行。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351531",
     "title_en": "Vehicle Body Builder",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Araç Gövde Yapımcısı",
+    "title_zh": "车辆车身制造商",
     "keywords": [
       "Coach Builder",
       "Vehicle Body Maker"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Construct and assemble vehicle body components.",
+      "Ensure structural integrity and safety of vehicle bodies.",
+      "Collaborate with other technicians for vehicle assembly."
+    ],
+    "duties_tr": [
+      "Araç gövde bileşenlerini inşa etmek ve monte etmek.",
+      "Araç gövdelerinin yapısal bütünlüğünü ve güvenliğini sağlamak.",
+      "Araç montajı için diğer teknisyenlerle işbirliği yapmak."
+    ],
+    "duties_zh": [
+      "构建和组装车辆车身组件。",
+      "确保车辆车身的结构完整性和安全性。",
+      "与其他技术人员合作进行车辆组装。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351532",
     "title_en": "Vehicle Trimmer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Araç Döşemecisi",
+    "title_zh": "车辆内饰工",
     "keywords": [
       "Vehicle Upholsterer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair vehicle upholstery and interior components.",
+      "Ensure quality and aesthetics of vehicle interiors.",
+      "Maintain tools and equipment used in upholstery work."
+    ],
+    "duties_tr": [
+      "Araç döşemesi ve iç bileşenlerini kurmak ve onarmak.",
+      "Araç iç mekanlarının kalitesini ve estetiğini sağlamak.",
+      "Döşeme işlerinde kullanılan alet ve ekipmanları bakımını yapmak."
+    ],
+    "duties_zh": [
+      "安装和修理车辆的内饰和内部组件。",
+      "确保车辆内部的质量和美观。",
+      "维护用于内饰工作的工具和设备。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "351631",
     "title_en": "Vehicle Painter",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Araç Boyacısı",
+    "title_zh": "车辆喷漆工",
     "keywords": [
       "Vehicle Refinisher"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Prepare surfaces and apply paint to vehicles.",
+      "Ensure high-quality finishes and color matching.",
+      "Maintain painting equipment and ensure safety standards."
+    ],
+    "duties_tr": [
+      "Yüzeyleri hazırlamak ve araçlara boya uygulamak.",
+      "Yüksek kaliteli yüzeyler ve renk uyumu sağlamak.",
+      "Boyama ekipmanını bakımını yapmak ve güvenlik standartlarını sağlamak."
+    ],
+    "duties_zh": [
+      "准备表面并为车辆喷漆。",
+      "确保高质量的表面和颜色匹配。",
+      "维护喷漆设备并确保安全标准。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "361131",
     "title_en": "Floor Finisher",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Zemin Kaplama Ustası",
+    "title_zh": "地板装饰工",
     "keywords": [
       "Carpet Layer",
       "Concrete Polisher",
@@ -8486,127 +10526,247 @@
       "Timber Floor Installer",
       "Vinyl Layer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair various types of flooring materials.",
+      "Ensure proper preparation and leveling of surfaces.",
+      "Maintain tools and equipment used in flooring work."
+    ],
+    "duties_tr": [
+      "Çeşitli zemin kaplama malzemelerini kurmak ve onarmak.",
+      "Yüzeylerin uygun bir şekilde hazırlanmasını ve düzleştirilmesini sağlamak.",
+      "Zemin işlerinde kullanılan alet ve ekipmanları bakımını yapmak."
+    ],
+    "duties_zh": [
+      "安装和修理各种类型的地板材料。",
+      "确保表面的适当准备和找平。",
+      "维护用于地板工作的工具和设备。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "361231",
     "title_en": "Painter",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Boya Ustası",
+    "title_zh": "油漆工",
     "keywords": [
       "House Painter",
       "Painter and Decorator",
       "Spray Painter (Non-industrial)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Prepare surfaces and apply paint to various structures.",
+      "Ensure high-quality finishes and color consistency.",
+      "Maintain painting tools and equipment in good condition."
+    ],
+    "duties_tr": [
+      "Yüzeyleri hazırlamak ve çeşitli yapılar üzerine boya uygulamak.",
+      "Yüksek kaliteli yüzeyler ve renk tutarlılığını sağlamak.",
+      "Boyama aletlerini ve ekipmanlarını iyi durumda tutmak."
+    ],
+    "duties_zh": [
+      "准备表面并在各种结构上涂漆。",
+      "确保高质量的表面和颜色一致性。",
+      "保持涂漆工具和设备处于良好状态。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "362131",
     "title_en": "Glazier",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Camcı",
+    "title_zh": "玻璃工",
     "keywords": [
       "Window Installer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair glass in buildings and vehicles.",
+      "Ensure safety and compliance with building codes.",
+      "Measure and cut glass to required specifications."
+    ],
+    "duties_tr": [
+      "Binalarda ve araçlarda cam montajı ve onarımı yapmak.",
+      "Güvenliği sağlamak ve yapı kodlarına uyumu sağlamak.",
+      "Gerekli spesifikasyonlara göre cam ölçmek ve kesmek."
+    ],
+    "duties_zh": [
+      "在建筑物和车辆中安装和修理玻璃。",
+      "确保安全并遵守建筑规范。",
+      "根据要求的规格测量和切割玻璃。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "362231",
     "title_en": "Plasterer (Wall and Ceiling)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Alçı Ustası (Duvar ve Tavan)",
+    "title_zh": "石膏工（墙壁和天花板）",
     "keywords": [
       "Ceiling Fixer",
       "Drywall Plasterer",
       "Wall and Ceiling Fixer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install plasterboard and apply plaster to walls and ceilings.",
+      "Ensure smooth finishes and proper installation techniques.",
+      "Maintain tools and equipment used in plastering work."
+    ],
+    "duties_tr": [
+      "Alçıpan montajı yapmak ve duvarlar ile tavanlara alçı uygulamak.",
+      "Pürüzsüz yüzeyler ve uygun montaj tekniklerini sağlamak.",
+      "Alçı işlerinde kullanılan alet ve ekipmanları bakımını yapmak."
+    ],
+    "duties_zh": [
+      "安装石膏板并在墙壁和天花板上涂抹石膏。",
+      "确保光滑的表面和正确的安装技术。",
+      "维护用于抹灰工作的工具和设备。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "362232",
     "title_en": "Renderer (Solid Plaster)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sıva Ustası (Katı Alçı)",
+    "title_zh": "抹灰工（固体石膏）",
     "keywords": [
       "Solid Plasterer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Apply solid plaster to walls and ceilings for finishing.",
+      "Ensure proper mixing and application techniques.",
+      "Maintain tools and equipment used in rendering work."
+    ],
+    "duties_tr": [
+      "Duvarlar ve tavanlar için son kat olarak katı alçı uygulamak.",
+      "Uygun karıştırma ve uygulama tekniklerini sağlamak.",
+      "Sıva işlerinde kullanılan alet ve ekipmanları bakımını yapmak."
+    ],
+    "duties_zh": [
+      "在墙壁和天花板上涂抹固体石膏以进行装饰。",
+      "确保正确的混合和应用技术。",
+      "维护用于抹灰工作的工具和设备。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "362331",
     "title_en": "Roof Tiler",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çatı Kiremitçisi",
+    "title_zh": "屋顶瓦工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair roofing tiles and materials.",
+      "Ensure proper drainage and weatherproofing of roofs.",
+      "Maintain tools and equipment used in roofing work."
+    ],
+    "duties_tr": [
+      "Çatı kiremitlerini ve malzemelerini kurmak ve onarmak.",
+      "Çatılarda uygun drenaj ve hava koşullarına dayanıklılığı sağlamak.",
+      "Çatı işlerinde kullanılan alet ve ekipmanları bakımını yapmak."
+    ],
+    "duties_zh": [
+      "安装和修理屋顶瓦片和材料。",
+      "确保屋顶的适当排水和防水。",
+      "维护用于屋顶工作的工具和设备。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "362431",
     "title_en": "Wall and Floor Tiler",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Duvar ve Zemin Kiremitçisi",
+    "title_zh": "墙壁和地板瓦工",
     "keywords": [
       "Ceramic Tiler",
       "Pool Tiler"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair wall and floor tiles.",
+      "Ensure proper alignment and adhesion of tiles.",
+      "Maintain tools and equipment used in tiling work."
+    ],
+    "duties_tr": [
+      "Duvar ve zemin karolarını kurmak ve onarmak.",
+      "Karoların uygun hizalanmasını ve yapışmasını sağlamak.",
+      "Döşeme işlerinde kullanılan alet ve ekipmanları bakımını yapmak."
+    ],
+    "duties_zh": [
+      "安装和修理墙壁和地板瓷砖。",
+      "确保瓷砖的正确对齐和粘附。",
+      "维护用于铺砖工作的工具和设备。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "363131",
     "title_en": "Plumber (General)",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sıhhi Tesisatçı (Genel)",
+    "title_zh": "管道工（普通）",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair plumbing systems in residential and commercial buildings.",
+      "Diagnose plumbing issues and perform necessary repairs.",
+      "Ensure compliance with plumbing codes and safety regulations."
+    ],
+    "duties_tr": [
+      "Konut ve ticari binalarda sıhhi tesisat sistemlerini kurmak ve onarmak.",
+      "Sıhhi tesisat sorunlarını teşhis etmek ve gerekli onarımları yapmak.",
+      "Sıhhi tesisat kodlarına ve güvenlik düzenlemelerine uyumu sağlamak."
+    ],
+    "duties_zh": [
+      "在住宅和商业建筑中安装和修理管道系统。",
+      "诊断管道问题并进行必要的修理。",
+      "确保遵守管道规范和安全法规。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "363231",
     "title_en": "Gasfitter",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Gaz Tesisatçısı",
+    "title_zh": "燃气工",
     "keywords": [
       "Plumber and Gasfitter"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair gas supply systems in buildings.",
+      "Ensure safety and compliance with gas regulations.",
+      "Perform routine maintenance on gas appliances."
+    ],
+    "duties_tr": [
+      "Binalarda gaz dağıtım sistemlerini kurmak ve onarmak.",
+      "Güvenliği sağlamak ve gaz düzenlemelerine uyumu sağlamak.",
+      "Gazlı cihazlar üzerinde rutin bakım yapmak."
+    ],
+    "duties_zh": [
+      "在建筑物中安装和修理燃气供应系统。",
+      "确保安全并遵守燃气法规。",
+      "对燃气设备进行例行维护。"
+    ],
     "skillLevel": 2
   },
   {
     "code": "363331",
     "title_en": "Roof Plumber",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çatı Tesisatçısı",
+    "title_zh": "屋顶管道工",
     "keywords": [
       "Fascia and Guttering Installer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Install and repair plumbing systems on roofs.",
+      "Ensure proper drainage and waterproofing of roof plumbing.",
+      "Maintain tools and equipment used in roofing plumbing work."
+    ],
+    "duties_tr": [
+      "Çatılarda sıhhi tesisat sistemlerini kurmak ve onarmak.",
+      "Çatı tesisatında uygun drenaj ve su geçirmezliği sağlamak.",
+      "Çatı tesisat işlerinde kullanılan alet ve ekipmanları bakımını yapmak."
+    ],
+    "duties_zh": [
+      "在屋顶上安装和修理管道系统。",
+      "确保屋顶管道的适当排水和防水。",
+      "维护用于屋顶管道工作的工具和设备。"
+    ],
     "skillLevel": 2
   },
   {
@@ -14705,198 +16865,378 @@
   {
     "code": "832133",
     "title_en": "Fruit and Vegetable Packer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Meyve ve Sebze Paketleyici",
+    "title_zh": "水果和蔬菜包装工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Pack fruits and vegetables according to quality standards.",
+      "Label packages accurately for inventory and distribution.",
+      "Maintain cleanliness and organization in the packing area."
+    ],
+    "duties_tr": [
+      "Meyve ve sebzeleri kalite standartlarına göre paketler.",
+      "Paketleri envanter ve dağıtım için doğru bir şekilde etiketler.",
+      "Paketleme alanında temizlik ve düzeni korur."
+    ],
+    "duties_zh": [
+      "根据质量标准包装水果和蔬菜。",
+      "准确标记包裹以便于库存和分配。",
+      "保持包装区域的清洁和组织。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "832134",
     "title_en": "Meat Packer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Et Paketleyici",
+    "title_zh": "肉类包装工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Prepare and package meat products for sale.",
+      "Ensure compliance with health and safety regulations.",
+      "Monitor inventory levels and report shortages."
+    ],
+    "duties_tr": [
+      "Et ürünlerini satış için hazırlar ve paketler.",
+      "Sağlık ve güvenlik düzenlemelerine uyumu sağlar.",
+      "Stok seviyelerini izler ve eksiklikleri bildirir."
+    ],
+    "duties_zh": [
+      "准备和包装肉类产品以供销售。",
+      "确保遵守健康和安全法规。",
+      "监控库存水平并报告短缺情况。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "832135",
     "title_en": "Seafood Packer",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Deniz Ürünleri Paketleyici",
+    "title_zh": "海鲜包装工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Package seafood products following industry standards.",
+      "Inspect products for quality and freshness.",
+      "Maintain a hygienic working environment."
+    ],
+    "duties_tr": [
+      "Deniz ürünlerini sektör standartlarına uygun olarak paketler.",
+      "Ürünleri kalite ve tazelik açısından denetler.",
+      "Hijyenik bir çalışma ortamını korur."
+    ],
+    "duties_zh": [
+      "按照行业标准包装海鲜产品。",
+      "检查产品的质量和新鲜度。",
+      "保持卫生的工作环境。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "832231",
     "title_en": "Product Assembler",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ürün Montajcısı",
+    "title_zh": "产品组装工",
     "keywords": [
       "Automotive Assembler",
       "Electrical and Electronic Assembler"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assemble products according to specifications.",
+      "Conduct quality checks on assembled items.",
+      "Report any defects or issues to supervisors."
+    ],
+    "duties_tr": [
+      "Ürünleri belirtilen özelliklere göre monte eder.",
+      "Montajlı ürünlerde kalite kontrolleri yapar.",
+      "Herhangi bir kusur veya sorunu yöneticilere bildirir."
+    ],
+    "duties_zh": [
+      "根据规格组装产品。",
+      "对组装的物品进行质量检查。",
+      "向主管报告任何缺陷或问题。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839131",
     "title_en": "Cement and Concrete Plant Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Çimento ve Beton Tesis İşçisi",
+    "title_zh": "水泥和混凝土厂工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Operate machinery for mixing and pouring concrete.",
+      "Monitor production processes to ensure quality.",
+      "Maintain equipment and report malfunctions."
+    ],
+    "duties_tr": [
+      "Beton karıştırma ve dökme makinelerini kullanır.",
+      "Kaliteyi sağlamak için üretim süreçlerini izler.",
+      "Ekipmanları bakımını yapar ve arızaları bildirir."
+    ],
+    "duties_zh": [
+      "操作混合和倒入混凝土的机器。",
+      "监控生产过程以确保质量。",
+      "维护设备并报告故障。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839132",
     "title_en": "Chemical Plant Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kimya Tesis İşçisi",
+    "title_zh": "化工厂工人",
     "keywords": [
       "Paint Factory Worker"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the production of chemical products.",
+      "Follow safety protocols and guidelines.",
+      "Maintain cleanliness in the work area."
+    ],
+    "duties_tr": [
+      "Kimyasal ürünlerin üretimine yardımcı olur.",
+      "Güvenlik protokollerine ve yönergelerine uyar.",
+      "Çalışma alanında temizliği korur."
+    ],
+    "duties_zh": [
+      "协助生产化学产品。",
+      "遵循安全协议和指南。",
+      "保持工作区域的清洁。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839133",
     "title_en": "Fabric and Textile Factory Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kumaş ve Tekstil Fabrikası İşçisi",
+    "title_zh": "纺织和面料工厂工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Operate machines for fabric production.",
+      "Inspect textiles for defects and quality.",
+      "Assist in the packaging of finished products."
+    ],
+    "duties_tr": [
+      "Kumaş üretimi için makineleri çalıştırır.",
+      "Tekstilleri kusurlar ve kalite açısından denetler.",
+      "Tamamlanmış ürünlerin paketlenmesine yardımcı olur."
+    ],
+    "duties_zh": [
+      "操作用于面料生产的机器。",
+      "检查纺织品的缺陷和质量。",
+      "协助包装成品。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839134",
     "title_en": "Glass Processing Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Cam İşleme İşçisi",
+    "title_zh": "玻璃加工工",
     "keywords": [
       "Glass Mould Cleaner"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Cut and shape glass according to specifications.",
+      "Ensure safety measures are followed during processing.",
+      "Maintain tools and equipment in good condition."
+    ],
+    "duties_tr": [
+      "Camı belirtilen özelliklere göre keser ve şekillendirir.",
+      "İşleme sırasında güvenlik önlemlerinin alındığından emin olur.",
+      "Aletleri ve ekipmanları iyi durumda tutar."
+    ],
+    "duties_zh": [
+      "根据规格切割和塑形玻璃。",
+      "确保在加工过程中遵循安全措施。",
+      "保持工具和设备处于良好状态。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839135",
     "title_en": "Metal Engineering Process Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Metal Mühendislik Süreç İşçisi",
+    "title_zh": "金属工程加工工",
     "keywords": [
       "Boilermaker's Assistant",
       "Fitter's Assistant",
       "Metal Forger's Assistant",
       "Metal Moulder's Assistant"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Operate machinery for metal fabrication.",
+      "Inspect metal components for quality assurance.",
+      "Follow safety protocols during operations."
+    ],
+    "duties_tr": [
+      "Metal işleme için makineleri çalıştırır.",
+      "Metal bileşenleri kalite güvencesi için denetler.",
+      "İşlemler sırasında güvenlik protokollerine uyar."
+    ],
+    "duties_zh": [
+      "操作用于金属制造的机器。",
+      "检查金属部件以确保质量。",
+      "在操作过程中遵循安全协议。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839136",
     "title_en": "Paper and Pulp Process Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Kağıt ve Hamur Süreç İşçisi",
+    "title_zh": "纸浆和纸加工工",
     "keywords": [
       "Pulp, Paper Making and Paper Products Labourer"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the production of paper products.",
+      "Monitor machinery for proper operation.",
+      "Maintain a clean and organized workspace."
+    ],
+    "duties_tr": [
+      "Kağıt ürünlerinin üretimine yardımcı olur.",
+      "Makinelerin düzgün çalışmasını izler.",
+      "Temiz ve düzenli bir çalışma alanı korur."
+    ],
+    "duties_zh": [
+      "协助生产纸制品。",
+      "监控机器的正常运行。",
+      "保持工作空间的清洁和有序。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839137",
     "title_en": "Plastics Factory Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Plastik Fabrikası İşçisi",
+    "title_zh": "塑料工厂工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Operate machines for plastic production.",
+      "Inspect finished products for quality control.",
+      "Follow safety guidelines during manufacturing."
+    ],
+    "duties_tr": [
+      "Plastik üretimi için makineleri çalıştırır.",
+      "Tamamlanmış ürünleri kalite kontrolü için denetler.",
+      "Üretim sırasında güvenlik yönergelerine uyar."
+    ],
+    "duties_zh": [
+      "操作用于塑料生产的机器。",
+      "检查成品以进行质量控制。",
+      "在制造过程中遵循安全指南。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839138",
     "title_en": "Recycling Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Geri Dönüşüm İşçisi",
+    "title_zh": "回收工",
     "keywords": [
       "Recycling Sorter"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Sort and process recyclable materials.",
+      "Operate machinery for recycling operations.",
+      "Ensure compliance with environmental regulations."
+    ],
+    "duties_tr": [
+      "Geri dönüştürülebilir malzemeleri ayırır ve işler.",
+      "Geri dönüşüm işlemleri için makineleri çalıştırır.",
+      "Çevre düzenlemelerine uyumu sağlar."
+    ],
+    "duties_zh": [
+      "分类和处理可回收材料。",
+      "操作用于回收操作的机器。",
+      "确保遵守环境法规。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839141",
     "title_en": "Timber and Wood Process Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ağaç ve Ahşap İşleme İşçisi",
+    "title_zh": "木材和木工加工工",
     "keywords": [
       "Pallet Maker",
       "Pallet Repairer",
       "Timber Mill Worker"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Operate machinery for wood processing.",
+      "Cut and shape wood according to specifications.",
+      "Maintain tools and equipment in safe working order."
+    ],
+    "duties_tr": [
+      "Ahşap işleme için makineleri çalıştırır.",
+      "Ahşabı belirtilen özelliklere göre keser ve şekillendirir.",
+      "Aletleri ve ekipmanları güvenli çalışma düzeninde tutar."
+    ],
+    "duties_zh": [
+      "操作用于木材加工的机器。",
+      "根据规格切割和塑形木材。",
+      "保持工具和设备处于安全工作状态。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839199",
     "title_en": "Materials and Chemical Process Workers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Malzeme ve Kimya Süreç İşçileri (diğer)",
+    "title_zh": "其他材料和化学加工工",
     "keywords": [
       "Clay Processing Factory Worker",
       "Footwear Factory Worker",
       "Hide and Skin Processing Worker",
       "Rubber Factory Worker"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in various material processing tasks.",
+      "Follow safety and quality control procedures.",
+      "Maintain equipment and report any issues."
+    ],
+    "duties_tr": [
+      "Çeşitli malzeme işleme görevlerine yardımcı olur.",
+      "Güvenlik ve kalite kontrol prosedürlerine uyar.",
+      "Ekipmanları bakımını yapar ve sorunları bildirir."
+    ],
+    "duties_zh": [
+      "协助进行各种材料加工任务。",
+      "遵循安全和质量控制程序。",
+      "维护设备并报告任何问题。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839231",
     "title_en": "Product Examiner",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ürün İnceleme Uzmanı",
+    "title_zh": "产品检查员",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Examine products for defects and compliance.",
+      "Document findings and report to management.",
+      "Ensure adherence to quality standards."
+    ],
+    "duties_tr": [
+      "Ürünleri kusurlar ve uyum açısından inceler.",
+      "Bulguları belgeler ve yönetime bildirir.",
+      "Kalite standartlarına uyumu sağlar."
+    ],
+    "duties_zh": [
+      "检查产品的缺陷和合规性。",
+      "记录发现并报告给管理层。",
+      "确保遵守质量标准。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839232",
     "title_en": "Product Grader",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ürün Sınıflandırma Uzmanı",
+    "title_zh": "产品分级员",
     "keywords": [
       "Fruit and Vegetable Classer",
       "Grain Quality Technician",
@@ -14904,142 +17244,286 @@
       "Milk and Cream Grader",
       "Timber Grader"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Classify products based on quality and specifications.",
+      "Maintain accurate records of graded items.",
+      "Assist in inventory management and reporting."
+    ],
+    "duties_tr": [
+      "Ürünleri kalite ve özelliklere göre sınıflandırır.",
+      "Sınıflandırılan ürünlerin doğru kayıtlarını tutar.",
+      "Stok yönetimi ve raporlamasında yardımcı olur."
+    ],
+    "duties_zh": [
+      "根据质量和规格对产品进行分类。",
+      "保持分级物品的准确记录。",
+      "协助库存管理和报告。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "839233",
     "title_en": "Product Tester",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Ürün Test Uzmanı",
+    "title_zh": "产品测试员",
     "keywords": [
       "Coal Sample Tester",
       "Concrete Tester"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Conduct tests on products to ensure quality.",
+      "Record test results and analyze data.",
+      "Report findings to relevant stakeholders."
+    ],
+    "duties_tr": [
+      "Ürünlerin kalitesini sağlamak için testler yapar.",
+      "Test sonuçlarını kaydeder ve verileri analiz eder.",
+      "Bulguları ilgili taraflara bildirir."
+    ],
+    "duties_zh": [
+      "对产品进行测试以确保质量。",
+      "记录测试结果并分析数据。",
+      "向相关利益相关者报告发现。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841131",
     "title_en": "Cotton Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Pamuk Tarım İşçisi",
+    "title_zh": "棉花农场工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the cultivation and harvesting of cotton.",
+      "Maintain equipment and tools used in farming.",
+      "Follow safety practices while working in the fields."
+    ],
+    "duties_tr": [
+      "Pamuk yetiştirme ve hasat etme işlerine yardımcı olur.",
+      "Tarımda kullanılan ekipman ve aletleri bakımını yapar.",
+      "Tarlada çalışırken güvenlik uygulamalarına uyar."
+    ],
+    "duties_zh": [
+      "协助棉花的种植和收割。",
+      "维护农业中使用的设备和工具。",
+      "在田间工作时遵循安全操作。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841132",
     "title_en": "Fruit Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Meyve Tarım İşçisi",
+    "title_zh": "水果农场工人",
     "keywords": [
       "Orchard Worker (Fruit)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the planting and harvesting of fruits.",
+      "Monitor crop health and report issues.",
+      "Maintain tools and equipment used in fruit farming."
+    ],
+    "duties_tr": [
+      "Meyve ekimi ve hasadı işlerine yardımcı olur.",
+      "Ekin sağlığını izler ve sorunları bildirir.",
+      "Meyve tarımında kullanılan alet ve ekipmanların bakımını yapar."
+    ],
+    "duties_zh": [
+      "协助水果的种植和收割。",
+      "监测作物健康并报告问题。",
+      "维护水果种植中使用的工具和设备。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841133",
     "title_en": "Fruit Picker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Meyve Toplayıcı",
+    "title_zh": "水果采摘工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Harvest fruits from trees and plants.",
+      "Ensure fruits are handled carefully to prevent damage.",
+      "Sort and pack harvested fruits for distribution."
+    ],
+    "duties_tr": [
+      "Ağaçlardan ve bitkilerden meyve toplar.",
+      "Meyvelerin hasar görmemesi için dikkatli bir şekilde taşınmasını sağlar.",
+      "Hasat edilen meyveleri dağıtım için sınıflandırır ve paketler."
+    ],
+    "duties_zh": [
+      "从树木和植物上采摘水果。",
+      "确保小心处理水果以防止损坏。",
+      "对收获的水果进行分类和包装以便分发。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841134",
     "title_en": "Grain, Oilseed, Pulse and Pasture Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tahıl, Yağ Tohumu, Baklagil ve Mer'a Tarım İşçisi",
+    "title_zh": "谷物、油籽、豆类和牧草农场工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in planting and harvesting grains and pulses.",
+      "Monitor soil conditions and crop growth.",
+      "Maintain farming equipment and tools."
+    ],
+    "duties_tr": [
+      "Tahıl ve baklagil ekimi ve hasadına yardımcı olur.",
+      "Toprak koşullarını ve ekin büyümesini izler.",
+      "Tarım ekipmanları ve aletlerinin bakımını yapar."
+    ],
+    "duties_zh": [
+      "协助种植和收割谷物和豆类。",
+      "监测土壤条件和作物生长。",
+      "维护农业设备和工具。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841135",
     "title_en": "Mushroom Picker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Mantar Toplayıcı",
+    "title_zh": "蘑菇采摘工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Harvest mushrooms from farms or wild areas.",
+      "Ensure mushrooms are handled properly to maintain quality.",
+      "Sort and package mushrooms for sale."
+    ],
+    "duties_tr": [
+      "Fermantasyon veya doğal alanlardan mantar toplar.",
+      "Mantarların kalitesini korumak için uygun şekilde taşınmasını sağlar.",
+      "Mantarları satış için sınıflandırır ve paketler."
+    ],
+    "duties_zh": [
+      "从农场或野外采摘蘑菇。",
+      "确保正确处理蘑菇以保持质量。",
+      "对蘑菇进行分类和包装以供销售。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841136",
     "title_en": "Nut Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Fındık Tarım İşçisi",
+    "title_zh": "坚果农场工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the cultivation and harvesting of nuts.",
+      "Monitor nut quality and report any issues.",
+      "Maintain tools and equipment used in nut farming."
+    ],
+    "duties_tr": [
+      "Fındık yetiştirme ve hasat etme işlerine yardımcı olur.",
+      "Fındık kalitesini izler ve sorunları bildirir.",
+      "Fındık tarımında kullanılan alet ve ekipmanların bakımını yapar."
+    ],
+    "duties_zh": [
+      "协助坚果的种植和收割。",
+      "监测坚果质量并报告任何问题。",
+      "维护坚果种植中使用的工具和设备。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841137",
     "title_en": "Sugar Cane Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Şeker Kamışı Tarım İşçisi",
+    "title_zh": "甘蔗农场工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the planting and harvesting of sugar cane.",
+      "Monitor crop health and report any issues.",
+      "Maintain tools and equipment used in sugar cane farming."
+    ],
+    "duties_tr": [
+      "Şeker kamışı ekimi ve hasadına yardımcı olur.",
+      "Ekin sağlığını izler ve sorunları bildirir.",
+      "Şeker kamışı tarımında kullanılan alet ve ekipmanların bakımını yapar."
+    ],
+    "duties_zh": [
+      "协助甘蔗的种植和收割。",
+      "监测作物健康并报告问题。",
+      "维护甘蔗种植中使用的工具和设备。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841138",
     "title_en": "Vegetable Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sebze Tarım İşçisi",
+    "title_zh": "蔬菜农场工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the planting and harvesting of vegetables.",
+      "Monitor crop conditions and report issues.",
+      "Maintain tools and equipment used in vegetable farming."
+    ],
+    "duties_tr": [
+      "Sebze ekimi ve hasadına yardımcı olur.",
+      "Ekin koşullarını izler ve sorunları bildirir.",
+      "Sebze tarımında kullanılan alet ve ekipmanların bakımını yapar."
+    ],
+    "duties_zh": [
+      "协助种植和收割蔬菜。",
+      "监测作物状况并报告问题。",
+      "维护蔬菜种植中使用的工具和设备。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841141",
     "title_en": "Vegetable Picker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sebze Toplayıcı",
+    "title_zh": "蔬菜采摘工",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Harvest vegetables from fields and gardens.",
+      "Ensure vegetables are handled carefully to prevent damage.",
+      "Sort and pack harvested vegetables for distribution."
+    ],
+    "duties_tr": [
+      "Tarlalardan ve bahçelerden sebze toplar.",
+      "Sebzelerin hasar görmemesi için dikkatli bir şekilde taşınmasını sağlar.",
+      "Hasat edilen sebzeleri dağıtım için sınıflandırır ve paketler."
+    ],
+    "duties_zh": [
+      "从田地和花园中收获蔬菜。",
+      "确保小心处理蔬菜以防止损坏。",
+      "对收获的蔬菜进行分类和包装以便分发。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841142",
     "title_en": "Vineyard Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Bağ İşçisi",
+    "title_zh": "葡萄园工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the cultivation and harvesting of grapes.",
+      "Monitor vine health and report any issues.",
+      "Maintain tools and equipment used in vineyard operations."
+    ],
+    "duties_tr": [
+      "Üzüm yetiştirme ve hasadına yardımcı olur.",
+      "Bağların sağlığını izler ve sorunları bildirir.",
+      "Bağcılık işlemlerinde kullanılan alet ve ekipmanların bakımını yapar."
+    ],
+    "duties_zh": [
+      "协助种植和收割葡萄。",
+      "监测葡萄藤的健康并报告问题。",
+      "维护葡萄园操作中使用的工具和设备。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841199",
     "title_en": "Crop Farm Workers nec",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Tarım İşçileri (diğer)",
+    "title_zh": "其他农场工人",
     "keywords": [
       "Coffee Plantation Worker",
       "Cotton and Grain Farm Worker",
@@ -15050,34 +17534,70 @@
       "Tea Tree Farm Worker",
       "Turf Farm Worker"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in various agricultural tasks as required.",
+      "Monitor crop conditions and report any issues.",
+      "Maintain tools and equipment used in farming."
+    ],
+    "duties_tr": [
+      "Gerekli olduğunda çeşitli tarımsal görevlerde yardımcı olur.",
+      "Ekin koşullarını izler ve sorunları bildirir.",
+      "Tarımda kullanılan alet ve ekipmanların bakımını yapar."
+    ],
+    "duties_zh": [
+      "根据需要协助进行各种农业任务。",
+      "监测作物状况并报告问题。",
+      "维护农业中使用的工具和设备。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841231",
     "title_en": "Beef Cattle Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sığır Yetiştiriciliği İşçisi",
+    "title_zh": "肉牛农场工人",
     "keywords": [
       "Feedlot Worker (Beef Cattle)",
       "Station Hand (Beef)"
     ],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the care and management of cattle.",
+      "Monitor animal health and report any issues.",
+      "Maintain facilities and equipment used in cattle farming."
+    ],
+    "duties_tr": [
+      "Sığır bakım ve yönetiminde yardımcı olur.",
+      "Hayvan sağlığını izler ve sorunları bildirir.",
+      "Sığır yetiştiriciliğinde kullanılan tesisat ve ekipmanların bakımını yapar."
+    ],
+    "duties_zh": [
+      "协助照顾和管理牛只。",
+      "监测动物健康并报告任何问题。",
+      "维护用于养牛的设施和设备。"
+    ],
     "skillLevel": 5
   },
   {
     "code": "841232",
     "title_en": "Cattle and Sheep Farm Worker",
-    "title_tr": "",
-    "title_zh": "",
+    "title_tr": "Sığır ve Koyun Yetiştiriciliği İşçisi",
+    "title_zh": "牛羊农场工人",
     "keywords": [],
-    "duties_en": [],
-    "duties_tr": [],
-    "duties_zh": [],
+    "duties_en": [
+      "Assist in the care and management of cattle and sheep.",
+      "Monitor animal health and report any issues.",
+      "Maintain facilities and equipment used in livestock farming."
+    ],
+    "duties_tr": [
+      "Sığır ve koyun bakım ve yönetiminde yardımcı olur.",
+      "Hayvan sağlığını izler ve sorunları bildirir.",
+      "Hayvancılıkta kullanılan tesisat ve ekipmanların bakımını yapar."
+    ],
+    "duties_zh": [
+      "协助照顾和管理牛羊。",
+      "监测动物健康并报告任何问题。",
+      "维护用于养殖的设施和设备。"
+    ],
     "skillLevel": 5
   },
   {

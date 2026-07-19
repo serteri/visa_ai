@@ -42,6 +42,7 @@ type AnzscoEntry = {
   title: string;
   title_tr?: string;
   title_zh?: string;
+  keywords?: string[];
   isOnSkilledList?: boolean;
 };
 
@@ -170,7 +171,13 @@ function searchNoc(query: string): NocEntry[] {
   return merged.slice(0, 14);
 }
 
-const ANZSCO_INDEX = anzscoListRaw as AnzscoEntry[];
+const ANZSCO_INDEX = (anzscoListRaw as any[]).map((row) => ({
+  code: row.code,
+  title: row.title_en || row.title || "",
+  title_tr: row.title_tr,
+  title_zh: row.title_zh,
+  keywords: row.keywords || [],
+})) as AnzscoEntry[];
 
 const ANZSCO_SEARCH_ALIAS_MAP: Record<string, string[]> = {
   doktor: ["pratisyen hekim", "uzman hekim", "medical practitioners", "specialist physician"],
@@ -250,6 +257,9 @@ function searchAnzsco(query: string, locale: string): AnzscoEntry[] {
       if (foldedEnglishTitle.startsWith(term)) bestScore = Math.min(bestScore, 4);
       if (foldedLocalizedTitle.includes(term)) bestScore = Math.min(bestScore, 5);
       if (foldedEnglishTitle.includes(term)) bestScore = Math.min(bestScore, 6);
+      
+      const keywordMatch = entry.keywords?.some(kw => foldLookupValue(kw).includes(term)) ?? false;
+      if (keywordMatch) bestScore = Math.min(bestScore, 7);
     }
 
     return { entry, score: bestScore, localizedTitle };

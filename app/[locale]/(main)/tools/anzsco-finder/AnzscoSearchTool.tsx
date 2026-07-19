@@ -8,15 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/contexts/language-context";
-import anzscoList from "@/src/data/anzsco-list.json";
+import anzscoList from "@/public/anzsco-list.json";
 
 type Occupation = {
   code: string;
-  title: string;
+  title_en: string;
   title_tr?: string;
   title_zh?: string;
-  skillLevel: string;
-  duties: string[];
+  keywords?: string[];
+  skillLevel: number | string;
+  duties_en: string[];
   duties_tr?: string[];
   duties_zh?: string[];
 };
@@ -27,20 +28,18 @@ const OCCUPATIONS = anzscoList as Occupation[];
 const OFFICIAL_LIST_PDF = "/australia-skilled-occupation-list-2026.pdf";
 
 // Falls back to the canonical English title whenever a locale-specific
-// translation hasn't been added yet for that occupation (see Task 3 --
-// title_tr/title_zh are being backfilled incrementally, not all at once).
+// translation hasn't been added yet for that occupation
 function getLocalizedTitle(o: Occupation, locale: string): string {
-  if (locale === "tr") return o.title_tr ?? o.title;
-  if (locale === "zh-Hans") return o.title_zh ?? o.title;
-  return o.title;
+  if (locale === "tr") return o.title_tr || o.title_en;
+  if (locale === "zh-Hans") return o.title_zh || o.title_en;
+  return o.title_en;
 }
 
-// Localized duties fall back to English until tr/zh duty translations are
-// backfilled for that occupation (see scripts/i18n/anzsco-batch-*.ts).
+// Localized duties fall back to English until tr/zh duty translations are available
 function getLocalizedDuties(o: Occupation, locale: string): string[] {
   if (locale === "tr" && o.duties_tr?.length) return o.duties_tr;
   if (locale === "zh-Hans" && o.duties_zh?.length) return o.duties_zh;
-  return o.duties;
+  return o.duties_en || [];
 }
 const POPULAR_CODES = [
   "261313", // Software Engineer (ICT)
@@ -85,10 +84,13 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
     return OCCUPATIONS.filter((o) => {
       const localizedTitle =
         locale === "tr" ? o.title_tr : locale === "zh-Hans" ? o.title_zh : undefined;
+      const titleEn = o.title_en || "";
+      const matchesKeywords = o.keywords?.some((kw) => kw.toLowerCase().includes(q)) ?? false;
       return (
-        o.title.toLowerCase().includes(q) ||
+        titleEn.toLowerCase().includes(q) ||
         localizedTitle?.toLowerCase().includes(q) ||
-        o.code.toLowerCase().includes(q)
+        o.code.toLowerCase().includes(q) ||
+        matchesKeywords
       );
     });
   }, [popularOccupations, debouncedQuery, locale]);
@@ -181,8 +183,8 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                             </p>
                           </div>
                           {occ.skillLevel ? (
-                            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
-                              {occ.skillLevel}
+                            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 whitespace-nowrap">
+                              Skill Level {occ.skillLevel}
                             </span>
                           ) : null}
                         </div>
@@ -212,8 +214,8 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                           </h2>
                         </div>
                         {selectedOccupation.skillLevel ? (
-                          <div className="rounded-full border border-cyan-200/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
-                            {selectedOccupation.skillLevel}
+                          <div className="rounded-full border border-cyan-200/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100 whitespace-nowrap">
+                            Skill Level {selectedOccupation.skillLevel}
                           </div>
                         ) : null}
                       </div>
@@ -237,7 +239,7 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                           </div>
                           <p className="mt-2 text-3xl font-bold text-slate-950">
                             {selectedOccupation.skillLevel
-                              ? `${t("af.detail.levelPrefix")} ${selectedOccupation.skillLevel.match(/\d+/)?.[0] ?? ""}`
+                              ? `Skill Level ${selectedOccupation.skillLevel}`
                               : "—"}
                           </p>
                         </div>
