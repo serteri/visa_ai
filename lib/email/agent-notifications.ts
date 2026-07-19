@@ -29,7 +29,10 @@ export async function sendAgentAssignedEmail(params: {
 
   try {
     const resend = new Resend(apiKey);
-    const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
+    // Hardcoded, not read from FROM_EMAIL -- this sender must never fall
+    // back to Resend's default onboarding@resend.dev under any circumstance,
+    // including a misconfigured/unset FROM_EMAIL env var.
+    const fromEmail = "LogiVisa <noreply@logivisa.com>";
 
     await resend.emails.send({
       from: fromEmail,
