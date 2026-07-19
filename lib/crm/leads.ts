@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
+import { isMissingColumnError } from "@/lib/db/missing-relation";
 
 export const DOC_STATUSES = ["New", "Missing Documents", "In Review", "Approved"] as const;
 export type DocStatus = (typeof DOC_STATUSES)[number];
@@ -18,46 +19,56 @@ export async function getAgentLeads(
   if (opts.tier === "Hot" || opts.tier === "Warm" || opts.tier === "Cold") {
     where.pointsTier = opts.tier;
   }
-  return prisma.userReport.findMany({
-    where,
-    orderBy: { createdAt: opts.sort === "oldest" ? "asc" : "desc" },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      pointsTier: true,
-      source: true,
-      docStatus: true,
-      createdAt: true,
-    },
-  });
+  try {
+    return await prisma.userReport.findMany({
+      where,
+      orderBy: { createdAt: opts.sort === "oldest" ? "asc" : "desc" },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        pointsTier: true,
+        source: true,
+        docStatus: true,
+        createdAt: true,
+      },
+    });
+  } catch (error) {
+    if (isMissingColumnError(error, "agent_id")) return [];
+    throw error;
+  }
 }
 
 /** A single lead, scoped to the owning agent (returns null if not theirs). */
 export async function getAgentLead(agentId: string, leadId: string) {
-  return prisma.userReport.findFirst({
-    where: { id: leadId, agentId },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      pointsTier: true,
-      leadTier: true,
-      source: true,
-      preferredPath: true,
-      locale: true,
-      isUnlocked: true,
-      paymentStatus: true,
-      createdAt: true,
-      reportJson: true,
-      inputJson: true,
-      docStatus: true,
-      agentNotes: true,
-      market: true,
-    },
-  });
+  try {
+    return await prisma.userReport.findFirst({
+      where: { id: leadId, agentId },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        pointsTier: true,
+        leadTier: true,
+        source: true,
+        preferredPath: true,
+        locale: true,
+        isUnlocked: true,
+        paymentStatus: true,
+        createdAt: true,
+        reportJson: true,
+        inputJson: true,
+        docStatus: true,
+        agentNotes: true,
+        market: true,
+      },
+    });
+  } catch (error) {
+    if (isMissingColumnError(error, "agent_id")) return null;
+    throw error;
+  }
 }
 
 // ── Agent directory + performance metrics (admin) ───────────────────────────
@@ -77,12 +88,18 @@ function addTier(metrics: AgentMetrics, tier: string | null, count: number) {
 
 /** One grouped query → per-agent tier breakdown for the whole admin table. */
 export async function getAllAgentMetrics(): Promise<Map<string, AgentMetrics>> {
-  const rows = await prisma.userReport.groupBy({
-    by: ["agentId", "pointsTier"],
-    where: { agentId: { not: null } },
-    _count: { _all: true },
-  });
   const map = new Map<string, AgentMetrics>();
+  let rows;
+  try {
+    rows = await prisma.userReport.groupBy({
+      by: ["agentId", "pointsTier"],
+      where: { agentId: { not: null } },
+      _count: { _all: true },
+    });
+  } catch (error) {
+    if (isMissingColumnError(error, "agent_id")) return map;
+    throw error;
+  }
   for (const row of rows) {
     if (!row.agentId) continue;
     const metrics = map.get(row.agentId) ?? emptyMetrics();
@@ -137,24 +154,29 @@ export function splitName(fullName?: string | null): { firstName: string; lastNa
 // here unless the requesting agent's `market` is "TR", so a global agent
 // never even sees them in the pool query, not just in the UI.
 export async function getLeadPool(agentMarket: string | null | undefined) {
-  return prisma.userReport.findMany({
-    where: {
-      agentId: null,
-      source: { in: PDF_LEAD_SOURCES },
-      ...(agentMarket === "TR" ? {} : { market: { not: "TR" } }),
-    },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      source: true,
-      market: true,
-      docStatus: true,
-      createdAt: true,
-    },
-  });
+  try {
+    return await prisma.userReport.findMany({
+      where: {
+        agentId: null,
+        source: { in: PDF_LEAD_SOURCES },
+        ...(agentMarket === "TR" ? {} : { market: { not: "TR" } }),
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        source: true,
+        market: true,
+        docStatus: true,
+        createdAt: true,
+      },
+    });
+  } catch (error) {
+    if (isMissingColumnError(error, "agent_id") || isMissingColumnError(error, "market")) return [];
+    throw error;
+  }
 }
 
 /** Claims a pool lead for the given agent -- no-ops (returns false) if it was already claimed. */
@@ -180,17 +202,22 @@ export async function updateLeadWorkflow(
 }
 
 export async function getUnassignedLeads() {
-  return prisma.userReport.findMany({
-    where: { agentId: null },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      pointsTier: true,
-      createdAt: true,
-    },
-    take: 50,
-  });
+  try {
+    return await prisma.userReport.findMany({
+      where: { agentId: null },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        pointsTier: true,
+        createdAt: true,
+      },
+      take: 50,
+    });
+  } catch (error) {
+    if (isMissingColumnError(error, "agent_id")) return [];
+    throw error;
+  }
 }
