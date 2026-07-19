@@ -1,5 +1,6 @@
 import { count, desc } from "drizzle-orm";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { isMissingRelationError } from "@/lib/db/missing-relation";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 type WaitlistLead = typeof fullCheckWaitlist.$inferSelect;
 
@@ -129,6 +131,16 @@ type DashboardPageProps = {
 
 export default async function AdminDashboardPage({ params, searchParams }: DashboardPageProps) {
   const { locale } = await params;
+
+  // proxy.ts only checks that the admin session cookie is *present* (Node
+  // crypto isn't available in Edge middleware) -- this is the real
+  // signature/timing-safe verification, matching the sibling /admin/leads
+  // pages. Without it this was the one legacy admin page with no auth check
+  // of its own at all.
+  if (!(await isAdminAuthenticated())) {
+    redirect(`/${locale}/admin/leads/access?callbackUrl=${encodeURIComponent(`/${locale}/admin/dashboard`)}`);
+  }
+
   const query = await searchParams;
   const intentFilter = query.intent === "high" ? "high" : "all";
   const data = await getDashboardData();

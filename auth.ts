@@ -7,7 +7,17 @@ import { prisma } from "@/lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    // 5-minute idle timeout for the portal (ADMIN/AGENT). maxAge is the JWT's
+    // lifetime from its last (re-)issue; updateAge: 0 makes every request that
+    // hits an `auth()` call re-issue the token, so activity keeps sliding the
+    // window forward. No activity for 5 minutes -> the token's exp lapses ->
+    // auth() returns null on the next request -> proxy.ts's role-gate sends
+    // the user back to /login, closing the "stale cookie left open" gap.
+    maxAge: 5 * 60,
+    updateAge: 0,
+  },
   pages: {
     signIn: "/en/sign-in",
   },

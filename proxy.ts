@@ -28,16 +28,25 @@ function getLocale(request: NextRequest): string {
   }
 }
 
+// The legacy admin's own login page -- must stay reachable without the
+// session cookie the rest of this gate requires, or nobody could ever sign
+// in to get that cookie in the first place.
+function isAdminAccessPath(pathname: string): boolean {
+  return /^\/(?:(?:en|tr|zh-Hans)\/)?admin\/leads\/access(?:\/.*)?$/.test(pathname);
+}
+
 function isRootAdminPath(pathname: string): boolean {
   // The legacy ops admin is forced under /en/admin. The new role-based CRM
   // admin (/admin/crm) is deliberately excluded so it stays prefixless like the
   // rest of the app — forcing it under /en collides with the next.config
   // /en/:path* → /:path* redirect and causes a redirect loop.
   if (pathname.startsWith("/admin/crm")) return false;
+  if (isAdminAccessPath(pathname)) return false;
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
 function isLocaleAdminPath(pathname: string): boolean {
+  if (isAdminAccessPath(pathname)) return false;
   return /^\/(en|tr|zh-Hans)\/admin(?:\/.*)?$/.test(pathname);
 }
 
@@ -149,6 +158,20 @@ export const proxy = auth((req) => {
       redirectUrl.search = searchParams.toString();
       return NextResponse.redirect(redirectUrl);
     }
+    // Fail-closed session gate: require the legacy admin password cookie
+    // (lib/admin-auth.ts) to be PRESENT. This used to be skippable entirely
+    // whenever ADMIN_TOKEN wasn't configured in env -- the ADMIN_TOKEN check
+    // below only fired if that var was set, so an unset ADMIN_TOKEN meant
+    // anyone could load /admin/dashboard with zero auth. The cookie's actual
+    // signature/timing-safe comparison still happens server-side in
+    // isAdminAuthenticated() (Node crypto isn't available in Edge
+    // middleware) -- this is the fail-closed presence check in front of it.
+    if (!req.cookies.get("logivisa_admin_session")) {
+      const target = searchParams.toString() ? `${pathname}?${searchParams}` : pathname;
+      const accessUrl = new URL("/admin/leads/access", req.url);
+      accessUrl.searchParams.set("callbackUrl", target);
+      return NextResponse.redirect(accessUrl);
+    }
     // Same ADMIN_TOKEN gate as isLocaleAdminPath below. Required here too:
     // prefixless English admin paths resolve entirely within this branch (via
     // rewrite, not a fresh request) and never reach isLocaleAdminPath, which
@@ -195,6 +218,13 @@ export const proxy = auth((req) => {
 
   if (isLocaleAdminPath(pathname)) {
     const locale = pathname.startsWith("/tr/") ? "tr" : pathname.startsWith("/zh-Hans/") ? "zh-Hans" : "en";
+    // Same fail-closed cookie presence check as the prefixless branch above.
+    if (!req.cookies.get("logivisa_admin_session")) {
+      const target = searchParams.toString() ? `${pathname}?${searchParams}` : pathname;
+      const accessUrl = new URL("/admin/leads/access", req.url);
+      accessUrl.searchParams.set("callbackUrl", target);
+      return NextResponse.redirect(accessUrl);
+    }
     const configuredAdminToken = process.env.ADMIN_TOKEN?.trim();
     const providedAdminToken = searchParams.get("ADMIN_TOKEN")?.trim();
     if (configuredAdminToken && providedAdminToken !== configuredAdminToken) {

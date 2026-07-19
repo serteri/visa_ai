@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/rbac";
 import { signOutAction } from "./actions";
 import { Toaster } from "@/components/ui/sonner";
+import { IdleLogout } from "./idle-logout";
 
 export default async function PortalLayout({
   children,
@@ -52,6 +53,7 @@ export default async function PortalLayout({
 
       <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
       <Toaster />
+      {user ? <IdleLogout locale={locale} /> : null}
     </div>
   );
 }
