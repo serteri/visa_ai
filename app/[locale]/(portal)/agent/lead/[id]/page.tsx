@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
-import { getAgentLead, splitName } from "@/lib/crm/leads";
+import { getAgentLead, parseNotes, splitName } from "@/lib/crm/leads";
 import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
 import { WorkflowForm } from "./workflow-form";
 
@@ -86,7 +86,7 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
             locale={locale}
             leadId={id}
             initialDocStatus={lead.docStatus ?? "New"}
-            initialNotes={lead.agentNotes ?? ""}
+            initialNotes={parseNotes(lead.agentNotes)}
           />
         </CardContent>
       </Card>

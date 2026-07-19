@@ -188,15 +188,54 @@ export async function claimLead(agentId: string, leadId: string): Promise<boolea
   return result.count > 0;
 }
 
-/** Updates doc-review status and/or internal notes -- scoped to the owning agent. */
-export async function updateLeadWorkflow(
+/** Updates doc-review status only -- scoped to the owning agent. */
+export async function updateLeadStatus(
   agentId: string,
   leadId: string,
-  data: { docStatus?: string; agentNotes?: string }
+  docStatus: string
 ): Promise<boolean> {
   const result = await prisma.userReport.updateMany({
     where: { id: leadId, agentId },
-    data,
+    data: { docStatus },
+  });
+  return result.count > 0;
+}
+
+// ── Agent notes log ──────────────────────────────────────────────────────────
+//
+// Simple append-only activity log, stored as JSON in the existing
+// UserReport.agentNotes text column (no new table/column needed -- notes
+// are timestamped, newest first). A plain-text value written before this
+// format existed (or by any other path) is surfaced as one undated legacy
+// entry rather than discarded.
+
+export type NoteEntry = { text: string; at: string };
+
+export function parseNotes(raw: string | null | undefined): NoteEntry[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed as NoteEntry[];
+  } catch {
+    return [{ text: raw, at: "" }];
+  }
+  return [];
+}
+
+/** Appends a new timestamped note (newest first) -- scoped to the owning agent. */
+export async function appendLeadNote(agentId: string, leadId: string, text: string): Promise<boolean> {
+  const lead = await prisma.userReport.findFirst({
+    where: { id: leadId, agentId },
+    select: { agentNotes: true },
+  });
+  if (!lead) return false;
+
+  const notes = parseNotes(lead.agentNotes);
+  notes.unshift({ text, at: new Date().toISOString() });
+
+  const result = await prisma.userReport.updateMany({
+    where: { id: leadId, agentId },
+    data: { agentNotes: JSON.stringify(notes) },
   });
   return result.count > 0;
 }
