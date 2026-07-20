@@ -34,12 +34,15 @@ function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
   const [isPending, startTransition] = useTransition();
 
   function handleSelect(agentId: string) {
+    const agent = agents.find((a) => a.id === agentId);
+    const agentLabel = agent?.name ?? agent?.email ?? "agent";
+
     startTransition(async () => {
       try {
         await assignLeadToAgent(lead.id, agentId);
-        toast.success("Lead successfully assigned.");
+        toast.success(`✅ Lead successfully assigned to ${agentLabel}`);
       } catch {
-        toast.error("Failed to assign lead.");
+        toast.error(`❌ Failed to assign lead to ${agentLabel}`);
       }
     });
   }
