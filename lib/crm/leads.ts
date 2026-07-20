@@ -40,6 +40,33 @@ export async function getAgentLeads(
   }
 }
 
+/** Admin-only: fetches any lead by id, unscoped by agent ownership. */
+export async function getLeadById(leadId: string) {
+  return prisma.userReport.findUnique({
+    where: { id: leadId },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      phone: true,
+      pointsTier: true,
+      leadTier: true,
+      source: true,
+      preferredPath: true,
+      locale: true,
+      isUnlocked: true,
+      paymentStatus: true,
+      createdAt: true,
+      reportJson: true,
+      inputJson: true,
+      docStatus: true,
+      agentNotes: true,
+      market: true,
+      agentId: true,
+    },
+  });
+}
+
 /** A single lead, scoped to the owning agent (returns null if not theirs). */
 export async function getAgentLead(agentId: string, leadId: string) {
   try {
@@ -134,7 +161,16 @@ export async function getAgents() {
 export async function getAgentUser(id: string) {
   return prisma.user.findFirst({
     where: { id, role: "AGENT" },
-    select: { id: true, name: true, email: true, image: true, createdAt: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      phone: true,
+      companyName: true,
+      address: true,
+      createdAt: true,
+    },
   });
 }
 

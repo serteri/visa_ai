@@ -1,7 +1,7 @@
 "use server";
 
 import { and, eq, gte, sql } from "drizzle-orm";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { revalidateTag } from "next/cache";
 import Stripe from "stripe";
 import { Resend } from "resend";
@@ -29,6 +29,29 @@ import {
   markUserReportUnlocked,
   type UnlockMethod,
 } from "@/src/lib/user-reports";
+import { getAgentUser } from "@/lib/crm/leads";
+import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
+
+const REF_COOKIE = "logivisa_ref";
+
+/**
+ * Resolves the ?ref=<agentId> cookie (see components/ref-capture.tsx) to a
+ * real AGENT account. Never throws -- an invalid/stale/tampered cookie value
+ * just means no auto-assignment happens, not a broken submission.
+ */
+async function resolveReferralAgent(): Promise<{ id: string; email: string; name: string | null } | null> {
+  try {
+    const cookieStore = await cookies();
+    const refAgentId = cookieStore.get(REF_COOKIE)?.value;
+    if (!refAgentId) return null;
+
+    const agent = await getAgentUser(refAgentId);
+    return agent ?? null;
+  } catch (error) {
+    console.error("[full-check] Failed to resolve referral agent cookie (non-blocking):", error);
+    return null;
+  }
+}
 
 type SupportedLocale = "en" | "tr" | "zh-Hans";
 
@@ -1269,6 +1292,7 @@ export async function submitFullCheckWaitlist(
   };
 
   const internalLeadTier = computeInternalLeadTier(readinessInputForReport, generatedReport.assessmentState);
+  const referralAgent = await resolveReferralAgent();
 
   const reportRecord = await createUserReport({
     fullName,
@@ -1282,7 +1306,27 @@ export async function submitFullCheckWaitlist(
     report: generatedReport,
     ipAddress: clientIp !== "unknown" ? clientIp : undefined,
     input: readinessInputForReport,
+    // Affiliate/referral auto-assignment: skips the manual pool entirely
+    // when a valid agent ?ref= cookie is present.
+    agentId: referralAgent?.id,
+    assignedViaRef: Boolean(referralAgent),
   });
+
+  // Best-effort: the lead is already persisted and (if applicable) assigned
+  // above, so a broken RESEND_API_KEY or a send failure here must never fail
+  // the submission the visitor is waiting on.
+  if (referralAgent) {
+    try {
+      await sendAgentAssignedEmail({
+        agentEmail: referralAgent.email,
+        agentName: referralAgent.name,
+        leadName: fullName || email,
+        status: "New",
+      });
+    } catch (error) {
+      console.error("[full-check] Referral assignment email failed (non-blocking):", error);
+    }
+  }
 
   try {
     await db.insert(leads).values({

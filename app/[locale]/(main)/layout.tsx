@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -5,6 +6,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { LanguageProvider } from "@/contexts/language-context";
 import { Header } from "@/components/header";
 import { GlobalDisclaimerFooter } from "@/components/global-disclaimer-footer";
+import { RefCapture } from "@/components/ref-capture";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
 
@@ -145,6 +147,9 @@ export default async function LocaleLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
       />
+      <Suspense fallback={null}>
+        <RefCapture />
+      </Suspense>
       <Header locale={locale} showAdmin={showAdmin} />
       <main className="overflow-x-hidden pt-28 sm:pt-32">{children}</main>
       <GlobalDisclaimerFooter />

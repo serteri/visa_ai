@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
-import { getAgentMetrics, getAgentUser } from "@/lib/crm/leads";
+import { getAgentLeads, getAgentMetrics, getAgentUser, splitName } from "@/lib/crm/leads";
 import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
 
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export default async function AdminAgentDetailPage({ params }: PageProps) {
   const agent = await getAgentUser(id);
   if (!agent) notFound();
 
-  const metrics = await getAgentMetrics(id);
+  const [metrics, assignedLeads] = await Promise.all([getAgentMetrics(id), getAgentLeads(id)]);
 
   return (
     <div className="space-y-6">
@@ -73,6 +73,18 @@ export default async function AdminAgentDetailPage({ params }: PageProps) {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Joined</span>
               <span className="text-sm font-medium">{agent.createdAt.toLocaleDateString(locale)}</span>
             </div>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Phone</span>
+              <span className="text-sm font-medium">{agent.phone ?? "—"}</span>
+            </div>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Company</span>
+              <span className="text-sm font-medium">{agent.companyName ?? "—"}</span>
+            </div>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3 sm:col-span-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Address</span>
+              <span className="text-sm font-medium">{agent.address ?? "—"}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -88,10 +100,64 @@ export default async function AdminAgentDetailPage({ params }: PageProps) {
             <StatCard label="Warm" value={metrics.warm} tier="Warm" />
             <StatCard label="Cold" value={metrics.cold} tier="Cold" />
           </div>
-          <p className="mt-4 text-xs text-slate-500">
-            Individual lead reports/PDFs are delivered to agents and by email — this admin view
-            intentionally shows aggregate metrics only.
-          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Assigned leads ({assignedLeads.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {assignedLeads.length === 0 ? (
+            <p className="py-6 text-center text-sm text-slate-500">No leads assigned yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-slate-500">
+                    <th className="py-2 pr-4 font-semibold">Name</th>
+                    <th className="px-4 py-2 font-semibold">Email</th>
+                    <th className="px-4 py-2 font-semibold">Tier</th>
+                    <th className="px-4 py-2 font-semibold">Status</th>
+                    <th className="px-4 py-2 font-semibold">Received</th>
+                    <th className="px-4 py-2 font-semibold sr-only">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assignedLeads.map((lead) => {
+                    const { firstName, lastName } = splitName(lead.fullName);
+                    return (
+                      <tr key={lead.id} className="border-b border-slate-100 hover:bg-slate-50">
+                        <td className="py-2 pr-4 font-medium">
+                          {firstName || lastName ? `${firstName} ${lastName}`.trim() : "—"}
+                        </td>
+                        <td className="px-4 py-2 text-slate-600">{lead.email}</td>
+                        <td className="px-4 py-2">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold ${tierBadgeClass(
+                              lead.pointsTier
+                            )}`}
+                          >
+                            {tierEmoji(lead.pointsTier)} {lead.pointsTier ?? "—"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 text-slate-600">{lead.docStatus ?? "New"}</td>
+                        <td className="px-4 py-2 text-slate-500">{lead.createdAt.toLocaleDateString(locale)}</td>
+                        <td className="px-4 py-2 text-right">
+                          <Link
+                            href={`/${locale}/admin/crm/lead/${lead.id}`}
+                            className="font-medium text-indigo-600 hover:underline"
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -72,6 +72,11 @@ model UserReport {
   docStatus             String?   @default("New") @map("doc_status")
   agentNotes            String?   @map("agent_notes")
   market                String?   @default("GLOBAL")
+  // Affiliate/referral auto-assignment: true when this lead was routed
+  // directly to `agentId` at creation time because the visitor arrived via
+  // that agent's ?ref=<agentId> link (see the ref cookie flow in
+  // full-check/actions.ts), instead of landing in the manual pool.
+  assignedViaRef        Boolean?  @default(false) @map("assigned_via_ref")
 
   @@map("user_reports")
 }
@@ -91,6 +96,12 @@ model User {
   // to Turkish Guide leads; other agents only see the Global Guide + Occupation
   // List pool. Unused for USER/ADMIN roles.
   market            String?            @map("market")
+  // B2B affiliate/partner profile fields (AGENT accounts). Optional -- shown
+  // in the admin agent detail page even when empty so the UI is ready once
+  // agents are onboarded with this info.
+  phone             String?
+  companyName       String?            @map("company_name")
+  address           String?
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   accounts          Account[]

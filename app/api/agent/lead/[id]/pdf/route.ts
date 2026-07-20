@@ -1,25 +1,28 @@
 import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth/rbac";
-import { getAgentLead } from "@/lib/crm/leads";
+import { getAgentLead, getLeadById } from "@/lib/crm/leads";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessInput } from "@/lib/readiness/types";
 import type { ReadinessReport } from "@/lib/readiness/types";
 
 /**
  * Regenerates the assessment PDF for a single lead, server-side, from the
- * stored report_json/input_json. Access is doubly scoped: the caller must be an
- * AGENT, and getAgentLead() only returns the row when agent_id === the caller,
- * so one agent can never pull another agent's report.
+ * stored report_json/input_json. AGENT callers are scoped strictly to their
+ * own leads (getAgentLead only returns the row when agent_id === the
+ * caller); ADMIN callers can pull any lead (getLeadById, unscoped) since
+ * admins have full visibility over the CRM.
  */
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
 
   const user = await getCurrentUser();
   if (!user) return new NextResponse("Unauthorized", { status: 401 });
-  if (user.role !== "AGENT") return new NextResponse("Forbidden", { status: 403 });
+  if (user.role !== "AGENT" && user.role !== "ADMIN") {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
 
-  const lead = await getAgentLead(user.id, id);
+  const lead = user.role === "ADMIN" ? await getLeadById(id) : await getAgentLead(user.id, id);
   if (!lead || !lead.reportJson) {
     return new NextResponse("Not found", { status: 404 });
   }

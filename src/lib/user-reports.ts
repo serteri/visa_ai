@@ -14,6 +14,10 @@ export type CreateUserReportInput = {
   report: ReadinessReport;
   input: ReadinessInput;
   ipAddress?: string;
+  /** Affiliate/referral auto-assignment -- set when the visitor arrived via
+   *  an agent's ?ref=<agentId> link (see full-check/actions.ts). */
+  agentId?: string;
+  assignedViaRef?: boolean;
 };
 
 export type UnlockMethod = "payment" | "lead_capture" | "beta_free";
@@ -42,9 +46,11 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
         payment_status,
         report_json,
         input_json,
-        ip_address
+        ip_address,
+        agent_id,
+        assigned_via_ref
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending',$10::jsonb,$11::jsonb,$12)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending',$10::jsonb,$11::jsonb,$12,$13,$14)
       RETURNING id
     `,
     reportId,
@@ -58,7 +64,9 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
     input.pointsTier ?? null,
     JSON.stringify(input.report),
     JSON.stringify(input.input),
-    input.ipAddress ?? null
+    input.ipAddress ?? null,
+    input.agentId ?? null,
+    input.assignedViaRef ?? false
   );
 
   return { id: row[0].id };
