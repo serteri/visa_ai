@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,28 @@ import { registerAgentAction, type RegisterState } from "./actions";
 export function AgentRegisterForm({ locale }: { locale: string }) {
   const action = registerAgentAction.bind(null, locale);
   const [state, formAction, isPending] = useActionState<RegisterState, FormData>(action, {});
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmTouched, setConfirmTouched] = useState(false);
+
+  const passwordsMismatch = confirmTouched && confirmPassword.length > 0 && password !== confirmPassword;
+
+  // Client-side gate only -- the server action re-checks password ===
+  // confirmPassword itself (never trust client validation alone).
+  // confirmPassword is read here purely for this comparison; it's never
+  // sent anywhere beyond this form and the server never persists it.
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (password !== confirmPassword) {
+      e.preventDefault();
+      setConfirmTouched(true);
+    }
+  }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="register-name">Full name</Label>
-        <Input id="register-name" name="name" required autoComplete="name" placeholder="Ahmet Yilmaz" />
+        <Input id="register-name" name="name" required autoComplete="name" placeholder="John Doe" />
       </div>
 
       <div className="space-y-2">
@@ -40,17 +56,38 @@ export function AgentRegisterForm({ locale }: { locale: string }) {
           minLength={8}
           autoComplete="new-password"
           placeholder="At least 8 characters"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="register-confirm-password">Confirm password</Label>
+        <Input
+          id="register-confirm-password"
+          name="confirmPassword"
+          type="password"
+          required
+          minLength={8}
+          autoComplete="new-password"
+          placeholder="Re-enter your password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          onBlur={() => setConfirmTouched(true)}
+          aria-invalid={passwordsMismatch}
+          className={passwordsMismatch ? "border-red-500 focus-visible:ring-red-500" : ""}
+        />
+        {passwordsMismatch && <p className="text-xs text-red-600">Passwords do not match.</p>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="register-phone">Phone</Label>
-          <Input id="register-phone" name="phone" type="tel" autoComplete="tel" placeholder="+61 412 345 678" />
+          <Input id="register-phone" name="phone" type="tel" autoComplete="tel" placeholder="+61 400 000 000" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="register-company">Company name</Label>
-          <Input id="register-company" name="companyName" placeholder="Yilmaz Migration Services" />
+          <Input id="register-company" name="companyName" placeholder="Acme Corporation" />
         </div>
       </div>
 

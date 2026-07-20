@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -11,6 +12,23 @@ export type RegisterState = { error?: string };
 
 const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+// confirmPassword only ever exists to prove the two fields match -- it's
+// validated here and then discarded; nothing downstream (the User.create
+// below) ever sees or persists it.
+const registerSchema = z
+  .object({
+    name: z.string().trim().min(1, "Full name is required."),
+    email: z.string().trim().toLowerCase().regex(EMAIL_REGEX, "Enter a valid email address."),
+    password: z.string().min(8, "Password must be at least 8 characters."),
+    confirmPassword: z.string(),
+    phone: z.string().trim().optional().default(""),
+    companyName: z.string().trim().optional().default(""),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 /**
  * Public self-registration for agent candidates (proxy.ts excludes this
@@ -25,15 +43,20 @@ export async function registerAgentAction(
   _prev: RegisterState,
   formData: FormData
 ): Promise<RegisterState> {
-  const name = String(formData.get("name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const password = String(formData.get("password") ?? "");
-  const phone = String(formData.get("phone") ?? "").trim();
-  const companyName = String(formData.get("companyName") ?? "").trim();
+  const parsed = registerSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+    phone: formData.get("phone"),
+    companyName: formData.get("companyName"),
+  });
 
-  if (!name) return { error: "Full name is required." };
-  if (!email || !EMAIL_REGEX.test(email)) return { error: "Enter a valid email address." };
-  if (!password || password.length < 8) return { error: "Password must be at least 8 characters." };
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Please fix the highlighted fields." };
+  }
+
+  const { name, email, password, phone, companyName } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
   if (existing) {
