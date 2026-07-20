@@ -126,6 +126,13 @@ model User {
   phone             String?
   companyName       String?            @map("company_name")
   address           String?
+  // Self-registered AGENT accounts (/agent/register) start "PENDING" and
+  // can't see their referral link or metrics until an admin approves them
+  // (see /admin/crm/agent/[id]'s Approve action). Default is "APPROVED",
+  // not "PENDING" -- this column's default also backfills every existing
+  // row on creation, and pre-existing agents (created directly by an admin,
+  // not through self-registration) must not suddenly lose access.
+  approvalStatus    String             @default("APPROVED") @map("approval_status")
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   accounts          Account[]

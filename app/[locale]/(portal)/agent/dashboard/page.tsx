@@ -2,10 +2,11 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { requireRole } from "@/lib/auth/rbac";
+import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
 import { getAgentLeads, splitName, type LeadSort } from "@/lib/crm/leads";
 import { getAgentCommissionTotal, getAgentTransactions } from "@/lib/crm/transactions";
 import { LEAD_TIERS, tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
+import { PendingApprovalNotice } from "../pending-approval-notice";
 
 function formatUsd(amount: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
@@ -51,6 +52,18 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
   const dashboardPath = `${prefix}/agent/dashboard`;
 
   const user = await requireRole("AGENT", locale, dashboardPath);
+
+  if (!isApprovedAgent(user)) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Agent</p>
+          <h1 className="text-2xl font-bold">My assigned leads</h1>
+        </div>
+        <PendingApprovalNotice />
+      </div>
+    );
+  }
 
   const activeTier = tier === "Hot" || tier === "Warm" || tier === "Cold" ? tier : undefined;
   const activeSort: LeadSort = sort === "oldest" ? "oldest" : "newest";

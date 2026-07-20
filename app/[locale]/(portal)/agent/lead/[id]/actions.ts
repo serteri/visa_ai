@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { requireRole } from "@/lib/auth/rbac";
+import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
 import { DOC_STATUSES, appendLeadNote, updateLeadStatus } from "@/lib/crm/leads";
 
 export type ActionState = { error?: string; success?: boolean };
@@ -15,6 +15,7 @@ export async function updateLeadStatusAction(
 ): Promise<ActionState> {
   const prefix = locale === "en" ? "" : `/${locale}`;
   const user = await requireRole("AGENT", locale, `${prefix}/agent/lead/${leadId}`);
+  if (!isApprovedAgent(user)) return { error: "Your account is pending approval." };
 
   if (!DOC_STATUSES.includes(docStatus as (typeof DOC_STATUSES)[number])) {
     return { error: "Invalid status." };
@@ -38,6 +39,7 @@ export async function addLeadNoteAction(
 ): Promise<ActionState> {
   const prefix = locale === "en" ? "" : `/${locale}`;
   const user = await requireRole("AGENT", locale, `${prefix}/agent/lead/${leadId}`);
+  if (!isApprovedAgent(user)) return { error: "Your account is pending approval." };
 
   const text = String(formData.get("note") ?? "").trim();
   if (!text) {

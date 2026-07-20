@@ -65,6 +65,13 @@ function localeFromPath(pathname: string): "en" | "tr" | "zh-Hans" {
   return "en";
 }
 
+// The agent self-registration page must stay reachable without a session --
+// candidates aren't in the system yet, so gating it behind AGENT auth would
+// make it permanently unreachable. Same pattern as isAdminAccessPath above.
+function isAgentRegisterPath(pathname: string): boolean {
+  return /^\/(?:(?:en|tr|zh-Hans)\/)?agent\/register(?:\/.*)?$/.test(pathname);
+}
+
 // New role-based CRM portal. The AGENT portal (English) is prefixless
 // (/agent/...); the ADMIN portal is served under /admin/crm, prefixless for
 // English and locale-prefixed for tr/zh-Hans. Locale prefix is optional in
@@ -74,6 +81,7 @@ function localeFromPath(pathname: string): "en" | "tr" | "zh-Hans" {
 // Legacy /admin/{leads,agents,referrals,...} pages are deliberately excluded
 // (via the "admin/crm" match) so they keep their separate ADMIN_TOKEN gate.
 function portalRoleForPath(pathname: string): "AGENT" | "ADMIN" | null {
+  if (isAgentRegisterPath(pathname)) return null;
   if (/^\/(?:en\/|tr\/|zh-Hans\/)?agent(?:\/.*)?$/.test(pathname)) return "AGENT";
   if (/^\/(?:(?:en|tr|zh-Hans)\/)?admin\/crm(?:\/.*)?$/.test(pathname)) return "ADMIN";
   return null;

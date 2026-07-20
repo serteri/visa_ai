@@ -3,13 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { requireRole } from "@/lib/auth/rbac";
+import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
 import { claimLead, getAgentLead } from "@/lib/crm/leads";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
 
 export async function claimLeadAction(locale: string, leadId: string): Promise<void> {
   const prefix = locale === "en" ? "" : `/${locale}`;
   const user = await requireRole("AGENT", locale, `${prefix}/agent/pool`);
+
+  // Defense in depth: the pool page never renders a Claim button for a
+  // pending agent, but this action must reject it directly too, not just
+  // rely on the UI never offering it.
+  if (!isApprovedAgent(user)) return;
 
   // If another agent claimed it between page render and this submit, `claimed`
   // comes back false -- stay on the pool instead of opening a lead detail page

@@ -153,7 +153,7 @@ export async function getAgents() {
   return prisma.user.findMany({
     where: { role: "AGENT" },
     orderBy: { createdAt: "desc" },
-    select: { id: true, name: true, email: true, image: true, market: true, createdAt: true },
+    select: { id: true, name: true, email: true, image: true, market: true, approvalStatus: true, createdAt: true },
   });
 }
 
@@ -169,6 +169,7 @@ export async function getAgentUser(id: string) {
       phone: true,
       companyName: true,
       address: true,
+      approvalStatus: true,
       createdAt: true,
     },
   });

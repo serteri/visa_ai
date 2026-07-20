@@ -8,12 +8,14 @@ declare module "next-auth" {
       id: string;
       role?: string;
       market?: string;
+      approvalStatus?: string;
     } & DefaultSession["user"];
   }
 
   interface User {
     role?: string;
     market?: string | null;
+    approvalStatus?: string | null;
   }
 }
 
@@ -21,5 +23,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     role?: string;
     market?: string;
+    approvalStatus?: string;
   }
 }

@@ -1,0 +1,48 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+/** Only ever rendered for an APPROVED agent -- see /agent/pool and
+ *  /agent/dashboard, which gate this behind isApprovedAgent(). */
+export function ReferralLinkCard({ agentId }: { agentId: string }) {
+  const [copied, setCopied] = useState(false);
+  const [link, setLink] = useState("");
+
+  // Built client-side from window.location so it works the same in every
+  // environment (localhost, staging, prod) without needing NEXT_PUBLIC_BASE_URL
+  // wired through to this specific component.
+  useEffect(() => {
+    setLink(`${window.location.origin}/?ref=${agentId}`);
+  }, [agentId]);
+
+  function handleCopy() {
+    if (!link) return;
+    navigator.clipboard.writeText(link).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <Card className="border-indigo-200 bg-indigo-50">
+      <CardHeader>
+        <CardTitle className="text-base text-indigo-900">🔗 Your referral link</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-indigo-800">
+          Leads who fill out the assessment via this link are assigned to you automatically.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <code className="flex-1 min-w-0 truncate rounded-md border border-indigo-200 bg-white px-3 py-2 text-sm text-slate-700">
+            {link || "…"}
+          </code>
+          <Button type="button" size="sm" onClick={handleCopy} disabled={!link}>
+            {copied ? "Copied!" : "Copy"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

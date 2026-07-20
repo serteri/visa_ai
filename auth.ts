@@ -45,6 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           image: user.image,
           role: user.role,
           market: user.market,
+          approvalStatus: user.approvalStatus,
         };
       },
     }),
@@ -58,12 +59,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // is undefined and the existing token.role is preserved.
       if (user && "role" in user && user.role) token.role = user.role as string;
       if (user && "market" in user && user.market) token.market = user.market as string;
+      if (user && "approvalStatus" in user && user.approvalStatus) {
+        token.approvalStatus = user.approvalStatus as string;
+      }
       return token;
     },
     session({ session, token }) {
       if (token.sub) session.user.id = token.sub;
       if (token.role) session.user.role = token.role as string;
       if (token.market) session.user.market = token.market as string;
+      if (token.approvalStatus) session.user.approvalStatus = token.approvalStatus as string;
       return session;
     },
   },

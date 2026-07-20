@@ -11,6 +11,9 @@ export type SessionUser = {
   role: Role;
   /** Lead-pool scope for AGENT accounts -- "TR" or "GLOBAL". Unused otherwise. */
   market?: string | null;
+  /** AGENT approval workflow -- "PENDING" until an admin approves the
+   *  self-registration. "APPROVED" for everyone else (default). */
+  approvalStatus?: string | null;
 };
 
 /** Normalizes the raw session into a typed user (or null if unauthenticated). */
@@ -23,7 +26,13 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     email: session.user.email,
     role: (session.user.role as Role) ?? "USER",
     market: session.user.market ?? null,
+    approvalStatus: session.user.approvalStatus ?? "APPROVED",
   };
+}
+
+/** True once an admin has approved this AGENT account (irrelevant for other roles). */
+export function isApprovedAgent(user: SessionUser): boolean {
+  return user.role === "AGENT" && (user.approvalStatus ?? "APPROVED") === "APPROVED";
 }
 
 /**

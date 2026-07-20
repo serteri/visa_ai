@@ -3,9 +3,11 @@ import type { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { requireRole } from "@/lib/auth/rbac";
+import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
 import { getLeadPool } from "@/lib/crm/leads";
 import { claimLeadAction } from "./actions";
+import { PendingApprovalNotice } from "../pending-approval-notice";
+import { ReferralLinkCard } from "../referral-link-card";
 
 export const metadata: Metadata = {
   title: "Lead pool · LogiVisa Portal",
@@ -27,6 +29,19 @@ export default async function AgentLeadPoolPage({ params }: PageProps) {
   const prefix = locale === "en" ? "" : `/${locale}`;
 
   const user = await requireRole("AGENT", locale, `${prefix}/agent/pool`);
+
+  if (!isApprovedAgent(user)) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Agent</p>
+          <h1 className="text-2xl font-bold">Lead pool</h1>
+        </div>
+        <PendingApprovalNotice />
+      </div>
+    );
+  }
+
   const pool = await getLeadPool(user.market);
 
   return (
@@ -45,6 +60,8 @@ export default async function AgentLeadPoolPage({ params }: PageProps) {
           My assigned leads →
         </Link>
       </div>
+
+      <ReferralLinkCard agentId={user.id} />
 
       <Card>
         <CardHeader>

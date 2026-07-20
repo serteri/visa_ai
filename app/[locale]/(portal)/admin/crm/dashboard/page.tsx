@@ -76,6 +76,7 @@ export default async function AdminDashboardPage({ params }: PageProps) {
                   <tr className="border-b border-slate-200 text-left text-slate-500">
                     <th className="py-3 pr-4 font-semibold">Agent</th>
                     <th className="px-4 py-3 font-semibold">Email</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
                     <th className="px-4 py-3 font-semibold">Total</th>
                     <th className="px-4 py-3 font-semibold">Breakdown by tier</th>
                     <th className="px-4 py-3 font-semibold sr-only">Action</th>
@@ -88,6 +89,17 @@ export default async function AdminDashboardPage({ params }: PageProps) {
                       <tr key={agent.id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="py-3 pr-4 font-medium">{agent.name ?? "—"}</td>
                         <td className="px-4 py-3 text-slate-600">{agent.email}</td>
+                        <td className="px-4 py-3">
+                          {agent.approvalStatus === "PENDING" ? (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800">
+                              ⏳ Pending
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                              ✅ Approved
+                            </span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 font-semibold">{m.total}</td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-1.5">

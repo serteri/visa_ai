@@ -2,11 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
 import { getAgentLeads, getAgentMetrics, getAgentUser, splitName } from "@/lib/crm/leads";
 import { getAgentTransactionsForAdmin } from "@/lib/crm/transactions";
 import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
+import { approveAgentAction } from "../../actions";
 
 export const metadata: Metadata = {
   title: "Admin · Agent detail · LogiVisa Portal",
@@ -50,15 +52,33 @@ export default async function AdminAgentDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Link
-          href={`/${locale}/admin/crm/dashboard`}
-          className="text-sm font-medium text-indigo-600 hover:underline"
-        >
-          ← Back to agents
-        </Link>
-        <h1 className="mt-1 text-2xl font-bold">{agent.name ?? agent.email}</h1>
-        <p className="text-sm text-slate-500">Agent profile &amp; historical performance.</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <Link
+            href={`/${locale}/admin/crm/dashboard`}
+            className="text-sm font-medium text-indigo-600 hover:underline"
+          >
+            ← Back to agents
+          </Link>
+          <h1 className="mt-1 text-2xl font-bold">{agent.name ?? agent.email}</h1>
+          <p className="text-sm text-slate-500">Agent profile &amp; historical performance.</p>
+        </div>
+        {agent.approvalStatus === "PENDING" ? (
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-800">
+              ⏳ Pending approval
+            </span>
+            <form action={approveAgentAction.bind(null, agent.id)}>
+              <Button type="submit" size="sm">
+                Approve agent
+              </Button>
+            </form>
+          </div>
+        ) : (
+          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700">
+            ✅ Approved
+          </span>
+        )}
       </div>
 
       <Card>
