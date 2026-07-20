@@ -77,8 +77,32 @@ model UserReport {
   // that agent's ?ref=<agentId> link (see the ref cookie flow in
   // full-check/actions.ts), instead of landing in the manual pool.
   assignedViaRef        Boolean?  @default(false) @map("assigned_via_ref")
+  transactions          Transaction[]
 
   @@map("user_reports")
+}
+
+// Affiliate commission ledger. LogiVisa's own Stripe account collects 100%
+// of every payment -- agents are never paid out through Stripe. This is a
+// read-only record of what an agent *earned* (commissionAmount) on a given
+// sale, computed once at webhook time and stored, not recomputed later --
+// see recordCommissionTransaction() in lib/stripe/commission.ts for why
+// commissionRate/commissionAmount are persisted rather than derived from a
+// rate that could change in the future.
+model Transaction {
+  id               String   @id @default(uuid())
+  leadId           String   @map("lead_id")
+  agentId          String?  @map("agent_id")
+  stripeSessionId  String   @unique @map("stripe_session_id")
+  totalAmount      Decimal  @map("total_amount") @db.Decimal(10, 2)
+  commissionRate   Decimal? @map("commission_rate") @db.Decimal(5, 4)
+  commissionAmount Decimal? @map("commission_amount") @db.Decimal(10, 2)
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  lead  UserReport @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  agent User?      @relation("AgentTransactions", fields: [agentId], references: [id], onDelete: SetNull)
+
+  @@map("transactions")
 }
 
 model User {
@@ -111,6 +135,7 @@ model User {
   sessions          Session[]
   visaTrackings     VisaTracking[]
   assignedLeads     UserReport[]       @relation("AgentAssignedLeads")
+  transactions      Transaction[]      @relation("AgentTransactions")
 
   @@map("users")
 }

@@ -4,7 +4,12 @@ import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
 import { getAgentLeads, splitName, type LeadSort } from "@/lib/crm/leads";
+import { getAgentCommissionTotal, getAgentTransactions } from "@/lib/crm/transactions";
 import { LEAD_TIERS, tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
+
+function formatUsd(amount: number): string {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
+}
 
 export const metadata: Metadata = {
   title: "My leads · LogiVisa Portal",
@@ -50,7 +55,11 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
   const activeTier = tier === "Hot" || tier === "Warm" || tier === "Cold" ? tier : undefined;
   const activeSort: LeadSort = sort === "oldest" ? "oldest" : "newest";
 
-  const leads = await getAgentLeads(user.id, { tier: activeTier, sort: activeSort });
+  const [leads, transactions, commissionTotal] = await Promise.all([
+    getAgentLeads(user.id, { tier: activeTier, sort: activeSort }),
+    getAgentTransactions(user.id),
+    getAgentCommissionTotal(user.id),
+  ]);
 
   const buildQuery = (next: { tier?: string; sort?: string }) => {
     const sp = new URLSearchParams();
@@ -76,6 +85,49 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
           Lead pool →
         </Link>
       </div>
+
+      <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+          Total confirmed commission
+        </p>
+        <p className="mt-1 text-3xl font-extrabold text-emerald-900">{formatUsd(commissionTotal)}</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">My sales &amp; commission</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {transactions.length === 0 ? (
+            <p className="py-6 text-center text-sm text-slate-500">No confirmed sales yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-slate-500">
+                    <th className="py-2 pr-4 font-semibold">Customer</th>
+                    <th className="px-4 py-2 font-semibold">Total paid</th>
+                    <th className="px-4 py-2 font-semibold">Your commission</th>
+                    <th className="px-4 py-2 font-semibold">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.map((tx) => (
+                    <tr key={tx.id} className="border-b border-slate-100">
+                      <td className="py-2 pr-4 font-medium">{tx.leadName}</td>
+                      <td className="px-4 py-2 text-slate-600">{formatUsd(tx.totalAmount)}</td>
+                      <td className="px-4 py-2 font-semibold text-emerald-700">
+                        {formatUsd(tx.commissionAmount)}
+                      </td>
+                      <td className="px-4 py-2 text-slate-500">{tx.createdAt.toLocaleDateString(locale)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="gap-4">

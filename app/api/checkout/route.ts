@@ -15,6 +15,7 @@ type CheckoutPayload = {
   email?: string;
   userId?: string;
   reportId?: string;
+  agentId?: string;
 };
 
 const SUPPORTED_PRODUCTS = new Set<StripeProductType>([
@@ -66,6 +67,11 @@ export async function POST(request: NextRequest) {
         userId: body.userId || "",
         email: body.email || "",
         reportId: body.reportId || "",
+        // leadId mirrors reportId -- recordCommissionTransaction() (lib/
+        // stripe/commission.ts) reads leadId specifically, kept distinct
+        // from reportId since not every checkout here is report-related.
+        leadId: body.reportId || "",
+        agentId: body.agentId || "",
       },
     });
 

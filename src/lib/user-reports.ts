@@ -85,6 +85,7 @@ export async function getUserReportById(reportId: string): Promise<{
   locale: string;
   report: ReadinessReport;
   input: ReadinessInput;
+  agentId: string | null;
 } | null> {
   const rows = await prisma.$queryRawUnsafe<
     Array<{
@@ -93,9 +94,10 @@ export async function getUserReportById(reportId: string): Promise<{
       locale: string;
       report_json: ReadinessReport;
       input_json: ReadinessInput;
+      agent_id: string | null;
     }>
   >(
-    `SELECT id, email, locale, report_json, input_json FROM user_reports WHERE id::text = $1::text LIMIT 1`,
+    `SELECT id, email, locale, report_json, input_json, agent_id FROM user_reports WHERE id::text = $1::text LIMIT 1`,
     reportId
   );
 
@@ -108,6 +110,7 @@ export async function getUserReportById(reportId: string): Promise<{
     locale: row.locale,
     report: row.report_json,
     input: row.input_json,
+    agentId: row.agent_id,
   };
 }
 

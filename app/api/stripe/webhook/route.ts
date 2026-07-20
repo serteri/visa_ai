@@ -6,8 +6,191 @@ import { prisma } from "@/lib/prisma";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import type { ReadinessInput } from "@/lib/readiness/types";
+import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
+import { recordCommissionTransaction } from "@/lib/stripe/commission";
 
 export const dynamic = "force-dynamic";
+
+// The single active Stripe webhook endpoint for this app -- consolidated
+// from a second, unused stub at app/api/webhooks/stripe/route.ts (deleted;
+// its pdf_book/pdf_book_global delivery-email logic was merged in below so
+// removing it didn't silently break paid PDF purchases).
+type CheckoutSessionMeta = {
+  productType?: "premium" | "pdf_book" | "pdf_book_global";
+};
+
+function resolvePdfSlug(productType: CheckoutSessionMeta["productType"]): string | null {
+  if (productType === "pdf_book") return PDF_SLUGS.turkish;
+  if (productType === "pdf_book_global") return PDF_SLUGS.global;
+  return null;
+}
+
+async function handlePdfBookPurchase(session: Stripe.Checkout.Session, slug: string): Promise<void> {
+  const email =
+    session.metadata?.email?.trim() ||
+    session.customer_email?.trim() ||
+    session.customer_details?.email?.trim() ||
+    undefined;
+  const fullName = session.customer_details?.name?.trim() || "there";
+
+  if (!email) {
+    console.error("[stripe webhook] pdf purchase missing customer email — cannot deliver", {
+      sessionId: session.id,
+      slug,
+    });
+    return;
+  }
+
+  const result = await sendPdfDeliveryEmail({ fullName, email, slug });
+  console.log("[stripe webhook] pdf delivery", {
+    sessionId: session.id,
+    slug,
+    email,
+    sent: result.sent,
+    skippedReason: result.skippedReason,
+  });
+}
+
+async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Response> {
+  const reportId = session.metadata?.reportId;
+  const email = session.metadata?.email ?? session.customer_email ?? "";
+
+  if (!reportId) {
+    console.error("Webhook: Missing reportId in session metadata");
+    return new Response("Missing reportId", { status: 400 });
+  }
+
+  try {
+    const rows = await prisma.$queryRawUnsafe<
+      Array<{
+        id: string;
+        email: string;
+        locale: string;
+        full_name: string | null;
+        report_json: ReadinessReport;
+        input_json: ReadinessInput;
+      }>
+    >(
+      `SELECT id, email, locale, full_name, report_json, input_json FROM user_reports WHERE id::text = $1::text LIMIT 1`,
+      reportId
+    );
+
+    const record = rows[0];
+    if (!record) {
+      console.error(`Webhook: Report ${reportId} not found`);
+      return new Response("Report not found", { status: 404 });
+    }
+
+    // Mark as unlocked with payment
+    await prisma.$executeRawUnsafe(
+      `
+        UPDATE user_reports
+        SET
+          email = $1,
+          unlock_method = 'payment',
+          payment_status = 'paid',
+          is_unlocked = TRUE,
+          pdf_sent = FALSE,
+          unlocked_at = NOW()
+        WHERE id::text = $2::text
+      `,
+      email,
+      reportId
+    );
+
+    // Affiliate commission ledger -- best-effort, must never fail this
+    // webhook or block PDF delivery below. No-ops if this session has no
+    // leadId in metadata (recordCommissionTransaction checks internally).
+    try {
+      await recordCommissionTransaction(session);
+    } catch (commissionErr) {
+      console.error("Webhook: Commission transaction recording failed (non-blocking):", commissionErr);
+    }
+
+    // Generate PDF and send email
+    const apiKey = process.env.RESEND_API_KEY;
+    if (apiKey) {
+      try {
+        const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as
+          | "en"
+          | "tr"
+          | "zh-Hans";
+        const pdfBytes = await generateReadinessPDF({
+          report: record.report_json,
+          locale,
+          saveToFile: false,
+          userInputSummary: {
+            name: record.full_name ?? undefined,
+            email,
+            mainGoal: record.input_json.mainGoal,
+            currentCountry: record.input_json.currentCountry,
+            passportCountry: record.input_json.passportCountry,
+            age: record.input_json.age,
+            occupation: record.input_json.occupation,
+            englishLevel: record.input_json.englishLevel,
+            sponsorOrFamily: record.input_json.sponsorOrFamily,
+            biggestConcern: record.input_json.biggestConcern,
+          },
+        });
+
+        const resend = new Resend(apiKey);
+        const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
+        const isTr = locale === "tr";
+        const isZh = locale === "zh-Hans";
+        const greeting = record.full_name
+          ? `${isTr ? "Merhaba" : isZh ? "您好" : "Hi"} ${record.full_name},`
+          : isTr
+            ? "Merhaba,"
+            : isZh
+              ? "您好，"
+              : "Hi,";
+
+        await resend.emails.send({
+          from: fromEmail,
+          to: [email],
+          subject: isTr
+            ? "Tam vize hazirlik raporu — ödeme onaylandı"
+            : isZh
+              ? "完整签证准备度报告 — 支付已确认"
+              : "Your full visa readiness report — payment confirmed",
+          text: [
+            greeting,
+            "",
+            isTr
+              ? "Ödemeniz onaylandı. Tam vize hazırlık raporunuz ektedir."
+              : isZh
+                ? "您的付款已确认。完整签证准备度报告已作为附件发送。"
+                : "Your payment has been confirmed. Your full visa readiness report is attached.",
+            "",
+            isTr
+              ? "Bu yalnızca genel bilgidir ve göç tavsiyesi değildir."
+              : isZh
+                ? "本内容仅为一般信息，不构成移民建议。"
+                : "This is general information only and not migration advice.",
+          ].join("\n"),
+          attachments: [
+            {
+              filename: "visa-readiness-report.pdf",
+              content: Buffer.from(pdfBytes),
+            },
+          ],
+        });
+
+        await prisma.$executeRawUnsafe(`UPDATE user_reports SET pdf_sent = TRUE WHERE id::text = $1::text`, reportId);
+
+        console.log(`Webhook: Report ${reportId} unlocked and PDF sent to ${email}`);
+      } catch (emailErr) {
+        console.error("Webhook: PDF generation or email delivery failed:", emailErr);
+        // Payment was successful, so we don't fail the webhook
+      }
+    }
+  } catch (err) {
+    console.error("Webhook: Failed to process checkout.session.completed:", err);
+    return new Response("Processing failed", { status: 500 });
+  }
+
+  return new Response("OK", { status: 200 });
+}
 
 export async function POST(request: NextRequest) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -41,131 +224,20 @@ export async function POST(request: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const reportId = session.metadata?.reportId;
-    const email = session.metadata?.email ?? session.customer_email ?? "";
+    const metadata = (session.metadata || {}) as CheckoutSessionMeta;
+    const pdfSlug = resolvePdfSlug(metadata.productType);
 
-    if (!reportId) {
-      console.error("Webhook: Missing reportId in session metadata");
-      return new Response("Missing reportId", { status: 400 });
+    if (pdfSlug) {
+      try {
+        await handlePdfBookPurchase(session, pdfSlug);
+      } catch (err) {
+        console.error("Webhook: pdf book purchase handling failed:", err);
+        return new Response("Processing failed", { status: 500 });
+      }
+      return new Response("OK", { status: 200 });
     }
 
-    try {
-      // Fetch the report
-      const rows = await prisma.$queryRawUnsafe<
-        Array<{
-          id: string;
-          email: string;
-          locale: string;
-          full_name: string | null;
-          report_json: ReadinessReport;
-          input_json: ReadinessInput;
-        }>
-      >(
-        `SELECT id, email, locale, full_name, report_json, input_json FROM user_reports WHERE id::text = $1::text LIMIT 1`,
-        reportId
-      );
-
-      const record = rows[0];
-      if (!record) {
-        console.error(`Webhook: Report ${reportId} not found`);
-        return new Response("Report not found", { status: 404 });
-      }
-
-      // Mark as unlocked with payment
-      await prisma.$executeRawUnsafe(
-        `
-          UPDATE user_reports
-          SET
-            email = $1,
-            unlock_method = 'payment',
-            payment_status = 'paid',
-            is_unlocked = TRUE,
-            pdf_sent = FALSE,
-            unlocked_at = NOW()
-          WHERE id::text = $2::text
-        `,
-        email,
-        reportId
-      );
-
-      // Generate PDF and send email
-      const apiKey = process.env.RESEND_API_KEY;
-      if (apiKey) {
-        try {
-          const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as "en" | "tr" | "zh-Hans";
-          const pdfBytes = await generateReadinessPDF({
-            report: record.report_json,
-            locale,
-            saveToFile: false,
-            userInputSummary: {
-              name: record.full_name ?? undefined,
-              email,
-              mainGoal: record.input_json.mainGoal,
-              currentCountry: record.input_json.currentCountry,
-              passportCountry: record.input_json.passportCountry,
-              age: record.input_json.age,
-              occupation: record.input_json.occupation,
-              englishLevel: record.input_json.englishLevel,
-              sponsorOrFamily: record.input_json.sponsorOrFamily,
-              biggestConcern: record.input_json.biggestConcern,
-            },
-          });
-
-          const resend = new Resend(apiKey);
-          const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
-          const isTr = locale === "tr";
-          const isZh = locale === "zh-Hans";
-          const greeting = record.full_name
-            ? `${isTr ? "Merhaba" : isZh ? "您好" : "Hi"} ${record.full_name},`
-            : isTr ? "Merhaba," : isZh ? "您好，" : "Hi,";
-
-          await resend.emails.send({
-            from: fromEmail,
-            to: [email],
-            subject: isTr
-              ? "Tam vize hazirlik raporu — ödeme onaylandı"
-              : isZh
-                ? "完整签证准备度报告 — 支付已确认"
-                : "Your full visa readiness report — payment confirmed",
-            text: [
-              greeting,
-              "",
-              isTr
-                ? "Ödemeniz onaylandı. Tam vize hazırlık raporunuz ektedir."
-                : isZh
-                  ? "您的付款已确认。完整签证准备度报告已作为附件发送。"
-                  : "Your payment has been confirmed. Your full visa readiness report is attached.",
-              "",
-              isTr
-                ? "Bu yalnızca genel bilgidir ve göç tavsiyesi değildir."
-                : isZh
-                  ? "本内容仅为一般信息，不构成移民建议。"
-                  : "This is general information only and not migration advice.",
-            ].join("\n"),
-            attachments: [
-              {
-                filename: "visa-readiness-report.pdf",
-                content: Buffer.from(pdfBytes),
-              },
-            ],
-          });
-
-          // Mark PDF as sent
-          await prisma.$executeRawUnsafe(
-            `UPDATE user_reports SET pdf_sent = TRUE WHERE id::text = $1::text`,
-            reportId
-          );
-
-          console.log(`Webhook: Report ${reportId} unlocked and PDF sent to ${email}`);
-        } catch (emailErr) {
-          console.error("Webhook: PDF generation or email delivery failed:", emailErr);
-          // Payment was successful, so we don't fail the webhook
-        }
-      }
-    } catch (err) {
-      console.error("Webhook: Failed to process checkout.session.completed:", err);
-      return new Response("Processing failed", { status: 500 });
-    }
+    return handleReportUnlock(session);
   }
 
   return new Response("OK", { status: 200 });

@@ -703,6 +703,7 @@ async function createStripeCheckoutSession(input: {
   reportId: string;
   email: string;
   locale: SupportedLocale;
+  agentId?: string | null;
 }): Promise<{ url: string }> {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   // Founder reminder: Please remember to create a new $49 product in your Stripe Dashboard
@@ -722,7 +723,16 @@ async function createStripeCheckoutSession(input: {
     mode: "payment",
     success_url: `${baseUrl}/${input.locale}/full-check?payment=success&reportId=${input.reportId}`,
     cancel_url: `${baseUrl}/${input.locale}/full-check?payment=cancelled`,
-    metadata: { reportId: input.reportId, email: input.email },
+    // leadId/agentId let the webhook (recordCommissionTransaction, lib/stripe/
+    // commission.ts) attribute this sale to the right agent for commission
+    // tracking -- agentId is only set when this report was auto-assigned via
+    // a referral link (see resolveReferralAgent() above).
+    metadata: {
+      reportId: input.reportId,
+      leadId: input.reportId,
+      email: input.email,
+      agentId: input.agentId ?? "",
+    },
   });
 
   if (!session.url) throw new Error("Stripe did not return a checkout URL.");
@@ -1498,7 +1508,7 @@ export async function unlockPremiumReport(
     if (unlockMethod === "payment" || !freeBeta) {
       try {
         const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
-        const { url } = await createStripeCheckoutSession({ reportId, email, locale });
+        const { url } = await createStripeCheckoutSession({ reportId, email, locale, agentId: record.agentId });
         return {
           status: "error",
           message: `STRIPE_REDIRECT:${url}`,
