@@ -1,12 +1,86 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LayoutDashboard, LogOut } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 import { LanguageSelector } from "@/components/language-selector";
 import { Button } from "@/components/ui/button";
+
+function portalLabel(role?: string | null) {
+  if (role === "ADMIN") return "Admin Portal";
+  if (role === "AGENT") return "Agent Portal";
+  return "Account";
+}
+
+/** Minimalist user icon + dropdown replacing the old raw "Sign out"/avatar-letter UI. */
+function UserMenu({ locale }: { locale: string }) {
+  const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  if (!session?.user) return null;
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 transition-colors hover:border-indigo-300 hover:text-indigo-600 dark:border-white/10 dark:bg-transparent dark:text-slate-300"
+      >
+        <User className="h-3.5 w-3.5" />
+        {portalLabel(session.user.role)}
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-xl border border-slate-200/70 bg-white/95 py-1 shadow-xl backdrop-blur-lg dark:border-white/10 dark:bg-zinc-950/95"
+        >
+          <Link
+            href={`/${locale}/dashboard`}
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboard
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              signOut({ callbackUrl: `/${locale}` });
+            }}
+            className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-slate-600 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-white/10"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const VISA_LINKS = [
   { subclass: "500", en: "Student visa 500", tr: "Öğrenci Vizesi 500", zh: "500 学生签证" },
@@ -175,34 +249,7 @@ export function Header({
                 </Button>
               </>
             ) : (
-              <>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-indigo-600"
-                >
-                  <Link href={`/${locale}/dashboard`}>Dashboard</Link>
-                </Button>
-                {session.user?.image ? (
-                  <button
-                    type="button"
-                    onClick={() => signOut({ callbackUrl: `/${locale}` })}
-                    className="h-8 w-8 overflow-hidden rounded-full ring-2 ring-slate-200 hover:ring-indigo-400 transition-all"
-                    title="Sign out"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={session.user.image} alt="" className="h-full w-full object-cover" />
-                  </button>
-                ) : (
-                  <Button
-                    variant="ghost"
-                    className="h-8 whitespace-nowrap rounded-full px-4 text-xs font-medium text-slate-600 hover:text-rose-500"
-                    onClick={() => signOut({ callbackUrl: `/${locale}` })}
-                  >
-                    Sign out
-                  </Button>
-                )}
-              </>
+              <UserMenu locale={locale} />
             )}
           </div>
         </div>
@@ -446,12 +493,13 @@ export function Header({
                   </Button>
                 </>
               ) : (
-                <div className="flex items-center justify-between px-2">
+                <div className="flex items-center justify-between rounded-xl border border-slate-100 px-3 py-2 dark:border-white/10">
                   <Link
                     href={`/${locale}/dashboard`}
-                    className="text-sm font-medium text-slate-700 hover:text-indigo-600"
+                    className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-indigo-600"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
+                    <LayoutDashboard className="h-4 w-4" />
                     Dashboard
                   </Link>
                   <button
@@ -460,8 +508,9 @@ export function Header({
                       setIsMobileMenuOpen(false);
                       signOut({ callbackUrl: `/${locale}` });
                     }}
-                    className="text-xs font-medium text-slate-400 hover:text-rose-500 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-rose-500 transition-colors"
                   >
+                    <LogOut className="h-3.5 w-3.5" />
                     Sign out
                   </button>
                 </div>

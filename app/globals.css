@@ -19,6 +19,33 @@
   --radius: 0.75rem;
 }
 
+/* Dark mode is driven purely by the OS/browser color-scheme preference (no
+   next-themes class toggle is wired up anywhere in the app) — Tailwind v4's
+   default `dark:` variant matches `prefers-color-scheme: dark` directly.
+   Section components already carry `dark:text-*`/`dark:bg-*` classes, but
+   several homepage sections have no background of their own and rely on
+   this body background showing through. Without a dark override here, text
+   flips to white while the page background stays light, making it
+   unreadable — this fixes that at the root instead of per-component. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #09090b;
+    --foreground: #f8fafc;
+    --card: #18181b;
+    --card-foreground: #f8fafc;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --primary: #38bdf8;
+    --primary-foreground: #0f172a;
+    --secondary: #27272a;
+    --secondary-foreground: #f8fafc;
+    --accent: #27272a;
+    --accent-foreground: #f8fafc;
+    --border: #27272a;
+    --ring: #38bdf8;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

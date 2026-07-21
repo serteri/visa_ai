@@ -20,7 +20,7 @@ export default async function Home() {
   const displayedAssessmentSlots = Math.max(MIN_DISPLAY_SLOTS, DISPLAY_START_SLOTS - usedSlots);
 
   return (
-    <main className="flex-1 bg-slate-50 pb-16">
+    <main className="flex-1 bg-slate-50 pb-16 dark:bg-zinc-950">
       <HomeContent
         initialFreeDownloadsLeft={freeRemaining}
         initialAssessmentSlotsLeft={displayedAssessmentSlots}
