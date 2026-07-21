@@ -45,3 +45,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# local scratch work (may contain exported lead/PII data, never commit)
+/scratch/
