@@ -541,6 +541,9 @@ export function FullCheckWaitlistForm({
   const [qualificationAwardedInAustralia, setQualificationAwardedInAustralia] = useState("");
   const [qualificationRegionalAustralia, setQualificationRegionalAustralia] = useState("");
   const [specialistEducationStemResponse, setSpecialistEducationStemResponse] = useState("");
+  const [visaInterest, setVisaInterest] = useState(initialValues.visaInterest ?? "");
+  const [nominationStream, setNominationStream] = useState("");
+  const [yearsInSponsoredPosition, setYearsInSponsoredPosition] = useState("");
   const experienceHelpText = txt(
     "Yalnızca davetten önceki son 10 yıl içindeki, aday gösterilen veya yakından ilgili meslekte, haftada en az 20 saatlik nitelikli çalışmayı yazın.",
     "Count only skilled work in your nominated or closely related occupation, at least 20 hours/week, within 10 years before invitation.",
@@ -955,13 +958,69 @@ export function FullCheckWaitlistForm({
           <select
             id="waitlist-visa-interest"
             name="visaInterest"
-            defaultValue={initialValues.visaInterest ?? ""}
+            value={visaInterest}
+            onChange={(e) => setVisaInterest(e.target.value)}
             className={selectClassName}
           >
             <option value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
             {renderVisaPathwayOptions(countryVisaPathways[selectedCountry], isTr, isZh)}
           </select>
         </div>
+
+        {visaInterest === "186" && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-nomination-stream">
+                {txt(
+                  "186 için hangi akışı hedefliyorsunuz? (opsiyonel)",
+                  "Which subclass 186 stream are you targeting? (optional)",
+                  "您计划申请186签证的哪个通道？（可选）"
+                )}
+              </Label>
+              <select
+                id="waitlist-nomination-stream"
+                name="nominationStream"
+                value={nominationStream}
+                onChange={(e) => setNominationStream(e.target.value)}
+                className={selectClassName}
+              >
+                <option value="">{txt("Emin değilim / ikisini de değerlendir", "Not sure / evaluate both", "不确定 / 两者都评估")}</option>
+                <option value="direct_entry">{txt("Direct Entry", "Direct Entry", "Direct Entry")}</option>
+                <option value="trt">{txt("Temporary Residence Transition (TRT)", "Temporary Residence Transition (TRT)", "Temporary Residence Transition (TRT)")}</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-years-sponsored-position">
+                {txt(
+                  "TRT: Onaylı sponsor(lar) altında toplam çalışma süresi (yıl, opsiyonel)",
+                  "TRT: Total years employed under approved sponsor(s) (optional)",
+                  "TRT：在获批担保方名下的累计工作年限（可选）"
+                )}
+              </Label>
+              <Input
+                id="waitlist-years-sponsored-position"
+                name="yearsInSponsoredPosition"
+                type="number"
+                min={0}
+                step="0.5"
+                inputMode="decimal"
+                value={yearsInSponsoredPosition}
+                onChange={(e) => setYearsInSponsoredPosition(e.target.value)}
+                {...noAutofill("yearsInSponsoredPosition")}
+                className={fieldClassName}
+                placeholder={txt("Örn: 3", "E.g., 3", "例如：3")}
+              />
+              <p className="text-xs text-muted-foreground">
+                {txt(
+                  "Aynı işverende olması gerekmez — süre, onaylı sponsor statüsündeki tüm işverenler toplanarak hesaplanabilir.",
+                  "Does not need to be with a single employer — this can total sponsored periods across more than one approved sponsor.",
+                  "无需在同一雇主处任职——可累计多个获批担保雇主的工作年限总和。"
+                )}
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-current-country">

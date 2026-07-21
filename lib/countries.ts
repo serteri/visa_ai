@@ -60,6 +60,7 @@ export const countryVisaPathways: Record<SupportedCountry, VisaPathwayOption[]> 
     { value: "190", label: { en: "Skilled Nominated visa 190", tr: "Skilled Nominated Vizesi 190", "zh-Hans": "190 州担保技术移民" } },
     { value: "491", label: { en: "Skilled Work Regional visa 491", tr: "Skilled Work Regional Vizesi 491", "zh-Hans": "491 偶远地区技术签证" } },
     { value: "820_801", label: { en: "Partner visa 820/801", tr: "Partner Vizesi 820/801", "zh-Hans": "820/801 境内配偶签证" } },
+    { value: "186", label: { en: "Employer Nomination Scheme visa 186", tr: "İşveren Aday Gösterme Programı Vizesi 186", "zh-Hans": "186 雇主提名签证" } },
   ],
   CA: [
     {

@@ -145,6 +145,15 @@ const optionalYesNoNotSureSchema = z.preprocess(
   z.enum(["yes", "no", "not_sure"]).optional()
 );
 
+const optionalNominationStreamSchema = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return undefined;
+    const normalized = String(value).trim();
+    return normalized ? normalized : undefined;
+  },
+  z.enum(["direct_entry", "trt"]).optional()
+);
+
 // ─── Country-specific report schema guards ───────────────────────────────────
 
 const AU_PATHWAY_SUBCLASSES = new Set(["500", "485", "482", "189", "190", "491", "820", "801", "186", "general"]);
@@ -937,6 +946,16 @@ export async function submitFullCheckWaitlist(
   const onshoreExperienceYears = onshoreExperienceYearsResult.success
     ? onshoreExperienceYearsResult.data
     : undefined;
+  const yearsInSponsoredPositionResult = optionalExperienceYearsSchema.safeParse(
+    formData.get("yearsInSponsoredPosition")
+  );
+  const yearsInSponsoredPosition = yearsInSponsoredPositionResult.success
+    ? yearsInSponsoredPositionResult.data
+    : undefined;
+  const nominationStreamResult = optionalNominationStreamSchema.safeParse(
+    formData.get("nominationStream")
+  );
+  const nominationStream = nominationStreamResult.success ? nominationStreamResult.data : undefined;
   const englishTestTaken = String(formData.get("englishTestTaken") ?? "").trim();
   const occupationConfirmed = String(formData.get("occupationConfirmed") ?? "").trim();
   const hasGraduateVisaPathwayIntentRaw = String(formData.get("hasGraduateVisaPathwayIntent") ?? "").trim();
@@ -1219,6 +1238,8 @@ export async function submitFullCheckWaitlist(
       specialistEducationStemResponse,
       offshoreExperienceYears,
       onshoreExperienceYears,
+      yearsInSponsoredPosition,
+      nominationStream,
       englishTestTaken: englishTestTaken || undefined,
       occupationConfirmed: occupationConfirmed || undefined,
       hasGraduateVisaPathwayIntent,
@@ -1292,6 +1313,8 @@ export async function submitFullCheckWaitlist(
     specialistEducationStemResponse,
     offshoreExperienceYears,
     onshoreExperienceYears,
+    yearsInSponsoredPosition,
+    nominationStream,
     englishTestTaken: englishTestTaken || undefined,
     occupationConfirmed: occupationConfirmed || undefined,
     estimatedBudgetRange: estimatedBudgetRange || undefined,
