@@ -2,7 +2,6 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { Download } from "lucide-react";
-import { OCCUPATION_LIST_2026_PDF_URL } from "@/config/resources";
 import { sendGAEvent } from "@next/third-parties/google";
 
 import { Button } from "@/components/ui/button";
@@ -29,6 +28,7 @@ import { useTranslation } from "@/contexts/language-context";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
 import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
+import { PdfDownloadModal } from "@/components/PdfDownloadModal";
 import { Badge } from "@/components/ui/badge";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
 import anzscoListRaw from "@/src/data/anzsco-list.json";
@@ -517,6 +517,7 @@ export function FullCheckWaitlistForm({
   const initialAnzscoEntry = resolveAnzscoEntry(initialValues.occupation);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
+  const [occupationModalOpen, setOccupationModalOpen] = useState(false);
   const [analysisStepIndex, setAnalysisStepIndex] = useState(0);
   const [analysisProgressId, setAnalysisProgressId] = useState(() =>
     typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`
@@ -1307,7 +1308,7 @@ export function FullCheckWaitlistForm({
             </div>
           )}
 
-          {/* Subtle helper link — AU/ANZSCO only. Opens in new tab so form progress is preserved. */}
+          {/* AU-only helper — opens modal so user never loses form progress */}
           {selectedCountry === "AU" && (
             <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
               <svg
@@ -1326,29 +1327,13 @@ export function FullCheckWaitlistForm({
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
               {txt("Emin değil misiniz?", "Not sure?", "不确定？")}{" "}
-              <a
-                href={OCCUPATION_LIST_2026_PDF_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => setOccupationModalOpen(true)}
                 className="inline-flex items-center gap-0.5 text-indigo-500 underline-offset-2 hover:text-indigo-700 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 {txt("2026 Resmi Meslek Listesini İncele", "Check the 2026 Official Occupation List", "查看 2026 官方职业清单")}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3 w-3"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </a>
+              </button>
             </p>
           )}
 
@@ -1826,6 +1811,16 @@ export function FullCheckWaitlistForm({
 
       {state.status === "success" && assistantReportData && (
         <LogiAIAssistant locale={locale} reportData={assistantReportData} />
+      )}
+
+      {/* Occupation list modal — AU only, triggered by helper link next to occupation field */}
+      {selectedCountry === "AU" && (
+        <PdfDownloadModal
+          locale={locale}
+          product="occupation"
+          open={occupationModalOpen}
+          onClose={() => setOccupationModalOpen(false)}
+        />
       )}
     </div>
   );
