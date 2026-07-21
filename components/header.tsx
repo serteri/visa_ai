@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Menu, X, User, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, X, User, LayoutDashboard, LogOut, BookOpen } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 import { LanguageSelector } from "@/components/language-selector";
@@ -120,6 +120,8 @@ export function Header({
   const stateNominationLabel = isTr ? "Eyalet Nominasyonu" : isZh ? "州担保" : "State Nomination";
   const visaComparisonLabel = isTr ? "189-190-491 Karsilastirma" : isZh ? "189-190-491 对比" : "189 vs 190 vs 491";
   const toolsLabel = isTr ? "Araçlar" : isZh ? "工具" : "Tools";
+  const resourcesLabel = isTr ? "Kaynaklar" : isZh ? "资源" : "Resources";
+  const occupationListLabel = isTr ? "2026 Meslek Listesi" : isZh ? "2026 职业清单" : "2026 Occupation List";
   const contactLabel = isTr ? "İletişim" : isZh ? "联系我们" : "Contact";
 
   return (
@@ -202,6 +204,28 @@ export function Header({
               </Link>
               <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
                 {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
+              </Link>
+            </div>
+          </div>
+
+          {/* Resources dropdown */}
+          <div className="group relative">
+            <button
+              type="button"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            >
+              {resourcesLabel}
+              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
+              <Link
+                href={`/${locale}/resources/occupation-list`}
+                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                <BookOpen className="h-4 w-4 shrink-0 text-indigo-400" />
+                {occupationListLabel}
               </Link>
             </div>
           </div>
@@ -330,6 +354,28 @@ export function Header({
             </div>
           </div>
 
+          {/* Resources dropdown */}
+          <div className="group relative">
+            <button
+              type="button"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            >
+              {resourcesLabel}
+              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
+              <Link
+                href={`/${locale}/resources/occupation-list`}
+                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                <BookOpen className="h-4 w-4 shrink-0 text-indigo-400" />
+                {occupationListLabel}
+              </Link>
+            </div>
+          </div>
+
           <Link
             href={`/${locale}/guides`}
             className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
@@ -428,6 +474,20 @@ export function Header({
             >
               {assistantLabel}
             </Link>
+            <div className="space-y-1">
+              <p className="px-2 text-xs font-semibold uppercase text-slate-400">{resourcesLabel}</p>
+              <Link
+                href={`/${locale}/resources/occupation-list`}
+                className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <BookOpen className="h-4 w-4 text-indigo-400" />
+                {occupationListLabel}
+              </Link>
+            </div>
+
+            <div className="h-px w-full bg-slate-100 dark:bg-white/10" />
+
             <div className="space-y-1">
               <p className="px-2 text-xs font-semibold uppercase text-slate-400">{toolsLabel}</p>
               <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
