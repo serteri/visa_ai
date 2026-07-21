@@ -1032,47 +1032,6 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
         </div>
       </section>
 
-      {/* Final CTA — closes the page with the same dual AU/CA entry points
-          used in the hero, for anyone who scrolled all the way down. */}
-      <section className="section-shell">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-14 text-center shadow-2xl shadow-indigo-500/30 sm:px-12">
-          <div className="absolute -left-10 -top-10 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -right-10 -bottom-10 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
-          <div className="relative">
-            <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-              {locale === "tr"
-                ? "Vize Yolunuzu Bulmaya Hazır mısınız?"
-                : locale === "zh-Hans"
-                  ? "准备好找到您的签证路径了吗？"
-                  : "Ready to Find Your Visa Pathway?"}
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-base text-indigo-100 sm:text-lg">
-              {locale === "tr"
-                ? "2 dakikada, gerçek verilere dayalı, kişiselleştirilmiş bir analiz alın."
-                : locale === "zh-Hans"
-                  ? "2分钟内获得基于真实数据的个性化分析。"
-                  : "Get a personalized, data-driven analysis in 2 minutes."}
-            </p>
-            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-              <Link
-                href={`/${locale}/full-check?country=AU`}
-                className="group inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-8 py-4 text-lg font-extrabold text-indigo-700 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl sm:px-10 sm:py-5 sm:text-xl"
-              >
-                {t("hero.btnAustralia")}
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </Link>
-              <Link
-                href={`/${locale}/full-check?country=CA`}
-                className="group inline-flex items-center justify-center gap-3 rounded-2xl border-2 border-white/70 bg-transparent px-8 py-4 text-lg font-extrabold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-white/10 hover:shadow-2xl sm:px-10 sm:py-5 sm:text-xl"
-              >
-                {t("hero.btnCanada")}
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
     </section>
   );
 }
