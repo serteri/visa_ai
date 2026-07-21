@@ -234,23 +234,27 @@ function calculateQualitativeRankedPathways(report: ReadinessReport, locale: Loc
   }));
 }
 
-const GATE_BASED_SUBCLASSES = ["500", "482"] as const;
+const GATE_BASED_SUBCLASSES = ["500", "482", "186"] as const;
 
 /**
- * 500 and 482 are structurally gate/eligibility-based (a study-intent or
- * employer-sponsorship threshold, never a competitive points test), unlike
- * 189/190/491 which are points-tested and only fall back to a qualitative
- * tier when data happens to be missing. So these are always represented as
- * a qualitative tier — never a fabricated matchPercentage — regardless of
- * assessmentState.canShowNumericRanking, which governs the skilled/points
- * lane only.
+ * 500, 482, and 186 are structurally gate/eligibility-based (a study-intent,
+ * employer-sponsorship, or nomination-stream threshold, never a competitive
+ * points test), unlike 189/190/491 which are points-tested and only fall
+ * back to a qualitative tier when data happens to be missing. So these are
+ * always represented as a qualitative tier — never a fabricated
+ * matchPercentage — regardless of assessmentState.canShowNumericRanking,
+ * which governs the skilled/points lane only.
  *
- * Hard-ineligible cases (e.g. 482's CSIT salary gate) are deliberately
- * excluded here: those are already surfaced by generate-pdf.ts's
- * buildIneligiblePathwayEntries, which scans pathwayComparison directly for
- * relevance === "ineligible" across 482/485/189/190/491. Including them
- * here too would just produce a duplicate row (the two get de-duplicated by
- * subclass) — cleaner to leave that case fully owned by the existing sweep.
+ * Hard-ineligible cases (e.g. 482's CSIT salary gate, 186's TRT tenure gate
+ * or Direct Entry age gate) are deliberately excluded here: those are
+ * surfaced instead by generate-pdf.ts's buildIneligiblePathwayEntries,
+ * which scans pathwayComparison directly for relevance === "ineligible".
+ * Including them here too would just produce a duplicate row (the two get
+ * de-duplicated by subclass) — cleaner to leave that case fully owned by
+ * the existing sweep. IMPORTANT: buildIneligiblePathwayEntries's own
+ * INELIGIBLE_RANKING_SUBCLASSES allow-list must include every subclass
+ * added here, or a hard-ineligible entry for that subclass would be
+ * dropped from the ranking entirely — caught by neither path.
  */
 function buildGateBasedRankedPathways(report: ReadinessReport, locale: Locale): RankedPathway[] {
   const raw: Array<Omit<RankedPathway, "recommendationTag">> = report.pathwayComparison

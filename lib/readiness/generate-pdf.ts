@@ -465,15 +465,16 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
   };
 }
 
-const INELIGIBLE_RANKING_SUBCLASSES = ["482", "485", "189", "190", "491"] as const;
+const INELIGIBLE_RANKING_SUBCLASSES = ["482", "485", "189", "190", "491", "186"] as const;
 
 /**
  * Hard Gate (1 July 2026): pathways the readiness engine marked "ineligible"
- * (482 salary/CSIT, 485 age, 189/190/491 sub-65-point score) must always
- * appear first in the Visa Viability Ranking, regardless of any
- * match-percentage score. This scans the compliance-checked pathway
- * comparison rather than the match-percentage ranking, since ineligible
- * pathways are excluded from that scoring entirely.
+ * (482 salary/CSIT, 485 age, 189/190/491 sub-65-point score, 186 TRT tenure/
+ * Direct Entry age/CSIT salary) must always appear first in the Visa
+ * Viability Ranking, regardless of any match-percentage score. This scans
+ * the compliance-checked pathway comparison rather than the
+ * match-percentage ranking, since ineligible pathways are excluded from
+ * that scoring entirely.
  */
 function buildIneligiblePathwayEntries(report: ReadinessReport): RankedPathway[] {
   return report.pathwayComparison
