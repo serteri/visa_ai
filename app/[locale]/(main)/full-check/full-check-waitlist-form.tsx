@@ -28,7 +28,14 @@ import { useTranslation } from "@/contexts/language-context";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
 import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
-import { PdfDownloadModal } from "@/components/PdfDownloadModal";
+import { LeadMagnetForm } from "@/components/LeadMagnetForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
 import anzscoListRaw from "@/src/data/anzsco-list.json";
@@ -1815,12 +1822,24 @@ export function FullCheckWaitlistForm({
 
       {/* Occupation list modal — AU only, triggered by helper link next to occupation field */}
       {selectedCountry === "AU" && (
-        <PdfDownloadModal
-          locale={locale}
-          product="occupation"
-          open={occupationModalOpen}
-          onClose={() => setOccupationModalOpen(false)}
-        />
+        <Dialog open={occupationModalOpen} onOpenChange={(v) => !v && setOccupationModalOpen(false)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold">
+                📋 2026 Official Occupation List
+              </DialogTitle>
+              <DialogDescription className="text-slate-600 dark:text-slate-400">
+                Enter your details and we&apos;ll send the full PDF straight to your inbox — then come back and continue your assessment.
+              </DialogDescription>
+            </DialogHeader>
+            <LeadMagnetForm
+              locale={locale}
+              documentId="csol-2026"
+              documentName="2026 Official Occupation List"
+              onSuccess={() => setOccupationModalOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, Download, ArrowRight, CheckCircle, Info } from "lucide-react";
+import { FileText, ArrowRight, CheckCircle, Info } from "lucide-react";
 
-import { OCCUPATION_LIST_2026_PDF_URL } from "@/config/resources";
+import { LeadMagnetForm } from "@/components/LeadMagnetForm";
 
 export const metadata: Metadata = {
   title: "2026 Official Occupation List — Australia Skilled Migration",
   description:
-    "Download the official 2026 Skilled Occupation List (SOL) PDF published by the Australian Department of Home Affairs. Find out if your occupation is eligible for a subclass 189, 190 or 491 visa.",
+    "Get the official 2026 Skilled Occupation List (SOL) delivered to your inbox. Find out if your occupation is eligible for a subclass 189, 190 or 491 visa.",
 };
 
 const HIGHLIGHTS = [
@@ -26,8 +26,8 @@ export default async function OccupationListPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950/20">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 lg:px-8">
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden px-4 pb-12 pt-12 sm:px-6 lg:px-8">
         {/* Decorative blobs */}
         <div
           aria-hidden="true"
@@ -50,43 +50,38 @@ export default async function OccupationListPage({
           </h1>
 
           <p className="mt-5 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-            The <strong>Skilled Occupation List (SOL)</strong> is the definitive reference
-            published by the{" "}
+            The <strong>Skilled Occupation List (SOL)</strong> is the definitive
+            reference published by the{" "}
             <span className="font-medium text-indigo-600 dark:text-indigo-400">
               Australian Department of Home Affairs
             </span>{" "}
-            listing every occupation eligible for Australia&apos;s skilled migration program.
-            Check whether your job qualifies, then start your readiness assessment.
+            listing every occupation eligible for Australia&apos;s skilled
+            migration program. Enter your email below and we&apos;ll send it
+            straight to your inbox.
           </p>
-
-          {/* Action buttons */}
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              id="view-pdf-btn"
-              href={OCCUPATION_LIST_2026_PDF_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              <Download className="h-4 w-4" />
-              View / Download PDF
-            </a>
-
-            <Link
-              id="start-assessment-cta"
-              href={`/${locale}/full-check`}
-              className="inline-flex items-center gap-2.5 rounded-full border border-indigo-200 bg-white px-7 py-3.5 text-sm font-semibold text-indigo-700 shadow-sm transition-all duration-300 hover:border-indigo-400 hover:shadow-md dark:border-indigo-800 dark:bg-zinc-900 dark:text-indigo-300 dark:hover:border-indigo-600"
-            >
-              Start My Assessment
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* What's in the list */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
+      {/* ── Lead capture + highlights ── */}
+      <section className="px-4 pb-12 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-2">
+          {/* Lead capture card */}
+          <div className="rounded-2xl border border-indigo-100 bg-white/90 p-8 shadow-md backdrop-blur-sm dark:border-indigo-900/50 dark:bg-zinc-900/70">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-indigo-500">
+              Free · Instant delivery
+            </p>
+            <h2 className="mb-6 text-xl font-bold text-slate-800 dark:text-white">
+              Get the PDF in your inbox
+            </h2>
+
+            <LeadMagnetForm
+              locale={locale}
+              documentId="csol-2026"
+              documentName="2026 Official Occupation List"
+            />
+          </div>
+
+          {/* What's in the list */}
           <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-8 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-zinc-900/60">
             <div className="mb-6 flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/50">
@@ -99,17 +94,21 @@ export default async function OccupationListPage({
 
             <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               The PDF lists hundreds of occupations identified by their{" "}
-              <strong className="text-slate-700 dark:text-slate-200">ANZSCO code</strong> (the
-              Australian and New Zealand Standard Classification of Occupations). Each entry
-              shows the occupation title and which skilled-migration visa subclasses it is
-              eligible for.
+              <strong className="text-slate-700 dark:text-slate-200">
+                ANZSCO code
+              </strong>{" "}
+              (the Australian and New Zealand Standard Classification of
+              Occupations). Each entry shows the occupation title and which
+              skilled-migration visa subclasses it is eligible for.
             </p>
 
             <ul className="space-y-3">
               {HIGHLIGHTS.map((point) => (
                 <li key={point} className="flex items-start gap-3">
                   <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
-                  <span className="text-sm text-slate-600 dark:text-slate-300">{point}</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-300">
+                    {point}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -117,11 +116,11 @@ export default async function OccupationListPage({
         </div>
       </section>
 
-      {/* CTA banner */}
+      {/* ── CTA banner ── */}
       <section className="px-4 pb-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 p-8 text-center shadow-xl">
-            {/* Pattern overlay */}
+            {/* Dot pattern overlay */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 opacity-10"
@@ -131,7 +130,6 @@ export default async function OccupationListPage({
                 backgroundSize: "24px 24px",
               }}
             />
-
             <h2 className="relative text-2xl font-extrabold text-white sm:text-3xl">
               Found your occupation?
             </h2>
@@ -139,7 +137,6 @@ export default async function OccupationListPage({
               Run a full visa-readiness assessment to see your points score, the
               best pathways for your situation, and a personalised action plan.
             </p>
-
             <Link
               id="banner-start-assessment-cta"
               href={`/${locale}/full-check`}
