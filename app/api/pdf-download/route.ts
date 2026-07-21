@@ -57,7 +57,7 @@ function resolveSlug(value: string | null): string {
 const pdfDownloadSchema = z.object({
   full_name: z.string().trim().min(1, "Full name is required."),
   email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
-  phone: z.string().trim().min(1, "Phone number is required."),
+  phone: z.string().trim().optional().default(""),
   slug: z.string().optional(),
   category: z.string().optional(),
   termsAcceptedAt: z.string().min(1, "Terms acceptance timestamp is required."),

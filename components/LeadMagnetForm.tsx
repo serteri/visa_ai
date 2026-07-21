@@ -137,13 +137,7 @@ export function LeadMagnetForm({
       );
     }
     const digits = form.phone.replace(/\D/g, "");
-    if (!digits) {
-      errs.phone = tx(
-        "Telefon numarası zorunludur.",
-        "Phone number is required.",
-        "手机号为必填项。"
-      );
-    } else if (digits.length < 6) {
+    if (form.phone.trim() && digits.length < 6) {
       errs.phone = tx(
         "Geçerli bir telefon numarası girin.",
         "Enter a valid phone number.",
@@ -310,8 +304,7 @@ export function LeadMagnetForm({
       {/* Phone */}
       <div className="space-y-1">
         <Label htmlFor="lmf-phone">
-          {tx("Telefon Numarası", "Phone Number", "手机号")}
-          <span className="ml-1 text-red-500">*</span>
+          {tx("Telefon Numarası (Opsiyonel)", "Phone Number (Optional)", "手机号（可选）")}
         </Label>
         <div className="flex gap-2">
           <Select

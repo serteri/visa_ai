@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { FileText, ArrowRight, CheckCircle, Info } from "lucide-react";
+import { FileText, CheckCircle, Info } from "lucide-react";
 
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
 
@@ -116,38 +115,7 @@ export default async function OccupationListPage({
         </div>
       </section>
 
-      {/* ── CTA banner ── */}
-      <section className="px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 p-8 text-center shadow-xl">
-            {/* Dot pattern overlay */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-10"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-                backgroundSize: "24px 24px",
-              }}
-            />
-            <h2 className="relative text-2xl font-extrabold text-white sm:text-3xl">
-              Found your occupation?
-            </h2>
-            <p className="relative mt-3 text-base text-indigo-100">
-              Run a full visa-readiness assessment to see your points score, the
-              best pathways for your situation, and a personalised action plan.
-            </p>
-            <Link
-              id="banner-start-assessment-cta"
-              href={`/${locale}/full-check`}
-              className="relative mt-6 inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-indigo-700 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
-            >
-              Get My Free Report
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
+
     </div>
   );
 }
