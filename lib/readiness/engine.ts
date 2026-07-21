@@ -288,7 +288,14 @@ const QUALIFICATIONS_BACHELOR_OR_LOWER = new Set([
  * Hard Gate (1 July 2026 rules): age > 35 with a Bachelor's degree or lower
  * is an unconditional 485 disqualifier, regardless of any other "possible"/
  * "high potential" signal the softer evaluate485AgeGate heuristic below
- * might otherwise produce.
+ * might otherwise produce — UNLESS has485AgeException applies (PhD,
+ * Master's by Research, or Hong Kong/BNO passport all raise the cap to 50
+ * in either stream). PhD/Master's-by-Research holders already bypass this
+ * gate naturally since neither qualification is in
+ * QUALIFICATIONS_BACHELOR_OR_LOWER, but a Hong Kong/BNO passport holder
+ * with a Bachelor's degree or lower would otherwise be wrongly hard-gated
+ * at 35 despite qualifying for the 50 exception — has485AgeException is
+ * checked explicitly here to close that gap.
  */
 function evaluate485HardAgeGate(input: ReadinessInput): {
   declaredAge: number | null;
@@ -299,7 +306,7 @@ function evaluate485HardAgeGate(input: ReadinessInput): {
   const isBachelorOrLower = qualification !== undefined && QUALIFICATIONS_BACHELOR_OR_LOWER.has(qualification);
   return {
     declaredAge,
-    isHardIneligible: declaredAge !== null && declaredAge > 35 && isBachelorOrLower,
+    isHardIneligible: declaredAge !== null && declaredAge > 35 && isBachelorOrLower && !has485AgeException(input),
   };
 }
 
@@ -465,7 +472,42 @@ function formatIneligibleLowPointsReason(
 
 // ─── Pathway detection ────────────────────────────────────────────────────────
 
+/**
+ * True only when the user explicitly picked the "Partner visa 820/801"
+ * option from the full-check pathway dropdown (real submitted value:
+ * "820_801") or wrote the phrase out in free text. Deliberately does NOT
+ * key off input.sponsorOrFamily — that field's three options ("Single / No
+ * Dependants", "Partner / Dependants with Functional English", "Partner /
+ * Dependants WITHOUT Functional English") describe the skilled-visa
+ * applicant's own accompanying partner/dependants for points-test and
+ * second-instalment-fee purposes, not "I am seeking 820/801 sponsorship by
+ * a partner" — treating it as a partner-visa signal would incorrectly
+ * suppress genuine 189/190/491 results for the common case of a skilled
+ * migrant who simply has a partner.
+ *
+ * Exported (and typed against a minimal structural subset of ReadinessInput,
+ * not the full type) so ranked-pathways.ts can apply the exact same check
+ * to the Visa Viability Ranking section — that section is built via a
+ * separate code path from pathwayComparison and would otherwise keep
+ * showing 189/190/491 there even after a partner-pathway selection is
+ * correctly excluded from pathwayComparison itself.
+ */
+export function isPartnerPathwaySelected(input: { preferredPathway?: string }): boolean {
+  const pref = norm(input.preferredPathway ?? "");
+  if (!pref) return false;
+  return pref.includes("820_801") || pref.includes("820/801") || pref.includes("partner visa") || pref.includes("partner vizesi");
+}
+
 function detectSubclasses(input: ReadinessInput): string[] {
+  // Hard scope boundary: this engine cannot responsibly evaluate
+  // family-sponsored pathways (see the "Partner/Family visas ... are
+  // intentionally never detected" comments below), so when the user has
+  // explicitly told us that's what they want, skip all skilled/employer/
+  // student detection entirely rather than silently substituting an
+  // unrelated pathway just because their occupation or freetext happens to
+  // match a keyword.
+  if (isPartnerPathwaySelected(input)) return [];
+
   const combined = [
     input.mainGoal ?? "",
     input.preferredPathway ?? "",
@@ -3500,7 +3542,8 @@ function buildFinancialRoadmap(
 function buildProgressionPathways(
   subclasses: string[],
   locale: Locale,
-  hasGraduateVisaPathwayIntent = false
+  hasGraduateVisaPathwayIntent = false,
+  isPartnerPathway = false
 ): ProgressionPathway[] {
   const isTr = locale === "tr";
   const items: ProgressionPathway[] = [];
@@ -3591,7 +3634,21 @@ function buildProgressionPathways(
     });
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && isPartnerPathway) {
+    // Do NOT fall through to the generic "assume skilled migration" default
+    // below — that would recommend a 190/491 EOI strategy to someone who
+    // explicitly selected the Partner visa (820/801), which this engine
+    // does not assess (see isPartnerPathwaySelected in the pathway-detection
+    // section for why).
+    items.push({
+      from: isTr ? "Mevcut profil" : "Current profile",
+      to: isTr ? "Kapsam dışı" : "Out of scope",
+      label: isTr ? "Partner Vizesi (820/801) değerlendirmesi kapsam dışı" : "Partner Visa (820/801) assessment out of scope",
+      explanation: isTr
+        ? "Bu araç Partner Vizesi (820/801) için tipik bir geçiş yolu öngörmez; bu tamamen ayrı bir ilişki-temelli vize kategorisidir. Uygunluk için kayıtlı bir göçmenlik danışmanına (MARA) danışın."
+        : "This tool does not project a typical progression pathway for the Partner Visa (820/801) — it is a separate, relationship-based visa category. Consult a registered migration agent (MARA) for eligibility.",
+    });
+  } else if (items.length === 0) {
     items.push({
       from: isTr ? "Mevcut profil" : "Current profile",
       to: isTr ? "Stratejik nitelikli göç yolu" : "Strategic skilled migration route",
@@ -4430,7 +4487,42 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   let pathwayComparison: PathwayComparison[];
 
-  if (detectedSubclasses.length === 0) {
+  if (detectedSubclasses.length === 0 && isPartnerPathwaySelected(input)) {
+    pathwayComparison = [
+      {
+        subclass: "general",
+        visaName:
+          locale === "tr" ? "Partner Vizesi (820/801) — Kapsam Dışı" : "Partner Visa (820/801) — Out of Scope",
+        reason:
+          locale === "tr"
+            ? "Bu araç şu anda Partner Vizesi (820/801) değerlendirmesi yapmıyor. Bu form sponsorun Avustralya vatandaşlığı/daimi oturum statüsü, ilişkinin niteliği ve süresi gibi ilişki-temelli kanıtları toplamıyor; bu nedenle güvenilir bir uygunluk değerlendirmesi sunulamaz. Partner vizesi uygunluğu için kayıtlı bir göçmenlik danışmanına (MARA) veya immi.homeaffairs.gov.au adresine başvurun."
+            : "This tool does not currently assess the Partner Visa (820/801). This form does not collect relationship-based evidence — the sponsor's Australian citizenship/permanent residency status, or the nature and duration of the relationship — so a reliable eligibility assessment cannot be produced. For Partner visa eligibility, consult a registered migration agent (MARA) or immi.homeaffairs.gov.au.",
+        relevance: "not_enough_information",
+        confidenceLevel: "low",
+        confidenceExplanation:
+          locale === "tr"
+            ? "Partner vizesi değerlendirmesi bu aracın kapsamı dışında olduğu için güven seviyesi uygulanamaz."
+            : "Confidence does not apply — Partner visa assessment is out of scope for this tool.",
+        difficulty: "medium",
+        requirementType:
+          locale === "tr"
+            ? "İlişki ve sponsor kanıtı odaklı (bu araç tarafından toplanmıyor)"
+            : "Relationship and sponsor evidence based (not collected by this tool)",
+        userRelativePosition:
+          locale === "tr"
+            ? "Bu yol için göreli konum değerlendirilemez."
+            : "Relative positioning does not apply to this pathway.",
+        keyRequirements:
+          locale === "tr"
+            ? ["Sponsorun Avustralya vatandaşlığı/daimi oturum statüsü", "İlişkinin niteliği ve sürekliliğine ilişkin kanıt", "Kayıtlı bir göçmenlik danışmanına (MARA) danışın"]
+            : ["Sponsor's Australian citizenship/permanent residency status", "Evidence of the relationship's nature and continuity", "Consult a registered migration agent (MARA)"],
+        pathwaySpecificRisks:
+          locale === "tr"
+            ? ["Bu form Partner Vizesi (820/801) için gereken ilişki-temelli kanıtları toplamadığından, burada gösterilen diğer vize yolları (189/190/491 gibi) bu profil için geçerli veya ilgili değildir."]
+            : ["Because this form does not collect the relationship-based evidence the Partner Visa (820/801) requires, any other visa pathways this tool might otherwise show (such as 189/190/491) are not valid or relevant to this profile."],
+      },
+    ];
+  } else if (detectedSubclasses.length === 0) {
     pathwayComparison = [
       {
         subclass: "general",
@@ -4568,7 +4660,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const progressionPathways = buildProgressionPathways(
     detectedSubclasses,
     locale,
-    input.hasGraduateVisaPathwayIntent === true
+    input.hasGraduateVisaPathwayIntent === true,
+    isPartnerPathwaySelected(input)
   );
   const pathwayFriction = buildPathwayFriction(
     pathwayComparison,
@@ -4622,6 +4715,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     country: "AU",
     pathwayComparison,
     assessmentState,
+    isPartnerPathway: isPartnerPathwaySelected(input),
   });
   const premiumSections: PremiumSections = {
     ...generatedPremiumSections,

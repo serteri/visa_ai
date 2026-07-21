@@ -967,6 +967,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
       age: input.age,
       currentCountry: input.currentCountry,
       locale: input.locale,
+      preferredPathway: input.preferredPathway,
     }),
     stateNominationTracker,
     lodgementReadyChecklist: generateChecklist({

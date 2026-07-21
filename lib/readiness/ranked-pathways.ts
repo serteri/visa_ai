@@ -7,11 +7,13 @@ import type {
   RankedPathway,
   ReadinessReport,
 } from "./types";
+import { isPartnerPathwaySelected } from "./engine";
 
 type RankedPathwayInput = {
   age?: string;
   currentCountry?: string;
   locale?: Locale;
+  preferredPathway?: string;
 };
 
 const AU_RANKED_VISA_LABELS: Record<"189" | "190" | "491", Record<Locale, string>> = {
@@ -285,6 +287,14 @@ export function calculateRankedPathways(
   report: ReadinessReport,
   input: RankedPathwayInput
 ): RankedPathway[] {
+  // Same hard scope boundary as detectSubclasses() in engine.ts: when the
+  // user explicitly selected the Partner visa (820/801) pathway, the
+  // qualitative-fallback branch below would otherwise still show 189/190/491
+  // "Unlikely fit" rows unconditionally (it maps over a fixed triplet
+  // regardless of what was actually detected) — reintroducing, in the Visa
+  // Viability Ranking section, the exact bug just fixed in pathwayComparison.
+  if (isPartnerPathwaySelected(input)) return [];
+
   const locale = input.locale ?? "en";
   const gateBasedPathways = buildGateBasedRankedPathways(report, locale);
   const detectedSubclasses = report.detectedSubclasses ?? report.pathwayComparison.map((pathway) => pathway.subclass);

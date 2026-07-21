@@ -703,6 +703,17 @@ export function generatePremiumSections(input: {
   /** Required so this section can never disagree with the main engine's eligibility verdict — see assessment-state.ts. */
   pathwayComparison: PathwayComparison[];
   assessmentState: AssessmentState;
+  /**
+   * True when the user explicitly selected the Partner visa (820/801)
+   * pathway. historicalInvitationTrends below is driven purely by
+   * matchTrendByOccupation(occupation) — independent of pathwayComparison
+   * or detectedSubclasses — so without this flag it would keep showing
+   * 189/190/491 point/wait estimates to a partner-visa selector whenever
+   * their occupation happened to match a trend record, the same "wrong
+   * pathway shown" bug fixed elsewhere for the pathwayComparison and
+   * rankedPathways sections.
+   */
+  isPartnerPathway?: boolean;
 }): PremiumSections {
   const locale = input.locale ?? "en";
 
@@ -808,8 +819,21 @@ export function generatePremiumSections(input: {
     locale,
     "Historical trend data unavailable - occupation not yet verified against our database."
   );
+  const partnerPathwayOutOfScopeMessage = t3(
+    locale,
+    "Not applicable - historical invitation trend data applies to points-tested skilled migration (189/190/491), not the Partner visa (820/801) selected for this report.",
+    "Uygulanamaz - tarihsel davet trend verileri puan testli nitelikli göçe (189/190/491) aittir, bu rapor için seçilen Partner Vizesi (820/801)'ne değil.",
+    "不适用 - 历史邀请趋势数据适用于打分制技术移民（189/190/491），不适用于本报告选择的境内配偶签证（820/801）。"
+  );
 
-  const historicalInvitationTrends = trend
+  const historicalInvitationTrends = input.isPartnerPathway
+    ? {
+        matchedOccupationGroup: partnerPathwayOutOfScopeMessage,
+        anzscoCode: "",
+        estimates: [],
+        note: partnerPathwayOutOfScopeMessage,
+      }
+    : trend
     ? {
         matchedOccupationGroup: getTrendOccupationGroup(locale, trend),
         anzscoCode: trend.anzsco_code,
