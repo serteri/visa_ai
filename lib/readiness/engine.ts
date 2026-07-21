@@ -542,11 +542,20 @@ function detectSubclasses(input: ReadinessInput): string[] {
   if (hasKw(combined, ["study", "student", "course", "university", "college", "school", "eğitim", "öğrenci", "okul"])) {
     found.add("500");
   }
-  // Structured signal from the subclass 500 course fields (name, CRICOS
-  // code, completion status/date) — stronger and more direct than the
-  // freetext keyword match above, same treatment as
-  // hasGraduateVisaPathwayIntent for 485 below.
-  if (input.courseName || input.courseCricosCode || input.courseCompletionStatus) {
+  // Structured signal from the course fields (name, CRICOS code, completion
+  // status/date) — stronger and more direct than the freetext keyword match
+  // above, same treatment as hasGraduateVisaPathwayIntent for 485 below.
+  // These fields are shared with the 485 evidence checklist ("Recent
+  // Australian study" — see getEvidenceStatusItems), so when the user has
+  // explicitly selected 485 (found.has("485") from the explicit-number check
+  // above), a completed/in-progress course is evidence FOR 485, not a signal
+  // that they also want a fresh 500 — skip adding 500 in that case so one
+  // shared field set can't make a 485 applicant's report show an unrelated
+  // Student visa pathway.
+  if (
+    (input.courseName || input.courseCricosCode || input.courseCompletionStatus) &&
+    !found.has("485")
+  ) {
     found.add("500");
   }
 

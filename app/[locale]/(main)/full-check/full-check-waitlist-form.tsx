@@ -33,6 +33,14 @@ import nocListRaw from "@/src/data/countries/ca/noc-list.json";
 import anzscoListRaw from "@/src/data/anzsco-list.json";
 import Fuse from "fuse.js";
 
+// Course/CoE fields feed the evidence checklist for both the Student visa
+// (500 — "Course / CoE") and the Temporary Graduate visa (485 — "Recent
+// Australian study"), so both pathways need the chance to fill them in.
+const COURSE_FIELDS_VISA_INTERESTS = ["500", "485"];
+function showsCourseFields(visaInterest: string): boolean {
+  return COURSE_FIELDS_VISA_INTERESTS.includes(visaInterest);
+}
+
 // ── NOC Fuzzy Search Setup ────────────────────────────────────────────────────
 // Built once at module level so every keystroke hits a pre-built index.
 
@@ -1026,7 +1034,7 @@ export function FullCheckWaitlistForm({
           </div>
         )}
 
-        {visaInterest === "500" && (
+        {showsCourseFields(visaInterest) && (
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="waitlist-course-name">
