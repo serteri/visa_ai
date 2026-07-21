@@ -154,6 +154,15 @@ const optionalNominationStreamSchema = z.preprocess(
   z.enum(["direct_entry", "trt"]).optional()
 );
 
+const optionalCourseCompletionStatusSchema = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return undefined;
+    const normalized = String(value).trim();
+    return normalized ? normalized : undefined;
+  },
+  z.enum(["studying", "completed"]).optional()
+);
+
 // ─── Country-specific report schema guards ───────────────────────────────────
 
 const AU_PATHWAY_SUBCLASSES = new Set(["500", "485", "482", "189", "190", "491", "820", "801", "186", "general"]);
@@ -956,6 +965,13 @@ export async function submitFullCheckWaitlist(
     formData.get("nominationStream")
   );
   const nominationStream = nominationStreamResult.success ? nominationStreamResult.data : undefined;
+  const courseName = String(formData.get("courseName") ?? "").trim() || undefined;
+  const courseCricosCode = String(formData.get("courseCricosCode") ?? "").trim() || undefined;
+  const courseCompletionDate = String(formData.get("courseCompletionDate") ?? "").trim() || undefined;
+  const courseCompletionStatusResult = optionalCourseCompletionStatusSchema.safeParse(
+    formData.get("courseCompletionStatus")
+  );
+  const courseCompletionStatus = courseCompletionStatusResult.success ? courseCompletionStatusResult.data : undefined;
   const englishTestTaken = String(formData.get("englishTestTaken") ?? "").trim();
   const occupationConfirmed = String(formData.get("occupationConfirmed") ?? "").trim();
   const hasGraduateVisaPathwayIntentRaw = String(formData.get("hasGraduateVisaPathwayIntent") ?? "").trim();
@@ -1240,6 +1256,10 @@ export async function submitFullCheckWaitlist(
       onshoreExperienceYears,
       yearsInSponsoredPosition,
       nominationStream,
+      courseName,
+      courseCricosCode,
+      courseCompletionStatus,
+      courseCompletionDate,
       englishTestTaken: englishTestTaken || undefined,
       occupationConfirmed: occupationConfirmed || undefined,
       hasGraduateVisaPathwayIntent,
@@ -1315,6 +1335,10 @@ export async function submitFullCheckWaitlist(
     onshoreExperienceYears,
     yearsInSponsoredPosition,
     nominationStream,
+    courseName,
+    courseCricosCode,
+    courseCompletionStatus,
+    courseCompletionDate,
     englishTestTaken: englishTestTaken || undefined,
     occupationConfirmed: occupationConfirmed || undefined,
     estimatedBudgetRange: estimatedBudgetRange || undefined,

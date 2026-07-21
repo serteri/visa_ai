@@ -544,6 +544,10 @@ export function FullCheckWaitlistForm({
   const [visaInterest, setVisaInterest] = useState(initialValues.visaInterest ?? "");
   const [nominationStream, setNominationStream] = useState("");
   const [yearsInSponsoredPosition, setYearsInSponsoredPosition] = useState("");
+  const [courseName, setCourseName] = useState("");
+  const [courseCricosCode, setCourseCricosCode] = useState("");
+  const [courseCompletionStatus, setCourseCompletionStatus] = useState("");
+  const [courseCompletionDate, setCourseCompletionDate] = useState("");
   const experienceHelpText = txt(
     "Yalnızca davetten önceki son 10 yıl içindeki, aday gösterilen veya yakından ilgili meslekte, haftada en az 20 saatlik nitelikli çalışmayı yazın.",
     "Count only skilled work in your nominated or closely related occupation, at least 20 hours/week, within 10 years before invitation.",
@@ -1018,6 +1022,76 @@ export function FullCheckWaitlistForm({
                   "无需在同一雇主处任职——可累计多个获批担保雇主的工作年限总和。"
                 )}
               </p>
+            </div>
+          </div>
+        )}
+
+        {visaInterest === "500" && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-course-name">
+                {txt("Kurs / nitelik adı (opsiyonel)", "Course / qualification name (optional)", "课程/学历名称（可选）")}
+              </Label>
+              <Input
+                id="waitlist-course-name"
+                name="courseName"
+                value={courseName}
+                onChange={(e) => setCourseName(e.target.value)}
+                {...noAutofill("courseName")}
+                className={fieldClassName}
+                placeholder={txt("Örn: Master of Information Technology", "E.g., Master of Information Technology", "例如：信息技术硕士")}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-course-cricos-code">
+                {txt("CRICOS kurs kodu (opsiyonel)", "CRICOS course code (optional)", "CRICOS 课程代码（可选）")}
+              </Label>
+              <Input
+                id="waitlist-course-cricos-code"
+                name="courseCricosCode"
+                value={courseCricosCode}
+                onChange={(e) => setCourseCricosCode(e.target.value)}
+                {...noAutofill("courseCricosCode")}
+                className={fieldClassName}
+                placeholder={txt("Örn: 0123456X", "E.g., 0123456X", "例如：0123456X")}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-course-completion-status">
+                {txt("Kurs durumu (opsiyonel)", "Course status (optional)", "课程状态（可选）")}
+              </Label>
+              <select
+                id="waitlist-course-completion-status"
+                name="courseCompletionStatus"
+                value={courseCompletionStatus}
+                onChange={(e) => setCourseCompletionStatus(e.target.value)}
+                className={selectClassName}
+              >
+                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option value="studying">{txt("Hâlâ okuyorum", "Still studying", "仍在就读")}</option>
+                <option value="completed">{txt("Tamamladım", "Completed", "已完成")}</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-course-completion-date">
+                {txt(
+                  "Kursun (tahmini) tamamlanma tarihi (opsiyonel)",
+                  "Course's (estimated) completion date (optional)",
+                  "课程（预计）完成日期（可选）"
+                )}
+              </Label>
+              <Input
+                id="waitlist-course-completion-date"
+                name="courseCompletionDate"
+                type="month"
+                value={courseCompletionDate}
+                onChange={(e) => setCourseCompletionDate(e.target.value)}
+                {...noAutofill("courseCompletionDate")}
+                className={fieldClassName}
+              />
             </div>
           </div>
         )}

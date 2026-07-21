@@ -53,6 +53,25 @@ export type ReadinessInput = {
   nocCode?: string;
   /** TEER level (0–5) derived from the selected NOC code. */
   nocTeer?: number;
+  /**
+   * Subclass 500 (Student) course context. Informational (report display +
+   * evidence-readiness status) and a direct, structured 500-detection
+   * signal — any of the four being set is treated the same way
+   * hasGraduateVisaPathwayIntent is a direct signal for 485, rather than
+   * relying only on loose free-text keyword matching. Deliberately NOT
+   * used for course-to-occupation matching -- the existing `occupation`
+   * field is reused for that instead of a second, hard-to-match text field.
+   */
+  courseName?: string;
+  courseCricosCode?: string;
+  courseCompletionStatus?: "studying" | "completed";
+  /**
+   * "YYYY-MM" (native <input type="month"> format), deliberately not a
+   * finer-grained or coarser format so a future months-since-completion
+   * calculation -- e.g. against the 485 "held a student visa in the last
+   * 6 months" evidence window -- can be added without a data migration.
+   */
+  courseCompletionDate?: string;
 };
 
 export type PathwayRelevance =

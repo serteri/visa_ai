@@ -542,6 +542,13 @@ function detectSubclasses(input: ReadinessInput): string[] {
   if (hasKw(combined, ["study", "student", "course", "university", "college", "school", "eğitim", "öğrenci", "okul"])) {
     found.add("500");
   }
+  // Structured signal from the subclass 500 course fields (name, CRICOS
+  // code, completion status/date) — stronger and more direct than the
+  // freetext keyword match above, same treatment as
+  // hasGraduateVisaPathwayIntent for 485 below.
+  if (input.courseName || input.courseCricosCode || input.courseCompletionStatus) {
+    found.add("500");
+  }
 
   // Graduate → 485
   if (
@@ -2883,14 +2890,20 @@ function getEvidenceStatusItems(
       ];
     case "485":
       return [
-        { label: isTr ? "Son Avustralya eğitimi" : "Recent Australian study", status: "typically_required" },
+        {
+          label: isTr ? "Son Avustralya eğitimi" : "Recent Australian study",
+          status: input.courseCompletionStatus === "completed" ? "provided" : "typically_required",
+        },
         { label: isTr ? "İngilizce kanıtı" : "English evidence", status: hasEnglish ? "provided" : "missing" },
         { label: isTr ? "AFP kontrolü" : "AFP check", status: "typically_required" },
         { label: isTr ? "Sağlık sigortası" : "Health insurance", status: "typically_required" },
       ];
     case "500":
       return [
-        { label: isTr ? "Kurs / CoE" : "Course / CoE", status: "typically_required" },
+        {
+          label: isTr ? "Kurs / CoE" : "Course / CoE",
+          status: input.courseName || input.courseCricosCode ? "provided" : "typically_required",
+        },
         { label: isTr ? "OSHC" : "OSHC", status: "typically_required" },
         { label: isTr ? "Mali kanıt" : "Financial evidence", status: "typically_required" },
         { label: isTr ? "Pasaport ülkesi" : "Passport country", status: input.passportCountry ? "provided" : "typically_required" },
