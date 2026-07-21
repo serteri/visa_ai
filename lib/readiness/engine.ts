@@ -481,6 +481,7 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // Explicit subclass numbers first
   const pref = norm(input.preferredPathway ?? "");
   if (/\b500\b/.test(pref)) found.add("500");
+  if (/\b485\b/.test(pref)) found.add("485");
   if (/\b482\b/.test(pref)) found.add("482");
   if (/\b189\b/.test(pref)) found.add("189");
   if (/\b190\b/.test(pref)) found.add("190");
@@ -498,6 +499,29 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // Study → 500
   if (hasKw(combined, ["study", "student", "course", "university", "college", "school", "eğitim", "öğrenci", "okul"])) {
     found.add("500");
+  }
+
+  // Graduate → 485
+  if (
+    hasKw(combined, [
+      "485",
+      "graduate visa",
+      "temporary graduate",
+      "post-study work",
+      "post study work",
+      "psw",
+      "mezun vizesi",
+      "geçici mezun",
+    ])
+  ) {
+    found.add("485");
+  }
+  // Structured signal from the "currently an international student in
+  // Australia or planning to apply for a 485 Graduate Visa?" form field —
+  // stronger and more direct than the freetext keyword match above, so it
+  // is checked independently rather than folded into the hasKw() call.
+  if (input.hasGraduateVisaPathwayIntent === true) {
+    found.add("485");
   }
 
   // Sponsor/employer → 482

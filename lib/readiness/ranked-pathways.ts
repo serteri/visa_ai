@@ -234,17 +234,62 @@ function calculateQualitativeRankedPathways(report: ReadinessReport, locale: Loc
   }));
 }
 
+const GATE_BASED_SUBCLASSES = ["500", "482"] as const;
+
+/**
+ * 500 and 482 are structurally gate/eligibility-based (a study-intent or
+ * employer-sponsorship threshold, never a competitive points test), unlike
+ * 189/190/491 which are points-tested and only fall back to a qualitative
+ * tier when data happens to be missing. So these are always represented as
+ * a qualitative tier — never a fabricated matchPercentage — regardless of
+ * assessmentState.canShowNumericRanking, which governs the skilled/points
+ * lane only.
+ *
+ * Hard-ineligible cases (e.g. 482's CSIT salary gate) are deliberately
+ * excluded here: those are already surfaced by generate-pdf.ts's
+ * buildIneligiblePathwayEntries, which scans pathwayComparison directly for
+ * relevance === "ineligible" across 482/485/189/190/491. Including them
+ * here too would just produce a duplicate row (the two get de-duplicated by
+ * subclass) — cleaner to leave that case fully owned by the existing sweep.
+ */
+function buildGateBasedRankedPathways(report: ReadinessReport, locale: Locale): RankedPathway[] {
+  const raw: Array<Omit<RankedPathway, "recommendationTag">> = report.pathwayComparison
+    .filter(
+      (p): p is PathwayComparison & { subclass: (typeof GATE_BASED_SUBCLASSES)[number] } =>
+        (GATE_BASED_SUBCLASSES as readonly string[]).includes(p.subclass) && p.relevance !== "ineligible"
+    )
+    .map((p) => ({
+      subclass: p.subclass,
+      visaLabel: getLocalizedPathwayLabel(p.subclass, locale, p.visaName ?? p.subclass),
+      qualitativeTier: confidenceToQualitativeTier(p.confidenceLevel),
+      isPreliminaryOnly: true,
+      isGateBased: true,
+      preliminaryNote: p.reason,
+    }));
+
+  const sorted = [...raw].sort(
+    (a, b) => qualitativeTierRank(b.qualitativeTier!) - qualitativeTierRank(a.qualitativeTier!)
+  );
+
+  return sorted.map((item) => ({
+    ...item,
+    recommendationTag: "🔍 Preliminary Signal Only" as const,
+  }));
+}
+
 export function calculateRankedPathways(
   report: ReadinessReport,
   input: RankedPathwayInput
 ): RankedPathway[] {
+  const locale = input.locale ?? "en";
+  const gateBasedPathways = buildGateBasedRankedPathways(report, locale);
   const detectedSubclasses = report.detectedSubclasses ?? report.pathwayComparison.map((pathway) => pathway.subclass);
   const skilledDetected = detectedSubclasses.some((subclass) =>
     ["189", "190", "491"].includes(subclass)
   );
 
   if (!report.assessmentState.canShowNumericRanking || !skilledDetected) {
-    return calculateQualitativeRankedPathways(report, input.locale ?? "en");
+    return [...calculateQualitativeRankedPathways(report, locale), ...gateBasedPathways];
   }
 
   const pointsEstimate =
@@ -300,7 +345,7 @@ export function calculateRankedPathways(
   ];
 
   const sorted = [...raw].sort((a, b) => b.matchPercentage! - a.matchPercentage!);
-  return sorted.map((item, index) => ({
+  const numericRanked: RankedPathway[] = sorted.map((item, index) => ({
     ...item,
     recommendationTag:
       index === 0
@@ -309,4 +354,6 @@ export function calculateRankedPathways(
           ? "⚖️ Alternative Option"
           : "⚠️ High Risk / Low Probability",
   }));
+
+  return [...numericRanked, ...gateBasedPathways];
 }

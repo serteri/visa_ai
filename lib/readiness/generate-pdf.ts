@@ -188,6 +188,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       conditionalBadge: "KOŞULLU",
       highRiskBadge: "YÜKSEK RİSK",
       preliminarySignalOnly: "Yalnızca ön sinyal",
+      gateBasedPathway: "Eşik/uygunluk bazlı yol",
       referenceOnly: "yalnızca referans",
       qualitativeFitPotential: "Olası uyum",
       qualitativeFitUnclear: "Belirsiz uyum",
@@ -313,6 +314,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       conditionalBadge: "有条件",
       highRiskBadge: "高风险",
       preliminarySignalOnly: "仅初步信号",
+      gateBasedPathway: "基于门槛/资格的路径",
       referenceOnly: "仅供参考",
       qualitativeFitPotential: "可能匹配",
       qualitativeFitUnclear: "匹配度不明确",
@@ -437,6 +439,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     conditionalBadge: "CONDITIONAL",
     highRiskBadge: "HIGH RISK",
     preliminarySignalOnly: "Preliminary signal only",
+    gateBasedPathway: "Gate/eligibility-based pathway",
     referenceOnly: "reference only",
     qualitativeFitPotential: "Potential fit",
     qualitativeFitUnclear: "Unclear fit",
@@ -2868,7 +2871,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         setBoldFont();
         doc.setFontSize(FONTS.body);
         doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-        doc.text(safeText(`${item.visaLabel} - ${text.preliminarySignalOnly}`), margin + 2.5, topY + 5.2);
+        doc.text(
+          safeText(`${item.visaLabel} - ${item.isGateBased ? text.gateBasedPathway : text.preliminarySignalOnly}`),
+          margin + 2.5,
+          topY + 5.2
+        );
 
         const badgeWidth = Math.min(45, Math.max(24, doc.getTextWidth(safeText(badge.label)) + 7));
         doc.setFillColor(badge.color.r, badge.color.g, badge.color.b);

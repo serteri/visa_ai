@@ -224,7 +224,7 @@ export type RankedPathwayRecommendation =
 export type QualitativeFitTier = "Potential fit" | "Unclear fit" | "Unlikely fit";
 
 export type RankedPathway = {
-  subclass: "189" | "190" | "491" | "482" | "485" | "186" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
+  subclass: "189" | "190" | "491" | "482" | "485" | "500" | "186" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
   visaLabel: string;
   /** Only present when assessmentState.canShowNumericRanking is true — a real deterministic figure, never a placeholder. */
   matchPercentage?: number;
@@ -236,6 +236,15 @@ export type RankedPathway = {
   isPreliminaryOnly?: boolean;
   /** "Preliminary signal only — points cannot be calculated until [missing fields] are provided." Set when isPreliminaryOnly is true. */
   preliminaryNote?: string;
+  /**
+   * True for pathways that are structurally gate/eligibility-based (500,
+   * 482) rather than points-competitive (189/190/491) — they will NEVER
+   * produce a matchPercentage, regardless of how much profile data is
+   * provided, unlike isPreliminaryOnly-only entries which are missing a
+   * number only temporarily. Lets the renderer show accurate copy ("Gate-
+   * Based Pathway") instead of implying more data will yield a percentage.
+   */
+  isGateBased?: boolean;
   recommendationTag: RankedPathwayRecommendation;
   /** Hard Gate (1 July 2026): true when a mandatory rule threshold (salary/age) was violated. Forces this entry to the top of the Visa Viability Ranking, rendered in red. */
   isHardIneligible?: boolean;
