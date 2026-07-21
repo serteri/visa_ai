@@ -6,6 +6,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { LanguageProvider } from "@/contexts/language-context";
 import { Header } from "@/components/header";
 import { GlobalDisclaimerFooter } from "@/components/global-disclaimer-footer";
+import { PreFooterCta } from "@/components/pre-footer-cta";
 import { RefCapture } from "@/components/ref-capture";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
@@ -152,6 +153,7 @@ export default async function LocaleLayout({
       </Suspense>
       <Header locale={locale} showAdmin={showAdmin} />
       <main className="overflow-x-hidden pt-28 sm:pt-32">{children}</main>
+      <PreFooterCta locale={locale} />
       <GlobalDisclaimerFooter />
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </LanguageProvider>
