@@ -1308,7 +1308,7 @@ export function FullCheckWaitlistForm({
           )}
 
           {/* Subtle helper link — AU/ANZSCO only. Opens in new tab so form progress is preserved. */}
-          {selectedCountry !== "CA" && (
+          {selectedCountry === "AU" && (
             <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
