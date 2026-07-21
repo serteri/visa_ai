@@ -176,7 +176,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
       {/* Trust & Authority: Stats Bar */}
       <section className="border-y border-slate-200 bg-slate-100/70 py-10 dark:border-zinc-800 dark:bg-zinc-900/40">
         <div className="section-shell">
-          <div className="grid grid-cols-2 gap-8 divide-slate-200 text-center sm:grid-cols-4 sm:divide-x dark:divide-zinc-800">
+          <div className="grid grid-cols-2 gap-4 divide-slate-200 sm:grid-cols-4 sm:gap-8 sm:divide-x dark:divide-zinc-800">
             {[
               {
                 value: "707+",
@@ -211,11 +211,11 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
                   locale === "tr" ? "Göç Verileri" : locale === "zh-Hans" ? "移民数据" : "Immigration Data",
               },
             ].map((stat) => (
-              <div key={stat.label} className="px-2">
+              <div key={stat.label} className="flex flex-col items-center justify-center gap-1 px-2 text-center">
                 <p className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
                   {stat.value}
                 </p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:text-sm dark:text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 sm:text-sm dark:text-slate-400">
                   {stat.label}
                 </p>
               </div>
@@ -236,8 +236,8 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
                 ? "由官方移民数据提供支持："
                 : "Powered by Official Immigration Data:"}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-            <div className="flex items-center gap-2 text-slate-500 opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0 dark:text-slate-400">
+          <div className="flex flex-col items-center justify-center gap-6 md:flex-row md:flex-wrap md:gap-x-10 md:gap-y-4">
+            <div className="flex flex-col items-center gap-2 text-center text-slate-500 opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0 dark:text-slate-400 md:flex-row md:text-left">
               <span className="text-xl">🇦🇺</span>
               <span className="text-sm font-bold tracking-tight sm:text-base">
                 {locale === "tr"
@@ -247,7 +247,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
                     : "Australian Govt. Department of Home Affairs (ANZSCO)"}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-slate-500 opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0 dark:text-slate-400">
+            <div className="flex flex-col items-center gap-2 text-center text-slate-500 opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0 dark:text-slate-400 md:flex-row md:text-left">
               <span className="text-xl">🇨🇦</span>
               <span className="text-sm font-bold tracking-tight sm:text-base">
                 {locale === "tr"
@@ -276,7 +276,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
           {[
             {
               icon: ClipboardList,
@@ -329,23 +329,23 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
           ].map((step, index) => (
             <div
               key={step.title}
-              className="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50"
+              className="relative flex flex-col gap-2 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 md:gap-4 dark:border-zinc-800 dark:bg-zinc-900/50"
             >
-              <span className="absolute right-6 top-6 text-sm font-bold text-slate-300 dark:text-zinc-700">
-                0{index + 1}
-              </span>
-              <div
-                className={`mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl ${
-                  step.color === "indigo"
-                    ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
-                    : step.color === "purple"
-                      ? "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
-                      : "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
-                }`}
-              >
-                <step.icon className="h-6 w-6" />
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                    step.color === "indigo"
+                      ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
+                      : step.color === "purple"
+                        ? "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
+                        : "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  }`}
+                >
+                  <step.icon className="h-6 w-6" />
+                </div>
+                <span className="text-sm font-bold text-slate-300 dark:text-zinc-700">0{index + 1}</span>
               </div>
-              <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">{step.title}</h3>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">{step.title}</h3>
               <p className="text-slate-600 dark:text-slate-400">{step.description}</p>
             </div>
           ))}
@@ -413,7 +413,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
               flag: "🇦🇺",
@@ -474,23 +474,23 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
           ].map((item) => (
             <div
               key={item.name}
-              className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900/50 sm:p-7"
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900/50 sm:p-7"
             >
-              <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="mb-4 flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">{item.flag}</span>
+                  <span className="shrink-0 text-2xl">{item.flag}</span>
                   <div>
                     <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
                   </div>
                 </div>
-                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:bg-zinc-800 dark:text-slate-400">
+                <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:bg-zinc-800 dark:text-slate-400">
                   {locale === "tr" ? "Vaka İncelemesi" : locale === "zh-Hans" ? "案例研究" : "Case Study"}
                 </span>
               </div>
 
               <span
-                className={`mb-3 inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ${
+                className={`mb-3 inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-bold ${
                   item.badgeColor === "amber"
                     ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
                     : item.badgeColor === "indigo"
@@ -503,7 +503,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
                 {item.badgeText}
               </span>
 
-              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              <p className="line-clamp-3 text-sm leading-relaxed text-slate-600 sm:line-clamp-none dark:text-slate-400">
                 {item.narrative}
               </p>
             </div>
@@ -557,7 +557,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
           <div className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-blue-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-200/50 dark:border-blue-800/60 dark:bg-zinc-900/70 dark:hover:border-blue-600">
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl pointer-events-none transition-all group-hover:bg-blue-500/20" />
 
-            <div className="relative flex flex-1 flex-col gap-4 p-8">
+            <div className="relative flex flex-1 flex-col items-center gap-4 p-5 text-center sm:p-8 md:items-start md:text-left">
               <div className="flex items-center gap-2">
                 <span className="text-3xl">🇹🇷</span>
                 <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
@@ -594,34 +594,40 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
                 )}
               </p>
 
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-blue-500">✓</span>
-                  {locale === "tr"
-                    ? "80+ sayfa, 13 bölüm, 2026 güncel verileri"
-                    : locale === "zh-Hans"
-                      ? "80+ 页，13 章，2026 最新数据"
-                      : "80+ pages across 13 chapters, 2026 data"}
+              <ul className="w-full space-y-2 text-left text-sm text-slate-600 dark:text-slate-400">
+                <li className="flex flex-row items-start gap-2">
+                  <span className="mt-0.5 shrink-0 text-blue-500">✓</span>
+                  <span>
+                    {locale === "tr"
+                      ? "80+ sayfa, 13 bölüm, 2026 güncel verileri"
+                      : locale === "zh-Hans"
+                        ? "80+ 页，13 章，2026 最新数据"
+                        : "80+ pages across 13 chapters, 2026 data"}
+                  </span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-blue-500">✓</span>
-                  {locale === "tr"
-                    ? "189 / 190 / 491 puan testi ve ANZSCO kod rehberi"
-                    : locale === "zh-Hans"
-                      ? "189 / 190 / 491 打分测试与 ANZSCO 职业代码指南"
-                      : "189 / 190 / 491 points test and ANZSCO code guide"}
+                <li className="flex flex-row items-start gap-2">
+                  <span className="mt-0.5 shrink-0 text-blue-500">✓</span>
+                  <span>
+                    {locale === "tr"
+                      ? "189 / 190 / 491 puan testi ve ANZSCO kod rehberi"
+                      : locale === "zh-Hans"
+                        ? "189 / 190 / 491 打分测试与 ANZSCO 职业代码指南"
+                        : "189 / 190 / 491 points test and ANZSCO code guide"}
+                  </span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-blue-500">✓</span>
-                  {locale === "tr"
-                    ? "Türk başvurucular için özelleştirilmiş belge rehberi"
-                    : locale === "zh-Hans"
-                      ? "为土耳其申请人定制的材料清单"
-                      : "Document checklist tailored to Turkish applicants"}
+                <li className="flex flex-row items-start gap-2">
+                  <span className="mt-0.5 shrink-0 text-blue-500">✓</span>
+                  <span>
+                    {locale === "tr"
+                      ? "Türk başvurucular için özelleştirilmiş belge rehberi"
+                      : locale === "zh-Hans"
+                        ? "为土耳其申请人定制的材料清单"
+                        : "Document checklist tailored to Turkish applicants"}
+                  </span>
                 </li>
               </ul>
 
-              <div className="mt-auto pt-4">
+              <div className="mt-auto w-full pt-4">
                 {hasFreeSlots ? (
                   <Button
                     size="lg"
@@ -669,7 +675,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
           <div className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-emerald-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-200/50 dark:border-emerald-800/60 dark:bg-zinc-900/70 dark:hover:border-emerald-600">
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none transition-all group-hover:bg-emerald-500/20" />
 
-            <div className="relative flex flex-1 flex-col gap-4 p-8">
+            <div className="relative flex flex-1 flex-col items-center gap-4 p-5 text-center sm:p-8 md:items-start md:text-left">
               <div className="flex items-center gap-2">
                 <span className="text-3xl">🌏</span>
                 <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
@@ -707,34 +713,40 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
                 )}
               </p>
 
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-emerald-500">✓</span>
-                  {locale === "tr"
-                    ? "Skilled Migration (189/190/491) — puan testi ve strateji"
-                    : locale === "zh-Hans"
-                      ? "技术移民（189/190/491）— 打分测试与策略"
-                      : "Skilled Migration (189/190/491) — points test & strategy"}
+              <ul className="w-full space-y-2 text-left text-sm text-slate-600 dark:text-slate-400">
+                <li className="flex flex-row items-start gap-2">
+                  <span className="mt-0.5 shrink-0 text-emerald-500">✓</span>
+                  <span>
+                    {locale === "tr"
+                      ? "Skilled Migration (189/190/491) — puan testi ve strateji"
+                      : locale === "zh-Hans"
+                        ? "技术移民（189/190/491）— 打分测试与策略"
+                        : "Skilled Migration (189/190/491) — points test & strategy"}
+                  </span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-emerald-500">✓</span>
-                  {locale === "tr"
-                    ? "Öğrenci Vizesi (Subclass 500) → PR köprü stratejisi"
-                    : locale === "zh-Hans"
-                      ? "学生签证（500 类别）→ PR 过渡策略"
-                      : "Student Visa (Subclass 500) → PR bridge strategy"}
+                <li className="flex flex-row items-start gap-2">
+                  <span className="mt-0.5 shrink-0 text-emerald-500">✓</span>
+                  <span>
+                    {locale === "tr"
+                      ? "Öğrenci Vizesi (Subclass 500) → PR köprü stratejisi"
+                      : locale === "zh-Hans"
+                        ? "学生签证（500 类别）→ PR 过渡策略"
+                        : "Student Visa (Subclass 500) → PR bridge strategy"}
+                  </span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-emerald-500">✓</span>
-                  {locale === "tr"
-                    ? "Sydney, Melbourne, Brisbane, Adelaide için 2026 yaşam maliyeti"
-                    : locale === "zh-Hans"
-                      ? "悉尼、墨尔本、布里斯班、阿德莱德 2026 年生活成本"
-                      : "2026 cost of living for Sydney, Melbourne, Brisbane, Adelaide"}
+                <li className="flex flex-row items-start gap-2">
+                  <span className="mt-0.5 shrink-0 text-emerald-500">✓</span>
+                  <span>
+                    {locale === "tr"
+                      ? "Sydney, Melbourne, Brisbane, Adelaide için 2026 yaşam maliyeti"
+                      : locale === "zh-Hans"
+                        ? "悉尼、墨尔本、布里斯班、阿德莱德 2026 年生活成本"
+                        : "2026 cost of living for Sydney, Melbourne, Brisbane, Adelaide"}
+                  </span>
                 </li>
               </ul>
 
-              <div className="mt-auto pt-4">
+              <div className="mt-auto w-full pt-4">
                 {hasFreeSlots ? (
                   <Button
                     size="lg"
@@ -798,58 +810,64 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
           {/* Bento Card 1 */}
-          <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
-            <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
+          <div className="group relative flex flex-row items-start gap-4 overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-xl sm:p-8 dark:border-zinc-800 dark:bg-zinc-900/50">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
               <span className="text-2xl">✨</span>
             </div>
-            <h3 className="mb-3 text-xl font-bold text-slate-900 dark:text-white">
-              {locale === "tr" ? "Puan Hesaplayıcı" : locale === "zh-Hans" ? "积分计算器" : "Points Calculator"}
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400">
-              {locale === "tr"
-                ? "Tahmini puanınızı ve potansiyel ek puan fırsatlarını gerçek göç kurallarına göre anında hesaplayın."
-                : locale === "zh-Hans"
-                ? "根据移民规则即刻计算您的预估分数以及潜在的加分机会。"
-                : "Instantly calculate your estimated points and potential bonus point opportunities based on real immigration rules."}
-            </p>
+            <div>
+              <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
+                {locale === "tr" ? "Puan Hesaplayıcı" : locale === "zh-Hans" ? "积分计算器" : "Points Calculator"}
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400">
+                {locale === "tr"
+                  ? "Tahmini puanınızı ve potansiyel ek puan fırsatlarını gerçek göç kurallarına göre anında hesaplayın."
+                  : locale === "zh-Hans"
+                  ? "根据移民规则即刻计算您的预估分数以及潜在的加分机会。"
+                  : "Instantly calculate your estimated points and potential bonus point opportunities based on real immigration rules."}
+              </p>
+            </div>
             <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-indigo-500/10 blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
           </div>
 
           {/* Bento Card 2 */}
-          <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
-            <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+          <div className="group relative flex flex-row items-start gap-4 overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-xl sm:p-8 dark:border-zinc-800 dark:bg-zinc-900/50">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
               <span className="text-2xl">🔍</span>
             </div>
-            <h3 className="mb-3 text-xl font-bold text-slate-900 dark:text-white">
-              {locale === "tr" ? "Gizli Riskler" : locale === "zh-Hans" ? "潜在风险" : "Hidden Risks"}
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400">
-              {locale === "tr" 
-                ? "Profilinizdeki eksik belgeleri ve red riskini artırabilecek zayıf noktaları önceden tespit edin." 
-                : locale === "zh-Hans" 
-                ? "提前发现您档案中缺失的材料以及可能增加拒签风险的弱点。" 
-                : "Identify missing documents and weak spots in your profile that could increase your risk of refusal."}
-            </p>
+            <div>
+              <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
+                {locale === "tr" ? "Gizli Riskler" : locale === "zh-Hans" ? "潜在风险" : "Hidden Risks"}
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400">
+                {locale === "tr"
+                  ? "Profilinizdeki eksik belgeleri ve red riskini artırabilecek zayıf noktaları önceden tespit edin."
+                  : locale === "zh-Hans"
+                  ? "提前发现您档案中缺失的材料以及可能增加拒签风险的弱点。"
+                  : "Identify missing documents and weak spots in your profile that could increase your risk of refusal."}
+              </p>
+            </div>
             <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-purple-500/10 blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
           </div>
 
           {/* Bento Card 3 */}
-          <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
-            <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+          <div className="group relative flex flex-row items-start gap-4 overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-xl sm:p-8 dark:border-zinc-800 dark:bg-zinc-900/50">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
               <span className="text-2xl">🗺️</span>
             </div>
-            <h3 className="mb-3 text-xl font-bold text-slate-900 dark:text-white">
+            <div>
+            <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
               {locale === "tr" ? "Maliyet Yol Haritası" : locale === "zh-Hans" ? "费用路线图" : "Cost Roadmap"}
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
-              {locale === "tr" 
-                ? "Vize ücretleri, danışmanlık masrafları ve diğer tüm süreç maliyetlerini detaylı bir şekilde planlayın." 
+              {locale === "tr"
+                ? "Vize ücretleri, danışmanlık masrafları ve diğer tüm süreç maliyetlerini detaylı bir şekilde planlayın."
                 : locale === "zh-Hans" 
                 ? "详细规划签证费、咨询费以及整个流程中的其他所有成本。" 
                 : "Detailed planning of visa fees, consultation costs, and all other expenses involved in your journey."}
             </p>
+            </div>
             <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-emerald-500/10 blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
           </div>
         </div>
@@ -954,7 +972,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
           </h2>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
           {[
             {
               initials: "DL",
