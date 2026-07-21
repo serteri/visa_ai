@@ -76,26 +76,16 @@ function findOccupationRecord(input: ReadinessInput): OccupationRecord | undefin
   return findCanonicalOccupationRecord(canonicalizeOccupationInput(input.occupation)) as OccupationRecord | undefined;
 }
 
+// Matches strictly by ANZSCO code -- see the equivalent, more heavily used
+// matchTrendByOccupation() in src/lib/readiness/report-generator.ts for why
+// a name-based fallback here is unsafe (distinct codes sharing an
+// occupation name, e.g. Software Engineer 233119 vs 261313, would silently
+// borrow the wrong occupation's friction/reality text otherwise).
 function findTrendRecord(input: ReadinessInput, occupation?: OccupationRecord): TrendRecord | undefined {
-  const canonicalOccupation = canonicalizeOccupationInput(input.occupation);
-  const code = occupation?.anzsco_code ?? parseAnzscoCode(canonicalOccupation);
-  if (code) {
-    const byCode = TREND_ROWS.find((row) => row.anzsco_code === code);
-    if (byCode) return byCode;
-  }
+  const code = occupation?.anzsco_code ?? parseAnzscoCode(canonicalizeOccupationInput(input.occupation));
+  if (!code) return undefined;
 
-  const q = normalize(canonicalOccupation);
-  if (!q) return undefined;
-
-  const exact = TREND_ROWS.find(
-    (row) => normalize(row.occupation_group) === q || normalize(row.occupation_group_zh) === q
-  );
-  if (exact) return exact;
-
-  return TREND_ROWS.find((row) => {
-    const zh = normalize(row.occupation_group_zh);
-    return normalize(row.occupation_group).includes(q) || (zh ? zh.includes(q) || q.includes(zh) : false);
-  });
+  return TREND_ROWS.find((row) => row.anzsco_code === code);
 }
 
 function parseAgeRange(age?: string): AgeRange | undefined {

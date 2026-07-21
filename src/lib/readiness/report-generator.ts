@@ -348,36 +348,23 @@ function inferCanadaActionTrack(locale: Locale, occupation?: string): { title: s
   };
 }
 
+/**
+ * Matches strictly by ANZSCO code, never by occupation name text. Trend
+ * coverage is a small, curated set (src/data/visa-trends.json) sitting
+ * alongside the much larger occupations.json -- many different ANZSCO
+ * codes share the same or a similar occupation name (e.g. "Software
+ * Engineer" is both 233119, unmapped to any skilled list, and 261313, a
+ * real MLTSSL entry with its own trend row). A name-based fallback here
+ * previously matched those unrelated codes together, showing one
+ * occupation's real invitation-point/wait estimates under a completely
+ * different occupation's report. No code in the input, or a code with no
+ * trend row, means no trend data -- never a name-guessed substitute.
+ */
 function matchTrendByOccupation(occupation?: string): TrendRecord | undefined {
-  const query = normalize(occupation);
-  if (!query) {
-    return undefined;
-  }
-
   const codeMatch = occupation?.match(/(\d{6})/)?.[1];
-  if (codeMatch) {
-    const byCode = TREND_DATA.occupation_trends.find((row) => row.anzsco_code === codeMatch);
-    if (byCode) return byCode;
-  }
+  if (!codeMatch) return undefined;
 
-  const exact = TREND_DATA.occupation_trends.find(
-    (row) => normalize(row.occupation_group) === query || normalize(row.occupation_group_zh) === query
-  );
-  if (exact) return exact;
-
-  const partial = TREND_DATA.occupation_trends.find((row) => {
-    const source = normalize(row.occupation_group);
-    const zh = normalize(row.occupation_group_zh);
-    return source.includes(query) || query.includes(source) || (zh ? zh.includes(query) || query.includes(zh) : false);
-  });
-  if (partial) return partial;
-
-  const keyword = TREND_DATA.occupation_trends.find((row) => {
-    const source = normalize(row.occupation_group);
-    return query.split(/\s+/).some((word) => word.length > 3 && source.includes(word));
-  });
-
-  return keyword;
+  return TREND_DATA.occupation_trends.find((row) => row.anzsco_code === codeMatch);
 }
 
 function buildRawGanttSteps(
