@@ -183,6 +183,98 @@ function evaluateEmployerSalaryGate(input: ReadinessInput): {
   };
 }
 
+const DIRECT_ENTRY_186_MAX_AGE = 45;
+const TRT_186_MIN_SPONSORED_YEARS = 2;
+
+/**
+ * Narrow, documented exceptions to the Direct Entry 45 age cap: academics,
+ * government/university scientists or researchers, and eligible NZ subclass
+ * 444/461 holders. Detected only via freetext keyword signals (no dedicated
+ * ReadinessInput field exists for nominator type or NZ visa history), so
+ * this is best-effort — same limitation as has485AgeException.
+ */
+function has186DirectEntryAgeException(input: ReadinessInput): boolean {
+  const combined = [input.mainGoal ?? "", input.preferredPathway ?? "", input.biggestConcern ?? "", input.occupation ?? ""]
+    .join(" ")
+    .toLowerCase();
+  return /(academic|university lecturer|faculty head|scientist|researcher|technical specialist|nz visa 444|nz visa 461|subclass 444|subclass 461)/i.test(
+    combined
+  );
+}
+
+/**
+ * The occupation dataset (src/data/occupations.json) only tracks
+ * MLTSSL/STSOL/ROL membership, not CSOL (which superseded those lists under
+ * the Migration Strategy reforms). An MLTSSL match is used as a proxy signal
+ * for "likely on CSOL" — high-confidence but not a direct CSOL lookup, so
+ * callers must not present this as a definitive CSOL confirmation.
+ */
+function isLikelyOnCsolViaMltsslProxy(occupation?: string): boolean {
+  return getEligibleSkilledSubclasses(occupation).includes("189");
+}
+
+/**
+ * Direct Entry stream (permanent, points-untested): age <45 (subject to the
+ * narrow exceptions above), positive skills assessment, occupation on CSOL
+ * (approximated via MLTSSL proxy — see isLikelyOnCsolViaMltsslProxy), and at
+ * least 3 years of relevant work experience (approximated as the sum of
+ * offshore + onshore experience years, since no single "total relevant
+ * experience" field exists).
+ */
+function evaluate186DirectEntryGate(input: ReadinessInput): {
+  declaredAge: number | null;
+  isAgeIneligible: boolean;
+  hasAgeException: boolean;
+  hasSkillsAssessment: boolean;
+  isLikelyOnCsol: boolean;
+  hasOccupation: boolean;
+  totalExperienceYears: number;
+  meetsExperienceThreshold: boolean;
+} {
+  const declaredAge = parseDeclaredAge(input);
+  const hasAgeException = has186DirectEntryAgeException(input);
+  const isAgeIneligible = declaredAge !== null && declaredAge >= DIRECT_ENTRY_186_MAX_AGE && !hasAgeException;
+  const hasSkillsAssessment = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
+  const totalExperienceYears = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
+  return {
+    declaredAge,
+    isAgeIneligible,
+    hasAgeException,
+    hasSkillsAssessment,
+    isLikelyOnCsol: isLikelyOnCsolViaMltsslProxy(input.occupation),
+    hasOccupation: Boolean(input.occupation),
+    totalExperienceYears,
+    meetsExperienceThreshold: totalExperienceYears >= 3,
+  };
+}
+
+/**
+ * TRT stream (permanent, experience-based, no age limit, no points test): at
+ * least 2 years of employment in the nominated occupation aggregated across
+ * any employer(s) that held approved-sponsor status during the counted
+ * period (DHA removed the same-employer requirement in Dec 2024; the 29 Nov
+ * 2025 amendment only requires each counted period to be under an approved
+ * sponsor, not a single continuous employer — see yearsInSponsoredPosition
+ * doc comment in types.ts). CSOL membership is applied here too per current
+ * guidance, approximated via the same MLTSSL proxy as Direct Entry.
+ */
+function evaluate186TrtGate(input: ReadinessInput): {
+  yearsInSponsoredPosition: number | null;
+  meetsTenureThreshold: boolean;
+  isLikelyOnCsol: boolean;
+  hasOccupation: boolean;
+} {
+  const years = typeof input.yearsInSponsoredPosition === "number" && Number.isFinite(input.yearsInSponsoredPosition)
+    ? input.yearsInSponsoredPosition
+    : null;
+  return {
+    yearsInSponsoredPosition: years,
+    meetsTenureThreshold: years !== null && years >= TRT_186_MIN_SPONSORED_YEARS,
+    isLikelyOnCsol: isLikelyOnCsolViaMltsslProxy(input.occupation),
+    hasOccupation: Boolean(input.occupation),
+  };
+}
+
 const QUALIFICATIONS_BACHELOR_OR_LOWER = new Set([
   "High School",
   "Bachelor's Degree",
@@ -393,6 +485,7 @@ function detectSubclasses(input: ReadinessInput): string[] {
   if (/\b189\b/.test(pref)) found.add("189");
   if (/\b190\b/.test(pref)) found.add("190");
   if (/\b491\b/.test(pref)) found.add("491");
+  if (/\b186\b/.test(pref)) found.add("186");
   // Partner/Family visas (820, 801, 300, 309, 100) are intentionally never
   // detected or added here. The readiness form does not collect sponsor
   // citizenship data, so this engine is scoped to General Skilled Migration
@@ -410,6 +503,22 @@ function detectSubclasses(input: ReadinessInput): string[] {
   // Sponsor/employer → 482
   if (hasKw(combined, ["482", "employer", "sponsor", "sponsored", "job offer", "işveren", "sponsorlu"])) {
     found.add("482");
+  }
+
+  // Employer Nomination Scheme (permanent) → 186
+  if (
+    hasKw(combined, [
+      "186",
+      "employer nomination",
+      "ens visa",
+      "ens stream",
+      "permanent sponsor",
+      "temporary residence transition",
+      "işveren aday gösterme",
+      "kalıcı sponsor",
+    ])
+  ) {
+    found.add("186");
   }
 
   // Regional → also ensure 491
@@ -818,6 +927,7 @@ const VISA_NAMES: Record<string, { en: string; tr: string }> = {
   "491": { en: "Skilled Work Regional Visa", tr: "Bölgesel Yetenekli Çalışma Vizesi" },
   "820": { en: "Partner Visa - Temporary (Onshore)", tr: "Partner Vizesi - Geçici (Yerinde)" },
   "801": { en: "Partner Visa - Permanent", tr: "Partner Vizesi - Kalıcı" },
+  "186": { en: "Employer Nomination Scheme Visa (subclass 186)", tr: "İşveren Aday Gösterme Programı Vizesi (subclass 186)" },
 };
 
 function getPathwayKeyRequirements(
@@ -911,6 +1021,18 @@ function getPathwayKeyRequirements(
             "Partner sponsorship status context",
             "Information relevant to the nature and continuity of the relationship",
             "Supporting context about living arrangements or shared life",
+          ];
+    case "186":
+      return isTr
+        ? [
+            "İşveren aday gösterme bağlamı ve CSOL meslek listesi uyumu",
+            "Direct Entry akışı için beceri değerlendirmesi ve yaş (<45) bağlamı",
+            "TRT akışı için onaylı sponsor altında geçirilen süre (en az 2 yıl) bağlamı",
+          ]
+        : [
+            "Employer nomination context and CSOL occupation-list alignment",
+            "Direct Entry stream: skills assessment and age (<45) context",
+            "TRT stream: time spent under an approved sponsor (at least 2 years) context",
           ];
     default:
       return isTr
@@ -1053,6 +1175,40 @@ function getPathwaySpecificRisks(
     }
   }
 
+  if (subclass === "186") {
+    const salaryGate = evaluateEmployerSalaryGate(input);
+    const directEntryGate = evaluate186DirectEntryGate(input);
+    const trtGate = evaluate186TrtGate(input);
+
+    if (salaryGate.isBelowCsit && salaryGate.declaredSalaryAud !== null) {
+      risks.push(formatIneligibleSalaryReason(locale, salaryGate.declaredSalaryAud));
+    }
+    if (directEntryGate.isAgeIneligible && directEntryGate.declaredAge !== null) {
+      risks.push(t(locale, "ineligible.ageReason", { age: directEntryGate.declaredAge, ageLimit: DIRECT_ENTRY_186_MAX_AGE }));
+    }
+    if (trtGate.yearsInSponsoredPosition !== null && !trtGate.meetsTenureThreshold) {
+      risks.push(
+        isTr
+          ? `TRT akışı için gereken en az ${TRT_186_MIN_SPONSORED_YEARS} yıllık onaylı sponsor süresi henüz karşılanmıyor (beyan edilen: ${trtGate.yearsInSponsoredPosition} yıl).`
+          : `The TRT stream's minimum ${TRT_186_MIN_SPONSORED_YEARS}-year approved-sponsor period is not yet met (declared: ${trtGate.yearsInSponsoredPosition} ${trtGate.yearsInSponsoredPosition === 1 ? "year" : "years"}).`
+      );
+    }
+    if ((directEntryGate.hasOccupation || trtGate.hasOccupation) && !directEntryGate.isLikelyOnCsol) {
+      risks.push(
+        isTr
+          ? "Meslek, MLTSSL eşleşmesi üzerinden CSOL'de olası görünüyor ancak bu bir yaklaşık değerdir — gerçek CSOL listesini ayrıca doğrulayın."
+          : "Occupation appears likely on CSOL based on an MLTSSL-match proxy — this is an approximation, not a direct CSOL lookup; verify against the current CSOL separately."
+      );
+    }
+    if (!input.nominationStream) {
+      risks.push(
+        isTr
+          ? "Direct Entry mi yoksa TRT akışı mı hedeflendiği belirtilmediği için değerlendirme her iki akışı da kapsayacak şekilde genel tutuldu."
+          : "Because it wasn't specified whether Direct Entry or TRT is the target stream, this assessment covers both generally."
+      );
+    }
+  }
+
   if (risks.length === 0) {
     risks.push(
       isTr
@@ -1139,6 +1295,19 @@ function getPathwayConfidenceLevel(
     return base;
   }
 
+  if (subclass === "186") {
+    const directEntryGate = evaluate186DirectEntryGate(input);
+    const trtGate = evaluate186TrtGate(input);
+    const trtLooksStrong = trtGate.meetsTenureThreshold && trtGate.isLikelyOnCsol;
+    const directEntryLooksStrong =
+      directEntryGate.hasSkillsAssessment && directEntryGate.meetsExperienceThreshold && directEntryGate.isLikelyOnCsol;
+    if (dataCompletenessPercentage < 40) return "low";
+    if (trtLooksStrong || directEntryLooksStrong) {
+      return dataCompletenessPercentage >= 60 ? "high" : "medium";
+    }
+    return input.occupation ? "medium" : "low";
+  }
+
   return "low";
 }
 
@@ -1215,6 +1384,16 @@ function getConfidenceExplanation(
       : hasSponsorContext
         ? `Confidence is stronger with relationship/sponsor context and current available detail (${dataCompletenessPercentage}%).`
         : `Confidence is lower when relationship/sponsor context or available detail (${dataCompletenessPercentage}%) is limited.`;
+  }
+
+  if (subclass === "186") {
+    return isTr
+      ? hasSponsorContext && hasOccupation
+        ? `İşveren sponsorluğu ve meslek bağlamı mevcut; veri tamamlanma düzeyi (%${dataCompletenessPercentage}) ile birlikte güven destekleniyor.`
+        : `İşveren sponsorluğu/meslek bağlamı veya veri tamamlanma düzeyi (%${dataCompletenessPercentage}) sınırlı olduğu için güven daha temkinli.`
+      : hasSponsorContext && hasOccupation
+        ? `Employer sponsorship and occupation context are visible, and the available detail (${dataCompletenessPercentage}%) supports this confidence level.`
+        : `Employer sponsorship/occupation context or available detail (${dataCompletenessPercentage}%) is limited, so confidence remains cautious.`;
   }
 
   const knownSignals = [hasAge, hasEnglish, hasOccupation, hasSponsorContext].filter(Boolean)
@@ -1339,6 +1518,77 @@ function buildPathwayEntry(
       : hasPartnerSignal
         ? "The partner context indicates the 820/801 Partner Visa may be a possible pathway. This depends on individual circumstances and the sponsor's Australian status."
         : "The 820/801 Partner Visa requires a sponsor who is an Australian citizen, permanent resident, or NZ citizen. Sponsor information would support this assessment.";
+  } else if (subclass === "186") {
+    const salaryGate186 = evaluateEmployerSalaryGate(input);
+    const directEntryGate = evaluate186DirectEntryGate(input);
+    const trtGate = evaluate186TrtGate(input);
+
+    if (salaryGate186.isBelowCsit && salaryGate186.declaredSalaryAud !== null) {
+      // Hard Gate: the CSIT salary floor applies to both 186 streams (employer-sponsored).
+      relevance = "ineligible";
+      reason = formatIneligibleSalaryReason(locale, salaryGate186.declaredSalaryAud);
+    } else if (input.nominationStream === "trt") {
+      if (trtGate.yearsInSponsoredPosition !== null && !trtGate.meetsTenureThreshold) {
+        relevance = "ineligible";
+        reason = isTr
+          ? `TRT akışı, onaylı sponsor altında en az ${TRT_186_MIN_SPONSORED_YEARS} yıl çalışılmış olmasını gerektirir. Beyan edilen süre (${trtGate.yearsInSponsoredPosition} yıl) bu eşiğin altında olduğu için TRT akışı şu an uygun görünmüyor.`
+          : `The TRT stream requires at least ${TRT_186_MIN_SPONSORED_YEARS} years employed under an approved sponsor. The declared period (${trtGate.yearsInSponsoredPosition} ${trtGate.yearsInSponsoredPosition === 1 ? "year" : "years"}) is below this threshold, so the TRT stream does not currently look available.`;
+      } else if (trtGate.yearsInSponsoredPosition === null) {
+        relevance = "needs_more_information";
+        reason = isTr
+          ? "TRT akışı için uygunluk, onaylı sponsor altında geçirilen toplam süreye (en az 2 yıl) bağlıdır. Bu bilgi henüz sağlanmadı."
+          : "TRT stream eligibility depends on total time spent under an approved sponsor in the nominated occupation (at least 2 years). This information has not been provided yet.";
+      } else {
+        relevance = "possible";
+        reason = isTr
+          ? "Bildirilen onaylı sponsor süresi TRT akışının asgari 2 yıllık eşiğini karşılıyor, bu nedenle subclass 186 (TRT) olası bir yol olabilir. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
+          : "The reported approved-sponsor period meets the TRT stream's minimum 2-year threshold, so subclass 186 (TRT) may be a possible pathway. This is general information only and depends on individual circumstances.";
+      }
+    } else if (input.nominationStream === "direct_entry") {
+      if (directEntryGate.isAgeIneligible && directEntryGate.declaredAge !== null) {
+        relevance = "ineligible";
+        reason = t(locale, "ineligible.ageReason", { age: directEntryGate.declaredAge, ageLimit: DIRECT_ENTRY_186_MAX_AGE });
+      } else if (!directEntryGate.hasSkillsAssessment || !directEntryGate.meetsExperienceThreshold || !directEntryGate.hasOccupation) {
+        relevance = "needs_more_information";
+        reason = isTr
+          ? "Direct Entry akışı olumlu bir beceri değerlendirmesi ve en az 3 yıllık ilgili iş deneyimi gerektirir. Bu bilgilerin bir kısmı henüz eksik."
+          : "The Direct Entry stream requires a positive skills assessment and at least 3 years of relevant work experience. Some of this information is still missing.";
+      } else {
+        relevance = "possible";
+        reason = isTr
+          ? "Beceri değerlendirmesi ve iş deneyimi bağlamı, Direct Entry akışının olası bir yol olabileceğini göstermektedir. Bu yalnızca genel bilgidir ve kişisel duruma göre değişebilir."
+          : "Skills assessment and work experience context indicate the Direct Entry stream may be a possible pathway. This is general information only and depends on individual circumstances.";
+      }
+    } else {
+      // No stream specified — evaluate both and report whichever looks viable.
+      const trtViable = trtGate.meetsTenureThreshold;
+      const directEntryViable =
+        directEntryGate.hasSkillsAssessment && directEntryGate.meetsExperienceThreshold && !directEntryGate.isAgeIneligible;
+      if (trtViable || directEntryViable) {
+        relevance = "possible";
+        reason = isTr
+          ? trtViable && directEntryViable
+            ? "Mevcut sinyaller hem TRT hem de Direct Entry akışı için olası bir uyum gösteriyor. Hangi akışın hedeflendiği belirtilirse değerlendirme netleşir."
+            : trtViable
+              ? "Mevcut sinyaller TRT akışı için olası bir uyum gösteriyor (onaylı sponsor süresi eşiği karşılanıyor)."
+              : "Mevcut sinyaller Direct Entry akışı için olası bir uyum gösteriyor (beceri değerlendirmesi ve deneyim eşiği karşılanıyor)."
+          : trtViable && directEntryViable
+            ? "Current signals suggest a possible fit for both the TRT and Direct Entry streams. Specifying which stream is targeted would sharpen this assessment."
+            : trtViable
+              ? "Current signals suggest a possible fit for the TRT stream (approved-sponsor tenure threshold is met)."
+              : "Current signals suggest a possible fit for the Direct Entry stream (skills assessment and experience thresholds are met).";
+      } else if (directEntryGate.isAgeIneligible && trtGate.yearsInSponsoredPosition !== null && !trtGate.meetsTenureThreshold) {
+        relevance = "ineligible";
+        reason = isTr
+          ? "Direct Entry akışı için yaş sınırı aşılmış, TRT akışı için ise onaylı sponsor süresi eşiği karşılanmıyor. Mevcut bilgilerle her iki akış da uygun görünmüyor."
+          : "The Direct Entry stream's age cap is exceeded, and the TRT stream's approved-sponsor tenure threshold is not met. Neither stream currently looks available based on the information provided.";
+      } else {
+        relevance = "needs_more_information";
+        reason = isTr
+          ? "Subclass 186, Direct Entry (beceri değerlendirmesi, yaş, CSOL) veya TRT (en az 2 yıllık onaylı sponsor süresi) akışlarından biri üzerinden değerlendirilebilir. Hangi akışın hedeflendiği ve ilgili detaylar henüz net değil."
+          : "Subclass 186 can be assessed via Direct Entry (skills assessment, age, CSOL) or TRT (at least 2 years under an approved sponsor). Which stream is targeted, and the related details, are not yet clear.";
+      }
+    }
   } else {
     relevance = "not_enough_information";
     reason = isTr
@@ -1371,10 +1621,17 @@ function buildPathwayEntry(
     ineligibleSharedNotes = parts.sharedNotes;
   }
 
+  // For 186, relevance is already set to "ineligible" only on true hard-gate
+  // failures within the branch above (CSIT salary floor, TRT tenure below 2
+  // years, or Direct Entry age above 45) — reusing that here avoids
+  // recomputing the salary/age/tenure gates a third time.
+  const isForced186Ineligible = subclass === "186" && relevance === "ineligible";
+
   const forcedIneligibleByRule =
     (subclass === "485" && (hardAgeGate?.isHardIneligible || ageGate?.isAboveLimit)) ||
     (subclass === "482" && salaryGate?.isBelowCsit) ||
-    isLowPointsIneligible;
+    isLowPointsIneligible ||
+    isForced186Ineligible;
 
   // Hard Gate: unconditionally overrides any "possible"/high-potential relevance
   // and confidence the softer heuristics above might otherwise have produced.
@@ -1442,6 +1699,7 @@ function getDifficultyForPathway(
   if (pathway.subclass === "482") return "medium";
   if (pathway.subclass === "820" || pathway.subclass === "801") return "high";
   if (["189", "190", "491"].includes(pathway.subclass)) return "high";
+  if (pathway.subclass === "186") return "high";
   return "medium";
 }
 
@@ -1474,6 +1732,11 @@ function getRequirementType(
     return isTr
       ? "İlişki ve sponsor kanıtı odaklı"
       : "Relationship and sponsor evidence based";
+  }
+  if (pathway.subclass === "186") {
+    return isTr
+      ? "İşveren aday gösterme, meslek listesi ve akışa özgü kanıt (beceri değerlendirmesi veya sponsor süresi) odaklı"
+      : "Employer nomination, occupation-list, and stream-specific evidence (skills assessment or sponsor tenure) based";
   }
   return isTr ? "Daha fazla kişisel bağlam gerektirir" : "Requires more personal context";
 }

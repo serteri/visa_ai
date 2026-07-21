@@ -38,6 +38,17 @@ export type ReadinessInput = {
   onshoreExperienceYears?: number;
   regionalWilling?: boolean;
   educationRelevance?: "relevant" | "non_relevant" | "unknown";
+  /**
+   * Subclass 186 Temporary Residence Transition (TRT) stream input: total
+   * years of employment in the nominated occupation while the employer held
+   * approved-sponsor status, aggregated across employers if more than one
+   * (NOT "years with the same employer" — DHA removed that requirement in
+   * Dec 2024; the 29 Nov 2025 amendment only requires each counted period to
+   * have been under an approved sponsor, not a single continuous employer).
+   */
+  yearsInSponsoredPosition?: number;
+  /** Which subclass 186 stream the user is targeting. Left undefined to evaluate both. */
+  nominationStream?: "direct_entry" | "trt";
   /** Official NOC 2021 V1.0 unit group code (5 digits), set when user picks from autocomplete. */
   nocCode?: string;
   /** TEER level (0–5) derived from the selected NOC code. */
@@ -213,7 +224,7 @@ export type RankedPathwayRecommendation =
 export type QualitativeFitTier = "Potential fit" | "Unclear fit" | "Unlikely fit";
 
 export type RankedPathway = {
-  subclass: "189" | "190" | "491" | "482" | "485" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
+  subclass: "189" | "190" | "491" | "482" | "485" | "186" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
   visaLabel: string;
   /** Only present when assessmentState.canShowNumericRanking is true — a real deterministic figure, never a placeholder. */
   matchPercentage?: number;
