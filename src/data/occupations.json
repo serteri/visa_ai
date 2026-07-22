@@ -276,7 +276,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -374,7 +376,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -775,7 +779,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -1023,7 +1029,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -1045,7 +1053,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -1791,7 +1801,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -2037,7 +2049,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -4597,7 +4611,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -4848,7 +4864,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -5244,7 +5262,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -5363,7 +5383,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -6999,7 +7021,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -8328,7 +8352,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -9068,7 +9094,9 @@
       "post_qual_experience_years": 2,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -9101,7 +9129,9 @@
       "post_qual_experience_years": 2,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -9548,7 +9578,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -9741,7 +9773,9 @@
       "post_qual_experience_years": 2,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -9778,7 +9812,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -9789,7 +9825,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -9822,7 +9860,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -9848,7 +9888,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10244,7 +10286,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10499,7 +10543,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10510,7 +10556,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10702,7 +10750,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10736,7 +10786,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Not required for assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10758,7 +10810,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10769,7 +10823,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11206,7 +11262,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11271,7 +11329,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11320,7 +11380,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11342,7 +11404,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11363,7 +11427,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Not required for assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11374,7 +11440,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11385,7 +11453,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11439,7 +11509,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11493,7 +11565,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11532,7 +11606,9 @@
       "anzsco_code": "121411",
       "occupation_name": "Mixed Crop and Livestock Farmer",
       "authority": "Unknown",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": [],
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset."
     },
@@ -11540,7 +11616,9 @@
       "anzsco_code": "121317",
       "occupation_name": "Mixed Livestock Farmer",
       "authority": "Unknown",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": [],
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset."
     },
@@ -11636,7 +11714,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11790,7 +11870,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11861,7 +11943,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -12086,7 +12170,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -12143,7 +12229,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -12154,7 +12242,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -12602,7 +12692,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -12669,7 +12761,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -12919,7 +13013,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -13087,7 +13183,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -13109,7 +13207,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -13196,7 +13296,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -13381,7 +13483,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -13949,7 +14053,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -13960,7 +14066,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -14016,7 +14124,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -14204,7 +14314,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -14316,7 +14428,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -14506,7 +14620,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -14719,7 +14835,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -14745,7 +14863,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -15176,7 +15296,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -15442,7 +15564,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -15464,7 +15588,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -15549,7 +15675,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -15750,7 +15878,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -15794,7 +15924,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -16000,7 +16132,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -16297,7 +16431,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -16341,7 +16477,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -16748,7 +16886,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -16783,7 +16923,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17196,7 +17338,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17292,7 +17436,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17425,7 +17571,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17742,7 +17890,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17810,7 +17960,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17843,7 +17995,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17998,7 +18152,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "IELTS 7 each band or OET B each component",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18177,7 +18333,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18188,7 +18346,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "IELTS 7 each band or PTE Academic 65 each or OET B each",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18232,7 +18392,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18254,7 +18416,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18296,7 +18460,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18317,7 +18483,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18348,7 +18516,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Not required for assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18411,7 +18581,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18560,7 +18732,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18598,7 +18772,9 @@
       "anzsco_code": "121217",
       "occupation_name": "Sugar Cane Grower",
       "authority": "Unknown",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": [],
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset."
     },
@@ -18709,7 +18885,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Not required for assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18720,7 +18898,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18958,7 +19138,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -19035,7 +19217,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -19129,7 +19313,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -19290,7 +19476,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -19652,7 +19840,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -19673,7 +19863,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20023,7 +20215,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20066,7 +20260,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20077,7 +20273,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20094,7 +20292,9 @@
       "anzsco_code": "121221",
       "occupation_name": "Vegetable Grower",
       "authority": "Unknown",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": [],
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset."
     },
@@ -20343,7 +20543,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20517,7 +20719,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20640,7 +20844,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20662,7 +20868,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Not required for assessment",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20810,7 +21018,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20821,7 +21031,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "STSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20968,7 +21180,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
