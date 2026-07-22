@@ -187,6 +187,8 @@ export type PathwayStrengthComparison = {
   }>;
   /** Hard Gate (1 July 2026): true when this pathway was disqualified by a mandatory rule threshold (salary/age). */
   isHardIneligible?: boolean;
+  /** True when the ONLY reason this points-tested pathway is ineligible is a below-threshold score, not a rule violation. Renders with a neutral "Below Points Threshold" label instead of "CRITICAL COMPLIANCE ALERT". */
+  isPointsThresholdOnly?: boolean;
   /** Localized "Ineligible: ..." text, shown in bold red as the first item of this pathway's strength breakdown. */
   ineligibleReason?: string;
 };
@@ -230,6 +232,8 @@ export type PathwayFriction = {
   explanation: string;
   /** Hard Gate (1 July 2026): true when this pathway was disqualified by a mandatory rule threshold (salary/age). Rendered as a bold red "CRITICAL COMPLIANCE ALERT" instead of a routine friction note. */
   isHardIneligible?: boolean;
+  /** True when the ONLY reason this points-tested pathway is ineligible is a below-threshold score, not a rule violation. Renders with the neutral "Below Points Threshold" label/color instead of "CRITICAL COMPLIANCE ALERT". */
+  isPointsThresholdOnly?: boolean;
 };
 
 export type RankedPathwayRecommendation =
@@ -237,6 +241,7 @@ export type RankedPathwayRecommendation =
   | "⚖️ Alternative Option"
   | "⚠️ High Risk / Low Probability"
   | "❌ Ineligible (Compliance Violation)"
+  | "📉 Below Points Threshold"
   | "🔍 Preliminary Signal Only";
 
 /** Shown instead of a fabricated %/points figure when assessmentState.canShowNumericRanking is false. */
@@ -267,6 +272,8 @@ export type RankedPathway = {
   recommendationTag: RankedPathwayRecommendation;
   /** Hard Gate (1 July 2026): true when a mandatory rule threshold (salary/age) was violated. Forces this entry to the top of the Visa Viability Ranking, rendered in red. */
   isHardIneligible?: boolean;
+  /** True when the ONLY reason this points-tested pathway (189/190/491) is ineligible is a below-threshold score -- not an age/salary/CSIT rule violation. Rendered in amber with a neutral "Below Points Threshold" label instead of the red "Compliance Violation" styling, since no rule was actually broken. */
+  isPointsThresholdOnly?: boolean;
   /** Localized "Ineligible: ..." warning text, shown under the entry when isHardIneligible is true. For low-points subclasses this is the per-subclass points line only; the shared notes below carry the profile-level recommendations. */
   ineligibleReason?: string;
   /** Profile-level notes (English projection, employment caveat) shared across 189/190/491 — rendered once beneath the ranking rows, not per row. */

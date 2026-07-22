@@ -5,7 +5,7 @@ import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { frictionBandLabel } from "@/src/lib/readiness/localization";
 import { resolveOccupationDisplayName } from "./occupation-eligibility";
-import type { ReadinessReport, RankedPathway } from "./types";
+import type { ReadinessReport, RankedPathway, RankedPathwayRecommendation } from "./types";
 
 const COLORS = {
   primary: { r: 22, g: 78, b: 99 },
@@ -184,6 +184,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       alternativeOption: "Alternatif Seçenek",
       highRiskLowProbability: "Yüksek Risk / Düşük Olasılık",
       ineligibleComplianceViolation: "❌ Uygun Değil (Uyumluluk İhlali)",
+      belowPointsThreshold: "📉 Puan Eşiğinin Altında",
       highPotentialBadge: "YÜKSEK POTANSİYEL",
       conditionalBadge: "KOŞULLU",
       highRiskBadge: "YÜKSEK RİSK",
@@ -310,6 +311,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       alternativeOption: "替代选项",
       highRiskLowProbability: "高风险 / 低概率",
       ineligibleComplianceViolation: "❌ 不符合资格（合规违规）",
+      belowPointsThreshold: "📉 未达到分数门槛",
       highPotentialBadge: "高潜力",
       conditionalBadge: "有条件",
       highRiskBadge: "高风险",
@@ -435,6 +437,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     alternativeOption: "Alternative Option",
     highRiskLowProbability: "High Risk / Low Probability",
     ineligibleComplianceViolation: "❌ Ineligible (Compliance Violation)",
+    belowPointsThreshold: "📉 Below Points Threshold",
     highPotentialBadge: "HIGH POTENTIAL",
     conditionalBadge: "CONDITIONAL",
     highRiskBadge: "HIGH RISK",
@@ -483,21 +486,33 @@ function buildIneligiblePathwayEntries(report: ReadinessReport): RankedPathway[]
         p.relevance === "ineligible" &&
         (INELIGIBLE_RANKING_SUBCLASSES as readonly string[]).includes(p.subclass)
     )
-    .map((p) => ({
-      subclass: p.subclass,
-      visaLabel: `${p.subclass} - ${p.visaName}`,
-      matchPercentage: 0,
-      pointsSignal: 0,
-      recommendationTag: "❌ Ineligible (Compliance Violation)" as const,
-      isHardIneligible: true,
-      // Per-row text is only the subclass-specific points line when available
-      // (189/190/491 on points); age/salary gates (485/482) keep their full
-      // reason since they have no shared profile-level notes to hoist. The
-      // English/employment factors are surfaced once, via the intro line above
-      // the rows and the shared note box below them — never repeated per row.
-      ineligibleReason: p.ineligiblePointsLine ?? p.reason,
-      ineligibleSharedNotes: p.ineligibleSharedNotes,
-    }));
+    .map((p) => {
+      // A below-threshold score (189/190/491) is not a rule violation the way
+      // an age cap or salary floor breach is -- the applicant broke no rule,
+      // they just haven't reached the points bar yet. Keep the red "Compliance
+      // Violation" styling only for genuine hard-gate breaches (485 age, 482
+      // salary/CSIT, 186 tenure/age/CSIT); use a neutral label/color here.
+      const isPointsThresholdOnly = p.ineligiblePointsLine !== undefined;
+      const recommendationTag: RankedPathwayRecommendation = isPointsThresholdOnly
+        ? "📉 Below Points Threshold"
+        : "❌ Ineligible (Compliance Violation)";
+      return {
+        subclass: p.subclass,
+        visaLabel: `${p.subclass} - ${p.visaName}`,
+        matchPercentage: 0,
+        pointsSignal: 0,
+        recommendationTag,
+        isHardIneligible: true,
+        isPointsThresholdOnly,
+        // Per-row text is only the subclass-specific points line when available
+        // (189/190/491 on points); age/salary gates (485/482) keep their full
+        // reason since they have no shared profile-level notes to hoist. The
+        // English/employment factors are surfaced once, via the intro line above
+        // the rows and the shared note box below them — never repeated per row.
+        ineligibleReason: p.ineligiblePointsLine ?? p.reason,
+        ineligibleSharedNotes: p.ineligibleSharedNotes,
+      };
+    });
 }
 
 function getFeedbackTexts(locale: "en" | "tr" | "zh-Hans") {
@@ -1620,10 +1635,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   /** Bold red compliance-alert line, used for Hard Gate ineligibility reasons. */
-  function addCriticalAlertText(value: string, indent = 0) {
+  function addCriticalAlertText(value: string, indent = 0, color: { r: number; g: number; b: number } = COLORS.riskHigh) {
     setBoldFont();
     doc.setFontSize(FONTS.small);
-    doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
+    doc.setTextColor(color.r, color.g, color.b);
     const x = margin + indent;
     const lines = doc.splitTextToSize(safeText(value), contentWidth - indent);
     lines.forEach((line: string) => {
@@ -2687,6 +2702,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function formatRecommendationTag(tag: string) {
+    if (tag.includes("Below Points")) return text.belowPointsThreshold;
     if (tag.includes("Ineligible")) return text.ineligibleComplianceViolation;
     if (tag.includes("Highly")) return text.highlyRecommendedPathway;
     if (tag.includes("Alternative")) return text.alternativeOption;
@@ -2822,9 +2838,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         const rowHeight = Math.max(16, 10 + reasonLines.length * reasonLineHeight + 2);
         ensurePageSpace(rowHeight + 2);
         const topY = yPosition;
-        const red = COLORS.riskHigh;
+        const red = item.isPointsThresholdOnly ? COLORS.riskMedium : COLORS.riskHigh;
 
-        doc.setFillColor(254, 242, 242);
+        if (item.isPointsThresholdOnly) {
+          doc.setFillColor(255, 251, 235);
+        } else {
+          doc.setFillColor(254, 242, 242);
+        }
         doc.setDrawColor(red.r, red.g, red.b);
         doc.setLineWidth(0.5);
         doc.roundedRect(margin, topY, contentWidth, rowHeight, 1.2, 1.2, "FD");
@@ -3300,9 +3320,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       addBody(`${item.visaName} (${item.subclass})`);
       if (item.isHardIneligible && item.ineligibleReason) {
         // Hard Gate (1 July 2026): the ineligibility reason is always the
-        // FIRST item in the breakdown, rendered bold red, ahead of strength/
-        // friction/evidence signals which no longer apply once a hard gate trips.
-        addCriticalAlertText(`${text.criticalComplianceAlertLabel}: ${item.ineligibleReason}`, 4);
+        // FIRST item in the breakdown, rendered ahead of strength/friction/
+        // evidence signals which no longer apply once ineligible. A
+        // below-threshold score (isPointsThresholdOnly) is not a rule
+        // violation, so it gets a neutral amber label instead of the red
+        // "CRITICAL COMPLIANCE ALERT" reserved for genuine hard-gate breaches.
+        if (item.isPointsThresholdOnly) {
+          addCriticalAlertText(`${text.belowPointsThreshold}: ${item.ineligibleReason}`, 4, COLORS.riskMedium);
+        } else {
+          addCriticalAlertText(`${text.criticalComplianceAlertLabel}: ${item.ineligibleReason}`, 4);
+        }
       }
       addSmallText(`${effectiveLocale === "tr" ? "Güç" : effectiveLocale === "zh-Hans" ? "强度" : "Strength"}: ${formatStrength(item.strength)}`, 4);
       addSmallText(`${effectiveLocale === "tr" ? "Zorluk seviyesi" : effectiveLocale === "zh-Hans" ? "竞争激烈度" : "Friction"}: ${formatDifficulty(item.friction)}`, 4);
@@ -3401,16 +3428,26 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.pathwayFriction.length > 0) {
     addHeading(text.pathwayFriction);
-    const hardIneligibleFriction = report.pathwayFriction.filter((item) => item.isHardIneligible);
+    const trueHardIneligibleFriction = report.pathwayFriction.filter((item) => item.isHardIneligible && !item.isPointsThresholdOnly);
+    const pointsThresholdFriction = report.pathwayFriction.filter((item) => item.isHardIneligible && item.isPointsThresholdOnly);
     const routineFriction = report.pathwayFriction.filter((item) => !item.isHardIneligible);
     // Hard Gate (1 July 2026): the "🚨 CRITICAL COMPLIANCE ALERT" banner is
     // shown ONCE at the top of the section, then each ineligible pathway gets
     // its own tailored one-line explanation — instead of repeating the same
-    // alert + generic pointer verbatim under every subclass.
-    if (hardIneligibleFriction.length > 0) {
+    // alert + generic pointer verbatim under every subclass. Below-threshold
+    // scores are not rule violations, so they get their own neutral group
+    // instead of being lumped under the compliance-alert banner.
+    if (trueHardIneligibleFriction.length > 0) {
       addCriticalAlertText(text.criticalComplianceAlertLabel);
-      hardIneligibleFriction.forEach((item) => {
+      trueHardIneligibleFriction.forEach((item) => {
         addCriticalAlertText(`${item.pathway}: ${item.explanation}`, 4);
+      });
+      yPosition += 1;
+    }
+    if (pointsThresholdFriction.length > 0) {
+      addCriticalAlertText(text.belowPointsThreshold, 0, COLORS.riskMedium);
+      pointsThresholdFriction.forEach((item) => {
+        addCriticalAlertText(`${item.pathway}: ${item.explanation}`, 4, COLORS.riskMedium);
       });
       yPosition += 1;
     }

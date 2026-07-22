@@ -3100,6 +3100,8 @@ function buildPathwayStrengthComparison(
       // Hard Gate (1 July 2026): overrides the strength breakdown with a bold
       // red compliance-violation reason shown as the first item in the PDF.
       isHardIneligible: pathway.relevance === "ineligible",
+      // A below-threshold score is not a rule violation -- see isPointsThresholdOnly doc comment.
+      isPointsThresholdOnly: pathway.ineligiblePointsLine !== undefined,
       ineligibleReason:
         pathway.relevance === "ineligible"
           ? shortIneligibleReference(locale)
@@ -3693,14 +3695,22 @@ function buildPathwayFriction(
   return pathways.map((pathway) => {
     if (pathway.relevance === "ineligible") {
       // Hard Gate (1 July 2026): replaces the routine friction note with a
-      // bold red compliance alert carrying the exact ineligibility reason.
+      // compliance alert carrying the exact ineligibility reason. A
+      // below-threshold score (ineligiblePointsLine set) is not a rule
+      // violation, so it gets the neutral "Below Points Threshold" label
+      // instead of "CRITICAL COMPLIANCE ALERT", which is reserved for
+      // genuine hard-gate breaches (age cap, salary floor, tenure, etc).
       const visaLabel =
         pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName} (${pathway.subclass})`;
+      const isPointsThresholdOnly = pathway.ineligiblePointsLine !== undefined;
       return {
         pathway: visaLabel,
-        frictionType: isTr ? "🚨 KRİTİK UYUMLULUK UYARISI" : isZh ? "🚨 关键合规警报" : "🚨 CRITICAL COMPLIANCE ALERT",
+        frictionType: isPointsThresholdOnly
+          ? isTr ? "📉 PUAN EŞİĞİNİN ALTINDA" : isZh ? "📉 未达到分数门槛" : "📉 BELOW POINTS THRESHOLD"
+          : isTr ? "🚨 KRİTİK UYUMLULUK UYARISI" : isZh ? "🚨 关键合规警报" : "🚨 CRITICAL COMPLIANCE ALERT",
         explanation: customIneligibleFrictionExplanation(locale, pathway.subclass),
         isHardIneligible: true,
+        isPointsThresholdOnly,
       };
     }
     const visaLabel =
