@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const SRC = path.join(process.cwd(), "src/data/sources/skilled-occupation-list.md");
-const OUT = path.join(process.cwd(), "src/data/skilled-occupation-list.json");
+const OUT = path.join(process.cwd(), "src/data/skilled-occupation-list.OLD.json");
 
 const VALID_LISTS = new Set(["MLTSSL", "STSOL", "CSOL", "ROL"]);
 // Truncated/typo list tokens seen in the source → canonical form.

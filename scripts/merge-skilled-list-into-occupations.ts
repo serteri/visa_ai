@@ -1,6 +1,6 @@
 /**
  * Corrects src/data/occupations.json using the authoritative parsed Skilled
- * Occupation List (src/data/skilled-occupation-list.json). For every occupation
+ * Occupation List (src/data/skilled-occupation-list.OLD.json). For every occupation
  * present in the official list we overwrite `visa_lists` + `authority` (the .md
  * is the source of truth) and attach `visa_subclasses`. Occupations NOT in the
  * official list are left untouched (conservative — we don't wipe rows the .md
@@ -29,7 +29,7 @@ type Skilled = {
 };
 
 const OCC_PATH = path.join(process.cwd(), "src/data/occupations.json");
-const SKILLED_PATH = path.join(process.cwd(), "src/data/skilled-occupation-list.json");
+const SKILLED_PATH = path.join(process.cwd(), "src/data/skilled-occupation-list.OLD.json");
 
 const occFile = JSON.parse(readFileSync(OCC_PATH, "utf8")) as { occupations: Occ[] };
 const skilledFile = JSON.parse(readFileSync(SKILLED_PATH, "utf8")) as { occupations: Skilled[] };

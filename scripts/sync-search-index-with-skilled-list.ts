@@ -1,5 +1,5 @@
 /**
- * Makes the official Skilled Occupation List (src/data/skilled-occupation-list.json)
+ * Makes the official Skilled Occupation List (src/data/skilled-occupation-list.OLD.json)
  * drive the occupation SEARCH INDEX (src/data/anzsco-list.json) across ALL groups.
  *
  * Non-destructive + translation-preserving:
@@ -26,7 +26,7 @@ type SearchEntry = {
 type Skilled = { anzsco_code: string; occupation_name: string };
 
 const SEARCH_PATH = path.join(process.cwd(), "src/data/anzsco-list.json");
-const SKILLED_PATH = path.join(process.cwd(), "src/data/skilled-occupation-list.json");
+const SKILLED_PATH = path.join(process.cwd(), "src/data/skilled-occupation-list.OLD.json");
 
 const search = JSON.parse(readFileSync(SEARCH_PATH, "utf8")) as SearchEntry[];
 const skilled = (JSON.parse(readFileSync(SKILLED_PATH, "utf8")) as { occupations: Skilled[] }).occupations;

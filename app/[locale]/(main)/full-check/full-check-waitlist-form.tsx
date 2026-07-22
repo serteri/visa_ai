@@ -27,7 +27,7 @@ import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { useTranslation } from "@/contexts/language-context";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
-import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
+import { findOccupationRecord, getSkilledListMembership } from "@/lib/readiness/occupation-eligibility";
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
 import {
   Dialog,
@@ -292,9 +292,7 @@ function searchAnzsco(query: string, locale: string): AnzscoEntry[] {
 
   return scoredResults.slice(0, maxResults).map(({ entry }) => {
     const record = findOccupationRecord(entry.code);
-    const isOnSkilledList = record
-      ? (record.visa_lists ?? []).some((l) => ["MLTSSL", "STSOL", "ROL", "CSOL"].includes(l))
-      : false;
+    const isOnSkilledList = record ? getSkilledListMembership(record.anzsco_code).length > 0 : false;
     return {
       ...entry,
       isOnSkilledList,
