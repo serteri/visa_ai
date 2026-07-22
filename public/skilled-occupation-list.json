@@ -11743,6 +11743,425 @@
     ]
   },
   {
+    "anzsco_code": "211214",
+    "occupation_en": "Singer",
+    "occupation_tr": "Şarkıcı",
+    "occupation_zh": "歌手",
+    "visa_types": [
+      "494"
+    ],
+    "list": [
+      "ROL"
+    ],
+    "assessing_authority": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "anzsco_code": "321214",
+    "occupation_en": "Small Offset Printer",
+    "occupation_tr": "Küçük Ofset Baskı Operatörü",
+    "occupation_zh": "小型胶印操作员",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "TRA"
+    ]
+  },
+  {
+    "anzsco_code": "452314",
+    "occupation_en": "Snowsport Instructor",
+    "occupation_tr": "Kar Sporları Eğitmeni",
+    "occupation_zh": "雪上运动教练",
+    "visa_types": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "list": [
+      "STSOL"
+    ],
+    "assessing_authority": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "anzsco_code": "272499",
+    "occupation_en": "Social Professionals nec",
+    "occupation_tr": "Diğer Sosyal Bilim Uzmanları",
+    "occupation_zh": "其他社会工作专业人员",
+    "visa_types": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "list": [
+      "STSOL"
+    ],
+    "assessing_authority": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "anzsco_code": "272511",
+    "occupation_en": "Social Worker",
+    "occupation_tr": "Sosyal Hizmet Uzmanı",
+    "occupation_zh": "社会工作者",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "AASW"
+    ]
+  },
+  {
+    "anzsco_code": "261399",
+    "occupation_en": "Software and Applications Programmers nec",
+    "occupation_tr": "Diğer Yazılım ve Uygulama Programcıları",
+    "occupation_zh": "其他软件与应用程序开发人员",
+    "visa_types": [
+      "407",
+      "190",
+      "489",
+      "485",
+      "189",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "ACS"
+    ]
+  },
+  {
+    "anzsco_code": "261313",
+    "occupation_en": "Software Engineer",
+    "occupation_tr": "Yazılım Mühendisi",
+    "occupation_zh": "软件工程师",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "ACS"
+    ]
+  },
+  {
+    "anzsco_code": "261314",
+    "occupation_en": "Software Tester",
+    "occupation_tr": "Yazılım Test Uzmanı",
+    "occupation_zh": "软件测试工程师",
+    "visa_types": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "STSOL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "ACS"
+    ]
+  },
+  {
+    "anzsco_code": "271311",
+    "occupation_en": "Solicitor",
+    "occupation_tr": "Avukat (Dava Vekili)",
+    "occupation_zh": "事务律师",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "Legal admissions authority of a state or territory"
+    ]
+  },
+  {
+    "anzsco_code": "333212",
+    "occupation_en": "Solid Plasterer",
+    "occupation_tr": "Sıvacı (Katı Sıva)",
+    "occupation_zh": "硬质抹灰工",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491"
+    ],
+    "list": [
+      "MLTSSL"
+    ],
+    "assessing_authority": [
+      "TRA"
+    ]
+  },
+  {
+    "anzsco_code": "251214",
+    "occupation_en": "Sonographer",
+    "occupation_tr": "Ultrasonografi Uzmanı",
+    "occupation_zh": "超声技师",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "ASMIRT"
+    ]
+  },
+  {
+    "anzsco_code": "399516",
+    "occupation_en": "Sound Technician",
+    "occupation_tr": "Ses Teknisyeni",
+    "occupation_zh": "音响技术员",
+    "visa_types": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "STSOL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "TRA"
+    ]
+  },
+  {
+    "anzsco_code": "241599",
+    "occupation_en": "Special Education Teachers nec",
+    "occupation_tr": "Diğer Özel Eğitim Öğretmenleri",
+    "occupation_zh": "其他特殊教育教师",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "AITSL"
+    ]
+  },
+  {
+    "anzsco_code": "241511",
+    "occupation_en": "Special Needs Teacher",
+    "occupation_tr": "Özel Eğitim Öğretmeni",
+    "occupation_zh": "特殊教育教师",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "AITSL"
+    ]
+  },
+  {
+    "anzsco_code": "139999",
+    "occupation_en": "Specialist Managers nec",
+    "occupation_tr": "Diğer Uzman Müdürler",
+    "occupation_zh": "其他专业经理",
+    "visa_types": [
+      "190",
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "list": [
+      "STSOL"
+    ],
+    "assessing_authority": [
+      "VETASSESS"
+    ]
+  },
+  {
+    "anzsco_code": "253311",
+    "occupation_en": "Specialist Physician (General Medicine)",
+    "occupation_tr": "Uzman Hekim (Genel Dahiliye)",
+    "occupation_zh": "专科医生（普通内科）",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "MedBA"
+    ]
+  },
+  {
+    "anzsco_code": "253399",
+    "occupation_en": "Specialist Physicians nec",
+    "occupation_tr": "Diğer Uzman Hekimler",
+    "occupation_zh": "其他专科医生",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "MedBA"
+    ]
+  },
+  {
+    "anzsco_code": "252712",
+    "occupation_en": "Speech Pathologist",
+    "occupation_tr": "Konuşma Terapisti",
+    "occupation_zh": "语言病理学家",
+    "visa_types": [
+      "189",
+      "190",
+      "407",
+      "485",
+      "489",
+      "494",
+      "491",
+      "482",
+      "186"
+    ],
+    "list": [
+      "MLTSSL",
+      "CSOL"
+    ],
+    "assessing_authority": [
+      "SPA"
+    ]
+  },
+  {
+    "anzsco_code": "139915",
+    "occupation_en": "Sports Administrator",
+    "occupation_tr": "Spor İdarecisi",
+    "occupation_zh": "体育管理人员",
+    "visa_types": [
+      "407",
+      "489",
+      "494",
+      "491"
+    ],
+    "list": [
+      "ROL"
+    ],
+    "assessing_authority": [
+      "VETASSESS"
+    ]
+  },
+  {
     "anzsco_code": "149113",
     "occupation_en": "Sports Centre Manager",
     "occupation_tr": "Spor Merkezi Müdürü",
@@ -12583,7 +13002,7 @@
       "ROL"
     ],
     "assessing_authority": [
-      "VETASSESS"
+      "VETASSE"
     ]
   },
   {
