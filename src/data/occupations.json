@@ -15,7 +15,7 @@
     },
     {
       "anzsco_code": "411111",
-      "occupation_name": "Aboriginal and Torres Strait Islander Health Worker",
+      "occupation_name": "Ambulance Officer",
       "authority": "VETASSESS Council of Ambulance Authorities",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -40,7 +40,7 @@
     },
     {
       "anzsco_code": "411112",
-      "occupation_name": "Aboriginal and Torres Strait Islander Health Worker (Remote Areas)",
+      "occupation_name": "Intensive Care Ambulance Paramedic",
       "authority": "Council of Ambulance Authorities",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -95,7 +95,7 @@
     },
     {
       "anzsco_code": "271111",
-      "occupation_name": "Accountant",
+      "occupation_name": "Barrister",
       "authority": "Legal admissions authority of a state or territory",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -119,7 +119,7 @@
     },
     {
       "anzsco_code": "421111",
-      "occupation_name": "Accountant",
+      "occupation_name": "Child Care Worker",
       "authority": "ACECQA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -137,7 +137,7 @@
     },
     {
       "anzsco_code": "211111",
-      "occupation_name": "Accountant (General)",
+      "occupation_name": "Actor",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -176,7 +176,7 @@
     },
     {
       "anzsco_code": "121111",
-      "occupation_name": "Accountant (General) Manager",
+      "occupation_name": "Aquaculture Farmer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -233,7 +233,7 @@
     },
     {
       "anzsco_code": "421114",
-      "occupation_name": "Accounts Payable Specialist",
+      "occupation_name": "Out of School Hours Care Worker",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -270,7 +270,7 @@
     },
     {
       "anzsco_code": "224112",
-      "occupation_name": "Actuarial Specialist",
+      "occupation_name": "Mathematician",
       "authority": "Unknown",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -370,7 +370,7 @@
     },
     {
       "anzsco_code": "225112",
-      "occupation_name": "Advertising Manager",
+      "occupation_name": "Market Research Analyst",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -461,7 +461,7 @@
     },
     {
       "anzsco_code": "411212",
-      "occupation_name": "Aged Care Assistant",
+      "occupation_name": "Dental Prosthetist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -478,7 +478,7 @@
     },
     {
       "anzsco_code": "411211",
-      "occupation_name": "Aged Care Worker",
+      "occupation_name": "Dental Hygienist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -641,7 +641,7 @@
     },
     {
       "anzsco_code": "311113",
-      "occupation_name": "Agricultural Technician (Horticulture)",
+      "occupation_name": "Animal Husbandry Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -657,7 +657,7 @@
     },
     {
       "anzsco_code": "311114",
-      "occupation_name": "Agricultural Technician (Viticulture)",
+      "occupation_name": "Aquaculture or Fisheries Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1005,7 +1005,7 @@
     },
     {
       "anzsco_code": "121213",
-      "occupation_name": "Applications Development Manager",
+      "occupation_name": "Fruit or Nut Grower",
       "authority": "VETASSESS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -1023,7 +1023,7 @@
     },
     {
       "anzsco_code": "121216",
-      "occupation_name": "Aquaculture Farmer",
+      "occupation_name": "Mixed Crop Farmer",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1047,7 +1047,7 @@
     },
     {
       "anzsco_code": "311216",
-      "occupation_name": "Aquaculture Farmer",
+      "occupation_name": "Pathology Collector",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1060,7 +1060,7 @@
     },
     {
       "anzsco_code": "134211",
-      "occupation_name": "Aquaculture Manager",
+      "occupation_name": "Medical Administrator",
       "authority": "MedBA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1084,7 +1084,7 @@
     },
     {
       "anzsco_code": "134411",
-      "occupation_name": "Aquaculture Manager",
+      "occupation_name": "Faculty Head",
       "authority": "VETASSESS AITSL",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1155,7 +1155,7 @@
     },
     {
       "anzsco_code": "311212",
-      "occupation_name": "Arable Farmer",
+      "occupation_name": "Cardiac Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1385,7 +1385,7 @@
     },
     {
       "anzsco_code": "211211",
-      "occupation_name": "Auditor",
+      "occupation_name": "Composer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1400,7 +1400,7 @@
     },
     {
       "anzsco_code": "221211",
-      "occupation_name": "Auditor",
+      "occupation_name": "Company Secretary",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1526,7 +1526,7 @@
     },
     {
       "anzsco_code": "451111",
-      "occupation_name": "Barista",
+      "occupation_name": "Beauty Therapist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1542,7 +1542,7 @@
     },
     {
       "anzsco_code": "212311",
-      "occupation_name": "Barrister",
+      "occupation_name": "Art Director (Film, Television or Stage)",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1579,7 +1579,7 @@
     },
     {
       "anzsco_code": "451311",
-      "occupation_name": "Beauty Therapist",
+      "occupation_name": "Funeral Director",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -1734,7 +1734,7 @@
     },
     {
       "anzsco_code": "311313",
-      "occupation_name": "Biosecurity Officer",
+      "occupation_name": "Quarantine Officer",
       "authority": "Unknown",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -1795,7 +1795,7 @@
     },
     {
       "anzsco_code": "322211",
-      "occupation_name": "Body Maker",
+      "occupation_name": "Sheetmetal Trades Worker",
       "authority": "Unknown",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -2043,7 +2043,7 @@
     },
     {
       "anzsco_code": "312912",
-      "occupation_name": "Building and Construction Technician",
+      "occupation_name": "Metallurgical or Materials Technician",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -2106,7 +2106,7 @@
     },
     {
       "anzsco_code": "312911",
-      "occupation_name": "Building Technician",
+      "occupation_name": "Maintenance Planner",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -2154,7 +2154,7 @@
     },
     {
       "anzsco_code": "411611",
-      "occupation_name": "Bus Driver",
+      "occupation_name": "Massage Therapist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -2201,7 +2201,7 @@
     },
     {
       "anzsco_code": "351211",
-      "occupation_name": "Butcher",
+      "occupation_name": "Butcher or Smallgoods Maker",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -2259,7 +2259,7 @@
     },
     {
       "anzsco_code": "394112",
-      "occupation_name": "Cabinetmaker (Apprentice)",
+      "occupation_name": "Cabinet Maker",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -2764,7 +2764,7 @@
     },
     {
       "anzsco_code": "234915",
-      "occupation_name": "Chemist",
+      "occupation_name": "Exercise Physiologist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -2801,7 +2801,7 @@
     },
     {
       "anzsco_code": "111211",
-      "occupation_name": "Chief Financial Officer",
+      "occupation_name": "Corporate General Manager",
       "authority": "IML",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -2874,7 +2874,7 @@
     },
     {
       "anzsco_code": "411311",
-      "occupation_name": "Childcare Worker",
+      "occupation_name": "Diversional Therapist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -3083,7 +3083,7 @@
     },
     {
       "anzsco_code": "451711",
-      "occupation_name": "Cleaner",
+      "occupation_name": "Flight Attendant",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -3738,7 +3738,7 @@
     },
     {
       "anzsco_code": "132111",
-      "occupation_name": "Corporate General Manager",
+      "occupation_name": "Corporate Services Manager",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -3816,7 +3816,7 @@
     },
     {
       "anzsco_code": "272312",
-      "occupation_name": "Counselling Psychologist",
+      "occupation_name": "Educational Psychologist",
       "authority": "APS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -3880,7 +3880,7 @@
     },
     {
       "anzsco_code": "599212",
-      "occupation_name": "Court Bailiff or Sheriff (Aus) / Court Collections Officer (NZ)",
+      "occupation_name": "Court Bailiff or Sheriff (Aus) \\ Court Collections Officer (NZ)",
       "authority": "VETASSESS",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -3895,7 +3895,7 @@
     },
     {
       "anzsco_code": "599213",
-      "occupation_name": "Court Orderly (Aus) / Court Registry Officer (NZ)",
+      "occupation_name": "Court Orderly (Aus) \\ Court Registry Officer (NZ)",
       "authority": "VETASSESS",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -4131,7 +4131,7 @@
     },
     {
       "anzsco_code": "121215",
-      "occupation_name": "Dairy Cattle Farmer",
+      "occupation_name": "Grape Grower",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4183,7 +4183,7 @@
     },
     {
       "anzsco_code": "311215",
-      "occupation_name": "Dairy Farmer",
+      "occupation_name": "Pharmacy Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4208,7 +4208,7 @@
     },
     {
       "anzsco_code": "232313",
-      "occupation_name": "Dance Teacher",
+      "occupation_name": "Jewellery Designer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4247,7 +4247,7 @@
     },
     {
       "anzsco_code": "231212",
-      "occupation_name": "Dancer",
+      "occupation_name": "Ship's Engineer",
       "authority": "AMSA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4512,7 +4512,7 @@
     },
     {
       "anzsco_code": "251111",
-      "occupation_name": "Dentist",
+      "occupation_name": "Dietitian",
       "authority": "DAA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4783,7 +4783,7 @@
     },
     {
       "anzsco_code": "411412",
-      "occupation_name": "Disability Support Assistant",
+      "occupation_name": "Mothercraft Nurse",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4794,7 +4794,7 @@
     },
     {
       "anzsco_code": "411411",
-      "occupation_name": "Disability Support Worker",
+      "occupation_name": "Enrolled Nurse",
       "authority": "ANMAC",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4834,7 +4834,7 @@
     },
     {
       "anzsco_code": "399111",
-      "occupation_name": "Diver (Commercial)",
+      "occupation_name": "Boat Builder and Repairer",
       "authority": "TRA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4858,7 +4858,7 @@
     },
     {
       "anzsco_code": "399112",
-      "occupation_name": "Diver (Professional)",
+      "occupation_name": "Shipwright",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -4904,7 +4904,7 @@
     },
     {
       "anzsco_code": "452318",
-      "occupation_name": "Dog and Horse Racing Official",
+      "occupation_name": "Dog or Horse Racing Official",
       "authority": "VETASSESS",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -5012,7 +5012,7 @@
     },
     {
       "anzsco_code": "232312",
-      "occupation_name": "Drama Teacher",
+      "occupation_name": "Industrial Designer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -5256,7 +5256,7 @@
     },
     {
       "anzsco_code": "272313",
-      "occupation_name": "Educational Psychologist",
+      "occupation_name": "Organisational Psychologist",
       "authority": "Unknown",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -5377,7 +5377,7 @@
     },
     {
       "anzsco_code": "342212",
-      "occupation_name": "Electrical Linesworker (Apprentice)",
+      "occupation_name": "Technical Cable Jointer",
       "authority": "Unknown",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -5400,7 +5400,7 @@
     },
     {
       "anzsco_code": "312412",
-      "occupation_name": "Electrical Technician",
+      "occupation_name": "Electronic Engineering Technician",
       "authority": "Engineers Australia",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -5418,7 +5418,7 @@
     },
     {
       "anzsco_code": "341113",
-      "occupation_name": "Electrician (Apprentice)",
+      "occupation_name": "Lift Mechanic",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -5490,7 +5490,7 @@
     },
     {
       "anzsco_code": "342312",
-      "occupation_name": "Electronic Equipment Technician",
+      "occupation_name": "Communications Operator",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -5529,7 +5529,7 @@
     },
     {
       "anzsco_code": "342314",
-      "occupation_name": "Electronic Equipment Trades Worker (Apprentice)",
+      "occupation_name": "Electronic Instrument Trades Worker (General)",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -5623,7 +5623,7 @@
     },
     {
       "anzsco_code": "312411",
-      "occupation_name": "Electronics Technician",
+      "occupation_name": "Electronic Engineering Draftsperson",
       "authority": "Engineers Australia",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -5638,7 +5638,7 @@
     },
     {
       "anzsco_code": "342311",
-      "occupation_name": "Electronics Technician",
+      "occupation_name": "Business Machine Mechanic",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -5808,7 +5808,7 @@
     },
     {
       "anzsco_code": "312999",
-      "occupation_name": "Engineering Technicians nec",
+      "occupation_name": "Building and Engineering Technicians nec",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -5868,7 +5868,7 @@
     },
     {
       "anzsco_code": "254311",
-      "occupation_name": "Enrolled Nurse",
+      "occupation_name": "Nurse Manager",
       "authority": "ANMAC",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -6020,7 +6020,7 @@
     },
     {
       "anzsco_code": "234311",
-      "occupation_name": "Environmental Consultant",
+      "occupation_name": "Conservation Officer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -6247,7 +6247,7 @@
     },
     {
       "anzsco_code": "221214",
-      "occupation_name": "External Auditor",
+      "occupation_name": "Internal Auditor",
       "authority": "CAANZ CPAA IPA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -6379,7 +6379,7 @@
     },
     {
       "anzsco_code": "311211",
-      "occupation_name": "Farmer General",
+      "occupation_name": "Anaesthetic Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -6401,7 +6401,7 @@
     },
     {
       "anzsco_code": "232214",
-      "occupation_name": "Fashion Designer",
+      "occupation_name": "Other Spatial Scientist",
       "authority": "SSSI",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -6877,7 +6877,7 @@
     },
     {
       "anzsco_code": "323111",
-      "occupation_name": "Fitter (General)",
+      "occupation_name": "Aircraft Maintenance Engineer (Avionics)",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -6923,7 +6923,7 @@
     },
     {
       "anzsco_code": "323112",
-      "occupation_name": "Fitter and Turner",
+      "occupation_name": "Aircraft Maintenance Engineer (Mechanical)",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -6969,7 +6969,7 @@
     },
     {
       "anzsco_code": "323113",
-      "occupation_name": "Fitter Welder",
+      "occupation_name": "Aircraft Maintenance Engineer (Structures)",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -6991,7 +6991,7 @@
     },
     {
       "anzsco_code": "323213",
-      "occupation_name": "Fitter Welder",
+      "occupation_name": "Fitter-Welder",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -7015,7 +7015,7 @@
     },
     {
       "anzsco_code": "323299",
-      "occupation_name": "Fitters and Related Workers nec",
+      "occupation_name": "Metal Fitters and Machinists nec",
       "authority": "Unknown",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -7046,7 +7046,7 @@
     },
     {
       "anzsco_code": "231211",
-      "occupation_name": "Flight Engineer",
+      "occupation_name": "Master Fisher",
       "authority": "AMSA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -7176,7 +7176,7 @@
     },
     {
       "anzsco_code": "234211",
-      "occupation_name": "Food Technologist",
+      "occupation_name": "Chemist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -7597,7 +7597,7 @@
     },
     {
       "anzsco_code": "393112",
-      "occupation_name": "Garment Maker",
+      "occupation_name": "Leather Goods Maker",
       "authority": "Unknown",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -7944,7 +7944,7 @@
     },
     {
       "anzsco_code": "232213",
-      "occupation_name": "Graphic Designer",
+      "occupation_name": "Cartographer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -8080,7 +8080,7 @@
     },
     {
       "anzsco_code": "451211",
-      "occupation_name": "Hairdresser",
+      "occupation_name": "Driving Instructor",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -8172,7 +8172,7 @@
     },
     {
       "anzsco_code": "411511",
-      "occupation_name": "Health and Wellness Advisor",
+      "occupation_name": "Aboriginal and Torres Strait Islander Health Worker",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -8309,7 +8309,7 @@
     },
     {
       "anzsco_code": "252212",
-      "occupation_name": "Herbalist",
+      "occupation_name": "Homoeopath",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -8324,7 +8324,7 @@
     },
     {
       "anzsco_code": "252312",
-      "occupation_name": "Herbalist",
+      "occupation_name": "Dentist",
       "authority": "ADC",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -8346,7 +8346,7 @@
     },
     {
       "anzsco_code": "232112",
-      "occupation_name": "Heritage Architect",
+      "occupation_name": "Landscape Architect",
       "authority": "Unknown",
       "min_qualification": "AQF Master degree (Architecture)",
       "post_qual_experience_years": 1,
@@ -8404,7 +8404,7 @@
     },
     {
       "anzsco_code": "252213",
-      "occupation_name": "Homoeopath",
+      "occupation_name": "Naturopath",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -8513,7 +8513,7 @@
     },
     {
       "anzsco_code": "311213",
-      "occupation_name": "Horticultural Farmer",
+      "occupation_name": "Medical Laboratory Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -8555,7 +8555,7 @@
     },
     {
       "anzsco_code": "139911",
-      "occupation_name": "Hospital Chief Executive or Medical Director",
+      "occupation_name": "Arts Administrator or Manager",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -8896,7 +8896,7 @@
     },
     {
       "anzsco_code": "135112",
-      "occupation_name": "ICT Manager (nec)",
+      "occupation_name": "ICT Project Manager",
       "authority": "ACS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -8940,7 +8940,7 @@
     },
     {
       "anzsco_code": "135111",
-      "occupation_name": "ICT Project Manager",
+      "occupation_name": "Chief Information Officer",
       "authority": "ACS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -9035,7 +9035,7 @@
     },
     {
       "anzsco_code": "263212",
-      "occupation_name": "ICT Support and Test Engineers nec",
+      "occupation_name": "ICT Support Engineer",
       "authority": "ACS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -9088,7 +9088,7 @@
     },
     {
       "anzsco_code": "313211",
-      "occupation_name": "ICT Support Technician",
+      "occupation_name": "Radiocommunications Technician",
       "authority": "Unknown",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -9123,7 +9123,7 @@
     },
     {
       "anzsco_code": "313212",
-      "occupation_name": "ICT Systems Test Engineer",
+      "occupation_name": "Telecommunications Field Engineer",
       "authority": "Unknown",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -9330,7 +9330,7 @@
     },
     {
       "anzsco_code": "132311",
-      "occupation_name": "Industrial Relations Manager",
+      "occupation_name": "Human Resource Manager",
       "authority": "AHRI",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -9394,7 +9394,7 @@
     },
     {
       "anzsco_code": "121211",
-      "occupation_name": "Information Technology Manager",
+      "occupation_name": "Cotton Grower",
       "authority": "VETASSESS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -9552,7 +9552,7 @@
     },
     {
       "anzsco_code": "212212",
-      "occupation_name": "Intellectual Property Attorney",
+      "occupation_name": "Book or Script Editor",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -9638,7 +9638,7 @@
     },
     {
       "anzsco_code": "232212",
-      "occupation_name": "Interior Designer",
+      "occupation_name": "Surveyor",
       "authority": "VETASSESS SSSI",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -9832,7 +9832,7 @@
     },
     {
       "anzsco_code": "225311",
-      "occupation_name": "Journalist",
+      "occupation_name": "Public Relations Professional",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -10024,7 +10024,7 @@
     },
     {
       "anzsco_code": "232311",
-      "occupation_name": "Land Economist",
+      "occupation_name": "Fashion Designer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -10151,7 +10151,7 @@
     },
     {
       "anzsco_code": "212111",
-      "occupation_name": "Lawyer",
+      "occupation_name": "Artistic Director",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -10187,7 +10187,7 @@
     },
     {
       "anzsco_code": "393114",
-      "occupation_name": "Leather Worker",
+      "occupation_name": "Shoemaker",
       "authority": "Unknown",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -10248,7 +10248,7 @@
     },
     {
       "anzsco_code": "212112",
-      "occupation_name": "Legal Practitioner",
+      "occupation_name": "Media Producer (excluding Video)",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -10347,7 +10347,7 @@
     },
     {
       "anzsco_code": "224712",
-      "occupation_name": "Library Technician",
+      "occupation_name": "Organisation and Methods Analyst",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -10507,7 +10507,7 @@
     },
     {
       "anzsco_code": "121214",
-      "occupation_name": "Livestock Farmer",
+      "occupation_name": "Grain, Oilseed or Pasture Grower",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -10537,7 +10537,7 @@
     },
     {
       "anzsco_code": "311214",
-      "occupation_name": "Livestock Farmer",
+      "occupation_name": "Operating Theatre Technician",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -10757,7 +10757,7 @@
     },
     {
       "anzsco_code": "211112",
-      "occupation_name": "Management Accountant",
+      "occupation_name": "Dancer or Choreographer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -10909,7 +10909,7 @@
     },
     {
       "anzsco_code": "225114",
-      "occupation_name": "Marketing Manager",
+      "occupation_name": "Content Creator (Marketing)",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -11300,7 +11300,7 @@
     },
     {
       "anzsco_code": "391111",
-      "occupation_name": "Metal Fabricator",
+      "occupation_name": "Hairdresser",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -11460,7 +11460,7 @@
     },
     {
       "anzsco_code": "224913",
-      "occupation_name": "Migration Agent / Immigration Consultant",
+      "occupation_name": "Migration Agent (Aus) \\ Immigration Consultant (NZ)",
       "authority": "Unknown",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -11526,7 +11526,7 @@
     },
     {
       "anzsco_code": "311411",
-      "occupation_name": "Mining Technician",
+      "occupation_name": "Chemistry Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -11559,7 +11559,7 @@
     },
     {
       "anzsco_code": "312611",
-      "occupation_name": "Mining Technician (General)",
+      "occupation_name": "Safety Inspector",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -11684,7 +11684,7 @@
     },
     {
       "anzsco_code": "321111",
-      "occupation_name": "Motor Mechanic (General)",
+      "occupation_name": "Automotive Electrician",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -11907,7 +11907,7 @@
     },
     {
       "anzsco_code": "231213",
-      "occupation_name": "Musician",
+      "occupation_name": "Ship's Master",
       "authority": "AMSA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -11937,7 +11937,7 @@
     },
     {
       "anzsco_code": "252214",
-      "occupation_name": "Naturopath",
+      "occupation_name": "Traditional Chinese Medicine Practitioner",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -11950,7 +11950,7 @@
     },
     {
       "anzsco_code": "252311",
-      "occupation_name": "Naturopath",
+      "occupation_name": "Dental Specialist",
       "authority": "ADC",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -12065,7 +12065,7 @@
     },
     {
       "anzsco_code": "313213",
-      "occupation_name": "Network Support Technician",
+      "occupation_name": "Telecommunications Network Planner",
       "authority": "TRA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -12188,7 +12188,7 @@
     },
     {
       "anzsco_code": "254211",
-      "occupation_name": "Nurse Practitioner",
+      "occupation_name": "Nurse Educator",
       "authority": "ANMAC",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -12312,7 +12312,7 @@
     },
     {
       "anzsco_code": "253911",
-      "occupation_name": "Obstetrician",
+      "occupation_name": "Dermatologist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -12382,7 +12382,7 @@
     },
     {
       "anzsco_code": "272314",
-      "occupation_name": "Occupational Psychologist",
+      "occupation_name": "Psychotherapist",
       "authority": "APS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -12510,7 +12510,7 @@
     },
     {
       "anzsco_code": "399913",
-      "occupation_name": "Optical Dispenser / Dispensing Optician",
+      "occupation_name": "Optical Dispenser (Aus) \\ Dispensing Optician (NZ)",
       "authority": "TRA",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -12651,7 +12651,7 @@
     },
     {
       "anzsco_code": "253512",
-      "occupation_name": "Orthopaedic Surgeon",
+      "occupation_name": "Cardiothoracic Surgeon",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -12930,7 +12930,7 @@
     },
     {
       "anzsco_code": "332211",
-      "occupation_name": "Painting Trades Worker",
+      "occupation_name": "Painter",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III (trade)",
       "post_qual_experience_years": 3,
@@ -12970,7 +12970,7 @@
     },
     {
       "anzsco_code": "322113",
-      "occupation_name": "Panel Worker",
+      "occupation_name": "Farrier",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -12992,7 +12992,7 @@
     },
     {
       "anzsco_code": "322111",
-      "occupation_name": "Panelbeater",
+      "occupation_name": "Blacksmith",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -13050,7 +13050,7 @@
     },
     {
       "anzsco_code": "234213",
-      "occupation_name": "Park Manager",
+      "occupation_name": "Wine Maker",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -13162,7 +13162,7 @@
     },
     {
       "anzsco_code": "212211",
-      "occupation_name": "Patent Attorney",
+      "occupation_name": "Author",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -13190,7 +13190,7 @@
     },
     {
       "anzsco_code": "234612",
-      "occupation_name": "Pathologist",
+      "occupation_name": "Respiratory Scientist",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -13394,7 +13394,7 @@
     },
     {
       "anzsco_code": "311412",
-      "occupation_name": "Petroleum Technician",
+      "occupation_name": "Earth Science Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -13427,7 +13427,7 @@
     },
     {
       "anzsco_code": "234711",
-      "occupation_name": "Pharmacist",
+      "occupation_name": "Veterinarian",
       "authority": "AVBC",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -13792,7 +13792,7 @@
     },
     {
       "anzsco_code": "334116",
-      "occupation_name": "Plumber (Apprentice)",
+      "occupation_name": "Plumber (General)",
       "authority": "Unknown",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -13847,7 +13847,7 @@
     },
     {
       "anzsco_code": "332111",
-      "occupation_name": "Plumber (General)",
+      "occupation_name": "Floor Finisher",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -13915,7 +13915,7 @@
     },
     {
       "anzsco_code": "334117",
-      "occupation_name": "Plumber (Water Supply and Sewerage)",
+      "occupation_name": "Fire Protection Plumber",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -14842,7 +14842,7 @@
     },
     {
       "anzsco_code": "311413",
-      "occupation_name": "Production Technician",
+      "occupation_name": "Life Science Technician",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -14949,7 +14949,7 @@
     },
     {
       "anzsco_code": "131112",
-      "occupation_name": "Project Manager (Building/Construction)",
+      "occupation_name": "Sales and Marketing Manager",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -15003,7 +15003,7 @@
     },
     {
       "anzsco_code": "225412",
-      "occupation_name": "Property Manager",
+      "occupation_name": "Sales Representative (Medical and Pharmaceutical Products)",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -15089,7 +15089,7 @@
     },
     {
       "anzsco_code": "272111",
-      "occupation_name": "Psychologist",
+      "occupation_name": "Careers Counsellor",
       "authority": "VETASSESS ACWA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -15177,7 +15177,7 @@
     },
     {
       "anzsco_code": "225211",
-      "occupation_name": "Public Relations Professional",
+      "occupation_name": "ICT Account Manager",
       "authority": "ACS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -15251,7 +15251,7 @@
     },
     {
       "anzsco_code": "224211",
-      "occupation_name": "Quantity Surveyor",
+      "occupation_name": "Archivist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -15348,7 +15348,7 @@
     },
     {
       "anzsco_code": "342411",
-      "occupation_name": "Radio Communications Technician",
+      "occupation_name": "Cabler (Data and Telecommunications)",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -15484,7 +15484,7 @@
     },
     {
       "anzsco_code": "612113",
-      "occupation_name": "Real Estate Agency Principal / Real Estate Agency Licensee",
+      "occupation_name": "Real Estate Agency Principal (Aus) \\ Real Estate Agency Licensee (NZ)",
       "authority": "Unknown",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -15495,7 +15495,7 @@
     },
     {
       "anzsco_code": "225411",
-      "occupation_name": "Real Estate Agent",
+      "occupation_name": "Sales Representative (Industrial Products)",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -15582,7 +15582,7 @@
     },
     {
       "anzsco_code": "272612",
-      "occupation_name": "Recreation Officer / Recreation Coordinator",
+      "occupation_name": "Recreation Officer",
       "authority": "Unknown",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -15682,7 +15682,7 @@
     },
     {
       "anzsco_code": "254212",
-      "occupation_name": "Registered Nurse",
+      "occupation_name": "Nurse Researcher",
       "authority": "ANMAC",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -15706,7 +15706,7 @@
     },
     {
       "anzsco_code": "254411",
-      "occupation_name": "Registered Nurse (Aged Care)",
+      "occupation_name": "Nurse Practitioner",
       "authority": "ANMAC",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -16023,7 +16023,7 @@
     },
     {
       "anzsco_code": "254425",
-      "occupation_name": "Registered Nurse (Palliative Care)",
+      "occupation_name": "Registered Nurse (Paediatrics)",
       "authority": "ANMAC",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -16139,7 +16139,7 @@
     },
     {
       "anzsco_code": "242211",
-      "occupation_name": "Registered Nurse Educator",
+      "occupation_name": "Vocational Education Teacher",
       "authority": "TRA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -16318,7 +16318,7 @@
     },
     {
       "anzsco_code": "121312",
-      "occupation_name": "Research and Development Manager",
+      "occupation_name": "Beef Cattle Farmer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -16380,7 +16380,7 @@
     },
     {
       "anzsco_code": "253211",
-      "occupation_name": "Resident Medical Officer",
+      "occupation_name": "Anaesthetist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -16856,7 +16856,7 @@
     },
     {
       "anzsco_code": "134111",
-      "occupation_name": "School Principal",
+      "occupation_name": "Child Care Centre Manager",
       "authority": "ACECQA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -16893,7 +16893,7 @@
     },
     {
       "anzsco_code": "234999",
-      "occupation_name": "Science Professionals nec",
+      "occupation_name": "Natural and Physical Science Professionals nec",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -17205,7 +17205,7 @@
     },
     {
       "anzsco_code": "139912",
-      "occupation_name": "Senior Research Scientist",
+      "occupation_name": "Environmental Manager",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -17269,7 +17269,7 @@
     },
     {
       "anzsco_code": "393111",
-      "occupation_name": "Sewing Machinist",
+      "occupation_name": "Canvas Goods Fabricator",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -17443,7 +17443,7 @@
     },
     {
       "anzsco_code": "231214",
-      "occupation_name": "Singer",
+      "occupation_name": "Ship's Officer",
       "authority": "AMSA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -17684,7 +17684,7 @@
     },
     {
       "anzsco_code": "233916",
-      "occupation_name": "Software Engineer",
+      "occupation_name": "Naval Architect",
       "authority": "Engineers Australia",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
@@ -17756,7 +17756,7 @@
     },
     {
       "anzsco_code": "234314",
-      "occupation_name": "Soil Scientist",
+      "occupation_name": "Park Ranger",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -17778,7 +17778,7 @@
     },
     {
       "anzsco_code": "212113",
-      "occupation_name": "Solicitor",
+      "occupation_name": "Radio Presenter",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -17824,7 +17824,7 @@
     },
     {
       "anzsco_code": "333212",
-      "occupation_name": "Solid Plasterer",
+      "occupation_name": "Renderer (Solid Plaster)",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III (trade)",
       "post_qual_experience_years": 3,
@@ -17930,7 +17930,7 @@
     },
     {
       "anzsco_code": "241512",
-      "occupation_name": "Special Education Teacher (Hearing Impaired)",
+      "occupation_name": "Teacher of the Hearing Impaired",
       "authority": "AITSL",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -17954,7 +17954,7 @@
     },
     {
       "anzsco_code": "241513",
-      "occupation_name": "Special Education Teacher (Physically Disabled)",
+      "occupation_name": "Teacher of the Sight Impaired",
       "authority": "Unknown",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18026,7 +18026,7 @@
     },
     {
       "anzsco_code": "253312",
-      "occupation_name": "Specialist Physician (Cardiovascular medicine)",
+      "occupation_name": "Cardiologist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18050,7 +18050,7 @@
     },
     {
       "anzsco_code": "253313",
-      "occupation_name": "Specialist Physician (Clinical Genetics)",
+      "occupation_name": "Clinical Haematologist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18074,7 +18074,7 @@
     },
     {
       "anzsco_code": "253314",
-      "occupation_name": "Specialist Physician (Dermatology)",
+      "occupation_name": "Medical Oncologist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18098,7 +18098,7 @@
     },
     {
       "anzsco_code": "253315",
-      "occupation_name": "Specialist Physician (Endocrinology)",
+      "occupation_name": "Endocrinologist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18122,7 +18122,7 @@
     },
     {
       "anzsco_code": "253316",
-      "occupation_name": "Specialist Physician (Gastroenterology)",
+      "occupation_name": "Gastroenterologist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18159,7 +18159,7 @@
     },
     {
       "anzsco_code": "253317",
-      "occupation_name": "Specialist Physician (General Medicine)",
+      "occupation_name": "Intensive Care Specialist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18183,7 +18183,7 @@
     },
     {
       "anzsco_code": "253318",
-      "occupation_name": "Specialist Physician (Infectious Diseases)",
+      "occupation_name": "Neurologist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18231,7 +18231,7 @@
     },
     {
       "anzsco_code": "253321",
-      "occupation_name": "Specialist Physician (Neurology)",
+      "occupation_name": "Paediatrician",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18255,7 +18255,7 @@
     },
     {
       "anzsco_code": "253322",
-      "occupation_name": "Specialist Physician (Oncology)",
+      "occupation_name": "Renal Medicine Specialist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18279,7 +18279,7 @@
     },
     {
       "anzsco_code": "253323",
-      "occupation_name": "Specialist Physician (Respiratory medicine)",
+      "occupation_name": "Rheumatologist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18303,7 +18303,7 @@
     },
     {
       "anzsco_code": "253324",
-      "occupation_name": "Specialist Physician (Rheumatology)",
+      "occupation_name": "Thoracic Medicine Specialist",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18790,7 +18790,7 @@
     },
     {
       "anzsco_code": "311414",
-      "occupation_name": "Supervisor (Mining)",
+      "occupation_name": "School Laboratory Technician",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18845,7 +18845,7 @@
     },
     {
       "anzsco_code": "253511",
-      "occupation_name": "Surgeon",
+      "occupation_name": "Surgeon (General)",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18892,7 +18892,7 @@
     },
     {
       "anzsco_code": "312913",
-      "occupation_name": "Surveying or Spatial Science Technician",
+      "occupation_name": "Mine Deputy",
       "authority": "Unknown",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -18905,7 +18905,7 @@
     },
     {
       "anzsco_code": "232411",
-      "occupation_name": "Surveyor",
+      "occupation_name": "Graphic Designer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -19032,7 +19032,7 @@
     },
     {
       "anzsco_code": "211113",
-      "occupation_name": "Taxation Accountant",
+      "occupation_name": "Entertainer or Variety Artist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -19189,7 +19189,7 @@
     },
     {
       "anzsco_code": "225212",
-      "occupation_name": "Technical Writer",
+      "occupation_name": "ICT Business Development Manager",
       "authority": "ACS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -19307,7 +19307,7 @@
     },
     {
       "anzsco_code": "342413",
-      "occupation_name": "Telecommunications Linesworker / Telecommunications Line Mechanic",
+      "occupation_name": "Telecommunications Linesworker",
       "authority": "Unknown",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -19320,7 +19320,7 @@
     },
     {
       "anzsco_code": "149211",
-      "occupation_name": "Telecommunications Manager",
+      "occupation_name": "Call or Contact Centre Manager",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -19534,7 +19534,7 @@
     },
     {
       "anzsco_code": "393113",
-      "occupation_name": "Textile Worker",
+      "occupation_name": "Sail Maker",
       "authority": "Unknown",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -19592,7 +19592,7 @@
     },
     {
       "anzsco_code": "253514",
-      "occupation_name": "Thoracic Surgeon",
+      "occupation_name": "Orthopaedic Surgeon",
       "authority": "MedBA",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -20093,7 +20093,7 @@
     },
     {
       "anzsco_code": "242112",
-      "occupation_name": "University Lecturer",
+      "occupation_name": "University Tutor",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -20189,7 +20189,7 @@
     },
     {
       "anzsco_code": "232511",
-      "occupation_name": "Urban Planner",
+      "occupation_name": "Interior Designer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -20233,7 +20233,7 @@
     },
     {
       "anzsco_code": "224311",
-      "occupation_name": "Valuer",
+      "occupation_name": "Economist",
       "authority": "VETASSESS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -20347,7 +20347,7 @@
     },
     {
       "anzsco_code": "322112",
-      "occupation_name": "Vehicle Painter",
+      "occupation_name": "Electroplater",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
@@ -20451,7 +20451,7 @@
     },
     {
       "anzsco_code": "251911",
-      "occupation_name": "Veterinarian",
+      "occupation_name": "Health Promotion Officer",
       "authority": "VETASSESS",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 1,
@@ -20504,7 +20504,7 @@
     },
     {
       "anzsco_code": "251912",
-      "occupation_name": "Veterinary Technician",
+      "occupation_name": "Orthotist or Prosthetist",
       "authority": "AOPA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
@@ -20802,7 +20802,7 @@
     },
     {
       "anzsco_code": "322313",
-      "occupation_name": "Welder (First Class) (Aus) / Welder (NZ)",
+      "occupation_name": "Welder (First Class)",
       "authority": "TRA",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
@@ -20995,7 +20995,7 @@
     },
     {
       "anzsco_code": "394113",
-      "occupation_name": "Wood Machinist",
+      "occupation_name": "Furniture Maker",
       "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
