@@ -1,5 +1,5 @@
 /**
- * Generates a polished lead-magnet PDF from src/data/skilled-occupation-list.json:
+ * Generates a polished lead-magnet PDF from src/data/skilled-occupation-list.OLD.json:
  * a clean, branded, multi-page directory of Australian skilled occupations with
  * ANZSCO code, occupation lists, visa pathways, and assessing authority.
  *
@@ -21,7 +21,7 @@ type Occ = {
   authority: string;
 };
 
-const SRC = path.join(process.cwd(), "src/data/skilled-occupation-list.json");
+const SRC = path.join(process.cwd(), "src/data/skilled-occupation-list.OLD.json");
 const OUT = path.join(process.cwd(), "public/australia-skilled-occupation-list-2026.pdf");
 
 const data = JSON.parse(readFileSync(SRC, "utf8")) as { occupations: Occ[]; count: number };

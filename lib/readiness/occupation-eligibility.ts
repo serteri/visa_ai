@@ -1,5 +1,6 @@
 import occupationsData from "@/src/data/occupations.json";
 import anzscoListData from "@/src/data/anzsco-list.json";
+import skilledOccupationListData from "@/public/skilled-occupation-list.json";
 
 export type SkilledSubclass = "189" | "190" | "491";
 
@@ -8,6 +9,11 @@ type OccupationRecord = {
   occupation_name: string;
   authority: string;
   visa_lists?: string[];
+};
+
+type SkilledOccupationListRow = {
+  anzsco_code: string;
+  list: string[];
 };
 
 type LocalizedAnzscoRecord = {
@@ -65,6 +71,55 @@ function isAmbiguousGenericTerm(value?: string): boolean {
 }
 
 const OCCUPATIONS_BY_CODE = new Map(OCCUPATION_ROWS.map((row) => [row.anzsco_code, row]));
+
+// Skilled Occupation List: the primary source of truth for "is this
+// occupation scoreable under 189/190/491 (or otherwise on a skilled list at
+// all)". Kept separate from occupations.json, which is the broader
+// full-ANZSCO dataset (skilled and non-skilled occupations both) used for
+// search/autocomplete and for non-list fields (authority, qualification,
+// etc). A code can appear on multiple rows here (distinct title variants
+// sharing one ANZSCO code), so list membership is the union across all rows
+// for that code.
+//
+// public/skilled-occupation-list.json (671 codes) does not cover every
+// occupation occupations.json knows about -- e.g. it has no row at all for
+// "Software Engineer" (261313), a real MLTSSL/CSOL occupation, despite being
+// the more detailed/current source where it does have a row. So this falls
+// back to occupations.json's own visa_lists (itself corrected against this
+// same skilled-occupation-list.json earlier) for any code missing here,
+// rather than treating "absent from this file" as "confirmed not skilled".
+const SKILLED_LISTS_BY_CODE = new Map<string, Set<string>>();
+for (const row of skilledOccupationListData as SkilledOccupationListRow[]) {
+  const existing = SKILLED_LISTS_BY_CODE.get(row.anzsco_code) ?? new Set<string>();
+  for (const list of row.list ?? []) existing.add(list);
+  SKILLED_LISTS_BY_CODE.set(row.anzsco_code, existing);
+}
+
+/**
+ * Returns the Skilled Occupation List membership (MLTSSL/STSOL/ROL/CSOL) for
+ * a resolved ANZSCO code, or an empty array if the code isn't on any skilled
+ * list. Prefers public/skilled-occupation-list.json; falls back to
+ * occupations.json's own visa_lists when the code has no row there at all.
+ */
+export function getSkilledListMembership(anzscoCode?: string): string[] {
+  if (!anzscoCode) return [];
+  const fromSkilledList = SKILLED_LISTS_BY_CODE.get(anzscoCode);
+  if (fromSkilledList) return Array.from(fromSkilledList);
+
+  const occupationRecord = OCCUPATIONS_BY_CODE.get(anzscoCode);
+  return occupationRecord?.visa_lists ?? [];
+}
+
+/**
+ * Whether a raw occupation value (code or name) resolves to an occupation on
+ * any skilled list. Returns false both when the occupation resolves but
+ * carries no skilled-list membership, and when it doesn't resolve at all.
+ */
+export function isOnSkilledOccupationList(occupation?: string): boolean {
+  const record = findOccupationRecord(occupation);
+  if (!record) return false;
+  return getSkilledListMembership(record.anzsco_code).length > 0;
+}
 
 const LOCALIZED_ALIASES = new Map<string, string>();
 
@@ -141,16 +196,11 @@ const LOCALIZED_BY_CODE = new Map(LOCALIZED_ROWS.map((row) => [row.code, row]));
  * "233512", since the intake form submits codes for AU) to a human-readable,
  * locale-appropriate display name.
  *
- * anzsco-list.json (the AU search/autocomplete index -- see
- * build-ultimate-anzsco.py) is keyed by OSCA identifiers, not real ANZSCO
- * codes, and the two numbering schemes are not interchangeable; a code
- * submitted from that autocomplete routinely has no entry in
- * occupations.json (the authoritative, real-ANZSCO-coded dataset used for
- * skilled-list eligibility). When that happens this still shows the
- * anzsco-list.json title for that code, if one exists, rather than the bare
- * numeric code -- purely cosmetic, since the eligibility check itself
- * still correctly finds nothing for an unmatched code. Only genuinely
- * unmatched/free-text input falls through to the raw string.
+ * anzsco-list.json (the AU search/autocomplete index) is now derived
+ * directly from occupations.json (deduplicated, same ANZSCO codes), so a
+ * code submitted from that autocomplete always has a matching
+ * occupations.json record. The LOCALIZED_BY_CODE fallback below only
+ * matters for genuinely unmatched/free-text input.
  */
 export function resolveOccupationDisplayName(occupation?: string, locale?: "en" | "tr" | "zh-Hans"): string {
   const raw = (occupation ?? "").trim();
@@ -182,7 +232,7 @@ export function getEligibleSkilledSubclasses(occupation?: string): SkilledSubcla
   const record = findOccupationRecord(occupation);
   if (!record) return [];
 
-  const listMemberships = new Set(record.visa_lists ?? []);
+  const listMemberships = new Set(getSkilledListMembership(record.anzsco_code));
   const subclasses: SkilledSubclass[] = [];
 
   if (listMemberships.has("MLTSSL")) {
