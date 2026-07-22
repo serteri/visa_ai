@@ -1,5 +1,5 @@
 /**
- * Generates a polished lead-magnet PDF from src/data/skilled-occupation-list.OLD.json:
+ * Generates a polished lead-magnet PDF from public/skilled-occupation-list.json:
  * a clean, branded, multi-page directory of Australian skilled occupations with
  * ANZSCO code, occupation lists, visa pathways, and assessing authority.
  *
@@ -13,6 +13,14 @@ import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "../lib/readiness/pdf-font";
 import { notoSansBoldBase64 } from "../lib/readiness/pdf-font-bold";
 
+type SkilledOccupationRow = {
+  anzsco_code: string;
+  occupation_en: string;
+  visa_types: string[];
+  list: string[];
+  assessing_authority: string[];
+};
+
 type Occ = {
   anzsco_code: string;
   occupation_name: string;
@@ -21,13 +29,21 @@ type Occ = {
   authority: string;
 };
 
-const SRC = path.join(process.cwd(), "src/data/skilled-occupation-list.OLD.json");
+const SRC = path.join(process.cwd(), "public/skilled-occupation-list.json");
 const OUT = path.join(process.cwd(), "public/australia-skilled-occupation-list-2026.pdf");
 
-const data = JSON.parse(readFileSync(SRC, "utf8")) as { occupations: Occ[]; count: number };
-const occupations = [...data.occupations].sort((a, b) =>
-  a.occupation_name.localeCompare(b.occupation_name)
-);
+const rows = JSON.parse(readFileSync(SRC, "utf8")) as SkilledOccupationRow[];
+const occupations = rows
+  .map(
+    (row): Occ => ({
+      anzsco_code: row.anzsco_code,
+      occupation_name: row.occupation_en,
+      lists: row.list,
+      visa_subclasses: row.visa_types,
+      authority: row.assessing_authority.join(", "),
+    })
+  )
+  .sort((a, b) => a.occupation_name.localeCompare(b.occupation_name));
 
 const FONT = "NotoSans";
 const NAVY = { r: 15, g: 23, b: 42 };
