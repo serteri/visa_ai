@@ -22,9 +22,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL",
-        "STSOL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -126,8 +125,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "ROL"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -239,7 +237,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "CSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -277,7 +277,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "STSOL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -485,8 +486,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "STSOL"
+        "ROL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -1067,8 +1068,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "ROL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -1740,7 +1741,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -1802,7 +1805,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "MLTSSL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -2266,9 +2270,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
-        "CSOL",
-        "ROL",
-        "TRA"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -4138,7 +4140,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -4190,7 +4191,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "ROL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "494"
@@ -4254,8 +4256,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "ROL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -4789,7 +4791,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -4865,7 +4869,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "MLTSSL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -5019,7 +5024,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "AITSL requires supervised teaching evidence and strict pedagogical equivalence.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -5263,7 +5267,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "MLTSSL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -5384,7 +5389,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "MLTSSL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -5425,7 +5431,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
-        "CSOL",
         "MLTSSL"
       ],
       "visa_subclasses": [
@@ -5875,8 +5880,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "STSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -7022,7 +7026,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "STSOL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -7053,8 +7058,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "ROL"
       ],
       "visa_subclasses": [
         "186",
@@ -7603,7 +7607,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -8331,8 +8337,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "STSOL"
+        "ROL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -8353,7 +8359,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "MLTSSL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -8411,7 +8418,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "ROL"
+        "STSOL"
       ],
       "visa_subclasses": [
         "494"
@@ -8520,7 +8527,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -9042,7 +9048,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -9130,7 +9135,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "MLTSSL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -9559,7 +9565,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -10031,7 +10036,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -10158,10 +10162,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "MLTSSL",
-        "ROL",
-        "STSOL"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -10193,7 +10195,10 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL",
+        "CSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10254,7 +10259,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -10514,7 +10521,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "ROL"
       ],
       "visa_subclasses": [
@@ -10764,7 +10770,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "MLTSSL"
       ],
       "visa_subclasses": [
@@ -11307,9 +11312,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
-        "CSOL",
         "STSOL",
-        "TRA"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -11466,7 +11470,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -11944,7 +11950,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "STSOL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -12072,8 +12079,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
       "visa_lists": [
-        "CSOL",
-        "STSOL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -12195,8 +12202,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -12517,7 +12524,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "",
       "visa_lists": [
-        "ROL"
+        "ROL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "494"
@@ -12937,9 +12945,7 @@
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "TRA may reject applications lacking verifiable full-scope task evidence and wage records.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL",
-        "TRA"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -12977,8 +12983,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
-        "CSOL",
-        "ROL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -13057,8 +13063,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "STSOL"
+        "ROL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -13196,7 +13202,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "CSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -13798,7 +13806,10 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "MLTSSL",
+        "CSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -13922,8 +13933,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
-        "CSOL",
-        "TRA"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -14849,7 +14859,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "ROL"
+        "STSOL"
       ],
       "visa_subclasses": [
         "494"
@@ -15010,8 +15020,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "STSOL"
+        "ROL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -15096,7 +15106,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -15355,10 +15364,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL",
         "STSOL",
-        "TRA"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -15490,7 +15497,9 @@
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -15501,7 +15510,10 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL",
+        "CSOL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -15589,7 +15601,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "STSOL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -15689,8 +15702,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -16146,8 +16159,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "ANMAC requires AHPRA registration and recency of practice evidence.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "ROL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -16863,7 +16876,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "MLTSSL"
       ],
       "visa_subclasses": [
@@ -16900,7 +16912,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "MLTSSL"
       ],
       "visa_subclasses": [
@@ -17450,8 +17461,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "ROL"
       ],
       "visa_subclasses": [
         "186",
@@ -17762,7 +17772,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17784,7 +17796,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -17831,9 +17845,7 @@
       "english_requirement": "Not required for migration skills assessment",
       "critical_warning": "TRA may reject where documentation does not show full trade competencies.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL",
-        "TRA"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -17961,7 +17973,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "MLTSSL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -18796,7 +18809,9 @@
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -18899,7 +18914,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "STSOL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -18912,7 +18928,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -19314,7 +19329,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
       "visa_lists": [
-        "STSOL"
+        "STSOL",
+        "CSOL"
       ],
       "visa_subclasses": []
     },
@@ -19540,7 +19556,9 @@
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "This occupation is present in the ANZSCO classification but is not currently mapped to skilled visa lists in this dataset.",
-      "visa_lists": [],
+      "visa_lists": [
+        "ROL"
+      ],
       "visa_subclasses": []
     },
     {
@@ -20100,8 +20118,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "MLTSSL"
+        "ROL"
       ],
       "visa_subclasses": [
         "186",
@@ -20458,7 +20475,6 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "Assessment authority requirements may vary; verify with assessing body.",
       "visa_lists": [
-        "CSOL",
         "STSOL"
       ],
       "visa_subclasses": [
@@ -20511,8 +20527,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "VETASSESS assessments are sensitive to direct professional scope alignment; roles diverging from the defined scope may not satisfy assessment criteria.",
       "visa_lists": [
-        "CSOL",
-        "STSOL"
+        "MLTSSL",
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -20809,9 +20825,8 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "",
       "visa_lists": [
-        "CSOL",
         "MLTSSL",
-        "TRA"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
@@ -21002,8 +21017,7 @@
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
       "critical_warning": "TRA outcome requires state licensing; assessment does not grant license.",
       "visa_lists": [
-        "CSOL",
-        "TRA"
+        "CSOL"
       ],
       "visa_subclasses": [
         "186",
