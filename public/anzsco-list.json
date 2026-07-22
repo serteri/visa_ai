@@ -23,20 +23,20 @@
   },
   {
     "code": "111211",
-    "title_en": "Chief Financial Officer",
-    "title_tr": "Finans Direktörü (CFO)",
-    "title_zh": "首席财务官",
+    "title_en": "Corporate General Manager",
+    "title_tr": "Kurumsal Genel Müdür",
+    "title_zh": "企业总经理",
     "keywords": [],
     "duties_en": [
-      "Perform Chief Financial Officer duties within their area of responsibility.",
+      "Perform Corporate General Manager duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Finans Direktörü (CFO) görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Kurumsal Genel Müdür görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行首席财务官职责。",
+      "在其职责范围内履行企业总经理职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -1286,22 +1286,22 @@
   },
   {
     "code": "134411",
-    "title_en": "Aquaculture Manager",
-    "title_tr": "Su Ürünleri Yetiştiriciliği Müdürü",
-    "title_zh": "水产养殖经理",
+    "title_en": "Faculty Head",
+    "title_tr": "Fakülte Başkanı",
+    "title_zh": "系主任",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Aquaculture Manager duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Faculty Head duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Su Ürünleri Yetiştiriciliği Müdürü görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Fakülte Başkanı görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的水产养殖经理职责。",
+      "履行需要学士学位或以上技能水平的系主任职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -1361,22 +1361,22 @@
   },
   {
     "code": "135111",
-    "title_en": "ICT Project Manager",
-    "title_tr": "BİT Proje Müdürü",
-    "title_zh": "信息通信技术项目经理",
+    "title_en": "Chief Information Officer",
+    "title_tr": "Bilgi İşlem Direktörü (CIO)",
+    "title_zh": "首席信息官",
     "keywords": [],
     "duties_en": [
-      "Perform specialised ICT Project Manager duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Chief Information Officer duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren BİT Proje Müdürü görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Bilgi İşlem Direktörü (CIO) görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的信息通信技术项目经理职责。",
+      "履行需要学士学位或以上技能水平的首席信息官职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -1911,22 +1911,22 @@
   },
   {
     "code": "149211",
-    "title_en": "Telecommunications Manager",
-    "title_tr": "Telekomünikasyon Müdürü",
-    "title_zh": "电信经理",
+    "title_en": "Call or Contact Centre Manager",
+    "title_tr": "Çağrı veya İletişim Merkezi Müdürü",
+    "title_zh": "呼叫或联络中心经理",
     "keywords": [],
     "duties_en": [
-      "Perform Telecommunications Manager duties requiring an associate degree, advanced diploma or diploma level of skill.",
+      "Perform Call or Contact Centre Manager duties requiring an associate degree, advanced diploma or diploma level of skill.",
       "Apply relevant technical or specialised knowledge to complete assigned tasks and support team objectives.",
       "Maintain accurate records and comply with relevant workplace and safety requirements."
     ],
     "duties_tr": [
-      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Telekomünikasyon Müdürü görevlerini yerine getirir.",
+      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Çağrı veya İletişim Merkezi Müdürü görevlerini yerine getirir.",
       "Verilen görevleri tamamlamak ve ekip hedeflerini desteklemek için ilgili teknik veya uzmanlık bilgisini uygular.",
       "Doğru kayıtlar tutar ve ilgili işyeri ve güvenlik gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行需要副学士学位、高级文凭或文凭水平技能的电信经理职责。",
+      "履行需要副学士学位、高级文凭或文凭水平技能的呼叫或联络中心经理职责。",
       "运用相关技术或专业知识完成分配的任务并支持团队目标。",
       "保持准确记录并遵守相关工作场所与安全要求。"
     ],
@@ -2186,22 +2186,22 @@
   },
   {
     "code": "211111",
-    "title_en": "Accountant (General)",
-    "title_tr": "Muhasebeci (Genel)",
-    "title_zh": "会计师（普通）",
+    "title_en": "Actor",
+    "title_tr": "Aktör",
+    "title_zh": "演员",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Accountant (General) duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Actor duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Muhasebeci (Genel) görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Aktör görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的会计师（普通）职责。",
+      "履行需要学士学位或以上技能水平的演员职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -2236,22 +2236,22 @@
   },
   {
     "code": "211113",
-    "title_en": "Taxation Accountant",
-    "title_tr": "Vergi Muhasebecisi",
-    "title_zh": "税务会计师",
+    "title_en": "Entertainer or Variety Artist",
+    "title_tr": "Eğlence Sanatçısı",
+    "title_zh": "综艺表演艺人",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Taxation Accountant duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Entertainer or Variety Artist duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Vergi Muhasebecisi görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Eğlence Sanatçısı görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的税务会计师职责。",
+      "履行需要学士学位或以上技能水平的综艺表演艺人职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -2286,22 +2286,22 @@
   },
   {
     "code": "211211",
-    "title_en": "Auditor",
-    "title_tr": "Denetçi",
-    "title_zh": "审计师",
+    "title_en": "Composer",
+    "title_tr": "Besteci",
+    "title_zh": "作曲家",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Auditor duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Composer duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Denetçi görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Besteci görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的审计师职责。",
+      "履行需要学士学位或以上技能水平的作曲家职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -2502,22 +2502,22 @@
   },
   {
     "code": "212211",
-    "title_en": "Patent Attorney",
-    "title_tr": "Patent Avukatı",
-    "title_zh": "专利律师",
+    "title_en": "Author",
+    "title_tr": "Yazar",
+    "title_zh": "作家",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Patent Attorney duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Author duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Patent Avukatı görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Yazar görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的专利律师职责。",
+      "履行需要学士学位或以上技能水平的作家职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -2552,22 +2552,22 @@
   },
   {
     "code": "212311",
-    "title_en": "Barrister",
-    "title_tr": "Avukat (Duruşma Avukatı)",
-    "title_zh": "出庭律师",
+    "title_en": "Art Director (Film, Television or Stage)",
+    "title_tr": "Sanat Yönetmeni (Film, TV veya Sahne)",
+    "title_zh": "艺术指导（电影、电视或舞台）",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Barrister duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Art Director (Film, Television or Stage) duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Avukat (Duruşma Avukatı) görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Sanat Yönetmeni (Film, TV veya Sahne) görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的出庭律师职责。",
+      "履行需要学士学位或以上技能水平的艺术指导（电影、电视或舞台）职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -3624,22 +3624,22 @@
   },
   {
     "code": "224211",
-    "title_en": "Quantity Surveyor",
-    "title_tr": "Metraj Uzmanı",
-    "title_zh": "工料测量师",
+    "title_en": "Archivist",
+    "title_tr": "Arşivci",
+    "title_zh": "档案管理员",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Quantity Surveyor duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Archivist duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Metraj Uzmanı görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Arşivci görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的工料测量师职责。",
+      "履行需要学士学位或以上技能水平的档案管理员职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -4099,22 +4099,22 @@
   },
   {
     "code": "225114",
-    "title_en": "Marketing Manager",
-    "title_tr": "Pazarlama Müdürü",
-    "title_zh": "市场营销经理",
+    "title_en": "Content Creator (Marketing)",
+    "title_tr": "İçerik Üreticisi (Pazarlama)",
+    "title_zh": "内容创作者（营销）",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Marketing Manager duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Content Creator (Marketing) duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Pazarlama Müdürü görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren İçerik Üreticisi (Pazarlama) görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的市场营销经理职责。",
+      "履行需要学士学位或以上技能水平的内容创作者（营销）职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -4224,22 +4224,22 @@
   },
   {
     "code": "225412",
-    "title_en": "Property Manager",
-    "title_tr": "Emlak Yöneticisi",
-    "title_zh": "物业经理",
+    "title_en": "Sales Representative (Medical and Pharmaceutical Products)",
+    "title_tr": "Satış Temsilcisi (Tıbbi ve Farmasötik Ürünler)",
+    "title_zh": "销售代表（医疗与药品）",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Property Manager duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Sales Representative (Medical and Pharmaceutical Products) duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Emlak Yöneticisi görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Satış Temsilcisi (Tıbbi ve Farmasötik Ürünler) görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的物业经理职责。",
+      "履行需要学士学位或以上技能水平的销售代表（医疗与药品）职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -4374,22 +4374,22 @@
   },
   {
     "code": "231211",
-    "title_en": "Flight Engineer",
-    "title_tr": "Uçuş Mühendisi",
-    "title_zh": "飞行工程师",
+    "title_en": "Master Fisher",
+    "title_tr": "Usta Balıkçı",
+    "title_zh": "高级渔民",
     "keywords": [],
     "duties_en": [
-      "Perform Flight Engineer duties requiring an associate degree, advanced diploma or diploma level of skill.",
+      "Perform Master Fisher duties requiring an associate degree, advanced diploma or diploma level of skill.",
       "Apply relevant technical or specialised knowledge to complete assigned tasks and support team objectives.",
       "Maintain accurate records and comply with relevant workplace and safety requirements."
     ],
     "duties_tr": [
-      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Uçuş Mühendisi görevlerini yerine getirir.",
+      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Usta Balıkçı görevlerini yerine getirir.",
       "Verilen görevleri tamamlamak ve ekip hedeflerini desteklemek için ilgili teknik veya uzmanlık bilgisini uygular.",
       "Doğru kayıtlar tutar ve ilgili işyeri ve güvenlik gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行需要副学士学位、高级文凭或文凭水平技能的飞行工程师职责。",
+      "履行需要副学士学位、高级文凭或文凭水平技能的高级渔民职责。",
       "运用相关技术或专业知识完成分配的任务并支持团队目标。",
       "保持准确记录并遵守相关工作场所与安全要求。"
     ],
@@ -4399,22 +4399,22 @@
   },
   {
     "code": "231212",
-    "title_en": "Dancer",
-    "title_tr": "Dansçı",
-    "title_zh": "舞者",
+    "title_en": "Ship's Engineer",
+    "title_tr": "Gemi Mühendisi (Makine Zabiti)",
+    "title_zh": "轮机员",
     "keywords": [],
     "duties_en": [
-      "Perform Dancer duties requiring an associate degree, advanced diploma or diploma level of skill.",
+      "Perform Ship's Engineer duties requiring an associate degree, advanced diploma or diploma level of skill.",
       "Apply relevant technical or specialised knowledge to complete assigned tasks and support team objectives.",
       "Maintain accurate records and comply with relevant workplace and safety requirements."
     ],
     "duties_tr": [
-      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Dansçı görevlerini yerine getirir.",
+      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Gemi Mühendisi (Makine Zabiti) görevlerini yerine getirir.",
       "Verilen görevleri tamamlamak ve ekip hedeflerini desteklemek için ilgili teknik veya uzmanlık bilgisini uygular.",
       "Doğru kayıtlar tutar ve ilgili işyeri ve güvenlik gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行需要副学士学位、高级文凭或文凭水平技能的舞者职责。",
+      "履行需要副学士学位、高级文凭或文凭水平技能的轮机员职责。",
       "运用相关技术或专业知识完成分配的任务并支持团队目标。",
       "保持准确记录并遵守相关工作场所与安全要求。"
     ],
@@ -4449,22 +4449,22 @@
   },
   {
     "code": "231214",
-    "title_en": "Singer",
-    "title_tr": "Şarkıcı",
-    "title_zh": "歌手",
+    "title_en": "Ship's Officer",
+    "title_tr": "Gemi Zabiti",
+    "title_zh": "船员（高级船员）",
     "keywords": [],
     "duties_en": [
-      "Perform Singer duties requiring an associate degree, advanced diploma or diploma level of skill.",
+      "Perform Ship's Officer duties requiring an associate degree, advanced diploma or diploma level of skill.",
       "Apply relevant technical or specialised knowledge to complete assigned tasks and support team objectives.",
       "Maintain accurate records and comply with relevant workplace and safety requirements."
     ],
     "duties_tr": [
-      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Şarkıcı görevlerini yerine getirir.",
+      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Gemi Zabiti görevlerini yerine getirir.",
       "Verilen görevleri tamamlamak ve ekip hedeflerini desteklemek için ilgili teknik veya uzmanlık bilgisini uygular.",
       "Doğru kayıtlar tutar ve ilgili işyeri ve güvenlik gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行需要副学士学位、高级文凭或文凭水平技能的歌手职责。",
+      "履行需要副学士学位、高级文凭或文凭水平技能的船员（高级船员）职责。",
       "运用相关技术或专业知识完成分配的任务并支持团队目标。",
       "保持准确记录并遵守相关工作场所与安全要求。"
     ],
@@ -6399,22 +6399,22 @@
   },
   {
     "code": "242112",
-    "title_en": "University Lecturer",
-    "title_tr": "Üniversite Öğretim Görevlisi",
-    "title_zh": "大学讲师",
+    "title_en": "University Tutor",
+    "title_tr": "Üniversite Asistanı",
+    "title_zh": "大学助教",
     "keywords": [],
     "duties_en": [
-      "Perform specialised University Lecturer duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised University Tutor duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Üniversite Öğretim Görevlisi görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Üniversite Asistanı görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的大学讲师职责。",
+      "履行需要学士学位或以上技能水平的大学助教职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -7124,22 +7124,22 @@
   },
   {
     "code": "252212",
-    "title_en": "Herbalist",
-    "title_tr": "Bitkisel Tedavi Uzmanı",
-    "title_zh": "草药师",
+    "title_en": "Homoeopath",
+    "title_tr": "Homeopat",
+    "title_zh": "顺势疗法师",
     "keywords": [],
     "duties_en": [
-      "Perform specialised Herbalist duties requiring a bachelor's degree level of skill or higher.",
+      "Perform specialised Homoeopath duties requiring a bachelor's degree level of skill or higher.",
       "Apply advanced technical, professional or managerial expertise to plan, coordinate and evaluate work outcomes.",
       "Ensure compliance with relevant professional standards, legislation and workplace requirements."
     ],
     "duties_tr": [
-      "Lisans düzeyi veya üzerinde beceri gerektiren Bitkisel Tedavi Uzmanı görevlerini yerine getirir.",
+      "Lisans düzeyi veya üzerinde beceri gerektiren Homeopat görevlerini yerine getirir.",
       "İş sonuçlarını planlamak, koordine etmek ve değerlendirmek için ileri düzey teknik, mesleki veya yönetsel uzmanlık uygular.",
       "İlgili mesleki standartlara, mevzuata ve işyeri gerekliliklerine uyumu sağlar."
     ],
     "duties_zh": [
-      "履行需要学士学位或以上技能水平的草药师职责。",
+      "履行需要学士学位或以上技能水平的顺势疗法师职责。",
       "运用高级技术、专业或管理知识来规划、协调和评估工作成果。",
       "确保遵守相关专业标准、法规和工作场所要求。"
     ],
@@ -10393,22 +10393,22 @@
   },
   {
     "code": "311113",
-    "title_en": "Agricultural Technician (Horticulture)",
-    "title_tr": "Tarım Teknisyeni (Bahçecilik)",
-    "title_zh": "农业技术员（园艺）",
+    "title_en": "Animal Husbandry Technician",
+    "title_tr": "Hayvancılık Teknisyeni",
+    "title_zh": "畜牧技术员",
     "keywords": [],
     "duties_en": [
-      "Perform Agricultural Technician (Horticulture) duties requiring an associate degree, advanced diploma or diploma level of skill.",
+      "Perform Animal Husbandry Technician duties requiring an associate degree, advanced diploma or diploma level of skill.",
       "Apply relevant technical or specialised knowledge to complete assigned tasks and support team objectives.",
       "Maintain accurate records and comply with relevant workplace and safety requirements."
     ],
     "duties_tr": [
-      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Tarım Teknisyeni (Bahçecilik) görevlerini yerine getirir.",
+      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Hayvancılık Teknisyeni görevlerini yerine getirir.",
       "Verilen görevleri tamamlamak ve ekip hedeflerini desteklemek için ilgili teknik veya uzmanlık bilgisini uygular.",
       "Doğru kayıtlar tutar ve ilgili işyeri ve güvenlik gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行需要副学士学位、高级文凭或文凭水平技能的农业技术员（园艺）职责。",
+      "履行需要副学士学位、高级文凭或文凭水平技能的畜牧技术员职责。",
       "运用相关技术或专业知识完成分配的任务并支持团队目标。",
       "保持准确记录并遵守相关工作场所与安全要求。"
     ],
@@ -10418,22 +10418,22 @@
   },
   {
     "code": "311114",
-    "title_en": "Agricultural Technician (Viticulture)",
-    "title_tr": "Tarım Teknisyeni (Bağcılık)",
-    "title_zh": "农业技术员（葡萄种植）",
+    "title_en": "Aquaculture or Fisheries Technician",
+    "title_tr": "Su Ürünleri veya Balıkçılık Teknisyeni",
+    "title_zh": "水产养殖或渔业技术员",
     "keywords": [],
     "duties_en": [
-      "Perform Agricultural Technician (Viticulture) duties requiring an associate degree, advanced diploma or diploma level of skill.",
+      "Perform Aquaculture or Fisheries Technician duties requiring an associate degree, advanced diploma or diploma level of skill.",
       "Apply relevant technical or specialised knowledge to complete assigned tasks and support team objectives.",
       "Maintain accurate records and comply with relevant workplace and safety requirements."
     ],
     "duties_tr": [
-      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Tarım Teknisyeni (Bağcılık) görevlerini yerine getirir.",
+      "Ön lisans, ileri diploma veya diploma düzeyinde beceri gerektiren Su Ürünleri veya Balıkçılık Teknisyeni görevlerini yerine getirir.",
       "Verilen görevleri tamamlamak ve ekip hedeflerini desteklemek için ilgili teknik veya uzmanlık bilgisini uygular.",
       "Doğru kayıtlar tutar ve ilgili işyeri ve güvenlik gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行需要副学士学位、高级文凭或文凭水平技能的农业技术员（葡萄种植）职责。",
+      "履行需要副学士学位、高级文凭或文凭水平技能的水产养殖或渔业技术员职责。",
       "运用相关技术或专业知识完成分配的任务并支持团队目标。",
       "保持准确记录并遵守相关工作场所与安全要求。"
     ],
@@ -11068,20 +11068,20 @@
   },
   {
     "code": "312411",
-    "title_en": "Electronics Technician",
-    "title_tr": "Elektronik Teknisyeni",
-    "title_zh": "电子技术员",
+    "title_en": "Electronic Engineering Draftsperson",
+    "title_tr": "Elektronik Mühendisliği Teknik Ressamı",
+    "title_zh": "电子工程制图员",
     "keywords": [],
     "duties_en": [
-      "Perform Electronics Technician duties within their area of responsibility.",
+      "Perform Electronic Engineering Draftsperson duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Elektronik Teknisyeni görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Elektronik Mühendisliği Teknik Ressamı görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行电子技术员职责。",
+      "在其职责范围内履行电子工程制图员职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -11090,20 +11090,20 @@
   },
   {
     "code": "312412",
-    "title_en": "Electrical Technician",
-    "title_tr": "Elektrik Teknisyeni",
-    "title_zh": "电气技术员",
+    "title_en": "Electronic Engineering Technician",
+    "title_tr": "Elektronik Mühendisliği Teknisyeni",
+    "title_zh": "电子工程技术员",
     "keywords": [],
     "duties_en": [
-      "Perform Electrical Technician duties within their area of responsibility.",
+      "Perform Electronic Engineering Technician duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Elektrik Teknisyeni görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Elektronik Mühendisliği Teknisyeni görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行电气技术员职责。",
+      "在其职责范围内履行电子工程技术员职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -11612,22 +11612,22 @@
   },
   {
     "code": "322111",
-    "title_en": "Panelbeater",
-    "title_tr": "Kaportacı",
-    "title_zh": "钣金工",
+    "title_en": "Blacksmith",
+    "title_tr": "Demirci",
+    "title_zh": "铁匠",
     "keywords": [],
     "duties_en": [
-      "Perform Panelbeater duties requiring a Certificate III or IV level of skill, often with relevant experience.",
+      "Perform Blacksmith duties requiring a Certificate III or IV level of skill, often with relevant experience.",
       "Carry out routine and non-routine tasks using established trade or technical procedures.",
       "Follow safety, quality and regulatory requirements relevant to the role."
     ],
     "duties_tr": [
-      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Kaportacı görevlerini yerine getirir.",
+      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Demirci görevlerini yerine getirir.",
       "Yerleşik meslek veya teknik prosedürleri kullanarak rutin ve rutin olmayan görevleri yürütür.",
       "Göreve ilişkin güvenlik, kalite ve mevzuat gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行通常需要相关经验及三级或四级证书技能水平的钣金工职责。",
+      "履行通常需要相关经验及三级或四级证书技能水平的铁匠职责。",
       "按照既定的行业或技术流程执行常规和非常规任务。",
       "遵守与该职位相关的安全、质量和法规要求。"
     ],
@@ -11637,22 +11637,22 @@
   },
   {
     "code": "322112",
-    "title_en": "Vehicle Painter",
-    "title_tr": "Araç Boyacısı",
-    "title_zh": "车辆喷漆工",
+    "title_en": "Electroplater",
+    "title_tr": "Elektro Kaplamacı",
+    "title_zh": "电镀工",
     "keywords": [],
     "duties_en": [
-      "Perform Vehicle Painter duties requiring a Certificate III or IV level of skill, often with relevant experience.",
+      "Perform Electroplater duties requiring a Certificate III or IV level of skill, often with relevant experience.",
       "Carry out routine and non-routine tasks using established trade or technical procedures.",
       "Follow safety, quality and regulatory requirements relevant to the role."
     ],
     "duties_tr": [
-      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Araç Boyacısı görevlerini yerine getirir.",
+      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Elektro Kaplamacı görevlerini yerine getirir.",
       "Yerleşik meslek veya teknik prosedürleri kullanarak rutin ve rutin olmayan görevleri yürütür.",
       "Göreve ilişkin güvenlik, kalite ve mevzuat gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行通常需要相关经验及三级或四级证书技能水平的车辆喷漆工职责。",
+      "履行通常需要相关经验及三级或四级证书技能水平的电镀工职责。",
       "按照既定的行业或技术流程执行常规和非常规任务。",
       "遵守与该职位相关的安全、质量和法规要求。"
     ],
@@ -12737,22 +12737,22 @@
   },
   {
     "code": "334117",
-    "title_en": "Plumber (Water Supply and Sewerage)",
-    "title_tr": "Tesisatçı (Su ve Kanalizasyon)",
-    "title_zh": "管道工（供水与排污）",
+    "title_en": "Fire Protection Plumber",
+    "title_tr": "Yangın Koruma Tesisatçısı",
+    "title_zh": "消防管道工",
     "keywords": [],
     "duties_en": [
-      "Perform Plumber (Water Supply and Sewerage) duties requiring a Certificate III or IV level of skill, often with relevant experience.",
+      "Perform Fire Protection Plumber duties requiring a Certificate III or IV level of skill, often with relevant experience.",
       "Carry out routine and non-routine tasks using established trade or technical procedures.",
       "Follow safety, quality and regulatory requirements relevant to the role."
     ],
     "duties_tr": [
-      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Tesisatçı (Su ve Kanalizasyon) görevlerini yerine getirir.",
+      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Yangın Koruma Tesisatçısı görevlerini yerine getirir.",
       "Yerleşik meslek veya teknik prosedürleri kullanarak rutin ve rutin olmayan görevleri yürütür.",
       "Göreve ilişkin güvenlik, kalite ve mevzuat gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行通常需要相关经验及三级或四级证书技能水平的管道工（供水与排污）职责。",
+      "履行通常需要相关经验及三级或四级证书技能水平的消防管道工职责。",
       "按照既定的行业或技术流程执行常规和非常规任务。",
       "遵守与该职位相关的安全、质量和法规要求。"
     ],
@@ -12937,22 +12937,22 @@
   },
   {
     "code": "342312",
-    "title_en": "Electronic Equipment Technician",
-    "title_tr": "Elektronik Cihaz Teknisyeni",
-    "title_zh": "电子设备技术员",
+    "title_en": "Communications Operator",
+    "title_tr": "İletişim Operatörü",
+    "title_zh": "通信操作员",
     "keywords": [],
     "duties_en": [
-      "Perform Electronic Equipment Technician duties requiring a Certificate III or IV level of skill, often with relevant experience.",
+      "Perform Communications Operator duties requiring a Certificate III or IV level of skill, often with relevant experience.",
       "Carry out routine and non-routine tasks using established trade or technical procedures.",
       "Follow safety, quality and regulatory requirements relevant to the role."
     ],
     "duties_tr": [
-      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Elektronik Cihaz Teknisyeni görevlerini yerine getirir.",
+      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren İletişim Operatörü görevlerini yerine getirir.",
       "Yerleşik meslek veya teknik prosedürleri kullanarak rutin ve rutin olmayan görevleri yürütür.",
       "Göreve ilişkin güvenlik, kalite ve mevzuat gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行通常需要相关经验及三级或四级证书技能水平的电子设备技术员职责。",
+      "履行通常需要相关经验及三级或四级证书技能水平的通信操作员职责。",
       "按照既定的行业或技术流程执行常规和非常规任务。",
       "遵守与该职位相关的安全、质量和法规要求。"
     ],
@@ -13722,20 +13722,20 @@
   },
   {
     "code": "393111",
-    "title_en": "Sewing Machinist",
-    "title_tr": "Dikiş Makinesi Operatörü",
-    "title_zh": "缝纫工",
+    "title_en": "Canvas Goods Fabricator",
+    "title_tr": "Branda Ürünleri Üreticisi",
+    "title_zh": "帆布制品制作工",
     "keywords": [],
     "duties_en": [
-      "Perform Sewing Machinist duties within their area of responsibility.",
+      "Perform Canvas Goods Fabricator duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Dikiş Makinesi Operatörü görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Branda Ürünleri Üreticisi görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行缝纫工职责。",
+      "在其职责范围内履行帆布制品制作工职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -13894,22 +13894,22 @@
   },
   {
     "code": "394112",
-    "title_en": "Cabinetmaker (Apprentice)",
-    "title_tr": "Mobilyacı (Çırak)",
-    "title_zh": "橱柜制作学徒",
+    "title_en": "Cabinet Maker",
+    "title_tr": "Mobilyacı",
+    "title_zh": "橱柜制作工",
     "keywords": [],
     "duties_en": [
-      "Perform Cabinetmaker (Apprentice) duties requiring a Certificate III or IV level of skill, often with relevant experience.",
+      "Perform Cabinet Maker duties requiring a Certificate III or IV level of skill, often with relevant experience.",
       "Carry out routine and non-routine tasks using established trade or technical procedures.",
       "Follow safety, quality and regulatory requirements relevant to the role."
     ],
     "duties_tr": [
-      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Mobilyacı (Çırak) görevlerini yerine getirir.",
+      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Mobilyacı görevlerini yerine getirir.",
       "Yerleşik meslek veya teknik prosedürleri kullanarak rutin ve rutin olmayan görevleri yürütür.",
       "Göreve ilişkin güvenlik, kalite ve mevzuat gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行通常需要相关经验及三级或四级证书技能水平的橱柜制作学徒职责。",
+      "履行通常需要相关经验及三级或四级证书技能水平的橱柜制作工职责。",
       "按照既定的行业或技术流程执行常规和非常规任务。",
       "遵守与该职位相关的安全、质量和法规要求。"
     ],
@@ -13919,22 +13919,22 @@
   },
   {
     "code": "394113",
-    "title_en": "Wood Machinist",
-    "title_tr": "Ahşap Makine Operatörü",
-    "title_zh": "木工机械操作工",
+    "title_en": "Furniture Maker",
+    "title_tr": "Mobilya Üreticisi",
+    "title_zh": "家具制作工",
     "keywords": [],
     "duties_en": [
-      "Perform Wood Machinist duties requiring a Certificate III or IV level of skill, often with relevant experience.",
+      "Perform Furniture Maker duties requiring a Certificate III or IV level of skill, often with relevant experience.",
       "Carry out routine and non-routine tasks using established trade or technical procedures.",
       "Follow safety, quality and regulatory requirements relevant to the role."
     ],
     "duties_tr": [
-      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Ahşap Makine Operatörü görevlerini yerine getirir.",
+      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Mobilya Üreticisi görevlerini yerine getirir.",
       "Yerleşik meslek veya teknik prosedürleri kullanarak rutin ve rutin olmayan görevleri yürütür.",
       "Göreve ilişkin güvenlik, kalite ve mevzuat gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行通常需要相关经验及三级或四级证书技能水平的木工机械操作工职责。",
+      "履行通常需要相关经验及三级或四级证书技能水平的家具制作工职责。",
       "按照既定的行业或技术流程执行常规和非常规任务。",
       "遵守与该职位相关的安全、质量和法规要求。"
     ],
@@ -14460,12 +14460,12 @@
   },
   {
     "code": "399913",
-    "title_en": "Optical Dispenser / Dispensing Optician",
+    "title_en": "Optical Dispenser (Aus) \\ Dispensing Optician (NZ)",
     "title_tr": "Gözlükçü",
     "title_zh": "配镜师",
     "keywords": [],
     "duties_en": [
-      "Perform Optical Dispenser / Dispensing Optician duties within their area of responsibility.",
+      "Perform Optical Dispenser (Aus) \\ Dispensing Optician (NZ) duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
@@ -14579,20 +14579,20 @@
   },
   {
     "code": "411212",
-    "title_en": "Aged Care Assistant",
-    "title_tr": "Yaşlı Bakım Yardımcısı",
-    "title_zh": "老年护理助理",
+    "title_en": "Dental Prosthetist",
+    "title_tr": "Diş Protez Teknisyeni",
+    "title_zh": "牙科修复师",
     "keywords": [],
     "duties_en": [
-      "Perform Aged Care Assistant duties within their area of responsibility.",
+      "Perform Dental Prosthetist duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Yaşlı Bakım Yardımcısı görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Diş Protez Teknisyeni görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行老年护理助理职责。",
+      "在其职责范围内履行牙科修复师职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -14723,20 +14723,20 @@
   },
   {
     "code": "411511",
-    "title_en": "Health and Wellness Advisor",
-    "title_tr": "Sağlık ve Zindelik Danışmanı",
-    "title_zh": "健康与养生顾问",
+    "title_en": "Aboriginal and Torres Strait Islander Health Worker",
+    "title_tr": "Aborijin ve Torres Boğazı Adalı Sağlık Çalışanı",
+    "title_zh": "原住民及托雷斯海峡岛民健康工作者",
     "keywords": [],
     "duties_en": [
-      "Perform Health and Wellness Advisor duties within their area of responsibility.",
+      "Perform Aboriginal and Torres Strait Islander Health Worker duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Sağlık ve Zindelik Danışmanı görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Aborijin ve Torres Boğazı Adalı Sağlık Çalışanı görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行健康与养生顾问职责。",
+      "在其职责范围内履行原住民及托雷斯海峡岛民健康工作者职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -14920,20 +14920,20 @@
   },
   {
     "code": "421111",
-    "title_en": "Accountant",
-    "title_tr": "Muhasebeci",
-    "title_zh": "会计",
+    "title_en": "Child Care Worker",
+    "title_tr": "Çocuk Bakım Görevlisi",
+    "title_zh": "儿童保育员",
     "keywords": [],
     "duties_en": [
-      "Perform Accountant duties within their area of responsibility.",
+      "Perform Child Care Worker duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Muhasebeci görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Çocuk Bakım Görevlisi görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行会计职责。",
+      "在其职责范围内履行儿童保育员职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -15143,20 +15143,20 @@
   },
   {
     "code": "451111",
-    "title_en": "Barista",
-    "title_tr": "Barista",
-    "title_zh": "咖啡师",
+    "title_en": "Beauty Therapist",
+    "title_tr": "Güzellik Uzmanı",
+    "title_zh": "美容师",
     "keywords": [],
     "duties_en": [
-      "Perform Barista duties within their area of responsibility.",
+      "Perform Beauty Therapist duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Barista görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Güzellik Uzmanı görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行咖啡师职责。",
+      "在其职责范围内履行美容师职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -15190,22 +15190,22 @@
   },
   {
     "code": "451311",
-    "title_en": "Beauty Therapist",
-    "title_tr": "Güzellik Uzmanı",
-    "title_zh": "美容师",
+    "title_en": "Funeral Director",
+    "title_tr": "Cenaze Levazımatçısı",
+    "title_zh": "殡葬承办人",
     "keywords": [],
     "duties_en": [
-      "Perform Beauty Therapist duties requiring a Certificate III or IV level of skill, often with relevant experience.",
+      "Perform Funeral Director duties requiring a Certificate III or IV level of skill, often with relevant experience.",
       "Carry out routine and non-routine tasks using established trade or technical procedures.",
       "Follow safety, quality and regulatory requirements relevant to the role."
     ],
     "duties_tr": [
-      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Güzellik Uzmanı görevlerini yerine getirir.",
+      "Genellikle ilgili deneyimle birlikte Sertifika III veya IV düzeyinde beceri gerektiren Cenaze Levazımatçısı görevlerini yerine getirir.",
       "Yerleşik meslek veya teknik prosedürleri kullanarak rutin ve rutin olmayan görevleri yürütür.",
       "Göreve ilişkin güvenlik, kalite ve mevzuat gerekliliklerine uyar."
     ],
     "duties_zh": [
-      "履行通常需要相关经验及三级或四级证书技能水平的美容师职责。",
+      "履行通常需要相关经验及三级或四级证书技能水平的殡葬承办人职责。",
       "按照既定的行业或技术流程执行常规和非常规任务。",
       "遵守与该职位相关的安全、质量和法规要求。"
     ],
@@ -15487,20 +15487,20 @@
   },
   {
     "code": "452318",
-    "title_en": "Dog and Horse Racing Official",
-    "title_tr": "Köpek ve At Yarışı Görevlisi",
-    "title_zh": "赛狗与赛马赛事官员",
+    "title_en": "Dog or Horse Racing Official",
+    "title_tr": "Köpek veya At Yarışı Görevlisi",
+    "title_zh": "赛狗或赛马赛事官员",
     "keywords": [],
     "duties_en": [
-      "Perform Dog and Horse Racing Official duties within their area of responsibility.",
+      "Perform Dog or Horse Racing Official duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
-      "Köpek ve At Yarışı Görevlisi görevlerini sorumluluk alanı içinde yerine getirir.",
+      "Köpek veya At Yarışı Görevlisi görevlerini sorumluluk alanı içinde yerine getirir.",
       "Bu meslek için beceri düzeyi, bu veri setindeki güvenilir bir ANZSCO referansına göre henüz doğrulanmamıştır."
     ],
     "duties_zh": [
-      "在其职责范围内履行赛狗与赛马赛事官员职责。",
+      "在其职责范围内履行赛狗或赛马赛事官员职责。",
       "该职业的技能水平尚未依据本数据集中的可信 ANZSCO 参考进行核实。"
     ],
     "skillLevel": "",
@@ -15926,12 +15926,12 @@
   },
   {
     "code": "599212",
-    "title_en": "Court Bailiff or Sheriff (Aus) / Court Collections Officer (NZ)",
+    "title_en": "Court Bailiff or Sheriff (Aus) \\ Court Collections Officer (NZ)",
     "title_tr": "Mahkeme İcra Memuru",
     "title_zh": "法院执达员",
     "keywords": [],
     "duties_en": [
-      "Perform Court Bailiff or Sheriff (Aus) / Court Collections Officer (NZ) duties within their area of responsibility.",
+      "Perform Court Bailiff or Sheriff (Aus) \\ Court Collections Officer (NZ) duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
@@ -15948,12 +15948,12 @@
   },
   {
     "code": "599213",
-    "title_en": "Court Orderly (Aus) / Court Registry Officer (NZ)",
+    "title_en": "Court Orderly (Aus) \\ Court Registry Officer (NZ)",
     "title_tr": "Mahkeme Görevlisi",
     "title_zh": "法院事务官",
     "keywords": [],
     "duties_en": [
-      "Perform Court Orderly (Aus) / Court Registry Officer (NZ) duties within their area of responsibility.",
+      "Perform Court Orderly (Aus) \\ Court Registry Officer (NZ) duties within their area of responsibility.",
       "Skill level for this occupation is not yet verified against a trusted ANZSCO reference in this dataset."
     ],
     "duties_tr": [
