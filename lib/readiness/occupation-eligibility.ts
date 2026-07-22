@@ -139,15 +139,34 @@ const LOCALIZED_BY_CODE = new Map(LOCALIZED_ROWS.map((row) => [row.code, row]));
 /**
  * Resolves a raw occupation value (which may now be a bare ANZSCO code, e.g.
  * "233512", since the intake form submits codes for AU) to a human-readable,
- * locale-appropriate display name. Falls back to the raw input if no record
- * is found, so unmatched/free-text entries still render something.
+ * locale-appropriate display name.
+ *
+ * anzsco-list.json (the AU search/autocomplete index -- see
+ * build-ultimate-anzsco.py) is keyed by OSCA identifiers, not real ANZSCO
+ * codes, and the two numbering schemes are not interchangeable; a code
+ * submitted from that autocomplete routinely has no entry in
+ * occupations.json (the authoritative, real-ANZSCO-coded dataset used for
+ * skilled-list eligibility). When that happens this still shows the
+ * anzsco-list.json title for that code, if one exists, rather than the bare
+ * numeric code -- purely cosmetic, since the eligibility check itself
+ * still correctly finds nothing for an unmatched code. Only genuinely
+ * unmatched/free-text input falls through to the raw string.
  */
 export function resolveOccupationDisplayName(occupation?: string, locale?: "en" | "tr" | "zh-Hans"): string {
   const raw = (occupation ?? "").trim();
   if (!raw) return raw;
 
   const record = findOccupationRecord(raw);
-  if (!record) return raw;
+  if (!record) {
+    const code = parseAnzscoCode(raw);
+    const searchIndexEntry = code ? LOCALIZED_BY_CODE.get(code) : undefined;
+    if (searchIndexEntry) {
+      if (locale === "tr" && searchIndexEntry.title_tr) return searchIndexEntry.title_tr;
+      if (locale === "zh-Hans" && searchIndexEntry.title_zh) return searchIndexEntry.title_zh;
+      return searchIndexEntry.title;
+    }
+    return raw;
+  }
 
   const localized = LOCALIZED_BY_CODE.get(record.anzsco_code);
   if (localized) {
