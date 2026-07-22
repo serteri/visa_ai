@@ -1,4 +1,22 @@
 """
+!!! DO NOT RUN THIS SCRIPT !!!
+===============================
+This script reads "Identifier" codes from public/OSCA List.xlsx and writes
+them into public/anzsco-list.json / src/data/anzsco-list.json as if they
+were ANZSCO codes. OSCA (Occupation Standard Classification for Australia)
+and ANZSCO are different, non-interchangeable coding systems that happen to
+share the same 6-digit format. Running this script previously overwrote a
+correct, real-ANZSCO-coded anzsco-list.json with OSCA-coded data (commit
+0f9a6b5), causing widespread wrong-occupation-code bugs across the AU
+autocomplete and eligibility checks (only 4 of 1156 codes it produced were
+real ANZSCO codes).
+
+anzsco-list.json / src/data/anzsco-list.json are now built from a verified
+ANZSCO source (see public/anzsco-list-verified.json and
+scratch/backfill/build_anzsco_final.py) instead. Do not run this script
+against those files again.
+===============================
+
 build-ultimate-anzsco.py
 ========================
 1. Reads public/OSCA List.xlsx directly and groups by Identifier.
