@@ -2785,72 +2785,47 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addHeading(text.visaViabilityRanking);
     ensurePageSpace(55);
 
-    // Profile-level notes (English projection, employment caveat) are identical
-    // across the ineligible points-tested subclasses, so they are rendered ONCE
-    // in a shared box beneath the rows rather than repeated in every row.
+    // Points-threshold-only entries used to carry a profile-level prose note
+    // (English "Mathematical Projection" + employment caveat) here. That note
+    // is now redundant with the real category-by-category Points Breakdown
+    // table rendered later in this report (same English/employment rows,
+    // shown as actual numbers), so it's replaced with a single pointer to
+    // that table instead of repeating the same information in two formats.
     const hardIneligibleEntries = rankedPathways.filter((rp) => rp.isHardIneligible);
-    const sharedIneligibleNotes =
-      hardIneligibleEntries.find((rp) => rp.ineligibleSharedNotes && rp.ineligibleSharedNotes.length > 0)
-        ?.ineligibleSharedNotes ?? [];
+    const hasPointsThresholdIneligible = hardIneligibleEntries.some((rp) => rp.isPointsThresholdOnly);
     const lastIneligibleSubclass = hardIneligibleEntries[hardIneligibleEntries.length - 1]?.subclass;
 
-    function drawSharedIneligibleNotesBox(notes: string[]) {
-      const intro =
+    function drawPointsBreakdownPointerBox() {
+      const line =
         effectiveLocale === "tr"
-          ? "Not — yukarıdaki puan testli alt sınıfların (189/190/491) tümü için geçerlidir:"
+          ? `Yukarıdaki puan testli alt sınıflar (189/190/491) için kategori bazlı puan dökümü ve puanı artırma yolları: bu raporun "${text.pointsBreakdownTable}" bölümüne bakın.`
           : effectiveLocale === "zh-Hans"
-            ? "注意——以下内容适用于上述所有打分制子类别（189/190/491）："
-            : "Note — the following applies to all points-tested subclasses (189/190/491) above:";
+            ? `以上打分制子类别（189/190/491）的分类积分明细及加分方式，请参见本报告"${text.pointsBreakdownTable}"部分。`
+            : `For a category-by-category points breakdown and how to raise your score on the points-tested subclasses (189/190/491) above, see the "${text.pointsBreakdownTable}" section of this report.`;
 
       setBaseFont();
       doc.setFontSize(FONTS.small);
-      const introLines: string[] = doc.splitTextToSize(safeText(intro), contentWidth - 10);
-      const noteLineGroups = notes.map((note) => doc.splitTextToSize(safeText(`• ${note}`), contentWidth - 10) as string[]);
-      const totalNoteLines = noteLineGroups.reduce((sum, lines) => sum + lines.length, 0);
-      const noteLineHeight = 3.8;
-      const boxHeight = 6 + introLines.length * noteLineHeight + totalNoteLines * noteLineHeight + 3;
+      const lines: string[] = doc.splitTextToSize(safeText(line), contentWidth - 10);
+      const lineHeight2 = 3.8;
+      const boxHeight = 6 + lines.length * lineHeight2;
       ensurePageSpace(boxHeight + 2);
       const topY = yPosition;
 
       doc.setFillColor(COLORS.zebra.r, COLORS.zebra.g, COLORS.zebra.b);
-      doc.setDrawColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
+      doc.setDrawColor(COLORS.riskMedium.r, COLORS.riskMedium.g, COLORS.riskMedium.b);
       doc.setLineWidth(0.4);
       doc.roundedRect(margin, topY, contentWidth, boxHeight, 1.2, 1.2, "FD");
 
       let cursorY = topY + 5;
-      setBoldFont();
-      doc.setFontSize(FONTS.small);
-      doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
-      introLines.forEach((line: string) => {
-        doc.text(safeText(line), margin + 5, cursorY);
-        cursorY += noteLineHeight;
-      });
-
       setBaseFont();
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-      noteLineGroups.forEach((lines) => {
-        lines.forEach((line: string) => {
-          doc.text(safeText(line), margin + 5, cursorY);
-          cursorY += noteLineHeight;
-        });
+      lines.forEach((textLine: string) => {
+        doc.text(safeText(textLine), margin + 5, cursorY);
+        cursorY += lineHeight2;
       });
 
       yPosition += boxHeight + 2;
-    }
-
-    // One-time intro pointing every reader to the shared factors note below,
-    // regardless of which single row they read — shown once, not per row.
-    if (sharedIneligibleNotes.length > 0) {
-      addSmallText(
-        effectiveLocale === "tr"
-          ? "Not: İngilizce/iş deneyimi etkisinin ayrıntıları için sıralamanın altındaki ortak nota bakın."
-          : effectiveLocale === "zh-Hans"
-            ? "注意：有关英语/工作经验影响的详情，请参见排名下方的共享说明。"
-            : "Note: see the shared factors below the ranking for details on English/employment impact.",
-        0
-      );
-      yPosition += 1;
     }
 
     let viableRank = 0;
@@ -2898,9 +2873,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
         yPosition += rowHeight + 2;
 
-        // After the final ineligible row, render the shared profile-level notes once.
-        if (item.subclass === lastIneligibleSubclass && sharedIneligibleNotes.length > 0) {
-          drawSharedIneligibleNotesBox(sharedIneligibleNotes);
+        // After the final ineligible row, point once to the real points table below.
+        if (item.subclass === lastIneligibleSubclass && hasPointsThresholdIneligible) {
+          drawPointsBreakdownPointerBox();
         }
         return;
       }
