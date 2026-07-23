@@ -408,10 +408,12 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
     reality.push(t3(locale, "ACS experience deduction risk is high because declared experience is below 2 years.", "Beyan edilen deneyim 2 yilin altinda oldugu icin ACS deneyim kesintisi riski yuksektir.", "因申报经验不足 2 年，ACS 经验扣减风险较高。"));
   }
 
+  // Kept OUT of `reality` (unlike the other pushes above) -- this text is
+  // occupation-level, not subclass-specific, so it comes out identical for
+  // every points-tested subclass (189/190/491) sharing the same occupation.
+  // Returned separately so the renderer can show it once instead of
+  // verbatim under each subclass row.
   const localizedOccupationWarning = localizeOccupationWarning(locale, occupation?.critical_warning);
-  if (localizedOccupationWarning) {
-    reality.push(localizedOccupationWarning);
-  }
 
   if (subclassKey === "820/801") {
     frictionScore = "MEDIUM";
@@ -450,6 +452,7 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
     frictionScore,
     realityCheck: reality.join(" ") || t3(locale, "No major friction trigger detected from available profile data.", "Mevcut profil verilerine gore belirgin bir surtunme tetikleyicisi tespit edilmedi.", "根据现有档案数据，未检测到显著阻力触发因素。"),
     successSignals: successSignals.length ? successSignals : [t3(locale, "Evidence completeness and timing discipline remain material variables in the baseline comparison.", "Kanit butunlugu ve zamanlama disiplini, temel karsilastirmada onemli degiskenler olarak kalmaktadir.", "证据完整性与时间管理仍是基线比较中的重要变量。")],
+    occupationWarning: localizedOccupationWarning || undefined,
   };
 }
 

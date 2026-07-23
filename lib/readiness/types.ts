@@ -136,6 +136,8 @@ export type KeyVisaRequirement = {
 export type PointsBreakdownItem = {
   label: string;
   points: number;
+  /** Maximum points available in this category (e.g. Age's max is 30), for the "Maximum" column of the points breakdown table. Undefined for categories without a fixed table maximum. */
+  max?: number;
   note?: string;
 };
 
@@ -144,6 +146,8 @@ export type PointsEstimate = {
   estimatedPoints?: number;
   breakdown: PointsBreakdownItem[];
   note: string;
+  /** One-line note about occupation/skills-assessment status, shown under the breakdown table -- occupation itself does not carry points-table score, so it's kept out of the scored breakdown array but still needs surfacing. */
+  occupationNote?: string;
 };
 
 export type OccupationMatch = {
@@ -204,6 +208,8 @@ export type PointsBoosterScenario = {
   estimatedChange: number;
   resultingEstimate?: number;
   explanation: string;
+  /** True for the single combined scenario that sums the top individual scenarios' point changes -- a real cumulative calculation, not a display artifact. */
+  isCombined?: boolean;
 };
 
 export type PointsBoosterSimulator = {
@@ -420,6 +426,8 @@ export type FrictionAnalysisItem = {
   frictionScore: FrictionScore;
   realityCheck: string;
   successSignals: string[];
+  /** Occupation-level warning (e.g. an assessing-authority caveat) that is identical across every points-tested subclass (189/190/491) for the same occupation -- kept separate from realityCheck so the renderer can show it once instead of once per subclass row. */
+  occupationWarning?: string;
 };
 
 export type PremiumInvitationTrendEstimate = {

@@ -12,6 +12,7 @@ import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
 import type { CanadaCRSInput, CLBLevel } from "@/lib/points/canada-types";
+import type { PartnerOption } from "@/lib/points/types";
 import type {
   AgeOption,
   AustralianEmploymentOption,
@@ -47,6 +48,7 @@ import type {
   PositionChanger,
   PremiumSections,
   PointsBoosterSimulator,
+  PointsBreakdownItem,
   PointsEstimate,
   PrimaryLimitingFactor,
   ProgressionPathway,
@@ -2396,6 +2398,66 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
   };
 }
 
+const AGE_BRACKET_LABEL: Record<ReturnType<typeof parseAgeOption> & string, { en: string; tr: string; zh: string }> = {
+  "18_24": { en: "18-24 age bracket", tr: "18-24 yaş aralığı", zh: "18-24 岁区间" },
+  "25_32": { en: "25-32 age bracket", tr: "25-32 yaş aralığı", zh: "25-32 岁区间" },
+  "33_39": { en: "33-39 age bracket", tr: "33-39 yaş aralığı", zh: "33-39 岁区间" },
+  "40_44": { en: "40-44 age bracket", tr: "40-44 yaş aralığı", zh: "40-44 岁区间" },
+  "45_plus": { en: "45+ age bracket", tr: "45 ve üzeri yaş", zh: "45 岁及以上" },
+};
+
+/**
+ * Maps the applicant's own accompanying-partner/dependants status
+ * (input.sponsorOrFamily, the same field documented at
+ * isPartnerPathwaySelected -- three real form options) to the points-test
+ * partner factor. "Functional English" is a lower bar than the Competent
+ * English (IELTS 6.0) the partner-skilled/competent-English point tiers
+ * require, and the form doesn't collect the partner's skills-assessment
+ * status at all, so that option can only be confidently scored 0 rather
+ * than guessed at 5 or 10 -- never award points the form can't actually
+ * confirm.
+ */
+function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, locale: Locale): { option: PartnerOption; reason: string } {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const value = (sponsorOrFamily ?? "").trim();
+
+  if (value === "Single / No Dependants") {
+    return {
+      option: "single_or_partner_au_citizen_or_pr",
+      reason: isTr
+        ? "Bekar / bağımlı yok olarak belirtildi"
+        : isZh
+          ? "已选择“单身 / 无受养人”"
+          : "Declared single / no dependants",
+    };
+  }
+  if (value === "Partner / Dependants WITHOUT Functional English") {
+    return {
+      option: "none_or_unsure",
+      reason: isTr
+        ? "Partner Functional English koşulunu karşılamıyor"
+        : isZh
+          ? "配偶不具备 Functional English"
+          : "Partner does not meet Functional English",
+    };
+  }
+  if (value === "Partner / Dependants with Functional English") {
+    return {
+      option: "none_or_unsure",
+      reason: isTr
+        ? "Functional English, puan tablosundaki Competent English eşiğinin altında; partnerin beceri değerlendirmesi de forma girilmedi, bu yüzden puan verilmedi"
+        : isZh
+          ? "Functional English 低于积分表要求的 Competent English 门槛，且未提供配偶的技能评估情况，因此未计分"
+          : "Functional English is below the points-table's Competent English threshold, and the partner's skills-assessment status wasn't collected, so no points are awarded",
+    };
+  }
+  return {
+    option: "none_or_unsure",
+    reason: isTr ? "Partner durumu girilmedi" : isZh ? "未提供伴侣情况" : "Partner status not provided",
+  };
+}
+
 function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstimate {
   if (input.country === "CA") return buildCanadaPointsEstimate(input, locale);
 
@@ -2410,12 +2472,6 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     input.occupation?.trim() && getEligibleSkilledSubclasses(input.occupation).length > 0
   );
   const canApplyExperiencePoints = !hasExperienceInput || occupationHasDatasetMatch;
-
-  const missingFactors = isTr
-    ? ["NAATI / topluluk dili", "Mesleki Yıl", "Partner durumu", "Eyalet / bölgesel adaylık"]
-    : isZh
-      ? ["NAATI / 社区语言", "Professional Year", "伴侣状态", "州 / 偏远地区提名"]
-      : ["NAATI / community language", "Professional Year", "Partner status", "State / regional nomination"];
 
   if (!ageOption && !englishOption) {
     return {
@@ -2438,6 +2494,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   const specialistEducation = hasSpecialistEducationClaim(input);
   const australianStudyRequirement = isAustralianQualification(input);
   const regionalStudy = isRegionalAustralianQualification(input);
+  const partner = sponsorOrFamilyToPartnerOption(input.sponsorOrFamily, locale);
 
   const result = calculateAustraliaPoints({
     age: ageOption ?? "18_24",
@@ -2450,101 +2507,120 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     professionalYear: false,
     credentialledCommunityLanguage: false,
     regionalStudy,
-    partner: "none_or_unsure",
+    partner: partner.option,
     hasStateNomination190: false,
     hasNominationOrSponsorship491: false,
   });
 
-  const breakdown = [
-    ageOption
-      ? {
-          label: isTr ? "Yaş puanı" : "Age points",
-          points: result.breakdown.age,
-          note: input.age,
-        }
-      : null,
-    englishOption
-      ? {
-          label: isTr ? "İngilizce seviyesi puanı" : "English level points",
-          points: result.breakdown.english,
-          note: input.englishLevel,
-        }
-      : null,
-    hasExperienceInput
-      ? {
-          label: isTr ? "İstihdam puanı (yurt dışı + Avustralya)" : "Employment points (overseas + Australian)",
-          points: canApplyExperiencePoints ? result.breakdown.employmentCombinedAfterCap : 0,
-          note: canApplyExperiencePoints
-            ? (isTr
-                ? `Yurt dışı: ${input.offshoreExperienceYears ?? 0} yıl, Avustralya: ${input.onshoreExperienceYears ?? 0} yıl. Yakından ilgili meslek iddiaları ayrıca doğrulanmaz; deneyimin girilen aday meslekle uyumlu olduğu varsayılır.`
-                : isZh
-                  ? `境外：${input.offshoreExperienceYears ?? 0} 年，澳洲：${input.onshoreExperienceYears ?? 0} 年。系统不会单独核验“密切相关职业”工作经历；默认你填写的工作经历与所填提名职业一致。`
-                  : `Overseas: ${input.offshoreExperienceYears ?? 0} yrs, Australian: ${input.onshoreExperienceYears ?? 0} yrs. Closely related occupation claims are not independently verified; this estimate assumes the declared work aligns to the nominated occupation entered.`)
-            : (isTr
-                ? "Deneyim puanı uygulanmadı: aday meslek veritabanında doğrulanamadı. İlgisiz veya doğrulanmamış iş deneyimi otomatik puanlanmaz."
-                : isZh
-                  ? "未应用工作经验分：提名职业无法在职业数据库中核验。与提名职业无关或无法核验的工作经历不会自动计分。"
-                  : "Employment points were not applied because the nominated occupation could not be verified against the occupation dataset. Unrelated or unverified employment is not auto-credited."),
-        }
-      : null,
-    hasEducationInput
-      ? {
-          label: isTr ? "Eğitim puanı" : "Education points",
-          points: result.breakdown.education,
-          note: input.qualificationLevel,
-        }
-      : null,
-    australianStudyRequirement
-      ? {
-          label: isTr ? "Avustralya study requirement puanı" : "Australian study requirement points",
-          points: result.breakdown.bonus.australianStudyRequirement,
-          note: isTr
-            ? "Avustralya kurumunda tamamlanan yeterlilik"
-            : isZh
-              ? "在澳大利亚教育机构完成的学历"
-              : "Qualification completed at an Australian institution",
-        }
-      : null,
-    regionalStudy
-      ? {
-          label: isTr ? "Bölgesel Avustralya öğrenim puanı" : "Regional Australia study points",
-          points: result.breakdown.bonus.regionalStudy,
-          note: isTr
-            ? "Belirlenmiş bölgesel kampüs, uzaktan eğitim değil"
-            : isZh
-              ? "指定偏远地区实体校区，非远程教学"
-              : "Designated regional campus, not distance education",
-        }
-      : null,
-    isResearchOrDoctorateQualification(input.qualificationLevel)
-      ? {
-          label: isTr ? "Uzmanlık eğitimi (STEM) puanı" : "Specialist education (STEM) points",
-          points: result.breakdown.bonus.specialistEducation,
-          note:
-            input.specialistEducationStemResponse === "yes"
-              ? isTr
-                ? "Kullanıcı STEM alanını açıkça onayladı"
-                : isZh
-                  ? "用户明确确认属于 STEM 研究学位"
-                  : "User explicitly confirmed an eligible STEM research degree"
-              : input.specialistEducationStemResponse === "not_sure"
-                ? isTr
-                  ? "Emin değilim → +10 uygulanmadı"
-                  : isZh
-                    ? "不确定 → 未授予 +10"
-                    : "Not sure -> +10 not awarded"
-                : isTr
-                  ? "Açık 'Evet' yanıtı olmadığı için +10 uygulanmadı"
-                  : isZh
-                    ? "未收到明确“是”回答，因此未授予 +10"
-                    : "No explicit 'Yes' confirmation, so +10 was not awarded",
-        }
-      : null,
-  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
+  const employmentCapNote = result.employmentCapApplied
+    ? isTr
+      ? " (birleşik istihdam puanı 20 ile sınırlandırılmıştır)"
+      : isZh
+        ? "（合计工作经验分已按 20 分上限计算）"
+        : " (combined employment score capped at 20)"
+    : "";
 
-  const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
+  // Core scored categories: always shown, even at 0, so the user sees every
+  // factor the points test actually checks -- not just the ones they filled
+  // in. Occupation/skills-assessment status is deliberately NOT a row here;
+  // it carries no points-table score of its own (see occupationNote below).
+  const breakdown: PointsBreakdownItem[] = [
+    {
+      label: isTr ? "Yaş" : "Age",
+      points: result.breakdown.age,
+      max: 30,
+      note: ageOption
+        ? isTr ? AGE_BRACKET_LABEL[ageOption].tr : isZh ? AGE_BRACKET_LABEL[ageOption].zh : AGE_BRACKET_LABEL[ageOption].en
+        : isTr ? "Yaş girilmedi" : isZh ? "未提供年龄" : "Age not provided",
+    },
+    {
+      label: isTr ? "İngilizce" : "English",
+      points: result.breakdown.english,
+      max: 20,
+      note: englishOption
+        ? (isTr ? "Girilen seviye: " : isZh ? "已提供级别：" : "Provided level: ") + input.englishLevel
+        : isTr ? "Test sonucu girilmedi" : isZh ? "未提供考试成绩" : "Test score not provided",
+    },
+    {
+      label: isTr ? "Yurt dışı deneyim" : "Overseas experience",
+      points: canApplyExperiencePoints ? result.breakdown.overseasEmployment : 0,
+      max: 15,
+      note: !canApplyExperiencePoints
+        ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
+        : input.offshoreExperienceYears !== undefined
+          ? `${input.offshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
+          : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
+    },
+    {
+      label: isTr ? "Avustralya deneyimi" : "Australian experience",
+      points: canApplyExperiencePoints ? result.breakdown.australianEmployment : 0,
+      max: 20,
+      note: !canApplyExperiencePoints
+        ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
+        : input.onshoreExperienceYears !== undefined
+          ? `${input.onshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
+          : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
+    },
+    {
+      label: isTr ? "Eğitim" : "Education",
+      points: result.breakdown.education,
+      max: 20,
+      note: hasEducationInput
+        ? input.qualificationLevel
+        : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
+    },
+    {
+      label: isTr ? "Partner durumu" : "Partner status",
+      points: result.breakdown.partner,
+      max: 10,
+      note: partner.reason,
+    },
+  ];
 
-  const missingStr = missingFactors.join(", ");
+  // Situational bonuses: only shown when actually applicable, since most
+  // profiles won't have them -- unlike the core six, a "not applicable" row
+  // here would just be noise rather than a useful zero.
+  if (australianStudyRequirement) {
+    breakdown.push({
+      label: isTr ? "Avustralya öğrenim koşulu" : "Australian study requirement",
+      points: result.breakdown.bonus.australianStudyRequirement,
+      max: 5,
+      note: isTr ? "Avustralya kurumunda tamamlanan yeterlilik" : isZh ? "在澳大利亚教育机构完成的学历" : "Qualification completed at an Australian institution",
+    });
+  }
+  if (regionalStudy) {
+    breakdown.push({
+      label: isTr ? "Bölgesel Avustralya öğrenimi" : "Regional Australia study",
+      points: result.breakdown.bonus.regionalStudy,
+      max: 5,
+      note: isTr ? "Belirlenmiş bölgesel kampüs" : isZh ? "指定偏远地区实体校区" : "Designated regional campus",
+    });
+  }
+  if (isResearchOrDoctorateQualification(input.qualificationLevel)) {
+    breakdown.push({
+      label: isTr ? "Uzmanlık eğitimi (STEM)" : "Specialist education (STEM)",
+      points: result.breakdown.bonus.specialistEducation,
+      max: 10,
+      note:
+        input.specialistEducationStemResponse === "yes"
+          ? isTr ? "STEM alanı onaylandı" : isZh ? "已确认 STEM 学位" : "STEM field confirmed"
+          : input.specialistEducationStemResponse === "not_sure"
+            ? isTr ? "Emin değilim → uygulanmadı" : isZh ? "不确定 → 未计分" : "Not sure -> not awarded"
+            : isTr ? "Onay yok → uygulanmadı" : isZh ? "未确认 → 未计分" : "Not confirmed -> not awarded",
+    });
+  }
+
+  // The true total respects the employment cap; it is NOT a naive sum of the
+  // displayed rows, since overseas/Australian experience are shown as their
+  // own uncapped category values (see employmentCapNote above).
+  const estimatedPoints = result.total189;
+
+  const occupationNote = isTr
+    ? "Meslek / Skills Assessment doğrudan puan vermez, ama diğer pathway'lerin (482/186 gibi) uygunluğunu belirler."
+    : isZh
+      ? "职业 / 技能评估本身不计分，但决定其他路径（如 482/186）的资格。"
+      : "Occupation / Skills Assessment does not carry points-table score directly, but determines eligibility for other pathways (e.g. 482/186).";
+
   const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
   const specialistEducationNoteCaveat = buildSpecialistEducationCaveat(
     locale,
@@ -2552,16 +2628,17 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     "short"
   );
   const note = isTr
-    ? `Bu, yaş${ageOption ? "" : " (belirtilmedi)"}, İngilizce seviyesi${englishOption ? "" : " (belirtilmedi)"}, iş deneyimi${hasExperienceInput ? "" : " (belirtilmedi)"} ve eğitim düzeyine${hasEducationInput ? "" : " (belirtilmedi)"} dayalı bir tahmindir. Dahil edilmeyen faktörler: ${missingStr}. Gerçek puan durumu kişisel duruma göre değişebilir.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`
+    ? `Gerçek puan durumu kişisel duruma göre değişebilir; NAATI, Mesleki Yıl ve eyalet/bölgesel adaylık gibi ek fırsatlar için Puan Senaryo Simülatörüne bakın.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`
     : isZh
-      ? `本估算基于年龄${ageOption ? "" : "（未提供）"}、英语水平${englishOption ? "" : "（未提供）"}、工作经验${hasExperienceInput ? "" : "（未提供）"}和学历${hasEducationInput ? "" : "（未提供）"}。未纳入因素：${missingStr}。实际分数取决于个人情况。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`
-      : `This estimate is based on age${ageOption ? "" : " (not provided)"}, English level${englishOption ? "" : " (not provided)"}, work experience${hasExperienceInput ? "" : " (not provided)"}, and education level${hasEducationInput ? "" : " (not provided)"}. Factors not included: ${missingStr}. Actual points position depends on individual circumstances.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`;
+      ? `实际分数取决于个人情况；NAATI、Professional Year、州/偏远地区提名等潜在加分见下方“加分场景模拟”。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`
+      : `Actual points position depends on individual circumstances; see the Points Booster Simulator below for potential additions like NAATI, Professional Year, and state/regional nomination.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`;
 
   return {
     appliesTo: ["189", "190", "491"],
     estimatedPoints,
     breakdown,
     note,
+    occupationNote,
   };
 }
 
@@ -3252,91 +3329,78 @@ function buildPointsBoosterSimulator(
   // (Schedule 6A of the Migration Regulations 1994: Competent=0, Proficient=10, Superior=20)
   if (englishOption === "competent") {
     scenarios.push({
-      label: isTr
-        ? "Superior İngilizce (IELTS 8.0+ / PTE 79+) — +20 puan"
-        : "Superior English (IELTS 8.0+ / PTE 79+) — +20 points",
+      label: isTr ? "Superior İngilizce (IELTS 8.0+ / PTE 79+)" : "Superior English (IELTS 8.0+ / PTE 79+)",
       estimatedChange: 20,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 20,
       explanation: isTr
-        ? "Avustralya puan tablosunda Competent (6.0) yerine Superior (8.0+) İngilizce, tüm dört bantta elde edildiğinde +20 puan ekler. IELTS 8.0+ her bantta Superior ile eşleşir. Bu, noktaların artırılması için en yüksek getirili tek senaryodur."
-        : "Under Schedule 6A of the Migration Regulations 1994, English proficiency points are: Competent (IELTS 6.0 in all four bands) = 0 bonus points; Proficient (IELTS 7.0) = +10 points; Superior (IELTS 8.0+ in all four bands) = +20 points. Upgrading from Competent to Superior adds exactly +20 points — the largest single-factor improvement in the entire Australian points test. A single low band score (e.g., Speaking 7.5) means you miss Superior and receive only Proficient points, so target all four bands at 8.0+. PTE Academic 79+ across all communicative skills or OET Grade B in all sections also qualifies as Superior. Superior English also provides priority ranking in several state 190 nomination programs.",
+        ? "En yüksek getirili tek puan artışı."
+        : "The single highest-value points upgrade available.",
     });
   } else if (englishOption === "proficient") {
     scenarios.push({
-      label: isTr
-        ? "Superior İngilizce'ye yükseltme (IELTS 8.0+ / PTE 79+) — +10 puan"
-        : "Upgrade to Superior English (IELTS 8.0+ / PTE 79+) — +10 points",
+      label: isTr ? "Superior İngilizce'ye yükseltme (IELTS 8.0+ / PTE 79+)" : "Upgrade to Superior English (IELTS 8.0+ / PTE 79+)",
       estimatedChange: 10,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 10,
-      explanation: isTr
-        ? "Proficient'ten (IELTS 7.0) Superior'a (IELTS 8.0+) geçiş +10 puan ekler. Dört bantta 8.0+ elde etmek zor olabilir; ancak bazı yollar için birikimsel olarak puan avantajı sağlar."
-        : "Moving from Proficient English (+10 points at IELTS 7.0 in all bands) to Superior (+20 points at IELTS 8.0+ in all bands) adds exactly +10 points. Achieving 8.0+ simultaneously in all four bands is demanding, particularly Writing and Speaking. Targeted preparation with IELTS coaches is advisable. PTE Academic 79+ in all communicative skills also qualifies as Superior. A single successful IELTS resit (~AUD $385) that achieves 8.0+ across all bands returns +10 points at zero ongoing cost — high ROI.",
+      explanation: isTr ? "Proficient'ten Superior'a geçiş." : "Moving from Proficient to Superior.",
     });
   }
 
   // NAATI CCL: +5 points (Community Languages credential)
   scenarios.push({
-    label: isTr
-      ? "NAATI CCL (Toplum Dili Sertifikası) — +5 puan"
-      : "NAATI CCL Community Languages credential — +5 points",
+    label: isTr ? "NAATI CCL (Toplum Dili Sertifikası)" : "NAATI CCL Community Languages credential",
     estimatedChange: 5,
     resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
-    explanation: isTr
-      ? "NAATI Toplum Dili Sertifikası (CCL), nitelikli kişilere +5 bonus puan sağlar. Bu sınav, adayların bir toplum dilini (örn. Türkçe, Mandarin, Arapça) yeterli bir düzeyde kullanabildiğini kanıtlamasını gerektirir. Sınavda iki 300 kelimelik diyalogun çevirisi yapılır."
-      : "The NAATI Community Languages Credential (CCL), if obtained on or after 8 July 2019, awards exactly +5 bonus points (Schedule 6A). The exam tests oral translation of two 300-word dialogues between English and a specified community language (e.g., Mandarin, Cantonese, Turkish, Arabic, Vietnamese, Hindi, Korean). Pass rate is approximately 50%, so structured preparation with a CCL coach is strongly recommended. Cost: ~AUD $700–$800 per attempt. The credential is valid for 3 years. For candidates whose first language appears on the supported list, the CCL is one of the fastest +5 points available — typical preparation time is 4–8 weeks.",
+    explanation: isTr ? "Nitelikli bir toplum dili sertifikası." : "A recognised community-language credential.",
   });
 
   // Professional Year: +5 points
   if (isProfessionalYearRelevantOccupation(input)) {
     scenarios.push({
-      label: isTr
-        ? "Avustralya'da Mesleki Yıl (Professional Year) — +5 puan"
-        : "Australian Professional Year program — +5 points",
+      label: isTr ? "Avustralya'da Mesleki Yıl (Professional Year)" : "Australian Professional Year program",
       estimatedChange: 5,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
-      explanation: isTr
-        ? "Avustralya'da muhasebe, BT veya mühendislik alanında tamamlanan Mesleki Yıl programı +5 bonus puan ekler. Program genellikle 12 ay sürer ve yaklaşık AUD 7,000–10,000 maliyeti vardır. Yalnızca Avustralya'daki son mezunlar veya uluslararası mezunlar için geçerlidir."
-        : "Completing an Australian Professional Year (PY) program in accounting, IT, or engineering adds exactly +5 bonus points. The program runs for 44 weeks: 36 weeks structured training + 8 weeks workplace internship. Cost: ~AUD $7,000–$10,000 depending on provider. Open to international graduates currently in Australia on a valid visa. Approved providers: IT → ACS-approved institutions; Accounting → FPA, CPA Australia, or ICAA-affiliated programs; Engineering → Engineers Australia-approved providers. The 8-week internship must be with a registered Australian employer in the relevant field. The PY also satisfies the '12 months Australian study' criterion some state 190 programs require for onshore applicants. It additionally builds a local professional network and Australian workplace references — both valuable for post-visa employment.",
+      explanation: isTr ? "Muhasebe, BT veya mühendislikte 44 haftalık program." : "A 44-week program in accounting, IT, or engineering.",
     });
   }
 
-  // Partner/single applicant factor: +10 points
-  scenarios.push({
-    label: isTr
-      ? "Tek başvurucu veya becerili partner (partner faktörü) — +10 puan"
-      : "Single applicant or partner with skilled qualifications + Competent English — +10 points",
-    estimatedChange: 10,
-    resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 10,
-    explanation: isTr
-      ? "Partner faktörü Schedule 6A altında iki durumda +10 puan verir: (1) Başvurucu bekar veya partneri Avustralya vatandaşı/PR sahibiyse; (2) Partnerin hem pozitif beceri değerlendirmesi hem de Competent İngilizce (IELTS 6.0+) koşullarını sağlaması. Eş adaylarınızı optimize edin: partner şartları karşılayamazsa, onu başvuruya dahil etmemek puan avantajı sağlayabilir."
-      : "The 'partner factor' in Schedule 6A awards +10 points in two scenarios: (1) the applicant is single, OR their partner is an Australian citizen or permanent resident; (2) the partner holds a valid positive skills assessment from an Australian assessing authority AND meets Competent English (IELTS 6.0 in all four bands). If the partner cannot satisfy both criteria, the partner factor score is 0 — including a non-qualifying partner costs 10 points compared to applying as single. Strategic decision: if your partner cannot obtain a skills assessment or pass IELTS in time, it may be more point-efficient to apply as a de-facto single (not including them in the application). Confirm with a Registered Migration Agent before lodging.",
-  });
+  // Partner/single applicant factor: max 10 points. Only offered when there's
+  // real room to gain -- if pointsEstimate already shows the max (e.g.
+  // applicant declared single), suggesting "+10 more" would double-count
+  // points they already have.
+  const currentPartnerPoints = pointsEstimate?.breakdown.find((item) => item.label === "Partner status" || item.label === "Partner durumu")?.points ?? 0;
+  if (currentPartnerPoints < 10) {
+    const partnerDelta = 10 - currentPartnerPoints;
+    scenarios.push({
+      label: isTr
+        ? "Tek başvurucu veya becerili partner (partner faktörü)"
+        : "Single applicant or partner with skilled qualifications + Competent English",
+      estimatedChange: partnerDelta,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + partnerDelta,
+      explanation: isTr
+        ? "Partner Competent İngilizce + beceri değerlendirmesini karşılarsa."
+        : "If your partner meets Competent English + a positive skills assessment.",
+    });
+  }
 
   // 190 State nomination: +5 points
   if (subclasses.includes("190")) {
     scenarios.push({
-      label: isTr
-        ? "190 Eyalet/Bölge Adaylığı — +5 puan"
-        : "190 State or Territory Nomination — +5 points",
+      label: isTr ? "190 Eyalet/Bölge Adaylığı" : "190 State or Territory Nomination",
       estimatedChange: 5,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
-      explanation: isTr
-        ? "190 eyalet/bölge adaylığı +5 puan ekler. Bazı eyaletlerde (örn. Victoria, NSW) mevcut çekilişlerin 75-80 puan bandında olduğu bildirilmiştir; adaylık bu eşiği aşmak için belirleyici olabilir. Her eyalet kendi meslek listesini yönetir."
-        : "State or Territory nomination for subclass 190 adds exactly +5 points to the points test and is a mandatory visa requirement. It also carries a 2-year obligation to live and work in the nominating state. Recent 190 invitation thresholds: NSW 75–80 points; Victoria 75–80 points; Queensland 70–75 points; South Australia 65+ points; Western Australia 65+ points. Each state maintains its own Skilled Occupation List (SOL) which changes periodically. Smaller states (South Australia, Tasmania) typically operate with lower demand thresholds and faster turnaround times (4–8 weeks vs 12–16 weeks for NSW/VIC). Submit your EOI in SkillSelect then apply for state nomination — never pay third parties for 'guaranteed' state nomination.",
+      explanation: isTr ? "Zorunlu eyalet/bölge adaylığı." : "Mandatory state/territory nomination.",
     });
   }
 
   // 491 Regional nomination/sponsorship: +15 points
   if (subclasses.includes("491")) {
     scenarios.push({
-      label: isTr
-        ? "491 Bölgesel Adaylık veya Sponsorluk — +15 puan"
-        : "491 Regional Nomination or Eligible Relative Sponsorship — +15 points",
+      label: isTr ? "491 Bölgesel Adaylık veya Sponsorluk" : "491 Regional Nomination or Eligible Relative Sponsorship",
       estimatedChange: 15,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 15,
       explanation: isTr
-        ? "491 adaylığı (eyalet/bölge) veya uygun bir akraba sponsoru (Kategori 2-3 posta kodunda yaşayan) +15 puan ekler. Bu, mevcut puana eklenir ve çoğu meslek için rekabetçi bir konuma taşıyabilir. 491 vizesi 5 yıl sürelidir; sahipler PR'a geçmek için bölgede oturmalı ve çalışmalıdır."
-        : "491 nomination (state/territory pathway) or sponsorship by an eligible relative living in a Specified Regional Area adds exactly +15 points — the largest single bonus in the SkillSelect points test. This can transform a borderline 65-point 189 profile into a competitive 80-point 491 candidate. The 491 is a provisional visa valid for 5 years; holders must live and work in a regional area for at least 3 years and meet an income threshold (~AUD $53,900/year) before applying for PR via Subclass 191. Active 491-nominating states include New South Wales (occupations outside Sydney), South Australia, Tasmania, and Northern Territory. Regional postcode categories 2 and 3 include cities such as Newcastle, Wollongong, Geelong, the Gold Coast hinterland, and all of regional Western Australia.",
+        ? "Puan tablosundaki en büyük tekil artış."
+        : "The largest single bonus in the points test.",
     });
   }
 
@@ -3345,9 +3409,7 @@ function buildPointsBoosterSimulator(
       label: isTr ? "Yaş bandı (18–24): şu anki maksimum puan" : "Age band (18–24): current maximum points",
       estimatedChange: 0,
       resultingEstimate: currentEstimate,
-      explanation: isTr
-        ? "18–24 yaş bandı puan tablosunda maksimum yaş puanı (25 puan) sağlar. Bu avantaj 25 yaşından itibaren azalmaya başlar."
-        : "The 18–24 age band attracts the maximum age points (25 points) in the Australian points test. This advantage begins to decrease at age 25 and disappears after 44.",
+      explanation: isTr ? "Bu avantaj 25 yaşından itibaren azalır." : "This advantage begins to decrease at age 25.",
     });
   }
 
@@ -3359,6 +3421,25 @@ function buildPointsBoosterSimulator(
       explanation: isTr
         ? "İstihdam, eğitim, partner ve bonus faktörleri sağlanmadığı için ek matematiksel senaryo hesaplanmadı."
         : "Employment, education, partner, and bonus factors were not provided, so no additional mathematical scenario was calculated.",
+    });
+  }
+
+  // Real cumulative scenario: sums the two highest-value non-zero, non-
+  // informational scenarios' point changes into one combined figure -- an
+  // actual calculation (not a display trick), since applying two boosters
+  // together is additive in the real points test.
+  const combinable = scenarios.filter((s) => s.estimatedChange > 0);
+  if (combinable.length >= 2) {
+    const top2 = [...combinable].sort((a, b) => b.estimatedChange - a.estimatedChange).slice(0, 2);
+    const combinedChange = top2.reduce((sum, s) => sum + s.estimatedChange, 0);
+    scenarios.push({
+      label: isTr
+        ? `${top2[0].label} + ${top2[1].label} (birlikte)`
+        : `${top2[0].label} + ${top2[1].label} (combined)`,
+      estimatedChange: combinedChange,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + combinedChange,
+      explanation: isTr ? "İki senaryonun toplam etkisi." : "The combined effect of both scenarios together.",
+      isCombined: true,
     });
   }
 

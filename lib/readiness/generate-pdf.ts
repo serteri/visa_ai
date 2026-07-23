@@ -97,6 +97,16 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       strongestSignal: "En güçlü sinyal",
       secondarySignals: "İkincil sinyaller",
       primaryLimitingFactor: "Birincil Sınırlayıcı Faktör",
+      pointsBreakdownTable: "Puan Dökümü",
+      pointsEarned: "Aldığın Puan",
+      maxPoints: "Maksimum",
+      totalRow: "TOPLAM",
+      minimumRequired: "gerekli",
+      occupationScoringNote: "Not: Meslek / Skills Assessment doğrudan puan vermez, ama diğer pathway'lerin (482/186 gibi) uygunluğunu belirler.",
+      scenarioTable: "Senaryo",
+      pointsChange: "Puan Değişimi",
+      newTotal: "Yeni Toplam",
+      frictionLevelDefinition: "Rekabet Düzeyi = ek kanıt/işlem yükü ne kadar fazla.",
       positionChangers: "Durumunuzu Değiştirebilecek Faktörler",
       pathwayTable: "Vize Yolu Karşılaştırması",
       pathwayStrengthComparison: "Vize Yolu Karşılaştırması",
@@ -224,6 +234,16 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       strongestSignal: "最高匹配路径",
       secondarySignals: "其他匹配路径",
       primaryLimitingFactor: "主要限制因素",
+      pointsBreakdownTable: "积分明细",
+      pointsEarned: "已获得分数",
+      maxPoints: "最高分",
+      totalRow: "总计",
+      minimumRequired: "所需",
+      occupationScoringNote: "注意：职业 / 技能评估本身不计分，但决定其他路径（如 482/186）的资格。",
+      scenarioTable: "情景",
+      pointsChange: "分数变化",
+      newTotal: "新总分",
+      frictionLevelDefinition: "竞争激烈度 = 所需的额外证据/流程工作量。",
       positionChangers: "可能改变你位置的因素",
       pathwayTable: "签证路径结构化对比",
       pathwayStrengthComparison: "路径强度对比",
@@ -350,6 +370,16 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     strongestSignal: "Strongest signal",
     secondarySignals: "Secondary signals",
     primaryLimitingFactor: "Primary Limiting Factor",
+    pointsBreakdownTable: "Points Breakdown",
+    pointsEarned: "Points Earned",
+    maxPoints: "Maximum",
+    totalRow: "TOTAL",
+    minimumRequired: "required",
+    occupationScoringNote: "Note: Occupation / Skills Assessment does not carry points-table score directly, but determines eligibility for other pathways (e.g. 482/186).",
+    scenarioTable: "Scenario",
+    pointsChange: "Points Change",
+    newTotal: "New Total",
+    frictionLevelDefinition: "Friction Level = how much extra evidence/process burden is involved.",
     positionChangers: "What May Change Your Position",
     pathwayTable: "Structured Pathway Comparison",
     pathwayStrengthComparison: "Pathway Strength Comparison",
@@ -3256,14 +3286,50 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     [text.confidence, formatSignalConfidence(report.signalSnapshot.confidenceLabel)],
   ]);
 
-  addPremiumKeyValueContainer(
-    text.primaryLimitingFactor,
-    [
-      [text.primaryLimitingFactor, report.primaryLimitingFactor.label],
-      [text.realityCheck, report.primaryLimitingFactor.explanation],
-    ],
-    COLORS.riskMedium
-  );
+  // A real category-by-category points breakdown replaces the generic
+  // "Primary Limiting Factor" prose whenever real AU points-tested data is
+  // available -- the engine already computes per-category figures
+  // (pointsEstimate.breakdown), so show those instead of a templated
+  // paragraph. Falls back to the old prose box for non-points-tested
+  // contexts (e.g. only 482/500/820 in scope) where there's nothing numeric
+  // to show.
+  if (report.pointsEstimate && report.pointsEstimate.breakdown.length > 0) {
+    addHeading(text.pointsBreakdownTable);
+    const breakdownRows = report.pointsEstimate.breakdown;
+    drawTable(
+      [text.category, text.pointsEarned, text.maxPoints, text.note],
+      breakdownRows.map((item) => [
+        item.label,
+        String(item.points),
+        item.max !== undefined ? String(item.max) : "—",
+        item.note ?? "",
+      ]),
+      [0.24, 0.14, 0.14, 0.48]
+    );
+    const total = report.pointsEstimate.estimatedPoints;
+    if (total !== undefined) {
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      ensurePageSpace(lineHeight + 2);
+      doc.text(safeText(`${text.totalRow}: ${total} pts (65 ${text.minimumRequired})`), margin, yPosition);
+      yPosition += lineHeight + 2;
+      setBaseFont();
+    }
+    if (report.pointsEstimate.occupationNote) {
+      addSmallText(cleanNum(report.pointsEstimate.occupationNote), 0);
+    }
+    yPosition += 2;
+  } else {
+    addPremiumKeyValueContainer(
+      text.primaryLimitingFactor,
+      [
+        [text.primaryLimitingFactor, report.primaryLimitingFactor.label],
+        [text.realityCheck, report.primaryLimitingFactor.explanation],
+      ],
+      COLORS.riskMedium
+    );
+  }
 
   if (report.positionChangers.length > 0) {
     addHeading(text.positionChangers);
@@ -3290,6 +3356,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         frictionScore,
         frictionLabel: frictionBandLabel(effectiveLocale, frictionScore),
         realityCheck: friction?.realityCheck ?? item.reason,
+        occupationWarning: friction?.occupationWarning,
       };
     });
 
@@ -3304,10 +3371,28 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         return getFrictionColorByLabel(row.frictionScore);
       }
     );
+    addSmallText(text.frictionLevelDefinition, 0);
+    yPosition += 1;
+
+    // An occupation-level warning (e.g. an assessing-authority caveat) comes
+    // back identical on every points-tested subclass (189/190/491) sharing
+    // the same occupation -- consolidate it into one shared line instead of
+    // repeating the same sentence under each row.
+    const occupationWarningCounts = new Map<string, number>();
+    pathwayRows.forEach((row) => {
+      if (row.occupationWarning) {
+        occupationWarningCounts.set(row.occupationWarning, (occupationWarningCounts.get(row.occupationWarning) ?? 0) + 1);
+      }
+    });
+    const sharedOccupationWarning = [...occupationWarningCounts.entries()].find(([, count]) => count >= 2)?.[0];
 
     pathwayRows.forEach((row) => {
-      addSmallText(`${row.visa} - ${text.realityCheck}: ${row.realityCheck}`, 4);
+      const perRowWarning = row.occupationWarning && row.occupationWarning !== sharedOccupationWarning ? ` ${row.occupationWarning}` : "";
+      addSmallText(`${row.visa} - ${text.realityCheck}: ${row.realityCheck}${perRowWarning}`, 4);
     });
+    if (sharedOccupationWarning) {
+      addSmallText(sharedOccupationWarning, 0);
+    }
     yPosition += 3;
     } // end else (data available)
   }
@@ -3388,14 +3473,17 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         0
       );
       addSmallText(cleanNum(report.pointsBoosterSimulator.note), 0);
-      report.pointsBoosterSimulator.scenarios.forEach((scenario) => {
-        const delta = scenario.estimatedChange >= 0 ? `+${scenario.estimatedChange} pts` : `${scenario.estimatedChange} pts`;
-        addBody(cleanNum(`${scenario.label}: ${delta}`));
-        if (scenario.resultingEstimate !== undefined) {
-          addSmallText(cleanNum(`${effectiveLocale === "tr" ? "Sonraki matematiksel tahmin" : effectiveLocale === "zh-Hans" ? "调整后估算分" : "Resulting estimate"}: ${scenario.resultingEstimate} pts`), 4);
-        }
-        addSmallText(cleanNum(scenario.explanation), 4);
-      });
+      yPosition += 1;
+      drawTable(
+        [text.scenarioTable, text.pointsChange, text.newTotal],
+        report.pointsBoosterSimulator.scenarios.map((scenario) => [
+          cleanNum(scenario.label) + (scenario.isCombined ? " ★" : ""),
+          scenario.estimatedChange >= 0 ? `+${scenario.estimatedChange}` : `${scenario.estimatedChange}`,
+          scenario.resultingEstimate !== undefined ? String(scenario.resultingEstimate) : "—",
+        ]),
+        [0.6, 0.2, 0.2],
+        (rowIndex) => (report.pointsBoosterSimulator!.scenarios[rowIndex]?.isCombined ? COLORS.accent : null)
+      );
     }
     yPosition += 3;
   }
