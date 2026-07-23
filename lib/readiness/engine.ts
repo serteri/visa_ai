@@ -2464,6 +2464,37 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
 
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
+
+  function getLocalizedQualification(level: string | undefined, locale: Locale): string {
+    if (!level) return "";
+    const isTr = locale === "tr";
+    const isZh = locale === "zh-Hans";
+
+    if (isZh) {
+      if (level.includes("Bachelor")) return "学士学位 / 本科";
+      if (level.includes("Master's Degree (Coursework)")) return "硕士学位（授课型）";
+      if (level.includes("Master's Degree (Research)")) return "硕士学位（研究型）";
+      if (level.includes("PhD") || level.includes("Doctorate")) return "博士学位";
+      if (level === "Diploma") return "大专 / 文凭";
+      if (level === "Certificate") return "证书课程";
+      if (level === "High School") return "高中";
+      if (level === "Other") return "其他学历";
+      return level;
+    }
+    if (isTr) {
+      if (level.includes("Bachelor")) return "Lisans Derecesi";
+      if (level.includes("Master's Degree (Coursework)")) return "Yüksek Lisans (Ders Aşamalı)";
+      if (level.includes("Master's Degree (Research)")) return "Yüksek Lisans (Tezli / Araştırma)";
+      if (level.includes("PhD") || level.includes("Doctorate")) return "Doktora";
+      if (level === "Diploma") return "Ön Lisans / Diploma";
+      if (level === "Certificate") return "Sertifika";
+      if (level === "High School") return "Lise";
+      if (level === "Other") return "Diğer";
+      return level;
+    }
+    return level;
+  }
+
   const ageOption = input.age ? parseAgeOption(input.age) : null;
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
   const hasExperienceInput =
@@ -2527,7 +2558,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // it carries no points-table score of its own (see occupationNote below).
   const breakdown: PointsBreakdownItem[] = [
     {
-      label: isTr ? "Yaş" : "Age",
+      label: isTr ? "Yaş" : isZh ? "年龄" : "Age",
       points: result.breakdown.age,
       max: 30,
       note: ageOption
@@ -2535,7 +2566,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : isTr ? "Yaş girilmedi" : isZh ? "未提供年龄" : "Age not provided",
     },
     {
-      label: isTr ? "İngilizce" : "English",
+      label: isTr ? "İngilizce" : isZh ? "英语能力" : "English",
       points: result.breakdown.english,
       max: 20,
       note: englishOption
@@ -2543,7 +2574,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : isTr ? "Test sonucu girilmedi" : isZh ? "未提供考试成绩" : "Test score not provided",
     },
     {
-      label: isTr ? "Yurt dışı deneyim" : "Overseas experience",
+      label: isTr ? "Yurt dışı deneyim" : isZh ? "海外工作经验" : "Overseas experience",
       points: canApplyExperiencePoints ? result.breakdown.overseasEmployment : 0,
       max: 15,
       note: !canApplyExperiencePoints
@@ -2553,7 +2584,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
     },
     {
-      label: isTr ? "Avustralya deneyimi" : "Australian experience",
+      label: isTr ? "Avustralya deneyimi" : isZh ? "澳大利亚工作经验" : "Australian experience",
       points: canApplyExperiencePoints ? result.breakdown.australianEmployment : 0,
       max: 20,
       note: !canApplyExperiencePoints
@@ -2563,15 +2594,15 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
     },
     {
-      label: isTr ? "Eğitim" : "Education",
+      label: isTr ? "Eğitim" : isZh ? "教育背景" : "Education",
       points: result.breakdown.education,
       max: 20,
       note: hasEducationInput
-        ? input.qualificationLevel
+        ? getLocalizedQualification(input.qualificationLevel, locale)
         : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
     },
     {
-      label: isTr ? "Partner durumu" : "Partner status",
+      label: isTr ? "Partner durumu" : isZh ? "配偶状态" : "Partner status",
       points: result.breakdown.partner,
       max: 10,
       note: partner.reason,
@@ -2583,7 +2614,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // here would just be noise rather than a useful zero.
   if (australianStudyRequirement) {
     breakdown.push({
-      label: isTr ? "Avustralya öğrenim koşulu" : "Australian study requirement",
+      label: isTr ? "Avustralya öğrenim koşulu" : isZh ? "澳大利亚学习要求" : "Australian study requirement",
       points: result.breakdown.bonus.australianStudyRequirement,
       max: 5,
       note: isTr ? "Avustralya kurumunda tamamlanan yeterlilik" : isZh ? "在澳大利亚教育机构完成的学历" : "Qualification completed at an Australian institution",
@@ -2591,7 +2622,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   }
   if (regionalStudy) {
     breakdown.push({
-      label: isTr ? "Bölgesel Avustralya öğrenimi" : "Regional Australia study",
+      label: isTr ? "Bölgesel Avustralya öğrenimi" : isZh ? "澳大利亚偏远地区学习" : "Regional Australia study",
       points: result.breakdown.bonus.regionalStudy,
       max: 5,
       note: isTr ? "Belirlenmiş bölgesel kampüs" : isZh ? "指定偏远地区实体校区" : "Designated regional campus",
@@ -2599,7 +2630,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   }
   if (isResearchOrDoctorateQualification(input.qualificationLevel)) {
     breakdown.push({
-      label: isTr ? "Uzmanlık eğitimi (STEM)" : "Specialist education (STEM)",
+      label: isTr ? "Uzmanlık eğitimi (STEM)" : isZh ? "专业型学位 (STEM)" : "Specialist education (STEM)",
       points: result.breakdown.bonus.specialistEducation,
       max: 10,
       note:
@@ -3332,37 +3363,67 @@ function buildPointsBoosterSimulator(
   // (Schedule 6A of the Migration Regulations 1994: Competent=0, Proficient=10, Superior=20)
   if (englishOption === "competent") {
     scenarios.push({
-      label: isTr ? "Superior İngilizce (IELTS 8.0+ / PTE 79+)" : "Superior English (IELTS 8.0+ / PTE 79+)",
+      label: isTr
+        ? "Superior İngilizce (IELTS 8.0+ / PTE 79+)"
+        : isZh
+          ? "卓越英语水平 (IELTS 8.0+ / PTE 79+)"
+          : "Superior English (IELTS 8.0+ / PTE 79+)",
       estimatedChange: 20,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 20,
       explanation: isTr
         ? "En yüksek getirili tek puan artışı."
-        : "The single highest-value points upgrade available.",
+        : isZh
+          ? "打分表中分值最高且性价比最高的单项加分。"
+          : "The single highest-value points upgrade available.",
     });
   } else if (englishOption === "proficient") {
     scenarios.push({
-      label: isTr ? "Superior İngilizce'ye yükseltme (IELTS 8.0+ / PTE 79+)" : "Upgrade to Superior English (IELTS 8.0+ / PTE 79+)",
+      label: isTr
+        ? "Superior İngilizce'ye yükseltme (IELTS 8.0+ / PTE 79+)"
+        : isZh
+          ? "提升至卓越英语水平 (IELTS 8.0+ / PTE 79+)"
+          : "Upgrade to Superior English (IELTS 8.0+ / PTE 79+)",
       estimatedChange: 10,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 10,
-      explanation: isTr ? "Proficient'ten Superior'a geçiş." : "Moving from Proficient to Superior.",
+      explanation: isTr
+        ? "Proficient'ten Superior'a geçiş."
+        : isZh
+          ? "从优秀英语水平（Proficient，+10分）提升至卓越英语水平（Superior，+20分）。"
+          : "Moving from Proficient to Superior.",
     });
   }
 
   // NAATI CCL: +5 points (Community Languages credential)
   scenarios.push({
-    label: isTr ? "NAATI CCL (Toplum Dili Sertifikası)" : "NAATI CCL Community Languages credential",
+    label: isTr
+      ? "NAATI CCL (Toplum Dili Sertifikası)"
+      : isZh
+        ? "NAATI CCL 社区语言能力认证"
+        : "NAATI CCL Community Languages credential",
     estimatedChange: 5,
     resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
-    explanation: isTr ? "Nitelikli bir toplum dili sertifikası." : "A recognised community-language credential.",
+    explanation: isTr
+      ? "Nitelikli bir toplum dili sertifikası."
+      : isZh
+        ? "获得认可的社区语言能力证书。"
+        : "A recognised community-language credential.",
   });
 
   // Professional Year: +5 points
   if (isProfessionalYearRelevantOccupation(input)) {
     scenarios.push({
-      label: isTr ? "Avustralya'da Mesleki Yıl (Professional Year)" : "Australian Professional Year program",
+      label: isTr
+        ? "Avustralya'da Mesleki Yıl (Professional Year)"
+        : isZh
+          ? "澳大利亚职业年项目 (Professional Year)"
+          : "Australian Professional Year program",
       estimatedChange: 5,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
-      explanation: isTr ? "Muhasebe, BT veya mühendislikte 44 haftalık program." : "A 44-week program in accounting, IT, or engineering.",
+      explanation: isTr
+        ? "Muhasebe, BT veya mühendislikte 44 haftalık program."
+        : isZh
+          ? "针对会计、IT或工程类别的44周职业培训项目。"
+          : "A 44-week program in accounting, IT, or engineering.",
     });
   }
 
@@ -3370,60 +3431,94 @@ function buildPointsBoosterSimulator(
   // real room to gain -- if pointsEstimate already shows the max (e.g.
   // applicant declared single), suggesting "+10 more" would double-count
   // points they already have.
-  const currentPartnerPoints = pointsEstimate?.breakdown.find((item) => item.label === "Partner status" || item.label === "Partner durumu")?.points ?? 0;
+  const currentPartnerPoints = pointsEstimate?.breakdown.find(
+    (item) => item.label === "Partner status" || item.label === "Partner durumu" || item.label === "配偶状态"
+  )?.points ?? 0;
   if (currentPartnerPoints < 10) {
     const partnerDelta = 10 - currentPartnerPoints;
     scenarios.push({
       label: isTr
         ? "Tek başvurucu veya becerili partner (partner faktörü)"
-        : "Single applicant or partner with skilled qualifications + Competent English",
+        : isZh
+          ? "单身申请或配偶技术加分+达到英语雅思4个6分"
+          : "Single applicant or partner with skilled qualifications + Competent English",
       estimatedChange: partnerDelta,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + partnerDelta,
       explanation: isTr
         ? "Partner Competent İngilizce + beceri değerlendirmesini karşılarsa."
-        : "If your partner meets Competent English + a positive skills assessment.",
+        : isZh
+          ? "若配偶通过了澳洲职业评估，且英语达到雅思4个6分（或同等水平）。"
+          : "If your partner meets Competent English + a positive skills assessment.",
     });
   }
 
   // 190 State nomination: +5 points
   if (subclasses.includes("190")) {
     scenarios.push({
-      label: isTr ? "190 Eyalet/Bölge Adaylığı" : "190 State or Territory Nomination",
+      label: isTr
+        ? "190 Eyalet/Bölge Adaylığı"
+        : isZh
+          ? "190 州/领地担保提名"
+          : "190 State or Territory Nomination",
       estimatedChange: 5,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
-      explanation: isTr ? "Zorunlu eyalet/bölge adaylığı." : "Mandatory state/territory nomination.",
+      explanation: isTr
+        ? "Zorunlu eyalet/bölge adaylığı."
+        : isZh
+          ? "获得州或领地政府提名。"
+          : "Mandatory state/territory nomination.",
     });
   }
 
   // 491 Regional nomination/sponsorship: +15 points
   if (subclasses.includes("491")) {
     scenarios.push({
-      label: isTr ? "491 Bölgesel Adaylık veya Sponsorluk" : "491 Regional Nomination or Eligible Relative Sponsorship",
+      label: isTr
+        ? "491 Bölgesel Adaylık veya Sponsorluk"
+        : isZh
+          ? "491 偏远地区州提名或亲属担保"
+          : "491 Regional Nomination or Eligible Relative Sponsorship",
       estimatedChange: 15,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 15,
       explanation: isTr
         ? "Puan tablosundaki en büyük tekil artış."
-        : "The largest single bonus in the points test.",
+        : isZh
+          ? "打分表中数额最大的单项加分。"
+          : "The largest single bonus in the points test.",
     });
   }
 
   if (ageOption === "18_24") {
     scenarios.push({
-      label: isTr ? "Yaş bandı (18–24): şu anki maksimum puan" : "Age band (18–24): current maximum points",
+      label: isTr
+        ? "Yaş bandı (18–24): şu anki maksimum puan"
+        : isZh
+          ? "年龄区间 (18-24岁)：当前最高得分"
+          : "Age band (18–24): current maximum points",
       estimatedChange: 0,
       resultingEstimate: currentEstimate,
-      explanation: isTr ? "Bu avantaj 25 yaşından itibaren azalır." : "This advantage begins to decrease at age 25.",
+      explanation: isTr
+        ? "Bu avantaj 25 yaşından itibaren azalır."
+        : isZh
+          ? "此加分优势自25岁起开始下降。"
+          : "This advantage begins to decrease at age 25.",
     });
   }
 
   if (scenarios.length === 0) {
     scenarios.push({
-      label: isTr ? "Eksik puan faktörleri" : "Missing points-table factors",
+      label: isTr
+        ? "Eksik puan faktörleri"
+        : isZh
+          ? "缺失积分评估因素"
+          : "Missing points-table factors",
       estimatedChange: 0,
       resultingEstimate: currentEstimate,
       explanation: isTr
         ? "İstihdam, eğitim, partner ve bonus faktörleri sağlanmadığı için ek matematiksel senaryo hesaplanmadı."
-        : "Employment, education, partner, and bonus factors were not provided, so no additional mathematical scenario was calculated.",
+        : isZh
+          ? "由于未提供工作经验、学历、配偶等背景，未计算额外的模拟加分情景。"
+          : "Employment, education, partner, and bonus factors were not provided, so no additional mathematical scenario was calculated.",
     });
   }
 

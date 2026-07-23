@@ -789,41 +789,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
     confidenceExplanation: `由于已提供年龄、英语、职业和护照国家等核心信息，报告置信度为中等到较强；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息。`,
   };
 
-  const pointsBoosterSimulator = report.pointsBoosterSimulator
-    ? {
-        ...report.pointsBoosterSimulator,
-        note: "如果打分项发生变化，您的预期分数可能会相应调整。以下仅为数学估算，不构成获邀或签证结果判断。",
-        scenarios: report.pointsBoosterSimulator.scenarios.map((scenario) => {
-          const labelText = scenario.label.toLowerCase();
-          if (labelText.includes("190")) {
-            return {
-              ...scenario,
-              label: "190 州担保加分情景",
-              explanation: "如获得州或领地提名，190 路径的初步打分估算通常可增加 5 分；实际竞争力仍取决于州/领地职业清单和邀请政策。",
-            };
-          }
-          if (labelText.includes("491")) {
-            return {
-              ...scenario,
-              label: "491 偏远地区提名/担保加分情景",
-              explanation: "如获得偏远地区州/领地提名或符合条件的亲属担保，491 路径的初步打分估算通常可增加 15 分。",
-            };
-          }
-          if (labelText.includes("english")) {
-            return {
-              ...scenario,
-              label: "英语等级提升情景",
-              explanation: "如英语能力等级提升，打分制技术移民路径的初步打分估算可能相应增加。",
-            };
-          }
-          return {
-            ...scenario,
-            label: localizeText("zh-Hans", scenario.label),
-            explanation: "如果打分项发生变化，您的预期分数可能会相应调整。",
-          };
-        }),
-      }
-    : undefined;
+  const pointsBoosterSimulator = report.pointsBoosterSimulator;
 
   const financialRoadmap = report.financialRoadmap.map((item) => ({
     ...item,
@@ -835,19 +801,18 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
   const pointsEstimate = report.pointsEstimate
     ? {
         ...report.pointsEstimate,
-        breakdown: report.pointsEstimate.breakdown.map((item) => ({
-          ...item,
-          label:
-            item.label === "Age points"
-              ? "年龄得分"
-              : item.label === "English level points"
-                ? "英语能力得分"
-                : localizeText("zh-Hans", item.label),
-          note:
-            item.note?.toLowerCase().includes("superior")
-              ? "高级英语"
-              : item.note?.replace(/Superior/g, "高级英语").replace(/Proficient/g, "熟练英语").replace(/Competent/g, "合格英语"),
-        })),
+        breakdown: report.pointsEstimate.breakdown.map((item) => {
+          let cleanNote = item.note ?? "";
+          cleanNote = cleanNote
+            .replace(/Superior/g, "高级")
+            .replace(/Proficient/g, "优秀")
+            .replace(/Competent/g, "合格");
+          return {
+            ...item,
+            label: localizeText("zh-Hans", item.label),
+            note: cleanNote,
+          };
+        }),
         note: "这是基于年龄与英语能力的初步估算；海外工作经验、澳洲工作经验、学历、加分项和配偶因素尚未完整纳入。实际分数需以个人材料和官方规则为准。",
       }
     : undefined;
