@@ -3540,6 +3540,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       2
     );
     const trendEstimates = report.premiumSections.historicalInvitationTrends.estimates;
+    if (trendEstimates.length > 0) {
+      addSmallText(
+        effectiveLocale === "tr"
+          ? "Bu puanlar ve bekleme süreleri, bu meslek için son davet turlarındaki gerçek sonuçları yansıtır (her alt sınıf için son davet edilen puan) — tahmin değildir."
+          : effectiveLocale === "zh-Hans"
+            ? "以下分数和等待时间反映该职业近期邀请轮次的真实结果（每个子类别最近一次获邀分数）——并非预测。"
+            : "The points and wait windows below reflect real results from this occupation's recent invitation rounds (the last invited point per subclass) — not a projection.",
+        2
+      );
+    }
     drawTable(
       [text.subclass, text.estimatedPoints, text.estimatedWait],
       trendEstimates.map((item) => [
@@ -3555,6 +3565,32 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       .forEach((item) => {
         addCriticalAlertText(`${item.subclass}: ${item.referenceOnlyNote}`, 2);
       });
+
+    // Gap-to-benchmark: for AU points-tested subclasses, spell out how the
+    // user's own estimated score compares to the real recent benchmark,
+    // rather than leaving readers to subtract the two numbers themselves.
+    const userAuPoints = report.pointsEstimate?.estimatedPoints;
+    if (userAuPoints !== undefined) {
+      trendEstimates
+        .filter((item) => ["189", "190", "491"].includes(item.subclass))
+        .forEach((item) => {
+          const diff = item.estimatedPoints - userAuPoints;
+          const gapLine =
+            diff > 0
+              ? effectiveLocale === "tr"
+                ? `Subclass ${item.subclass}: bu meslek son turlarda ortalama ${item.estimatedPoints} puanla davet edildi — tahmini puanınız bu referansın ${diff} puan altında.`
+                : effectiveLocale === "zh-Hans"
+                  ? `Subclass ${item.subclass}：该职业近期轮次的平均获邀分数为 ${item.estimatedPoints} 分——您的预估分数比该参考分低 ${diff} 分。`
+                  : `Subclass ${item.subclass}: this occupation was invited at ${item.estimatedPoints} points in recent rounds — your estimated score is ${diff} points below that benchmark.`
+              : effectiveLocale === "tr"
+                ? `Subclass ${item.subclass}: bu meslek son turlarda ortalama ${item.estimatedPoints} puanla davet edildi — tahmini puanınız bu referansın ${Math.abs(diff)} puan üzerinde veya eşit.`
+                : effectiveLocale === "zh-Hans"
+                  ? `Subclass ${item.subclass}：该职业近期轮次的平均获邀分数为 ${item.estimatedPoints} 分——您的预估分数已达到或高于该参考分 ${Math.abs(diff)} 分。`
+                  : `Subclass ${item.subclass}: this occupation was invited at ${item.estimatedPoints} points in recent rounds — your estimated score is at or above that benchmark (by ${Math.abs(diff)} points).`;
+          addSmallText(gapLine, 2);
+        });
+    }
+
     addSmallText(cleanNum(report.premiumSections.historicalInvitationTrends.note), 2);
 
     // CA: use the dual-row living cost table; AU: single-row as before
