@@ -919,8 +919,28 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     base.pathwayComparison,
     base.assessmentState
   );
+  const frictionAnalysis = buildFrictionAnalysis(input, base);
+
+  const pathwayStrengthComparison = base.pathwayStrengthComparison.map((item) => {
+    const dyn = frictionAnalysis.find((f) => f.pathway === item.subclass);
+    if (dyn) {
+      const score = dyn.frictionScore;
+      const mappedFriction: "low" | "medium" | "high" | "extreme" =
+        score === "EXTREME" ? "extreme"
+        : score === "HIGH" ? "high"
+        : score === "MEDIUM" ? "medium"
+        : "low";
+      return {
+        ...item,
+        friction: mappedFriction,
+      };
+    }
+    return item;
+  });
+
   const report = {
     ...base,
+    pathwayStrengthComparison,
     rankedPathways: calculateRankedPathways(base, {
       age: input.age,
       currentCountry: input.currentCountry,
@@ -937,7 +957,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     }),
     documentChecklist: buildPremiumDocumentChecklist(input, base),
     suggestedNextSteps: buildImmediateActionPlan(input, base, occupation?.anzsco_code),
-    frictionAnalysis: buildFrictionAnalysis(input, base),
+    frictionAnalysis,
   };
 
   return input.locale === "zh-Hans" ? localizeBaseReportForZh(report) : report;

@@ -257,3 +257,21 @@ export function t3(locale: Locale, en: string, tr: string, zh: string): string {
   if (locale === "zh-Hans") return zh;
   return en;
 }
+
+export function confidenceLevelDefinition(locale: Locale, level: "low" | "medium" | "high"): string {
+  if (locale === "zh-Hans") {
+    if (level === "high") return "高度匹配；关键档案数据已核验，且满足相关核心标准。";
+    if (level === "medium") return "中等匹配；部分档案数据为假定，或需要补充更多细节进行确认。";
+    return "匹配度有限；关键档案数据缺失、未核验或不明确。";
+  }
+
+  if (locale === "tr") {
+    if (level === "high") return "Güçlü uyum; temel profil girdileri doğrulanmış ve ilgili kriterler karşılanmıştır.";
+    if (level === "medium") return "Orta düzey uyum; bazı profil girdileri varsayılmıştır veya ek ayrıntı gereklidir.";
+    return "Sınırlı uyum; temel profil girdileri eksik, doğrulanmamış veya net değil.";
+  }
+
+  if (level === "high") return "Strong alignment; key profile inputs are verified, and relevant criteria are met.";
+  if (level === "medium") return "Moderate alignment; some profile inputs are assumed or need additional details.";
+  return "Limited alignment; key profile inputs are missing, unverified, or unclear.";
+}

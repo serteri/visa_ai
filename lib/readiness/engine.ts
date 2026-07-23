@@ -3563,47 +3563,54 @@ function buildPointsBoosterSimulator(
   }
 
   if (currentEstimate !== undefined && combos.length > 0) {
-    if (currentEstimate < SKILLED_MIGRATION_MIN_POINTS) {
-      const gap = SKILLED_MIGRATION_MIN_POINTS - currentEstimate;
-      const crossing = combos
+    const targetThresholds = [65, 75, 85, 95];
+    const seenComboKeys = new Set<string>();
+
+    for (const target of targetThresholds) {
+      if (currentEstimate >= target) continue;
+      const gap = target - currentEstimate;
+      const reaching = combos
         .filter((c) => c.total >= gap)
         .sort((a, b) => a.items.length - b.items.length || a.total - b.total);
-      const seenKeys = new Set<string>();
-      let added = 0;
-      for (const c of crossing) {
-        if (added >= 3) break;
-        const key = c.items.map((s) => s.label).sort().join("|");
-        if (seenKeys.has(key)) continue;
-        seenKeys.add(key);
-        const resulting = currentEstimate + c.total;
+
+      for (const bestCombo of reaching) {
+        const key = bestCombo.items.map((s) => s.label).sort().join("|");
+        if (seenComboKeys.has(key)) continue;
+        seenComboKeys.add(key);
+
+        const resulting = currentEstimate + bestCombo.total;
         pushComboScenario(
-          c.items,
-          c.total,
+          bestCombo.items,
+          bestCombo.total,
           isTr
-            ? `65 puan barajını geçer (${resulting} puan).`
+            ? `${target} puan hedefine ulaşır (Toplam: ${resulting} puan).`
             : isZh
-              ? `跨过 65 分门槛（合计 ${resulting} 分）。`
-              : `Crosses the 65-point minimum (reaches ${resulting} points).`
+              ? `达到 ${target} 分目标（总分：${resulting} 分）。`
+              : `Reaches the ${target}-point target (Total: ${resulting} points).`
         );
-        added += 1;
+        break; // Add only the single best distinct combo for this target threshold
       }
     }
 
     // Try the real, occupation-matched benchmarks from highest to lowest and
     // use the highest one that's actually reachable with the available
     // boosters -- an ambitious target the profile can't realistically reach
-    // is skipped in favor of the next real target down, rather than shown
-    // as unreachable or silently dropped altogether.
+    // is skipped in favor of the next real target down.
     const relevantTrendEstimates = [...(trendEstimates ?? [])]
       .filter((e) => subclasses.includes(e.subclass) && e.estimatedPoints > currentEstimate)
       .sort((a, b) => b.estimatedPoints - a.estimatedPoints);
+
     for (const target of relevantTrendEstimates) {
       const targetGap = target.estimatedPoints - currentEstimate;
       const reaching = combos
         .filter((c) => c.total >= targetGap)
         .sort((a, b) => a.items.length - b.items.length || a.total - b.total);
-      if (reaching.length > 0) {
-        const chosen = reaching[0];
+
+      for (const chosen of reaching) {
+        const key = chosen.items.map((s) => s.label).sort().join("|");
+        if (seenComboKeys.has(key)) continue;
+        seenComboKeys.add(key);
+
         const resulting = currentEstimate + chosen.total;
         pushComboScenario(
           chosen.items,
@@ -3619,7 +3626,7 @@ function buildPointsBoosterSimulator(
               ? `（Subclass ${target.subclass} 近期邀请参考分：${target.estimatedPoints} 分）`
               : ` (recent Subclass ${target.subclass} invitation benchmark: ${target.estimatedPoints} pts)`
         );
-        break;
+        break; // Only push one combo for this subclass benchmark
       }
     }
   }
@@ -4082,7 +4089,7 @@ function buildSignalSnapshot(
     const positionDiff =
       relativePositionScore(b.relativePosition) - relativePositionScore(a.relativePosition);
     if (positionDiff !== 0) return positionDiff;
-    const frictionRank = { low: 3, medium: 2, high: 1 };
+    const frictionRank = { low: 4, medium: 3, high: 2, extreme: 1 };
     return frictionRank[b.friction] - frictionRank[a.friction];
   });
 

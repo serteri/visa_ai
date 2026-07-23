@@ -321,7 +321,7 @@ export function calculateStateNominationTracker(
   assessmentState: AssessmentState
 ): StateNominationTracker {
   const relevantIneligible = pathwayComparison.some(
-    (p) => STATE_NOMINATION_SUBCLASSES.includes(p.subclass) && p.relevance === "ineligible"
+    (p) => STATE_NOMINATION_SUBCLASSES.includes(p.subclass) && p.relevance === "ineligible" && p.ineligiblePointsLine === undefined
   );
   const eligibilityBlocked = relevantIneligible || !assessmentState.canShowNumericRanking;
 

@@ -178,7 +178,7 @@ export type PathwayStrengthComparison = {
   subclass: string;
   visaName: string;
   strength: "limited" | "moderate" | "strong";
-  friction: "low" | "medium" | "high";
+  friction: "low" | "medium" | "high" | "extreme";
   evidenceLoad: "low" | "medium" | "high";
   typicalPath: string;
   explanation: string;

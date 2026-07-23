@@ -3,7 +3,7 @@ import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
-import { frictionBandLabel, frictionBandDefinition } from "@/src/lib/readiness/localization";
+import { frictionBandLabel, frictionBandDefinition, confidenceLevelDefinition } from "@/src/lib/readiness/localization";
 import { resolveOccupationDisplayName } from "./occupation-eligibility";
 import type { ReadinessReport, RankedPathway, RankedPathwayRecommendation } from "./types";
 
@@ -2663,7 +2663,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     );
   }
 
-  function formatDifficulty(level: "low" | "medium" | "high") {
+  function formatDifficulty(level: "low" | "medium" | "high" | "extreme") {
+    if (level === "extreme") return effectiveLocale === "tr" ? "Çok yüksek" : effectiveLocale === "zh-Hans" ? "极高" : "Extreme";
     if (level === "high") return text.highRisk;
     if (level === "medium") return text.mediumRisk;
     return text.lowRisk;
@@ -3356,6 +3357,18 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       });
     yPosition += 1;
 
+    // Definition lines for the confidence levels present in this report's rows
+    const presentConfidenceLevels = Array.from(
+      new Set(report.pathwayComparison.map((item) => item.confidenceLevel))
+    ) as Array<"low" | "medium" | "high">;
+    const confidenceOrder: Record<"low" | "medium" | "high", number> = { low: 0, medium: 1, high: 2 };
+    presentConfidenceLevels
+      .sort((a, b) => confidenceOrder[a] - confidenceOrder[b])
+      .forEach((level) => {
+        addSmallText(`${formatConfidenceLevel(level)}: ${confidenceLevelDefinition(effectiveLocale, level)}`, 0);
+      });
+    yPosition += 1;
+
     // An occupation-level warning (e.g. an assessing-authority caveat) comes
     // back identical on every points-tested subclass (189/190/491) sharing
     // the same occupation -- consolidate it into one shared line instead of
@@ -3422,6 +3435,19 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         });
       }
     });
+    
+    // Definition lines for the friction levels present in the comparison block
+    const presentFrictionLevels = Array.from(
+      new Set(report.pathwayStrengthComparison.map((item) => item.friction))
+    ) as Array<"low" | "medium" | "high" | "extreme">;
+    const frictionOrder: Record<"low" | "medium" | "high" | "extreme", number> = { low: 0, medium: 1, high: 2, extreme: 3 };
+    presentFrictionLevels
+      .sort((a, b) => frictionOrder[a] - frictionOrder[b])
+      .forEach((level) => {
+        const upper = level.toUpperCase() as "LOW" | "MEDIUM" | "HIGH" | "EXTREME";
+        addSmallText(`${frictionBandLabel(effectiveLocale, upper)}: ${frictionBandDefinition(effectiveLocale, upper)}`, 4);
+      });
+    
     yPosition += 3;
   }
 
