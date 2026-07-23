@@ -26,6 +26,7 @@ import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections } from "@/src/lib/readiness/report-generator";
+import type { InvitationTrendEstimate } from "@/src/lib/readiness/report-generator";
 import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-checklists";
 import { buildRiskIndicators, buildCanadaRiskIndicators } from "./risk-rules";
 import { buildNextSteps, buildCanadaNextSteps } from "./next-steps";
@@ -3313,9 +3314,11 @@ function buildPointsBoosterSimulator(
   input: ReadinessInput,
   subclasses: string[],
   pointsEstimate: PointsEstimate | undefined,
-  locale: Locale
+  locale: Locale,
+  trendEstimates?: InvitationTrendEstimate[]
 ): PointsBoosterSimulator | undefined {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
   if (!hasSkilled) return undefined;
 
@@ -3424,23 +3427,106 @@ function buildPointsBoosterSimulator(
     });
   }
 
-  // Real cumulative scenario: sums the two highest-value non-zero, non-
-  // informational scenarios' point changes into one combined figure -- an
-  // actual calculation (not a display trick), since applying two boosters
-  // together is additive in the real points test.
+  // Real combined-pathway scenarios: instead of one arbitrary "top 2"
+  // combination, enumerate every distinct 2- and 3-factor combination of the
+  // achievable single boosters above (each already additive/non-double-
+  // counted -- see the partner-status guard above) and surface the ones that
+  // actually matter: (a) distinct paths that cross the real 65-point
+  // minimum from the applicant's current score, and (b) -- only when a real,
+  // occupation-matched recent invitation benchmark exists (never a guessed
+  // number) -- the smallest combination that reaches that benchmark.
   const combinable = scenarios.filter((s) => s.estimatedChange > 0);
-  if (combinable.length >= 2) {
-    const top2 = [...combinable].sort((a, b) => b.estimatedChange - a.estimatedChange).slice(0, 2);
-    const combinedChange = top2.reduce((sum, s) => sum + s.estimatedChange, 0);
+  type Combo = { items: typeof combinable; total: number };
+  const combos: Combo[] = [];
+  for (let i = 0; i < combinable.length; i++) {
+    for (let j = i + 1; j < combinable.length; j++) {
+      combos.push({
+        items: [combinable[i], combinable[j]],
+        total: combinable[i].estimatedChange + combinable[j].estimatedChange,
+      });
+      for (let k = j + 1; k < combinable.length; k++) {
+        combos.push({
+          items: [combinable[i], combinable[j], combinable[k]],
+          total: combinable[i].estimatedChange + combinable[j].estimatedChange + combinable[k].estimatedChange,
+        });
+      }
+    }
+  }
+
+  function comboLabel(items: typeof combinable): string {
+    return items.map((s) => s.label).join(isTr ? " + " : isZh ? " + " : " + ");
+  }
+
+  function pushComboScenario(items: typeof combinable, total: number, explanation: string, labelSuffix?: string) {
     scenarios.push({
-      label: isTr
-        ? `${top2[0].label} + ${top2[1].label} (birlikte)`
-        : `${top2[0].label} + ${top2[1].label} (combined)`,
-      estimatedChange: combinedChange,
-      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + combinedChange,
-      explanation: isTr ? "İki senaryonun toplam etkisi." : "The combined effect of both scenarios together.",
+      label: comboLabel(items) + (labelSuffix ?? ""),
+      estimatedChange: total,
+      resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + total,
+      explanation,
       isCombined: true,
     });
+  }
+
+  if (currentEstimate !== undefined && combos.length > 0) {
+    if (currentEstimate < SKILLED_MIGRATION_MIN_POINTS) {
+      const gap = SKILLED_MIGRATION_MIN_POINTS - currentEstimate;
+      const crossing = combos
+        .filter((c) => c.total >= gap)
+        .sort((a, b) => a.items.length - b.items.length || a.total - b.total);
+      const seenKeys = new Set<string>();
+      let added = 0;
+      for (const c of crossing) {
+        if (added >= 3) break;
+        const key = c.items.map((s) => s.label).sort().join("|");
+        if (seenKeys.has(key)) continue;
+        seenKeys.add(key);
+        const resulting = currentEstimate + c.total;
+        pushComboScenario(
+          c.items,
+          c.total,
+          isTr
+            ? `65 puan barajını geçer (${resulting} puan).`
+            : isZh
+              ? `跨过 65 分门槛（合计 ${resulting} 分）。`
+              : `Crosses the 65-point minimum (reaches ${resulting} points).`
+        );
+        added += 1;
+      }
+    }
+
+    // Try the real, occupation-matched benchmarks from highest to lowest and
+    // use the highest one that's actually reachable with the available
+    // boosters -- an ambitious target the profile can't realistically reach
+    // is skipped in favor of the next real target down, rather than shown
+    // as unreachable or silently dropped altogether.
+    const relevantTrendEstimates = [...(trendEstimates ?? [])]
+      .filter((e) => subclasses.includes(e.subclass) && e.estimatedPoints > currentEstimate)
+      .sort((a, b) => b.estimatedPoints - a.estimatedPoints);
+    for (const target of relevantTrendEstimates) {
+      const targetGap = target.estimatedPoints - currentEstimate;
+      const reaching = combos
+        .filter((c) => c.total >= targetGap)
+        .sort((a, b) => a.items.length - b.items.length || a.total - b.total);
+      if (reaching.length > 0) {
+        const chosen = reaching[0];
+        const resulting = currentEstimate + chosen.total;
+        pushComboScenario(
+          chosen.items,
+          chosen.total,
+          isTr
+            ? `Subclass ${target.subclass} için son davet turlarındaki referans puanına ulaşır (${target.estimatedPoints} puan; sonucunuz: ${resulting}).`
+            : isZh
+              ? `达到 Subclass ${target.subclass} 近期邀请轮次的参考分数（${target.estimatedPoints} 分；您的结果：${resulting} 分）。`
+              : `Reaches the recent invitation benchmark for Subclass ${target.subclass} (${target.estimatedPoints} points; your result: ${resulting}).`,
+          isTr
+            ? ` (Subclass ${target.subclass} son davet referansı: ${target.estimatedPoints} puan)`
+            : isZh
+              ? `（Subclass ${target.subclass} 近期邀请参考分：${target.estimatedPoints} 分）`
+              : ` (recent Subclass ${target.subclass} invitation benchmark: ${target.estimatedPoints} pts)`
+        );
+        break;
+      }
+    }
   }
 
   const australianOriginPointsDisclaimer = buildAustralianOriginPointsDisclaimer(input, locale);
@@ -4759,11 +4845,27 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     detectedSubclasses,
     locale
   );
+  const generatedPremiumSections = generatePremiumSections({
+    locale,
+    occupation: input.occupation,
+    selectedCity: input.preferredCity,
+    familyStatus: input.sponsorOrFamily,
+    timeline: input.timeline,
+    mainGoal: input.mainGoal,
+    biggestConcern: input.biggestConcern,
+    estimatedPoints: pointsEstimate?.estimatedPoints,
+    englishLevel: input.englishLevel,
+    country: "AU",
+    pathwayComparison,
+    assessmentState,
+    isPartnerPathway: isPartnerPathwaySelected(input),
+  });
   const pointsBoosterSimulator = buildPointsBoosterSimulator(
     input,
     detectedSubclasses,
     pointsEstimate,
-    locale
+    locale,
+    generatedPremiumSections.historicalInvitationTrends.estimates
   );
   const financialRoadmap = buildFinancialRoadmap(
     detectedSubclasses,
@@ -4815,21 +4917,6 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     hasMissingInfo: missingInformation.length > 0,
   });
 
-  const generatedPremiumSections = generatePremiumSections({
-    locale,
-    occupation: input.occupation,
-    selectedCity: input.preferredCity,
-    familyStatus: input.sponsorOrFamily,
-    timeline: input.timeline,
-    mainGoal: input.mainGoal,
-    biggestConcern: input.biggestConcern,
-    estimatedPoints: pointsEstimate?.estimatedPoints,
-    englishLevel: input.englishLevel,
-    country: "AU",
-    pathwayComparison,
-    assessmentState,
-    isPartnerPathway: isPartnerPathwaySelected(input),
-  });
   const premiumSections: PremiumSections = {
     ...generatedPremiumSections,
     scenarioBasedInsights: {
