@@ -224,6 +224,34 @@ export function frictionBandLabel(locale: Locale, score: "LOW" | "MEDIUM" | "HIG
   return score;
 }
 
+/**
+ * Per-level meaning of the Friction Level badge -- what LOW/MEDIUM/HIGH/
+ * EXTREME actually reflects (mainly the gap between the profile's estimated
+ * points and recent invitation benchmarks for points-tested pathways; see
+ * buildFrictionItem in src/lib/readiness-engine.ts for the underlying gap
+ * thresholds), not just the label word itself.
+ */
+export function frictionBandDefinition(locale: Locale, score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME"): string {
+  if (locale === "zh-Hans") {
+    if (score === "EXTREME") return "您的档案与近期获邀参考分数之间存在较大差距——目前有多个不利因素叠加影响该路径。";
+    if (score === "HIGH") return "您的档案与近期参考分数之间存在明显差距——很可能需要大量补充材料或显著提升档案。";
+    if (score === "MEDIUM") return "您的档案与近期参考分数之间存在中等差距——可能需要补充材料或适度提升。";
+    return "您的档案已达到或超过该路径近期的参考分数——只需标准材料，没有明显差距需要弥补。";
+  }
+
+  if (locale === "tr") {
+    if (score === "EXTREME") return "Profiliniz ile güncel davet referansları arasında ciddi bir fark var — bu yolu şu an olumsuz etkileyen birden fazla faktör bir araya geliyor.";
+    if (score === "HIGH") return "Profiliniz ile güncel referans puanlar arasında belirgin bir fark var — önemli ek kanıt veya profil iyileştirmesi muhtemelen gerekli.";
+    if (score === "MEDIUM") return "Profiliniz ile güncel referans puanlar arasında orta düzey bir fark var — ek kanıt veya ölçülü bir iyileştirme gerekebilir.";
+    return "Profiliniz bu yol için güncel referans puanlara eşit veya üzerinde — standart kanıt yeterli, kapatılması gereken büyük bir açık yok.";
+  }
+
+  if (score === "EXTREME") return "A substantial gap exists between your profile and recent invitation benchmarks -- multiple compounding factors currently work against this pathway.";
+  if (score === "HIGH") return "A meaningful gap exists between your profile and recent benchmarks -- significant additional evidence or profile improvement is likely required.";
+  if (score === "MEDIUM") return "A moderate gap exists between your profile and recent benchmarks -- some additional evidence or a modest improvement may be needed.";
+  return "Your profile is at or above recent benchmarks for this pathway -- standard evidence is expected, no major gap to close.";
+}
+
 export function t3(locale: Locale, en: string, tr: string, zh: string): string {
   if (locale === "tr") return tr;
   if (locale === "zh-Hans") return zh;

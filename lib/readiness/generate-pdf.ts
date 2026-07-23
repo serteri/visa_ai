@@ -3,7 +3,7 @@ import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
-import { frictionBandLabel } from "@/src/lib/readiness/localization";
+import { frictionBandLabel, frictionBandDefinition } from "@/src/lib/readiness/localization";
 import { resolveOccupationDisplayName } from "./occupation-eligibility";
 import type { ReadinessReport, RankedPathway, RankedPathwayRecommendation } from "./types";
 
@@ -106,7 +106,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       scenarioTable: "Senaryo",
       pointsChange: "Puan Değişimi",
       newTotal: "Yeni Toplam",
-      frictionLevelDefinition: "Rekabet Düzeyi = ek kanıt/işlem yükü ne kadar fazla.",
       positionChangers: "Durumunuzu Değiştirebilecek Faktörler",
       pathwayTable: "Vize Yolu Karşılaştırması",
       pathwayStrengthComparison: "Vize Yolu Karşılaştırması",
@@ -243,7 +242,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       scenarioTable: "情景",
       pointsChange: "分数变化",
       newTotal: "新总分",
-      frictionLevelDefinition: "竞争激烈度 = 所需的额外证据/流程工作量。",
       positionChangers: "可能改变你位置的因素",
       pathwayTable: "签证路径结构化对比",
       pathwayStrengthComparison: "路径强度对比",
@@ -379,7 +377,6 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     scenarioTable: "Scenario",
     pointsChange: "Points Change",
     newTotal: "New Total",
-    frictionLevelDefinition: "Friction Level = how much extra evidence/process burden is involved.",
     positionChangers: "What May Change Your Position",
     pathwayTable: "Structured Pathway Comparison",
     pathwayStrengthComparison: "Pathway Strength Comparison",
@@ -3371,7 +3368,17 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         return getFrictionColorByLabel(row.frictionScore);
       }
     );
-    addSmallText(text.frictionLevelDefinition, 0);
+    // Only the levels actually shown in this report's rows get a definition
+    // line -- no point explaining EXTREME if nothing in this report is EXTREME.
+    const presentFrictionScores = Array.from(new Set(pathwayRows.map((row) => row.frictionScore))) as Array<
+      "LOW" | "MEDIUM" | "HIGH" | "EXTREME"
+    >;
+    const frictionOrder: Record<"LOW" | "MEDIUM" | "HIGH" | "EXTREME", number> = { LOW: 0, MEDIUM: 1, HIGH: 2, EXTREME: 3 };
+    presentFrictionScores
+      .sort((a, b) => frictionOrder[a] - frictionOrder[b])
+      .forEach((score) => {
+        addSmallText(`${frictionBandLabel(effectiveLocale, score)}: ${frictionBandDefinition(effectiveLocale, score)}`, 0);
+      });
     yPosition += 1;
 
     // An occupation-level warning (e.g. an assessing-authority caveat) comes
