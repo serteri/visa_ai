@@ -2797,12 +2797,33 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const lastIneligibleSubclass = hardIneligibleEntries[hardIneligibleEntries.length - 1]?.subclass;
 
     function drawPointsBreakdownPointerBox() {
+      const score = report.pointsEstimate?.estimatedPoints;
+      let gapSentence = "";
+      if (typeof score === "number") {
+        if (score < 65) {
+          const gap = 65 - score;
+          gapSentence =
+            effectiveLocale === "tr"
+              ? `Tahmini puanınız ${score}; 189/190/491 minimum barajı olan 65'e ulaşmak için ${gap} puana daha ihtiyacınız var. `
+              : effectiveLocale === "zh-Hans"
+                ? `您的估算分数为 ${score} 分；您还需要 ${gap} 分才能达到 189/190/491 签证的最低 65 分门槛。`
+                : `Your estimated score is ${score}; you need ${gap} more points to reach the 189/190/491 minimum of 65. `;
+        } else {
+          gapSentence =
+            effectiveLocale === "tr"
+              ? `Tahmini puanınız ${score}; bu puan 189/190/491 için gereken minimum 65 barajını karşılamaktadır. `
+              : effectiveLocale === "zh-Hans"
+                ? `您的估算分数为 ${score} 分，已达到 189/190/491 签证的最低 65 分门槛。`
+                : `Your estimated score is ${score}, which meets the 189/190/491 minimum of 65. `;
+        }
+      }
+
       const line =
         effectiveLocale === "tr"
-          ? `Yukarıdaki puan testli alt sınıflar (189/190/491) için kategori bazlı puan dökümü ve puanı artırma yolları: bu raporun "${text.pointsBreakdownTable}" bölümüne bakın.`
+          ? `${gapSentence}Yukarıdaki puan testli alt sınıflar (189/190/491) için kategori bazlı puan dökümü ve puanı artırma yolları: bu raporun "${text.pointsBreakdownTable}" bölümüne bakın.`
           : effectiveLocale === "zh-Hans"
-            ? `以上打分制子类别（189/190/491）的分类积分明细及加分方式，请参见本报告"${text.pointsBreakdownTable}"部分。`
-            : `For a category-by-category points breakdown and how to raise your score on the points-tested subclasses (189/190/491) above, see the "${text.pointsBreakdownTable}" section of this report.`;
+            ? `${gapSentence}以上打分制子类别（189/190/491）的分类积分明细及加分方式，请参见本报告"${text.pointsBreakdownTable}"部分。`
+            : `${gapSentence}For a category-by-category points breakdown and how to raise your score on the points-tested subclasses (189/190/491) above, see the "${text.pointsBreakdownTable}" section of this report.`;
 
       setBaseFont();
       doc.setFontSize(FONTS.small);
@@ -3353,7 +3374,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     presentFrictionScores
       .sort((a, b) => frictionOrder[a] - frictionOrder[b])
       .forEach((score) => {
-        addSmallText(`${frictionBandLabel(effectiveLocale, score)}: ${frictionBandDefinition(effectiveLocale, score)}`, 0);
+        const rawLabel = frictionBandLabel(effectiveLocale, score);
+        const label = effectiveLocale === "zh-Hans" ? rawLabel.replace("竞争", "") : rawLabel;
+        const separator = effectiveLocale === "zh-Hans" ? "：" : ": ";
+        addSmallText(`${text.frictionLevel}${separator}${label}${separator}${frictionBandDefinition(effectiveLocale, score)}`, 0);
       });
     yPosition += 1;
 
@@ -3365,7 +3389,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     presentConfidenceLevels
       .sort((a, b) => confidenceOrder[a] - confidenceOrder[b])
       .forEach((level) => {
-        addSmallText(`${formatConfidenceLevel(level)}: ${confidenceLevelDefinition(effectiveLocale, level)}`, 0);
+        const separator = effectiveLocale === "zh-Hans" ? "：" : ": ";
+        addSmallText(`${text.confidence}${separator}${formatConfidenceLevel(level)}${separator}${confidenceLevelDefinition(effectiveLocale, level)}`, 0);
       });
     yPosition += 1;
 
@@ -3445,7 +3470,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       .sort((a, b) => frictionOrder[a] - frictionOrder[b])
       .forEach((level) => {
         const upper = level.toUpperCase() as "LOW" | "MEDIUM" | "HIGH" | "EXTREME";
-        addSmallText(`${frictionBandLabel(effectiveLocale, upper)}: ${frictionBandDefinition(effectiveLocale, upper)}`, 4);
+        const rawLabel = frictionBandLabel(effectiveLocale, upper);
+        const label = effectiveLocale === "zh-Hans" ? rawLabel.replace("竞争", "") : rawLabel;
+        const separator = effectiveLocale === "zh-Hans" ? "：" : ": ";
+        addSmallText(`${text.frictionLevel}${separator}${label}${separator}${frictionBandDefinition(effectiveLocale, upper)}`, 4);
       });
     
     yPosition += 3;
@@ -3507,18 +3535,44 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.progressionPathways.length > 0) {
     addHeading(text.progressionPathways);
-    addSmallText(
-      effectiveLocale === "tr"
-        ? "Avustralya vize sisteminde tipik geçiş yolları şunları içerebilir:"
-        : effectiveLocale === "zh-Hans"
-          ? "澳大利亚签证体系中的典型过渡路径可能包括："
-        : "Typical progression pathways in the Australian visa system may include:",
-      0
-    );
-    report.progressionPathways.forEach((item) => {
-      addBody(`${item.label}: ${item.from} -> ${item.to}`);
-      addSmallText(item.explanation, 4);
-    });
+
+    const primaryPathways = report.progressionPathways.filter((p) => !p.isAlternative);
+    const alternativePathways = report.progressionPathways.filter((p) => p.isAlternative);
+
+    if (primaryPathways.length > 0) {
+      addSmallText(
+        effectiveLocale === "tr"
+          ? "Profiliniz için en uygun birincil geçiş yolları:"
+          : effectiveLocale === "zh-Hans"
+            ? "为您推荐的主要过渡路径："
+            : "Primary progression pathways for your profile:",
+        0
+      );
+      primaryPathways.forEach((item) => {
+        addBody(`${item.label}: ${item.from} -> ${item.to}`);
+        addSmallText(item.explanation, 4);
+      });
+      yPosition += 1;
+    }
+
+    if (alternativePathways.length > 0) {
+      if (primaryPathways.length > 0) {
+        yPosition += 2;
+      }
+      addSmallText(
+        effectiveLocale === "tr"
+          ? "Diğer olası veya alternatif geçiş yolları:"
+          : effectiveLocale === "zh-Hans"
+            ? "其他可能的替代或候选过渡路径："
+            : "Other potential or alternative progression pathways:",
+        0
+      );
+      alternativePathways.forEach((item) => {
+        addBody(`${item.label}: ${item.from} -> ${item.to}`);
+        addSmallText(item.explanation, 4);
+      });
+    }
+
     yPosition += 3;
   }
 

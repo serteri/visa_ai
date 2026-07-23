@@ -3836,20 +3836,28 @@ function buildProgressionPathways(
   subclasses: string[],
   locale: Locale,
   hasGraduateVisaPathwayIntent = false,
-  isPartnerPathway = false
+  isPartnerPathway = false,
+  input?: ReadinessInput,
+  pointsEstimate?: PointsEstimate
 ): ProgressionPathway[] {
   const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
   const items: ProgressionPathway[] = [];
   const hasSkilled = subclasses.some((subclass) => ["189", "190", "491"].includes(subclass));
 
+  const score = pointsEstimate?.estimatedPoints ?? 0;
+  const gap = Math.max(0, 65 - score);
+
   if (hasGraduateVisaPathwayIntent) {
     items.push({
-      from: isTr ? "Mevcut profil" : "Current profile",
-      to: isTr ? "485 köprüsü → 189/190/491" : "485 bridge → 189/190/491",
-      label: isTr ? "485 köprü stratejisi" : "485 bridge strategy",
+      from: isTr ? "Mevcut profil" : isZh ? "当前档案" : "Current profile",
+      to: isTr ? "485 köprüsü → 189/190/491" : isZh ? "485 桥梁 → 189/190/491" : "485 bridge → 189/190/491",
+      label: isTr ? "485 köprü stratejisi" : isZh ? "485 桥梁策略" : "485 bridge strategy",
       explanation: isTr
         ? "485 geçici mezun vizesi, Avustralya iş deneyimi biriktirmek ve eyalet adaylığı şartlarına yaklaşmak için stratejik bir köprü olarak kullanılabilir; bu yalnızca geçiş bağlamıdır, bağımsız bir PR yolu değildir."
-        : "The 485 Temporary Graduate Visa can be used as a strategic bridge to accumulate Australian work experience and move closer to state nomination requirements; it is contextual transition logic, not a standalone PR pathway.",
+        : isZh
+          ? "485 临时毕业生签证可用作积累澳大利亚工作经验并更接近州担保要求的战略桥梁；这仅是过渡逻辑，并非独立的永久居民路径。"
+          : "The 485 Temporary Graduate Visa can be used as a strategic bridge to accumulate Australian work experience and move closer to state nomination requirements; it is contextual transition logic, not a standalone PR pathway.",
     });
   }
 
@@ -3857,10 +3865,12 @@ function buildProgressionPathways(
     items.push({
       from: "500",
       to: "485 → 189/190/491",
-      label: isTr ? "Öğrenci yolu bağlamı" : "Student pathway context",
+      label: isTr ? "Öğrenci yolu bağlamı" : isZh ? "学生签证路径" : "Student pathway context",
       explanation: isTr
         ? "Öğrenci yolu sonrasında mezuniyet ve nitelikli göç seçenekleri bazı profillerde birlikte değerlendirilebilir. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
-        : "After a student pathway, graduate and skilled migration options may be considered together in some profiles. This is general information only and depends on individual circumstances."
+        : isZh
+          ? "在一些档案中，学生签证之后的毕业生签证和技术移民选项可以结合考虑。本内容仅为一般信息，取决于个人情况。"
+          : "After a student pathway, graduate and skilled migration options may be considered together in some profiles. This is general information only and depends on individual circumstances."
     });
   }
 
@@ -3868,10 +3878,13 @@ function buildProgressionPathways(
     items.push({
       from: "500",
       to: "485 → 189/190/491",
-      label: isTr ? "Öğrenci yolu bağlamı" : "Student pathway context",
+      label: isTr ? "Öğrenci yolu bağlamı" : isZh ? "学生签证路径" : "Student pathway context",
+      isAlternative: true,
       explanation: isTr
-        ? "Öğrenci yolu sonrasında mezuniyet ve nitelikli göç seçenekleri bazı profillerde birlikte değerlendirilebilir. Bu genel bilgi amaçlıdır ve kişisel koşullara bağlıdır."
-        : "After a student pathway, graduate and skilled migration options may be considered together in some profiles. This is general information only and depends on individual circumstances.",
+        ? "Öğrenci vizesi (500) alıp Avustralya'da eğitim görmek, mezuniyet sonrası geçici vize ve nihayetinde PR yollarını açmak için alternatif bir seçenek olabilir. Bu yol ek finansal yatırım ve zaman gerektirir."
+        : isZh
+          ? "通过申请学生签证（500）在澳大利亚学习，是积累本地学历、解锁毕业后工作签证并最终申请技术移民的替代方案。此途径需要额外的资金投入和时间。"
+          : "Taking a Student visa (500) to study in Australia can be an alternative route to unlock post-study graduate visas and eventual PR pathways. This requires additional financial investment and time.",
     });
   }
 
@@ -3879,20 +3892,26 @@ function buildProgressionPathways(
     items.push({
       from: "482",
       to: "Employer-sponsored permanent pathways",
-      label: isTr ? "İş sponsorluğu bağlamı" : "Employer sponsorship context",
+      label: isTr ? "İş sponsorluğu bağlamı" : isZh ? "雇主担保路径" : "Employer sponsorship context",
+      isAlternative: true,
       explanation: isTr
-        ? "İş sponsorluğu bağlamında 482 sonrası kalıcı sponsorlu yollar bazı profillerde değerlendirilebilir; bu durum bireysel koşullara bağlıdır."
-        : "In some profiles, 482 context may be considered alongside employer-sponsored permanent pathways; outcomes depend on individual circumstances.",
+        ? "İş sponsorluğu (482 vizesi), işvereniniz tarafından sponsor olunarak Avustralya'da kalmanızı sağlayan alternatif bir yoldur. İleride 186 ENS gibi kalıcı göçmenlik vizesine geçiş olanağı sunabilir."
+        : isZh
+          ? "雇主担保（482签证）是让您在雇主支持下在澳大利亚工作的替代方案。如果在相关职位工作满规定年限且符合条件，未来可过渡到 186 ENS 等永久居民签证。"
+          : "Employer sponsorship (subclass 482) is an alternative route allowing you to remain in Australia with employer support. It can lead to permanent pathways like the 186 ENS later.",
     });
   }
+
   if (subclasses.includes("485")) {
     items.push({
       from: "485",
       to: "189 / 190 / 491",
-      label: isTr ? "485 sonrası tipik seçenekler" : "Typical post-485 options",
+      label: isTr ? "485 sonrası tipik seçenekler" : isZh ? "典型的 485 之后选项" : "Typical post-485 options",
       explanation: isTr
         ? "485 Geçici Mezun vizesinden sonra nitelikli göç yolları bazı profillerde ilgili olabilir. Bu PR vaadi değildir ve kişisel duruma göre değişebilir."
-        : "After the 485 Temporary Graduate visa, skilled migration pathways may be relevant in some profiles. This does not promise permanent residence and depends on individual circumstances.",
+        : isZh
+          ? "在一些档案中，485 临时毕业生签证之后的毕业生签证和技术移民选项可以结合考虑。这不构成永久居民保证，取决于个人情况。"
+          : "After the 485 Temporary Graduate visa, skilled migration pathways may be relevant in some profiles. This does not promise permanent residence and depends on individual circumstances.",
     });
   }
 
@@ -3900,55 +3919,106 @@ function buildProgressionPathways(
     items.push({
       from: "482",
       to: "Employer-sponsored permanent pathways",
-      label: isTr ? "İş sponsorluğu bağlamı" : "Employer sponsorship context",
+      label: isTr ? "İş sponsorluğu bağlamı" : isZh ? "雇主担保路径" : "Employer sponsorship context",
       explanation: isTr
         ? "İş sponsorluğu bağlamında 482 sonrası kalıcı sponsorlu yollar bazı profillerde değerlendirilebilir; bu durum bireysel koşullara bağlıdır."
-        : "After 482, employer-sponsored permanent pathways may be relevant in some cases; criteria and employer context matter.",
+        : isZh
+          ? "在 482 之后，雇主担保的永久途径在某些情况下可能是相关的；标准和雇主背景至关重要。"
+          : "After 482, employer-sponsored permanent pathways may be relevant in some cases; criteria and employer context matter.",
     });
   }
+
   if (subclasses.includes("491")) {
     items.push({
       from: "491",
       to: "191",
-      label: isTr ? "Bölgesel geçiş bağlamı" : "Regional progression context",
+      label: isTr ? "Bölgesel geçiş bağlamı" : isZh ? "偏远地区过渡路径" : "Regional progression context",
       explanation: isTr
-        ? "İlgili dönem ve kriterler karşılanırsa bu tipik bir sistem geçişi olarak değerlendirilebilir."
-        : "This may be considered a typical system progression after the relevant period if criteria are met.",
+        ? gap > 0
+          ? `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve vergilendirilebilir gelir şartını (yıllık 53.900 AUD; bkz. Tahmini Maliyet Yol Haritası) karşılamanız gerekir. Mevcut ${gap} puanlık açığınız göz önüne olduğunda, 491 vizesi üzerinden +15 puanlık bölgesel adaylık desteği almak, bu açığı kapatarak PR'a giden yolda son derece gerçekçi ve gerekli bir adımdır.`
+          : `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve vergilendirilebilir gelir şartını (yıllık 53.900 AUD; bkz. Tahmini Maliyet Yol Haritası) karşılamanız gerekir.`
+        : isZh
+          ? gap > 0
+            ? `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并满足应纳税收入要求（目前为每年 53,900 澳元；请参见财务路线图部分）。鉴于您目前有 ${gap} 分的分数差距，通过 491 获得偏远地区州担保的 +15 分加分，是通往 191 永久居民签证的一条非常务实且必不可少的捷径。`
+            : `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并满足应纳税收入要求（目前为每年 53,900 澳元；请参见财务路线图部分），方可递交 191 永久居民签证。`
+          : gap > 0
+            ? `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and meet taxable income requirements (currently AUD 53,900/year; refer to the Financial Roadmap). Given your current points gap of ${gap} points, securing the +15 point regional nomination via subclass 491 is a highly realistic and essential stepping stone to permanent residency (subclass 191).`
+            : `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and meet taxable income requirements (currently AUD 53,900/year; refer to the Financial Roadmap) to progress to permanent residency (subclass 191).`,
     });
   }
+
+  if (subclasses.includes("190")) {
+    items.push({
+      from: "190 EOI",
+      to: "190 Permanent Residency",
+      label: isTr ? "Eyalet adaylığı süreci" : isZh ? "州担保提名流程" : "State nomination progression",
+      explanation: isTr
+        ? gap > 0
+          ? `190 vizesi süreci, eyaletten adaylık daveti almayı (+5 puan) içerir. Mevcut ${gap} puanlık açığınız göz önüne alındığında, eyalet adaylığı desteği, rekabetçi bir davet barajına ulaşmanız için kritik öneme sahiptir.`
+          : `190 vizesi süreci, eyaletten adaylık daveti almayı (+5 puan) içerir ve doğrudan kalıcı ikamet hakkı sağlar.`
+        : isZh
+          ? gap > 0
+            ? `递交 190 签证的流程包括获得州担保提名（+5 分）。鉴于您目前有 ${gap} 分的分数差距，州担保对于帮助您弥补差距、达到具有竞争力的邀请分数线至关重要。`
+            : `递交 190 签证的流程包括获得州担保提名（+5 分），成功后可直接获得澳大利亚永久居民身份。`
+          : gap > 0
+            ? `Progressing through subclass 190 involves obtaining a state nomination (+5 points). Given your current gap of ${gap} points, state sponsorship is crucial to help bridge the remaining points needed to reach a competitive invitation benchmark.`
+            : `Progressing through subclass 190 involves obtaining a state nomination (+5 points), leading directly to permanent residency.`,
+    });
+  }
+
+  if (subclasses.includes("189")) {
+    items.push({
+      from: "189 EOI",
+      to: "189 Permanent Residency",
+      label: isTr ? "Bağımsız nitelikli göç süreci" : isZh ? "独立技术移民流程" : "Independent skilled progression",
+      explanation: isTr
+        ? gap > 0
+          ? `189 vizesi için süreç, eyalet adaylığı olmaksızın tamamen puan bazlıdır. Mevcut ${gap} puanlık açığınız göz önüne alındığında, davet turlarında rekabetçi olabilmek için tekil veya birleşik puan artırıcıları (örn. İngilizce sınavı, NAATI) aktif olarak hedeflemelisiniz.`
+          : `189 vizesi için süreç, eyalet adaylığı olmaksızın tamamen puan bazlıdır. Davet turlarında doğrudan kalıcı ikamet hakkı sağlar.`
+        : isZh
+          ? gap > 0
+            ? `对于 189 独立技术移民签证，申请完全基于您的打分，无需州担保。鉴于您目前有 ${gap} 分的分数差距，您必须积极争取单项或组合加分（例如英语考试、NAATI 社区语言认证），才能在邀请轮次中具备竞争力。`
+            : `对于 189 独立技术移民签证，申请完全基于您的打分，达到门槛后可通过递交 EOI 竞争直接受邀获得永久居民身份。`
+          : gap > 0
+            ? `For subclass 189, progression is purely points-based without state nomination. Given your current gap of ${gap} points, you must actively pursue single or combined points boosters (e.g. English test, NAATI) to become competitive for invitation rounds.`
+            : `For subclass 189, progression is purely points-based, leading directly to permanent residency upon invitation.`,
+    });
+  }
+
   if ((subclasses.includes("820") || subclasses.includes("801"))) {
     items.push({
       from: "820",
       to: "801",
-      label: isTr ? "Partner yolu aşamaları" : "Partner pathway stages",
+      label: isTr ? "Partner yolu aşamaları" : isZh ? "配偶签证阶段" : "Partner pathway stages",
       explanation: isTr
         ? "820 geçici aşama ve 801 kalıcı aşama aynı onshore partner yolunun tipik aşamalarıdır."
-        : "820 temporary stage and 801 permanent stage are typical stages of the same onshore partner pathway.",
+        : isZh
+          ? "820 临时阶段和 801 永久阶段是同一种境内配偶签证路径的典型阶段。"
+          : "820 temporary stage and 801 permanent stage are typical stages of the same onshore partner pathway.",
     });
   }
 
   if (items.length === 0 && isPartnerPathway) {
-    // Do NOT fall through to the generic "assume skilled migration" default
-    // below — that would recommend a 190/491 EOI strategy to someone who
-    // explicitly selected the Partner visa (820/801), which this engine
-    // does not assess (see isPartnerPathwaySelected in the pathway-detection
-    // section for why).
     items.push({
-      from: isTr ? "Mevcut profil" : "Current profile",
-      to: isTr ? "Kapsam dışı" : "Out of scope",
-      label: isTr ? "Partner Vizesi (820/801) değerlendirmesi kapsam dışı" : "Partner Visa (820/801) assessment out of scope",
+      from: isTr ? "Mevcut profil" : isZh ? "当前档案" : "Current profile",
+      to: isTr ? "Kapsam dışı" : isZh ? "范围之外" : "Out of scope",
+      label: isTr ? "Partner Vizesi (820/801) değerlendirmesi kapsam dışı" : isZh ? "配偶签证 (820/801) 评估范围之外" : "Partner Visa (820/801) assessment out of scope",
       explanation: isTr
         ? "Bu araç Partner Vizesi (820/801) için tipik bir geçiş yolu öngörmez; bu tamamen ayrı bir ilişki-temelli vize kategorisidir. Uygunluk için kayıtlı bir göçmenlik danışmanına (MARA) danışın."
-        : "This tool does not project a typical progression pathway for the Partner Visa (820/801) — it is a separate, relationship-based visa category. Consult a registered migration agent (MARA) for eligibility.",
+        : isZh
+          ? "此工具不为配偶签证 (820/801) 预测过渡路径——它是一个完全独立的、基于关系的签证类别。请咨询注册移民代理 (MARA) 以获取资格评估。"
+          : "This tool does not project a typical progression pathway for the Partner Visa (820/801) -- it is a separate, relationship-based visa category. Consult a registered migration agent (MARA) for eligibility.",
     });
   } else if (items.length === 0) {
     items.push({
-      from: isTr ? "Mevcut profil" : "Current profile",
-      to: isTr ? "Stratejik nitelikli göç yolu" : "Strategic skilled migration route",
-      label: isTr ? "Nitelikli göç için standart ilerleme" : "Standard progression for skilled professionals",
+      from: isTr ? "Mevcut profil" : isZh ? "当前档案" : "Current profile",
+      to: isTr ? "Stratejik nitelikli göç yolu" : isZh ? "战略技术移民路线" : "Strategic skilled migration route",
+      label: isTr ? "Nitelikli göç için standart ilerleme" : isZh ? "技术移民标准进度" : "Standard progression for skilled professionals",
       explanation: isTr
         ? "Mevcut ortamda nitelikli profesyoneller için standart ilerleme genellikle olumlu bir Skills Assessment alınmasını, İngilizce puanını Superior seviyeye taşımayı ve hem Eyalet (190) hem de Bölgesel (491) sponsorluklarını hedefleyen stratejik bir Expression of Interest (EOI) sunumunu içerir."
-        : "Standard progression for skilled professionals in the current landscape typically involves securing a positive Skills Assessment, maximizing English scores to Superior, and lodging a strategic Expression of Interest (EOI) targeting both State (190) and Regional (491) sponsorships.",
+        : isZh
+          ? "在当前环境下，技术专业人员的标准进度通常包括获得正面的职业评估、将英语成绩提高到 Superior 级别，并递交针对州担保 (190) 和偏远地区担保 (491) 的战略性 EOI 意向书。"
+          : "Standard progression for skilled professionals in the current landscape typically involves securing a positive Skills Assessment, maximizing English scores to Superior, and lodging a strategic Expression of Interest (EOI) targeting both State (190) and Regional (491) sponsorships.",
     });
   }
 
@@ -4978,7 +5048,9 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     detectedSubclasses,
     locale,
     input.hasGraduateVisaPathwayIntent === true,
-    isPartnerPathwaySelected(input)
+    isPartnerPathwaySelected(input),
+    input,
+    pointsEstimate
   );
   const pathwayFriction = buildPathwayFriction(
     pathwayComparison,

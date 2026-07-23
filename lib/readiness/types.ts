@@ -230,6 +230,7 @@ export type ProgressionPathway = {
   to: string;
   label: string;
   explanation: string;
+  isAlternative?: boolean;
 };
 
 export type PathwayFriction = {

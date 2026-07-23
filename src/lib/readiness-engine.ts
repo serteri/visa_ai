@@ -755,13 +755,8 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
   const progressionPathways = report.progressionPathways.map((item) => ({
     ...item,
     to: item.to.includes("Employer") ? "雇主担保永久路径" : item.to,
-    label:
-      item.to.includes("485") ? "学生到毕业生/技术移民路径"
-      : item.to.includes("191") ? "偏远地区到永久居留路径"
-      : item.to.includes("801") ? "配偶签证阶段"
-      : item.to.includes("Employer") ? "雇主担保路径"
-      : "典型过渡路径",
-    explanation: "该路径为澳大利亚签证体系中的常见过渡结构之一；是否适用取决于个人情况和当时规则。",
+    label: item.label,
+    explanation: item.explanation,
   }));
 
   const pathwayFriction = report.pathwayFriction.map((item) => {
