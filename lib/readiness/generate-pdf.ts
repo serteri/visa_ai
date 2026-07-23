@@ -2798,6 +2798,33 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     function drawPointsBreakdownPointerBox() {
       const score = report.pointsEstimate?.estimatedPoints;
+
+      let lossSummaryText = "";
+      const breakdown = report.pointsEstimate?.breakdown;
+      if (breakdown && breakdown.length > 0) {
+        const losses = breakdown
+          .filter((item) => item.max !== undefined && item.points < item.max)
+          .map((item) => ({
+            label: item.label,
+            points: item.points,
+            max: item.max!,
+            loss: item.max! - item.points,
+          }))
+          .sort((a, b) => b.loss - a.loss);
+
+        if (losses.length > 0) {
+          const topLosses = losses.slice(0, 3);
+          const formatted = topLosses.map((item) => `${item.label}: ${item.points}/${item.max}`);
+          if (effectiveLocale === "tr") {
+            lossSummaryText = `En büyük puan kaybı alanlarınız: ${formatted.join(", ")}. `;
+          } else if (effectiveLocale === "zh-Hans") {
+            lossSummaryText = `主要失分项为：${formatted.join("，")}。`;
+          } else {
+            lossSummaryText = `Your major points-loss categories are: ${formatted.join(", ")}. `;
+          }
+        }
+      }
+
       let gapSentence = "";
       if (typeof score === "number") {
         if (score < 65) {
@@ -2820,10 +2847,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
       const line =
         effectiveLocale === "tr"
-          ? `${gapSentence}Yukarıdaki puan testli alt sınıflar (189/190/491) için kategori bazlı puan dökümü ve puanı artırma yolları: bu raporun "${text.pointsBreakdownTable}" bölümüne bakın.`
+          ? `${gapSentence}${lossSummaryText}Kategori bazlı puan dökümü ve puanı artırma yolları: bu raporun "${text.pointsBreakdownTable}" bölümüne bakın.`
           : effectiveLocale === "zh-Hans"
-            ? `${gapSentence}以上打分制子类别（189/190/491）的分类积分明细及加分方式，请参见本报告"${text.pointsBreakdownTable}"部分。`
-            : `${gapSentence}For a category-by-category points breakdown and how to raise your score on the points-tested subclasses (189/190/491) above, see the "${text.pointsBreakdownTable}" section of this report.`;
+            ? `${gapSentence}${lossSummaryText}以上打分制子类别（189/190/491）的分类积分明细及加分方式，请参见本报告"${text.pointsBreakdownTable}"部分。`
+            : `${gapSentence}${lossSummaryText}For a category-by-category points breakdown and how to raise your score on the points-tested subclasses (189/190/491) above, see the "${text.pointsBreakdownTable}" section of this report.`;
 
       setBaseFont();
       doc.setFontSize(FONTS.small);
@@ -2890,7 +2917,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
         setBaseFont();
         doc.setFontSize(FONTS.small);
-        doc.setTextColor(red.r, red.g, red.b);
+        doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
         doc.text(reasonLines, margin + 6, topY + 10, { lineHeightFactor: 1.18 });
 
         yPosition += rowHeight + 2;

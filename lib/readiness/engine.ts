@@ -473,6 +473,57 @@ function formatIneligibleLowPointsReason(
   return [pointsLine, ...sharedNotes].join(" ");
 }
 
+function buildSubclassIneligiblePointsReason(
+  subclass: string,
+  locale: Locale,
+  estimatedPoints: number,
+  input: ReadinessInput
+): string {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const gap = 65 - estimatedPoints;
+  const displayOccupation = input.occupation
+    ? resolveOccupationDisplayName(input.occupation, locale)
+    : (isTr ? "mesleğiniz" : isZh ? "您的职业" : "your occupation");
+
+  if (subclass === "189") {
+    if (isTr) {
+      return `Tahmini temel puanınız ${estimatedPoints} olup, 189 vizesi için gereken asgari 65 barajının ${gap} puan altındadır. Subclass 189 tamamen bağımsız bir vize olup, puanınızı artıracak herhangi bir eyalet veya akraba sponsorluğu katkısı sunmaz. Bu vize yolunu ulaşılabilir kılmak için, puan açığını tamamen dil puanınızı yükseltmek (örneğin Superior English ile +20 puan) veya daha fazla iş deneyimi kazanmak gibi kişisel niteliklerinizle kapatmanız gerekir.`;
+    }
+    if (isZh) {
+      return `您的预估分数为 ${estimatedPoints} 分，距离 189 签证最低要求的 65 分还有 ${gap} 分的差距。189 类属于完全独立的技术移民签证，没有额外的州担保或亲属担保加分来弥补这一分差。要使该途径可行，您必须完全通过提升个人基本背景（例如将英语成绩提高到 Superior 水平以获得 +20 加分，或积累更多相关工作经验）来弥补差距。`;
+    }
+    return `Your estimated baseline score is ${estimatedPoints} points, leaving a ${gap}-point gap to the 189 visa minimum of 65. As a purely independent pathway, subclass 189 does not offer any state nomination or family sponsorship points to help offset this shortfall. To make this visa viable, you must close this points deficit entirely through improving your personal credentials (e.g., achieving a Superior English exam result for +20 points, or accumulating more skilled work experience).`;
+  }
+
+  if (subclass === "190") {
+    const potentialScore = estimatedPoints + 5;
+    const remainingGap = Math.max(0, 65 - potentialScore);
+    if (isTr) {
+      return `Tahmini puanınız ${estimatedPoints} olup, gereken asgari 65 barajının ${gap} puan altındadır. Eyalet adaylığı (Subclass 190) size +5 ek puan sağlayarak potansiyel puanınızı ${potentialScore}'e yükseltir; ancak bu durumda dahi 65 barajına ulaşmak için ${remainingGap} puanlık bir açığınız kalacaktır. Eyalet sponsorluğuyla bu vizeye başvurabilmek için temel puanınızı en az 60'a yükseltmeniz gerekir. Eyaletlerin ${displayOccupation} mesleğini talep edip etmediğini görmek için bu rapordaki Eyalet Adaylığı Takipçisine göz atın.`;
+    }
+    if (isZh) {
+      return `您的预估分数为 ${estimatedPoints} 分，比 65 分最低要求低 ${gap} 分。虽然州担保（190 类）可以为您提供 +5 分的加分（使您的潜在分数达到 ${potentialScore} 分），但这仍使您面临 ${remainingGap} 分的差距。您必须将基础分数提高到至少 60 分，才能使该州担保途径可行。请参阅本报告中的州担保跟踪器，了解各州当前是否在积极邀请 ${displayOccupation} 职业。`;
+    }
+    return `Your estimated score of ${estimatedPoints} points is ${gap} points below the 65-point minimum. While obtaining a state nomination (subclass 190) provides a +5 point boost, bringing your potential score to ${potentialScore}, you would still face a ${remainingGap}-point shortfall. You must raise your base score to at least 60 to make this option viable. Refer to the State Nomination Tracker in this report to check if states are actively nominating ${displayOccupation}.`;
+  }
+
+  if (subclass === "491") {
+    const potentialScore = estimatedPoints + 15;
+    const remainingGap = Math.max(0, 65 - potentialScore);
+    if (isTr) {
+      return `Tahmini temel puanınız ${estimatedPoints} olup, 65 barajının ${gap} puan altındadır. Ancak Subclass 491, bölgesel adaylık veya aile sponsorluğu aracılığıyla +15 puanlık en büyük tekil puan desteğini sunarak potansiyel puanınızı ${potentialScore}'e yükseltir ve kalan açığı sadece ${remainingGap} puana indirir. Bu yolu uygulanabilir kılmak için temel puanınızı en az 50'ye yükseltmeniz yeterli olacaktır. Subclass 491, profiliniz için en gerçekçi ve en hızlı uygulanabilir nitelikli göç yolu olup, uygunluğa ulaşmak için İngilizce sonucunuzu yükseltmek gibi küçük temel puan artışları yeterlidir.`;
+    }
+    if (isZh) {
+      return `您的预估分数为 ${estimatedPoints} 分，比 65 分最低要求低 ${gap} 分。然而，491 类偏远地区提名或亲属担保可提供高达 +15 分的的加分，使您的潜在分数达到 ${potentialScore} 分，并将剩余差距缩短至仅 ${remainingGap} 分。要使该途径可行，您必须将基础分数提高到至少 50 分。这使 491 成为您当前最现实、最易实现的技术移民途径，您只需进行较小的基础分数提升（例如提高英语考试成绩）即可达到申请资格。`;
+    }
+    return `Your estimated score of ${estimatedPoints} points is ${gap} points below the 65-point threshold. However, subclass 491 regional nomination or family sponsorship offers a substantial +15 point boost, bringing your potential score to ${potentialScore} and reducing your remaining gap to only ${remainingGap} points. To make this pathway viable, you must raise your base score to at least 50. Subclass 491 is the most realistic and accessible skilled pathway for your profile, requiring only minor base points improvements (such as a higher English test result) to reach eligibility.`;
+  }
+
+  return "";
+}
+
+
 // ─── Pathway detection ────────────────────────────────────────────────────────
 
 /**
@@ -1701,8 +1752,8 @@ function buildPathwayEntry(
   let ineligiblePointsLine: string | undefined;
   let ineligibleSharedNotes: string[] | undefined;
   if (isLowPointsIneligible && estimatedPoints !== undefined) {
+    ineligiblePointsLine = buildSubclassIneligiblePointsReason(subclass, locale, estimatedPoints, input);
     const parts = buildIneligibleLowPointsParts(locale, estimatedPoints, input.englishLevel, input);
-    ineligiblePointsLine = parts.pointsLine;
     ineligibleSharedNotes = parts.sharedNotes;
   }
 
@@ -4031,7 +4082,10 @@ function buildPathwayFriction(
 ): PathwayFriction[] {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
-  return pathways.map((pathway) => {
+  const filtered = pathways.filter(
+    (p) => !(p.relevance === "ineligible" && p.ineligiblePointsLine !== undefined)
+  );
+  return filtered.map((pathway) => {
     if (pathway.relevance === "ineligible") {
       // Hard Gate (1 July 2026): replaces the routine friction note with a
       // compliance alert carrying the exact ineligibility reason. A
