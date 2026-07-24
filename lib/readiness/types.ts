@@ -7,6 +7,8 @@ export type ReadinessInput = {
   mainGoal?: string;
   currentCountry?: string;
   preferredCity?: string;
+  /** Canada only: explicit province target for PNP eligibility (lib/readiness/pnp-provinces.ts). When omitted, resolveTargetProvince() falls back to keyword inference from mainGoal/preferredCity/preferredPathway. */
+  targetProvince?: "ON" | "BC" | "AB";
   passportCountry?: string;
   age?: string;
   occupation?: string;
@@ -345,7 +347,8 @@ export type StateNominationStatus =
 
 export type StateMatchLevel = "high" | "medium" | "low";
 
-export type StateNominationCode = "NSW" | "VIC" | "WA" | "SA" | "QLD" | "NT" | "TAS" | "ACT";
+/** AU state/territory codes, plus Canada PNP province codes (lib/readiness/pnp-provinces.ts) — the tracker/renderer pipeline is shared, since both are "region-by-region nomination status" data, but the underlying eligibility logic per country is entirely separate. */
+export type StateNominationCode = "NSW" | "VIC" | "WA" | "SA" | "QLD" | "NT" | "TAS" | "ACT" | "ON" | "BC" | "AB";
 
 export type StateNominationState = {
   code: StateNominationCode;

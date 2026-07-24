@@ -11,6 +11,16 @@ import {
 import { checkOccupation } from "@/lib/occupations/check-occupation";
 import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
 import { isFSTPEligibleOccupation } from "@/lib/readiness/noc-fstp-groups";
+import {
+  type ProvinceCode,
+  type ProvinceStream,
+  type OntarioPathwayId,
+  type OntarioPathwayResult,
+  ONTARIO_WORKFORCE_PRIORITY_STREAMS,
+  SUPPORTED_PROVINCES,
+  qualifiesForOntarioTradesLanguageException,
+  ontarioStreamsIntroText,
+} from "@/lib/readiness/pnp-provinces";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
 import type { CanadaCRSInput, CLBLevel } from "@/lib/points/canada-types";
@@ -59,6 +69,8 @@ import type {
   ReadinessReport,
   ReportIndicators,
   SignalSnapshot,
+  StateNominationTracker,
+  StateNominationState,
 } from "./types";
 
 export type LeadTier = "High intent" | "Moderate intent" | "Low intent";
@@ -782,6 +794,27 @@ function hasCanadaPnpInterest(input: ReadinessInput): boolean {
   ]);
 }
 
+/**
+ * Single source of truth for which province's PNP module (if any) applies —
+ * prefers an explicit input.targetProvince, then falls back to keyword
+ * inference so existing free-text profiles ("Ontario", "OINP", "Toronto")
+ * still resolve without requiring a new form field immediately. Every
+ * downstream section (State Nomination Tracker, pathwayComparison PNP entry)
+ * must read from this instead of re-deriving its own province guess.
+ */
+function resolveTargetProvince(input: ReadinessInput): ProvinceCode | undefined {
+  if (input.targetProvince) return input.targetProvince;
+
+  const combined = [input.mainGoal ?? "", input.preferredCity ?? "", input.preferredPathway ?? "", input.sponsorOrFamily ?? ""]
+    .filter(Boolean)
+    .join(" ");
+
+  if (hasKw(combined, ["ontario", "oinp", "toronto", "ottawa", "mississauga", "hamilton", "london ontario"])) return "ON";
+  if (hasKw(combined, ["british columbia", "bc pnp", "vancouver", "victoria bc", "surrey", "burnaby"])) return "BC";
+  if (hasKw(combined, ["alberta", "ainp", "aaip", "calgary", "edmonton"])) return "AB";
+  return undefined;
+}
+
 function buildCanadaSparseStrategy(params: {
   locale: Locale;
   occupation?: string;
@@ -1007,6 +1040,166 @@ function buildFSTPEligibility(input: ReadinessInput): FSTPEligibility {
     workExperienceYears,
     languageThresholdMet,
     hasJobOfferOrCertificateOfQualification: false,
+  };
+}
+
+/**
+ * Resolves eligibility against all 3 Ontario Workforce Priority Stream
+ * pathways from actual profile data (NOC/TEER, language tier, job offer —
+ * unconfirmed by the intake form). Single source of truth: both the State
+ * Nomination Tracker and any future PNP-specific report text must read from
+ * this instead of re-deriving their own Ontario checks.
+ */
+function buildOntarioPnpEligibility(input: ReadinessInput): OntarioPathwayResult[] {
+  const nocResult = checkNocOccupation({ occupation: input.occupation ?? "", nocCode: input.nocCode });
+  const nocMatch = nocResult.matches.find((m) => m.code === input.nocCode) ?? nocResult.matches[0];
+  const resolvedNocCode = input.nocCode ?? nocMatch?.code;
+  const occupationTeer = input.nocTeer ?? nocMatch?.teer;
+
+  // check-noc-occupation.ts's NocMatch doesn't expose majorGroup/minorGroup
+  // directly, but qualifiesForOntarioTradesLanguageException only needs the
+  // code (its additional-codes/minor-group-prefix checks work off the code
+  // string) plus majorGroup, which we can derive from the code's first two
+  // digits — NOC 2021 codes are always major-group-prefixed.
+  const majorGroup = resolvedNocCode?.slice(0, 2) ?? "";
+  const minorGroup = resolvedNocCode?.slice(0, 3) ?? "";
+  const qualifiesForTradesLanguageException = resolvedNocCode
+    ? qualifiesForOntarioTradesLanguageException({ majorGroup, minorGroup, code: resolvedNocCode })
+    : false;
+
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const meetsClb6 = englishOption === "competent" || englishOption === "proficient" || englishOption === "superior";
+  // The coarse englishLevel enum (competent/proficient/superior) doesn't
+  // distinguish CLB 4/5/6 bands below "competent" -- any provided tier is
+  // treated as clearing CLB 4/5 too, and "none"/unset fails all three, same
+  // limitation already accepted for the FSTP language gate.
+  const meetsClb5Trades = meetsClb6;
+  const meetsClb4 = meetsClb6;
+
+  function buildResult(pathwayId: OntarioPathwayId, stream: ProvinceStream): OntarioPathwayResult {
+    if (pathwayId === "SELF_EMPLOYED_PHYSICIAN") {
+      // No job offer or language threshold to check per Ontario's own
+      // published requirements -- eligibility hinges entirely on OHIP
+      // billing/CPSO registration, which this intake form does not collect.
+      return {
+        pathwayId,
+        stream,
+        occupationTeer,
+        languageThresholdMet: true,
+        qualifiesForTradesLanguageException: false,
+        hasQualifyingJobOffer: false,
+        eligible: false,
+        missingRequirements: ["OHIP billing eligibility and CPSO registration status (not collected by this form)"],
+      };
+    }
+
+    const languageThresholdMet = pathwayId === "TEER_0_3" ? (qualifiesForTradesLanguageException ? meetsClb5Trades : meetsClb6) : meetsClb4;
+    const teerMatches =
+      pathwayId === "TEER_0_3" ? occupationTeer !== undefined && occupationTeer <= 3 : occupationTeer !== undefined && occupationTeer >= 4;
+
+    const missing: string[] = [];
+    if (occupationTeer === undefined) missing.push("NOC/TEER code (not resolved from occupation)");
+    else if (!teerMatches) missing.push(pathwayId === "TEER_0_3" ? "occupation TEER 0-3" : "occupation TEER 4-5");
+    if (!languageThresholdMet) missing.push(stream.languageThreshold);
+    missing.push("qualifying full-time job offer in Ontario (not collected by this form)");
+
+    return {
+      pathwayId,
+      stream,
+      occupationTeer,
+      languageThresholdMet,
+      qualifiesForTradesLanguageException: pathwayId === "TEER_0_3" && qualifiesForTradesLanguageException,
+      hasQualifyingJobOffer: false,
+      // hasQualifyingJobOffer is always false (unconfirmed by the form), so
+      // "eligible" never reaches true on job offer alone -- this correctly
+      // reflects that the job-offer gate always needs manual verification,
+      // rather than asserting eligibility the data can't support.
+      eligible: false,
+      missingRequirements: missing,
+    };
+  }
+
+  return [
+    buildResult("TEER_0_3", ONTARIO_WORKFORCE_PRIORITY_STREAMS[0]),
+    buildResult("TEER_4_5", ONTARIO_WORKFORCE_PRIORITY_STREAMS[1]),
+    buildResult("SELF_EMPLOYED_PHYSICIAN", ONTARIO_WORKFORCE_PRIORITY_STREAMS[2]),
+  ];
+}
+
+function ontarioPathwayScore(result: OntarioPathwayResult): { score: number; matchLevel: "high" | "medium" | "low" } {
+  if (result.pathwayId === "SELF_EMPLOYED_PHYSICIAN") return { score: 20, matchLevel: "low" };
+  const teerMatches = result.missingRequirements.every((m) => !m.includes("TEER") && !m.includes("NOC/TEER"));
+  if (teerMatches && result.languageThresholdMet) return { score: 65, matchLevel: "medium" };
+  if (teerMatches || result.languageThresholdMet) return { score: 35, matchLevel: "low" };
+  return { score: 10, matchLevel: "low" };
+}
+
+/**
+ * Province-scoped Canada equivalent of calculateStateNominationTracker
+ * (AU). Only Ontario has a real eligibility module wired up in this pass
+ * (SUPPORTED_PROVINCES) -- BC/Alberta and any unrecognized/unset target
+ * return an eligibilityBlocked tracker with an honest "not yet supported"
+ * note instead of silently returning nothing or fabricating a result.
+ */
+function buildCanadaStateNominationTracker(
+  input: ReadinessInput,
+  locale: Locale
+): StateNominationTracker {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  const targetProvince = resolveTargetProvince(input);
+
+  if (!targetProvince || !SUPPORTED_PROVINCES.has(targetProvince)) {
+    const blockedReason = !targetProvince
+      ? (isTr
+          ? "Hedef eyalet belirtilmedi. Eyalet aday gösterme (PNP) analizi için bir hedef eyalet (örn. Ontario) belirtin."
+          : isZh
+            ? "未指定目标省份。请指定目标省份（如安大略省）以获取省提名（PNP）分析。"
+            : "No target province was specified. Provide a target province (e.g. Ontario) for provincial nominee program (PNP) analysis.")
+      : (isTr
+          ? `${targetProvince} eyaleti için ayrıntılı bir PNP değerlendirme modülü henüz bu raporda desteklenmiyor. Bu, genel bilgidir; güncel eyalet PNP kriterleri için resmi kaynağı kontrol edin.`
+          : isZh
+            ? `本报告尚不支持 ${targetProvince} 省的详细 PNP 评估模块。这是一般信息；请查阅官方来源获取最新的省级 PNP 标准。`
+            : `A detailed PNP eligibility module for ${targetProvince} is not yet supported in this report. This is general information only — check the official source for current provincial PNP criteria.`);
+    return { states: [], topRecommendedStates: [], note: blockedReason, eligibilityBlocked: true, blockedReason };
+  }
+
+  // Only Ontario is reachable here today (SUPPORTED_PROVINCES).
+  const ontarioResults = buildOntarioPnpEligibility(input);
+  const pathwayLabel: Record<OntarioPathwayId, string> = {
+    TEER_0_3: isTr ? "Ontario — TEER 0-3" : isZh ? "安大略省 — TEER 0-3" : "Ontario — TEER 0-3",
+    TEER_4_5: isTr ? "Ontario — TEER 4-5" : isZh ? "安大略省 — TEER 4-5" : "Ontario — TEER 4-5",
+    SELF_EMPLOYED_PHYSICIAN: isTr
+      ? "Ontario — Kendi Hesabına Çalışan Hekimler"
+      : isZh
+        ? "安大略省 — 自雇医生"
+        : "Ontario — Self-Employed Physicians",
+  };
+
+  const states: StateNominationState[] = ontarioResults.map((result) => {
+    const { score, matchLevel } = ontarioPathwayScore(result);
+    return {
+      code: "ON",
+      name: pathwayLabel[result.pathwayId],
+      // EOI system status verified live against ontario.ca (2026-07-25): the
+      // previous 8 streams closed and the new Workforce Priority stream's
+      // EOI intake had not yet reopened. Kept as a named status rather than
+      // hardcoded text so it's obvious this needs periodic re-verification.
+      status: "Closed",
+      matchLevel,
+      score,
+      summary: result.stream.notes,
+      requirements: result.missingRequirements,
+    };
+  });
+
+  const topRecommendedStates = [...states].sort((a, b) => b.score - a.score).slice(0, 2);
+
+  return {
+    states,
+    topRecommendedStates,
+    note: ontarioStreamsIntroText(locale),
+    eligibilityBlocked: false,
   };
 }
 
@@ -4749,9 +4942,9 @@ function buildCanadaPointsBoosterSimulator(
     estimatedChange: 600,
     resultingEstimate: currentEstimate !== undefined ? currentEstimate + 600 : undefined,
     explanation: t(
-      "A valid provincial/territorial nomination under Express Entry adds exactly +600 CRS points — effectively guaranteeing an Invitation to Apply (ITA) in the next general draw regardless of base CRS score. Key PNP streams by profile: (1) Ontario OINP Human Capital Priorities (HCP): targets TEER 0–3 candidates with an active Express Entry profile; IRCC sends the OINP a data-share of profiles meeting the score threshold, then OINP issues Notifications of Interest (NOIs) — you cannot apply directly. Typical HCP CRS threshold: 450–490. (2) BC PNP Tech Pilot: 29 specific NOC codes in tech/digital economy; registration fee ~CAD $300; BC PNP receives your EOI and invites based on a separate BC score; strong alignment with Express Entry required. (3) Alberta AAIP (Accelerated Tech Pathway / Express Entry Stream): targets tech workers and healthcare workers; CAD $500 fee; draws held approximately monthly. (4) Saskatchewan SINP: tech, healthcare, and trades workers; draws every 2–4 weeks. Category-based selection draws introduced in 2023 target specific NOC groups (French-speaking, healthcare, STEM, trades) and have lower CRS thresholds than general draws — healthcare draws have cleared at 430–480 CRS.",
-      "Express Entry kapsamında geçerli bir eyalet/bölge adaylığı +600 CRS puanı ekler; bu da bir sonraki çekilişte ITA'yı neredeyse garanti eder. Meslekle ilgili akışlar şunlardır: Ontario OINP İnsan Sermayesi Öncelikleri (TEER 0-3), BC PNP Tech Pilot (teknoloji alanındaki seçili NOC kodları), Alberta AAIP.",
-      "Express Entry下的有效省/地区提名可获+600 CRS分，实际上保证在下次抽签中获得ITA。按职业相关通道：安大略省OINP人力资本优先（TEER 0-3）、BC省PNP科技试点（科技领域特定NOC代码）、阿尔伯塔省AAIP。"
+      "A valid provincial/territorial nomination that keeps your Express Entry profile active adds exactly +600 CRS points — effectively guaranteeing an Invitation to Apply (ITA) in the next general draw regardless of base CRS score. This is the ENHANCED nomination route (not every provincial nomination is Express Entry-linked -- verify which route a given stream offers before assuming +600 applies). Ontario: as of 26 June 2026, the previous 8 OINP streams (including Human Capital Priorities) were replaced by the single Ontario Workforce Priority Stream, covering TEER 0-3, TEER 4-5, and Self-Employed Physicians pathways -- each offers an optional Express Entry nomination route if the candidate maintains a valid Express Entry profile through to nomination; its EOI intake is currently closed pending reopening, so this is a readiness check, not confirmation a nomination can be submitted today. See the State Nomination Tracker section for a code-based eligibility check against your profile. BC and Alberta PNP modules are not yet implemented in this report -- consult WelcomeBC.ca / Alberta.ca directly for their current streams and CRS-linkage rules.",
+      "Express Entry profilinizi aktif tutan geçerli bir eyalet/bölge adaylığı +600 CRS puanı ekler; bu da bir sonraki çekilişte ITA'yı neredeyse garanti eder (her eyalet adaylığı Express Entry'ye bağlı değildir, doğrulayın). Ontario: 26 Haziran 2026 itibarıyla önceki 8 OINP stream'i (Human Capital Priorities dahil) kaldırılıp tek bir Ontario Workforce Priority Stream ile değiştirildi (TEER 0-3, TEER 4-5, Kendi Hesabına Çalışan Hekimler); her biri isteğe bağlı bir Express Entry adaylık yolu sunar. EOI başvuru sistemi şu anda kapalı ve yeniden açılış bekleniyor; bu nedenle bu bir hazırlık değerlendirmesidir, bugün başvuru yapılabileceği anlamına gelmez. Ayrıntı için Eyalet Aday Gösterme Programı (PNP) Takibi bölümüne bakın. BC ve Alberta PNP modülleri bu raporda henüz uygulanmadı.",
+      "保持 Express Entry 档案有效的有效省/地区提名可获 +600 CRS 分，实际上保证在下次抽签中获得 ITA（并非所有省提名都与 Express Entry 挂钩，请核实）。安大略省：自2026年6月26日起，此前的8个OINP通道（含人力资本优先）已被单一的Ontario Workforce Priority Stream取代（分为TEER 0-3、TEER 4-5、自雇医生三条路径），每条路径均可选择性走Express Entry提名通道；其EOI申请系统目前处于关闭状态，等待重新开放，因此这只是一项准备度评估，并不代表今天即可提交提名申请。详见省提名计划（PNP）追踪部分。本报告尚未实现BC和阿尔伯塔省的PNP模块。"
     ),
   });
 
@@ -4886,6 +5079,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   }
   const occupationIndication = buildCanadaOccupationIndication(input, locale);
   const assessmentState = buildAssessmentState(input, pathwayComparison, pointsEstimate.estimatedPoints, locale);
+  const stateNominationTracker = buildCanadaStateNominationTracker(input, locale);
 
   const riskIndicators = buildCanadaRiskIndicators({
     locale,
@@ -5077,6 +5271,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     pathwayFriction: [],
     confidenceExplanation: signalSnapshot.confidenceExplanation,
     assessmentState,
+    stateNominationTracker,
     reportIndicators: {
       dataCompletenessScore: dataCompleteness.percentage,
       dataCompletenessLabel: isTr ? "Veri tamlığı" : "Data completeness",

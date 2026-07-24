@@ -191,7 +191,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       estimatedWait: "Tahmini Bekleme",
       visaViabilityRanking: "Vize Şans Sıralaması",
       topRecommendedStates: "En Güçlü 2 Eyalet",
+      topRecommendedStatesCanada: "En Uygun Eyalet Adaylığı (PNP) Yolları",
       stateNominationTracker: "Eyalet Nomination Tracker",
+      stateNominationTrackerCanada: "Eyalet Aday Gösterme Programı (PNP) Takibi",
       lodgementReadyChecklist: "Lodgement-Ready Checklist",
       stateCode: "Eyalet",
       stateStatus: "Durum",
@@ -199,6 +201,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       match: "Uyum",
       pointsSignal: "Tahmini Temel Puan",
       stateRadar: "Eyalet Sinyal Radarı",
+      stateRadarCanada: "Eyalet PNP Sinyal Radarı",
       stateRadarSubtitle: "Eyalet adaylığı sinyalleri, profil uyum skoruna göre görselleştirilmiştir.",
       noClearSecondarySignal: "Belirgin ikincil sinyal yok",
       downloadablePdfDescription: "Bu dosya, oluşturulan tam vize hazırlık raporunun indirilebilir PDF sürümüdür.",
@@ -353,7 +356,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       estimatedWait: "预计等待时间",
       visaViabilityRanking: "签证可行性排序",
       topRecommendedStates: "前 2 个推荐州",
+      topRecommendedStatesCanada: "最匹配的省提名（PNP）路径",
       stateNominationTracker: "州担保追踪图",
+      stateNominationTrackerCanada: "省提名计划（PNP）追踪",
       lodgementReadyChecklist: "递交准备行动清单",
       stateCode: "州",
       stateStatus: "状态",
@@ -361,6 +366,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       match: "匹配",
       pointsSignal: "分数信号",
       stateRadar: "州担保信号雷达",
+      stateRadarCanada: "省提名（PNP）信号雷达",
       stateRadarSubtitle: "州担保信号根据档案匹配分数进行可视化。",
       noClearSecondarySignal: "暂无明显次要信号",
       downloadablePdfDescription: "本文件为已生成完整签证准备度报告的可下载 PDF 版本。",
@@ -514,7 +520,9 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     estimatedWait: "Estimated Wait",
     visaViabilityRanking: "Visa Viability Ranking",
     topRecommendedStates: "Top 2 Recommended States",
+    topRecommendedStatesCanada: "Best-Matching Provincial Nominee Program (PNP) Pathways",
     stateNominationTracker: "State Nomination Tracker",
+    stateNominationTrackerCanada: "Provincial Nominee Program (PNP) Tracker",
     lodgementReadyChecklist: "Lodgement-Ready Checklist",
     stateCode: "State",
     stateStatus: "Status",
@@ -522,6 +530,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     match: "Match",
     pointsSignal: "Estimated Base Points",
     stateRadar: "State Signal Radar",
+    stateRadarCanada: "Provincial PNP Signal Radar",
     stateRadarSubtitle: "State nomination signals visualized by profile match score.",
     noClearSecondarySignal: "No clear secondary signal",
     downloadablePdfDescription: "This file is the downloadable PDF version of the generated full visa readiness report.",
@@ -1272,14 +1281,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     appendixInfoRow("Key Contact", "Immigration Ontario: 1-866-214-6820");
     appendixInfoRow("Processing Time", "Nomination: 30–90 days (stream-dependent)");
     yPosition += 3;
-    appendixBody("Ontario is Canada's most populous province and the top destination for skilled workers, with a diversified economy anchored by finance (Bay Street), technology (MaRS Discovery District), healthcare, and advanced manufacturing. The OINP operates multiple streams aligned with the federal Express Entry system and labour market needs.");
+    appendixBody("Ontario is Canada's most populous province and the top destination for skilled workers, with a diversified economy anchored by finance (Bay Street), technology (MaRS Discovery District), healthcare, and advanced manufacturing. As of 26 June 2026, a regulation change eliminated the OINP's previous 8 streams -- including Human Capital Priorities, Skilled Trades, and Employer Job Offer -- and replaced them with a single Ontario Workforce Priority Stream covering three pathways. Its EOI intake is currently closed; see the Pro Tip below for reopening status.");
     yPosition += 2;
-    appendixH2("Key OINP Streams");
-    appendixBullet("Human Capital Priorities (HCP) Stream — EE-linked. Requires an active EE profile with a CRS score typically above 400. OINP proactively selects candidates from the federal pool. No job offer required. Covers NOC TEER 0, 1, 2, 3.");
-    appendixBullet("Skilled Trades Stream — For workers in specific skilled trades (NOC TEER 2/3). Requires a valid job offer from an Ontario employer and 2 years of relevant experience in the past 5 years.");
-    appendixBullet("French-Speaking Skilled Worker Stream — For francophone workers outside Quebec. No job offer needed; must demonstrate CLB 7+ in French and CLB 6+ in English.");
-    appendixBullet("Employer Job Offer — International Skilled Worker — For workers with a full-time, non-seasonal job offer from an Ontario employer in NOC TEER 0, 1, 2, or 3.");
-    appendixBullet("International Student streams — Ontario PG Work Permit, Masters Graduate, PhD Graduate streams available for graduates of Ontario institutions.");
+    appendixH2("Ontario Workforce Priority Stream — 3 Pathways");
+    appendixBullet("TEER 0-3 pathway — full-time permanent job offer required (or a valid mandatory licence in lieu of the work-experience test); CLB 6 (CLB 5 for select skilled-trades NOC groups: Major Groups 72, 73, 82, 83, 93, Minor Group 6320, Unit Group 62200); postsecondary credential. Optional Express Entry nomination route (adds +600 CRS) if the candidate maintains a valid EE profile through to nomination.");
+    appendixBullet("TEER 4-5 pathway — full-time permanent job offer required; 9 months cumulative paid experience in the job-offer position within the last 2 years; CLB 4; secondary school diploma or equivalent. Same optional Express Entry nomination route as TEER 0-3.");
+    appendixBullet("Self-Employed Physicians pathway — no job offer required; requires OHIP billing eligibility and good-standing College of Physicians and Surgeons of Ontario (CPSO) membership.");
+    appendixBullet("Three further streams (priority healthcare, entrepreneur, exceptional talent) have been announced but have no published eligibility criteria as of this report's data -- this is not detailed here to avoid inventing requirements; check ontario.ca/page/ontario-immigrant-nominee-program-oinp for updates.");
     yPosition += 2;
     appendixH2("In-Demand Sectors (Ontario)");
     appendixBullet("Financial Services & FinTech — Toronto is Canada's financial capital; CPA designation strongly valued");
@@ -1295,7 +1303,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     appendixInfoRow("Accountants", "CPA Ontario — cpaontario.ca");
     appendixInfoRow("Trades", "Ontario College of Trades (OCOT) — tradesecrets.ontario.ca");
     yPosition += 2;
-    appendixProTip("Ontario's HCP stream is purely profile-driven — OINP staff proactively send Notifications of Interest (NOI) to qualifying EE candidates. Maximize your CRS before Ontario selection windows open (typically quarterly). A NOI from Ontario adds 600 CRS points — effectively guaranteeing an ITA at the next federal draw.");
+    appendixProTip("The Workforce Priority Stream's Expression of Interest (EOI) system was closed for the transition and is expected to reopen later in summer 2026 (no confirmed date at time of writing) -- verify current intake status on ontario.ca before relying on timelines. Choosing the Express Entry nomination route (where offered) adds +600 CRS points, effectively guaranteeing an ITA at the next federal draw.");
     yPosition += 4;
 
     // ── BRITISH COLUMBIA ──────────────────────────────────────────────────
@@ -3122,7 +3130,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   function drawStateNominationBlockedNotice() {
     if (!report.stateNominationTracker?.eligibilityBlocked) return;
-    addHeading(text.stateNominationTracker);
+    addHeading(report.country === "CA" ? text.stateNominationTrackerCanada : text.stateNominationTracker);
     addBody(report.stateNominationTracker.blockedReason ?? "");
     yPosition += 3;
   }
@@ -3131,7 +3139,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const topStates = report.stateNominationTracker?.topRecommendedStates ?? [];
     if (topStates.length === 0) return;
 
-    addHeading(text.topRecommendedStates);
+    addHeading(report.country === "CA" ? text.topRecommendedStatesCanada : text.topRecommendedStates);
     ensurePageSpace(32);
 
     topStates.forEach((state, index) => {
@@ -3173,7 +3181,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (states.length === 0) return;
 
     ensurePageSpace(142);
-    addHeading(text.stateRadar);
+    addHeading(report.country === "CA" ? text.stateRadarCanada : text.stateRadar);
 
     const topY = yPosition;
     const boxHeight = 124;
@@ -3263,8 +3271,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const states = report.stateNominationTracker?.states ?? [];
     if (states.length === 0) return;
 
-    addHeading(text.stateNominationTracker);
-    addSmallText(text.stateTrackerIntro, 0);
+    addHeading(report.country === "CA" ? text.stateNominationTrackerCanada : text.stateNominationTracker);
+    addSmallText(report.country === "CA" ? (report.stateNominationTracker?.note ?? "") : text.stateTrackerIntro, 0);
     yPosition += 2;
 
     drawTable(
@@ -3380,15 +3388,17 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   drawMissingInfoBox();
 
   drawVisaViabilityRanking();
-  // State nomination tracker is AU-specific; skip entirely for CA reports
-  if (report.country !== "CA") {
-    if (report.stateNominationTracker?.eligibilityBlocked) {
-      drawStateNominationBlockedNotice();
-    } else {
-      drawStateRadar();
-      drawTopRecommendedStates();
-      drawStateNominationTable();
-    }
+  // State Nomination Tracker now covers both AU states/territories and CA
+  // provinces (report.country-aware headings above) -- only Ontario has a
+  // real eligibility module (buildCanadaStateNominationTracker), so other
+  // CA reports fall through to the eligibilityBlocked notice instead of
+  // being silently skipped.
+  if (report.stateNominationTracker?.eligibilityBlocked) {
+    drawStateNominationBlockedNotice();
+  } else {
+    drawStateRadar();
+    drawTopRecommendedStates();
+    drawStateNominationTable();
   }
   drawLodgementReadyChecklist();
 
