@@ -789,11 +789,20 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
     zhRelevantConfidenceLevels.length > 0
       ? zhRelevantConfidenceLevels.reduce((worst, level) => (zhConfidenceRank[level] < zhConfidenceRank[worst] ? level : worst), "high" as ConfidenceLevel)
       : "low";
+  // Same fix as buildConfidenceExplanation (lib/readiness/engine.ts): list
+  // the ACTUAL missing/provided categories from the (already Chinese-
+  // relabeled) evidenceReadiness array above, instead of a hardcoded
+  // "occupation, English level" claim that could contradict the Evidence
+  // Readiness Snapshot rendered from that same array.
+  const zhMissingFields = evidenceReadiness.filter((item) => item.status === "missing").map((item) => item.category);
+  const zhMissingFieldsList = zhMissingFields.length > 0 ? zhMissingFields.join("、") : "核心档案信息";
+  const zhProvidedFields = evidenceReadiness.filter((item) => item.status === "provided").map((item) => item.category);
+  const zhProvidedFieldsList = zhProvidedFields.length > 0 ? zhProvidedFields.join("、") : "核心档案信息";
   const zhConfidenceExplanation =
     zhOverallConfidenceLevel === "low"
-      ? "由于职业、英语水平等核心信息缺失或不足，报告置信度有限；本内容仅为一般信息，仍取决于个人具体情况。"
+      ? `由于${zhMissingFieldsList}等核心信息缺失或不足，报告置信度有限；本内容仅为一般信息，仍取决于个人具体情况。`
       : zhOverallConfidenceLevel === "high"
-        ? `由于已提供年龄、英语、职业和护照国家等核心信息，报告置信度较强；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息。`
+        ? `由于已提供${zhProvidedFieldsList}等核心信息，报告置信度较强；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息。`
         : `由于部分核心信息已提供，报告置信度为中等；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息，仍取决于个人具体情况。`;
 
   const signalSnapshot = {

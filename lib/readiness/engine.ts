@@ -4325,6 +4325,19 @@ function getOverallConfidenceLevel(pathways: PathwayComparison[]): ConfidenceLev
   return relevantLevels.reduce((worst, level) => (rank[level] < rank[worst] ? level : worst), "high" as ConfidenceLevel);
 }
 
+/**
+ * Builds the confidence narrative's "missing fields" list directly from the
+ * SAME evidenceReadiness array rendered in the Evidence Readiness Snapshot
+ * section, instead of a hardcoded example list (e.g. "occupation and English
+ * level") that could name a field as missing when the snapshot right above
+ * it already says "Provided". Only status === "missing" items are listed —
+ * "unclear"/"typically_required" items are not confirmed-missing, so listing
+ * them here would be a different, unsupported claim.
+ */
+function buildConfidenceMissingFieldsList(evidenceReadiness: EvidenceReadinessItem[]): string[] {
+  return evidenceReadiness.filter((item) => item.status === "missing").map((item) => item.category);
+}
+
 function buildConfidenceExplanation(
   pathways: PathwayComparison[],
   evidenceReadiness: EvidenceReadinessItem[],
@@ -4336,22 +4349,45 @@ function buildConfidenceExplanation(
   const isZh = locale === "zh-Hans";
   const hasSponsor = hasSponsorContext(input.sponsorOrFamily);
   const overallConfidenceLevel = getOverallConfidenceLevel(pathways);
+  const missingFields = buildConfidenceMissingFieldsList(evidenceReadiness);
+  const missingFieldsList = missingFields.length > 0
+    ? missingFields.join(isZh ? "、" : ", ")
+    : isTr
+      ? "temel profil bilgileri"
+      : isZh
+        ? "核心档案信息"
+        : "key profile inputs";
 
   if (overallConfidenceLevel === "low") {
     return isTr
-      ? "Güven düzeyi sınırlıdır çünkü meslek ve İngilizce gibi temel bilgiler eksik veya yetersiz. Bu rapor yalnızca genel bilgidir ve kişisel koşullara bağlıdır."
+      ? `Güven düzeyi sınırlıdır çünkü ${missingFieldsList} gibi temel bilgiler eksik veya yetersiz. Bu rapor yalnızca genel bilgidir ve kişisel koşullara bağlıdır.`
       : isZh
-        ? "由于职业和英语水平等核心信息缺失或不足，置信度有限。本报告仅为一般信息，仍取决于个人具体情况。"
-        : "Confidence is limited because key inputs such as occupation and English level are missing or insufficient. This report is general information only and depends on individual circumstances.";
+        ? `由于${missingFieldsList}等核心信息缺失或不足，置信度有限。本报告仅为一般信息，仍取决于个人具体情况。`
+        : `Confidence is limited because key inputs such as ${missingFieldsList} are missing or insufficient. This report is general information only and depends on individual circumstances.`;
   }
 
   if (overallConfidenceLevel === "high") {
+    // Mirror-image of the "low" branch's fix: only claim a field is
+    // "provided" if it actually is, instead of asserting age/English/
+    // occupation/passport unconditionally.
     const occupationDisplay = resolveOccupationDisplayName(input.occupation, locale);
+    const providedBits: string[] = [];
+    if (input.age) providedBits.push(isTr ? `yaş (${input.age})` : isZh ? `年龄（${input.age}）` : `age (${input.age})`);
+    if (hasRealEnglishEvidence(input)) providedBits.push(isTr ? "İngilizce seviyesi" : isZh ? "英语水平" : "English level");
+    if (input.occupation) providedBits.push(isTr ? `meslek (${occupationDisplay})` : isZh ? `职业（${occupationDisplay}）` : `occupation (${occupationDisplay})`);
+    if (input.passportCountry) providedBits.push(isTr ? `pasaport ülkesi (${input.passportCountry})` : isZh ? `护照国家（${input.passportCountry}）` : `passport country (${input.passportCountry})`);
+    const providedList = providedBits.length > 0
+      ? providedBits.join(isZh ? "、" : ", ")
+      : isTr
+        ? "temel profil bilgileri"
+        : isZh
+          ? "核心档案信息"
+          : "key profile inputs";
     return isTr
-      ? `Güven düzeyi daha güçlüdür çünkü yaş (${input.age}), İngilizce seviyesi, meslek (${occupationDisplay}) ve pasaport ülkesi (${input.passportCountry}) sağlanmıştır; bazı yol-özel kanıtlar hâlâ ayrıca incelenir${estimatedPoints !== undefined ? ` (tahmini temel puan: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
+      ? `Güven düzeyi daha güçlüdür çünkü ${providedList} sağlanmıştır; bazı yol-özel kanıtlar hâlâ ayrıca incelenir${estimatedPoints !== undefined ? ` (tahmini temel puan: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
       : isZh
-        ? `由于已提供年龄（${input.age}）、英语水平、职业（${occupationDisplay}）和护照国家（${input.passportCountry}），置信度较强；部分路径特定证据仍需单独复核${estimatedPoints !== undefined ? `（当前加分信号：${estimatedPoints}）` : ""}。本内容仅为一般信息。`
-        : `Confidence is stronger because age (${input.age}), English level, occupation (${occupationDisplay}), and passport country (${input.passportCountry}) are provided, while some pathway-specific evidence still needs separate review${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. This is general information only.`;
+        ? `由于已提供${providedList}，置信度较强；部分路径特定证据仍需单独复核${estimatedPoints !== undefined ? `（当前加分信号：${estimatedPoints}）` : ""}。本内容仅为一般信息。`
+        : `Confidence is stronger because ${providedList} are provided, while some pathway-specific evidence still needs separate review${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. This is general information only.`;
   }
 
   return isTr
