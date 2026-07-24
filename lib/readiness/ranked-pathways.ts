@@ -79,6 +79,51 @@ const CA_PATHWAY_LABELS: Record<string, Record<Locale, string>> = {
     tr: "Aile Sponsorluğu",
     "zh-Hans": "家庭担保",
   },
+  BC_SKILLED_WORKER: {
+    en: "BC PNP Skills Immigration — Skilled Worker",
+    tr: "BC PNP Skills Immigration — Skilled Worker",
+    "zh-Hans": "BC省技术移民 — Skilled Worker",
+  },
+  BC_HEALTH_AUTHORITY: {
+    en: "BC PNP Skills Immigration — Health Authority",
+    tr: "BC PNP Skills Immigration — Health Authority",
+    "zh-Hans": "BC省技术移民 — Health Authority",
+  },
+  BC_INTL_GRAD: {
+    en: "BC PNP Skills Immigration — International Graduate",
+    tr: "BC PNP Skills Immigration — International Graduate",
+    "zh-Hans": "BC省技术移民 — International Graduate",
+  },
+  BC_INTL_POSTGRAD: {
+    en: "BC PNP Skills Immigration — International Post-Graduate",
+    tr: "BC PNP Skills Immigration — International Post-Graduate",
+    "zh-Hans": "BC省技术移民 — International Post-Graduate",
+  },
+  BC_EEBC: {
+    en: "BC PNP Express Entry BC (EEBC)",
+    tr: "BC PNP Express Entry BC (EEBC)",
+    "zh-Hans": "BC省 Express Entry BC (EEBC)",
+  },
+  AB_OPPORTUNITY: {
+    en: "Alberta Opportunity Stream (AOS)",
+    tr: "Alberta Opportunity Stream (AOS)",
+    "zh-Hans": "阿尔伯塔 Opportunity Stream (AOS)",
+  },
+  AB_EXPRESS_ENTRY: {
+    en: "Alberta Express Entry Stream (AEES)",
+    tr: "Alberta Express Entry Stream (AEES)",
+    "zh-Hans": "阿尔伯塔 Express Entry Stream (AEES)",
+  },
+  AB_RURAL_RENEWAL: {
+    en: "Alberta Rural Renewal Stream",
+    tr: "Alberta Rural Renewal Stream",
+    "zh-Hans": "阿尔伯塔 Rural Renewal Stream",
+  },
+  AB_TOURISM_HOSPITALITY: {
+    en: "Alberta Tourism and Hospitality Stream",
+    tr: "Alberta Tourism and Hospitality Stream",
+    "zh-Hans": "阿尔伯塔 Tourism and Hospitality Stream",
+  },
 };
 
 function getLocalizedPathwayLabel(subclass: string, locale: Locale, fallback?: string): string {

@@ -16,10 +16,18 @@ import {
   type ProvinceStream,
   type OntarioPathwayId,
   type OntarioPathwayResult,
+  type BCPathwayId,
+  type BCPathwayResult,
+  type AlbertaPathwayId,
+  type AlbertaPathwayResult,
   ONTARIO_WORKFORCE_PRIORITY_STREAMS,
+  BC_PNP_STREAMS,
+  ALBERTA_AAIP_STREAMS,
   SUPPORTED_PROVINCES,
   qualifiesForOntarioTradesLanguageException,
   ontarioStreamsIntroText,
+  bcStreamsIntroText,
+  albertaStreamsIntroText,
 } from "@/lib/readiness/pnp-provinces";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
@@ -1134,6 +1142,204 @@ function ontarioPathwayScore(result: OntarioPathwayResult): { score: number; mat
   return { score: 10, matchLevel: "low" };
 }
 
+function isFederalEeEligible(input: ReadinessInput): boolean {
+  const nocResult = checkNocOccupation({ occupation: input.occupation ?? "", nocCode: input.nocCode });
+  const nocMatch = nocResult.matches.find((m) => m.code === input.nocCode) ?? nocResult.matches[0];
+  const resolvedNocCode = input.nocCode ?? nocMatch?.code;
+  const occupationTeer = input.nocTeer ?? nocMatch?.teer;
+
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const meetsClb7 = englishOption === "proficient" || englishOption === "superior";
+  const totalExperience = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
+
+  // FSWP/CEC criteria: TEER 0-3, CLB 7+, >= 1 year of experience
+  const meetsFswOrCec = occupationTeer !== undefined && occupationTeer <= 3 && meetsClb7 && totalExperience >= 1;
+
+  // FSTP criteria:
+  const fstp = buildFSTPEligibility(input);
+  const meetsFstp = fstp.occupationEligible && fstp.workExperienceGateMet && fstp.languageThresholdMet;
+
+  return meetsFswOrCec || meetsFstp;
+}
+
+function buildBcPnpEligibility(
+  input: ReadinessInput,
+  isFederalEeEligible: boolean
+): BCPathwayResult[] {
+  const nocResult = checkNocOccupation({ occupation: input.occupation ?? "", nocCode: input.nocCode });
+  const nocMatch = nocResult.matches.find((m) => m.code === input.nocCode) ?? nocResult.matches[0];
+  const resolvedNocCode = input.nocCode ?? nocMatch?.code;
+  const occupationTeer = input.nocTeer ?? nocMatch?.teer;
+
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const meetsClb6 = englishOption === "competent" || englishOption === "proficient" || englishOption === "superior";
+
+  const bcPathways: {
+    id: BCPathwayId;
+    requiresJobOffer: boolean;
+    jobOfferMinDurationMonths?: number;
+    jobOfferMinDaysRemaining?: number;
+    eligibleTEER: number[];
+    requiresFederalEEEligibility?: boolean;
+  }[] = [
+    { id: "BC_SKILLED_WORKER", requiresJobOffer: true, eligibleTEER: [0, 1, 2, 3] },
+    { id: "BC_HEALTH_AUTHORITY", requiresJobOffer: true, eligibleTEER: [0, 1, 2, 3, 4, 5] },
+    { id: "BC_INTL_GRAD", requiresJobOffer: true, eligibleTEER: [0, 1, 2, 3] },
+    { id: "BC_INTL_POSTGRAD", requiresJobOffer: true, jobOfferMinDurationMonths: 12, jobOfferMinDaysRemaining: 120, eligibleTEER: [0, 1, 2, 3, 4, 5] },
+    { id: "BC_EEBC", requiresJobOffer: true, eligibleTEER: [0, 1, 2], requiresFederalEEEligibility: true },
+  ];
+
+  return bcPathways.map((pw, index) => {
+    const stream = BC_PNP_STREAMS[index];
+    const missing: string[] = [];
+
+    const teerMatches = occupationTeer !== undefined && pw.eligibleTEER.includes(occupationTeer);
+    if (occupationTeer === undefined) {
+      missing.push("NOC/TEER code (not resolved from occupation)");
+    } else if (!teerMatches) {
+      missing.push(`eligible occupation in TEER ${pw.eligibleTEER.join(", ")}`);
+    }
+
+    if (!meetsClb6) {
+      missing.push(stream.languageThreshold);
+    }
+
+    if (pw.requiresFederalEEEligibility && !isFederalEeEligible) {
+      missing.push("active and eligible Federal Express Entry profile (FSWP, CEC, or FSTP)");
+    }
+
+    if (pw.jobOfferMinDurationMonths && pw.jobOfferMinDaysRemaining) {
+      missing.push(`qualifying BC job offer of at least ${pw.jobOfferMinDurationMonths} months with at least ${pw.jobOfferMinDaysRemaining} days remaining (not collected by this form)`);
+    } else {
+      missing.push("qualifying full-time, indeterminate job offer in British Columbia (not collected by this form)");
+    }
+
+    return {
+      pathwayId: pw.id,
+      stream,
+      occupationTeer,
+      languageThresholdMet: meetsClb6,
+      hasQualifyingJobOffer: false,
+      eligible: false,
+      missingRequirements: missing,
+    };
+  });
+}
+
+function bcPathwayScore(result: BCPathwayResult): { score: number; matchLevel: "high" | "medium" | "low" } {
+  const teerAndLangMet = result.missingRequirements.every(
+    (m) =>
+      !m.includes("NOC/TEER") &&
+      !m.includes("TEER") &&
+      !m.includes("CLB") &&
+      !m.includes("language") &&
+      !m.includes("Express Entry profile")
+  );
+  if (teerAndLangMet) return { score: 60, matchLevel: "medium" };
+  return { score: 20, matchLevel: "low" };
+}
+
+function buildAlbertaPnpEligibility(
+  input: ReadinessInput,
+  isFederalEeEligible: boolean,
+  estimatedPoints?: number
+): AlbertaPathwayResult[] {
+  const nocResult = checkNocOccupation({ occupation: input.occupation ?? "", nocCode: input.nocCode });
+  const nocMatch = nocResult.matches.find((m) => m.code === input.nocCode) ?? nocResult.matches[0];
+  const resolvedNocCode = input.nocCode ?? nocMatch?.code;
+  const occupationTeer = input.nocTeer ?? nocMatch?.teer;
+
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const meetsClb5 = englishOption === "competent" || englishOption === "proficient" || englishOption === "superior";
+  const meetsClb4 = meetsClb5;
+
+  const abPathways: {
+    id: AlbertaPathwayId;
+    requiresJobOffer: boolean;
+    requiresCurrentAlbertaEmployment?: boolean;
+    requiresCommunityEndorsement?: boolean;
+    minCRS?: number;
+  }[] = [
+    { id: "AB_OPPORTUNITY", requiresJobOffer: true, requiresCurrentAlbertaEmployment: true },
+    { id: "AB_EXPRESS_ENTRY", requiresJobOffer: false, minCRS: 300 },
+    { id: "AB_RURAL_RENEWAL", requiresJobOffer: true, requiresCommunityEndorsement: true },
+    { id: "AB_TOURISM_HOSPITALITY", requiresJobOffer: true, requiresCurrentAlbertaEmployment: true },
+  ];
+
+  return abPathways.map((pw, index) => {
+    const stream = ALBERTA_AAIP_STREAMS[index];
+    const missing: string[] = [];
+
+    if (occupationTeer === undefined) {
+      missing.push("NOC/TEER code (not resolved from occupation)");
+    }
+
+    let langMet = true;
+    if (pw.id === "AB_OPPORTUNITY" || pw.id === "AB_RURAL_RENEWAL") {
+      const requiredClb = (occupationTeer !== undefined && occupationTeer <= 3) ? 5 : 4;
+      langMet = requiredClb === 5 ? meetsClb5 : meetsClb4;
+      if (!langMet) missing.push(`CLB ${requiredClb} language proficiency`);
+    } else if (pw.id === "AB_TOURISM_HOSPITALITY") {
+      langMet = meetsClb4;
+      if (!langMet) missing.push("CLB 4 language proficiency");
+    } else if (pw.id === "AB_EXPRESS_ENTRY") {
+      langMet = isFederalEeEligible;
+      if (!langMet) missing.push("Must meet language requirements for a Federal Express Entry program");
+    }
+
+    if (pw.requiresJobOffer) {
+      missing.push("qualifying job offer from an Alberta employer (not collected by this form)");
+    }
+    if (pw.requiresCurrentAlbertaEmployment) {
+      missing.push("active full-time employment in Alberta (not collected by this form)");
+    }
+    if (pw.requiresCommunityEndorsement) {
+      missing.push("official rural community endorsement letter (not collected by this form)");
+    }
+
+    let crsMet = true;
+    if (pw.id === "AB_EXPRESS_ENTRY") {
+      if (!isFederalEeEligible) {
+        missing.push("active and eligible Federal Express Entry profile (FSWP, CEC, or FSTP)");
+      }
+      if (estimatedPoints === undefined) {
+        missing.push("valid CRS points estimate (requires age and English level)");
+        crsMet = false;
+      } else if (estimatedPoints < (pw.minCRS ?? 300)) {
+        missing.push(`Express Entry CRS score of at least ${pw.minCRS} (current estimate: ${estimatedPoints})`);
+        crsMet = false;
+      }
+    }
+
+    const eligible = pw.id === "AB_EXPRESS_ENTRY" ? (isFederalEeEligible && crsMet) : false;
+
+    return {
+      pathwayId: pw.id,
+      stream,
+      occupationTeer,
+      languageThresholdMet: langMet,
+      hasQualifyingJobOffer: false,
+      eligible,
+      missingRequirements: missing,
+    };
+  });
+}
+
+function albertaPathwayScore(result: AlbertaPathwayResult): { score: number; matchLevel: "high" | "medium" | "low" } {
+  if (result.pathwayId === "AB_EXPRESS_ENTRY" && result.eligible) {
+    return { score: 85, matchLevel: "high" };
+  }
+  const otherMet = result.missingRequirements.every(
+    (m) =>
+      !m.includes("NOC/TEER") &&
+      !m.includes("CLB") &&
+      !m.includes("language") &&
+      !m.includes("Express Entry")
+  );
+  if (otherMet) return { score: 60, matchLevel: "medium" };
+  return { score: 20, matchLevel: "low" };
+}
+
 /**
  * Province-scoped Canada equivalent of calculateStateNominationTracker
  * (AU). Only Ontario has a real eligibility module wired up in this pass
@@ -1164,28 +1370,92 @@ function buildCanadaStateNominationTracker(
     return { states: [], topRecommendedStates: [], note: blockedReason, eligibilityBlocked: true, blockedReason };
   }
 
-  // Only Ontario is reachable here today (SUPPORTED_PROVINCES).
-  const ontarioResults = buildOntarioPnpEligibility(input);
-  const pathwayLabel: Record<OntarioPathwayId, string> = {
-    TEER_0_3: isTr ? "Ontario — TEER 0-3" : isZh ? "安大略省 — TEER 0-3" : "Ontario — TEER 0-3",
-    TEER_4_5: isTr ? "Ontario — TEER 4-5" : isZh ? "安大略省 — TEER 4-5" : "Ontario — TEER 4-5",
-    SELF_EMPLOYED_PHYSICIAN: isTr
-      ? "Ontario — Kendi Hesabına Çalışan Hekimler"
-      : isZh
-        ? "安大略省 — 自雇医生"
-        : "Ontario — Self-Employed Physicians",
+  const isEeEligible = isFederalEeEligible(input);
+
+  if (targetProvince === "ON") {
+    const ontarioResults = buildOntarioPnpEligibility(input);
+    const pathwayLabel: Record<OntarioPathwayId, string> = {
+      TEER_0_3: isTr ? "Ontario — TEER 0-3" : isZh ? "安大略省 — TEER 0-3" : "Ontario — TEER 0-3",
+      TEER_4_5: isTr ? "Ontario — TEER 4-5" : isZh ? "安大略省 — TEER 4-5" : "Ontario — TEER 4-5",
+      SELF_EMPLOYED_PHYSICIAN: isTr
+        ? "Ontario — Kendi Hesabına Çalışan Hekimler"
+        : isZh
+          ? "安大略省 — 自雇医生"
+          : "Ontario — Self-Employed Physicians",
+    };
+
+    const states: StateNominationState[] = ontarioResults.map((result) => {
+      const { score, matchLevel } = ontarioPathwayScore(result);
+      return {
+        code: "ON",
+        name: pathwayLabel[result.pathwayId],
+        status: "Closed",
+        matchLevel,
+        score,
+        summary: result.stream.notes,
+        requirements: result.missingRequirements,
+      };
+    });
+
+    const topRecommendedStates = [...states].sort((a, b) => b.score - a.score).slice(0, 2);
+
+    return {
+      states,
+      topRecommendedStates,
+      note: ontarioStreamsIntroText(locale),
+      eligibilityBlocked: false,
+    };
+  }
+
+  if (targetProvince === "BC") {
+    const bcResults = buildBcPnpEligibility(input, isEeEligible);
+    const pathwayLabel: Record<BCPathwayId, string> = {
+      BC_SKILLED_WORKER: isTr ? "BC — Skilled Worker" : isZh ? "BC省 — Skilled Worker" : "BC — Skilled Worker",
+      BC_HEALTH_AUTHORITY: isTr ? "BC — Health Authority" : isZh ? "BC省 — Health Authority" : "BC — Health Authority",
+      BC_INTL_GRAD: isTr ? "BC — International Graduate" : isZh ? "BC省 — International Graduate" : "BC — International Graduate",
+      BC_INTL_POSTGRAD: isTr ? "BC — International Post-Graduate" : isZh ? "BC省 — International Post-Graduate" : "BC — International Post-Graduate",
+      BC_EEBC: isTr ? "BC — Express Entry BC (EEBC)" : isZh ? "BC省 — Express Entry BC (EEBC)" : "BC — Express Entry BC (EEBC)",
+    };
+
+    const states: StateNominationState[] = bcResults.map((result) => {
+      const { score, matchLevel } = bcPathwayScore(result);
+      return {
+        code: "BC",
+        name: pathwayLabel[result.pathwayId],
+        status: "Active",
+        matchLevel,
+        score,
+        summary: result.stream.notes,
+        requirements: result.missingRequirements,
+      };
+    });
+
+    const topRecommendedStates = [...states].sort((a, b) => b.score - a.score).slice(0, 2);
+
+    return {
+      states,
+      topRecommendedStates,
+      note: bcStreamsIntroText(locale),
+      eligibilityBlocked: false,
+    };
+  }
+
+  // targetProvince === "AB"
+  const pointsEstimate = buildCanadaPointsEstimate(input, locale);
+  const abResults = buildAlbertaPnpEligibility(input, isEeEligible, pointsEstimate.estimatedPoints);
+  const pathwayLabel: Record<AlbertaPathwayId, string> = {
+    AB_OPPORTUNITY: isTr ? "Alberta — Opportunity Stream" : isZh ? "阿尔伯塔省 — Opportunity Stream" : "Alberta — Opportunity Stream",
+    AB_EXPRESS_ENTRY: isTr ? "Alberta — Express Entry Stream" : isZh ? "阿尔伯塔省 — Express Entry Stream" : "Alberta — Express Entry Stream",
+    AB_RURAL_RENEWAL: isTr ? "Alberta — Rural Renewal Stream" : isZh ? "阿尔伯塔省 — Rural Renewal Stream" : "Alberta — Rural Renewal Stream",
+    AB_TOURISM_HOSPITALITY: isTr ? "Alberta — Tourism & Hospitality" : isZh ? "阿尔伯塔省 — Tourism & Hospitality" : "Alberta — Tourism & Hospitality",
   };
 
-  const states: StateNominationState[] = ontarioResults.map((result) => {
-    const { score, matchLevel } = ontarioPathwayScore(result);
+  const states: StateNominationState[] = abResults.map((result) => {
+    const { score, matchLevel } = albertaPathwayScore(result);
     return {
-      code: "ON",
+      code: "AB",
       name: pathwayLabel[result.pathwayId],
-      // EOI system status verified live against ontario.ca (2026-07-25): the
-      // previous 8 streams closed and the new Workforce Priority stream's
-      // EOI intake had not yet reopened. Kept as a named status rather than
-      // hardcoded text so it's obvious this needs periodic re-verification.
-      status: "Closed",
+      status: "Active",
       matchLevel,
       score,
       summary: result.stream.notes,
@@ -1198,7 +1468,7 @@ function buildCanadaStateNominationTracker(
   return {
     states,
     topRecommendedStates,
-    note: ontarioStreamsIntroText(locale),
+    note: albertaStreamsIntroText(locale),
     eligibilityBlocked: false,
   };
 }
@@ -4857,6 +5127,30 @@ function buildCanadaFinancialRoadmap(
   ];
 
   if (pathwayCodes.includes("PNP") || pathwayCodes.includes("CEC")) {
+    const targetProvince = resolveTargetProvince(input);
+    let amountLabel = t("CAD $0–$2,000 (varies by province)", "CAD 0–2.000 (eyalete göre değişir)", "CAD $0–$2,000（因省份而异）");
+    let explanation = t(
+      "Some PNP streams have their own application fees: Ontario OINP (no fee for Tech Draw), BC PNP Skills Immigration (CAD $1,750), Alberta AAIP (CAD $135 Worker EOI + CAD $1,500 application fee). A PNP nomination adds +600 CRS points.",
+      "Bazı PNP akışlarının kendi başvuru ücretleri vardır: Ontario OINP (Tech Draw ücretsiz), BC PNP Skills Immigration (CAD 1.750), Alberta AAIP (CAD 135 Worker EOI + CAD 1.500 başvuru ücreti). PNP adaylığı +600 CRS puanı ekler.",
+      "部分PNP通道有独立申请费：安大略省OINP（科技抽签免费），BC省PNP技术移民（CAD $1,750），阿尔伯塔AAIP（CAD $135 意向表达费 + CAD $1,500 申请费）。省提名可获 +600 CRS 分。"
+    );
+
+    if (targetProvince === "BC") {
+      amountLabel = "CAD $1,750";
+      explanation = t(
+        "BC PNP Skills Immigration application fee (updated 22 January 2026). A PNP nomination adds +600 CRS points, effectively guaranteeing an ITA in the next Express Entry draw.",
+        "BC PNP Skills Immigration başvuru ücreti (22 Ocak 2026'da güncellenmiştir). PNP adaylığı +600 CRS puanı ekleyerek sonraki Express Entry çekilişinde ITA'yı neredeyse garanti eder.",
+        "BC省技术移民（Skills Immigration）申请费（2026年1月22日更新）。省提名可获 +600 CRS 分，实际上可保证在下次 Express Entry 抽签中获得 ITA。"
+      );
+    } else if (targetProvince === "AB") {
+      amountLabel = "CAD $1,635";
+      explanation = t(
+        "Alberta AAIP fees: CAD $135 Worker Express of Interest (EOI) fee (effective 7 April 2026) + CAD $1,500 application fee. A PNP nomination adds +600 CRS points, effectively guaranteeing an ITA in the next Express Entry draw.",
+        "Alberta AAIP ücretleri: CAD 135 Worker EOI ücreti (7 Nisan 2026'dan itibaren) + CAD 1.500 başvuru ücreti. PNP adaylığı +600 CRS puanı ekleyerek sonraki Express Entry çekilişinde ITA'yı neredeyse garanti eder.",
+        "阿尔伯塔省 AAIP 费用：CAD $135 劳工意向表达（EOI）费（2026年4月7日生效）+ CAD $1,500 申请费。省提名可获 +600 CRS 分，实际上可保证在下次 Express Entry 抽签中获得 ITA。"
+      );
+    }
+
     items.push({
       category: t(
         "Provincial Nominee Program (PNP) stream — if applicable",
@@ -4864,12 +5158,8 @@ function buildCanadaFinancialRoadmap(
         "省提名计划（PNP）通道（如适用）"
       ),
       estimateType: "variable",
-      amountLabel: t("CAD $0–$2,000 (varies by province)", "CAD 0–2.000 (eyalete göre değişir)", "CAD $0–$2,000（因省份而异）"),
-      explanation: t(
-        "Some PNP streams have their own application fees: Ontario OINP (no fee for Tech Draw, EOI-based), BC PNP Tech Pilot (~CAD $300 registration), Alberta AAIP (~CAD $500). A PNP nomination adds +600 CRS points, effectively guaranteeing an ITA in the next Express Entry draw.",
-        "Bazı PNP akışlarının kendi başvuru ücretleri vardır: Ontario OINP (Tech Draw için ücretsiz), BC PNP Tech Pilot (~CAD 300 kayıt), Alberta AAIP (~CAD 500). PNP adaylığı +600 CRS puanı ekleyerek sonraki Express Entry çekilişinde ITA'yı neredeyse garanti eder.",
-        "部分PNP通道有独立申请费：安大略省OINP（科技抽签免费，基于EOI），BC省PNP科技试点（约CAD $300注册费），阿尔伯塔AAIP（约CAD $500）。省提名可获+600 CRS分，实际上可保证在下次Express Entry抽签中获得ITA。"
-      ),
+      amountLabel,
+      explanation,
     });
   }
 
@@ -5032,7 +5322,189 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   const pointsEstimate = buildCanadaPointsEstimate(input, locale);
   const dataCompleteness = buildDataCompleteness(input, locale);
   const pathwayComparison = buildCanadaPathwayComparison(pathwayCodes, locale, pointsEstimate.estimatedPoints, input.occupation, fstpEligibility);
-  if (hasPnpInterest) {
+
+  const targetProvince = resolveTargetProvince(input);
+  const isEeEligible = isFederalEeEligible(input);
+
+  if (targetProvince === "ON") {
+    const ontarioResults = buildOntarioPnpEligibility(input);
+    const onComparisons: PathwayComparison[] = ontarioResults.map((res) => {
+      const isPhysician = res.pathwayId === "SELF_EMPLOYED_PHYSICIAN";
+      return {
+        subclass: res.pathwayId,
+        visaName: res.stream.streamName,
+        reason: isPhysician
+          ? (isTr
+              ? "Ontario Kendi Hesabına Çalışan Hekimler akışı için OHIP faturalandırma uygunluğu ve CPSO kaydı gereklidir (formda toplanmamıştır)."
+              : isZh
+                ? "安大略自雇医生通道需要 OHIP 计费资格和 CPSO 注册状态（本表单未收集）。"
+                : "Ontario Self-Employed Physicians pathway requires OHIP billing eligibility and CPSO registration (not collected by this form).")
+          : (isTr
+              ? `Ontario Workforce Priority stream (TEER 0-3 veya 4-5) için iş teklifi gereklidir. Eksik: ${res.missingRequirements.join(", ")}.`
+              : isZh
+                ? `安大略技术通道需要工作邀约。缺失条件：${res.missingRequirements.join(", ")}。`
+                : `Ontario Workforce Priority stream (TEER 0-3 or 4-5) requires a job offer. Missing: ${res.missingRequirements.join(", ")}.`),
+        relevance: "ineligible",
+        confidenceLevel: "medium",
+        confidenceExplanation: isTr
+          ? "Ontario EOI alımı kapalı durumdadır ve iş teklifi eksiktir."
+          : isZh
+            ? "安大略意向表达通道已关闭且缺少有效工作邀约。"
+            : "Ontario EOI intake is closed and job offer is missing.",
+        difficulty: "high",
+        requirementType: isTr ? "İş teklifi zorunluluğu" : "Job offer required",
+        userRelativePosition: isTr
+          ? "Ontario EOI sistemi şu anda kapalıdır ve iş teklifi gereklidir."
+          : isZh
+            ? "安大略省 EOI 系统当前处于关闭状态，且必须持有工作邀约。"
+            : "Ontario EOI system is currently closed and a job offer is required.",
+        keyRequirements: isPhysician
+          ? ["OHIP billing eligibility", "CPSO registration"]
+          : ["Ontario job offer", "CLB 6 or CLB 4 language threshold"],
+        pathwaySpecificRisks: [
+          isTr
+            ? "OINP EOI alımı kapalı durumdadır."
+            : isZh
+              ? "OINP 意向表达申请通道目前已关闭。"
+              : "OINP EOI intake is currently closed."
+        ]
+      };
+    });
+    pathwayComparison.unshift(...onComparisons);
+  } else if (targetProvince === "BC") {
+    const bcResults = buildBcPnpEligibility(input, isEeEligible);
+    const bcComparisons: PathwayComparison[] = bcResults.map((res) => {
+      const isEeBC = res.pathwayId === "BC_EEBC";
+      const keyRequirements = isEeBC 
+        ? (isTr 
+            ? ["Express Entry profil uygunluğu", "BC iş teklifi", "CLB 7", "NOC TEER 0, 1, 2"] 
+            : isZh 
+              ? ["联邦EE通道资格", "BC工作邀约", "CLB 7", "NOC TEER 0, 1, 2"] 
+              : ["Federal Express Entry eligibility", "BC job offer", "CLB 7", "NOC TEER 0, 1, 2"])
+        : (isTr
+            ? ["BC iş teklifi", "CLB 6", "NOC TEER 0, 1, 2, 3"]
+            : isZh
+              ? ["BC工作邀约", "CLB 6", "NOC TEER 0, 1, 2, 3"]
+              : ["BC job offer", "CLB 6", "NOC TEER 0, 1, 2, 3"]);
+      return {
+        subclass: res.pathwayId,
+        visaName: res.stream.streamName,
+        reason: isTr
+          ? `British Columbia PNP adaylığı için geçerli bir iş teklifi gereklidir (formda toplanmamıştır). Eksik: ${res.missingRequirements.join(", ")}.`
+          : isZh
+            ? `不列颠哥伦比亚省提名（BC PNP）需要有效的工作邀约（本表单未收集）。缺失条件：${res.missingRequirements.join(", ")}。`
+            : `A qualifying job offer in British Columbia is required (not collected by this form). Missing requirements: ${res.missingRequirements.join(", ")}.`,
+        relevance: "ineligible",
+        confidenceLevel: "medium",
+        confidenceExplanation: isTr
+          ? "İş teklifi olmaması nedeniyle bu akış kapalıdır (blocked)."
+          : isZh
+            ? "由于缺乏有效工作邀约，此通道已被锁定。"
+            : "Blocked due to lack of a qualifying job offer.",
+        difficulty: "high",
+        requirementType: isTr ? "İş teklifi zorunluluğu" : "Job offer required",
+        userRelativePosition: isTr 
+          ? "Geçerli bir iş teklifiniz olmadan ilerleme kaydedemezsiniz." 
+          : isZh
+            ? "在未获得有效工作邀约前，您无法推进此路径。"
+            : "You cannot proceed without a valid job offer.",
+        keyRequirements,
+        pathwaySpecificRisks: [
+          isTr 
+            ? "BC PNP Skills Immigration veya EEBC akışları için iş teklifi kritik bir önkoşuldur." 
+            : isZh
+              ? "工作邀约是申请 BC PNP 技术移民或 EEBC 的关键前置条件。"
+              : "A job offer is a critical prerequisite for BC PNP Skills Immigration or EEBC."
+        ]
+      };
+    });
+    pathwayComparison.unshift(...bcComparisons);
+  } else if (targetProvince === "AB") {
+    const abResults = buildAlbertaPnpEligibility(input, isEeEligible, pointsEstimate.estimatedPoints);
+    const abComparisons: PathwayComparison[] = abResults.map((res) => {
+      const isAEES = res.pathwayId === "AB_EXPRESS_ENTRY";
+      if (isAEES) {
+        return {
+          subclass: res.pathwayId,
+          visaName: res.stream.streamName,
+          reason: res.eligible
+            ? (isTr
+                ? "Alberta Express Entry için asgari CRS 300 puanına ve federal EE uygunluğuna sahipsiniz."
+                : isZh
+                  ? "您满足阿尔伯塔 Express Entry（AEES）的最低 CRS 300 分及联邦 EE 资格要求。"
+                  : "You meet the requirements for Alberta Express Entry (minimum CRS 300 and Federal EE eligibility).")
+            : (isTr
+                ? `Alberta Express Entry akışı uygun bulunmadı. Eksik: ${res.missingRequirements.join(", ")}.`
+                : isZh
+                  ? `未满足阿尔伯塔 Express Entry 通道资格。缺失条件：${res.missingRequirements.join(", ")}。`
+                  : `Alberta Express Entry pathway is not eligible. Missing: ${res.missingRequirements.join(", ")}.`),
+          relevance: res.eligible ? "possible" : "ineligible",
+          confidenceLevel: "medium",
+          confidenceExplanation: isTr
+            ? "Express Entry CRS puanınız ve federal EE profil durumunuz doğrulanmıştır."
+            : isZh
+              ? "Express Entry CRS 预估得分和联邦 EE 资格已验证。"
+              : "Express Entry CRS score and Federal EE profile status have been verified.",
+          difficulty: res.eligible ? "medium" : "high",
+          requirementType: isTr ? "Federal EE ve CRS Skoru" : "Federal EE & CRS Score",
+          userRelativePosition: isTr
+            ? "Alberta Express Entry çekilişleri önceden planlanmaz, puanınız havuzda değerlendirilir."
+            : isZh
+              ? "阿尔伯塔 Express Entry 抽签不定期进行，您的档案将在池中等待挑选。"
+              : "Alberta Express Entry draws are unplanned and processed directly from the pool.",
+          keyRequirements: isTr
+            ? ["Federal Express Entry uygunluğu", "Asgari 300 CRS puanı"]
+            : isZh
+              ? ["联邦 Express Entry 资格", "最低 300 CRS 分数"]
+              : ["Federal Express Entry eligibility", "Minimum 300 CRS score"],
+          pathwaySpecificRisks: [
+            isTr
+              ? "AAIP çekilişleri düzensiz aralıklarla yapılır, kesin tarih veya garanti verilmez."
+              : isZh
+                ? "AAIP 抽签不定期进行，无法预测确切抽签日期且不保证获得邀请。"
+                : "AAIP draws occur at irregular intervals with no fixed schedule or invitation guarantee."
+          ]
+        };
+      } else {
+        return {
+          subclass: res.pathwayId,
+          visaName: res.stream.streamName,
+          reason: isTr
+            ? `Alberta Opportunity, Rural veya Tourism akışları iş teklifi gerektirir. Eksik: ${res.missingRequirements.join(", ")}.`
+            : isZh
+              ? `阿尔伯塔 Opportunity、Rural 或 Tourism 通道要求工作邀约。缺失条件：${res.missingRequirements.join(", ")}。`
+              : `Alberta Opportunity, Rural, or Tourism streams require a job offer. Missing: ${res.missingRequirements.join(", ")}.`,
+          relevance: "ineligible",
+          confidenceLevel: "medium",
+          confidenceExplanation: isTr
+            ? "İş teklifi olmaması nedeniyle bu akış kapalıdır (blocked)."
+            : isZh
+              ? "由于缺乏有效工作邀约，此通道已被锁定。"
+              : "Blocked due to lack of a qualifying job offer.",
+          difficulty: "high",
+          requirementType: isTr ? "İş teklifi ve Alberta istihdamı" : "Job offer & Alberta employment",
+          userRelativePosition: isTr
+            ? "Geçerli bir iş teklifiniz olmadan ilerleme kaydedemezsiniz."
+            : isZh
+              ? "在未获得有效工作邀约前，您无法推进此路径。"
+              : "You cannot proceed without a valid job offer.",
+          keyRequirements: isTr
+            ? ["Alberta işvereninden iş teklifi", "Geçerli çalışma izni / aktif çalışma (AOS için)"]
+            : isZh
+              ? ["阿省雇主工作邀约", "有效工签 / 在阿省全职工作（AOS 适用）"]
+              : ["Job offer from an Alberta employer", "Valid work permit / active employment (for AOS)"],
+          pathwaySpecificRisks: [
+            isTr
+              ? "Alberta iş teklifi ve yerel istihdam durumu kritik bir önkoşuldur."
+              : isZh
+                ? "阿尔伯塔省的工作邀约和本地工作状态是至关重要的前置条件。"
+                : "Alberta job offer and local employment status are critical prerequisites."
+          ]
+        };
+      }
+    });
+    pathwayComparison.unshift(...abComparisons);
+  } else if (hasPnpInterest) {
     pathwayComparison.unshift({
       subclass: "PNP",
       visaName: isTr
