@@ -1033,18 +1033,20 @@ export async function submitFullCheckWaitlist(
         ? "担保/家庭情况为必填项。"
         : "Sponsor/family status is required.";
   }
-  if (!annualSalaryAudRaw) {
-    errors.annualSalaryAud = isTr
-      ? "Yillik maas (AUD) gereklidir."
-      : isZh
-        ? "年薪（AUD）为必填项。"
-        : "Annual salary (AUD) is required.";
-  } else if (!Number.isFinite(annualSalaryAud) || (annualSalaryAud ?? 0) <= 0) {
-    errors.annualSalaryAud = isTr
-      ? "Gecerli bir yillik maas girin."
-      : isZh
-        ? "请输入有效的年薪数值。"
-        : "Enter a valid annual salary amount.";
+  if (targetCountry === "AU") {
+    if (!annualSalaryAudRaw) {
+      errors.annualSalaryAud = isTr
+        ? "Yillik maas (AUD) gereklidir."
+        : isZh
+          ? "年薪（AUD）为必填项。"
+          : "Annual salary (AUD) is required.";
+    } else if (!Number.isFinite(annualSalaryAud) || (annualSalaryAud ?? 0) <= 0) {
+      errors.annualSalaryAud = isTr
+        ? "Gecerli bir yillik maas girin."
+        : isZh
+          ? "请输入有效的年薪数值。"
+          : "Enter a valid annual salary amount.";
+    }
   }
   if (!offshoreExperienceYearsResult.success) {
     errors.offshoreExperienceYears = isTr

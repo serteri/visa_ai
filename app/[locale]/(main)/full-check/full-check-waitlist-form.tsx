@@ -563,11 +563,17 @@ export function FullCheckWaitlistForm({
   const [courseCricosCode, setCourseCricosCode] = useState("");
   const [courseCompletionStatus, setCourseCompletionStatus] = useState("");
   const [courseCompletionDate, setCourseCompletionDate] = useState("");
-  const experienceHelpText = txt(
-    "Yalnızca davetten önceki son 10 yıl içindeki, aday gösterilen veya yakından ilgili meslekte, haftada en az 20 saatlik nitelikli çalışmayı yazın.",
-    "Count only skilled work in your nominated or closely related occupation, at least 20 hours/week, within 10 years before invitation.",
-    "仅填写获邀前10年内、提名职业或密切相关职业、且每周至少20小时的技术工作年限。"
-  );
+  const experienceHelpText = selectedCountry === "CA"
+    ? txt(
+        "Nitelikli (TEER 0-5) kapsamındaki iş deneyimlerinizi yazın. Kanada içi deneyimler en az 1 yıl tam zamanlı olmalıdır.",
+        "Count skilled employment (TEER 0-5). Canadian work experience must be at least 1 year full-time to claim points.",
+        "仅计入技术工作经验（TEER 0-5）。加拿大境内工作经验须满至少1年全职方可计分。"
+      )
+    : txt(
+        "Yalnızca davetten önceki son 10 yıl içindeki, aday gösterilen veya yakından ilgili meslekte, haftada en az 20 saatlik nitelikli çalışmayı yazın.",
+        "Count only skilled work in your nominated or closely related occupation, at least 20 hours/week, within 10 years before invitation.",
+        "仅填写获邀前10年内、提名职业或密切相关职业、且每周至少20小时的技术工作年限。"
+      );
   const isResearchOrDoctorateQualification =
     qualificationLevel === "Master's Degree (Research)" ||
     qualificationLevel === "PhD/Doctorate" ||
@@ -801,7 +807,24 @@ export function FullCheckWaitlistForm({
     },
   ];
 
-  const sponsorFamilyOptions = [
+  const sponsorFamilyOptions = selectedCountry === "CA" ? [
+    {
+      value: "Single / No Spouse",
+      label: txt("Bekar / Eş Yok", "Single / No Spouse", "单身 / 无配偶"),
+    },
+    {
+      value: "Spouse is Canadian Citizen or PR",
+      label: txt("Eşim Kanada Vatandaşı veya PR", "Spouse is Canadian Citizen or PR", "配偶是加拿大公民或永久居民"),
+    },
+    {
+      value: "Spouse is Accompanying (with English/Education)",
+      label: txt("Eşim Eşlik Ediyor (İngilizce/Eğitim Var)", "Spouse is Accompanying (with English/Education)", "配偶随行（有英语/教育学历）"),
+    },
+    {
+      value: "Spouse is Accompanying (WITHOUT English/Education)",
+      label: txt("Eşim Eşlik Ediyor (İngilizce/Eğitim Yok)", "Spouse is Accompanying (WITHOUT English/Education)", "配偶随行（无英语/教育学历）"),
+    }
+  ] : [
     {
       value: "Single / No Dependants",
       label: txt("Bekar / Bağımlı Yok", "Single / No Dependants", "单身 / 无受养人"),
@@ -1393,11 +1416,17 @@ export function FullCheckWaitlistForm({
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-qualification-awarded-in-australia">
-            {txt(
-              "Bu yeterliliği bir Avustralya kurumunda tamamladınız mı?",
-              "Did you complete this qualification at an Australian institution?",
-              "你是否在澳大利亚教育机构完成了这一学历？"
-            )}
+            {selectedCountry === "CA"
+              ? txt(
+                  "Bu diploma için ECA (örn. WES) eğitim denkliği aldınız mı?",
+                  "Did you obtain an ECA (e.g. WES) credential assessment for this qualification?",
+                  "你是否为该学历获得了 ECA（例如 WES）证书评估？"
+                )
+              : txt(
+                  "Bu yeterliliği bir Avustralya kurumunda tamamladınız mı?",
+                  "Did you complete this qualification at an Australian institution?",
+                  "你是否在澳大利亚教育机构完成了这一学历？"
+                )}
           </Label>
           <select
             id="waitlist-qualification-awarded-in-australia"
@@ -1418,16 +1447,22 @@ export function FullCheckWaitlistForm({
             <option value="no">{txt("Hayır", "No", "否")}</option>
           </select>
           <p className="text-xs text-muted-foreground">
-            {txt(
-              "Bu yanıt, Australian study requirement (+5) ve varsa regional study (+5) puanlarını belirler.",
-              "This answer drives the Australian study requirement (+5) and, if relevant, regional study (+5) points.",
-              "此答案将决定 Australian study requirement（+5）以及如适用的 regional study（+5）积分。"
-            )}
+            {selectedCountry === "CA"
+              ? txt(
+                  "Kanada dışındaki eğitimler için ECA denkliği (ECA assessed) +puan getirir.",
+                  "Education completed outside Canada requires an ECA credential assessment to claim points.",
+                  "在加拿大境外完成的学历需要进行 ECA 证书评估才能计分。"
+                )
+              : txt(
+                  "Bu yanıt, Australian study requirement (+5) ve varsa regional study (+5) puanlarını belirler.",
+                  "This answer drives the Australian study requirement (+5) and, if relevant, regional study (+5) points.",
+                  "此答案将决定 Australian study requirement（+5）以及如适用的 regional study（+5）积分。"
+                )}
           </p>
           <ErrorText message={state.errors?.qualificationAwardedInAustralia} />
         </div>
 
-        {qualificationAwardedInAustralia === "yes" && (
+        {selectedCountry === "AU" && qualificationAwardedInAustralia === "yes" && (
           <div className="space-y-2">
             <Label htmlFor="waitlist-qualification-regional-australia">
               {txt(
@@ -1451,7 +1486,7 @@ export function FullCheckWaitlistForm({
           </div>
         )}
 
-        {qualificationAwardedInAustralia === "yes" && isResearchOrDoctorateQualification && (
+        {selectedCountry === "AU" && qualificationAwardedInAustralia === "yes" && isResearchOrDoctorateQualification && (
           <div className="space-y-2">
             <Label htmlFor="waitlist-specialist-education-stem-response">
               {txt(
@@ -1483,35 +1518,43 @@ export function FullCheckWaitlistForm({
           </div>
         )}
 
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-salary-aud">
-            {txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}
-            <RequiredMark />
-          </Label>
-          <Input
-            id="waitlist-salary-aud"
-            name="annualSalaryAud"
-            type="number"
-            min={0}
-            step={1}
-            inputMode="numeric"
-            value={annualSalaryAud}
-            onChange={(e) => setAnnualSalaryAud(e.target.value)}
-            {...noAutofill("annualSalaryAud")}
-            className={fieldClassName}
-            placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")}
-          />
-          <ErrorText message={state.errors?.annualSalaryAud} />
-        </div>
+        {selectedCountry === "AU" && (
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-salary-aud">
+              {txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}
+              <RequiredMark />
+            </Label>
+            <Input
+              id="waitlist-salary-aud"
+              name="annualSalaryAud"
+              type="number"
+              min={0}
+              step={1}
+              inputMode="numeric"
+              value={annualSalaryAud}
+              onChange={(e) => setAnnualSalaryAud(e.target.value)}
+              {...noAutofill("annualSalaryAud")}
+              className={fieldClassName}
+              placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")}
+            />
+            <ErrorText message={state.errors?.annualSalaryAud} />
+          </div>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="waitlist-offshore-experience-years">
-              {txt(
-                "Avustralya dışındaki nitelikli iş deneyimi (yıl)",
-                "Years of skilled employment outside Australia",
-                "澳大利亚境外技术工作年限"
-              )}
+              {selectedCountry === "CA"
+                ? txt(
+                    "Kanada dışındaki nitelikli iş deneyimi (yıl)",
+                    "Years of skilled employment outside Canada",
+                    "加拿大境外技术工作年限"
+                  )
+                : txt(
+                    "Avustralya dışındaki nitelikli iş deneyimi (yıl)",
+                    "Years of skilled employment outside Australia",
+                    "澳大利亚境外技术工作年限"
+                  )}
             </Label>
             <Input
               id="waitlist-offshore-experience-years"
@@ -1530,11 +1573,17 @@ export function FullCheckWaitlistForm({
 
           <div className="space-y-2">
             <Label htmlFor="waitlist-onshore-experience-years">
-              {txt(
-                "Avustralya içindeki nitelikli iş deneyimi (yıl)",
-                "Years of skilled employment in Australia",
-                "澳大利亚境内技术工作年限"
-              )}
+              {selectedCountry === "CA"
+                ? txt(
+                    "Kanada içindeki nitelikli iş deneyimi (yıl)",
+                    "Years of skilled employment in Canada",
+                    "加拿大境内技术工作年限"
+                  )
+                : txt(
+                    "Avustralya içindeki nitelikli iş deneyimi (yıl)",
+                    "Years of skilled employment in Australia",
+                    "澳大利亚境内技术工作年限"
+                  )}
             </Label>
             <Input
               id="waitlist-onshore-experience-years"
@@ -1554,13 +1603,19 @@ export function FullCheckWaitlistForm({
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-sponsor">
-            {txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}
+            {selectedCountry === "CA"
+              ? txt("Medeni durum ve eş faktörü", "Marital status and spouse factors", "婚姻状况与配偶情况")
+              : txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}
             <RequiredMark />
           </Label>
           <Select value={sponsorFamilyStatus} onValueChange={setSponsorFamilyStatus}>
             <SelectTrigger id="waitlist-sponsor" className={fieldClassName}>
               <SelectValue
-                placeholder={txt("Sponsor/aile durumunu seçin", "Select sponsor/family status", "请选择担保/家庭状态")}
+                placeholder={
+                  selectedCountry === "CA"
+                    ? txt("Medeni/eş durumunu seçin", "Select marital/spouse status", "请选择婚姻/配偶状态")
+                    : txt("Sponsor/aile durumunu seçin", "Select sponsor/family status", "请选择担保/家庭状态")
+                }
               />
             </SelectTrigger>
             <SelectContent>
@@ -1622,11 +1677,17 @@ export function FullCheckWaitlistForm({
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-graduate-visa-intent">
-            {txt(
-              "Şu anda Avustralya'da uluslararası öğrenci misiniz veya 485 Mezun Vizesi başvurmayı planlıyor musunuz? (opsiyonel)",
-              "Are you currently an international student in Australia or planning to apply for a 485 Graduate Visa? (optional)",
-              "您目前是否是在澳大利亚的国际学生，或计划申请485毕业生签证？（可选）"
-            )}
+            {selectedCountry === "CA"
+              ? txt(
+                  "Şu anda Kanada'da uluslararası öğrenci misiniz veya PGWP (Post-Graduation Work Permit) başvurmayı planlıyor musunuz? (opsiyonel)",
+                  "Are you currently an international student in Canada or planning to apply for a Post-Graduation Work Permit (PGWP)? (optional)",
+                  "您目前是否是在加拿大的国际学生，或计划申请毕业后工作许可（PGWP）？（可选）"
+                )
+              : txt(
+                  "Şu anda Avustralya'da uluslararası öğrenci misiniz veya 485 Mezun Vizesi başvurmayı planlıyor musunuz? (opsiyonel)",
+                  "Are you currently an international student in Australia or planning to apply for a 485 Graduate Visa? (optional)",
+                  "您目前是否是在澳大利亚的国际学生，或计划申请485毕业生签证？（可选）"
+                )}
           </Label>
           <select
             id="waitlist-graduate-visa-intent"

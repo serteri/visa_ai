@@ -119,3 +119,11 @@ export const countryVisaPathways: Record<SupportedCountry, VisaPathwayOption[]> 
     },
   ],
 };
+
+export const DISPLAY_START_SLOTS = 14;
+export const MIN_DISPLAY_SLOTS = 2;
+
+export function calculateDisplayedSlots(maxFree: number, remainingSpots: number): number {
+  const usedSlots = Math.max(0, maxFree - remainingSpots);
+  return Math.max(MIN_DISPLAY_SLOTS, DISPLAY_START_SLOTS - usedSlots);
+}

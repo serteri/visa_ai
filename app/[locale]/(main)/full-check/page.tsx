@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FullCheckInteractiveSection } from "./full-check-interactive-section";
 import { ShareLogivisaCard } from "@/components/share-logivisa-card";
 import { getCachedFullCheckUsage } from "@/lib/cache/public-read-models";
-import { isSupportedCountry } from "@/lib/countries";
+import { isSupportedCountry, calculateDisplayedSlots, DISPLAY_START_SLOTS } from "@/lib/countries";
 
 const BASE_URL = "https://www.logivisa.com";
 
@@ -107,6 +107,8 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
     // Keep defaults when DB is temporarily unavailable
   }
 
+  const displayedRemainingSpots = calculateDisplayedSlots(maxFree, remainingSpots);
+
   return (
     <main className="flex-1 bg-slate-50 pb-12">
       <section className="section-shell space-y-6">
@@ -114,7 +116,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           locale={locale}
           initialValues={initialValues}
           isFreeActive={isFreeActive}
-          remainingSpots={remainingSpots}
+          remainingSpots={displayedRemainingSpots}
           formHeader={
             <>
               <div className="mb-6 space-y-3">
@@ -128,9 +130,9 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                 }`}>
                   {isFreeActive
                     ? tx(
-                        `🔥 Hurry up: FREE for the first ${maxFree} users. Only ${remainingSpots} spots left!`,
-                        `🔥 Acele edin: Ilk ${maxFree} kullaniciya UCRETSIZ. Yalnizca ${remainingSpots} kontenjan kaldi!`,
-                        `🔥 抓紧：前 ${maxFree} 名用户免费。仅剩 ${remainingSpots} 个名额！`
+                        `🔥 Hurry up: FREE for the first ${DISPLAY_START_SLOTS} users. Only ${displayedRemainingSpots} spots left!`,
+                        `🔥 Acele edin: İlk ${DISPLAY_START_SLOTS} kullanıcıya ÜCRETSİZ. Yalnızca ${displayedRemainingSpots} kontenjan kaldı!`,
+                        `🔥 抓紧：前 ${DISPLAY_START_SLOTS} 名用户免费。仅剩 ${displayedRemainingSpots} 个名额！`
                       )
                     : tx(
                         "Premium Report — $49 per report.",
