@@ -348,7 +348,7 @@ export type StateNominationStatus =
 export type StateMatchLevel = "high" | "medium" | "low";
 
 /** AU state/territory codes, plus Canada PNP province codes (lib/readiness/pnp-provinces.ts) — the tracker/renderer pipeline is shared, since both are "region-by-region nomination status" data, but the underlying eligibility logic per country is entirely separate. */
-export type StateNominationCode = "NSW" | "VIC" | "WA" | "SA" | "QLD" | "NT" | "TAS" | "ACT" | "ON" | "BC" | "AB";
+export type StateNominationCode = "NSW" | "VIC" | "WA" | "SA" | "QLD" | "NT" | "TAS" | "ACT" | "ON" | "BC" | "AB" | "QC";
 
 export type StateNominationState = {
   code: StateNominationCode;
