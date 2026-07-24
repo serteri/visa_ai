@@ -10,6 +10,7 @@ import {
 } from "@/lib/readiness/education-signals";
 import { checkOccupation } from "@/lib/occupations/check-occupation";
 import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
+import { isFSTPEligibleOccupation } from "@/lib/readiness/noc-fstp-groups";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
 import type { CanadaCRSInput, CLBLevel } from "@/lib/points/canada-types";
@@ -950,6 +951,65 @@ function calculateConfidence(input: ReadinessInput): "HIGH" | "LOW" {
   return hasNoc && hasLanguage && hasAge && hasEducation ? "HIGH" : "LOW";
 }
 
+// FSTP work-experience gate: 2 years (3,120 hours) within the last 5 years,
+// deliberately separate constants from FSW's 1 year / 10 years (see
+// buildCanadaPointsEstimate's CEC/FSW work-experience handling) so the two
+// programs' hard gates can never be conflated.
+const FSTP_MIN_WORK_EXPERIENCE_YEARS = 2;
+const FSTP_MIN_WORK_EXPERIENCE_HOURS = 3120;
+const FSTP_WORK_EXPERIENCE_LOOKBACK_YEARS = 5;
+// FSTP's language threshold (CLB 5 speaking/listening, CLB 4 reading/writing)
+// is lower than FSW's CLB 7 -- kept as its own named constant rather than
+// reusing FSW's threshold anywhere in the FSTP gate.
+const FSTP_LANGUAGE_THRESHOLD = { speakingListening: "CLB 5", readingWriting: "CLB 4" } as const;
+
+export type FSTPEligibility = {
+  /** Code-based NOC check (lib/readiness/noc-fstp-groups.ts) — never free-text keyword matching. */
+  occupationEligible: boolean;
+  nocCode?: string;
+  /** True once >= FSTP_MIN_WORK_EXPERIENCE_YEARS of combined offshore+onshore experience is on file (a proxy for the 3,120-hour/5-year rule; hours are not separately collected). */
+  workExperienceGateMet: boolean;
+  workExperienceYears: number;
+  /** Best-effort from the coarse englishLevel field; any tier at or above "competent" clears CLB 5/4. Undefined English is treated as not meeting the threshold, not silently passing. */
+  languageThresholdMet: boolean;
+  /**
+   * The intake form does not currently collect a job offer or a Canadian
+   * certificate of qualification, so this hard gate cannot be confirmed
+   * true or false from user input -- it is surfaced as "unmet" (not
+   * silently assumed satisfied) so the report flags it for manual
+   * verification instead of asserting eligibility the data can't support.
+   */
+  hasJobOfferOrCertificateOfQualification: false;
+};
+
+/**
+ * Single source of truth for FSTP eligibility -- every downstream section
+ * (pathway detection, Structured Pathway Comparison text, Audit-Ready Proof
+ * Checklist gating) must read from this instead of re-deriving its own
+ * occupation or work-experience check, mirroring the hasRealEnglishEvidence
+ * pattern used for the English-evidence fix.
+ */
+function buildFSTPEligibility(input: ReadinessInput): FSTPEligibility {
+  const nocResult = checkNocOccupation({ occupation: input.occupation ?? "", nocCode: input.nocCode });
+  const resolvedNocCode = input.nocCode ?? nocResult.matches[0]?.code;
+  const occupationEligible = Boolean(resolvedNocCode && isFSTPEligibleOccupation(resolvedNocCode));
+
+  const workExperienceYears = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
+  const workExperienceGateMet = workExperienceYears >= FSTP_MIN_WORK_EXPERIENCE_YEARS;
+
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const languageThresholdMet = englishOption === "competent" || englishOption === "proficient" || englishOption === "superior";
+
+  return {
+    occupationEligible,
+    nocCode: resolvedNocCode,
+    workExperienceGateMet,
+    workExperienceYears,
+    languageThresholdMet,
+    hasJobOfferOrCertificateOfQualification: false,
+  };
+}
+
 // Intentionally simpler than the AU pathwayComparison builder — this covers
 // only what's needed for the 8 sections activated for Canada in this pass
 // (points, roadmap, risk, document checklist, gantt, PDF, disclaimer). The
@@ -959,7 +1019,8 @@ function buildCanadaPathwayComparison(
   pathwayCodes: CanadaPathwayCode[],
   locale: Locale,
   estimatedPoints?: number,
-  occupation?: string
+  occupation?: string,
+  fstpEligibility?: FSTPEligibility
 ): PathwayComparison[] {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -1010,6 +1071,90 @@ function buildCanadaPathwayComparison(
     // The input object is captured in the outer scope via the `occupation` param.
     // We synthesize a minimal ReadinessInput-compatible object for the check.
     const dynConf: ConfidenceLevel = estimatedPoints !== undefined && Boolean(occupation) ? "medium" : "low";
+
+    // FSTP gets its own branch instead of falling into the generic
+    // isExpressEntry copy shared with CEC/FSW: its work-experience duration
+    // (2yr/3,120hr/5yr, not CEC's 1yr/1,560hr or FSW's 1yr/10yr), language
+    // threshold (CLB 5/4, not CLB 7), and job-offer-OR-certificate hard gate
+    // are all distinct rules that generic Express Entry wording would
+    // misrepresent. fstpEligibility is the single source of truth for these
+    // (buildFSTPEligibility) -- this branch only renders it.
+    if (code === "FSTP" && fstpEligibility) {
+      const hardGateUnmet = !fstpEligibility.workExperienceGateMet || !fstpEligibility.languageThresholdMet;
+      const missingBits: string[] = [];
+      if (!fstpEligibility.workExperienceGateMet) {
+        missingBits.push(
+          isTr
+            ? `son ${FSTP_WORK_EXPERIENCE_LOOKBACK_YEARS} yıl içinde en az ${FSTP_MIN_WORK_EXPERIENCE_YEARS} yıl (${FSTP_MIN_WORK_EXPERIENCE_HOURS} saat) ilgili ticaret deneyimi`
+            : isZh
+              ? `过去 ${FSTP_WORK_EXPERIENCE_LOOKBACK_YEARS} 年内至少 ${FSTP_MIN_WORK_EXPERIENCE_YEARS} 年（${FSTP_MIN_WORK_EXPERIENCE_HOURS} 小时）相关技工经验`
+              : `at least ${FSTP_MIN_WORK_EXPERIENCE_YEARS} years (${FSTP_MIN_WORK_EXPERIENCE_HOURS} hours) of relevant trade experience within the last ${FSTP_WORK_EXPERIENCE_LOOKBACK_YEARS} years`
+        );
+      }
+      if (!fstpEligibility.languageThresholdMet) {
+        missingBits.push(
+          isTr
+            ? `${FSTP_LANGUAGE_THRESHOLD.speakingListening} konuşma/dinleme ve ${FSTP_LANGUAGE_THRESHOLD.readingWriting} okuma/yazma dil eşiği`
+            : isZh
+              ? `口语/听力达到 ${FSTP_LANGUAGE_THRESHOLD.speakingListening}、读写达到 ${FSTP_LANGUAGE_THRESHOLD.readingWriting} 的语言门槛`
+              : `${FSTP_LANGUAGE_THRESHOLD.speakingListening} speaking/listening and ${FSTP_LANGUAGE_THRESHOLD.readingWriting} reading/writing language threshold`
+        );
+      }
+      return {
+        subclass: code,
+        visaName: isTr ? CANADA_PATHWAY_NAMES[code].tr : CANADA_PATHWAY_NAMES[code].en,
+        reason: isTr
+          ? `NOC kodunuz (${fstpEligibility.nocCode ?? "?"}) FSTP için uygun ticaret grubunda.${hardGateUnmet ? ` Ancak ${missingBits.join(" ve ")} henüz doğrulanamadı.` : ""}`
+          : isZh
+            ? `您的 NOC 代码（${fstpEligibility.nocCode ?? "?"}）属于 FSTP 合格技工组别。${hardGateUnmet ? `但${missingBits.join("和")}尚未确认。` : ""}`
+            : `Your NOC code (${fstpEligibility.nocCode ?? "?"}) is in an FSTP-eligible trade group.${hardGateUnmet ? ` However, ${missingBits.join(" and ")} could not yet be confirmed.` : ""}`,
+        relevance: hardGateUnmet ? "needs_more_information" : "possible",
+        confidenceLevel: hardGateUnmet ? "low" : dynConf,
+        confidenceExplanation: isTr
+          ? "FSTP değerlendirmesi NOC ticaret grubu uygunluğuna, iş deneyimi eşiğine (2 yıl/3.120 saat) ve dil eşiğine (CLB 5/4) dayanır; bunlar CEC/FSW'den farklı ayrı kurallardır."
+          : isZh
+            ? "FSTP 评估依据 NOC 技工组别资格、工作经验门槛（2 年/3,120 小时）和语言门槛（CLB 5/4）——这些规则与 CEC/FSW 不同，是独立评估的。"
+            : "FSTP eligibility is assessed against NOC trade-group membership, a work-experience threshold (2 years/3,120 hours), and a language threshold (CLB 5/4) -- rules kept separate from CEC/FSW.",
+        difficulty: hardGateUnmet ? "high" : "medium",
+        requirementType: isTr
+          ? "NOC ticaret grubu, iş deneyimi eşiği ve dil eşiği (CLB 5/4)"
+          : isZh
+            ? "NOC 技工组别、工作经验门槛与语言门槛（CLB 5/4）"
+            : "NOC trade-group eligibility, work-experience threshold, and language threshold (CLB 5/4)",
+        userRelativePosition: isTr
+          ? "Bu yol bir puan testine değil, ticaret grubu uygunluğu ve eşik kriterlerine dayanır; göreli konum kavramı geçerli değildir."
+          : isZh
+            ? "该路径不基于打分制，而是基于技工组别资格和门槛标准；相对位置概念不适用。"
+            : "This pathway is not points-tested -- it is based on trade-group eligibility and threshold criteria, so a relative-position comparison does not apply.",
+        keyRequirements: isTr
+          ? [
+              "FSTP uygun ticaret grubunda NOC kodu",
+              `Son ${FSTP_WORK_EXPERIENCE_LOOKBACK_YEARS} yıl içinde ${FSTP_MIN_WORK_EXPERIENCE_YEARS} yıl (${FSTP_MIN_WORK_EXPERIENCE_HOURS} saat) ücretli ticaret deneyimi`,
+              `${FSTP_LANGUAGE_THRESHOLD.speakingListening} konuşma/dinleme, ${FSTP_LANGUAGE_THRESHOLD.readingWriting} okuma/yazma`,
+              "Geçerli iş teklifi (en az 1 yıl, en fazla 2 Kanadalı işveren) VEYA Kanada eyalet/federal yeterlilik sertifikası",
+            ]
+          : isZh
+            ? [
+                "NOC 代码属于 FSTP 合格技工组别",
+                `过去 ${FSTP_WORK_EXPERIENCE_LOOKBACK_YEARS} 年内 ${FSTP_MIN_WORK_EXPERIENCE_YEARS} 年（${FSTP_MIN_WORK_EXPERIENCE_HOURS} 小时）有偿技工经验`,
+                `口语/听力 ${FSTP_LANGUAGE_THRESHOLD.speakingListening}，读写 ${FSTP_LANGUAGE_THRESHOLD.readingWriting}`,
+                "有效工作邀约（至少1年，最多2名加拿大雇主）或加拿大省/联邦资格证书",
+              ]
+            : [
+                "NOC code in an FSTP-eligible trade group",
+                `${FSTP_MIN_WORK_EXPERIENCE_YEARS} years (${FSTP_MIN_WORK_EXPERIENCE_HOURS} hours) of paid trade experience within the last ${FSTP_WORK_EXPERIENCE_LOOKBACK_YEARS} years`,
+                `${FSTP_LANGUAGE_THRESHOLD.speakingListening} speaking/listening, ${FSTP_LANGUAGE_THRESHOLD.readingWriting} reading/writing`,
+                "A valid job offer (at least 1 year, max 2 Canadian employers) OR a Canadian provincial/federal certificate of qualification",
+              ],
+        pathwaySpecificRisks: [
+          isTr
+            ? "Bu form iş teklifi veya yeterlilik sertifikası bilgisi toplamaz — bu ikili şart ayrıca doğrulanmalıdır."
+            : isZh
+              ? "本表单未收集工作邀约或资格证书信息——该二选一条件需另行确认。"
+              : "This form does not collect job offer or certificate-of-qualification details -- this either/or requirement still needs separate confirmation.",
+        ],
+      };
+    }
 
     return {
       subclass: code,
@@ -4643,10 +4788,21 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   const isZh = locale === "zh-Hans";
   const hasPnpInterest = hasCanadaPnpInterest(input);
 
-  const pathwayCodes = detectCanadaPathways(input);
+  const fstpEligibility = buildFSTPEligibility(input);
+  // FSTP is only surfaced when the occupation's NOC code is actually in an
+  // FSTP-eligible trade group (code-based check, not free-text keyword
+  // matching) -- detectCanadaPathways may still add "FSTP" from keyword
+  // intent or the generic PR-intent fallback, but a non-trades occupation
+  // (e.g. Software Engineer) must not show FSTP as a pathway option, and a
+  // trades occupation that wasn't explicitly named must not be silently
+  // excluded either.
+  let pathwayCodes = detectCanadaPathways(input);
+  if (pathwayCodes.includes("FSTP") && !fstpEligibility.occupationEligible) {
+    pathwayCodes = pathwayCodes.filter((code) => code !== "FSTP");
+  }
   const pointsEstimate = buildCanadaPointsEstimate(input, locale);
   const dataCompleteness = buildDataCompleteness(input, locale);
-  const pathwayComparison = buildCanadaPathwayComparison(pathwayCodes, locale, pointsEstimate.estimatedPoints, input.occupation);
+  const pathwayComparison = buildCanadaPathwayComparison(pathwayCodes, locale, pointsEstimate.estimatedPoints, input.occupation, fstpEligibility);
   if (hasPnpInterest) {
     pathwayComparison.unshift({
       subclass: "PNP",

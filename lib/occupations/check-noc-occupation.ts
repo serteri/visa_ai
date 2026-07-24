@@ -1,4 +1,5 @@
 import nocList from "@/src/data/countries/ca/noc-list.json";
+import { isFSTPEligibleOccupation } from "@/lib/readiness/noc-fstp-groups";
 
 type NocEntry = {
   code: string;
@@ -10,13 +11,6 @@ type NocEntry = {
 };
 
 const NOC_LIST = nocList as NocEntry[];
-
-// FSTP eligibility is gated on these major/minor groups (see express-entry.json
-// programs.FSTP.workExperience.nocGroups). Coverage for these is complete;
-// general TEER 1 professional occupations outside major groups 00/10/11/13/20/21
-// are not yet compiled, see noc-list.json progress notes.
-const FSTP_MAJOR_GROUPS = ["72", "73", "82", "83", "92", "93"];
-const FSTP_EXTRA_CODES = ["62200", "63200", "63201", "63202"];
 
 export type NocMatch = {
   code: string;
@@ -34,10 +28,6 @@ export type NocCheckResult = {
   partialCoverageGap: boolean;
 };
 
-function isFstpGroup(entry: NocEntry): boolean {
-  return FSTP_MAJOR_GROUPS.includes(entry.majorGroup) || FSTP_EXTRA_CODES.includes(entry.code);
-}
-
 export function checkNocOccupation(input: { occupation: string; nocCode?: string }): NocCheckResult {
   // Exact code match from autocomplete selection — skip fuzzy search entirely.
   if (input.nocCode) {
@@ -45,7 +35,7 @@ export function checkNocOccupation(input: { occupation: string; nocCode?: string
     if (direct) {
       return {
         query: input.occupation || direct.title,
-        matches: [{ code: direct.code, title: direct.title, teer: direct.teer, isFstpEligibleGroup: isFstpGroup(direct), duties: direct.duties.slice(0, 3) }],
+        matches: [{ code: direct.code, title: direct.title, teer: direct.teer, isFstpEligibleGroup: isFSTPEligibleOccupation(direct.code), duties: direct.duties.slice(0, 3) }],
         partialCoverageGap: false,
       };
     }
@@ -68,7 +58,7 @@ export function checkNocOccupation(input: { occupation: string; nocCode?: string
     code: e.code,
     title: e.title,
     teer: e.teer,
-    isFstpEligibleGroup: isFstpGroup(e),
+    isFstpEligibleGroup: isFSTPEligibleOccupation(e.code),
     duties: e.duties.slice(0, 3),
   }));
 
