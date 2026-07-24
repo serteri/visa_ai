@@ -3,7 +3,24 @@ import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
-import { frictionBandLabel, frictionBandDefinition, confidenceLevelDefinition } from "@/src/lib/readiness/localization";
+import {
+  frictionBandLabel,
+  frictionBandDefinition,
+  confidenceLevelDefinition,
+  confidenceLevelLabel,
+  confidenceDefinitionGeneric,
+  frictionLevelDefinitionGeneric,
+  strengthLabel,
+  strengthDefinition,
+  evidenceLoadLabel,
+  evidenceLoadDefinition,
+  signalConfidenceLabel,
+  signalConfidenceDefinition,
+  evidenceStatusLabel,
+  evidenceStatusDefinition,
+  pointsGapDefinition,
+  hardGateDefinition,
+} from "@/src/lib/readiness/localization";
 import { resolveOccupationDisplayName } from "./occupation-eligibility";
 import type { ReadinessReport, RankedPathway, RankedPathwayRecommendation } from "./types";
 
@@ -221,6 +238,32 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       livingCostFamily: "3 Kişilik Aile (aylık tahmini)",
       livingCostBothNote: "CAD cinsinden göstergeler: kira, market ve toplu taşıma dahil. Bölgeye ve yaşam tarzına göre önemli farklılıklar görülebilir.",
       crsDrawTrends: "CRS Çekim Trendleri & Kategori Bazlı Seçim",
+      glossaryTitle: "Terimler Sözlüğü — Bu Raporu Nasıl Okumalısınız",
+      glossaryIntro: "Bu rapor genelinde tekrar eden terimler aşağıda tanımlanmıştır. Bölüme özel terimler ilgili bölümün içinde ayrıca açıklanır.",
+      glossaryTermStrength: "Sinyal Gücü (Strength)",
+      glossaryTermConfidence: "Güven (Confidence)",
+      glossaryTermFriction: "Rekabet Düzeyi (Friction Level)",
+      glossaryTermSignalConfidence: "Sinyal Güveni (Signal Confidence)",
+      glossaryTermEvidenceLoad: "Kanıt Yükü (Evidence Load)",
+      glossaryTermEvidenceStatus: "Kanıt Durumu (Evidence Status)",
+      glossaryTermPointsGap: "Puan Farkı (Points Gap)",
+      glossaryTermHardGate: "Zorunlu Eşik (Hard Gate)",
+      visaViabilityRankingIntro: "Aşağıdaki sıralama, olası tüm vize yollarını uygunluk durumuna, puan eşiğine ve profil uyumuna göre en güçlüden en zayıfa doğru dizer.",
+      pathwayFrictionIntro: "Bu bölüm, her yolun pratikte ne kadar rekabetçi olduğunu -- profilinizin güncel davet referanslarına göre nerede durduğunu -- gösterir.",
+      financialRoadmapIntro: "Aşağıdaki tutarlar, başvuru sürecinde karşılaşılabilecek başlıca resmi ve yaşam maliyeti kalemlerinin tahmini bir dökümüdür.",
+      progressionPathwaysIntro: "Bu bölüm, profilinizin mevcut durumundan kalıcı oturuma (PR) ulaşmasına kadar tipik olarak izlenen aşamaları özetler.",
+      strategicGanttChartIntro: "Aşağıdaki zaman çizelgesi, başvuru sürecindeki adımları ve bunların tipik zaman pencerelerini gösterir; kişisel bir taahhüt değil, planlama referansıdır.",
+      stateNominationTrackerIntro: "Bu tablo, her eyalet/bölgenin aday gösterme sinyallerini profilinizin uyumuna göre karşılaştırır.",
+      lodgementReadyChecklistIntro: "Bu kontrol listesi, başvuruyu teslim etmeden önce tamamlanması tipik olarak beklenen adımları sıralar.",
+      pointsBreakdownIntro: "Aşağıdaki tablo, puan bazlı yollar için tahmini puanınızın hangi kategorilerden geldiğini gösterir.",
+      premiumSectionsIntro: "Bu bölümler, temel rapora ek olarak daha derinlemesine planlama verisi sunar.",
+      typicalPathLabel: "Tipik Yol",
+      typicalPathExplainer: "Bu yolu başarıyla tamamlayan başvuru sahiplerinin izlediği en yaygın senaryo.",
+      signalReasonsLabel: "Sinyal Nedenleri",
+      signalReasonsExplainer: "Bu sinyal gücü değerlendirmesine katkıda bulunan başlıca olumlu faktörler.",
+      limitingFactorsLabel: "Sınırlayıcı Faktörler",
+      limitingFactorsExplainer: "Bu yolu şu an zayıflatan veya ek kanıt/iyileştirme gerektiren başlıca faktörler.",
+      belowPointsThresholdExplainer: "Profilinizin tahmini puanı, bu yol için gereken minimum eşiğin altında kalıyor.",
     };
   }
 
@@ -357,6 +400,32 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       livingCostFamily: "\u4e09\u53e3\u4e4b\u5bb6\uff08\u6bcf\u6708\u4f30\u7b97\uff09",
       livingCostBothNote: "\u4ee5 CAD \u4e3a\u5355\u4f4d\u7684\u53c2\u8003\u6307\u6807\uff0c\u542b\u79df\u91d1\u3001\u98df\u54c1\u6742\u8d27\u53ca\u4ea4\u901a\u8d39\u7528\u3002\u5b9e\u9645\u8d39\u7528\u56e0\u793e\u533a\u53ca\u751f\u6d3b\u65b9\u5f0f\u5dee\u5f02\u8f83\u5927\u3002",
       crsDrawTrends: "CRS \u62bd\u7b7e\u8d8b\u52bf\u4e0e\u7c7b\u522b\u4e13\u9879\u9009\u62d4",
+      glossaryTitle: "\u672f\u8bed\u8868 \u2014 \u5982\u4f55\u9605\u8bfb\u672c\u62a5\u544a",
+      glossaryIntro: "\u672c\u62a5\u544a\u4e2d\u53cd\u590d\u51fa\u73b0\u7684\u901a\u7528\u672f\u8bed\u5728\u6b64\u7edf\u4e00\u5b9a\u4e49\u3002\u7279\u5b9a\u7ae0\u8282\u7684\u672f\u8bed\u5c06\u5728\u8be5\u7ae0\u8282\u5185\u5355\u72ec\u8bf4\u660e\u3002",
+      glossaryTermStrength: "\u4fe1\u53f7\u5f3a\u5ea6\uff08Strength\uff09",
+      glossaryTermConfidence: "\u7f6e\u4fe1\u5ea6\uff08Confidence\uff09",
+      glossaryTermFriction: "\u7ade\u4e89\u6fc0\u70c8\u5ea6\uff08Friction Level\uff09",
+      glossaryTermSignalConfidence: "\u4fe1\u53f7\u7f6e\u4fe1\u5ea6\uff08Signal Confidence\uff09",
+      glossaryTermEvidenceLoad: "\u8bc1\u636e\u8d1f\u8377\uff08Evidence Load\uff09",
+      glossaryTermEvidenceStatus: "\u8bc1\u636e\u72b6\u6001\uff08Evidence Status\uff09",
+      glossaryTermPointsGap: "\u5206\u6570\u5dee\u8ddd\uff08Points Gap\uff09",
+      glossaryTermHardGate: "\u5f3a\u5236\u6027\u95e8\u69db\uff08Hard Gate\uff09",
+      visaViabilityRankingIntro: "\u4ee5\u4e0b\u6392\u5e8f\u6309\u5408\u89c4\u72b6\u6001\u3001\u5206\u6570\u95e8\u69db\u548c\u6863\u6848\u5339\u914d\u5ea6\uff0c\u5c06\u6240\u6709\u53ef\u80fd\u7684\u7b7e\u8bc1\u8def\u5f84\u4ece\u6700\u5f3a\u5230\u6700\u5f31\u6392\u5217\u3002",
+      pathwayFrictionIntro: "\u672c\u8282\u5c55\u793a\u6bcf\u6761\u8def\u5f84\u5728\u5b9e\u9645\u64cd\u4f5c\u4e2d\u7684\u7ade\u4e89\u6fc0\u70c8\u7a0b\u5ea6\u2014\u2014\u5373\u60a8\u7684\u6863\u6848\u4e0e\u8fd1\u671f\u83b7\u9080\u53c2\u8003\u5206\u6570\u76f8\u6bd4\u5904\u4e8e\u4ec0\u4e48\u4f4d\u7f6e\u3002",
+      financialRoadmapIntro: "\u4ee5\u4e0b\u91d1\u989d\u662f\u7533\u8bf7\u8fc7\u7a0b\u4e2d\u53ef\u80fd\u9047\u5230\u7684\u4e3b\u8981\u5b98\u65b9\u53ca\u751f\u6d3b\u8d39\u7528\u9879\u76ee\u7684\u4f30\u7b97\u660e\u7ec6\u3002",
+      progressionPathwaysIntro: "\u672c\u8282\u6982\u8ff0\u4ece\u6863\u6848\u5f53\u524d\u72b6\u6001\u5230\u83b7\u5f97\u6c38\u4e45\u5c45\u7559\uff08PR\uff09\u901a\u5e38\u9700\u8981\u7ecf\u5386\u7684\u9636\u6bb5\u3002",
+      strategicGanttChartIntro: "\u4e0b\u65b9\u65f6\u95f4\u7ebf\u5c55\u793a\u7533\u8bf7\u8fc7\u7a0b\u4e2d\u7684\u5404\u4e2a\u6b65\u9aa4\u53ca\u5176\u901a\u5e38\u6240\u9700\u7684\u65f6\u95f4\u7a97\u53e3\uff1b\u8fd9\u662f\u89c4\u5212\u53c2\u8003\uff0c\u5e76\u975e\u4e2a\u4eba\u627f\u8bfa\u3002",
+      stateNominationTrackerIntro: "\u6b64\u8868\u6309\u6863\u6848\u5339\u914d\u5ea6\u6bd4\u8f83\u5404\u5dde/\u5730\u533a\u7684\u63d0\u540d\u4fe1\u53f7\u3002",
+      lodgementReadyChecklistIntro: "\u6b64\u6e05\u5355\u5217\u51fa\u9012\u4ea4\u7533\u8bf7\u524d\u901a\u5e38\u9700\u8981\u5b8c\u6210\u7684\u6b65\u9aa4\u3002",
+      pointsBreakdownIntro: "\u4e0b\u8868\u5c55\u793a\u6253\u5206\u7c7b\u8def\u5f84\u4e2d\uff0c\u60a8\u7684\u9884\u8ba1\u5206\u6570\u6765\u81ea\u54ea\u4e9b\u7c7b\u522b\u3002",
+      premiumSectionsIntro: "\u8fd9\u4e9b\u7ae0\u8282\u5728\u57fa\u7840\u62a5\u544a\u4e4b\u4e0a\u63d0\u4f9b\u66f4\u6df1\u5165\u7684\u89c4\u5212\u6570\u636e\u3002",
+      typicalPathLabel: "\u5178\u578b\u8def\u5f84",
+      typicalPathExplainer: "\u6210\u529f\u5b8c\u6210\u8be5\u8def\u5f84\u7684\u7533\u8bf7\u4eba\u6700\u5e38\u89c1\u7684\u60c5\u5f62\u3002",
+      signalReasonsLabel: "\u4fe1\u53f7\u539f\u56e0",
+      signalReasonsExplainer: "\u4fc3\u6210\u8be5\u4fe1\u53f7\u5f3a\u5ea6\u8bc4\u4f30\u7684\u4e3b\u8981\u6709\u5229\u56e0\u7d20\u3002",
+      limitingFactorsLabel: "\u9650\u5236\u56e0\u7d20",
+      limitingFactorsExplainer: "\u76ee\u524d\u524a\u5f31\u8be5\u8def\u5f84\u3001\u6216\u9700\u8981\u8865\u5145\u8bc1\u636e/\u6539\u5584\u6863\u6848\u7684\u4e3b\u8981\u56e0\u7d20\u3002",
+      belowPointsThresholdExplainer: "\u60a8\u6863\u6848\u7684\u9884\u8ba1\u5206\u6570\u4f4e\u4e8e\u8be5\u8def\u5f84\u6240\u9700\u7684\u6700\u4f4e\u95e8\u69db\u3002",
     };
   }
 
@@ -492,6 +561,32 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     livingCostFamily: "Family of 3 (monthly estimate)",
     livingCostBothNote: "CAD indicative figures: rent, groceries, and transit included. Costs vary significantly by neighbourhood and lifestyle.",
     crsDrawTrends: "CRS Draw Trends & Category-Based Selection",
+    glossaryTitle: "Glossary — How to Read This Report",
+    glossaryIntro: "Terms that repeat throughout this report are defined once below. Terms specific to a single section are explained inline within that section.",
+    glossaryTermStrength: "Strength",
+    glossaryTermConfidence: "Confidence",
+    glossaryTermFriction: "Friction Level",
+    glossaryTermSignalConfidence: "Signal Confidence",
+    glossaryTermEvidenceLoad: "Evidence Load",
+    glossaryTermEvidenceStatus: "Evidence Status",
+    glossaryTermPointsGap: "Points Gap",
+    glossaryTermHardGate: "Hard Gate",
+    visaViabilityRankingIntro: "The ranking below orders every possible visa pathway from strongest to weakest based on compliance status, points threshold, and profile fit.",
+    pathwayFrictionIntro: "This section shows how competitive each pathway is in practice -- where your profile stands against recent invitation benchmarks.",
+    financialRoadmapIntro: "The figures below are an estimated breakdown of the major official and living-cost items you may encounter during the application process.",
+    progressionPathwaysIntro: "This section outlines the stages typically followed to move from your profile's current state to Permanent Residency (PR).",
+    strategicGanttChartIntro: "The timeline below shows the steps in the application process and their typical time windows; it is a planning reference, not a personal commitment.",
+    stateNominationTrackerIntro: "This table compares each state/territory's nomination signals against your profile fit.",
+    lodgementReadyChecklistIntro: "This checklist lists the steps typically expected before lodging an application.",
+    pointsBreakdownIntro: "The table below shows which categories your estimated score comes from for points-tested pathways.",
+    premiumSectionsIntro: "These sections provide deeper planning data beyond the core report.",
+    typicalPathLabel: "Typical Path",
+    typicalPathExplainer: "The most common scenario followed by applicants who succeed on this pathway.",
+    signalReasonsLabel: "Signal Reasons",
+    signalReasonsExplainer: "The main favorable factors contributing to this signal-strength assessment.",
+    limitingFactorsLabel: "Limiting Factors",
+    limitingFactorsExplainer: "The main factors currently weakening this pathway or requiring additional evidence/improvement.",
+    belowPointsThresholdExplainer: "Your profile's estimated points fall below the minimum threshold required for this pathway.",
   };
 }
 
@@ -1879,6 +1974,37 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
   }
 
+  /**
+   * Defines the report's recurring generic terms once, up front, instead of
+   * relying on readers to infer meaning from repeated bare labels
+   * (Strength/Confidence/Friction/Signal Confidence/Evidence Load/Evidence
+   * Status/Points Gap/Hard Gate) scattered across many sections.
+   */
+  function drawGlossary() {
+    addHeading(text.glossaryTitle);
+    addSmallText(text.glossaryIntro, 0);
+    yPosition += 2;
+
+    const entries: Array<[string, string]> = [
+      [text.glossaryTermConfidence, confidenceDefinitionGeneric(effectiveLocale)],
+      [text.glossaryTermStrength, strengthDefinition(effectiveLocale)],
+      [text.glossaryTermFriction, frictionLevelDefinitionGeneric(effectiveLocale)],
+      [text.glossaryTermSignalConfidence, signalConfidenceDefinition(effectiveLocale)],
+      [text.glossaryTermEvidenceLoad, evidenceLoadDefinition(effectiveLocale)],
+      [text.glossaryTermEvidenceStatus, evidenceStatusDefinition(effectiveLocale)],
+      [text.glossaryTermPointsGap, pointsGapDefinition(effectiveLocale)],
+      [text.glossaryTermHardGate, hardGateDefinition(effectiveLocale)],
+    ];
+
+    entries.forEach(([term, definition]) => {
+      addBody(term);
+      addSmallText(definition, 4);
+      yPosition += 1;
+    });
+
+    yPosition += 3;
+  }
+
   function drawAlertCollection(
     title: string,
     intro: string,
@@ -2015,6 +2141,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (!report.premiumSections?.strategicGanttChart?.steps?.length) return;
 
     addSectionHeading("", text.strategicGanttChart);
+    addSmallText(text.strategicGanttChartIntro, 0);
 
     const steps = report.premiumSections.strategicGanttChart.steps;
     const timelineBand = report.premiumSections.strategicGanttChart.timelineBand;
@@ -2671,62 +2798,23 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function formatStrength(level: "limited" | "moderate" | "strong") {
-    if (effectiveLocale === "tr") {
-      return level === "strong" ? "Daha güçlü sinyal" : level === "moderate" ? "Orta sinyal" : "Sınırlı sinyal";
-    }
-    if (effectiveLocale === "zh-Hans") {
-      return level === "strong" ? "匹配度较高" : level === "moderate" ? "匹配度中等" : "匹配度有限";
-    }
-    return level === "strong" ? "Stronger signal" : level === "moderate" ? "Moderate signal" : "Limited signal";
+    return strengthLabel(effectiveLocale, level);
   }
 
   function formatSignalConfidence(level: "limited" | "moderate" | "stronger") {
-    if (effectiveLocale === "tr") {
-      return level === "stronger" ? "Daha güçlü" : level === "moderate" ? "Orta" : "Sınırlı";
-    }
-    if (effectiveLocale === "zh-Hans") {
-      return level === "stronger" ? "较强" : level === "moderate" ? "中等" : "有限";
-    }
-    return level === "stronger" ? "Stronger" : level === "moderate" ? "Moderate" : "Limited";
+    return signalConfidenceLabel(effectiveLocale, level);
   }
 
   function formatConfidenceLevel(level: "low" | "medium" | "high") {
-    if (effectiveLocale === "tr") {
-      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
-    }
-    if (effectiveLocale === "zh-Hans") {
-      return level === "high" ? "较高" : level === "medium" ? "中等" : "有限";
-    }
-    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
+    return confidenceLevelLabel(effectiveLocale, level);
   }
 
   function formatLoad(level: "low" | "medium" | "high") {
-    if (effectiveLocale === "tr") {
-      return level === "high" ? "Yüksek" : level === "medium" ? "Orta" : "Düşük";
-    }
-    if (effectiveLocale === "zh-Hans") {
-      return level === "high" ? "高" : level === "medium" ? "中" : "低";
-    }
-    return level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
+    return evidenceLoadLabel(effectiveLocale, level);
   }
 
   function formatEvidenceStatus(status: "provided" | "missing" | "unclear" | "typically_required") {
-    if (effectiveLocale === "tr") {
-      if (status === "provided") return "Sağlandı";
-      if (status === "missing") return "Eksik";
-      if (status === "typically_required") return "Tipik olarak gerekir";
-      return "Net değil";
-    }
-    if (effectiveLocale === "zh-Hans") {
-      if (status === "provided") return "已提供";
-      if (status === "missing") return "缺失";
-      if (status === "typically_required") return "通常需要";
-      return "不明确";
-    }
-    if (status === "provided") return "Provided";
-    if (status === "missing") return "Missing";
-    if (status === "typically_required") return "Typically required";
-    return "Unclear";
+    return evidenceStatusLabel(effectiveLocale, status);
   }
 
   function formatRecommendationTag(tag: string) {
@@ -2784,6 +2872,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (rankedPathways.length === 0) return;
 
     addHeading(text.visaViabilityRanking);
+    addSmallText(text.visaViabilityRankingIntro, 0);
     ensurePageSpace(55);
 
     // Points-threshold-only entries used to carry a profile-level prose note
@@ -2795,6 +2884,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const hardIneligibleEntries = rankedPathways.filter((rp) => rp.isHardIneligible);
     const hasPointsThresholdIneligible = hardIneligibleEntries.some((rp) => rp.isPointsThresholdOnly);
     const lastIneligibleSubclass = hardIneligibleEntries[hardIneligibleEntries.length - 1]?.subclass;
+
+    if (hasPointsThresholdIneligible) {
+      addSmallText(`${text.belowPointsThreshold}: ${text.belowPointsThresholdExplainer}`, 0);
+    }
 
     function drawPointsBreakdownPointerBox() {
       const score = report.pointsEstimate?.estimatedPoints;
@@ -3204,6 +3297,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (checklist.length === 0) return;
 
     addHeading(text.lodgementReadyChecklist);
+    addSmallText(text.lodgementReadyChecklistIntro, 0);
 
     checklist.forEach((item) => {
       const detailLines = doc.splitTextToSize(safeText(item.detail), contentWidth - 34);
@@ -3281,6 +3375,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   addReportOverview();
 
+  drawGlossary();
+
   drawMissingInfoBox();
 
   drawVisaViabilityRanking();
@@ -3316,6 +3412,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // to show.
   if (report.pointsEstimate && report.pointsEstimate.breakdown.length > 0) {
     addHeading(text.pointsBreakdownTable);
+    addSmallText(text.pointsBreakdownIntro, 0);
     const breakdownRows = report.pointsEstimate.breakdown;
     drawTable(
       [text.category, text.pointsEarned, text.maxPoints, text.note],
@@ -3447,6 +3544,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   if (report.pathwayStrengthComparison.length > 0) {
     addHeading(text.pathwayStrengthComparison);
     addSmallText(text.pathwayStrengthIntro, 0);
+    addSmallText(`${text.typicalPathLabel}: ${text.typicalPathExplainer}`, 0);
+    addSmallText(`${text.signalReasonsLabel}: ${text.signalReasonsExplainer}`, 0);
+    addSmallText(`${text.limitingFactorsLabel}: ${text.limitingFactorsExplainer}`, 0);
     yPosition += 2;
     report.pathwayStrengthComparison.forEach((item) => {
       addBody(`${item.visaName} (${item.subclass})`);
@@ -3478,11 +3578,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       if (item.evidenceStatus.length > 0) {
         addSmallText(effectiveLocale === "tr" ? "Kanıt durumu:" : effectiveLocale === "zh-Hans" ? "证据状态：" : "Evidence status:", 4);
         item.evidenceStatus.forEach((ev) => {
-          const statusLabel =
-            ev.status === "provided" ? (effectiveLocale === "tr" ? "Sağlandı" : effectiveLocale === "zh-Hans" ? "已提供" : "Provided")
-            : ev.status === "missing" ? (effectiveLocale === "tr" ? "Eksik" : effectiveLocale === "zh-Hans" ? "缺失" : "Missing")
-            : ev.status === "unclear" ? (effectiveLocale === "tr" ? "Net değil" : effectiveLocale === "zh-Hans" ? "不明确" : "Unclear")
-            : (effectiveLocale === "tr" ? "Tipik gereklilik" : effectiveLocale === "zh-Hans" ? "通常需要" : "Typically required");
+          const statusLabel = formatEvidenceStatus(ev.status);
           addSmallText(`– ${ev.label}: ${statusLabel}`, 8);
         });
       }
@@ -3553,6 +3649,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.financialRoadmap.length > 0) {
     addSectionHeading("", text.financialRoadmap);
+    addSmallText(text.financialRoadmapIntro, 0);
     drawTable(
       [effectiveLocale === "tr" ? "Kategori" : text.category, effectiveLocale === "tr" ? "Tutar" : text.amount, effectiveLocale === "tr" ? "Not" : text.note],
       report.financialRoadmap.map((item) => [cleanNum(item.category), cleanNum(item.amountLabel), cleanNum(item.explanation)]),
@@ -3562,6 +3659,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.progressionPathways.length > 0) {
     addHeading(text.progressionPathways);
+    addSmallText(text.progressionPathwaysIntro, 0);
 
     const primaryPathways = report.progressionPathways.filter((p) => !p.isAlternative);
     const alternativePathways = report.progressionPathways.filter((p) => p.isAlternative);
@@ -3605,6 +3703,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.pathwayFriction.length > 0) {
     addHeading(text.pathwayFriction);
+    addSmallText(text.pathwayFrictionIntro, 0);
     const trueHardIneligibleFriction = report.pathwayFriction.filter((item) => item.isHardIneligible && !item.isPointsThresholdOnly);
     const pointsThresholdFriction = report.pathwayFriction.filter((item) => item.isHardIneligible && item.isPointsThresholdOnly);
     const routineFriction = report.pathwayFriction.filter((item) => !item.isHardIneligible);
@@ -3640,6 +3739,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.premiumSections) {
     addSectionHeading("", text.premiumSections);
+    addSmallText(text.premiumSectionsIntro, 0);
 
     addBody(text.invitationTrends);
     addSmallText(
