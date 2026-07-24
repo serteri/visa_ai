@@ -1422,7 +1422,7 @@ function buildCanadaStateNominationTracker(
       return {
         code: "BC",
         name: pathwayLabel[result.pathwayId],
-        status: "Active",
+        status: "Open for Offshore",
         matchLevel,
         score,
         summary: result.stream.notes,
@@ -1455,7 +1455,7 @@ function buildCanadaStateNominationTracker(
     return {
       code: "AB",
       name: pathwayLabel[result.pathwayId],
-      status: "Active",
+      status: "Open for Offshore",
       matchLevel,
       score,
       summary: result.stream.notes,
