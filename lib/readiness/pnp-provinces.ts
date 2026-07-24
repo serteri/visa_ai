@@ -30,10 +30,10 @@
 
 import type { Locale } from "./types";
 
-export type ProvinceCode = "ON" | "BC" | "AB";
+export type ProvinceCode = "ON" | "BC" | "AB" | "QC";
 
 /** Provinces with a real eligibility module wired up in this pass. */
-export const SUPPORTED_PROVINCES: ReadonlySet<ProvinceCode> = new Set(["ON", "BC", "AB"]);
+export const SUPPORTED_PROVINCES: ReadonlySet<ProvinceCode> = new Set(["ON", "BC", "AB", "QC"]);
 
 export type ProvinceStreamScoringModel =
   | "teer-pathway"

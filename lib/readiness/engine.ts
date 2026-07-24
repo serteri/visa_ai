@@ -29,6 +29,15 @@ import {
   bcStreamsIntroText,
   albertaStreamsIntroText,
 } from "@/lib/readiness/pnp-provinces";
+import {
+  type PSTQStreamId,
+  type PSTQStream,
+  type QuebecPSTQResult,
+  QUEBEC_PSTQ_STREAMS,
+  quebecStreamsIntroText,
+  isCalqArtsOccupation,
+  resolvePSTQStream,
+} from "@/lib/readiness/quebec-pstq";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
 import type { CanadaCRSInput, CLBLevel } from "@/lib/points/canada-types";
@@ -820,6 +829,7 @@ function resolveTargetProvince(input: ReadinessInput): ProvinceCode | undefined 
   if (hasKw(combined, ["ontario", "oinp", "toronto", "ottawa", "mississauga", "hamilton", "london ontario"])) return "ON";
   if (hasKw(combined, ["british columbia", "bc pnp", "vancouver", "victoria bc", "surrey", "burnaby"])) return "BC";
   if (hasKw(combined, ["alberta", "ainp", "aaip", "calgary", "edmonton"])) return "AB";
+  if (hasKw(combined, ["quebec", "montreal", "laval", "sherbrooke", "pstq", "mifi", "arrima"])) return "QC";
   return undefined;
 }
 
@@ -1340,6 +1350,196 @@ function albertaPathwayScore(result: AlbertaPathwayResult): { score: number; mat
   return { score: 20, matchLevel: "low" };
 }
 
+function buildQuebecPSTQEligibility(input: ReadinessInput): QuebecPSTQResult[] {
+  const isTr = input.locale === "tr";
+  const isZh = input.locale === "zh-Hans";
+
+  const nocResult = checkNocOccupation({ occupation: input.occupation ?? "", nocCode: input.nocCode });
+  const nocMatch = nocResult.matches.find((m) => m.code === input.nocCode) ?? nocResult.matches[0];
+  const resolvedNocCode = input.nocCode ?? nocMatch?.code;
+  const occupationTeer = input.nocTeer ?? nocMatch?.teer;
+
+  const occLower = (input.occupation ?? "").toLowerCase();
+  const isRegulated = ["nurse", "hemşire", "physician", "doctor", "hekim", "doktor", "engineer", "mühendis", "lawyer", "avukat"].some(
+    (kw) => occLower.includes(kw)
+  );
+
+  const resolvedStreamId = resolvePSTQStream(resolvedNocCode ?? "", isRegulated, occupationTeer ?? 1);
+
+  // Parse French levels
+  let oral = (input as any).frenchOralLevel !== undefined ? Number((input as any).frenchOralLevel) : undefined;
+  let written = (input as any).frenchWrittenLevel !== undefined ? Number((input as any).frenchWrittenLevel) : undefined;
+
+  const combinedText = [input.mainGoal, input.preferredPathway, input.biggestConcern, input.sponsorOrFamily]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  
+  if (oral === undefined) {
+    const oralMatch = combinedText.match(/french oral\s*(\d+)/i) || combinedText.match(/fransızca sözlü\s*(\d+)/i);
+    if (oralMatch) oral = Number(oralMatch[1]);
+  }
+  if (written === undefined) {
+    const writtenMatch = combinedText.match(/french written\s*(\d+)/i) || combinedText.match(/fransızca yazılı\s*(\d+)/i);
+    if (writtenMatch) written = Number(writtenMatch[1]);
+  }
+
+  const ageNum = input.age ? Number(input.age) : undefined;
+  const hasSpouse = input.sponsorOrFamily ? !["no spouse", "single", "eşi yok"].some(kw => input.sponsorOrFamily!.toLowerCase().includes(kw)) : false;
+
+  return QUEBEC_PSTQ_STREAMS.map((stream) => {
+    const missing: string[] = [];
+    let frenchLevelMet = true;
+    let workExperienceMet = true;
+    let recognitionStatus: "not_applicable" | "pending" | "recognized" = "not_applicable";
+
+    // 1. Common Age Check
+    if (ageNum !== undefined && ageNum < 18) {
+      missing.push(isTr ? "18 yaşından büyük olmak" : isZh ? "年满18岁" : "Must be at least 18 years old");
+    }
+
+    // 2. French Oral Requirement
+    if (oral === undefined) {
+      frenchLevelMet = false;
+      missing.push(
+        isTr
+          ? `Fransızca sözlü seviye ${stream.frenchOralMin} (gerekli Fransızca yeterlilik kanıtı bulunamadı)`
+          : isZh
+            ? `法语口语水平达到 ${stream.frenchOralMin} 级（未提供法语能力证明）`
+            : `Oral French level ${stream.frenchOralMin} (no French proficiency evidence found)`
+      );
+    } else if (oral < stream.frenchOralMin) {
+      frenchLevelMet = false;
+      missing.push(
+        isTr
+          ? `Fransızca sözlü seviye ${stream.frenchOralMin} (mevcut: ${oral})`
+          : isZh
+            ? `法语口语水平达到 ${stream.frenchOralMin} 级（当前：${oral}）`
+            : `Oral French level ${stream.frenchOralMin} (current: ${oral})`
+      );
+    }
+
+    // 3. French Written Requirement (if applicable)
+    if (stream.frenchWrittenMin !== undefined) {
+      if (written === undefined) {
+        frenchLevelMet = false;
+        missing.push(
+          isTr
+            ? `Fransızca yazılı seviye ${stream.frenchWrittenMin} (gerekli Fransızca yeterlilik kanıtı bulunamadı)`
+            : isZh
+              ? `法语书面水平达到 ${stream.frenchWrittenMin} 级（未提供法语能力证明）`
+              : `Written French level ${stream.frenchWrittenMin} (no French proficiency evidence found)`
+        );
+      } else if (written < stream.frenchWrittenMin) {
+        frenchLevelMet = false;
+        missing.push(
+          isTr
+            ? `Fransızca yazılı seviye ${stream.frenchWrittenMin} (mevcut: ${written})`
+            : isZh
+              ? `法语书面水平达到 ${stream.frenchWrittenMin} 级（当前：${written}）`
+              : `Written French level ${stream.frenchWrittenMin} (current: ${written})`
+        );
+      }
+    }
+
+    // 4. Spousal French Check
+    if (hasSpouse) {
+      missing.push(
+        isTr
+          ? "Eşlik eden eşin Fransızca sözlü seviye 4 olması gerekir (formda doğrulanmamıştır)"
+          : isZh
+            ? "随行配偶的法语口语水平需达到 4 级（本表单未核验）"
+            : "Accompanying spouse oral French level 4 (not verified by this form)"
+      );
+    }
+
+    // 5. Work Experience check
+    const totalExp = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
+    if (stream.id === "STREAM_2_INTERMEDIATE") {
+      if (totalExp < 2) {
+        workExperienceMet = false;
+        missing.push(
+          isTr
+            ? `Son 5 yılda en az 2 yıl iş deneyimi (mevcut: ${totalExp} yıl)`
+            : isZh
+              ? `近 5 年内至少有 2 年工作经验（当前：${totalExp} 年）`
+              : `At least 2 years of work experience in the last 5 years (current: ${totalExp} years)`
+        );
+      }
+      missing.push(
+        isTr
+          ? "Quebec'te en az 1 yıl tam zamanlı iş deneyimi (formda toplanmamıştır)"
+          : isZh
+            ? "在魁北克省内至少 1 年的全职工作经验（本表单未收集）"
+            : "At least 1 year of full-time work experience in Quebec (not collected by this form)"
+      );
+    } else if (stream.id === "STREAM_4_EXCEPTIONAL") {
+      if (totalExp < 3) {
+        workExperienceMet = false;
+        missing.push(
+          isTr
+            ? `Son 5 yılda en az 3 yıl mesleki deneyim (mevcut: ${totalExp} yıl)`
+            : isZh
+              ? `近 5 年内至少有 3 年专业工作经验（当前：${totalExp} 年）`
+              : `At least 3 years of professional work experience in the last 5 years (current: ${totalExp} years)`
+        );
+      }
+      missing.push(
+        isTr
+          ? "İstisnai yetenek ve uluslararası başarı kanıtı (ödüller, patentler, yayınlar)"
+          : isZh
+            ? "杰出才能及国际声誉证明（如奖项、专利、出版物等）"
+            : "Proof of exceptional talent and international recognition (awards, patents, publications)"
+      );
+      if (isCalqArtsOccupation(resolvedNocCode)) {
+        missing.push(
+          isTr
+            ? "UYARI: CALQ sanat/kültür alt-akışı şu anda yeni başvurulara kapatılmıştır."
+            : isZh
+              ? "警告：CALQ 艺术与文化子通道当前已关闭，不接受新申请。"
+              : "WARNING: CALQ arts & culture sub-stream is currently closed to new applications."
+        );
+      }
+    }
+
+    // 6. Professional Recognition Check (Stream 3)
+    if (stream.id === "STREAM_3_REGULATED") {
+      recognitionStatus = "pending";
+      missing.push(
+        isTr
+          ? "Quebec Meslek Odası (Professional Order) tarafından denklik/tanınma (tanınma onaylanana kadar süreç pending olarak değerlendirilir)"
+          : isZh
+            ? "魁北克专业协会（Professional Order）的资格认证/承认（在认证获得批准前，该状态显示为待定）"
+            : "Professional order recognition or denklik (process is considered pending until recognition is verified)"
+      );
+    }
+
+    // Stream Routing Check (Must be routed to this stream)
+    const isRoutedToThis = stream.id === resolvedStreamId || (stream.id === "STREAM_4_EXCEPTIONAL" && totalExp >= 3);
+    const eligible = isRoutedToThis && frenchLevelMet && workExperienceMet && (stream.id !== "STREAM_3_REGULATED");
+
+    return {
+      streamId: stream.id,
+      stream,
+      eligible,
+      missingRequirements: missing,
+      frenchLevelMet,
+      workExperienceMet,
+      recognitionStatus,
+    };
+  });
+}
+
+function quebecPathwayScore(result: QuebecPSTQResult): { score: number; matchLevel: "high" | "medium" | "low" } {
+  if (result.frenchLevelMet) {
+    if (result.streamId === "STREAM_3_REGULATED") {
+      return { score: 70, matchLevel: "medium" };
+    }
+    return { score: 85, matchLevel: "high" };
+  }
+  return { score: 15, matchLevel: "low" };
+}
+
 /**
  * Province-scoped Canada equivalent of calculateStateNominationTracker
  * (AU). Only Ontario has a real eligibility module wired up in this pass
@@ -1436,6 +1636,38 @@ function buildCanadaStateNominationTracker(
       states,
       topRecommendedStates,
       note: bcStreamsIntroText(locale),
+      eligibilityBlocked: false,
+    };
+  }
+
+  if (targetProvince === "QC") {
+    const qcResults = buildQuebecPSTQEligibility(input);
+    const pathwayLabel: Record<PSTQStreamId, string> = {
+      STREAM_1_SPECIALIZED: isTr ? "Quebec — Specialized Skills" : isZh ? "魁北克 — Specialized Skills" : "Quebec — Specialized Skills",
+      STREAM_2_INTERMEDIATE: isTr ? "Quebec — Intermediate Skills" : isZh ? "魁北克 — Intermediate Skills" : "Quebec — Intermediate Skills",
+      STREAM_3_REGULATED: isTr ? "Quebec — Regulated Professions" : isZh ? "魁北克 — Regulated Professions" : "Quebec — Regulated Professions",
+      STREAM_4_EXCEPTIONAL: isTr ? "Quebec — Exceptional Talent" : isZh ? "魁北克 — Exceptional Talent" : "Quebec — Exceptional Talent",
+    };
+
+    const states: StateNominationState[] = qcResults.map((result) => {
+      const { score, matchLevel } = quebecPathwayScore(result);
+      return {
+        code: "QC",
+        name: pathwayLabel[result.streamId],
+        status: "Open for Offshore",
+        matchLevel,
+        score,
+        summary: result.stream.notes,
+        requirements: result.missingRequirements,
+      };
+    });
+
+    const topRecommendedStates = [...states].sort((a, b) => b.score - a.score).slice(0, 2);
+
+    return {
+      states,
+      topRecommendedStates,
+      note: quebecStreamsIntroText(locale),
       eligibilityBlocked: false,
     };
   }
@@ -5149,6 +5381,13 @@ function buildCanadaFinancialRoadmap(
         "Alberta AAIP ücretleri: CAD 135 Worker EOI ücreti (7 Nisan 2026'dan itibaren) + CAD 1.500 başvuru ücreti. PNP adaylığı +600 CRS puanı ekleyerek sonraki Express Entry çekilişinde ITA'yı neredeyse garanti eder.",
         "阿尔伯塔省 AAIP 费用：CAD $135 劳工意向表达（EOI）费（2026年4月7日生效）+ CAD $1,500 申请费。省提名可获 +600 CRS 分，实际上可保证在下次 Express Entry 抽签中获得 ITA。"
       );
+    } else if (targetProvince === "QC") {
+      amountLabel = "CAD $940";
+      explanation = t(
+        "Quebec MIFI processing fee for a permanent selection application (effective 1 January 2026). Note: MIFI fees are adjusted annually on January 1st; lodgement-ready applicants should verify the exact fee on quebec.ca before submitting payment.",
+        "Quebec MIFI kalıcı seçim başvuru işlem ücreti (1 Ocak 2026'dan itibaren geçerli). Not: MIFI ücretleri her yıl 1 Ocak'ta güncellenir; başvuru sahipleri ödemeden önce güncel ücreti quebec.ca adresinden doğrulamalıdır.",
+        "魁北克 MIFI 永久选拔申请处理费（2026年1月1日生效）。注：MIFI 费用每年1月1日调整，准备递交的申请人应在付款前在 quebec.ca 上核实准确费用。"
+      );
     }
 
     items.push({
@@ -5504,6 +5743,65 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
       }
     });
     pathwayComparison.unshift(...abComparisons);
+  } else if (targetProvince === "QC") {
+    const qcResults = buildQuebecPSTQEligibility(input);
+    const qcComparisons: PathwayComparison[] = qcResults.map((res) => {
+      const isCalqArt = isCalqArtsOccupation(input.nocCode);
+      const isRegulated = res.streamId === "STREAM_3_REGULATED";
+      return {
+        subclass: res.streamId,
+        visaName: res.stream.streamName,
+        reason: res.eligible
+          ? (isTr
+              ? `Quebec PSTQ ${res.stream.streamName} akışı için uygun görünüyorsunuz. Fransızca seviyeniz ve TEER grubunuz kriterleri karşılamaktadır.`
+              : isZh
+                ? `根据您的法语水平和 TEER 分类，您符合魁北克 PSTQ ${res.stream.streamName} 的申请资格。`
+                : `You are eligible for Quebec PSTQ ${res.stream.streamName} based on your TEER and French level.`)
+          : (isTr
+              ? `Quebec PSTQ ${res.stream.streamName} akışı uygun bulunmadı. Eksik: ${res.missingRequirements.join(", ")}.`
+              : isZh
+                ? `未满足魁北克 PSTQ ${res.stream.streamName} 通道资格。缺失条件：${res.missingRequirements.join(", ")}。`
+                : `Quebec PSTQ ${res.stream.streamName} pathway is not eligible. Missing: ${res.missingRequirements.join(", ")}.`),
+        relevance: res.eligible ? "possible" : "ineligible",
+        confidenceLevel: "medium",
+        confidenceExplanation: isTr
+          ? "Quebec PSTQ değerlendirmesi Fransızca dil beyanı ve meslek TEER grubuna dayanmaktadır."
+          : isZh
+            ? "魁北克 PSTQ 评估基于法语能力声明和职业 TEER 分类。"
+            : "Quebec PSTQ assessment is based on declared French ability and occupation TEER classification.",
+        difficulty: "high",
+        requirementType: isTr ? "Fransızca Dil Yeterliliği" : "French Language Proficiency",
+        userRelativePosition: isTr
+          ? "Quebec, federal Express Entry havuzundan bağımsızdır. CRS puanınız buradaki davetler için geçerli değildir."
+          : isZh
+            ? "魁北克省独立于联邦 Express Entry 池之外。您的 CRS 分数不适用于该省的邀请。"
+            : "Quebec operates independently of the federal Express Entry pool. Your CRS score does not apply for invitations here.",
+        keyRequirements: isRegulated
+          ? ["French Oral level 7 & Written level 5", "Professional order recognition / denklik"]
+          : [
+              `French Oral level ${res.stream.frenchOralMin}`,
+              ...(res.stream.frenchWrittenMin ? [`French Written level ${res.stream.frenchWrittenMin}`] : []),
+              `TEER ${res.stream.teerRange.join(", ")}`
+            ],
+        pathwaySpecificRisks: [
+          isTr
+            ? "Quebec göçmenlik programları federal Express Entry ile eşzamanlı yürütülemez."
+            : isZh
+              ? "魁北克移民计划不能与联邦 Express Entry 同步进行。"
+              : "Quebec immigration programs cannot be pursued concurrently with federal Express Entry.",
+          ...(isCalqArt
+            ? [
+                isTr
+                  ? "Sanat/Kültür meslekleri için CALQ alt-akışı şu anda yeni başvurulara kapatılmıştır."
+                  : isZh
+                    ? "艺术与文化类职业的 CALQ 子通道目前已关闭新申请。"
+                    : "The CALQ sub-stream for arts/culture occupations is currently closed to new applications."
+              ]
+            : [])
+        ]
+      };
+    });
+    pathwayComparison.unshift(...qcComparisons);
   } else if (hasPnpInterest) {
     pathwayComparison.unshift({
       subclass: "PNP",

@@ -124,6 +124,26 @@ const CA_PATHWAY_LABELS: Record<string, Record<Locale, string>> = {
     tr: "Alberta Tourism and Hospitality Stream",
     "zh-Hans": "阿尔伯塔 Tourism and Hospitality Stream",
   },
+  STREAM_1_SPECIALIZED: {
+    en: "Quebec PSTQ Stream 1 — Specialized Skills",
+    tr: "Quebec PSTQ Stream 1 — Nitelikli ve Uzmanlaşmış Beceriler",
+    "zh-Hans": "魁北克 PSTQ 通道 1 — 专业与高技术技能",
+  },
+  STREAM_2_INTERMEDIATE: {
+    en: "Quebec PSTQ Stream 2 — Intermediate Skills",
+    tr: "Quebec PSTQ Stream 2 — Orta Seviye ve Manuel Beceriler",
+    "zh-Hans": "魁北克 PSTQ 通道 2 — 中等与手艺技能",
+  },
+  STREAM_3_REGULATED: {
+    en: "Quebec PSTQ Stream 3 — Regulated Professions",
+    tr: "Quebec PSTQ Stream 3 — Regüle Meslekler",
+    "zh-Hans": "魁北克 PSTQ 通道 3 — 受监管职业",
+  },
+  STREAM_4_EXCEPTIONAL: {
+    en: "Quebec PSTQ Stream 4 — Exceptional Talent",
+    tr: "Quebec PSTQ Stream 4 — İstisnai Yetenek",
+    "zh-Hans": "魁北克 PSTQ 通道 4 — 杰出人才",
+  },
 };
 
 function getLocalizedPathwayLabel(subclass: string, locale: Locale, fallback?: string): string {
