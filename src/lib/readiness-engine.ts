@@ -775,13 +775,34 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
     };
   });
 
+  // Single source of truth: derive the ZH narrative from the SAME per-pathway
+  // confidenceLevel values the base (EN/TR) report already computed from
+  // actual profile data, instead of an unconditional "age/English/occupation
+  // already provided, confidence medium-to-strong" claim that ignored what
+  // was actually on file (the exact class of bug fixed in getConfidenceExplanation
+  // / buildConfidenceExplanation for EN/TR — this mirrors that fix for ZH).
+  const zhRelevantConfidenceLevels = report.pathwayComparison
+    .filter((p) => p.relevance !== "ineligible")
+    .map((p) => p.confidenceLevel);
+  const zhConfidenceRank: Record<ConfidenceLevel, number> = { low: 0, medium: 1, high: 2 };
+  const zhOverallConfidenceLevel: ConfidenceLevel =
+    zhRelevantConfidenceLevels.length > 0
+      ? zhRelevantConfidenceLevels.reduce((worst, level) => (zhConfidenceRank[level] < zhConfidenceRank[worst] ? level : worst), "high" as ConfidenceLevel)
+      : "low";
+  const zhConfidenceExplanation =
+    zhOverallConfidenceLevel === "low"
+      ? "由于职业、英语水平等核心信息缺失或不足，报告置信度有限；本内容仅为一般信息，仍取决于个人具体情况。"
+      : zhOverallConfidenceLevel === "high"
+        ? `由于已提供年龄、英语、职业和护照国家等核心信息，报告置信度较强；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息。`
+        : `由于部分核心信息已提供，报告置信度为中等；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息，仍取决于个人具体情况。`;
+
   const signalSnapshot = {
     strongest: report.signalSnapshot.strongest.replace(/(.+) \(([^)]+)\)/, (_match, _name, subclass) => `${zhVisaName(subclass, String(_name))} (${subclass})`),
     secondary: report.signalSnapshot.secondary.map((item) =>
       item.replace(/(.+) \(([^)]+)\)/, (_match, _name, subclass) => `${zhVisaName(subclass, String(_name))} (${subclass})`)
     ),
     confidenceLabel: report.signalSnapshot.confidenceLabel,
-    confidenceExplanation: `由于已提供年龄、英语、职业和护照国家等核心信息，报告置信度为中等到较强；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息。`,
+    confidenceExplanation: zhConfidenceExplanation,
   };
 
   const pointsBoosterSimulator = report.pointsBoosterSimulator;
@@ -838,13 +859,32 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
     ),
   }));
 
+  // Parity with the EN/TR executive summary: disclose ineligible pathways up
+  // front (this was previously silent for ZH readers even when EN/TR flagged
+  // it), and gate the points sentence on the same canShowNumericRanking
+  // source of truth, with the same intermediate wording when a points figure
+  // exists but overall ranking confidence is not "sufficient" -- otherwise ZH
+  // readers would see an unqualified points figure while EN/TR readers see a
+  // caveated one for the identical profile.
+  const zhIneligiblePathways = pathwayComparison.filter((p) => p.relevance === "ineligible");
+  const zhIneligibleLine =
+    zhIneligiblePathways.length > 0
+      ? [`子类别 ${zhIneligiblePathways.map((p) => p.subclass).join("/")} 当前不符合资格。详情请见下方的签证可行性排序。`]
+      : [];
+  const zhCanShowNumericRanking = report.assessmentState.canShowNumericRanking;
+  const zhPointsLine =
+    zhCanShowNumericRanking && estimatedPoints !== undefined
+      ? `当前初步打分估算为 ${estimatedPoints}；该估算是决定打分制路径排序的关键因素。`
+      : !zhCanShowNumericRanking && estimatedPoints !== undefined
+        ? `预计基础分数约为 ${estimatedPoints}；但由于部分档案信息（如英语考试证明）尚未提供，排序的可信度仍然有限。`
+        : "当前资料已形成初步路径匹配度判断，但仍需核对路径特定证据。";
+
   return {
     ...report,
     executiveSummary: [
+      ...zhIneligibleLine,
       `本报告将 ${pathwayComparison.map((p) => p.subclass).join("、")} 等路径放在同一视图中进行结构化比较。`,
-      estimatedPoints !== undefined
-        ? `当前初步打分估算为 ${estimatedPoints}；该估算可能影响打分制路径的相对位置。`
-        : "当前资料已形成初步路径匹配度判断，但仍需核对路径特定证据。",
+      zhPointsLine,
       "技能评估、提名背景、担保信息和证据准备质量都可能实质性改变路径强度。",
     ],
     signalSnapshot,

@@ -3,6 +3,7 @@ import {
   buildEmploymentExperienceCaveat,
   getEmploymentDataSignals,
 } from "@/lib/readiness/employment-signals";
+import { hasRealEnglishEvidence } from "@/lib/readiness/english-evidence";
 import {
   buildSpecialistEducationCaveat,
   getSpecialistEducationSignals,
@@ -90,7 +91,13 @@ const JULY_2026_CSIT_AUD = 79423;
 const JULY_2026_485_STANDARD_MAX_AGE = 35;
 const JULY_2026_485_EXCEPTION_MAX_AGE = 50;
 const JULY_2026_482_BASE_COST_AUD = 4015;
-const JULY_2026_189_190_BASE_COST_AUD = 6140;
+// 189 and 190 do NOT share an identical base VAC -- keep them as separate
+// constants (matching the DHA fee schedule) instead of one shared value, so
+// every surface that quotes either figure (GOV_FEES_EN/TR fee table and the
+// Financial Roadmap narrative note) reads from the same single source and
+// can never drift into quoting two different numbers for the same subclass.
+const JULY_2026_189_BASE_COST_AUD = 6135;
+const JULY_2026_190_491_BASE_COST_AUD = 6140;
 const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
 const SKILLED_MIGRATION_MIN_POINTS = 65;
 
@@ -937,7 +944,7 @@ const CANADA_PATHWAY_NAMES: Record<CanadaPathwayCode, { en: string; tr: string }
  */
 function calculateConfidence(input: ReadinessInput): "HIGH" | "LOW" {
   const hasNoc = Boolean(input.nocCode || input.occupation);
-  const hasLanguage = Boolean(input.englishLevel);
+  const hasLanguage = hasRealEnglishEvidence(input);
   const hasAge = Boolean(input.age);
   const hasEducation = Boolean(input.qualificationLevel);
   return hasNoc && hasLanguage && hasAge && hasEducation ? "HIGH" : "LOW";
@@ -1457,7 +1464,7 @@ function getConfidenceExplanation(
 ): string {
   const isTr = locale === "tr";
   const hasAge = Boolean(input.age);
-  const hasEnglish = Boolean(input.englishLevel);
+  const hasEnglish = hasRealEnglishEvidence(input);
   const hasOccupation = Boolean(input.occupation);
   const hasSponsorContext = hasKw(
     [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "),
@@ -2950,11 +2957,21 @@ function buildExecutiveSummary(
   pathways: PathwayComparison[],
   locale: Locale,
   missingInformation: string[],
-  assessmentState: AssessmentState
+  assessmentState: AssessmentState,
+  rawEstimatedPoints?: number
 ): string[] {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const estimatedPoints = assessmentState.canShowNumericRanking ? assessmentState.estimatedPoints : undefined;
+  // A points figure can be mathematically known (e.g. an ineligible-by-points
+  // pathway's "30 vs 65 required" comparison, shown regardless of
+  // canShowNumericRanking) even when the report's overall ranking confidence
+  // is not "sufficient". Without this distinction, the summary said ranking
+  // "cannot be confirmed" on the same report where the Visa Viability Ranking
+  // section below displays that exact points figure and gap -- an
+  // intermediate wording acknowledges the number exists but with caveated
+  // confidence, instead of contradicting the section right below it.
+  const hasPreliminaryPointsSignal = estimatedPoints === undefined && rawEstimatedPoints !== undefined;
   const skilledVisible = pathways.some((pathway) => ["189", "190", "491"].includes(pathway.subclass));
   const pathwayNames = pathways
     .filter((pathway) => pathway.subclass !== "general")
@@ -2983,7 +3000,9 @@ function buildExecutiveSummary(
         : "Bu rapor, verilen bilgilerle görünen yol sinyallerini bağlayıcı kural eşiklerine göre değerlendirir.",
       skilledVisible && estimatedPoints !== undefined
         ? `Tahmini temel puan ${estimatedPoints}; bu puan, puan testli yolların sıralamasını belirleyen ana faktördür.`
-        : "Puan bağlamı sınırlı olduğunda puan testli yolların sıralaması doğrulanamaz.",
+        : skilledVisible && hasPreliminaryPointsSignal
+          ? `Tahmini temel puan yaklaşık ${rawEstimatedPoints}; ancak İngilizce sınav kanıtı gibi bazı profil ayrıntıları eksik olduğu için sıralama güveni sınırlıdır.`
+          : "Puan bağlamı sınırlı olduğunda puan testli yolların sıralaması doğrulanamaz.",
       "Beceri değerlendirmesi, adaylık bağlamı, sponsor bilgisi ve belge tamlığı, yol gücü sıralamasını doğrudan belirler.",
     ];
   }
@@ -2996,7 +3015,9 @@ function buildExecutiveSummary(
         : "本报告依据具有约束力的规则门槛评估当前可见的签证路径信号。",
       skilledVisible && estimatedPoints !== undefined
         ? `当前加分信号为 ${estimatedPoints}；该分数是决定打分制路径排序的关键因素。`
-        : "加分背景有限时，打分制路径的排序无法得到确认。",
+        : skilledVisible && hasPreliminaryPointsSignal
+          ? `预计基础分数约为 ${rawEstimatedPoints}；但由于英语考试证明等部分档案信息缺失，排序的可信度仍然有限。`
+          : "加分背景有限时，打分制路径的排序无法得到确认。",
       "职业评估、州担保背景、担保信息与材料完整度，直接决定路径强度排序。",
     ];
   }
@@ -3008,24 +3029,11 @@ function buildExecutiveSummary(
       : "This report evaluates visible pathway signals from the details provided against binding rule thresholds.",
     skilledVisible && estimatedPoints !== undefined
       ? `Estimated base points are ${estimatedPoints}; this is a determining factor in the ranking of points-tested pathways.`
-      : "Limited points context means the ranking of points-tested pathways cannot be confirmed.",
+      : skilledVisible && hasPreliminaryPointsSignal
+        ? `Estimated base points are approximately ${rawEstimatedPoints}, but ranking confidence remains limited because some profile details (e.g., English test evidence) are not yet provided.`
+        : "Limited points context means the ranking of points-tested pathways cannot be confirmed.",
     "Skills assessment, nomination context, sponsorship evidence, and documentation completeness directly determine the pathway strength ranking.",
   ];
-}
-
-/**
- * English evidence only counts as "provided" when a real proficiency tier is
- * on file. The intake sends englishLevel="none" for "no test / expired", and
- * englishTestTaken can be "no" — both are non-empty strings, so the previous
- * `Boolean(input.englishLevel || input.englishTestTaken)` check treated them as
- * truthy and mislabelled these profiles as "Provided". This maps them
- * accurately to missing.
- */
-function hasRealEnglishEvidence(input: ReadinessInput): boolean {
-  const level = (input.englishLevel ?? "").trim().toLowerCase();
-  if (level === "competent" || level === "proficient" || level === "superior") return true;
-  if (level === "none" || level === "") return false;
-  return input.englishTestTaken === "yes";
 }
 
 // Per-pathway evidence status items based on form input
@@ -3295,14 +3303,14 @@ function buildEvidenceReadiness(
     },
     {
       category: isTr ? "İngilizce kanıtı" : "English evidence",
-      status: input.englishLevel ? "provided" : hasSkilled || has482 || has485 ? "missing" : "unclear",
+      status: hasRealEnglishEvidence(input) ? "provided" : hasSkilled || has482 || has485 ? "missing" : "unclear",
       explanation: isTr
-        ? input.englishLevel
+        ? hasRealEnglishEvidence(input)
           ? "İngilizce seviyesi formda belirtildi."
           : hasSkilled || has482 || has485
             ? "Yetenekli, işveren odaklı veya 485 mezun vizesi yollarında İngilizce kanıtı genellikle değerlendirilir."
             : "Bu yolda İngilizce kanıtının rolü bağlama göre değişebilir."
-        : input.englishLevel
+        : hasRealEnglishEvidence(input)
           ? "English level was provided in the form."
           : hasSkilled || has482 || has485
             ? "English evidence is commonly considered for skilled, employer-sponsored, or 485 graduate visa pathways."
@@ -3705,9 +3713,9 @@ const GOV_FEES_EN: Record<string, string> = {
   "500": "From AUD 2,000 (unless exempt)",
   "482": "From AUD 4,015 (base application charge)",
   "485": "From AUD 4,600",
-  "189": "From AUD 6,135 (main applicant)",
-  "190": "From about AUD 6,140 (main applicant)",
-  "491": "From about AUD 6,140 (main applicant)",
+  "189": `From AUD ${JULY_2026_189_BASE_COST_AUD.toLocaleString("en-AU")} (main applicant)`,
+  "190": `From about AUD ${JULY_2026_190_491_BASE_COST_AUD.toLocaleString("en-AU")} (main applicant)`,
+  "491": `From about AUD ${JULY_2026_190_491_BASE_COST_AUD.toLocaleString("en-AU")} (main applicant)`,
   "820": "From AUD 11,710 (most applicants) — covers both the temporary (820) and permanent (801) stages",
   "801": "No separate fee — already paid as part of the subclass 820 application",
 };
@@ -3715,9 +3723,9 @@ const GOV_FEES_TR: Record<string, string> = {
   "500": "AUD 2.000'den itibaren (muaf olmayan başvurular için)",
   "482": "AUD 4.015'ten itibaren (temel başvuru ücreti)",
   "485": "AUD 4.600'dan itibaren",
-  "189": "AUD 6.135'ten itibaren (ana başvurucu)",
-  "190": "Yaklaşık AUD 6.140'tan itibaren (ana başvurucu)",
-  "491": "Yaklaşık AUD 6.140'tan itibaren (ana başvurucu)",
+  "189": `AUD ${JULY_2026_189_BASE_COST_AUD.toLocaleString("tr-TR")}'ten itibaren (ana başvurucu)`,
+  "190": `Yaklaşık AUD ${JULY_2026_190_491_BASE_COST_AUD.toLocaleString("tr-TR")}'tan itibaren (ana başvurucu)`,
+  "491": `Yaklaşık AUD ${JULY_2026_190_491_BASE_COST_AUD.toLocaleString("tr-TR")}'tan itibaren (ana başvurucu)`,
   "820": "AUD 11.710'dan itibaren (çoğu başvurucu) — geçici (820) ve kalıcı (801) aşamaları kapsar",
   "801": "Ayrı bir ücret yok — subclass 820 başvurusu kapsamında ödenmiştir",
 };
@@ -3747,8 +3755,8 @@ function buildFinancialRoadmap(
       estimateType: "official_fee",
       amountLabel: govFeeLabel,
       explanation: isTr
-        ? `Resmi başvuru ücreti vize türüne göre değişir ve 1 Temmuz 2026 sonrası güncellenmiştir. 482 temel ücret: AUD ${JULY_2026_482_BASE_COST_AUD.toLocaleString("en-AU")}. 189/190 temel ücret: yaklaşık AUD ${JULY_2026_189_190_BASE_COST_AUD.toLocaleString("en-AU")}. 491 için ücretler ayrı tabloda doğrulanmalıdır. Ücretler dönemsel olarak endekslenebilir; başvuru öncesi güncel tablo doğrulanmalıdır.`
-        : `Official visa application charges vary by subclass and were updated for the post-1 July 2026 schedule. Subclass 482 base charge: AUD ${JULY_2026_482_BASE_COST_AUD.toLocaleString("en-AU")}. Subclass 189/190 base charge: about AUD ${JULY_2026_189_190_BASE_COST_AUD.toLocaleString("en-AU")}. 491 charges should be separately confirmed from the current schedule. Charges can be indexed periodically and should be verified before lodgement.`,
+        ? `Resmi başvuru ücreti vize türüne göre değişir ve 1 Temmuz 2026 sonrası güncellenmiştir. 482 temel ücret: AUD ${JULY_2026_482_BASE_COST_AUD.toLocaleString("en-AU")}. 189 temel ücret: AUD ${JULY_2026_189_BASE_COST_AUD.toLocaleString("en-AU")}. 190/491 temel ücret: yaklaşık AUD ${JULY_2026_190_491_BASE_COST_AUD.toLocaleString("en-AU")}. Ücretler dönemsel olarak endekslenebilir; başvuru öncesi güncel tablo doğrulanmalıdır.`
+        : `Official visa application charges vary by subclass and were updated for the post-1 July 2026 schedule. Subclass 482 base charge: AUD ${JULY_2026_482_BASE_COST_AUD.toLocaleString("en-AU")}. Subclass 189 base charge: AUD ${JULY_2026_189_BASE_COST_AUD.toLocaleString("en-AU")}. Subclass 190/491 base charge: about AUD ${JULY_2026_190_491_BASE_COST_AUD.toLocaleString("en-AU")}. Charges can be indexed periodically and should be verified before lodgement.`,
     },
     {
       category: isTr ? "İngilizce Dil Testi (IELTS / PTE / OET)" : "English Language Test (IELTS / PTE / OET)",
@@ -3845,8 +3853,8 @@ function buildFinancialRoadmap(
         ? "AUD 300–500+ (yaşa ve ülkeye göre, kişi başı)"
         : "AUD $300–$500+ (per person, varies by age and country of residence)",
       explanation: isTr
-        ? "Her başvurucu IRCC tarafından onaylı bir Göçmen Sağlık Hizmeti (IHS) kliniğinde eMedical muayenesi yaptırmalıdır. Çocuklar ve gençler daha düşük ücretle muayene olabilir. Muayene akciğer röntgeni, kan testi ve genel fizik muayeneyi kapsar. Geçerlilik süresi 12 aydır. Mevcut TB salgını olan ülkelerden gelenler ek testlerden geçebilir."
-        : "Every applicant must complete a medical examination at an IRCC-approved Immigration Health Services (IHS) panel physician clinic. Indicative costs: adults AUD $300–$400; children under 15 approximately AUD $150–$250. The examination includes a chest X-ray (for applicants 11+), blood tests, and a general physical assessment. Medical results are electronically transmitted to the Department of Home Affairs via the eMedical system — there is no paper report to submit. Results are valid for 12 months. Applicants from tuberculosis-prevalent countries may require additional chest monitoring, extending the process by 6–12 months.",
+        ? "Her başvurucu, İçişleri Bakanlığı (Department of Home Affairs) tarafından onaylı panel sağlayıcısı Bupa Medical Visa Services aracılığıyla eMedical muayenesi yaptırmalıdır. Çocuklar ve gençler daha düşük ücretle muayene olabilir. Muayene akciğer röntgeni (11 yaş ve üzeri için), kan testi ve genel fizik muayeneyi kapsar. Sonuçlar eMedical sistemi üzerinden elektronik olarak Department of Home Affairs'e iletilir — kağıt rapor gönderimi gerekmez. Geçerlilik süresi 12 aydır. Mevcut TB salgını olan ülkelerden gelenler ek testlerden geçebilir, bu da süreci 6–12 ay uzatabilir."
+        : "Every applicant must complete a medical examination through Bupa Medical Visa Services, the panel provider approved by the Department of Home Affairs. Indicative costs: adults AUD $300–$400; children under 15 approximately AUD $150–$250. The examination includes a chest X-ray (for applicants 11+), blood tests, and a general physical assessment. Medical results are electronically transmitted to the Department of Home Affairs via the eMedical system — there is no paper report to submit. Results are valid for 12 months. Applicants from tuberculosis-prevalent countries may require additional chest monitoring, extending the process by 6–12 months.",
     },
     {
       category: isTr ? "Polis Belgesi / Karakter Belgeleri" : "Police Clearance Certificates",
@@ -4155,6 +4163,23 @@ function buildPathwayFriction(
   });
 }
 
+/**
+ * Single source of truth for the report's overall confidence level: the most
+ * cautious (lowest) confidenceLevel among relevant pathways, since a report
+ * is only as trustworthy as its weakest-confidence recommendation. Both the
+ * Structured Pathway Comparison badges (per-pathway confidenceLevel) and
+ * this aggregate text now derive from the same underlying values instead of
+ * each side independently re-deriving "how much data is missing" from raw
+ * input fields — which is what let them disagree (e.g. badges showing "Low"
+ * while the narrative said "moderate").
+ */
+function getOverallConfidenceLevel(pathways: PathwayComparison[]): ConfidenceLevel {
+  const relevantLevels = pathways.filter((p) => p.relevance !== "ineligible").map((p) => p.confidenceLevel);
+  if (relevantLevels.length === 0) return "low";
+  const rank: Record<ConfidenceLevel, number> = { low: 0, medium: 1, high: 2 };
+  return relevantLevels.reduce((worst, level) => (rank[level] < rank[worst] ? level : worst), "high" as ConfidenceLevel);
+}
+
 function buildConfidenceExplanation(
   pathways: PathwayComparison[],
   evidenceReadiness: EvidenceReadinessItem[],
@@ -4164,24 +4189,18 @@ function buildConfidenceExplanation(
 ): string {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
-  const hasEnglish = Boolean(input.englishLevel);
-  const hasOccupation = Boolean(input.occupation);
-  const hasPassport = Boolean(input.passportCountry);
   const hasSponsor = hasSponsorContext(input.sponsorOrFamily);
-  const hasAge = Boolean(input.age);
-  const skillsClear = input.occupationConfirmed === "yes";
-  const missingCore = [hasEnglish, hasOccupation, hasPassport, hasAge].filter(Boolean).length;
-  const hasMissingEvidence = evidenceReadiness.some((item) => item.status === "missing");
+  const overallConfidenceLevel = getOverallConfidenceLevel(pathways);
 
-  if (missingCore <= 1) {
+  if (overallConfidenceLevel === "low") {
     return isTr
-      ? "Güven düzeyi sınırlıdır çünkü meslek ve İngilizce gibi temel bilgiler eksiktir. Bu rapor yalnızca genel bilgidir ve kişisel koşullara bağlıdır."
+      ? "Güven düzeyi sınırlıdır çünkü meslek ve İngilizce gibi temel bilgiler eksik veya yetersiz. Bu rapor yalnızca genel bilgidir ve kişisel koşullara bağlıdır."
       : isZh
-        ? "由于职业和英语水平等核心信息缺失，置信度有限。本报告仅为一般信息，仍取决于个人具体情况。"
-        : "Confidence is limited because key inputs such as occupation and English level are missing. This report is general information only and depends on individual circumstances.";
+        ? "由于职业和英语水平等核心信息缺失或不足，置信度有限。本报告仅为一般信息，仍取决于个人具体情况。"
+        : "Confidence is limited because key inputs such as occupation and English level are missing or insufficient. This report is general information only and depends on individual circumstances.";
   }
 
-  if (missingCore >= 3 && skillsClear) {
+  if (overallConfidenceLevel === "high") {
     const occupationDisplay = resolveOccupationDisplayName(input.occupation, locale);
     return isTr
       ? `Güven düzeyi daha güçlüdür çünkü yaş (${input.age}), İngilizce seviyesi, meslek (${occupationDisplay}) ve pasaport ülkesi (${input.passportCountry}) sağlanmıştır; bazı yol-özel kanıtlar hâlâ ayrıca incelenir${estimatedPoints !== undefined ? ` (tahmini temel puan: ${estimatedPoints})` : ""}. Bu yalnızca genel bilgidir.`
@@ -4191,10 +4210,10 @@ function buildConfidenceExplanation(
   }
 
   return isTr
-    ? "Güven düzeyi orta seviyededir çünkü İngilizce ve meslek bilgileri sağlanmıştır; ancak beceri değerlendirmesi ve puan bağlamı net değildir."
+    ? "Güven düzeyi orta seviyededir çünkü bazı temel bilgiler sağlanmıştır; ancak beceri değerlendirmesi ve puan bağlamı net değildir."
     : isZh
-      ? `由于已提供英语和职业信息，置信度为中等；但职业评估和完整加分背景仍不明确${estimatedPoints !== undefined ? `（当前加分信号：${estimatedPoints}）` : ""}。${hasSponsor ? "已提供担保背景。" : "担保背景看起来有限。"}本内容仅为一般信息，仍取决于个人具体情况。`
-      : `Confidence is moderate because English and occupation details are available, but skills assessment and full points context remain unclear${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. ${hasSponsor ? "Sponsorship context is provided." : "Sponsorship context appears limited."} This is general information only and depends on individual circumstances.`;
+      ? `由于部分核心信息已提供，置信度为中等；但职业评估和完整加分背景仍不明确${estimatedPoints !== undefined ? `（当前加分信号：${estimatedPoints}）` : ""}。${hasSponsor ? "已提供担保背景。" : "担保背景看起来有限。"}本内容仅为一般信息，仍取决于个人具体情况。`
+      : `Confidence is moderate because some core inputs are provided, but skills assessment and full points context remain unclear${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. ${hasSponsor ? "Sponsorship context is provided." : "Sponsorship context appears limited."} This is general information only and depends on individual circumstances.`;
 }
 
 // ─── Main engine ──────────────────────────────────────────────────────────────
@@ -5059,7 +5078,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     pathwayComparison,
     locale,
     missingInformation,
-    assessmentState
+    assessmentState,
+    pointsEstimate?.estimatedPoints
   );
   const pathwayStrengthComparison = buildPathwayStrengthComparison(
     pathwayComparison,

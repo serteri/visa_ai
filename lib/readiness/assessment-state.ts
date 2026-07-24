@@ -1,5 +1,6 @@
 import { findOccupationRecord, getEligibleSkilledSubclasses, isAmbiguousOccupationAlias } from "./occupation-eligibility";
 import { getEmploymentDataSignals } from "./employment-signals";
+import { hasRealEnglishEvidence } from "./english-evidence";
 import type {
   AssessmentState,
   DataCompletenessLevel,
@@ -103,7 +104,7 @@ export function buildAssessmentState(
   const employmentSignals = getEmploymentDataSignals(input);
   const fieldsPresent: AssessmentState["fieldsPresent"] = {
     age: Boolean(input.age),
-    englishLevel: Boolean(input.englishLevel),
+    englishLevel: hasRealEnglishEvidence(input),
     englishTestEvidence: (input.englishTestTaken ?? "").trim().toLowerCase() === "yes",
     occupation: Boolean(input.occupation),
     skillsAssessment: (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes",
