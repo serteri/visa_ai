@@ -753,7 +753,40 @@ export function FullCheckWaitlistForm({
   const selectClassName =
     "h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
 
-  const englishLevelOptions = [
+  const englishLevelOptions = selectedCountry === "CA" ? [
+    {
+      value: "none",
+      label: txt(
+        "Test almadım / CLB 4'ten düşük",
+        "I haven't taken a test / Below CLB 4",
+        "我还没有参加考试 / 低于 CLB 4"
+      ),
+    },
+    {
+      value: "competent",
+      label: txt(
+        "CLB 5 - 6 (örn. IELTS 5.0 - 5.5, CELPIP 5 - 6)",
+        "CLB 5 - 6 (e.g., IELTS 5.0 - 5.5, CELPIP 5 - 6)",
+        "CLB 5 - 6（如 IELTS 5.0 - 5.5，CELPIP 5 - 6）"
+      ),
+    },
+    {
+      value: "proficient",
+      label: txt(
+        "CLB 7 - 8 (örn. IELTS 6.0 - 6.5, CELPIP 7 - 8)",
+        "CLB 7 - 8 (e.g., IELTS 6.0 - 6.5, CELPIP 7 - 8)",
+        "CLB 7 - 8（如 IELTS 6.0 - 6.5，CELPIP 7 - 8）"
+      ),
+    },
+    {
+      value: "superior",
+      label: txt(
+        "CLB 9+ (örn. IELTS L:8.0, diğer:7.0, CELPIP 9+)",
+        "CLB 9+ (e.g., IELTS L:8.0, others:7.0, CELPIP 9+)",
+        "CLB 9+（如 IELTS 听力:8.0，其他:7.0，CELPIP 9+）"
+      ),
+    },
+  ] : [
     {
       value: "none",
       label: txt(
@@ -1644,7 +1677,9 @@ export function FullCheckWaitlistForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="waitlist-english-test-taken">
-              {txt("İngilizce testi alındı mı? (opsiyonel)", "English test taken? (optional)", "英语考试成绩（可选）")}
+              {selectedCountry === "CA"
+                ? txt("Dil testi alındı mı? (IELTS/CELPIP/TEF vb. - opsiyonel)", "Language test taken? (IELTS/CELPIP/TEF etc. - optional)", "语言考试成绩（IELTS/CELPIP/TEF 等 - 可选）")
+                : txt("İngilizce testi alındı mı? (IELTS/PTE vb. - opsiyonel)", "English test taken? (IELTS/PTE etc. - optional)", "英语考试成绩（IELTS/PTE 等 - 可选）")}
             </Label>
             <select
               id="waitlist-english-test-taken"
