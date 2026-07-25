@@ -289,6 +289,17 @@ export type RankedPathway = {
   ineligibleSharedNotes?: string[];
 };
 
+export interface GroupedVisaResult {
+  isGrouped: true;
+  visaTitles: string;
+  status: string;
+  sharedMessage: string;
+  originalVisas: RankedPathway[];
+  recommendationTag: RankedPathwayRecommendation;
+  isHardIneligible: boolean;
+  isPointsThresholdOnly: boolean;
+}
+
 export type DataCompletenessLevel = "sufficient" | "partial" | "minimal";
 
 /**

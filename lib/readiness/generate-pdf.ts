@@ -22,7 +22,7 @@ import {
   hardGateDefinition,
 } from "@/src/lib/readiness/localization";
 import { resolveOccupationDisplayName } from "./occupation-eligibility";
-import type { ReadinessReport, RankedPathway, RankedPathwayRecommendation } from "./types";
+import type { ReadinessReport, RankedPathway, RankedPathwayRecommendation, GroupedVisaResult } from "./types";
 import { parsePartnerIntakeFromText } from "./partner-sponsorship";
 
 const COLORS = {
@@ -2886,6 +2886,75 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return { label: text.qualitativeFitUnlikely, color: COLORS.riskHigh };
   }
 
+  function groupVisaPathways(
+    visas: RankedPathway[],
+    report: ReadinessReport,
+    locale: "en" | "tr" | "zh-Hans"
+  ): Array<RankedPathway | GroupedVisaResult> {
+    const skilledSubclasses = ["189", "190", "491"];
+    const toGroup = visas.filter(
+      (v) => skilledSubclasses.includes(v.subclass) && v.isPointsThresholdOnly
+    );
+
+    if (toGroup.length <= 1) {
+      return visas;
+    }
+
+    const estimatedPoints = report.pointsEstimate?.estimatedPoints ?? 0;
+    const gap = 65 - estimatedPoints;
+    const subclassesJoined = toGroup.map((v) => v.subclass).join(" / ");
+
+    const titleSuffix = locale === "tr"
+      ? "Genel Vasıflı Göçmenlik"
+      : locale === "zh-Hans"
+        ? "普通技术移民"
+        : "General Skilled Migration";
+    const visaTitles = `${subclassesJoined} - ${titleSuffix}`;
+
+    const status = locale === "tr"
+      ? "Puan Eşiğinin Altında"
+      : locale === "zh-Hans"
+        ? "低于分数门槛"
+        : "Below Points Threshold";
+
+    const subclassesText = toGroup.map((v) => v.subclass).join(", ");
+    let sharedMessage = "";
+    if (locale === "tr") {
+      sharedMessage = `Tahmini temel puanınız ${estimatedPoints} olup, ${subclassesText} vize yollarının tamamı için gereken asgari 65 puan barajının ${gap} puan altındadır. Bu yolların tümü puan testine tabi olup, başvuru yapılabilmesi için asgari baraj puanına ulaşılması zorunludur. Puan dökümünüzün detayları ve puanınızı nasıl artırabileceğiniz bu raporun ilerleyen bölümlerinde detaylandırılmıştır.`;
+    } else if (locale === "zh-Hans") {
+      sharedMessage = `您的预估基准分数为 ${estimatedPoints} 分，距离 ${subclassesText} 签证途径共同要求的最低 65 分门槛还差 ${gap} 分。这些途径均基于积分系统，申请人必须达到最低起步分数才能获得申请资格。您的详细积分明细以及如何提高分数的建议，将在本报告后面的部分中进行详细阐述。`;
+    } else {
+      sharedMessage = `Your estimated baseline score is ${estimatedPoints} points, leaving a ${gap}-point gap to the minimum threshold of 65 points required for all selected subclasses (${subclassesText}). These pathways are all points-tested, meaning you must reach the minimum score before an application can be lodged. A complete analysis of your points allocation and strategies to improve your score are detailed in the subsequent sections of this report.`;
+    }
+
+    const groupedObj: GroupedVisaResult = {
+      isGrouped: true,
+      visaTitles,
+      status,
+      sharedMessage,
+      originalVisas: toGroup,
+      recommendationTag: "📉 Below Points Threshold",
+      isHardIneligible: true,
+      isPointsThresholdOnly: true,
+    };
+
+    const result: Array<RankedPathway | GroupedVisaResult> = [];
+    let groupedInserted = false;
+
+    for (const v of visas) {
+      if (skilledSubclasses.includes(v.subclass) && v.isPointsThresholdOnly) {
+        if (!groupedInserted) {
+          result.push(groupedObj);
+          groupedInserted = true;
+        }
+      } else {
+        result.push(v);
+      }
+    }
+
+    return result;
+  }
+
   function drawVisaViabilityRanking() {
     const computedRankedPathways =
       report.rankedPathways ??
@@ -2900,12 +2969,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // Hard Gate (1 July 2026): ineligible pathways are unconditionally pinned
     // to the top of the ranking, ahead of any match-percentage score below.
     const ineligiblePathways = buildIneligiblePathwayEntries(report);
-    const rankedPathways = [
+    const rawRankedPathways = [
       ...ineligiblePathways,
       ...computedRankedPathways.filter(
         (rp) => !ineligiblePathways.some((ie) => ie.subclass === rp.subclass)
       ),
     ];
+    const rankedPathways = groupVisaPathways(rawRankedPathways, report, effectiveLocale);
     if (rankedPathways.length === 0) return;
 
     addHeading(text.visaViabilityRanking);
@@ -2918,7 +2988,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // table rendered later in this report (same English/employment rows,
     // shown as actual numbers), so it's replaced with a single pointer to
     // that table instead of repeating the same information in two formats.
-    const hardIneligibleEntries = rankedPathways.filter((rp) => rp.isHardIneligible);
+    const hardIneligibleEntries = rawRankedPathways.filter((rp) => rp.isHardIneligible);
     const hasPointsThresholdIneligible = hardIneligibleEntries.some((rp) => rp.isPointsThresholdOnly);
     const lastIneligibleSubclass = hardIneligibleEntries[hardIneligibleEntries.length - 1]?.subclass;
 
@@ -3008,7 +3078,51 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
 
     let viableRank = 0;
-    rankedPathways.forEach((item) => {
+    rankedPathways.forEach((entry) => {
+      if ("isGrouped" in entry && entry.isGrouped) {
+        setBaseFont();
+        doc.setFontSize(FONTS.small);
+        const reasonLineHeight = 3.6;
+        const reasonLines: string[] = doc.splitTextToSize(safeText(entry.sharedMessage), contentWidth - 10);
+        const rowHeight = Math.max(16, 10 + reasonLines.length * reasonLineHeight + 2);
+        ensurePageSpace(rowHeight + 2);
+        const topY = yPosition;
+        const amber = COLORS.riskMedium;
+
+        doc.setFillColor(255, 251, 235);
+        doc.setDrawColor(amber.r, amber.g, amber.b);
+        doc.setLineWidth(0.5);
+        doc.roundedRect(margin, topY, contentWidth, rowHeight, 1.2, 1.2, "FD");
+        doc.setFillColor(amber.r, amber.g, amber.b);
+        doc.rect(margin, topY, 2.5, rowHeight, "F");
+
+        setBoldFont();
+        doc.setFontSize(FONTS.body);
+        doc.setTextColor(amber.r, amber.g, amber.b);
+        doc.text(safeText(entry.visaTitles), margin + 6, topY + 5.2);
+
+        const badgeLabel = formatRecommendationTag(entry.recommendationTag);
+        const badgeWidth = Math.min(70, Math.max(34, doc.getTextWidth(safeText(badgeLabel)) + 7));
+        doc.setFillColor(amber.r, amber.g, amber.b);
+        doc.roundedRect(margin + contentWidth - badgeWidth - 2.5, topY + 2.4, badgeWidth, 5.6, 1.4, 1.4, "F");
+        doc.setFontSize(6.6);
+        doc.setTextColor(255, 255, 255);
+        doc.text(safeText(badgeLabel), margin + contentWidth - badgeWidth + 1, topY + 6.2);
+
+        setBaseFont();
+        doc.setFontSize(FONTS.small);
+        doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+        doc.text(reasonLines, margin + 6, topY + 10, { lineHeightFactor: 1.18 });
+
+        yPosition += rowHeight + 2;
+
+        if (hasPointsThresholdIneligible) {
+          drawPointsBreakdownPointerBox();
+        }
+        return;
+      }
+
+      const item = entry as RankedPathway;
       if (item.isHardIneligible) {
         setBaseFont();
         doc.setFontSize(FONTS.small);
