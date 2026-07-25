@@ -23,6 +23,7 @@ import {
 } from "@/src/lib/readiness/localization";
 import { resolveOccupationDisplayName } from "./occupation-eligibility";
 import type { ReadinessReport, RankedPathway, RankedPathwayRecommendation } from "./types";
+import { parsePartnerIntakeFromText } from "./partner-sponsorship";
 
 const COLORS = {
   primary: { r: 22, g: 78, b: 99 },
@@ -3378,30 +3379,184 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return report.frictionAnalysis.find((f) => f.pathway === subclass);
   }
 
+  function drawPartnerSponsorshipReport() {
+    const isTr = effectiveLocale === "tr";
+    const isZh = effectiveLocale === "zh-Hans";
+
+    const pAssessment = report.partnerSponsorshipAssessment;
+    if (!pAssessment) return;
+
+    // 1. Snapshot section
+    addSectionHeading("", isTr ? "İlişki ve Sponsor Özeti" : isZh ? "关系与担保人概览" : "Relationship & Sponsor Snapshot");
+    const intake = parsePartnerIntakeFromText(userInputSummary.sponsorOrFamily);
+
+    const relLabel = isTr ? "İlişki Türü" : isZh ? "关系类型" : "Relationship Type";
+    const cohabLabel = isTr ? "Birlikte Yaşama Süresi" : isZh ? "共同居住时间" : "Cohabitation Duration";
+    const sponsorStatusLabel = isTr ? "Sponsor Statüsü" : isZh ? "担保人身份" : "Sponsor Status";
+    
+    const relVal = intake.relationshipType === "married" 
+      ? (isTr ? "Evli" : isZh ? "已婚" : "Married") 
+      : intake.relationshipType === "engaged"
+        ? (isTr ? "Nişanlı" : isZh ? "订婚" : "Engaged")
+        : (isTr ? "Common-law / De facto" : isZh ? "事实婚姻" : "Common-law / De facto");
+        
+    const cohabVal = intake.cohabitationDuration === "more_than_2_years"
+      ? (isTr ? "2 yıldan fazla" : isZh ? "2 年以上" : "More than 2 years")
+      : intake.cohabitationDuration === "12_to_24_months"
+        ? (isTr ? "12 - 24 ay" : isZh ? "12 - 24 个月" : "12 - 24 months")
+        : (isTr ? "12 aydan az" : isZh ? "12 个月以下" : "Less than 12 months");
+
+    const sponVal = intake.sponsorStatus === "citizen"
+      ? (isTr ? "Vatandaş" : isZh ? "公民" : "Citizen")
+      : intake.sponsorStatus === "permanent_resident"
+        ? (isTr ? "PR (Daimi Oturum)" : isZh ? "永久居民 (PR)" : "Permanent Resident (PR)")
+        : (isTr ? "Uygun NZ Vatandaşı" : isZh ? "合格新西兰公民" : "Eligible NZ Citizen");
+
+    addPremiumKeyValueContainer(
+      isTr ? "Segment Özet Tablosu" : isZh ? "评估基本信息" : "Assessment Snapshot",
+      [
+        [relLabel, relVal],
+        [cohabLabel, cohabVal],
+        [sponsorStatusLabel, sponVal],
+      ],
+      COLORS.primary
+    );
+    yPosition += 2;
+
+    // 2. Genuine Relationship Evidence Assessment
+    addHeading(isTr ? "İlişki Kanıt Gücü Değerlendirmesi" : isZh ? "真实关系证明评估" : "Genuine Relationship Evidence Assessment");
+    
+    const signalLabel = isTr ? "İlişki Kanıt Sinyali Gücü" : isZh ? "关系证明信号强度" : "Relationship Signal Strength";
+    const sigColor = pAssessment.relationshipSignalStrength === "High" 
+      ? COLORS.riskLow 
+      : pAssessment.relationshipSignalStrength === "Medium"
+        ? COLORS.riskMedium
+        : COLORS.riskHigh;
+
+    const signalValueText = pAssessment.relationshipSignalStrength === "High"
+      ? (isTr ? "YÜKSEK (Güçlü kanıt derinliği)" : isZh ? "高（证明材料丰富）" : "HIGH (Strong evidence depth)")
+      : pAssessment.relationshipSignalStrength === "Medium"
+        ? (isTr ? "ORTA (Makul kanıt derinliği)" : isZh ? "中（证明材料一般）" : "MEDIUM (Moderate evidence depth)")
+        : (isTr ? "DÜŞÜK (Yetersiz/Kısıtlı kanıt)" : isZh ? "低（证明材料不足）" : "LOW (Limited evidence/cohabitation)");
+
+    addPremiumKeyValueContainer(
+      isTr ? "Kanıt Gücü Sinyali" : isZh ? "证明强度信号" : "Evidence Strength Signal",
+      [
+        [signalLabel, signalValueText],
+      ],
+      sigColor
+    );
+    yPosition += 2;
+
+    addBody(
+      isTr
+        ? "Bu değerlendirme, başvuru formunda işaretlediğiniz birlikte yaşama süresi ve ilişki kanıtı çeşitliliğine (ortak fatura, banka hesabı vb.) dayanmaktadır. Bu resmi bir 'genuine relationship' kararı değildir, sadece göçmenlik dairesinin kanıt zenginliğini nasıl yorumlayacağına dair kaba bir sinyal göstergesidir."
+        : isZh
+          ? "此评估基于您在申请表中填写的共同居住时间及关系证明材料（如联名账户、租约等）。这并非官方的“真实关系”裁决，仅作为移民局可能如何评估您关系材料丰富程度的参考信号。"
+          : "This assessment is based on the cohabitation duration and the variety of relationship evidence (joint bank accounts, leases, etc.) provided in your intake. It is not an official 'genuine relationship' decision, but a rough indication of how immigration authorities may interpret your evidence richness."
+    );
+    yPosition += 2;
+
+    // 3. Sponsor Eligibility Snapshot
+    addHeading(isTr ? "Sponsor Uygunluk Durumu" : isZh ? "担保人资格评估" : "Sponsor Eligibility Snapshot");
+    const sponSigText = pAssessment.sponsorEligibilitySignal === "Eligible"
+      ? (isTr ? "UYGUN (Sponsorluk kriterleri karşılanıyor)" : isZh ? "符合条件" : "ELIGIBLE")
+      : (isTr ? "KOŞULLU (İnceleme / Risk var)" : isZh ? "有待核实/存在风险" : "CONDITIONAL (Exemptions / Risks apply)");
+
+    addPremiumKeyValueContainer(
+      isTr ? "Sponsorluk Uygunluk Sinyali" : isZh ? "担保人资格信号" : "Sponsor Eligibility Signal",
+      [
+        [isTr ? "Değerlendirme Sonucu" : isZh ? "评估结果" : "Assessment Status", sponSigText],
+      ],
+      pAssessment.sponsorEligibilitySignal === "Eligible" ? COLORS.riskLow : COLORS.riskMedium
+    );
+    yPosition += 2;
+
+    if (pAssessment.hardGateFlags.length > 0) {
+      pAssessment.hardGateFlags.forEach((flag) => {
+        addPremiumKeyValueContainer(
+          isTr ? "UYARI / KISITLAMA" : isZh ? "限制性警示" : "REGULATORY WARNING / BAR",
+          [[isTr ? "Açıklama" : isZh ? "详情说明" : "Details", flag]],
+          COLORS.riskHigh
+        );
+        yPosition += 2;
+      });
+    } else {
+      addBody(
+        isTr
+          ? "Sponsorun son 5 yıl içinde başka birine sponsor olduğu yönünde bir kayıt beyan edilmemiştir. Sponsorluk hak sınırlamaları kapsamında bilinen bir engel görünmemektedir."
+          : isZh
+            ? "未申报担保人在过去 5 年内有担保他人的记录。目前未发现明显的担保限制风险。"
+            : "No previous sponsorship within the last 5 years was declared. No immediate sponsorship bar is flagged."
+      );
+      yPosition += 2;
+    }
+
+    // 4. Audit-Ready Proof Checklist (Partner Version)
+    addSectionHeading("", isTr ? "Kanıt Evrak Kontrol Listesi" : isZh ? "关系证明文件清单" : "Audit-Ready Evidence Checklist");
+    addSmallText(
+      isTr
+        ? "Partner vizesi başvurusunda ilişkinin gerçekliğini ve sponsorluğun geçerliliğini kanıtlamak için gereken temel evraklar:"
+        : isZh
+          ? "用于在配偶/伴侣签证申请中证明关系真实性及担保资格的关键文件清单："
+          : "Key documents required to substantiate relationship genuineness and sponsor eligibility in your partner application:",
+      0
+    );
+    yPosition += 2;
+
+    const evidenceList = intake.relationshipEvidence ?? [];
+    const gaps = pAssessment.evidenceGaps;
+
+    if (evidenceList.length > 0) {
+      addBody(isTr ? "Mevcut Olduğu Belirtilen Evraklar:" : isZh ? "已准备/申报的关系证明：" : "Declared Evidence (Ready/Available):");
+      evidenceList.forEach((e) => {
+        const itemLabel = e === "marriage_cert" ? (isTr ? "Evlilik Cüzdanı / Kaydı" : isZh ? "结婚证书/官方登记" : "Marriage Certificate")
+          : e === "joint_bank" ? (isTr ? "Ortak Banka Hesabı / Finansal Dökümler" : isZh ? "联名账户/共同财务" : "Joint Bank Account / Shared Finances")
+          : e === "joint_lease" ? (isTr ? "Ortak Kira Sözleşmesi / Faturalar" : isZh ? "联名租约/共同账单" : "Joint Lease / Utility Bills")
+          : e === "photos_social" ? (isTr ? "Birlikte Fotoğraflar / Sosyal Kanıtlar" : isZh ? "合影与社交证据" : "Photos & Social Evidence")
+          : (isTr ? "Ortak Çocuk Bilgileri" : isZh ? "共同子女" : "Joint Children Details");
+        addSmallText(`[x] ${itemLabel}`, 4);
+      });
+      yPosition += 2;
+    }
+
+    if (gaps.length > 0) {
+      addBody(isTr ? "Eksik / Güçlendirilmesi Gereken Kanıtlar:" : isZh ? "缺失/待加强的关系证明材料：" : "Evidence Gaps (Needs to be acquired/strengthened):");
+      gaps.forEach((g) => {
+        addSmallText(`[ ] ${g}`, 4);
+      });
+      yPosition += 2;
+    }
+
+    // 5. Next Steps
+    addHeading(isTr ? "Önerilen Sonraki Adımlar" : isZh ? "推荐执行步骤" : "Recommended Next Steps");
+    pAssessment.recommendedNextSteps.forEach((step) => {
+      addSmallText(`• ${step}`, 0);
+    });
+    yPosition += 3;
+  }
+
   // Cover page
   addCoverPage();
 
-  addReportOverview();
-
-  drawGlossary();
-
-  drawMissingInfoBox();
-
-  drawVisaViabilityRanking();
-  // State Nomination Tracker now covers both AU states/territories and CA
-  // provinces (report.country-aware headings above) -- only Ontario has a
-  // real eligibility module (buildCanadaStateNominationTracker), so other
-  // CA reports fall through to the eligibilityBlocked notice instead of
-  // being silently skipped.
-  if (report.stateNominationTracker?.eligibilityBlocked) {
-    drawStateNominationBlockedNotice();
+  if (report.partnerSponsorshipAssessment) {
+    drawPartnerSponsorshipReport();
   } else {
-    drawStateRadar();
-    drawTopRecommendedStates();
-    drawStateNominationTable();
+    addReportOverview();
+    drawGlossary();
+    drawMissingInfoBox();
+    drawVisaViabilityRanking();
+    if (report.stateNominationTracker?.eligibilityBlocked) {
+      drawStateNominationBlockedNotice();
+    } else {
+      drawStateRadar();
+      drawTopRecommendedStates();
+      drawStateNominationTable();
+    }
+    drawLodgementReadyChecklist();
   }
-  drawLodgementReadyChecklist();
 
+  if (!report.partnerSponsorshipAssessment) {
   addPremiumKeyValueContainer(text.signalSnapshot, [
     [text.strongestSignal, report.signalSnapshot.strongest],
     [
@@ -3656,6 +3811,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
     yPosition += 3;
   }
+  }
 
   if (report.financialRoadmap.length > 0) {
     addSectionHeading("", text.financialRoadmap);
@@ -3667,6 +3823,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     );
   }
 
+  if (!report.partnerSponsorshipAssessment) {
   if (report.progressionPathways.length > 0) {
     addHeading(text.progressionPathways);
     addSmallText(text.progressionPathwaysIntro, 0);
@@ -3746,12 +3903,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   // Sparse data disclaimer — shown before data-sensitive sections
   drawSparseDataDisclaimer();
+  }
 
   if (report.premiumSections) {
     addSectionHeading("", text.premiumSections);
     addSmallText(text.premiumSectionsIntro, 0);
 
-    addBody(text.invitationTrends);
+    if (report.partnerSponsorshipAssessment) {
+      drawGanttTimeline();
+    } else {
+      addBody(text.invitationTrends);
     addSmallText(
       `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
       2
@@ -3831,10 +3992,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       );
       addSmallText(report.premiumSections.livingCostProjection.note, 2);
     }
+    }
 
     drawGanttTimeline();
   }
 
+  if (!report.partnerSponsorshipAssessment) {
   // NOC / TEER / ECA section (CA only — surfaces occupation indication with ECA body and duties)
   if (report.country === "CA") drawNocEcaSection();
 
@@ -3876,6 +4039,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // Audit-Ready Proof Checklist — dedicated section (was "Document-Level Specificity")
   drawAuditChecklistBox();
   drawImmediateActionPlan();
+  }
 
   addHeading(text.downloadablePdf);
   addSmallText(text.downloadablePdfDescription, 0);
@@ -3896,7 +4060,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   yPosition += 5;
 
   // ── Appendix Architecture (CA only) ─────────────────────────────────────
-  if (report.country === "CA") drawAppendixSection();
+  if (report.country === "CA" && !report.partnerSponsorshipAssessment) drawAppendixSection();
 
   // Viral CTA banner on final page
   addViralCTABanner();

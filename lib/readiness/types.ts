@@ -552,4 +552,11 @@ export type ReadinessReport = {
     currency: "AUD" | "CAD";
     monthly: { rent: number; groceries: number; transport: number; total: number };
   };
+  partnerSponsorshipAssessment?: {
+    relationshipSignalStrength: "Low" | "Medium" | "High";
+    sponsorEligibilitySignal: "Eligible" | "Conditional" | "Blocked";
+    hardGateFlags: string[];
+    evidenceGaps: string[];
+    recommendedNextSteps: string[];
+  };
 };

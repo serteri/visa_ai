@@ -59,6 +59,8 @@ import type { InvitationTrendEstimate } from "@/src/lib/readiness/report-generat
 import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-checklists";
 import { buildRiskIndicators, buildCanadaRiskIndicators } from "./risk-rules";
 import { buildNextSteps, buildCanadaNextSteps } from "./next-steps";
+import { isPartnerFamilySponsorship } from "@/lib/countries";
+import { parsePartnerIntakeFromText, buildPartnerSponsorshipAssessment } from "./partner-sponsorship";
 import type {
   AssessmentState,
   ConfidenceLevel,
@@ -1775,6 +1777,39 @@ function buildCanadaPathwayComparison(
     // misrepresent. fstpEligibility is the single source of truth for these
     // (buildFSTPEligibility) -- this branch only renders it.
     if (code === "FSTP" && fstpEligibility) {
+      if (!fstpEligibility.occupationEligible) {
+        return {
+          subclass: "FSTP",
+          visaName: isTr ? CANADA_PATHWAY_NAMES[code].tr : CANADA_PATHWAY_NAMES[code].en,
+          reason: isTr
+            ? `NOC kodunuz (${fstpEligibility.nocCode ?? "?"}) FSTP (Federal Skilled Trades) için geçerli bir ticaret grubu (Major Group 72/73/82/83/92/93 veya Chef/Cook) kapsamında değildir.`
+            : isZh
+              ? `您的 NOC 代码（${fstpEligibility.nocCode ?? "?"}）不在 FSTP（联邦技工类）符合条件的技工组别内。`
+              : `Your NOC code (${fstpEligibility.nocCode ?? "?"}) is not in an eligible trade group for the Federal Skilled Trades Program (FSTP).`,
+          relevance: "ineligible",
+          confidenceLevel: "high",
+          confidenceExplanation: isTr
+            ? "NOC kodu ticaret grubu kapsamında olmadığı için kesin olarak uygun değildir."
+            : isZh
+              ? "由于 NOC 代码不属于技工组别，确定不符合该途径。"
+              : "Definitively ineligible because the NOC code is not within the eligible skilled trades groups.",
+          difficulty: "high",
+          requirementType: isTr ? "NOC Ticaret Grubu" : isZh ? "NOC 技工类型" : "NOC Trade Group Eligibility",
+          userRelativePosition: isTr
+            ? "Bu yol için meslek kodu uygun değildir."
+            : "Occupation code is not eligible for this pathway.",
+          keyRequirements: isTr
+            ? ["FSTP uygun ticaret grubunda NOC kodu (Major Group 72/73/82/83/92/93 veya Chef/Cook)"]
+            : ["NOC code in an FSTP-eligible trade group (Major Group 72/73/82/83/92/93 or Chef/Cook)"],
+          pathwaySpecificRisks: [
+            isTr
+              ? "Ticari meslek dışındaki profiller FSTP yolundan başvuramaz. Lütfen CEC veya FSW gibi diğer Express Entry kanallarını değerlendirin."
+              : isZh
+                ? "非技工类职业无法通过 FSTP 申请。请考虑 CEC 或 FSW 等其他快速通道项目。"
+                : "Non-trade occupations cannot apply via the FSTP. Please consider CEC or FSW Express Entry streams."
+          ],
+        };
+      }
       const hardGateUnmet = !fstpEligibility.workExperienceGateMet || !fstpEligibility.languageThresholdMet;
       const missingBits: string[] = [];
       if (!fstpEligibility.workExperienceGateMet) {
@@ -5541,6 +5576,9 @@ function buildCanadaPointsBoosterSimulator(
 // AU-flavored logic — they are explicitly out of scope for this pass, not
 // silently degraded equivalents of the AU versions.
 function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
+  if (isPartnerFamilySponsorship(input.preferredPathway)) {
+    return buildPartnerReadinessReport(input, "CA");
+  }
   const locale = input.locale;
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -5556,7 +5594,20 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   // excluded either.
   let pathwayCodes = detectCanadaPathways(input);
   if (pathwayCodes.includes("FSTP") && !fstpEligibility.occupationEligible) {
-    pathwayCodes = pathwayCodes.filter((code) => code !== "FSTP");
+    const isExplicitFSTP = input.preferredPathway === "canada-express-entry-fstp" ||
+      (input.preferredPathway && input.preferredPathway.toLowerCase().includes("fstp"));
+    if (!isExplicitFSTP) {
+      pathwayCodes = pathwayCodes.filter((code) => code !== "FSTP");
+    } else {
+      // If FSTP is explicit but occupation is ineligible, check if TEER 0/1/2/3 to suggest FSW and CEC as alternatives
+      const nocResult = checkNocOccupation({ occupation: input.occupation ?? "", nocCode: input.nocCode });
+      const nocMatch = nocResult.matches.find((m) => m.code === input.nocCode) ?? nocResult.matches[0];
+      const teer = input.nocTeer ?? nocMatch?.teer;
+      if (teer !== undefined && teer <= 3) {
+        if (!pathwayCodes.includes("FSW")) pathwayCodes.push("FSW");
+        if (!pathwayCodes.includes("CEC")) pathwayCodes.push("CEC");
+      }
+    }
   }
   const pointsEstimate = buildCanadaPointsEstimate(input, locale);
   const dataCompleteness = buildDataCompleteness(input, locale);
@@ -6075,6 +6126,10 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   if (input.country === "CA") return runCanadaReadinessEngine(input);
 
+  if (isPartnerFamilySponsorship(input.preferredPathway)) {
+    return buildPartnerReadinessReport(input, "AU");
+  }
+
   const locale = input.locale;
 
   const detectedSubclasses = detectSubclasses(input);
@@ -6369,5 +6424,293 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     suggestedNextSteps,
     missingInformation,
     disclaimer,
+  };
+}
+
+function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"): ReadinessReport {
+  const locale = input.locale;
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+
+  const partnerData = parsePartnerIntakeFromText(input.sponsorOrFamily);
+  const pAssessment = buildPartnerSponsorshipAssessment(partnerData, country, locale);
+
+  const reportId = `LVA-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-PARTNER`;
+
+  const executiveSummary = country === "AU"
+    ? [
+        isTr
+          ? "Bu rapor, Avustralya Partner vizesi (Subclass 820/801) başvurunuz için ilişki kanıtı derinliğini ve sponsor uygunluğu sinyallerini değerlendirmektedir."
+          : isZh
+            ? "本报告评估您申请澳大利亚配偶签证（Subclass 820/801）的关系证明深度和担保人资格信号。"
+            : "This report assesses your relationship evidence depth and sponsor eligibility signals for the Australian Partner visa (Subclass 820/801) pathway.",
+        isTr
+          ? "Bu değerlendirme puan testi içeren vasıflı göçmenlik vizeleri (189/190/491) için geçerli değildir; partner vizeleri puan-bazlı değildir."
+          : isZh
+            ? "本评估不适用于打分制技术移民签证（189/190/491）；配偶签证不基于积分系统。"
+            : "This assessment does not apply to points-tested skilled migration visas (189/190/491); partner visas are not points-tested."
+      ]
+    : [
+        isTr
+          ? "Bu rapor, Kanada Eş Sponsorluğu (Spousal Sponsorship) başvurunuz için ilişki kanıtı derinliğini ve sponsor uygunluğu sinyallerini değerlendirmektedir."
+          : isZh
+            ? "本报告评估您申请加拿大配偶担保（Spousal Sponsorship）的关系证明深度和担保人资格信号。"
+            : "This report assesses your relationship evidence depth and sponsor eligibility signals for the Canada Spousal Sponsorship pathway.",
+        isTr
+          ? "Bu değerlendirme puan testi içeren Express Entry (CRS) göçmenlik vizeleri için geçerli değildir; aile sponsorluğu vizeleri puan-bazlı değildir."
+          : isZh
+            ? "本评估不适用于快速通道 (Express Entry) CRS 打分制移民；家庭担保不基于积分系统。"
+            : "This assessment does not apply to points-tested Express Entry (CRS) migration; family sponsorship is not points-tested."
+      ];
+
+  const primaryLimitingFactor = {
+    label: isTr
+      ? (pAssessment.relationshipSignalStrength === "Low" ? "Kısıtlı İlişki Kanıtı" : pAssessment.sponsorEligibilitySignal === "Conditional" ? "Sponsorluk Engel Riski" : "Kanıt Toplama")
+      : isZh
+        ? (pAssessment.relationshipSignalStrength === "Low" ? "关系证明不足" : pAssessment.sponsorEligibilitySignal === "Conditional" ? "担保人资格风险" : "材料收集")
+        : (pAssessment.relationshipSignalStrength === "Low" ? "Limited Relationship Evidence" : pAssessment.sponsorEligibilitySignal === "Conditional" ? "Sponsorship Bar Risk" : "Evidence Collection"),
+    explanation: pAssessment.sponsorEligibilitySignal === "Conditional"
+      ? (isTr
+          ? "Sponsorun son 5 yıl içindeki sponsorluk geçmişi, başvurunun askıya alınmasına veya reddedilmesine neden olabilecek bir kısıtlamayı tetikleyebilir."
+          : isZh
+            ? "担保人近 5 年内的担保历史可能会触发限制条件，导致申请被暂停或拒绝。"
+            : "The sponsor's previous sponsorship within the last 5 years may trigger a bar or restriction, causing delays or refusal.")
+      : (isTr
+          ? "Partner vizesinde en kritik faktör ilişkinin gerçekliği ve sürekliliğidir. Eksik kanıtların toplanması öncelikli adımdır."
+          : isZh
+            ? "配偶签证最关键的因素是关系的真实性与持续性。收集缺失的证明材料是首要任务。"
+            : "The most critical factor in a partner visa is relationship genuineness and continuity. Gathering missing evidence is the priority.")
+  };
+
+  const pathwayComparison: PathwayComparison[] = [
+    {
+      subclass: country === "AU" ? "820_801" : "FAMILY_SPONSORSHIP",
+      visaName: country === "AU" ? "Partner visa (820/801)" : "Spousal Sponsorship",
+      reason: isTr
+        ? "Formda beyan edilen ilişki ve sponsor bilgileriyle eşleşen doğrudan sponsorluk yolu."
+        : isZh
+          ? "与表单中申报的关系和担保信息匹配的直接担保途径。"
+          : "Direct sponsorship pathway matching the relationship and sponsor details declared in the form.",
+      relevance: "possible",
+      confidenceLevel: pAssessment.relationshipSignalStrength === "High" ? "high" : pAssessment.relationshipSignalStrength === "Medium" ? "medium" : "low",
+      confidenceExplanation: isTr
+        ? "Güven seviyesi, sunulan ilişki süresi ve kanıt türlerinin çeşitliliğine dayanmaktadır."
+        : isZh
+          ? "置信度级别基于提供的共同居住时间及证明材料的多样性。"
+          : "The confidence level is based on the cohabitation duration and variety of evidence types provided.",
+      difficulty: pAssessment.sponsorEligibilitySignal === "Conditional" ? "high" : "medium",
+      requirementType: isTr ? "İlişki ve sponsor kanıtları" : "Relationship & sponsor evidence",
+      userRelativePosition: isTr
+        ? "Bu yol puan-bazlı değildir; kriterlerin eksiksiz karşılanması esastır."
+        : isZh
+          ? "此通道非打分制；完全符合标准是关键。"
+          : "This pathway is criteria-based rather than points-tested; complete compliance with requirements is key.",
+      keyRequirements: country === "AU"
+        ? [
+            isTr ? "Gerçek ve devam eden ilişki kanıtları" : "Evidence of a genuine and continuing relationship",
+            isTr ? "Sponsorun Avustralya vatandaşı/PR olması" : "Sponsor is an Australian citizen or permanent resident",
+            isTr ? "Sağlık ve karakter gereklilikleri" : "Health and character checks"
+          ]
+        : [
+            isTr ? "İlişki ve asgari 12 ay birlikte yaşam kanıtı" : "Proof of relationship and min 12-month cohabitation",
+            isTr ? "Sponsorun Kanada vatandaşı/PR olması" : "Sponsor is a Canadian citizen or permanent resident",
+            isTr ? "Sponsorun finansal taahhüt belgesi" : "Financial undertaking by the sponsor"
+          ],
+      pathwaySpecificRisks: pAssessment.hardGateFlags
+    }
+  ];
+
+  const financialRoadmap: FinancialRoadmapItem[] = country === "AU"
+    ? [
+        {
+          category: isTr ? "Vize Başvuru Ücreti (VAC)" : "Visa Application Charge (VAC)",
+          estimateType: "official_fee" as const,
+          amountLabel: "AUD 11,710",
+          explanation: isTr
+            ? "Asıl başvuru sahibi için hükümet harcı (820 ve 801 aşamalarını kapsar), 1 Temmuz 2026 itibariyle güncel."
+            : "Base government fee for main applicant (covering both subclass 820 and 801 stages), updated July 1, 2026."
+        },
+        {
+          category: isTr ? "Diğer Maliyetler (Tahmini)" : "Other costs (est.)",
+          estimateType: "third_party_estimate" as const,
+          amountLabel: "AUD 300 - 800",
+          explanation: isTr
+            ? "Sağlık muayeneleri, polis kayıtları, tercüme ve noter onayları."
+            : "Estimated expenses for health examinations, police checks, translations, and certifications."
+        }
+      ]
+    : [
+        {
+          category: isTr ? "Eş Sponsorluğu Başvuru Ücretleri" : "Spousal Sponsorship government fees",
+          estimateType: "official_fee" as const,
+          amountLabel: "CAD 1,345",
+          explanation: isTr
+            ? "Sponsorluk ($90), İşlem ($570), Kalıcı Oturum Hakkı ($600) ve Biyometri ($85) ücretleri dahil, 30 Nisan 2026 itibariyle güncel."
+            : "Includes Sponsorship ($90), Processing ($570), Right of Permanent Residence ($600), and Biometrics ($85), updated April 30, 2026."
+        },
+        {
+          category: isTr ? "Diğer Maliyetler (Tahmini)" : "Other costs (est.)",
+          amountLabel: "CAD 450 - 1,500",
+          estimateType: "third_party_estimate" as const,
+          explanation: isTr
+            ? "Sağlık muayenesi, adli sicil belgeleri, belge çevirileri ve kargo masrafları."
+            : "Estimated expenses for medical exams, police clearances, translation of documents, and postage."
+        }
+      ];
+
+  const assessmentState: AssessmentState = {
+    employmentDataProvided: false,
+    employmentDataConfirmed: false,
+    fieldsPresent: {
+      age: true,
+      englishLevel: false,
+      englishTestEvidence: false,
+      occupation: false,
+      skillsAssessment: false,
+      workExperienceYears: false,
+      partnerStatus: true,
+      stateNomination: false,
+      healthCharacterDocs: false,
+    },
+    missingFieldLabels: [],
+    dataCompletenessLevel: "minimal" as const,
+    hardGateFlags: pAssessment.hardGateFlags,
+    occupationEligibility: "eligible" as const,
+    occupationEligibilityReason: "",
+    canShowNumericRanking: false,
+  };
+
+  const signalSnapshot = {
+    strongest: country === "AU" ? "Partner Visa (subclass 820/801)" : "Spousal Sponsorship",
+    secondary: [],
+    confidenceLabel: pAssessment.relationshipSignalStrength === "High"
+      ? ("stronger" as const)
+      : pAssessment.relationshipSignalStrength === "Medium"
+        ? ("moderate" as const)
+        : ("limited" as const),
+    confidenceExplanation: isTr
+      ? "İlişki süresi ve mevcut kanıtların çeşitliliğine dayanmaktadır."
+      : "Based on relationship duration and diversity of declared evidence.",
+  };
+
+  const dataCompleteness: DataCompleteness = {
+    percentage: 100,
+    missingFields: [],
+  };
+
+  const documentChecklist: DocumentCategory[] = [
+    {
+      category: isTr ? "Kimlik ve Pasaport Belgeleri" : "Identity and Passport Documents",
+      items: [
+        isTr ? "Geçerli pasaport (tüm işlem görmüş sayfaların kopyası)" : "Valid passport (copy of all used pages)",
+        isTr ? "Adli sicil kaydı (son 10 yılda 6 aydan fazla yaşanmış tüm ülkeler için)" : "Police certificates for all countries resided in for 6+ months in the last 10 years"
+      ]
+    },
+    {
+      category: isTr ? "İlişki Kanıt Belgeleri" : "Relationship Evidence Documents",
+      items: pAssessment.evidenceGaps.concat(
+        partnerData.relationshipEvidence?.map(e => {
+          if (e === "marriage_cert") return isTr ? "Evlilik Cüzdanı / Kaydı" : "Marriage Certificate";
+          if (e === "joint_bank") return isTr ? "Ortak Banka Hesabı / Ortak Finansal Kanıtlar" : "Joint Bank Account / Shared Finances";
+          if (e === "joint_lease") return isTr ? "Ortak Kira Sözleşmesi / Faturalar" : "Joint Lease / Utility Bills";
+          if (e === "photos_social") return isTr ? "Birlikte Fotoğraflar / Sosyal Kanıtlar" : "Photos & Social Evidence";
+          return isTr ? "Ortak Çocuk Bilgileri" : "Joint Children Details";
+        }) ?? []
+      )
+    }
+  ];
+
+  return {
+    country,
+    executiveSummary,
+    signalSnapshot,
+    primaryLimitingFactor,
+    positionChangers: [],
+    pathwayComparison,
+    pathwayStrengthComparison: [],
+    evidenceReadiness: [],
+    financialRoadmap,
+    progressionPathways: [],
+    pathwayFriction: [],
+    confidenceExplanation: signalSnapshot.confidenceExplanation,
+    assessmentState,
+    reportIndicators: {
+      dataCompletenessScore: 100,
+      dataCompletenessLabel: isTr ? "Veri tamlığı" : "Data completeness",
+      documentReadinessIndicator: pAssessment.relationshipSignalStrength === "High" ? "high" : pAssessment.relationshipSignalStrength === "Medium" ? "medium" : "low",
+      informationCoverageLevel: "comprehensive",
+      explanation: isTr
+        ? "Partner vizesi değerlendirmesi yapılmıştır."
+        : "A partner visa assessment was completed.",
+    },
+    primaryGap: primaryLimitingFactor.label,
+    dataCompleteness,
+    keyVisaRequirements: [],
+    factorsAffectingPathways: [],
+    riskIndicators: [],
+    documentChecklist,
+    premiumSections: {
+      historicalInvitationTrends: {
+        matchedOccupationGroup: "",
+        anzscoCode: "",
+        estimates: [],
+        note: isTr
+          ? "Partner vizeleri puan-bazlı olmadığı için davet taban puanları geçerli değildir."
+          : "Historical invitation points do not apply because partner visas are not points-tested."
+      },
+      livingCostProjection: {
+        city: country === "CA" ? (isTr ? "Toronto" : "Toronto") : (isTr ? "Sydney" : "Sydney"),
+        familyProfile: isTr ? "Tek Kişi" : "Single Adult",
+        currency: country === "CA" ? "CAD" : "AUD",
+        monthly: { rent: 2800, groceries: 800, transport: 150, total: 3750 },
+        note: ""
+      },
+      strategicGanttChart: {
+        timelineBand: "6-12 months",
+        steps: [
+          {
+            step: 1,
+            title: isTr ? "Kanıt Toplama ve Hazırlık Aşaması" : "Evidence Collection & Preparation",
+            window: "Weeks 1-8",
+            description: isTr
+              ? "İlişki kanıtlarının (ortak banka hesap dökümleri, faturalar, fotoğraflar, arkadaş ve aile beyanları) bir araya getirilmesi."
+              : "Assembling comprehensive relationship proof (joint accounts, statements, declarations, and history narrative)."
+          },
+          {
+            step: 2,
+            title: isTr ? "Sponsorluk ve Vize Başvuru Dosyası" : "Sponsorship & Visa Application Submission",
+            window: "Weeks 8-12",
+            description: isTr
+              ? "Hükümet harcının ödenerek sponsorluk onay talebinin ve vize dosyasının resmi olarak sisteme girilmesi."
+              : "Lodge the sponsorship request and the main visa application files with the official government portal."
+          },
+          {
+            step: 3,
+            title: isTr ? "Sağlık ve Karakter Kontrolleri" : "Health, Biometrics & Character Clearances",
+            window: "Weeks 12-24",
+            description: isTr
+              ? "Göçmenlik dairesinden gelen bildirimleri takiben biyometri verilmesi, sağlık kontrolü ve adli sicil belgelerinin sunulması."
+              : "Attend biometrics appointment, undergo medical examinations, and submit police certificates upon request."
+          }
+        ]
+      },
+      scenarioBasedInsights: {
+        pathwayStrengthComparison: [],
+        evidenceReadiness: [],
+        financialRoadmap: [],
+        progressionPathways: [],
+        pathwayFriction: [],
+        frictionAnalysis: [],
+        documentChecklist: [],
+        suggestedNextSteps: []
+      }
+    },
+    frictionAnalysis: [],
+    suggestedNextSteps: pAssessment.recommendedNextSteps,
+    missingInformation: [],
+    disclaimer: country === "AU"
+      ? "Regulatory disclaimer: Registered Migration Agents (MARA) provide official counsel in Australia. This report is for initial guidance only."
+      : "Regulatory disclaimer: Licensed RCIC consultants provide official counsel in Canada. This report is for initial guidance only.",
+    partnerSponsorshipAssessment: pAssessment,
   };
 }
