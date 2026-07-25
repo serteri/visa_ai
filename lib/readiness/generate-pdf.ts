@@ -268,6 +268,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       limitingFactorsLabel: "Sınırlayıcı Faktörler",
       limitingFactorsExplainer: "Bu yolu şu an zayıflatan veya ek kanıt/iyileştirme gerektiren başlıca faktörler.",
       belowPointsThresholdExplainer: "Profilinizin tahmini puanı, bu yol için gereken minimum eşiğin altında kalıyor.",
+      notProvided: "Belirtilmedi",
     };
   }
 
@@ -433,6 +434,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       limitingFactorsLabel: "\u9650\u5236\u56e0\u7d20",
       limitingFactorsExplainer: "\u76ee\u524d\u524a\u5f31\u8be5\u8def\u5f84\u3001\u6216\u9700\u8981\u8865\u5145\u8bc1\u636e/\u6539\u5584\u6863\u6848\u7684\u4e3b\u8981\u56e0\u7d20\u3002",
       belowPointsThresholdExplainer: "\u60a8\u6863\u6848\u7684\u9884\u8ba1\u5206\u6570\u4f4e\u4e8e\u8be5\u8def\u5f84\u6240\u9700\u7684\u6700\u4f4e\u95e8\u69db\u3002",
+      notProvided: "\u672a\u63d0\u4f9b",
     };
   }
 
@@ -597,6 +599,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     limitingFactorsLabel: "Limiting Factors",
     limitingFactorsExplainer: "The main factors currently weakening this pathway or requiring additional evidence/improvement.",
     belowPointsThresholdExplainer: "Your profile's estimated points fall below the minimum threshold required for this pathway.",
+    notProvided: "Not Provided",
   };
 }
 
@@ -1610,10 +1613,23 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function addCoverPage() {
-    const reportDate = new Date().toLocaleDateString(locale);
+    const reportDate = new Intl.DateTimeFormat(locale, {
+      timeZone: "Australia/Brisbane",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }).format(new Date());
+
+    const aestDatePart = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Australia/Brisbane",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+
     const subjectName = userInputSummary.name || "Applicant";
     const safeName = subjectName.replace(/[^A-Za-z0-9]/g, "").slice(0, 10).toUpperCase() || "CLIENT";
-    const reportId = `LVA-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${safeName}`;
+    const reportId = `LVA-${aestDatePart.replace(/-/g, "")}-${safeName}`;
 
     // ── Background ──────────────────────────────────────────────────────────
     doc.setFillColor(248, 250, 252);
@@ -1873,13 +1889,25 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   function addReportOverview() {
+    const reportDate = new Intl.DateTimeFormat(locale, {
+      timeZone: "Australia/Brisbane",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }).format(new Date());
+
+    const rawEng = userInputSummary.englishLevel;
+    const resolvedEnglishLevel = (!rawEng || rawEng.trim() === "" || rawEng.toLowerCase() === "none" || rawEng.toLowerCase() === "unset")
+      ? text.notProvided
+      : rawEng;
+
     const rawLeftRows: Array<[string, string | undefined]> = [
-      [text.generatedDate, new Date().toLocaleDateString(locale)],
+      [text.generatedDate, reportDate],
       [text.nameLabel, userInputSummary.name],
       [text.occupationLabel, userInputSummary.occupation],
       [text.ageLabel, userInputSummary.age],
       [text.currentCountryLabel, userInputSummary.currentCountry],
-      [text.englishLevelLabel, userInputSummary.englishLevel],
+      [text.englishLevelLabel, resolvedEnglishLevel],
       [text.goalLabel, userInputSummary.mainGoal],
     ];
     const leftRows = rawLeftRows.filter((row): row is [string, string] => Boolean(row[1]));
@@ -4069,7 +4097,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   addGlobalFooters();
 
   // Generate filename
-  const timestamp = new Date().toISOString().split("T")[0];
+  const timestamp = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Australia/Brisbane",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
   const filename = effectiveLocale === "tr"
     ? `vize-hazırlık-raporu-${timestamp}.pdf`
     : effectiveLocale === "zh-Hans"

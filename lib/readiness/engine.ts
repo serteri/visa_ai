@@ -6435,7 +6435,14 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
   const partnerData = parsePartnerIntakeFromText(input.sponsorOrFamily);
   const pAssessment = buildPartnerSponsorshipAssessment(partnerData, country, locale);
 
-  const reportId = `LVA-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-PARTNER`;
+  const aestDatePart = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Australia/Brisbane",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+
+  const reportId = `LVA-${aestDatePart.replace(/-/g, "")}-PARTNER`;
 
   const executiveSummary = country === "AU"
     ? [
