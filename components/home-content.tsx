@@ -12,7 +12,7 @@ import { useTranslation } from "@/contexts/language-context";
 import { PdfDownloadModal, type PdfProduct } from "@/components/PdfDownloadModal";
 import { SampleReportMockup } from "@/components/SampleReportMockup";
 import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
-import { activeCountries, countryComplianceBadge } from "@/lib/countries";
+import { activeCountries, countryComplianceBadge, DISPLAY_START_SLOTS } from "@/lib/countries";
 
 const FREE_DOWNLOADS_FALLBACK = 18;
 
@@ -130,21 +130,21 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
                 {locale === "tr" ? (
                   <>
                     İki ülke için ortak — bugün sadece{" "}
-                    <span className="text-emerald-700/60 line-through">20</span>{" "}
+                    <span className="text-emerald-700/60 line-through">{DISPLAY_START_SLOTS}</span>{" "}
                     <strong className="text-base">{assessmentSlotsLeft}</strong> ücretsiz analiz
                     hakkı kaldı! (Normalde $49 — ücretsiz haklar bittiğinde bu fiyata dönecektir)
                   </>
                 ) : locale === "zh-Hans" ? (
                   <>
                     两国共享 — 今日仅剩{" "}
-                    <span className="text-emerald-700/60 line-through">20</span>{" "}
+                    <span className="text-emerald-700/60 line-through">{DISPLAY_START_SLOTS}</span>{" "}
                     <strong className="text-base">{assessmentSlotsLeft}</strong>{" "}
                     个免费评估名额！（原价 $49 — 免费名额用尽后将恢复原价）
                   </>
                 ) : (
                   <>
                     Shared across both countries — only{" "}
-                    <span className="text-emerald-700/60 line-through">20</span>{" "}
+                    <span className="text-emerald-700/60 line-through">{DISPLAY_START_SLOTS}</span>{" "}
                     <strong className="text-base">{assessmentSlotsLeft}</strong> free assessment
                     slots left! (Normally $49 — reverts to this price once free slots run out)
                   </>
@@ -517,25 +517,25 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
         <div
           className={`mb-6 flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-center text-sm font-semibold shadow-sm ${
             hasFreeSlots
-              ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800/50 dark:bg-emerald-900/20 dark:text-emerald-300"
+              ? "border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-800/50 dark:bg-sky-900/20 dark:text-sky-300"
               : "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-300"
           }`}
         >
           {hasFreeSlots ? (
             <span>
-              🔥{" "}
+              📚{" "}
               {locale === "tr" ? (
                 <>
-                  Her iki rehberde de geçerli — sadece{" "}
+                  Her iki PDF rehber için geçerli — sadece{" "}
                   <strong>{freeDownloadsLeft}</strong> ücretsiz indirme hakkı kaldı!
                 </>
               ) : locale === "zh-Hans" ? (
                 <>
-                  两本指南通用 — 仅剩 <strong>{freeDownloadsLeft}</strong> 个免费下载名额！
+                  两本 PDF 指南通用 — 仅剩 <strong>{freeDownloadsLeft}</strong> 个免费下载名额！
                 </>
               ) : (
                 <>
-                  Shared across both editions — only{" "}
+                  Shared across both PDF guides — only{" "}
                   <strong>{freeDownloadsLeft}</strong> free download slots left!
                 </>
               )}
