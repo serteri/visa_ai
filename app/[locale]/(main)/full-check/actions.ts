@@ -10,7 +10,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
-import { defaultCountry, isSupportedCountry } from "@/lib/countries";
+import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship } from "@/lib/countries";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import {
   completeFullCheckProgress,
@@ -983,7 +983,6 @@ export async function submitFullCheckWaitlist(
         : undefined;
   const estimatedBudgetRange = String(formData.get("estimatedBudgetRange") ?? "").trim();
   const timeline = String(formData.get("timeline") ?? "").trim();
-  const sponsorOrFamily = String(formData.get("sponsorOrFamily") ?? "").trim();
   const biggestConcern = String(formData.get("biggestConcern") ?? "").trim();
   const nocCode = String(formData.get("nocCode") ?? "").trim() || undefined;
   const nocTeerRaw = String(formData.get("nocTeer") ?? "").trim();
@@ -995,6 +994,28 @@ export async function submitFullCheckWaitlist(
     mainGoal,
   });
   const isAdmin = isAdminWhitelistedEmail(email);
+
+  const isPartner = isPartnerFamilySponsorship(visaInterest);
+
+  const relationshipType = String(formData.get("relationshipType") ?? "").trim();
+  const cohabitationDuration = String(formData.get("cohabitationDuration") ?? "").trim();
+  const sponsorStatus = String(formData.get("sponsorStatus") ?? "").trim();
+  const previousSponsorship = String(formData.get("previousSponsorship") ?? "").trim();
+  const applicationLocationPreference = String(formData.get("applicationLocationPreference") ?? "").trim();
+  const relationshipEvidence = formData.getAll("relationshipEvidence").map(String);
+
+  let sponsorOrFamily = String(formData.get("sponsorOrFamily") ?? "").trim();
+  if (isPartner) {
+    const parts = [
+      relationshipType ? `Relation: ${relationshipType}` : null,
+      cohabitationDuration ? `Duration: ${cohabitationDuration}` : null,
+      sponsorStatus ? `Sponsor: ${sponsorStatus}` : null,
+      previousSponsorship ? `Prev Sponsor: ${previousSponsorship}` : null,
+      applicationLocationPreference ? `Pref: ${applicationLocationPreference}` : null,
+      relationshipEvidence.length > 0 ? `Evidence: ${relationshipEvidence.join(", ")}` : null,
+    ].filter(Boolean);
+    sponsorOrFamily = parts.join(" | ");
+  }
 
   const isTr = resolvedLocale === "tr";
   const isZh = resolvedLocale === "zh-Hans";
@@ -1010,30 +1031,31 @@ export async function submitFullCheckWaitlist(
   if (!age) errors.age = isTr ? "Yas gereklidir." : isZh ? "年龄为必填项。" : "Age is required.";
   if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : isZh ? "主要目标为必填项。" : "Main goal is required.";
   if (!fullName) errors.fullName = isTr ? "Ad soyad gereklidir." : isZh ? "姓名为必填项。" : "Full name is required.";
-  if (!occupation) errors.occupation = isTr ? "Meslek gereklidir." : isZh ? "职业为必填项。" : "Occupation is required.";
   if (!currentCountry) errors.currentCountry = isTr ? "Bulundugunuz ulke gereklidir." : isZh ? "当前国家为必填项。" : "Current country is required.";
-  if (!qualificationLevel) {
+
+  if (!isPartner && !occupation) errors.occupation = isTr ? "Meslek gereklidir." : isZh ? "职业为必填项。" : "Occupation is required.";
+  if (!isPartner && !qualificationLevel) {
     errors.qualificationLevel = isTr
       ? "Egitim seviyesi gereklidir."
       : isZh
         ? "学历为必填项。"
         : "Education level is required.";
   }
-  if (!englishLevel) {
+  if (!isPartner && !englishLevel) {
     errors.englishLevel = isTr
       ? "Ingilizce seviyesi gereklidir."
       : isZh
         ? "英语水平为必填项。"
         : "English level is required.";
   }
-  if (!sponsorOrFamily) {
+  if (!isPartner && !sponsorOrFamily) {
     errors.sponsorOrFamily = isTr
       ? "Sponsor/aile durumu gereklidir."
       : isZh
         ? "担保/家庭情况为必填项。"
         : "Sponsor/family status is required.";
   }
-  if (targetCountry === "AU") {
+  if (!isPartner && targetCountry === "AU") {
     if (!annualSalaryAudRaw) {
       errors.annualSalaryAud = isTr
         ? "Yillik maas (AUD) gereklidir."
@@ -1048,28 +1070,28 @@ export async function submitFullCheckWaitlist(
           : "Enter a valid annual salary amount.";
     }
   }
-  if (!offshoreExperienceYearsResult.success) {
+  if (!isPartner && !offshoreExperienceYearsResult.success) {
     errors.offshoreExperienceYears = isTr
       ? "Yurt disi deneyim yili 0 veya daha buyuk bir sayi olmalidir."
       : isZh
         ? "境外工作年限必须是大于或等于 0 的数字。"
         : "Offshore experience years must be a number greater than or equal to 0.";
   }
-  if (!onshoreExperienceYearsResult.success) {
+  if (!isPartner && !onshoreExperienceYearsResult.success) {
     errors.onshoreExperienceYears = isTr
       ? "Avustralya deneyim yili 0 veya daha buyuk bir sayi olmalidir."
       : isZh
         ? "澳大利亚境内工作年限必须是大于或等于 0 的数字。"
         : "Onshore experience years must be a number greater than or equal to 0.";
   }
-  if (!qualificationAwardedInAustraliaResult.success) {
+  if (!isPartner && !qualificationAwardedInAustraliaResult.success) {
     errors.qualificationAwardedInAustralia = isTr
       ? "Avustralya kurumunda tamamlama bilgisi geçersiz."
       : isZh
         ? "澳大利亚院校完成情况无效。"
         : "Australian institution answer is invalid.";
   }
-  if (qualificationAwardedInAustralia === true && !qualificationRegionalAustraliaResult.success) {
+  if (!isPartner && qualificationAwardedInAustralia === true && !qualificationRegionalAustraliaResult.success) {
     errors.qualificationRegionalAustralia = isTr
       ? "Bölgesel kampüs bilgisi geçersiz."
       : isZh

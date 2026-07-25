@@ -20,7 +20,7 @@ import {
   type FullCheckWaitlistState,
   submitFullCheckWaitlist,
 } from "./actions";
-import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, type SupportedCountry, type VisaPathwayOption } from "@/lib/countries";
+import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, type SupportedCountry, type VisaPathwayOption } from "@/lib/countries";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
@@ -557,6 +557,15 @@ export function FullCheckWaitlistForm({
   const [qualificationRegionalAustralia, setQualificationRegionalAustralia] = useState("");
   const [specialistEducationStemResponse, setSpecialistEducationStemResponse] = useState("");
   const [visaInterest, setVisaInterest] = useState(initialValues.visaInterest ?? "");
+  const isPartner = isPartnerFamilySponsorship(visaInterest);
+
+  const [relationshipType, setRelationshipType] = useState("");
+  const [cohabitationDuration, setCohabitationDuration] = useState("");
+  const [sponsorStatus, setSponsorStatus] = useState("");
+  const [previousSponsorship, setPreviousSponsorship] = useState("");
+  const [applicationLocationPreference, setApplicationLocationPreference] = useState("");
+  const [relationshipEvidence, setRelationshipEvidence] = useState<string[]>([]);
+
   const [nominationStream, setNominationStream] = useState("");
   const [yearsInSponsoredPosition, setYearsInSponsoredPosition] = useState("");
   const [courseName, setCourseName] = useState("");
@@ -1237,431 +1246,585 @@ export function FullCheckWaitlistForm({
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-occupation">
-            {txt("Meslek", "Occupation", "职业")}
-            <RequiredMark />
-            {selectedCountry === "CA" && (
-              <span className="ml-1.5 text-xs text-muted-foreground font-normal">
-                {txt("(NOC 2021 araması)", "(NOC 2021 search)", "（NOC 2021 搜索）")}
-              </span>
-            )}
-          </Label>
-          {selectedCountry === "CA" ? (
-            <div className="relative">
-              <input
-                id="waitlist-occupation"
-                type="text"
-                value={nocSearch}
-                {...noAutofill("occupation")}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setNocSearch(v);
-                  setNocCode("");
-                  setNocTeer(null);
-                  setNocResults(searchNoc(v));
-                  setNocOpen(true);
-                }}
-                onBlur={() => setTimeout(() => setNocOpen(false), 150)}
-                onFocus={() => {
-                  if (nocSearch.length >= 2) {
-                    setNocResults(searchNoc(nocSearch));
+        {!isPartner && (
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-occupation">
+              {txt("Meslek", "Occupation", "职业")}
+              <RequiredMark />
+              {selectedCountry === "CA" && (
+                <span className="ml-1.5 text-xs text-muted-foreground font-normal">
+                  {txt("(NOC 2021 araması)", "(NOC 2021 search)", "（NOC 2021 搜索）")}
+                </span>
+              )}
+            </Label>
+            {selectedCountry === "CA" ? (
+              <div className="relative">
+                <input
+                  id="waitlist-occupation"
+                  type="text"
+                  value={nocSearch}
+                  {...noAutofill("occupation")}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setNocSearch(v);
+                    setNocCode("");
+                    setNocTeer(null);
+                    setNocResults(searchNoc(v));
                     setNocOpen(true);
-                  }
-                }}
-                className={fieldClassName + " w-full"}
-                placeholder={txt("Örn: Yazılım Mühendisi veya NOC kodu", "E.g., Software Engineer or NOC code", "例如：软件工程师或 NOC 代码")}
-              />
-              <input type="hidden" name="occupation" value={nocSearch} />
-              {nocCode && <input type="hidden" name="nocCode" value={nocCode} />}
-              {nocTeer !== null && <input type="hidden" name="nocTeer" value={String(nocTeer)} />}
-              {nocCode && (
-                <p className="mt-1 text-xs text-emerald-700">
-                  {txt("Seçildi:", "Selected:", "已选：")} {nocCode} · TEER {nocTeer}
-                </p>
-              )}
-              {nocOpen && nocResults.length > 0 && (
-                <ul className="absolute z-50 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg text-sm">
-                  {nocResults.map((entry) => (
-                    <li
-                      key={entry.code}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        setNocSearch(entry.title);
-                        setNocCode(entry.code);
-                        setNocTeer(entry.teer);
-                        setNocOpen(false);
-                        setNocResults([]);
-                      }}
-                      className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted"
-                    >
-                      <span>{entry.title}</span>
-                      <span className="shrink-0 text-xs text-muted-foreground">
-                        {entry.code} · TEER {entry.teer}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ) : (
-            <div className="relative">
-              <input
-                id="waitlist-occupation"
-                type="text"
-                value={anzscoSearch}
-                {...noAutofill("occupation")}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setAnzscoSearch(value);
-                  setAnzscoCode("");
-                  setAnzscoResults(searchAnzsco(value, locale));
-                  setAnzscoOpen(true);
-                }}
-                onBlur={() => setTimeout(() => setAnzscoOpen(false), 150)}
-                onFocus={() => {
-                  if (anzscoSearch.length >= 2) {
-                    setAnzscoResults(searchAnzsco(anzscoSearch, locale));
-                    setAnzscoOpen(true);
-                  }
-                }}
-                className={fieldClassName + " w-full"}
-                placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
-              />
-              <input type="hidden" name="occupation" value={submittedOccupationValue} />
-              {resolvedAnzscoEntry && (
-                <p className="mt-1 text-xs text-emerald-700">
-                  {txt("Seçildi:", "Selected:", "已选：")} {resolvedAnzscoEntry.code} · {getLocalizedAnzscoTitle(resolvedAnzscoEntry, locale)}
-                </p>
-              )}
-              {anzscoOpen && anzscoResults.length > 0 && (
-                <ul className="absolute z-50 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg text-sm">
-                  {anzscoResults.map((entry) => {
-                    const nameStyle = entry.isOnSkilledList === false ? "text-muted-foreground" : "text-foreground font-medium";
-                    return (
+                  }}
+                  onBlur={() => setTimeout(() => setNocOpen(false), 150)}
+                  onFocus={() => {
+                    if (nocSearch.length >= 2) {
+                      setNocResults(searchNoc(nocSearch));
+                      setNocOpen(true);
+                    }
+                  }}
+                  className={fieldClassName + " w-full"}
+                  placeholder={txt("Örn: Yazılım Mühendisi veya NOC kodu", "E.g., Software Engineer or NOC code", "例如：软件工程师或 NOC 代码")}
+                />
+                <input type="hidden" name="occupation" value={nocSearch} />
+                {nocCode && <input type="hidden" name="nocCode" value={nocCode} />}
+                {nocTeer !== null && <input type="hidden" name="nocTeer" value={String(nocTeer)} />}
+                {nocCode && (
+                  <p className="mt-1 text-xs text-emerald-700">
+                    {txt("Seçildi:", "Selected:", "已选：")} {nocCode} · TEER {nocTeer}
+                  </p>
+                )}
+                {nocOpen && nocResults.length > 0 && (
+                  <ul className="absolute z-50 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg text-sm">
+                    {nocResults.map((entry) => (
                       <li
                         key={entry.code}
                         onMouseDown={(e) => {
                           e.preventDefault();
-                          setAnzscoSearch(getLocalizedAnzscoTitle(entry, locale));
-                          setAnzscoCode(entry.code);
-                          setAnzscoOpen(false);
-                          setAnzscoResults([]);
+                          setNocSearch(entry.title);
+                          setNocCode(entry.code);
+                          setNocTeer(entry.teer);
+                          setNocOpen(false);
+                          setNocResults([]);
                         }}
                         className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted"
                       >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className={`${nameStyle} truncate`}>
-                            {getLocalizedAnzscoTitle(entry, locale)}
-                          </span>
-                          {entry.isOnSkilledList === false && (
-                            <Badge variant="outline" className="shrink-0 scale-90 border-slate-200 bg-slate-50 text-slate-500 font-normal">
-                              {txt("Nitelikli Listede Değil", "Not on Skilled List", "不在主要职业清单上")}
-                            </Badge>
-                          )}
-                        </div>
-                        <span className="shrink-0 text-xs text-muted-foreground">{entry.code}</span>
+                        <span>{entry.title}</span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {entry.code} · TEER {entry.teer}
+                        </span>
                       </li>
-                    );
-                  })}
-                </ul>
-              )}
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ) : (
+              <div className="relative">
+                <input
+                  id="waitlist-occupation"
+                  type="text"
+                  value={anzscoSearch}
+                  {...noAutofill("occupation")}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setAnzscoSearch(value);
+                    setAnzscoCode("");
+                    setAnzscoResults(searchAnzsco(value, locale));
+                    setAnzscoOpen(true);
+                  }}
+                  onBlur={() => setTimeout(() => setAnzscoOpen(false), 150)}
+                  onFocus={() => {
+                    if (anzscoSearch.length >= 2) {
+                      setAnzscoResults(searchAnzsco(anzscoSearch, locale));
+                      setAnzscoOpen(true);
+                    }
+                  }}
+                  className={fieldClassName + " w-full"}
+                  placeholder={txt("Örn: Yazılım Mühendisi", "E.g., Software Engineer", "例如：软件工程师")}
+                />
+                <input type="hidden" name="occupation" value={submittedOccupationValue} />
+                {resolvedAnzscoEntry && (
+                  <p className="mt-1 text-xs text-emerald-700">
+                    {txt("Seçildi:", "Selected:", "已选：")} {resolvedAnzscoEntry.code} · {getLocalizedAnzscoTitle(resolvedAnzscoEntry, locale)}
+                  </p>
+                )}
+                {anzscoOpen && anzscoResults.length > 0 && (
+                  <ul className="absolute z-50 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg text-sm">
+                    {anzscoResults.map((entry) => {
+                      const nameStyle = entry.isOnSkilledList === false ? "text-muted-foreground" : "text-foreground font-medium";
+                      return (
+                        <li
+                          key={entry.code}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setAnzscoSearch(getLocalizedAnzscoTitle(entry, locale));
+                            setAnzscoCode(entry.code);
+                            setAnzscoOpen(false);
+                            setAnzscoResults([]);
+                          }}
+                          className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className={`${nameStyle} truncate`}>
+                              {getLocalizedAnzscoTitle(entry, locale)}
+                            </span>
+                            {entry.isOnSkilledList === false && (
+                              <Badge variant="outline" className="shrink-0 scale-90 border-slate-200 bg-slate-50 text-slate-500 font-normal">
+                                {txt("Nitelikli Listede Değil", "Not on Skilled List", "不在主要职业清单上")}
+                              </Badge>
+                            )}
+                          </div>
+                          <span className="shrink-0 text-xs text-muted-foreground">{entry.code}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* AU-only helper — opens modal so user never loses form progress */}
+            {selectedCountry === "AU" && (
+              <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3 shrink-0 text-indigo-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                {txt("Emin değil misiniz?", "Not sure?", "不确定？")}{" "}
+                <button
+                  type="button"
+                  onClick={() => setOccupationModalOpen(true)}
+                  className="inline-flex items-center gap-0.5 text-indigo-500 underline-offset-2 hover:text-indigo-700 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
+                >
+                  {txt("2026 Resmi Meslek Listesini İncele", "Check the 2026 Official Occupation List", "查看 2026 官方职业清单")}
+                </button>
+              </p>
+            )}
+
+            <ErrorText message={state.errors?.occupation} />
+          </div>
+        )}
+
+        {isPartner && (
+          <div className="space-y-4 border-l-2 border-indigo-200 pl-4 py-1 my-4">
+            <h3 className="text-sm font-semibold text-indigo-900 dark:text-indigo-300">
+              {txt("İlişki ve Sponsor Bilgileri", "Relationship & Sponsor Information", "关系与担保人信息")}
+            </h3>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-relationship-type">
+                  {txt("İlişki Türü", "Relationship Type", "关系类型")}
+                  <RequiredMark />
+                </Label>
+                <select
+                  id="waitlist-relationship-type"
+                  name="relationshipType"
+                  value={relationshipType}
+                  onChange={(e) => setRelationshipType(e.target.value)}
+                  className={selectClassName}
+                  required
+                >
+                  <option value="">{txt("Seçin", "Select", "请选择")}</option>
+                  <option value="married">{txt("Evli", "Married", "已婚")}</option>
+                  <option value="de_facto">{selectedCountry === "CA" ? txt("Common-law (Fiili Birliktelik)", "Common-law (De facto)", "事实婚姻 (Common-law)") : txt("De facto (Fiili Birliktelik)", "De facto", "事实婚姻 (De facto)")}</option>
+                  {selectedCountry === "AU" && (
+                    <option value="engaged">{txt("Nişanlı", "Engaged", "订婚")}</option>
+                  )}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-cohabitation-duration">
+                  {txt("Birlikte Yaşama Süresi", "Cohabitation Duration", "共同居住时间")}
+                  <RequiredMark />
+                </Label>
+                <select
+                  id="waitlist-cohabitation-duration"
+                  name="cohabitationDuration"
+                  value={cohabitationDuration}
+                  onChange={(e) => setCohabitationDuration(e.target.value)}
+                  className={selectClassName}
+                  required
+                >
+                  <option value="">{txt("Seçin", "Select", "请选择")}</option>
+                  <option value="less_than_12_months">{txt("12 aydan az", "Less than 12 months", "少于 12 个月")}</option>
+                  <option value="12_to_24_months">{txt("12 - 24 ay", "12 - 24 months", "12 - 24 个月")}</option>
+                  <option value="more_than_2_years">{txt("2 yıldan fazla", "More than 2 years", "2 年以上")}</option>
+                </select>
+              </div>
             </div>
-          )}
 
-          {/* AU-only helper — opens modal so user never loses form progress */}
-          {selectedCountry === "AU" && (
-            <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-3 w-3 shrink-0 text-indigo-400"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              {txt("Emin değil misiniz?", "Not sure?", "不确定？")}{" "}
-              <button
-                type="button"
-                onClick={() => setOccupationModalOpen(true)}
-                className="inline-flex items-center gap-0.5 text-indigo-500 underline-offset-2 hover:text-indigo-700 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
-              >
-                {txt("2026 Resmi Meslek Listesini İncele", "Check the 2026 Official Occupation List", "查看 2026 官方职业清单")}
-              </button>
-            </p>
-          )}
-
-          <ErrorText message={state.errors?.occupation} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-english">
-            {txt("İngilizce seviyesi", "English level", "英语水平")}
-            <RequiredMark />
-          </Label>
-          <Select value={englishLevel} onValueChange={setEnglishLevel}>
-            <SelectTrigger id="waitlist-english" className={fieldClassName}>
-              <SelectValue
-                placeholder={txt("İngilizce seviyenizi seçin", "Select your English level", "请选择你的英语水平")}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {englishLevelOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <input type="hidden" name="englishLevel" value={englishLevel} />
-          <ErrorText message={state.errors?.englishLevel} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-education">
-            {txt("En yüksek eğitim seviyesi", "Highest Education Level", "最高学历")}
-            <RequiredMark />
-          </Label>
-          <Select value={qualificationLevel} onValueChange={setQualificationLevel}>
-            <SelectTrigger id="waitlist-education" className={fieldClassName}>
-              <SelectValue
-                placeholder={txt("Eğitim seviyenizi seçin", "Select your education level", "请选择你的学历")}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {educationOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <input type="hidden" name="qualificationLevel" value={qualificationLevel} />
-          <ErrorText message={state.errors?.qualificationLevel} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-qualification-awarded-in-australia">
-            {selectedCountry === "CA"
-              ? txt(
-                  "Bu diploma için ECA (örn. WES) eğitim denkliği aldınız mı?",
-                  "Did you obtain an ECA (e.g. WES) credential assessment for this qualification?",
-                  "你是否为该学历获得了 ECA（例如 WES）证书评估？"
-                )
-              : txt(
-                  "Bu yeterliliği bir Avustralya kurumunda tamamladınız mı?",
-                  "Did you complete this qualification at an Australian institution?",
-                  "你是否在澳大利亚教育机构完成了这一学历？"
-                )}
-          </Label>
-          <select
-            id="waitlist-qualification-awarded-in-australia"
-            name="qualificationAwardedInAustralia"
-            value={qualificationAwardedInAustralia}
-            onChange={(e) => {
-              const next = e.target.value;
-              setQualificationAwardedInAustralia(next);
-              if (next !== "yes") {
-                setQualificationRegionalAustralia("");
-                setSpecialistEducationStemResponse("");
-              }
-            }}
-            className={selectClassName}
-          >
-            <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-            <option value="yes">{txt("Evet", "Yes", "是")}</option>
-            <option value="no">{txt("Hayır", "No", "否")}</option>
-          </select>
-          <p className="text-xs text-muted-foreground">
-            {selectedCountry === "CA"
-              ? txt(
-                  "Kanada dışındaki eğitimler için ECA denkliği (ECA assessed) +puan getirir.",
-                  "Education completed outside Canada requires an ECA credential assessment to claim points.",
-                  "在加拿大境外完成的学历需要进行 ECA 证书评估才能计分。"
-                )
-              : txt(
-                  "Bu yanıt, Australian study requirement (+5) ve varsa regional study (+5) puanlarını belirler.",
-                  "This answer drives the Australian study requirement (+5) and, if relevant, regional study (+5) points.",
-                  "此答案将决定 Australian study requirement（+5）以及如适用的 regional study（+5）积分。"
-                )}
-          </p>
-          <ErrorText message={state.errors?.qualificationAwardedInAustralia} />
-        </div>
-
-        {selectedCountry === "AU" && qualificationAwardedInAustralia === "yes" && (
-          <div className="space-y-2">
-            <Label htmlFor="waitlist-qualification-regional-australia">
-              {txt(
-                "Bu eğitim, Avustralya'nın belirlenmiş bölgesel bir kampüsünde mi tamamlandı? (uzaktan/online değil)",
-                "Was this study completed at a campus in a designated regional area of Australia (not distance/online)?",
-                "该学习是否在澳大利亚指定偏远地区的实体校区完成（非远程/在线）？"
-              )}
-            </Label>
-            <select
-              id="waitlist-qualification-regional-australia"
-              name="qualificationRegionalAustralia"
-              value={qualificationRegionalAustralia}
-              onChange={(e) => setQualificationRegionalAustralia(e.target.value)}
-              className={selectClassName}
-            >
-              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-              <option value="yes">{txt("Evet", "Yes", "是")}</option>
-              <option value="no">{txt("Hayır", "No", "否")}</option>
-            </select>
-            <ErrorText message={state.errors?.qualificationRegionalAustralia} />
-          </div>
-        )}
-
-        {selectedCountry === "AU" && qualificationAwardedInAustralia === "yes" && isResearchOrDoctorateQualification && (
-          <div className="space-y-2">
-            <Label htmlFor="waitlist-specialist-education-stem-response">
-              {txt(
-                "Bu araştırma derecesi şu alanlardan birinde miydi: doğa/fizik bilimleri, matematik, bilgisayar bilimi/BT veya mühendislik ve ilgili teknoloji?",
-                "Was this research degree in one of these fields: natural/physical sciences, mathematics, computer science/IT, or engineering and related technology?",
-                "该研究型学位是否属于以下领域之一：自然/物理科学、数学、计算机科学/信息技术、或工程及相关技术？"
-              )}
-            </Label>
-            <select
-              id="waitlist-specialist-education-stem-response"
-              name="specialistEducationStemResponse"
-              value={specialistEducationStemResponse}
-              onChange={(e) => setSpecialistEducationStemResponse(e.target.value)}
-              className={selectClassName}
-            >
-              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-              <option value="yes">{txt("Evet", "Yes", "是")}</option>
-              <option value="no">{txt("Hayır", "No", "否")}</option>
-              <option value="not_sure">{txt("Emin değilim", "Not sure", "不确定")}</option>
-            </select>
-            <p className="text-xs text-muted-foreground">
-              {txt(
-                "Specialist education +10 puanı yalnızca açıkça 'Evet' cevabı verildiğinde uygulanır.",
-                "The specialist education +10 is awarded only on an explicit 'Yes' response.",
-                "Specialist education +10 只有在明确回答“是”时才会计入。"
-              )}
-            </p>
-            <ErrorText message={state.errors?.specialistEducationStemResponse} />
-          </div>
-        )}
-
-        {selectedCountry === "AU" && (
-          <div className="space-y-2">
-            <Label htmlFor="waitlist-salary-aud">
-              {txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}
-              <RequiredMark />
-            </Label>
-            <Input
-              id="waitlist-salary-aud"
-              name="annualSalaryAud"
-              type="number"
-              min={0}
-              step={1}
-              inputMode="numeric"
-              value={annualSalaryAud}
-              onChange={(e) => setAnnualSalaryAud(e.target.value)}
-              {...noAutofill("annualSalaryAud")}
-              className={fieldClassName}
-              placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")}
-            />
-            <ErrorText message={state.errors?.annualSalaryAud} />
-          </div>
-        )}
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="waitlist-offshore-experience-years">
-              {selectedCountry === "CA"
-                ? txt(
-                    "Kanada dışındaki nitelikli iş deneyimi (yıl)",
-                    "Years of skilled employment outside Canada",
-                    "加拿大境外技术工作年限"
-                  )
-                : txt(
-                    "Avustralya dışındaki nitelikli iş deneyimi (yıl)",
-                    "Years of skilled employment outside Australia",
-                    "澳大利亚境外技术工作年限"
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-sponsor-status">
+                  {txt("Sponsorun Statüsü", "Sponsor Status", "担保人身份")}
+                  <RequiredMark />
+                </Label>
+                <select
+                  id="waitlist-sponsor-status"
+                  name="sponsorStatus"
+                  value={sponsorStatus}
+                  onChange={(e) => setSponsorStatus(e.target.value)}
+                  className={selectClassName}
+                  required
+                >
+                  <option value="">{txt("Seçin", "Select", "请选择")}</option>
+                  <option value="citizen">{txt("Vatandaş", "Citizen", "公民")}</option>
+                  <option value="permanent_resident">{txt("Kalıcı Oturum (PR)", "Permanent Resident", "永久居民")}</option>
+                  {selectedCountry === "AU" && (
+                    <option value="eligible_nz_citizen">{txt("Uygun Yeni Zelanda Vatandaşı", "Eligible NZ Citizen", "合格的新西兰公民")}</option>
                   )}
-            </Label>
-            <Input
-              id="waitlist-offshore-experience-years"
-              name="offshoreExperienceYears"
-              type="number"
-              min={0}
-              step="0.5"
-              inputMode="decimal"
-              {...noAutofill("offshoreExperienceYears")}
-              className={fieldClassName}
-              placeholder={txt("Örn: 5", "E.g., 5", "例如：5")}
-            />
-            <p className="text-xs text-muted-foreground">{experienceHelpText}</p>
-            <ErrorText message={state.errors?.offshoreExperienceYears} />
-          </div>
+                </select>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="waitlist-onshore-experience-years">
-              {selectedCountry === "CA"
-                ? txt(
-                    "Kanada içindeki nitelikli iş deneyimi (yıl)",
-                    "Years of skilled employment in Canada",
-                    "加拿大境内技术工作年限"
-                  )
-                : txt(
-                    "Avustralya içindeki nitelikli iş deneyimi (yıl)",
-                    "Years of skilled employment in Australia",
-                    "澳大利亚境内技术工作年限"
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-previous-sponsorship">
+                  {txt("Önceki Sponsorluk Geçmişi", "Previous Sponsorship History", "既往担保历史")}
+                  <RequiredMark />
+                </Label>
+                <select
+                  id="waitlist-previous-sponsorship"
+                  name="previousSponsorship"
+                  value={previousSponsorship}
+                  onChange={(e) => setPreviousSponsorship(e.target.value)}
+                  className={selectClassName}
+                  required
+                >
+                  <option value="">{txt("Seçin", "Select", "请选择")}</option>
+                  <option value="no">{txt("Hayır (Hiç kimseye sponsor olmadı)", "No (Never sponsored anyone)", "否（从未担保过任何人）")}</option>
+                  <option value="yes_within_5_years">{txt("Evet (Son 5 yıl içinde)", "Yes (Within last 5 years)", "是（近 5 年内）")}</option>
+                  <option value="yes_longer">{txt("Evet (5 yıldan uzun süre önce)", "Yes (More than 5 years ago)", "是（5 年前）")}</option>
+                </select>
+              </div>
+            </div>
+
+            {selectedCountry === "CA" && (
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-application-location-preference">
+                  {txt("Başvuru Konum Tercihi", "Application Location Preference", "申请递交地点偏好")}
+                  <RequiredMark />
+                </Label>
+                <select
+                  id="waitlist-application-location-preference"
+                  name="applicationLocationPreference"
+                  value={applicationLocationPreference}
+                  onChange={(e) => setApplicationLocationPreference(e.target.value)}
+                  className={selectClassName}
+                  required
+                >
+                  <option value="">{txt("Seçin", "Select", "请选择")}</option>
+                  <option value="inland">{txt("Inland (Kanada içinden başvuru)", "Inland (Applying from within Canada)", "境内递交 (Inland)")}</option>
+                  <option value="outland">{txt("Outland (Kanada dışından başvuru)", "Outland (Applying from outside Canada)", "境外递交 (Outland)")}</option>
+                </select>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>{txt("Mevcut İlişki Kanıtları (Birden fazla seçebilirsiniz)", "Available Relationship Evidence (Select all that apply)", "现有关系证明（可多选）")}</Label>
+              <div className="grid gap-2 sm:grid-cols-2 text-sm">
+                {[
+                  { value: "marriage_cert", en: "Marriage Certificate / Registry", tr: "Evlilik Cüzdanı / Kaydı", zh: "结婚证书/官方登记" },
+                  { value: "joint_bank", en: "Joint bank account / Shared finances", tr: "Ortak banka hesabı / Ortak finansal kanıtlar", zh: "联名银行账户/共享财务" },
+                  { value: "joint_lease", en: "Joint lease / Utility bills together", tr: "Ortak kira sözleşmesi / Faturalar", zh: "联名租约/共同账单" },
+                  { value: "photos_social", en: "Photos & Social evidence", tr: "Fotoğraflar ve Sosyal kanıtlar", zh: "照片与社交关系证明" },
+                  { value: "joint_children", en: "Joint children", tr: "Ortak çocuk(lar)", zh: "共同子女" },
+                ].map((item) => (
+                  <label key={item.value} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="relationshipEvidence"
+                      value={item.value}
+                      checked={relationshipEvidence.includes(item.value)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setRelationshipEvidence([...relationshipEvidence, item.value]);
+                        } else {
+                          setRelationshipEvidence(relationshipEvidence.filter((v) => v !== item.value));
+                        }
+                      }}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
+                    />
+                    <span>{txt(item.tr, item.en, item.zh)}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!isPartner && (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-english">
+                {txt("İngilizce seviyesi", "English level", "英语水平")}
+                <RequiredMark />
+              </Label>
+              <Select value={englishLevel} onValueChange={setEnglishLevel}>
+                <SelectTrigger id="waitlist-english" className={fieldClassName}>
+                  <SelectValue
+                    placeholder={txt("İngilizce seviyenizi seçin", "Select your English level", "请选择你的英语水平")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {englishLevelOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <input type="hidden" name="englishLevel" value={englishLevel} />
+              <ErrorText message={state.errors?.englishLevel} />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-education">
+                {txt("En yüksek eğitim seviyesi", "Highest Education Level", "最高学历")}
+                <RequiredMark />
+              </Label>
+              <Select value={qualificationLevel} onValueChange={setQualificationLevel}>
+                <SelectTrigger id="waitlist-education" className={fieldClassName}>
+                  <SelectValue
+                    placeholder={txt("Eğitim seviyenizi seçin", "Select your education level", "请选择你的学历")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {educationOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <input type="hidden" name="qualificationLevel" value={qualificationLevel} />
+              <ErrorText message={state.errors?.qualificationLevel} />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-qualification-awarded-in-australia">
+                {selectedCountry === "CA"
+                  ? txt(
+                      "Bu diploma için ECA (örn. WES) eğitim denkliği aldınız mı?",
+                      "Did you obtain an ECA (e.g. WES) credential assessment for this qualification?",
+                      "你是否为该学历获得了 ECA（例如 WES）证书评估？"
+                    )
+                  : txt(
+                      "Bu yeterliliği bir Avustralya kurumunda tamamladınız mı?",
+                      "Did you complete this qualification at an Australian institution?",
+                      "你是否在澳大利亚教育机构完成了这一学历？"
+                    )}
+              </Label>
+              <select
+                id="waitlist-qualification-awarded-in-australia"
+                name="qualificationAwardedInAustralia"
+                value={qualificationAwardedInAustralia}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setQualificationAwardedInAustralia(next);
+                  if (next !== "yes") {
+                    setQualificationRegionalAustralia("");
+                    setSpecialistEducationStemResponse("");
+                  }
+                }}
+                className={selectClassName}
+              >
+                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option value="no">{txt("Hayır", "No", "否")}</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                {selectedCountry === "CA"
+                  ? txt(
+                      "Kanada dışındaki eğitimler için ECA denkliği (ECA assessed) +puan getirir.",
+                      "Education completed outside Canada requires an ECA credential assessment to claim points.",
+                      "在加拿大境外完成的学历需要进行 ECA 证书评估才能计分。"
+                    )
+                  : txt(
+                      "Bu yanıt, Australian study requirement (+5) ve varsa regional study (+5) puanlarını belirler.",
+                      "This answer drives the Australian study requirement (+5) and, if relevant, regional study (+5) points.",
+                      "此答案将决定 Australian study requirement（+5）以及如适用的 regional study（+5）积分。"
+                    )}
+              </p>
+              <ErrorText message={state.errors?.qualificationAwardedInAustralia} />
+            </div>
+
+            {selectedCountry === "AU" && qualificationAwardedInAustralia === "yes" && (
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-qualification-regional-australia">
+                  {txt(
+                    "Bu eğitim, Avustralya'nın belirlenmiş bölgesel bir kampüsünde mi tamamlandı? (uzaktan/online değil)",
+                    "Was this study completed at a campus in a designated regional area of Australia (not distance/online)?",
+                    "该学习是否在澳大利亚指定偏远地区的实体校区完成（非远程/在线）？"
                   )}
-            </Label>
-            <Input
-              id="waitlist-onshore-experience-years"
-              name="onshoreExperienceYears"
-              type="number"
-              min={0}
-              step="0.5"
-              inputMode="decimal"
-              {...noAutofill("onshoreExperienceYears")}
-              className={fieldClassName}
-              placeholder={txt("Örn: 2", "E.g., 2", "例如：2")}
-            />
-            <p className="text-xs text-muted-foreground">{experienceHelpText}</p>
-            <ErrorText message={state.errors?.onshoreExperienceYears} />
-          </div>
-        </div>
+                </Label>
+                <select
+                  id="waitlist-qualification-regional-australia"
+                  name="qualificationRegionalAustralia"
+                  value={qualificationRegionalAustralia}
+                  onChange={(e) => setQualificationRegionalAustralia(e.target.value)}
+                  className={selectClassName}
+                >
+                  <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                  <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                  <option value="no">{txt("Hayır", "No", "否")}</option>
+                </select>
+                <ErrorText message={state.errors?.qualificationRegionalAustralia} />
+              </div>
+            )}
 
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-sponsor">
-            {selectedCountry === "CA"
-              ? txt("Medeni durum ve eş faktörü", "Marital status and spouse factors", "婚姻状况与配偶情况")
-              : txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}
-            <RequiredMark />
-          </Label>
-          <Select value={sponsorFamilyStatus} onValueChange={setSponsorFamilyStatus}>
-            <SelectTrigger id="waitlist-sponsor" className={fieldClassName}>
-              <SelectValue
-                placeholder={
-                  selectedCountry === "CA"
-                    ? txt("Medeni/eş durumunu seçin", "Select marital/spouse status", "请选择婚姻/配偶状态")
-                    : txt("Sponsor/aile durumunu seçin", "Select sponsor/family status", "请选择担保/家庭状态")
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {sponsorFamilyOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <input type="hidden" name="sponsorOrFamily" value={sponsorFamilyStatus} />
-          <ErrorText message={state.errors?.sponsorOrFamily} />
-        </div>
+            {selectedCountry === "AU" && qualificationAwardedInAustralia === "yes" && isResearchOrDoctorateQualification && (
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-specialist-education-stem-response">
+                  {txt(
+                    "Bu araştırma derecesi şu alanlardan birinde miydi: doğa/fizik bilimleri, matematik, bilgisayar bilimi/BT veya mühendislik ve ilgili teknoloji?",
+                    "Was this research degree in one of these fields: natural/physical sciences, mathematics, computer science/IT, or engineering and related technology?",
+                    "该研究型学位是否属于以下领域之一：自然/物理科学、数学、计算机科学/信息技术、或工程及相关技术？"
+                  )}
+                </Label>
+                <select
+                  id="waitlist-specialist-education-stem-response"
+                  name="specialistEducationStemResponse"
+                  value={specialistEducationStemResponse}
+                  onChange={(e) => setSpecialistEducationStemResponse(e.target.value)}
+                  className={selectClassName}
+                >
+                  <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                  <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                  <option value="no">{txt("Hayır", "No", "否")}</option>
+                  <option value="not_sure">{txt("Emin değilim", "Not sure", "不确定")}</option>
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  {txt(
+                    "Specialist education +10 puanı yalnızca açıkça 'Evet' cevabı verildiğinde uygulanır.",
+                    "The specialist education +10 is awarded only on an explicit 'Yes' response.",
+                    "Specialist education +10 只有在明确回答“是”时才会计入。"
+                  )}
+                </p>
+                <ErrorText message={state.errors?.specialistEducationStemResponse} />
+              </div>
+            )}
+
+            {selectedCountry === "AU" && (
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-salary-aud">
+                  {txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}
+                  <RequiredMark />
+                </Label>
+                <Input
+                  id="waitlist-salary-aud"
+                  name="annualSalaryAud"
+                  type="number"
+                  min={0}
+                  step={1}
+                  inputMode="numeric"
+                  value={annualSalaryAud}
+                  onChange={(e) => setAnnualSalaryAud(e.target.value)}
+                  {...noAutofill("annualSalaryAud")}
+                  className={fieldClassName}
+                  placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")}
+                />
+                <ErrorText message={state.errors?.annualSalaryAud} />
+              </div>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-offshore-experience-years">
+                  {selectedCountry === "CA"
+                    ? txt(
+                        "Kanada dışındaki nitelikli iş deneyimi (yıl)",
+                        "Years of skilled employment outside Canada",
+                        "加拿大境外技术工作年限"
+                      )
+                    : txt(
+                        "Avustralya dışındaki nitelikli iş deneyimi (yıl)",
+                        "Years of skilled employment outside Australia",
+                        "澳大利亚境外技术工作年限"
+                      )}
+                </Label>
+                <Input
+                  id="waitlist-offshore-experience-years"
+                  name="offshoreExperienceYears"
+                  type="number"
+                  min={0}
+                  step="0.5"
+                  inputMode="decimal"
+                  {...noAutofill("offshoreExperienceYears")}
+                  className={fieldClassName}
+                  placeholder={txt("Örn: 5", "E.g., 5", "例如：5")}
+                />
+                <p className="text-xs text-muted-foreground">{experienceHelpText}</p>
+                <ErrorText message={state.errors?.offshoreExperienceYears} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-onshore-experience-years">
+                  {selectedCountry === "CA"
+                    ? txt(
+                        "Kanada içindeki nitelikli iş deneyimi (yıl)",
+                        "Years of skilled employment in Canada",
+                        "加拿大境内技术工作年限"
+                      )
+                    : txt(
+                        "Avustralya içindeki nitelikli iş deneyimi (yıl)",
+                        "Years of skilled employment in Australia",
+                        "澳大利亚境内技术工作年限"
+                      )}
+                </Label>
+                <Input
+                  id="waitlist-onshore-experience-years"
+                  name="onshoreExperienceYears"
+                  type="number"
+                  min={0}
+                  step="0.5"
+                  inputMode="decimal"
+                  {...noAutofill("onshoreExperienceYears")}
+                  className={fieldClassName}
+                  placeholder={txt("Örn: 2", "E.g., 2", "例如：2")}
+                />
+                <p className="text-xs text-muted-foreground">{experienceHelpText}</p>
+                <ErrorText message={state.errors?.onshoreExperienceYears} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-sponsor">
+                {selectedCountry === "CA"
+                  ? txt("Medeni durum ve eş faktörü", "Marital status and spouse factors", "婚姻状况与配偶情况")
+                  : txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}
+                <RequiredMark />
+              </Label>
+              <Select value={sponsorFamilyStatus} onValueChange={setSponsorFamilyStatus}>
+                <SelectTrigger id="waitlist-sponsor" className={fieldClassName}>
+                  <SelectValue
+                    placeholder={
+                      selectedCountry === "CA"
+                        ? txt("Medeni/eş durumunu seçin", "Select marital/spouse status", "请选择婚姻/配偶状态")
+                        : txt("Sponsor/aile durumunu seçin", "Select sponsor/family status", "请选择担保/家庭状态")
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {sponsorFamilyOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <input type="hidden" name="sponsorOrFamily" value={sponsorFamilyStatus} />
+              <ErrorText message={state.errors?.sponsorOrFamily} />
+            </div>
+          </>
+        )}
 
         <div className="space-y-2">
           <Label htmlFor="waitlist-concern">{txt("En büyük endişe", "Biggest concern", "最大担忧")}</Label>
@@ -1674,67 +1837,71 @@ export function FullCheckWaitlistForm({
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="waitlist-english-test-taken">
-              {selectedCountry === "CA"
-                ? txt("Dil testi alındı mı? (IELTS/CELPIP/TEF vb. - opsiyonel)", "Language test taken? (IELTS/CELPIP/TEF etc. - optional)", "语言考试成绩（IELTS/CELPIP/TEF 等 - 可选）")
-                : txt("İngilizce testi alındı mı? (IELTS/PTE vb. - opsiyonel)", "English test taken? (IELTS/PTE etc. - optional)", "英语考试成绩（IELTS/PTE 等 - 可选）")}
-            </Label>
-            <select
-              id="waitlist-english-test-taken"
-              name="englishTestTaken"
-              defaultValue=""
-              className={selectClassName}
-            >
-              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-              <option value="yes">{txt("Evet", "Yes", "是")}</option>
-              <option value="no">{txt("Hayır", "No", "否")}</option>
-            </select>
-          </div>
+        {!isPartner && (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-english-test-taken">
+                  {selectedCountry === "CA"
+                    ? txt("Dil testi alındı mı? (IELTS/CELPIP/TEF vb. - opsiyonel)", "Language test taken? (IELTS/CELPIP/TEF etc. - optional)", "语言考试成绩（IELTS/CELPIP/TEF 等 - 可选）")
+                    : txt("İngilizce testi alındı mı? (IELTS/PTE vb. - opsiyonel)", "English test taken? (IELTS/PTE etc. - optional)", "英语考试成绩（IELTS/PTE 等 - 可选）")}
+                </Label>
+                <select
+                  id="waitlist-english-test-taken"
+                  name="englishTestTaken"
+                  defaultValue=""
+                  className={selectClassName}
+                >
+                  <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                  <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                  <option value="no">{txt("Hayır", "No", "否")}</option>
+                </select>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="waitlist-occupation-confirmed">
-              {txt("Meslek bilgisi net mi? (opsiyonel)", "Occupation confirmed? (optional)", "职业已确认？（可选）")}
-            </Label>
-            <select
-              id="waitlist-occupation-confirmed"
-              name="occupationConfirmed"
-              defaultValue=""
-              className={selectClassName}
-            >
-              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-              <option value="yes">{txt("Evet", "Yes", "是")}</option>
-              <option value="no">{txt("Hayır", "No", "否")}</option>
-            </select>
-          </div>
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-occupation-confirmed">
+                  {txt("Meslek bilgisi net mi? (opsiyonel)", "Occupation confirmed? (optional)", "职业已确认？（可选）")}
+                </Label>
+                <select
+                  id="waitlist-occupation-confirmed"
+                  name="occupationConfirmed"
+                  defaultValue=""
+                  className={selectClassName}
+                >
+                  <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                  <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                  <option value="no">{txt("Hayır", "No", "否")}</option>
+                </select>
+              </div>
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-graduate-visa-intent">
-            {selectedCountry === "CA"
-              ? txt(
-                  "Şu anda Kanada'da uluslararası öğrenci misiniz veya PGWP (Post-Graduation Work Permit) başvurmayı planlıyor musunuz? (opsiyonel)",
-                  "Are you currently an international student in Canada or planning to apply for a Post-Graduation Work Permit (PGWP)? (optional)",
-                  "您目前是否是在加拿大的国际学生，或计划申请毕业后工作许可（PGWP）？（可选）"
-                )
-              : txt(
-                  "Şu anda Avustralya'da uluslararası öğrenci misiniz veya 485 Mezun Vizesi başvurmayı planlıyor musunuz? (opsiyonel)",
-                  "Are you currently an international student in Australia or planning to apply for a 485 Graduate Visa? (optional)",
-                  "您目前是否是在澳大利亚的国际学生，或计划申请485毕业生签证？（可选）"
-                )}
-          </Label>
-          <select
-            id="waitlist-graduate-visa-intent"
-            name="hasGraduateVisaPathwayIntent"
-            defaultValue=""
-            className={selectClassName}
-          >
-            <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-            <option value="yes">{txt("Evet", "Yes", "是")}</option>
-            <option value="no">{txt("Hayır", "No", "否")}</option>
-          </select>
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-graduate-visa-intent">
+                {selectedCountry === "CA"
+                  ? txt(
+                      "Şu anda Kanada'da uluslararası öğrenci misiniz veya PGWP (Post-Graduation Work Permit) başvurmayı planlıyor musunuz? (opsiyonel)",
+                      "Are you currently an international student in Canada or planning to apply for a Post-Graduation Work Permit (PGWP)? (optional)",
+                      "您目前是否是在加拿大的国际学生，或计划申请毕业后工作许可（PGWP）？（可选）"
+                    )
+                  : txt(
+                      "Şu anda Avustralya'da uluslararası öğrenci misiniz veya 485 Mezun Vizesi başvurmayı planlıyor musunuz? (opsiyonel)",
+                      "Are you currently an international student in Australia or planning to apply for a 485 Graduate Visa? (optional)",
+                      "您目前是否是在澳大利亚的国际学生，或计划申请485毕业生签证？（可选）"
+                    )}
+              </Label>
+              <select
+                id="waitlist-graduate-visa-intent"
+                name="hasGraduateVisaPathwayIntent"
+                defaultValue=""
+                className={selectClassName}
+              >
+                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option value="no">{txt("Hayır", "No", "否")}</option>
+              </select>
+            </div>
+          </>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">

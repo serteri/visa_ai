@@ -127,3 +127,8 @@ export function calculateDisplayedSlots(maxFree: number, remainingSpots: number)
   const usedSlots = Math.max(0, maxFree - remainingSpots);
   return Math.max(MIN_DISPLAY_SLOTS, DISPLAY_START_SLOTS - usedSlots);
 }
+
+export function isPartnerFamilySponsorship(visaInterest: string | undefined): boolean {
+  if (!visaInterest) return false;
+  return visaInterest === "820_801" || visaInterest === "canada-family-sponsorship";
+}
