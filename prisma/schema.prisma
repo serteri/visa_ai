@@ -7,8 +7,6 @@
 // about them because they were introspected via `prisma db pull` and
 // marked `@@ignore` so Prisma Client won't expose them and `db push` won't
 // try to drop/alter them:
-//   - agent_referrals
-//   - agents
 //   - campaigns
 //   - contact_messages
 //   - pdf_downloads
@@ -333,50 +331,6 @@ model CaEoiRound {
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("ca_eoi_rounds")
-}
-
-// Drizzle-owned (see db/schema.ts's agentReferrals) — declared here only so
-// `prisma db push` recognizes this table and never proposes dropping it.
-// @@ignore means Prisma Client does not expose CRUD for this model; do not
-// write to it via Prisma.
-model agent_referrals {
-  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  full_name           String
-  email               String
-  phone               String?
-  country_of_passport String
-  current_country     String
-  preferred_language  String
-  visa_interest       String
-  short_message       String
-  consent             Boolean
-  status              String?   @default("new")
-  assigned_agent_id   String?   @db.Uuid
-  assigned_at         DateTime? @db.Timestamp(6)
-  created_at          DateTime? @default(now()) @db.Timestamp(6)
-  agents              agents?   @relation(fields: [assigned_agent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "agent_referrals_assigned_agent_id_agents_id_fk")
-
-  @@ignore
-}
-
-// Drizzle-owned (see db/schema.ts's agents) — same as agent_referrals above.
-model agents {
-  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  full_name       String
-  business_name   String?
-  email           String
-  phone           String?
-  marn            String?
-  languages       Json?
-  specialties     Json?
-  locations       Json?
-  active          Boolean?          @default(true)
-  notes           String?
-  created_at      DateTime?         @default(now()) @db.Timestamp(6)
-  updated_at      DateTime?         @default(now()) @db.Timestamp(6)
-  agent_referrals agent_referrals[]
-
-  @@ignore
 }
 
 // Drizzle-owned (see db/schema.ts's campaigns) — same as above. Introspected

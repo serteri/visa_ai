@@ -48,3 +48,6 @@ next-env.d.ts
 
 # local scratch work (may contain exported lead/PII data, never commit)
 /scratch/
+
+# one-off legacy data exports containing real customer PII -- never commit
+legacy_referrals_export.json

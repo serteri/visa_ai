@@ -51,23 +51,6 @@ export const sourceSnapshots = pgTable("source_snapshots", {
   notes: text("notes"),
 });
 
-export const agentReferrals = pgTable("agent_referrals", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  full_name: text("full_name").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone"),
-  country_of_passport: text("country_of_passport").notNull(),
-  current_country: text("current_country").notNull(),
-  preferred_language: text("preferred_language").notNull(),
-  visa_interest: text("visa_interest").notNull(),
-  short_message: text("short_message").notNull(),
-  consent: boolean("consent").notNull(),
-  status: text("status").default("new"),
-  assigned_agent_id: uuid("assigned_agent_id").references(() => agents.id),
-  assigned_at: timestamp("assigned_at"),
-  created_at: timestamp("created_at").defaultNow(),
-});
-
 export const fullCheckWaitlist = pgTable("full_check_waitlist", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull(),
@@ -184,22 +167,6 @@ export const contactMessages = pgTable("contact_messages", {
 }, (table) => ({
   email_idx: index("contact_messages_email_idx").on(table.email),
 }));
-
-export const agents = pgTable("agents", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  full_name: text("full_name").notNull(),
-  business_name: text("business_name"),
-  email: text("email").notNull(),
-  phone: text("phone"),
-  marn: text("marn"),
-  languages: jsonb("languages"),
-  specialties: jsonb("specialties"),
-  locations: jsonb("locations"),
-  active: boolean("active").default(true),
-  notes: text("notes"),
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow(),
-});
 
 // Relations
 export const visaTypesRelations = relations(visaTypes, ({ many }) => ({
