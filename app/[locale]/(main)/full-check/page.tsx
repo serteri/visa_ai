@@ -175,12 +175,12 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href={`/${locale}/agent-referral`}>
+                <Link href={`/${locale}/full-check`}>
                   {isTr
-                    ? "Kayıtlı göç danışmanı ile görüş"
+                    ? "Ücretsiz değerlendirmeyi deneyin"
                     : isZh
-                    ? "和注册移民顾问交流"
-                    : "Speak with a registered migration agent"}
+                    ? "尝试免费评估"
+                    : "Try the free assessment"}
                 </Link>
               </Button>
             </div>

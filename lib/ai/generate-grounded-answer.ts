@@ -387,7 +387,7 @@ function uniqueActions(actions: GroundedNextAction[]): GroundedNextAction[] {
 
 function buildActions(locale: "en" | "tr" | "zh-Hans", context: RetrievedVisaContext): GroundedNextAction[] {
   const actions: GroundedNextAction[] = [
-    { label: "Speak with registered migration agent", href: `/${locale}/agent-referral` },
+    { label: "Get your full personalized assessment", href: `/${locale}/full-check` },
   ];
 
   for (const item of context) {

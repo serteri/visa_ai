@@ -54,8 +54,8 @@ function isHardSafetyQuestion(message: string): boolean {
 function defaultActions(): NextAction[] {
   return [
     {
-      label: "Speak with a registered migration agent",
-      href: "/{locale}/agent-referral",
+      label: "Get your full personalized assessment",
+      href: "/{locale}/full-check",
     },
   ];
 }

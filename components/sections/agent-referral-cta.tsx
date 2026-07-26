@@ -22,7 +22,7 @@ export function AgentReferralCta() {
           {t("referral.text")}
         </p>
         <Button asChild variant="secondary" className="w-full sm:w-auto">
-          <Link href={`/${locale}/agent-referral`}>{t("referral.cta")}</Link>
+          <Link href={`/${locale}/full-check`}>{t("referral.cta")}</Link>
         </Button>
       </CardContent>
     </Card>

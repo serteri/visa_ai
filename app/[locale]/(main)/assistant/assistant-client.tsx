@@ -101,7 +101,17 @@ function getVisaInterestForReferral(sources: GroundedAssistantResult["sources"])
   return "not sure";
 }
 
-function buildAssistantReferralHref(input: {
+/**
+ * The assistant model can suggest "/agent-referral" as a next-action link
+ * (see wherever nextActions is produced server-side) -- that page's public
+ * intake funnel is being retired, so any such suggestion is transparently
+ * redirected to the live assessment form (/full-check) instead, carrying as
+ * much of the conversational context forward as that form accepts (mirrors
+ * buildFullCheckHref's param names below: source/preferredPathway/
+ * biggestConcern). Renamed from buildAssistantReferralHref since it no
+ * longer builds a referral link.
+ */
+function buildAssistantNextActionHref(input: {
   locale: "en" | "tr" | "zh-Hans";
   actionHref: string;
   latestUserQuestion: string;
@@ -114,11 +124,11 @@ function buildAssistantReferralHref(input: {
   const visaInterest = getVisaInterestForReferral(input.sources);
   const params = new URLSearchParams({
     source: "assistant",
-    visaInterest,
-    message: input.latestUserQuestion,
+    preferredPathway: visaInterest,
+    biggestConcern: input.latestUserQuestion,
   });
 
-  return `/${input.locale}/agent-referral?${params.toString()}`;
+  return `/${input.locale}/full-check?${params.toString()}`;
 }
 
 function buildFullCheckHref(locale: "en" | "tr" | "zh-Hans", form: ReadinessPreviewForm): string {
@@ -312,7 +322,7 @@ export function AssistantClient({
                                 .find((item): item is Extract<AssistantMessage, { role: "user" }> => item.role === "user")
                                 ?.text ?? "";
 
-                              const href = buildAssistantReferralHref({
+                              const href = buildAssistantNextActionHref({
                                 locale,
                                 actionHref: action.href,
                                 latestUserQuestion,

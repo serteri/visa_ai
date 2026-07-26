@@ -124,7 +124,7 @@ export default function OccupationCheckerPage() {
               <Link href={`/${locale}/points-calculator`}>{t("occupationChecker.ctaPoints")}</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link href={`/${locale}/agent-referral`}>{t("occupationChecker.ctaAgent")}</Link>
+              <Link href={`/${locale}/full-check`}>{t("occupationChecker.ctaAgent")}</Link>
             </Button>
           </CardContent>
         </Card>

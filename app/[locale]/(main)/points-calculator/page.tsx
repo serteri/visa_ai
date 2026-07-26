@@ -129,8 +129,8 @@ export default function PointsCalculatorPage() {
     cta190: isTr ? "Subclass 190 detaylarını görüntüle" : "View subclass 190 details",
     cta491: isTr ? "Subclass 491 detaylarını görüntüle" : "View subclass 491 details",
     ctaAgent: isTr
-      ? "Kayıtlı bir göç danışmanı ile görüşün"
-      : "Speak with a registered migration agent",
+      ? "Tam kişiselleştirilmiş değerlendirmenizi alın"
+      : "Get your full personalized assessment",
     compliance: isTr
       ? "Bu hesaplayıcı yalnızca genel bir tahmin sağlar. Göç tavsiyesi, hukuki tavsiye vermez ve davet veya vize sonucunu garanti etmez."
       : "This calculator provides a general estimate only. It does not provide migration advice, legal advice, or predict invitation or visa grant.",
@@ -421,7 +421,7 @@ export default function PointsCalculatorPage() {
               <Link href={`/${locale}/visas/491`}>{content.cta491}</Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link href={`/${locale}/agent-referral`}>{content.ctaAgent}</Link>
+              <Link href={`/${locale}/full-check`}>{content.ctaAgent}</Link>
             </Button>
           </CardContent>
         </Card>

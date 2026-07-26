@@ -11,8 +11,6 @@ const ADMIN_LINKS = [
   { href: "dashboard", label: "Dashboard" },
   { href: "leads", label: "Leads" },
   { href: "visas", label: "Visas" },
-  { href: "referrals", label: "Referrals" },
-  { href: "agents", label: "Agents" },
   { href: "full-check-waitlist", label: "Full Check Waitlist" },
   { href: "eoi-rounds", label: "EOI Rounds" },
 ];

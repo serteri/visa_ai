@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
 import { db } from "@/db";
-import { agentReferrals, agents, fullCheckWaitlist, visaTypes } from "@/db/schema";
+import { fullCheckWaitlist, visaTypes } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
@@ -63,15 +63,11 @@ function sourceLabel(source: string): string {
 }
 
 async function getDashboardData() {
-  const [waitlistTotal, referralTotalRow, agentTotalRow, visaTotal, waitlistLeads] = await Promise.all([
+  const [waitlistTotal, visaTotal, waitlistLeads] = await Promise.all([
     getWaitlistTotal(),
-    db.select({ value: count() }).from(agentReferrals),
-    db.select({ value: count() }).from(agents),
     getVisaTotal(),
     getWaitlistLeads(),
   ]);
-  const referralTotal = referralTotalRow[0];
-  const agentTotal = agentTotalRow[0];
 
   const sourceCounts = KNOWN_SOURCES.map((source) => ({
     source,
@@ -101,8 +97,6 @@ async function getDashboardData() {
 
   return {
     waitlistTotal,
-    referralTotal: referralTotal?.value ?? 0,
-    agentTotal: agentTotal?.value ?? 0,
     visaTotal,
     highIntentTotal: highIntentLeads.length,
     sourceCounts,
@@ -177,8 +171,6 @@ export default async function AdminDashboardPage({ params, searchParams }: Dashb
   const metricCards = [
     { label: "Total full-check waitlist leads", value: data.waitlistTotal },
     { label: "High-intent leads", value: data.highIntentTotal },
-    { label: "Total agent referrals", value: data.referralTotal },
-    { label: "Total agents", value: data.agentTotal },
     { label: "Total visas in database", value: data.visaTotal },
     { label: "Guide downloads", value: `${data.guideDownloadCount} / ${data.maxGuideDownloads}` },
   ];

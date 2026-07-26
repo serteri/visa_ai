@@ -66,8 +66,8 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
       : "The full readiness report is designed to include pathway comparison, risk indicators, evidence readiness, financial roadmap, suggested next steps, and PDF download.",
     ctaButton: isTr ? "Hazırlık raporunuzu oluşturun" : "Generate your readiness report",
     agentButton: isTr
-      ? "Kayıtlı bir göç danışmanı ile görüş"
-      : "Speak with a registered migration agent",
+      ? "Tam değerlendirmenize devam edin"
+      : "Continue to your full assessment",
     retake: isTr ? "Hızlı kontrolü tekrar yap" : "Retake quick check",
   };
   const visibleMatchedVisas = matchedVisas.slice(0, 3);
@@ -147,7 +147,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
                 <Link href={fullCheckHref}>{copy.ctaButton}</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href={`/${locale}/agent-referral`}>{copy.agentButton}</Link>
+                <Link href={fullCheckHref}>{copy.agentButton}</Link>
               </Button>
             </div>
           </CardContent>
@@ -158,7 +158,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
             <Link href={`/${locale}/checker`}>{copy.retake}</Link>
           </Button>
           <Button asChild variant="ghost">
-            <Link href={`/${locale}/agent-referral`}>{copy.agentButton}</Link>
+            <Link href={fullCheckHref}>{copy.agentButton}</Link>
           </Button>
         </div>
 
