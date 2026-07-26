@@ -287,10 +287,16 @@ export default async function HopeAndWaitGuidePage({ params }: PageProps) {
                 )}
               </p>
             </div>
+            {locale.toLowerCase() === "zh-hans" && (
+              <p className="mb-4 text-sm font-semibold text-amber-500">
+                Please note: The Visa Readiness Report is currently generated in English.
+              </p>
+            )}
             <LeadMagnetForm
               locale={locale}
-              documentId={locale === "tr" ? "guide-turkish-2026" : "guide-global-2026"}
-              documentName={locale === "tr" ? "Avustralya PR Rehberi 2026" : "Australia Guide 2026"}
+              documentId={locale.toLowerCase() === "tr" ? "guide-turkish-2026" : "guide-global-2026"}
+              documentName={locale.toLowerCase() === "tr" ? "Avustralya PR Rehberi 2026" : "Australia Guide 2026"}
+              isInline={true}
             />
           </aside>
 

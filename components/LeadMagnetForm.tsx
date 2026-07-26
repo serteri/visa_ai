@@ -70,6 +70,8 @@ export interface LeadMagnetFormProps {
   onSuccess?: () => void;
   /** Extra CSS classes applied to the root <form> element. */
   className?: string;
+  /** Whether the form is rendered inline in a reading flow, bypassing redirects. */
+  isInline?: boolean;
 }
 
 export function LeadMagnetForm({
@@ -78,6 +80,7 @@ export function LeadMagnetForm({
   documentName,
   onSuccess,
   className,
+  isInline = false,
 }: LeadMagnetFormProps) {
   // Resolve the API slug; fall back to documentId itself so unexpected values
   // still reach the server with a meaningful identifier rather than silently
@@ -213,6 +216,20 @@ export function LeadMagnetForm({
 
   // ── Success state ─────────────────────────────────────────────────────────────
   if (success) {
+    if (isInline) {
+      return (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-6 text-emerald-950 dark:bg-emerald-950/20 dark:border-emerald-900/50 dark:text-emerald-300">
+          <p className="text-base font-semibold">
+            {tx(
+              "Vize Hazırlık Raporunuz gelen kutunuza gönderildi. Aşağıdan okumaya devam edebilirsiniz.",
+              "Your Visa Readiness Report has been sent to your inbox. You can continue reading below.",
+              "您的签证准备度报告已发送至您的收件箱。您可以继续阅读下文。"
+            )}
+          </p>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col items-center gap-4 py-8 text-center">
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">

@@ -103,9 +103,7 @@ function ArticleBlock({ block, locale }: { block: string; locale: string }) {
 }
 
 export async function generateStaticParams() {
-  return guides
-    .filter((g) => g.slug !== "the-end-of-hope-and-wait")
-    .map((guide) => ({ slug: guide.slug }));
+  return guides.map((guide) => ({ slug: guide.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -148,8 +146,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function GuideArticlePage({ params }: PageProps) {
   const { locale, slug } = await params;
-  if (slug === "the-end-of-hope-and-wait") notFound();
-
   const guide = findGuide(slug);
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
