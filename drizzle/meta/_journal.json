@@ -57,6 +57,13 @@
       "when": 1783440000000,
       "tag": "0007_education_points_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785048839411,
+      "tag": "0008_milky_nick_fury",
+      "breakpoints": true
     }
   ]
 }

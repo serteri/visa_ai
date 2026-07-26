@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, uuid, jsonb, date, boolean, integer, index, real } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // NOTE: auth + user dashboard tables (users, accounts, sessions, verification_tokens,
 // saved_calculations, saved_quiz_results, saved_reports, visa_tracking) are now
@@ -152,6 +152,27 @@ export const pdfDownloads = pgTable("pdf_downloads", {
   ip_idx: index("pdf_downloads_ip_idx").on(table.ip_address),
   email_idx: index("pdf_downloads_email_idx").on(table.email),
 }));
+
+// Atomic slot counter for lead-magnet campaigns (e.g. "first 20 free" offers).
+// slots_remaining is only ever mutated via a single atomic UPDATE ... WHERE
+// slots_remaining > 0 ... RETURNING (see app/actions/leadMagnetActions.ts) —
+// never read-then-write in two steps, or concurrent submissions can both
+// pass a stale check and over-claim slots.
+//
+// NOTE: this diverges from the original migration (drizzle/0008_..._fury.sql,
+// which declared a serial id / varchar name / updated_at) because the live
+// table was recreated with a text/gen_random_uuid() id, text name, and
+// created_at instead, while resolving an earlier migration conflict. This
+// declaration was corrected to match the ACTUAL live table (verified via a
+// live information_schema query) rather than the original migration file,
+// which is now stale/inaccurate as a record of the live schema.
+export const campaigns = pgTable("campaigns", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().unique(),
+  slots_remaining: integer("slots_remaining").notNull().default(20),
+  price: integer("price").notNull().default(999),
+  created_at: timestamp("created_at").defaultNow(),
+});
 
 export const contactMessages = pgTable("contact_messages", {
   id: uuid("id").primaryKey().defaultRandom(),

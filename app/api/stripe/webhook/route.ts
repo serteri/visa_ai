@@ -8,21 +8,46 @@ import type { ReadinessReport } from "@/lib/readiness/types";
 import type { ReadinessInput } from "@/lib/readiness/types";
 import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
 import { recordCommissionTransaction } from "@/lib/stripe/commission";
+import { getStripeClient } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
 
 // The single active Stripe webhook endpoint for this app -- consolidated
 // from a second, unused stub at app/api/webhooks/stripe/route.ts (deleted;
 // its pdf_book/pdf_book_global delivery-email logic was merged in below so
-// removing it didn't silently break paid PDF purchases).
+// removing it didn't silently break paid PDF purchases). The lead-magnet
+// campaign paywall's checkout.session.completed handling (createCheckoutSession
+// in app/actions/stripeActions.ts) was added here too, for the same reason --
+// a second webhook route would either duplicate signature verification or
+// require registering two endpoint URLs in the Stripe dashboard for one event.
 type CheckoutSessionMeta = {
   productType?: "premium" | "pdf_book" | "pdf_book_global";
+  /** Set by app/actions/stripeActions.ts's createCheckoutSession for the
+   * lead-magnet slot-counter paywall (campaigns.name, e.g.
+   * "australia-guide-2026"). Fixed contract -- do not rename here without
+   * updating that action too. */
+  campaign?: string;
 };
 
 function resolvePdfSlug(productType: CheckoutSessionMeta["productType"]): string | null {
   if (productType === "pdf_book") return PDF_SLUGS.turkish;
   if (productType === "pdf_book_global") return PDF_SLUGS.global;
   return null;
+}
+
+/**
+ * Lead-magnet campaign checkout (app/actions/stripeActions.ts) reuses the
+ * campaign's DB name directly as the PDF slug -- campaigns.name and
+ * PDF_SLUGS values are the same string by convention (e.g.
+ * "australia-guide-2026" is both), so no separate campaign->slug mapping
+ * table is needed. Only known PDF_SLUGS values are accepted so an
+ * unexpected/malformed metadata.campaign can't be used to probe for
+ * arbitrary public files.
+ */
+function resolveCampaignPdfSlug(campaign: string | undefined): string | null {
+  if (!campaign) return null;
+  const knownSlugs = Object.values(PDF_SLUGS) as string[];
+  return knownSlugs.includes(campaign) ? campaign : null;
 }
 
 async function handlePdfBookPurchase(session: Stripe.Checkout.Session, slug: string): Promise<void> {
@@ -193,12 +218,13 @@ async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Res
 }
 
 export async function POST(request: NextRequest) {
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-  if (!stripeSecretKey) {
-    console.error("STRIPE_SECRET_KEY is not configured.");
+  let stripe: Stripe;
+  try {
+    stripe = getStripeClient();
+  } catch (err) {
+    console.error("Webhook: Stripe client not configured:", err);
     return new Response("Stripe not configured", { status: 500 });
   }
-  const stripe = new Stripe(stripeSecretKey);
 
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
@@ -225,6 +251,31 @@ export async function POST(request: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const metadata = (session.metadata || {}) as CheckoutSessionMeta;
+
+    // Lead-magnet campaign paywall (app/actions/stripeActions.ts). Checked
+    // first and independently of the productType branch below, since this
+    // checkout flow never sets productType.
+    const campaignPdfSlug = resolveCampaignPdfSlug(metadata.campaign);
+    if (campaignPdfSlug) {
+      const email = session.customer_details?.email;
+      if (!email || !metadata.campaign) {
+        console.error("[stripe webhook] campaign purchase missing customer email or campaign metadata — cannot deliver", {
+          sessionId: session.id,
+          email,
+          campaign: metadata.campaign,
+        });
+        return new Response("Missing customer email or campaign metadata", { status: 400 });
+      }
+
+      try {
+        await handlePdfBookPurchase(session, campaignPdfSlug);
+      } catch (err) {
+        console.error("Webhook: campaign pdf purchase handling failed:", err);
+        return new Response("Processing failed", { status: 500 });
+      }
+      return new Response("OK", { status: 200 });
+    }
+
     const pdfSlug = resolvePdfSlug(metadata.productType);
 
     if (pdfSlug) {
