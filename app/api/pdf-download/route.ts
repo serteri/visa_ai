@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { PDF_LEAD_SOURCE, marketForSlug } from "@/lib/crm/pdf-lead-sources";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 // Both the Turkish and Global English guides draw from a single shared free-download pool.
 export const FREE_LIMIT = 18;
@@ -209,35 +210,44 @@ export async function POST(req: NextRequest) {
     // /agent/pool) and send PDF delivery + admin notification emails asynchronously.
     // Wrap in after() so Next.js executes this post-response background work
     // after the response is sent to the user, preventing Vercel function timeout.
-    after(() => {
-      Promise.all([
-        prisma.userReport
-          .create({
-            data: {
-              fullName: full_name.trim(),
-              email: normalizedEmail,
-              phone: phone.trim(),
-              source: PDF_LEAD_SOURCE[slug] ?? "pdf_global_guide",
-              market: marketForSlug(slug),
-              paymentStatus: "n/a",
-              isUnlocked: true,
-              reportJson: {},
-              inputJson: {},
-              ipAddress: ip,
-            },
-          })
-          .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err)),
-        sendPdfDeliveryEmail({ fullName: full_name.trim(), email: normalizedEmail, slug }).catch((err) =>
-          console.error("[pdf-download] Delivery email failed (non-blocking):", err)
-        ),
-        sendPdfLeadAdminEmail({
-          fullName: full_name.trim(),
-          email: normalizedEmail,
-          phone: phone.trim(),
-          slug,
-          category,
-        }).catch((err) => console.error("[pdf-download] Admin notification failed (non-blocking):", err)),
-      ]);
+    after(async () => {
+      const startTime = performance.now();
+      try {
+        await Promise.all([
+          prisma.userReport
+            .create({
+              data: {
+                fullName: full_name.trim(),
+                email: normalizedEmail,
+                phone: phone.trim(),
+                source: PDF_LEAD_SOURCE[slug] ?? "pdf_global_guide",
+                market: marketForSlug(slug),
+                paymentStatus: "n/a",
+                isUnlocked: true,
+                reportJson: {},
+                inputJson: {},
+                ipAddress: ip,
+              },
+            })
+            .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err)),
+          sendPdfDeliveryEmail({ fullName: full_name.trim(), email: normalizedEmail, slug }).catch((err) => {
+            console.error("[pdf-download] Delivery email failed (non-blocking):", err);
+            throw err;
+          }),
+          sendPdfLeadAdminEmail({
+            fullName: full_name.trim(),
+            email: normalizedEmail,
+            phone: phone.trim(),
+            slug,
+            category,
+          }).catch((err) => console.error("[pdf-download] Admin notification failed (non-blocking):", err)),
+        ]);
+        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+        console.info(`[LogiVisa Profiler] Background PDF & Email process completed in ${duration} seconds.`);
+      } catch (err) {
+        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+        console.error(`[LogiVisa Profiler] Background PDF & Email process failed after ${duration} seconds. Error:`, err);
+      }
     });
 
     return Response.json({ success: true });
