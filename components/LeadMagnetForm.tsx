@@ -200,6 +200,17 @@ export function LeadMagnetForm({
       }
 
       setSuccess(true);
+      if (isInline) {
+        if (typeof window !== "undefined") {
+          const anyWindow = window as any;
+          anyWindow.dataLayer = anyWindow.dataLayer || [];
+          anyWindow.dataLayer.push({
+            event: "lead_magnet_inline_success",
+            form_location: "the_end_of_hope_and_wait_article",
+            document_requested: documentId,
+          });
+        }
+      }
       onSuccess?.();
     } catch {
       setError(

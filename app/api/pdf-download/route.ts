@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, after } from "next/server";
 import { revalidateTag } from "next/cache";
 import { Resend } from "resend";
 import { z } from "zod";
@@ -206,44 +206,39 @@ export async function POST(req: NextRequest) {
     revalidateTag("public-guide-download-stats", "max");
 
     // Drop this lead into the Agent CRM pool (unassigned; agents claim it from
-    // /agent/pool). Best-effort -- the Drizzle pdfDownloads row above is the
-    // system of record for the download itself, so a CRM-side failure here
-    // must not fail the request or block PDF delivery.
-    prisma.userReport
-      .create({
-        data: {
+    // /agent/pool) and send PDF delivery + admin notification emails asynchronously.
+    // Wrap in after() so Next.js executes this post-response background work
+    // after the response is sent to the user, preventing Vercel function timeout.
+    after(() => {
+      Promise.all([
+        prisma.userReport
+          .create({
+            data: {
+              fullName: full_name.trim(),
+              email: normalizedEmail,
+              phone: phone.trim(),
+              source: PDF_LEAD_SOURCE[slug] ?? "pdf_global_guide",
+              market: marketForSlug(slug),
+              paymentStatus: "n/a",
+              isUnlocked: true,
+              reportJson: {},
+              inputJson: {},
+              ipAddress: ip,
+            },
+          })
+          .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err)),
+        sendPdfDeliveryEmail({ fullName: full_name.trim(), email: normalizedEmail, slug }).catch((err) =>
+          console.error("[pdf-download] Delivery email failed (non-blocking):", err)
+        ),
+        sendPdfLeadAdminEmail({
           fullName: full_name.trim(),
           email: normalizedEmail,
           phone: phone.trim(),
-          source: PDF_LEAD_SOURCE[slug] ?? "pdf_global_guide",
-          market: marketForSlug(slug),
-          paymentStatus: "n/a",
-          isUnlocked: true,
-          reportJson: {},
-          inputJson: {},
-          ipAddress: ip,
-        },
-      })
-      .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err));
-
-    // Delivery Trap: the guide is emailed to the user instead of being
-    // returned as a direct browser download. Fired concurrently with the
-    // admin notification (rather than awaited sequentially) and not awaited
-    // before the response, so email delivery never blocks the UI's success
-    // transition. Failures are caught individually and logged — the lead is
-    // already recorded and can be re-sent manually either way.
-    Promise.all([
-      sendPdfDeliveryEmail({ fullName: full_name.trim(), email: normalizedEmail, slug }).catch((err) =>
-        console.error("[pdf-download] Delivery email failed (non-blocking):", err)
-      ),
-      sendPdfLeadAdminEmail({
-        fullName: full_name.trim(),
-        email: normalizedEmail,
-        phone: phone.trim(),
-        slug,
-        category,
-      }).catch((err) => console.error("[pdf-download] Admin notification failed (non-blocking):", err)),
-    ]);
+          slug,
+          category,
+        }).catch((err) => console.error("[pdf-download] Admin notification failed (non-blocking):", err)),
+      ]);
+    });
 
     return Response.json({ success: true });
   } catch (err) {
