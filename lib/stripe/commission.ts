@@ -41,22 +41,46 @@ function isUniqueConstraintViolation(error: unknown): boolean {
 }
 
 /**
- * Records a Transaction from a completed Stripe Checkout Session, using the
- * leadId/agentId placed in session metadata at checkout-creation time (see
- * full-check/actions.ts's createStripeCheckoutSession and
- * app/api/checkout/route.ts). No-ops if the session has no leadId -- not
- * every checkout (e.g. a PDF-book purchase) is tied to a CRM lead.
- *
- * Idempotent: stripeSessionId is unique, so a Stripe-redelivered webhook
- * event just hits the unique-constraint branch and is silently skipped
- * rather than double-recording the sale.
+ * True idempotency check -- callers must use this BEFORE doing any
+ * side-effecting work (e.g. sending a PDF), not just before writing the
+ * ledger row. Checking at the start (rather than relying on the insert's
+ * unique-constraint failure at the end) is what actually prevents a
+ * Stripe-redelivered webhook from re-sending the product a second time.
  */
-export async function recordCommissionTransaction(session: Stripe.Checkout.Session): Promise<void> {
-  const leadId = session.metadata?.leadId?.trim();
-  if (!leadId) return;
+export async function hasRecordedTransaction(stripeSessionId: string): Promise<boolean> {
+  const existing = await prisma.transaction.findUnique({
+    where: { stripeSessionId },
+    select: { id: true },
+  });
+  return existing !== null;
+}
 
-  const agentId = session.metadata?.agentId?.trim() || null;
-  const totalAmount = (session.amount_total ?? 0) / 100;
+/**
+ * Core ledger write, independent of where leadId/buyerEmail/agentId/
+ * totalAmount came from. Exactly one of leadId/buyerEmail should identify
+ * the buyer: leadId when a real CRM lead exists (report-unlock purchases),
+ * buyerEmail when it doesn't (e.g. a direct lead-magnet campaign PDF
+ * purchase -- creating a placeholder UserReport there would pollute CRM
+ * conversion metrics with a fake lead, so this ledger stands on its own for
+ * those sales instead).
+ *
+ * Does NOT swallow errors: financial ledger writes must never fail silently.
+ * Callers that need idempotency must call hasRecordedTransaction() first
+ * (see the doc comment there) -- the unique-constraint catch here exists
+ * only as a defense against a genuine race between two concurrent webhook
+ * deliveries slipping past that check, not as a substitute for it.
+ */
+export async function recordCommissionTransactionForLead(params: {
+  leadId?: string | null;
+  buyerEmail?: string | null;
+  agentId: string | null;
+  stripeSessionId: string;
+  totalAmount: number;
+}): Promise<void> {
+  const { leadId, buyerEmail, agentId, stripeSessionId, totalAmount } = params;
+  if (!leadId && !buyerEmail) {
+    throw new Error("recordCommissionTransactionForLead requires either leadId or buyerEmail.");
+  }
 
   let commissionRate: number | null = null;
   let commissionAmount: number | null = null;
@@ -69,9 +93,10 @@ export async function recordCommissionTransaction(session: Stripe.Checkout.Sessi
   try {
     await prisma.transaction.create({
       data: {
-        leadId,
+        leadId: leadId ?? null,
+        buyerEmail: buyerEmail ?? null,
         agentId,
-        stripeSessionId: session.id,
+        stripeSessionId,
         totalAmount,
         commissionRate,
         commissionAmount,
@@ -79,9 +104,29 @@ export async function recordCommissionTransaction(session: Stripe.Checkout.Sessi
     });
   } catch (error) {
     if (isUniqueConstraintViolation(error)) {
-      console.warn("[commission] Transaction already recorded for session", session.id);
+      // Genuine race (two concurrent deliveries of the same event both
+      // passed hasRecordedTransaction() before either finished writing) --
+      // the other delivery's row is the record of truth, ours is a no-op.
+      console.warn("[commission] Transaction already recorded for session (race)", stripeSessionId);
       return;
     }
     throw error;
   }
+}
+
+/**
+ * Records a Transaction from a completed Stripe Checkout Session, using the
+ * leadId/agentId placed in session metadata at checkout-creation time (see
+ * full-check/actions.ts's createStripeCheckoutSession and
+ * app/api/checkout/route.ts). No-ops if the session has no leadId -- not
+ * every checkout (e.g. a PDF-book purchase) is tied to a CRM lead.
+ */
+export async function recordCommissionTransaction(session: Stripe.Checkout.Session): Promise<void> {
+  const leadId = session.metadata?.leadId?.trim();
+  if (!leadId) return;
+
+  const agentId = session.metadata?.agentId?.trim() || null;
+  const totalAmount = (session.amount_total ?? 0) / 100;
+
+  await recordCommissionTransactionForLead({ leadId, agentId, stripeSessionId: session.id, totalAmount });
 }

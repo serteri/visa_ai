@@ -7,7 +7,7 @@ import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import type { ReadinessInput } from "@/lib/readiness/types";
 import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
-import { recordCommissionTransaction } from "@/lib/stripe/commission";
+import { recordCommissionTransaction, recordCommissionTransactionForLead, hasRecordedTransaction } from "@/lib/stripe/commission";
 import { getStripeClient } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +27,12 @@ type CheckoutSessionMeta = {
    * "australia-guide-2026"). Fixed contract -- do not rename here without
    * updating that action too. */
   campaign?: string;
+  /** Set by createCheckoutSession when the buyer arrived via a ?ref=<agentId>
+   * link (components/ref-capture.tsx), resolved server-side against a real
+   * AGENT account before being placed here -- never trust this as anything
+   * more than "an agent id that passed getAgentUser() at checkout-creation
+   * time", not currently-still-valid until re-checked. */
+  agentId?: string;
 };
 
 function resolvePdfSlug(productType: CheckoutSessionMeta["productType"]): string | null {
@@ -267,12 +273,39 @@ export async function POST(request: NextRequest) {
         return new Response("Missing customer email or campaign metadata", { status: 400 });
       }
 
+      // Idempotency gate, checked BEFORE any side effect (PDF send or ledger
+      // write) -- this is what actually stops a Stripe-redelivered webhook
+      // from re-sending the product, not the ledger insert's unique
+      // constraint (that only protects the ledger row itself, and would
+      // still let the email go out a second time if checked afterward).
+      if (await hasRecordedTransaction(session.id)) {
+        console.warn("[stripe webhook] campaign session already processed, skipping", { sessionId: session.id });
+        return new Response("Already processed", { status: 200 });
+      }
+
       try {
         await handlePdfBookPurchase(session, campaignPdfSlug);
       } catch (err) {
         console.error("Webhook: campaign pdf purchase handling failed:", err);
         return new Response("Processing failed", { status: 500 });
       }
+
+      // Financial ledger write for EVERY campaign sale (not just
+      // referral-attributed ones) -- no CRM lead exists for this purchase
+      // (an assessment-report lead and a $9.99 guide purchase are different
+      // things), so buyerEmail identifies the buyer instead of a fabricated
+      // UserReport row that would pollute CRM conversion metrics. Errors
+      // here are NOT swallowed: this is a financial record, and letting the
+      // error surface as a 500 makes Stripe retry -- the idempotency check
+      // above ensures that retry won't re-send the PDF, but WILL retry
+      // recording the transaction, since it's genuinely missing.
+      await recordCommissionTransactionForLead({
+        buyerEmail: email,
+        agentId: metadata.agentId ?? null,
+        stripeSessionId: session.id,
+        totalAmount: (session.amount_total ?? 0) / 100,
+      });
+
       return new Response("OK", { status: 200 });
     }
 

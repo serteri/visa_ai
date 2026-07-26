@@ -92,16 +92,27 @@ model UserReport {
 // rate that could change in the future.
 model Transaction {
   id               String   @id @default(uuid())
-  leadId           String   @map("lead_id")
+  // Optional -- not every sale has a CRM lead behind it (e.g. a direct
+  // lead-magnet campaign PDF purchase with no assessment report). Creating a
+  // placeholder UserReport just to satisfy a required FK would pollute CRM
+  // conversion metrics with fake leads, so this ledger table stands on its
+  // own for those sales instead (see buyerEmail below).
+  leadId           String?  @map("lead_id")
   agentId          String?  @map("agent_id")
+  // Buyer's email captured directly from Stripe (session.customer_details.email)
+  // for sales with no leadId -- the only way to know who paid when there's
+  // no UserReport row to read an email from.
+  buyerEmail       String?  @map("buyer_email")
   stripeSessionId  String   @unique @map("stripe_session_id")
   totalAmount      Decimal  @map("total_amount") @db.Decimal(10, 2)
   commissionRate   Decimal? @map("commission_rate") @db.Decimal(5, 4)
   commissionAmount Decimal? @map("commission_amount") @db.Decimal(10, 2)
   createdAt        DateTime @default(now()) @map("created_at")
 
-  lead  UserReport @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  agent User?      @relation("AgentTransactions", fields: [agentId], references: [id], onDelete: SetNull)
+  // SetNull (not Cascade): deleting a lead must never silently delete its
+  // financial transaction history.
+  lead  UserReport? @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  agent User?       @relation("AgentTransactions", fields: [agentId], references: [id], onDelete: SetNull)
 
   @@map("transactions")
 }
