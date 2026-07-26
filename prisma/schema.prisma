@@ -9,6 +9,7 @@
 // try to drop/alter them:
 //   - agent_referrals
 //   - agents
+//   - campaigns
 //   - contact_messages
 //   - pdf_downloads
 //
@@ -126,6 +127,13 @@ model User {
   phone             String?
   companyName       String?            @map("company_name")
   address           String?
+  // Per-agent commission percentage (e.g. 20 = 20%), set at account creation
+  // by an admin. Unused for USER/ADMIN roles. NOTE: lib/stripe/commission.ts's
+  // recordCommissionTransaction() still applies a single hardcoded
+  // COMMISSION_RATE (0.2) to every agent and does NOT yet read this field --
+  // wiring commission calculation to per-agent rates is a separate, deliberate
+  // follow-up change, not done as part of adding this column.
+  commissionRate    Float?             @map("commission_rate")
   // Self-registered AGENT accounts (/agent/register) start "PENDING" and
   // can't see their referral link or metrics until an admin approves them
   // (see /admin/crm/agent/[id]'s Approve action). Default is "APPROVED",
@@ -356,6 +364,22 @@ model agents {
   created_at      DateTime?         @default(now()) @db.Timestamp(6)
   updated_at      DateTime?         @default(now()) @db.Timestamp(6)
   agent_referrals agent_referrals[]
+
+  @@ignore
+}
+
+// Drizzle-owned (see db/schema.ts's campaigns) — same as above. Introspected
+// after this table nearly got dropped by an uninformed `prisma db push` --
+// see the warning at the top of this file. Columns verified directly against
+// the live table via information_schema (id/name are text, not
+// serial/varchar, and the timestamp column is created_at, not updated_at --
+// the original migration's design diverged from what actually got applied).
+model campaigns {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Text
+  name            String    @unique
+  slots_remaining Int       @default(20)
+  price           Int       @default(999)
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
 
   @@ignore
 }

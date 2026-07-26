@@ -157,12 +157,18 @@ export const proxy = auth((req) => {
   }
 
   if (isRootAdminPath(pathname)) {
-    // "/admin" alone needs a real URL change (add "/dashboard"), so it stays a
-    // redirect -- but to a prefixless target, since next.config permanently
-    // redirects any "/en/*" URL back to "/*", which would otherwise bounce
-    // this straight into a loop with that rule.
+    // "/admin" alone needs a real URL change, so it stays a redirect -- but
+    // to a prefixless target, since next.config permanently redirects any
+    // "/en/*" URL back to "/*", which would otherwise bounce this straight
+    // into a loop with that rule. Sent to the role-based CRM (/admin/crm/dashboard)
+    // rather than the legacy password-gated dashboard -- CRM is now the
+    // primary admin surface; the legacy pages remain reachable directly by
+    // URL but are no longer the default landing spot. This redirect target
+    // is excluded from isRootAdminPath (see its own "/admin/crm" check
+    // above), so it correctly falls through to the role-based CRM portal
+    // gate below instead of the legacy cookie gate.
     if (pathname === "/admin") {
-      const redirectUrl = new URL("/admin/dashboard", req.url);
+      const redirectUrl = new URL("/admin/crm/dashboard", req.url);
       redirectUrl.search = searchParams.toString();
       return NextResponse.redirect(redirectUrl);
     }

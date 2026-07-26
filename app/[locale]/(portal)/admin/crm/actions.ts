@@ -1,7 +1,10 @@
 "use server";
 
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
 import { getCurrentUser } from "@/lib/auth/rbac";
 
@@ -63,4 +66,74 @@ export async function approveAgentAction(agentId: string): Promise<void> {
   });
 
   revalidatePath("/", "layout");
+}
+
+export type CreateAgentState = { error?: string };
+
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+const createAgentSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required."),
+  lastName: z.string().trim().min(1, "Last name is required."),
+  email: z.string().trim().toLowerCase().regex(EMAIL_REGEX, "Enter a valid email address."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
+  // Stored as a plain percentage number (e.g. 20 = 20%), matching
+  // User.commissionRate's doc comment in prisma/schema.prisma. NOT yet read
+  // by lib/stripe/commission.ts, which still applies a single hardcoded
+  // 20% to every agent -- see that file's own note.
+  commissionRate: z.coerce.number().min(0, "Commission rate cannot be negative.").max(100, "Commission rate cannot exceed 100%."),
+});
+
+/**
+ * Admin-created agent account (distinct from the self-serve /agent/register
+ * flow): approvalStatus is "APPROVED" immediately, since an admin creating
+ * the account IS the approval -- unlike self-registration, which starts
+ * "PENDING" until an admin reviews it separately.
+ */
+export async function createAgentAction(
+  locale: string,
+  _prev: CreateAgentState,
+  formData: FormData
+): Promise<CreateAgentState> {
+  await requireAdmin();
+
+  const parsed = createAgentSchema.safeParse({
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    commissionRate: formData.get("commissionRate"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Please fix the highlighted fields." };
+  }
+
+  const { firstName, lastName, email, password, commissionRate } = parsed.data;
+
+  const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+  if (existing) {
+    return { error: "An account with this email already exists." };
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  await prisma.user.create({
+    data: {
+      name: `${firstName} ${lastName}`,
+      email,
+      password: passwordHash,
+      role: "AGENT",
+      market: "GLOBAL",
+      approvalStatus: "APPROVED",
+      commissionRate,
+    },
+  });
+
+  revalidatePath("/", "layout");
+  // redirect() throws internally -- must not be wrapped in a try/catch that
+  // could swallow it. Ends the action; the client never sees a returned
+  // state on the success path.
+  redirect(`/${locale}/admin/crm/dashboard`);
 }

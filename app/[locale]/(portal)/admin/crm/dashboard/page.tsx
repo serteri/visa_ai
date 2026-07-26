@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
 import { getAgents, getAllAgentMetrics, getUnassignedLeads } from "@/lib/crm/leads";
@@ -52,12 +53,17 @@ export default async function AdminDashboardPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Admin</p>
-        <h1 className="text-2xl font-bold">Agents &amp; performance</h1>
-        <p className="text-sm text-slate-500">
-          {agents.length} agent{agents.length === 1 ? "" : "s"} · {totals.total} total leads assigned.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Admin</p>
+          <h1 className="text-2xl font-bold">Agents &amp; performance</h1>
+          <p className="text-sm text-slate-500">
+            {agents.length} agent{agents.length === 1 ? "" : "s"} · {totals.total} total leads assigned.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href={`/${locale}/admin/crm/agents/create`}>Add New Agent</Link>
+        </Button>
       </div>
 
       <Card>
