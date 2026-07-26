@@ -303,7 +303,27 @@
       "Bash(cp src/data/anzsco-list.json src/data/anzsco-list.pre-batch01.json)",
       "Bash(rm -f src/data/anzsco-list.pre-batch01.json)",
       "Bash(mkdir -p /home/user/visa_ai/scratch/backfill)",
-      "Bash(cp \"/root/.claude/uploads/d85c2284-7846-5bad-8abb-f00daa175bf7/07a2dcb5-test_agent_9_leads.json\" /home/user/visa_ai/scratch/backfill/leads-export.json)"
+      "Bash(cp \"/root/.claude/uploads/d85c2284-7846-5bad-8abb-f00daa175bf7/07a2dcb5-test_agent_9_leads.json\" /home/user/visa_ai/scratch/backfill/leads-export.json)",
+      "Bash(grep -n \"^Pathway\\\\|Pathway Friction\\\\|Pathway$\" en-text.txt)",
+      "Bash(npx tsx -e ' *)",
+      "Bash(rm -f scripts/check-friction.ts /tmp/check.ts en-text.txt tr-text.txt zh-text.txt en-text.txt 2>/dev/null; git status --short | head -20)",
+      "Bash(rm -f scripts/test-pathway-friction.ts scripts/test-points-threshold.ts test-output-friction-*.pdf test-output-pointsgap-*.pdf friction-*.txt pg-*.txt *)",
+      "Bash(awk 'NR>=3600 && NR<=3620' lib/readiness/engine.ts)",
+      "Bash(awk 'NR==3711,NR==4358' C:/Users/serte/Desktop/visa_ai/lib/readiness/engine.ts)",
+      "Bash(awk 'NR==4369,NR==4600' C:/Users/serte/Desktop/visa_ai/lib/readiness/engine.ts)",
+      "WebFetch(domain:www.scaconnect.com)",
+      "WebFetch(domain:emigratelawyers.com.au)",
+      "WebFetch(domain:www.racc.net.au)",
+      "WebFetch(domain:novenai.com)",
+      "Bash(rm -f scripts/check-ca.ts scripts/test-bugfix-report.ts test-output-bugfix-*.pdf bf-en.txt bf-tr.txt *)",
+      "WebFetch(domain:moving2canada.com)",
+      "WebFetch(domain:www.fragomen.com)",
+      "Bash(awk -F: '$1>4935 && $1<5300')",
+      "Bash(grep -n \"return \\\\[$\" C:/Users/serte/Desktop/visa_ai/lib/readiness/engine.ts)",
+      "Bash(awk -F: '$1>1023 && $1<1120')",
+      "Bash(grep -n \"confidenceExplanation: signalSnapshot.confidenceExplanation,\\\\s*$\" C:/Users/serte/Desktop/visa_ai/lib/readiness/engine.ts)",
+      "Bash(awk -F: '$1>5300')",
+      "Bash(rm -f scripts/test-pnp-ontario.ts scripts/test-pnp-ontario-pdf.ts scripts/check-au-regression.ts test-output-pnp-*.pdf pnp-en.txt pnp-tr.txt pnp-zh.txt *)"
     ]
   }
 }
