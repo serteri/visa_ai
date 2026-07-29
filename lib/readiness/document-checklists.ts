@@ -2,6 +2,7 @@ import { t3 } from "@/src/lib/readiness/localization";
 import expressEntryConfig from "@/src/data/countries/ca/express-entry.json";
 import type { DocumentCategory, Locale } from "./types";
 import type { CanadaPathwayCode } from "./engine";
+import { getCanonicalDocName } from "./document-inventory";
 
 function localizedItems(
   locale: Locale,
@@ -65,14 +66,21 @@ export function getDocumentChecklist(
   if (subclasses.includes("482")) {
     categories.push({
       category: t3(locale, "482 Skills in Demand Visa", "482 Skills in Demand Vizesi", "482 紧缺技能签证"),
-      items: localizedItems(locale, [
-        ["Employer nomination or TRN reference", "İşveren aday gösterimi veya TRN referansı", "雇主提名或 TRN 参考号"],
-        ["Skills and qualification evidence", "Beceri ve nitelik kanıtı", "技能与学历证明"],
-        ["Employment references and work experience evidence", "İstihdam referansları ve iş deneyimi kanıtı", "雇佣推荐信与工作经验证明"],
-        ["English evidence", "İngilizce kanıtı", "英语能力证明"],
-        ["Health insurance", "Sağlık sigortası", "健康保险"],
-        ["Police certificates if required", "Gerekiyorsa sabıka kaydı", "如要求，无犯罪记录证明"],
-      ]),
+      items: [
+        ...localizedItems(locale, [
+          ["Employer nomination or TRN reference", "İşveren aday gösterimi veya TRN referansı", "雇主提名或 TRN 参考号"],
+          ["Skills and qualification evidence", "Beceri ve nitelik kanıtı", "技能与学历证明"],
+          ["Employment references and work experience evidence", "İstihdam referansları ve iş deneyimi kanıtı", "雇佣推荐信与工作经验证明"],
+        ]),
+        // Sourced from the shared document-inventory.ts, not hardcoded here --
+        // this is exactly the pair that had drifted out of sync with the
+        // interactive checklist tool (see document-inventory.ts's 482 entries).
+        getCanonicalDocName("482", "english_evidence", locale),
+        getCanonicalDocName("482", "health_insurance", locale),
+        ...localizedItems(locale, [
+          ["Police certificates if required", "Gerekiyorsa sabıka kaydı", "如要求，无犯罪记录证明"],
+        ]),
+      ],
     });
   }
 
