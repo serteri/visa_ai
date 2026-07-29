@@ -6,6 +6,7 @@ import { Menu, X, User, LayoutDashboard, LogOut, BookOpen } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 import { LanguageSelector } from "@/components/language-selector";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
 function portalLabel(role?: string | null) {
@@ -261,6 +262,7 @@ export function Header({
           ) : null}
 
           <div className="ml-2 flex items-center gap-2 border-l border-slate-200 pl-6 dark:border-white/10">
+            <ThemeToggle />
             <LanguageSelector currentLocale={locale} compact />
 
             {!isSignedIn ? (
@@ -405,6 +407,7 @@ export function Header({
           </Button>
 
           <div className="ml-2 flex items-center gap-2 border-l border-slate-200 pl-2 dark:border-white/10">
+            <ThemeToggle />
             <LanguageSelector currentLocale={locale} compact />
             <button
               type="button"
@@ -418,6 +421,7 @@ export function Header({
 
         {/* Mobile Menu Toggle (sm and below) */}
         <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle />
           <LanguageSelector currentLocale={locale} />
           <button
             type="button"
