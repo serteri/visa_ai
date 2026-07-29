@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Noto_Sans } from "next/font/google";
+import { Fraunces, IBM_Plex_Mono, Inter, Manrope, Noto_Sans } from "next/font/google";
 import Script from "next/script";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
+import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -11,6 +12,26 @@ const manrope = Manrope({
 
 const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
+  subsets: ["latin"],
+});
+
+// Landing-page-only fonts ("case file" redesign, see components/landing/*).
+// Site-wide default typography stays Manrope/Noto Sans -- these three are
+// opt-in via the .case-file/.cf-serif/.cf-mono/.cf-sans utility classes in
+// globals.css, not applied to <body> directly.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -95,11 +116,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${manrope.variable} ${notoSans.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      // next-themes sets/removes the "dark"/"light" class on this element
+      // client-side after hydration; suppressHydrationWarning stops React
+      // from flagging that as a server/client mismatch (the documented
+      // next-themes pattern -- see https://github.com/pacocoursey/next-themes).
+      suppressHydrationWarning
+      className={`${manrope.variable} ${notoSans.variable} ${fraunces.variable} ${ibmPlexMono.variable} ${inter.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">
-        <SessionProviderWrapper>
-          {children}
-        </SessionProviderWrapper>
+        <ThemeProviderWrapper>
+          <SessionProviderWrapper>
+            {children}
+          </SessionProviderWrapper>
+        </ThemeProviderWrapper>
 
         {/* Meta Pixel — production only */}
         {process.env.NODE_ENV === "production" && (
