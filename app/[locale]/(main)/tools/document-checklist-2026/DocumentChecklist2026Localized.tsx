@@ -143,7 +143,7 @@ function ChecklistCard({
                 type="date"
                 value={state.expiryDate}
                 onChange={(e) => onExpiryChange(e.target.value)}
-                className="rounded border border-[var(--cf-cover-line)] px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                className="rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
               />
               {expiryStatus && (
                 <span
@@ -197,7 +197,7 @@ function ChecklistCard({
               onChange={() => onToggleNote()}
               placeholder="Reference number, submission date, translation note..."
               rows={2}
-              className="mt-2 w-full resize-none rounded border border-[var(--cf-cover-line)] px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+              className="mt-2 w-full resize-none rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1.5 text-xs text-[var(--cf-cover-fg)] placeholder:text-[var(--cf-cover-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
             />
           )}
 
@@ -437,7 +437,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                                 type="date"
                                 value={state.expiryDate}
                                 onChange={(e) => updateDoc(doc.id, { expiryDate: e.target.value })}
-                                className="rounded border border-[var(--cf-cover-line)] px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                                className="rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
                               />
                               {getExpiryStatus(state.expiryDate, doc.warningMonths) && (() => {
                                 const expiryStatus = getExpiryStatus(state.expiryDate, doc.warningMonths)!
@@ -484,7 +484,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                               onChange={(e) => updateDoc(doc.id, { notes: e.target.value })}
                               placeholder="Reference number, submission date, translation note..."
                               rows={2}
-                              className="mt-2 w-full resize-none rounded border border-[var(--cf-cover-line)] px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                              className="mt-2 w-full resize-none rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1.5 text-xs text-[var(--cf-cover-fg)] placeholder:text-[var(--cf-cover-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
                             />
                           )}
 

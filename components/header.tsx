@@ -60,7 +60,7 @@ function UserMenu({ locale }: { locale: string }) {
             href={`/${locale}/dashboard`}
             role="menuitem"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+            className="flex items-center gap-2 px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]"
           >
             <LayoutDashboard className="h-4 w-4" />
             Dashboard
@@ -72,7 +72,7 @@ function UserMenu({ locale }: { locale: string }) {
               setOpen(false);
               signOut({ callbackUrl: `/${locale}` });
             }}
-            className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-flag-rust-bg)] hover:text-[var(--cf-flag-rust-fg)]"
+            className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-flag-rust-bg)] hover:text-[var(--cf-cover-fg)]"
           >
             <LogOut className="h-4 w-4" />
             Sign out
@@ -155,13 +155,13 @@ export function Header({
             <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[280px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href={`/${locale}/visas/australia`}
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]"
               >
                 {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
               </Link>
               <Link
                 href={`/${locale}/visas/canada`}
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]"
               >
                 {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
               </Link>
@@ -180,30 +180,30 @@ export function Header({
               </svg>
             </button>
             <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {pointsCalcLabel}
               </Link>
-              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {englishPointsLabel}
               </Link>
-              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {invRoundsLabel}
               </Link>
-              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {skillsAssessLabel}
               </Link>
-              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {occupationCodesLabel}
               </Link>
               {isTr && (
-                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-[var(--cf-flag-brass-bg)] text-[var(--cf-flag-brass-fg)] transition-colors hover:opacity-80">
+                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-[var(--cf-accent)] text-[var(--cf-bg-deep)] transition-colors hover:opacity-80">
                   📥 Ücretsiz Rehber
                 </Link>
               )}
-              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
               </Link>
-              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
               </Link>
             </div>
@@ -223,7 +223,7 @@ export function Header({
             <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href={`/${locale}/resources/occupation-list`}
-                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]"
               >
                 <BookOpen className="h-4 w-4 shrink-0 text-[var(--cf-accent)]" />
                 {occupationListLabel}
@@ -302,13 +302,13 @@ export function Header({
             <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[280px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href={`/${locale}/visas/australia`}
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]"
               >
                 {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
               </Link>
               <Link
                 href={`/${locale}/visas/canada`}
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]"
               >
                 {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
               </Link>
@@ -327,30 +327,30 @@ export function Header({
               </svg>
             </button>
             <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {pointsCalcLabel}
               </Link>
-              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {englishPointsLabel}
               </Link>
-              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {invRoundsLabel}
               </Link>
-              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {skillsAssessLabel}
               </Link>
-              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {occupationCodesLabel}
               </Link>
               {isTr && (
-                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-[var(--cf-flag-brass-bg)] text-[var(--cf-flag-brass-fg)] transition-colors hover:opacity-80">
+                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-[var(--cf-accent)] text-[var(--cf-bg-deep)] transition-colors hover:opacity-80">
                   📥 Ücretsiz Rehber
                 </Link>
               )}
-              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
               </Link>
-              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]">
                 {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
               </Link>
             </div>
@@ -370,7 +370,7 @@ export function Header({
             <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href={`/${locale}/resources/occupation-list`}
-                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]"
               >
                 <BookOpen className="h-4 w-4 shrink-0 text-[var(--cf-accent)]" />
                 {occupationListLabel}
@@ -572,7 +572,7 @@ export function Header({
                       setIsMobileMenuOpen(false);
                       signOut({ callbackUrl: `/${locale}` });
                     }}
-                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--cf-muted)] hover:text-[var(--cf-flag-rust-fg)] transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--cf-muted)] hover:text-[var(--cf-fg)] transition-colors"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                     Sign out
