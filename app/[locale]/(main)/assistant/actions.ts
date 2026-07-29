@@ -121,7 +121,7 @@ function localizeActionLabel(label: string, locale: "en" | "tr" | "zh-Hans"): st
       "View subclass 189 details": "查看 189 签证详情",
       "View subclass 190 details": "查看 190 签证详情",
       "View subclass 491 details": "查看 491 签证详情",
-      "View Partner visa details": "查看配偶签证详情",
+      "View Partner visa details": "查看伴侣签证详情",
       "Points calculator": "积分计算器",
       "Occupation checker": "职业检查工具",
     };

@@ -434,7 +434,7 @@ export function AssistantClient({
                         id="preview-main-goal"
                         value={previewForm.mainGoal}
                         onChange={(event) => updatePreviewField("mainGoal", event.target.value)}
-                        placeholder={tx("例：比较配偶和技能移民的可能路径", "Orn: Partner ve yetenekli yolları karşılaştır", "Example: compare partner and skilled possible pathways")}
+                        placeholder={tx("例：比较伴侣和技能移民的可能路径", "Orn: Partner ve yetenekli yolları karşılaştır", "Example: compare partner and skilled possible pathways")}
                         rows={3}
                         className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
@@ -495,7 +495,7 @@ export function AssistantClient({
                         id="preview-sponsor-family"
                         value={previewForm.sponsorFamily}
                         onChange={(event) => updatePreviewField("sponsorFamily", event.target.value)}
-                        placeholder={tx("雇主担保/配偶/家人/无...", "İşveren sponsoru, partner, aile, yok...", "Employer sponsor, partner, family, none...")}
+                        placeholder={tx("雇主担保/伴侣/家人/无...", "İşveren sponsoru, partner, aile, yok...", "Employer sponsor, partner, family, none...")}
                         className="rounded-xl border-slate-200 bg-slate-50 focus-visible:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-950"
                       />
                     </div>

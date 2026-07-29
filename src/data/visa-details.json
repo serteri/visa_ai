@@ -813,7 +813,7 @@
     "subclass": "820",
     "name": "Partner visa (Temporary)",
     "name_tr": "Partner Vizesi (Geçici)",
-    "name_zh": "配偶签证（临时）",
+    "name_zh": "伴侣签证（临时）",
     "nameKey": "visa820",
     "type": "Temporary",
     "processingTime": "Varies",
@@ -939,7 +939,7 @@
       "完成体检并提供品格/警方证明文件",
       "如果您当前的实质性签证先到期，您将获得过桥签证A（BVA）",
       "等待结果——处理时间不固定；请查阅官方签证处理时间指南工具",
-      "获批后，您将持有820类别签证，直至永久配偶签证（801类别）最终确定"
+      "获批后，您将持有820类别签证，直至永久伴侣签证（801类别）最终确定"
     ],
     "officialUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore/temporary-820#Overview",
     "pdfSnapshotUrls": [
@@ -950,7 +950,7 @@
     "subclass": "801",
     "name": "Partner visa (Permanent)",
     "name_tr": "Partner Vizesi (Kalıcı)",
-    "name_zh": "配偶签证（永久）",
+    "name_zh": "伴侣签证（永久）",
     "nameKey": "visa801",
     "type": "Permanent",
     "processingTime": "Varies",
@@ -961,7 +961,7 @@
     "minPoints": null,
     "description": "Permanent residence for partners or spouses of Australian citizens or permanent residents, granted after holding a subclass 820 (or 445) visa. You become eligible for assessment 2 years after you first applied for the temporary and permanent Partner visas.",
     "description_tr": "Avustralyalı vatandaş veya daimi oturma izni sahibi kişilerin partnerleri için, subclass 820 (veya 445) vizesini taşıdıktan sonra verilen daimi oturma izni. Geçici ve kalıcı Partner Vizesi için ilk başvurduğunuzdan 2 yıl sonra değerlendirmeye uygun hale gelirsiniz.",
-    "description_zh": "为澳大利亚公民或永久居民的配偶或伴侣提供永久居留权，在持有820类别（或445类别）签证后授予。自您首次申请临时及永久配偶签证之日起2年后，您将具备评估资格。",
+    "description_zh": "为澳大利亚公民或永久居民的配偶或伴侣提供永久居留权，在持有820类别（或445类别）签证后授予。自您首次申请临时及永久伴侣签证之日起2年后，您将具备评估资格。",
     "requirements": [
       "Hold a temporary Partner visa (subclass 820) or Dependent Child visa (subclass 445)",
       "2 years must have passed since you applied for the subclass 820 and 801 visas (may be waived for long-term relationships)",
@@ -977,7 +977,7 @@
       "Avustralya Hükümeti'ne ödenmemiş borç olmaması"
     ],
     "requirements_zh": [
-      "持有临时配偶签证（820类别）或受抚养子女签证（445类别）",
+      "持有临时伴侣签证（820类别）或受抚养子女签证（445类别）",
       "自您申请820和801类别签证以来必须已过2年（长期关系可能获得豁免）",
       "继续与担保您820类别签证的同一人保持配偶或事实伴侣关系",
       "继续符合健康和品格要求",
@@ -1003,7 +1003,7 @@
       "自首次申请之日起2年后具备评估资格（请在ImmiAccount中查看您的申请日期）",
       "提供更新的关系证据（担保人法定声明、财务/家庭/社会/承诺证据）",
       "如先前的警方证明已过期，请提供更新的澳大利亚警方证明",
-      "通过ImmiAccount提交第二阶段——永久配偶签证评估申请",
+      "通过ImmiAccount提交第二阶段——永久伴侣签证评估申请",
       "等待结果——处理时间不固定；请查阅官方签证处理时间指南工具",
       "获批后，您将自签证授予之日起成为永久居民"
     ],

@@ -876,7 +876,7 @@ export function FullCheckWaitlistForm({
       label: txt(
         "Partner / Bağımlılar Functional English ile",
         "Partner / Dependants with Functional English",
-        "配偶 / 受养人具备 Functional English"
+        "伴侣 / 受养人具备 Functional English"
       ),
     },
     {
@@ -884,7 +884,7 @@ export function FullCheckWaitlistForm({
       label: txt(
         "Partner / Bağımlılar Functional English OLMADAN",
         "Partner / Dependants WITHOUT Functional English",
-        "配偶 / 受养人不具备 Functional English"
+        "伴侣 / 受养人不具备 Functional English"
       ),
     },
   ];

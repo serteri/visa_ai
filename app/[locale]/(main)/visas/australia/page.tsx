@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     locale === "tr"
       ? "189, 190, 491, 482, 485 ve partner vize yollari dahil baslica Avustralya vizelerini kesfedin."
       : locale === "zh-Hans"
-        ? "查看澳大利亚主要签证通道，包括 189、190、491、482、485 及配偶签证路径。"
+        ? "查看澳大利亚主要签证通道，包括 189、190、491、482、485 及伴侣签证路径。"
         : "Explore all major Australian visas including subclass 189, 190, 491, 482, 485, and partner visa pathways.";
   return {
     metadataBase: new URL(BASE_URL),

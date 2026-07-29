@@ -810,7 +810,7 @@ export function generatePremiumSections(input: {
     locale,
     "Not applicable - historical invitation trend data applies to points-tested skilled migration (189/190/491), not the Partner visa (820/801) selected for this report.",
     "Uygulanamaz - tarihsel davet trend verileri puan testli nitelikli göçe (189/190/491) aittir, bu rapor için seçilen Partner Vizesi (820/801)'ne değil.",
-    "不适用 - 历史邀请趋势数据适用于打分制技术移民（189/190/491），不适用于本报告选择的境内配偶签证（820/801）。"
+    "不适用 - 历史邀请趋势数据适用于打分制技术移民（189/190/491），不适用于本报告选择的境内伴侣签证（820/801）。"
   );
 
   const historicalInvitationTrends = input.isPartnerPathway

@@ -11,7 +11,7 @@ export function Testimonials({ locale }: TestimonialsProps) {
         locale === "tr"
           ? "Temmuz kurallarına göre temel uygunluğumu kontrol etmek için bir göç danışmanına 300 dolar ödemek üzereydim. Bu yapay zeka, partnerimin İngilizce puan açığını 2 dakikada yakaladı. Muhteşem bir araç."
           : locale === "zh-Hans"
-            ? "我本来打算花300美元请移民顾问帮我核实7月新规下的基本资格。这个AI在2分钟内就发现了我配偶的英语分数缺口。非常出色的工具。"
+            ? "我本来打算花300美元请移民顾问帮我核实7月新规下的基本资格。这个AI在2分钟内就发现了我伴侣的英语分数缺口。非常出色的工具。"
             : "I was about to pay a migration agent $300 just to check my basic eligibility for the July rules. This AI caught my partner's English point gap in 2 minutes. Outstanding tool.",
       name: "David L.",
       location: locale === "zh-Hans" ? "悉尼" : "Sydney",

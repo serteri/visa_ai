@@ -90,7 +90,7 @@ const VISA_LINKS = [
   { subclass: "189", en: "Skilled Independent visa 189", tr: "Skilled Independent Vizesi 189", zh: "189 独立技术移民" },
   { subclass: "190", en: "Skilled Nominated visa 190", tr: "Skilled Nominated Vizesi 190", zh: "190 州担保技术移民" },
   { subclass: "491", en: "Skilled Work Regional visa 491", tr: "Skilled Work Regional Vizesi 491", zh: "491 偏远地区技术签证" },
-  { subclass: "820_801", en: "Partner visa 820/801", tr: "Partner Vizesi 820/801", zh: "820/801 配偶签证" },
+  { subclass: "820_801", en: "Partner visa 820/801", tr: "Partner Vizesi 820/801", zh: "820/801 伴侣签证" },
 ];
 
 export function Header({

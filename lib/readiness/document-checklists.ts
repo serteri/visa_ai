@@ -150,7 +150,7 @@ export function getDocumentChecklist(
 
   if (subclasses.includes("820")) {
     categories.push({
-      category: t3(locale, "820 Partner Visa (Temporary)", "820 Partner Vizesi (Geçici)", "820 配偶签证（临时）"),
+      category: t3(locale, "820 Partner Visa (Temporary)", "820 Partner Vizesi (Geçici)", "820 伴侣签证（临时）"),
       items: localizedItems(locale, [
         ["Sponsorship approval evidence", "Sponsorluk onay kanıtı", "担保批准证明"],
         ["Relationship history statement", "İlişki geçmişi beyanı", "关系历史陈述"],
@@ -165,7 +165,7 @@ export function getDocumentChecklist(
 
   if (subclasses.includes("801")) {
     categories.push({
-      category: t3(locale, "801 Partner Visa (Permanent)", "801 Partner Vizesi (Kalıcı)", "801 配偶签证（永久）"),
+      category: t3(locale, "801 Partner Visa (Permanent)", "801 Partner Vizesi (Kalıcı)", "801 伴侣签证（永久）"),
       items: localizedItems(locale, [
         ["Updated statutory declaration from sponsor", "Sponsordan güncel yeminli beyan", "担保人更新的法定声明"],
         ["Updated financial and household evidence", "Güncel mali ve ev içi kanıtlar", "更新的财务及家庭证据"],

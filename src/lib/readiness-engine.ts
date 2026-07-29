@@ -469,8 +469,8 @@ const ZH_VISA_NAMES: Record<string, string> = {
   "189": "189 独立技术移民",
   "190": "190 州担保技术移民",
   "491": "491 偏远地区技术移民",
-  "820": "820 境内配偶签证（临时）",
-  "801": "801 境内配偶签证（永久）",
+  "820": "820 境内伴侣签证（临时）",
+  "801": "801 境内伴侣签证（永久）",
   general: "一般评估",
 };
 
@@ -483,7 +483,7 @@ const ZH_REQUIREMENT_MAP: Record<string, string> = {
   "Employer sponsorship context": "雇主担保背景",
   "Occupation and experience information aligned with the role": "与岗位匹配的职业和经验信息",
   "Supporting information relevant to English and employment conditions": "与英语和雇佣条件相关的支持信息",
-  "Partner sponsorship status context": "配偶担保人身份背景",
+  "Partner sponsorship status context": "伴侣担保人身份背景",
   "Information relevant to the nature and continuity of the relationship": "与关系真实性和持续性相关的信息",
   "Supporting context about living arrangements or shared life": "同居安排或共同生活的支持背景",
 };
@@ -509,11 +509,11 @@ const ZH_POSITION_CHANGER_MAP: Record<string, { label: string; explanation: stri
   },
   "Sponsor or relationship evidence": {
     label: "担保或关系证明材料",
-    explanation: "担保人资格、关系持续性和共同生活证据会影响配偶或担保类路径的材料强度。",
+    explanation: "担保人资格、关系持续性和共同生活证据会影响伴侣或担保类路径的材料强度。",
   },
   "Points-table factors": {
     label: "打分项变化",
-    explanation: "年龄、英语、工作经验、学历、配偶因素和 NAATI 等加分项变化，会改变初步打分估算。",
+    explanation: "年龄、英语、工作经验、学历、伴侣因素和 NAATI 等加分项变化，会改变初步打分估算。",
   },
   "English test category": {
     label: "英语考试等级",
@@ -570,7 +570,7 @@ function zhPathwayReason(subclass: string): string {
   if (subclass === "190") return `${name} 是打分制技术移民路径，通常需要获得州或领地提名。本内容仅为一般信息，具体情况取决于个人背景。`;
   if (subclass === "491") return `${name} 是偏远地区技术移民路径，通常涉及州/领地提名或合资格亲属担保。本内容仅为一般信息，具体情况取决于个人背景。`;
   if (subclass === "482") return `${name} 以雇主担保和岗位匹配为核心。本内容仅为一般信息，具体情况取决于个人背景。`;
-  if (subclass === "820" || subclass === "801") return `${name} 通常围绕配偶关系证据、担保人背景和境内申请阶段进行评估。本内容仅为一般信息，具体情况取决于个人背景。`;
+  if (subclass === "820" || subclass === "801") return `${name} 通常围绕伴侣关系证据、担保人背景和境内申请阶段进行评估。本内容仅为一般信息，具体情况取决于个人背景。`;
   if (subclass === "500") return `${name} 通常围绕课程注册、学习目的和资金安排进行评估。本内容仅为一般信息。`;
   if (subclass === "485") return `${name} 通常适用于符合条件的澳大利亚近期毕业生。本内容仅为一般信息。`;
   return "现有信息尚不足以确定单一签证路径。补充目标、职业和担保背景后，可进行更完整的结构化评估。";
@@ -585,7 +585,7 @@ function zhPathwayRisks(subclass: string, estimatedPoints?: number): string[] {
   if (subclass === "190") risks.push("190 州担保技术移民还取决于州或领地提名设置及职业需求。");
   if (subclass === "491") risks.push("491 偏远地区技术移民还取决于偏远地区提名或合资格担保背景。");
   if (subclass === "482") risks.push("482 路径高度依赖雇主担保、岗位真实性和职业匹配。");
-  if (subclass === "820" || subclass === "801") risks.push("820/801 配偶签证对关系证据的一致性和完整性要求较高。");
+  if (subclass === "820" || subclass === "801") risks.push("820/801 伴侣签证对关系证据的一致性和完整性要求较高。");
   return risks.length ? risks : ["现有信息提供了初步路径信号，但个人背景和证据质量仍可能改变判断。"];
 }
 
@@ -607,7 +607,7 @@ function localizeKeyVisaPathway(pathway: string): string {
   if (pathway.includes("190")) return "190 州担保技术移民";
   if (pathway.includes("491")) return "491 偏远地区技术移民";
   if (pathway.includes("482")) return "482 雇主担保技术需求签证";
-  if (pathway.includes("820") || pathway.includes("801")) return "820/801 境内配偶签证";
+  if (pathway.includes("820") || pathway.includes("801")) return "820/801 境内伴侣签证";
   if (pathway.includes("500")) return "500 学生签证";
   if (pathway.includes("485")) return "485 临时毕业生签证";
   return localizeText("zh-Hans", pathway);
@@ -647,14 +647,14 @@ function localizeRiskIndicator(
       explanation:
         estimatedPoints !== undefined
           ? `当前初步打分估算为 ${estimatedPoints} 分。对 189/190/491 等打分制技术移民路径而言，这可能削弱获邀竞争力；仍需结合职业、州/领地提名政策和完整材料进一步判断。`
-          : "当前打分信息尚不完整。对打分制技术移民路径而言，年龄、英语、工作经验、学历、配偶因素和提名加分均需进一步核对。",
+          : "当前打分信息尚不完整。对打分制技术移民路径而言，年龄、英语、工作经验、学历、伴侣因素和提名加分均需进一步核对。",
     };
   }
   if (text.includes("partner") || text.includes("relationship") || text.includes("sponsor")) {
     return {
       ...risk,
       title: "担保或关系证明仍需核实",
-      explanation: "担保人资格、关系真实性、共同生活证据和文件一致性仍需逐项核对，否则可能影响配偶或担保类路径的材料强度。",
+      explanation: "担保人资格、关系真实性、共同生活证据和文件一致性仍需逐项核对，否则可能影响伴侣或担保类路径的材料强度。",
     };
   }
   if (text.includes("occupation") || text.includes("skills")) {
@@ -744,7 +744,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
     limitingFactors: item.limitingFactors.length ? item.limitingFactors.map((_factor, index) =>
       index === 0
         ? "仍需核对职业评估、州/领地提名要求及完整证明材料后，才能判断实际递交强度。"
-        : "当前初步打分估算仍可能因工作经验、学历、配偶因素或额外加分项而调整。"
+        : "当前初步打分估算仍可能因工作经验、学历、伴侣因素或额外加分项而调整。"
     ) : [],
     evidenceStatus: item.evidenceStatus.map((ev) => ({
       ...ev,
@@ -838,7 +838,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
             note: cleanNote,
           };
         }),
-        note: "这是基于年龄与英语能力的初步估算；海外工作经验、澳洲工作经验、学历、加分项和配偶因素尚未完整纳入。实际分数需以个人材料和官方规则为准。",
+        note: "这是基于年龄与英语能力的初步估算；海外工作经验、澳洲工作经验、学历、加分项和伴侣因素尚未完整纳入。实际分数需以个人材料和官方规则为准。",
       }
     : undefined;
 

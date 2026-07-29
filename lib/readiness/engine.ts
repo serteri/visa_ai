@@ -3372,7 +3372,7 @@ function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, loc
       reason: isTr
         ? "Partner Functional English koşulunu karşılamıyor"
         : isZh
-          ? "配偶不具备 Functional English"
+          ? "伴侣不具备 Functional English"
           : "Partner does not meet Functional English",
     };
   }
@@ -3382,7 +3382,7 @@ function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, loc
       reason: isTr
         ? "Functional English, puan tablosundaki Competent English eşiğinin altında; partnerin beceri değerlendirmesi de forma girilmedi, bu yüzden puan verilmedi"
         : isZh
-          ? "Functional English 低于积分表要求的 Competent English 门槛，且未提供配偶的技能评估情况，因此未计分"
+          ? "Functional English 低于积分表要求的 Competent English 门槛，且未提供伴侣的技能评估情况，因此未计分"
           : "Functional English is below the points-table's Competent English threshold, and the partner's skills-assessment status wasn't collected, so no points are awarded",
     };
   }
@@ -3535,7 +3535,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
     },
     {
-      label: isTr ? "Partner durumu" : isZh ? "配偶状态" : "Partner status",
+      label: isTr ? "Partner durumu" : isZh ? "伴侣状态" : "Partner status",
       points: result.breakdown.partner,
       max: 10,
       note: partner.reason,
@@ -4366,7 +4366,7 @@ function buildPointsBoosterSimulator(
   // applicant declared single), suggesting "+10 more" would double-count
   // points they already have.
   const currentPartnerPoints = pointsEstimate?.breakdown.find(
-    (item) => item.label === "Partner status" || item.label === "Partner durumu" || item.label === "配偶状态"
+    (item) => item.label === "Partner status" || item.label === "Partner durumu" || item.label === "伴侣状态"
   )?.points ?? 0;
   if (currentPartnerPoints < 10) {
     const partnerDelta = 10 - currentPartnerPoints;
@@ -4374,14 +4374,14 @@ function buildPointsBoosterSimulator(
       label: isTr
         ? "Tek başvurucu veya becerili partner (partner faktörü)"
         : isZh
-          ? "单身申请或配偶技术加分+达到英语雅思4个6分"
+          ? "单身申请或伴侣技术加分+达到英语雅思4个6分"
           : "Single applicant or partner with skilled qualifications + Competent English",
       estimatedChange: partnerDelta,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + partnerDelta,
       explanation: isTr
         ? "Partner Competent İngilizce + beceri değerlendirmesini karşılarsa."
         : isZh
-          ? "若配偶通过了澳洲职业评估，且英语达到雅思4个6分（或同等水平）。"
+          ? "若伴侣通过了澳洲职业评估，且英语达到雅思4个6分（或同等水平）。"
           : "If your partner meets Competent English + a positive skills assessment.",
     });
   }
@@ -4451,7 +4451,7 @@ function buildPointsBoosterSimulator(
       explanation: isTr
         ? "İstihdam, eğitim, partner ve bonus faktörleri sağlanmadığı için ek matematiksel senaryo hesaplanmadı."
         : isZh
-          ? "由于未提供工作经验、学历、配偶等背景，未计算额外的模拟加分情景。"
+          ? "由于未提供工作经验、学历、伴侣等背景，未计算额外的模拟加分情景。"
           : "Employment, education, partner, and bonus factors were not provided, so no additional mathematical scenario was calculated.",
     });
   }
@@ -4923,11 +4923,11 @@ function buildProgressionPathways(
     items.push({
       from: "820",
       to: "801",
-      label: isTr ? "Partner yolu aşamaları" : isZh ? "配偶签证阶段" : "Partner pathway stages",
+      label: isTr ? "Partner yolu aşamaları" : isZh ? "伴侣签证阶段" : "Partner pathway stages",
       explanation: isTr
         ? "820 geçici aşama ve 801 kalıcı aşama aynı onshore partner yolunun tipik aşamalarıdır."
         : isZh
-          ? "820 临时阶段和 801 永久阶段是同一种境内配偶签证路径的典型阶段。"
+          ? "820 临时阶段和 801 永久阶段是同一种境内伴侣签证路径的典型阶段。"
           : "820 temporary stage and 801 permanent stage are typical stages of the same onshore partner pathway.",
     });
   }
@@ -4936,11 +4936,11 @@ function buildProgressionPathways(
     items.push({
       from: isTr ? "Mevcut profil" : isZh ? "当前档案" : "Current profile",
       to: isTr ? "Kapsam dışı" : isZh ? "范围之外" : "Out of scope",
-      label: isTr ? "Partner Vizesi (820/801) değerlendirmesi kapsam dışı" : isZh ? "配偶签证 (820/801) 评估范围之外" : "Partner Visa (820/801) assessment out of scope",
+      label: isTr ? "Partner Vizesi (820/801) değerlendirmesi kapsam dışı" : isZh ? "伴侣签证 (820/801) 评估范围之外" : "Partner Visa (820/801) assessment out of scope",
       explanation: isTr
         ? "Bu araç Partner Vizesi (820/801) için tipik bir geçiş yolu öngörmez; bu tamamen ayrı bir ilişki-temelli vize kategorisidir. Uygunluk için kayıtlı bir göçmenlik danışmanına (MARA) danışın."
         : isZh
-          ? "此工具不为配偶签证 (820/801) 预测过渡路径——它是一个完全独立的、基于关系的签证类别。请咨询注册移民代理 (MARA) 以获取资格评估。"
+          ? "此工具不为伴侣签证 (820/801) 预测过渡路径——它是一个完全独立的、基于关系的签证类别。请咨询注册移民代理 (MARA) 以获取资格评估。"
           : "This tool does not project a typical progression pathway for the Partner Visa (820/801) -- it is a separate, relationship-based visa category. Consult a registered migration agent (MARA) for eligibility.",
     });
   } else if (items.length === 0) {
@@ -6449,12 +6449,12 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
         isTr
           ? "Bu rapor, Avustralya Partner vizesi (Subclass 820/801) başvurunuz için ilişki kanıtı derinliğini ve sponsor uygunluğu sinyallerini değerlendirmektedir."
           : isZh
-            ? "本报告评估您申请澳大利亚配偶签证（Subclass 820/801）的关系证明深度和担保人资格信号。"
+            ? "本报告评估您申请澳大利亚伴侣签证（Subclass 820/801）的关系证明深度和担保人资格信号。"
             : "This report assesses your relationship evidence depth and sponsor eligibility signals for the Australian Partner visa (Subclass 820/801) pathway.",
         isTr
           ? "Bu değerlendirme puan testi içeren vasıflı göçmenlik vizeleri (189/190/491) için geçerli değildir; partner vizeleri puan-bazlı değildir."
           : isZh
-            ? "本评估不适用于打分制技术移民签证（189/190/491）；配偶签证不基于积分系统。"
+            ? "本评估不适用于打分制技术移民签证（189/190/491）；伴侣签证不基于积分系统。"
             : "This assessment does not apply to points-tested skilled migration visas (189/190/491); partner visas are not points-tested."
       ]
     : [
