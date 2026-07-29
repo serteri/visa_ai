@@ -204,6 +204,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       stateRadar: "Eyalet Sinyal Radarı",
       stateRadarCanada: "Eyalet PNP Sinyal Radarı",
       stateRadarSubtitle: "Eyalet adaylığı sinyalleri, profil uyum skoruna göre görselleştirilmiştir.",
+      stateRadarMissingFieldsPrefix: "Eksik veriler:",
       noClearSecondarySignal: "Belirgin ikincil sinyal yok",
       downloadablePdfDescription: "Bu dosya, oluşturulan tam vize hazırlık raporunun indirilebilir PDF sürümüdür.",
       urgent: "ACIL",
@@ -370,6 +371,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       stateRadar: "州担保信号雷达",
       stateRadarCanada: "省提名（PNP）信号雷达",
       stateRadarSubtitle: "州担保信号根据档案匹配分数进行可视化。",
+      stateRadarMissingFieldsPrefix: "缺失信息：",
       noClearSecondarySignal: "暂无明显次要信号",
       downloadablePdfDescription: "本文件为已生成完整签证准备度报告的可下载 PDF 版本。",
       urgent: "紧急",
@@ -535,6 +537,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     stateRadar: "State Signal Radar",
     stateRadarCanada: "Provincial PNP Signal Radar",
     stateRadarSubtitle: "State nomination signals visualized by profile match score.",
+    stateRadarMissingFieldsPrefix: "Missing:",
     noClearSecondarySignal: "No clear secondary signal",
     downloadablePdfDescription: "This file is the downloadable PDF version of the generated full visa readiness report.",
     urgent: "URGENT",
@@ -3319,12 +3322,61 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
   }
 
+  /** Prominent amber banner shown directly under the State Signal Radar /
+   *  State Nomination Tracker headings when the underlying scores were
+   *  computed with incomplete profile data (see StateNominationTracker's
+   *  partialDataWarning doc comment) -- deliberately a filled, bordered box
+   *  at body-text size, not a small gray footnote, per the requirement that
+   *  this not get missed. */
+  function drawPartialDataWarning() {
+    const warning = report.stateNominationTracker?.partialDataWarning;
+    if (!warning) return;
+
+    setBoldFont();
+    doc.setFontSize(FONTS.body);
+    const messageLines = doc.splitTextToSize(safeText(`⚠ ${warning.message}`), contentWidth - 12);
+
+    setBaseFont();
+    doc.setFontSize(FONTS.small);
+    const fieldsLine = `${text.stateRadarMissingFieldsPrefix} ${warning.missingFieldLabels.join(", ")}`;
+    const fieldsLines = doc.splitTextToSize(safeText(fieldsLine), contentWidth - 12);
+
+    const boxHeight = 6 + messageLines.length * 5.2 + fieldsLines.length * 4.4 + 4;
+    ensurePageSpace(boxHeight + 4);
+    const boxTop = yPosition;
+
+    doc.setFillColor(255, 247, 230);
+    doc.setDrawColor(COLORS.riskMedium.r, COLORS.riskMedium.g, COLORS.riskMedium.b);
+    doc.setLineWidth(0.6);
+    doc.roundedRect(margin, boxTop, contentWidth, boxHeight, 2, 2, "FD");
+
+    let ly = boxTop + 6.5;
+    setBoldFont();
+    doc.setFontSize(FONTS.body);
+    doc.setTextColor(COLORS.riskMedium.r, COLORS.riskMedium.g, COLORS.riskMedium.b);
+    messageLines.forEach((line: string) => {
+      doc.text(line, margin + 6, ly);
+      ly += 5.2;
+    });
+
+    setBaseFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+    fieldsLines.forEach((line: string) => {
+      doc.text(safeText(line), margin + 6, ly);
+      ly += 4.4;
+    });
+
+    yPosition = boxTop + boxHeight + 5;
+  }
+
   function drawStateRadar() {
     const states = report.stateNominationTracker?.states ?? [];
     if (states.length === 0) return;
 
     ensurePageSpace(142);
     addHeading(report.country === "CA" ? text.stateRadarCanada : text.stateRadar);
+    drawPartialDataWarning();
 
     const topY = yPosition;
     const boxHeight = 124;
@@ -3415,6 +3467,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (states.length === 0) return;
 
     addHeading(report.country === "CA" ? text.stateNominationTrackerCanada : text.stateNominationTracker);
+    drawPartialDataWarning();
     addSmallText(report.country === "CA" ? (report.stateNominationTracker?.note ?? "") : text.stateTrackerIntro, 0);
     yPosition += 2;
 

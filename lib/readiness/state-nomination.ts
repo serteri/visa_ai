@@ -315,15 +315,59 @@ function buildRequirements(args: {
   return requirements.slice(0, 3);
 }
 
+/** Fields the per-state score formula actually reads (englishBand,
+ *  maxExperienceYears) -- not the full AssessmentState.missingFieldLabels
+ *  list, which also includes fields (partner status, health/character docs)
+ *  that are irrelevant to state-nomination scoring and always show as
+ *  "missing" since the intake form never collects them. */
+function buildPartialDataWarning(
+  locale: Locale,
+  assessmentState: AssessmentState
+): StateNominationTracker["partialDataWarning"] {
+  const missing: string[] = [];
+  if (!assessmentState.fieldsPresent.englishLevel) {
+    missing.push(t(locale, "English level not provided", "İngilizce seviyesi girilmedi", "未提供英语水平"));
+  }
+  if (!assessmentState.fieldsPresent.workExperienceYears) {
+    missing.push(t(locale, "Work experience not provided", "İş deneyimi girilmedi", "未提供工作经验"));
+  }
+
+  if (missing.length === 0) return undefined;
+
+  return {
+    message: t(
+      locale,
+      "This estimate was calculated with incomplete information — the actual result may change once missing details are provided.",
+      "Bu tahmin eksik bilgiyle hesaplandı — eksik detaylar girildiğinde gerçek sonuç değişebilir.",
+      "此估算基于不完整的信息计算得出——补充缺失信息后，实际结果可能会有所变化。"
+    ),
+    missingFieldLabels: missing,
+  };
+}
+
 export function calculateStateNominationTracker(
   input: ReadinessInput,
   pathwayComparison: PathwayComparison[],
   assessmentState: AssessmentState
 ): StateNominationTracker {
-  const relevantIneligible = pathwayComparison.some(
+  // State nomination is only ever relevant when this assessment actually
+  // evaluated the 190/491 pathways -- partner-visa (820/801) and other
+  // non-skilled-migration reports never put "190"/"491" into
+  // pathwayComparison at all (see buildPartnerReadinessReport in engine.ts),
+  // so this section must stay blocked for those regardless of data
+  // completeness. Only when 190/491 WERE evaluated do we then check for a
+  // REAL hard-ineligibility (age cap, visa-type incompatibility, etc. --
+  // anything that isn't purely "below the points threshold"). Points-only
+  // ineligibility and incomplete profile data (missing English level / work
+  // experience) no longer block it -- see buildPartialDataWarning for how
+  // the latter is surfaced instead.
+  const hasStateNominationRelevantPathway = pathwayComparison.some((p) =>
+    STATE_NOMINATION_SUBCLASSES.includes(p.subclass)
+  );
+  const hardIneligible = pathwayComparison.some(
     (p) => STATE_NOMINATION_SUBCLASSES.includes(p.subclass) && p.relevance === "ineligible" && p.ineligiblePointsLine === undefined
   );
-  const eligibilityBlocked = relevantIneligible || !assessmentState.canShowNumericRanking;
+  const eligibilityBlocked = !hasStateNominationRelevantPathway || hardIneligible;
 
   if (eligibilityBlocked) {
     return {
@@ -425,5 +469,6 @@ export function calculateStateNominationTracker(
       "Eyalet adayligi kosullari sik degisir. Bunu resmi davet garantisi degil, yonlendirici bir uygunluk isi haritasi olarak degerlendirin.",
       "州担保设置经常变化。请将其视为方向性资格热力图，而不是正式邀请保证。"
     ),
+    partialDataWarning: buildPartialDataWarning(input.locale, assessmentState),
   };
 }

@@ -375,10 +375,24 @@ export type StateNominationTracker = {
   states: StateNominationState[];
   topRecommendedStates: StateNominationState[];
   note: string;
-  /** True when the underlying 190/491 pathway is ineligible or numeric ranking cannot be shown (assessmentState.canShowNumericRanking is false). Gates all per-state match %/score display — states/topRecommendedStates are empty when true. */
+  /** True only when the underlying 190/491 pathway is hard-ineligible for a
+   *  non-points reason (e.g. age cap, visa-type incompatibility) --
+   *  points-only ineligibility and incomplete profile data no longer block
+   *  this. Gates all per-state match %/score display — states/topRecommendedStates
+   *  are empty when true. */
   eligibilityBlocked: boolean;
   /** Localized qualitative note shown in place of state-by-state numbers when eligibilityBlocked is true. */
   blockedReason?: string;
+  /** Present when states ARE shown (eligibilityBlocked is false) but the
+   *  profile is missing data (English level and/or work experience) that
+   *  the per-state score calculation depends on -- the estimate is directional
+   *  only. Renderers must surface this prominently (a banner), not as a
+   *  small footnote, since the scores themselves may shift once that data
+   *  is provided. */
+  partialDataWarning?: {
+    message: string;
+    missingFieldLabels: string[];
+  };
 };
 
 export type ChecklistPriority = "urgent" | "important" | "recommended" | "blocked";
