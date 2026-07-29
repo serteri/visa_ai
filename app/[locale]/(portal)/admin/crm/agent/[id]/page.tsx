@@ -8,7 +8,7 @@ import { requireRole } from "@/lib/auth/rbac";
 import { getAgentLeads, getAgentMetrics, getAgentUser, splitName } from "@/lib/crm/leads";
 import { getAgentTransactionsForAdmin } from "@/lib/crm/transactions";
 import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
-import { approveAgentAction } from "../../actions";
+import { approveAgentAction, rejectAgentAction } from "../../actions";
 
 export const metadata: Metadata = {
   title: "Admin · Agent detail · LogiVisa Portal",
@@ -68,9 +68,25 @@ export default async function AdminAgentDetailPage({ params }: PageProps) {
             <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-800">
               ⏳ Pending approval
             </span>
+            <form action={rejectAgentAction.bind(null, agent.id)}>
+              <Button type="submit" size="sm" variant="outline">
+                Reject
+              </Button>
+            </form>
             <form action={approveAgentAction.bind(null, agent.id)}>
               <Button type="submit" size="sm">
                 Approve agent
+              </Button>
+            </form>
+          </div>
+        ) : agent.approvalStatus === "REJECTED" ? (
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-sm font-semibold text-rose-700">
+              ✕ Rejected
+            </span>
+            <form action={approveAgentAction.bind(null, agent.id)}>
+              <Button type="submit" size="sm">
+                Approve anyway
               </Button>
             </form>
           </div>

@@ -175,6 +175,15 @@ export async function getAgentUser(id: string) {
   });
 }
 
+/** AGENT-role users awaiting admin approval -- feeds the dedicated pending-review queue. */
+export async function getPendingAgents() {
+  return prisma.user.findMany({
+    where: { role: "AGENT", approvalStatus: "PENDING" },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, name: true, email: true, phone: true, companyName: true, createdAt: true },
+  });
+}
+
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 /** Splits a single captured full name into first/last for the CRM detail view. */

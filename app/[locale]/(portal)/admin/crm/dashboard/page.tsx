@@ -61,9 +61,16 @@ export default async function AdminDashboardPage({ params }: PageProps) {
             {agents.length} agent{agents.length === 1 ? "" : "s"} · {totals.total} total leads assigned.
           </p>
         </div>
-        <Button asChild>
-          <Link href={`/${locale}/admin/crm/agents/create`}>Add New Agent</Link>
-        </Button>
+        <div className="flex gap-2">
+          {agents.some((agent) => agent.approvalStatus === "PENDING") && (
+            <Button asChild variant="outline">
+              <Link href={`/${locale}/admin/crm/agents/pending`}>Pending applications</Link>
+            </Button>
+          )}
+          <Button asChild>
+            <Link href={`/${locale}/admin/crm/agents/create`}>Add New Agent</Link>
+          </Button>
+        </div>
       </div>
 
       <Card>

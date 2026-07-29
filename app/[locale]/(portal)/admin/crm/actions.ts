@@ -68,6 +68,20 @@ export async function approveAgentAction(agentId: string): Promise<void> {
   revalidatePath("/", "layout");
 }
 
+/** Rejects a self-registered agent -- keeps their content locked behind
+ *  PendingApprovalNotice (isApprovedAgent only passes on "APPROVED"). */
+export async function rejectAgentAction(agentId: string): Promise<void> {
+  await requireAdmin();
+  if (!agentId) throw new Error("Missing agentId");
+
+  await prisma.user.updateMany({
+    where: { id: agentId, role: "AGENT" },
+    data: { approvalStatus: "REJECTED" },
+  });
+
+  revalidatePath("/", "layout");
+}
+
 export type CreateAgentState = { error?: string };
 
 const EMAIL_REGEX =

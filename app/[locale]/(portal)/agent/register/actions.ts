@@ -16,11 +16,19 @@ const EMAIL_REGEX =
 // confirmPassword only ever exists to prove the two fields match -- it's
 // validated here and then discarded; nothing downstream (the User.create
 // below) ever sees or persists it.
+// Mirrored client-side in register-form.tsx's PASSWORD_RULES for the live
+// checklist -- keep both in sync if a rule changes.
 const registerSchema = z
   .object({
     name: z.string().trim().min(1, "Full name is required."),
     email: z.string().trim().toLowerCase().regex(EMAIL_REGEX, "Enter a valid email address."),
-    password: z.string().min(8, "Password must be at least 8 characters."),
+    password: z
+      .string()
+      .min(10, "Password must be at least 10 characters.")
+      .regex(/[A-Z]/, "Password must contain at least 1 uppercase letter.")
+      .regex(/[a-z]/, "Password must contain at least 1 lowercase letter.")
+      .regex(/[0-9]/, "Password must contain at least 1 number.")
+      .regex(/[^A-Za-z0-9]/, "Password must contain at least 1 special character."),
     confirmPassword: z.string(),
     phone: z.string().trim().optional().default(""),
     companyName: z.string().trim().optional().default(""),

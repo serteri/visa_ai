@@ -1,11 +1,41 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { Check, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerAgentAction, type RegisterState } from "./actions";
+
+// Mirrored server-side in actions.ts's registerSchema -- keep both in sync
+// if a rule changes. label is what the live checklist shows the user.
+const PASSWORD_RULES: { label: string; test: (value: string) => boolean }[] = [
+  { label: "En az 10 karakter", test: (v) => v.length >= 10 },
+  { label: "En az 1 büyük harf", test: (v) => /[A-Z]/.test(v) },
+  { label: "En az 1 küçük harf", test: (v) => /[a-z]/.test(v) },
+  { label: "En az 1 rakam", test: (v) => /[0-9]/.test(v) },
+  { label: "En az 1 özel karakter", test: (v) => /[^A-Za-z0-9]/.test(v) },
+];
+
+function PasswordChecklist({ password }: { password: string }) {
+  return (
+    <ul className="space-y-1 pt-1">
+      {PASSWORD_RULES.map((rule) => {
+        const met = rule.test(password);
+        return (
+          <li
+            key={rule.label}
+            className={`flex items-center gap-1.5 text-xs ${met ? "text-emerald-600" : "text-slate-400"}`}
+          >
+            {met ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+            {rule.label}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 export function AgentRegisterForm({ locale }: { locale: string }) {
   const action = registerAgentAction.bind(null, locale);
@@ -15,13 +45,15 @@ export function AgentRegisterForm({ locale }: { locale: string }) {
   const [confirmTouched, setConfirmTouched] = useState(false);
 
   const passwordsMismatch = confirmTouched && confirmPassword.length > 0 && password !== confirmPassword;
+  const passwordValid = PASSWORD_RULES.every((rule) => rule.test(password));
+  const canSubmit = passwordValid && confirmPassword.length > 0 && password === confirmPassword;
 
   // Client-side gate only -- the server action re-checks password ===
   // confirmPassword itself (never trust client validation alone).
   // confirmPassword is read here purely for this comparison; it's never
   // sent anywhere beyond this form and the server never persists it.
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    if (password !== confirmPassword) {
+    if (!passwordValid || password !== confirmPassword) {
       e.preventDefault();
       setConfirmTouched(true);
     }
@@ -53,12 +85,13 @@ export function AgentRegisterForm({ locale }: { locale: string }) {
           name="password"
           type="password"
           required
-          minLength={8}
+          minLength={10}
           autoComplete="new-password"
-          placeholder="At least 8 characters"
+          placeholder="At least 10 characters"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <PasswordChecklist password={password} />
       </div>
 
       <div className="space-y-2">
@@ -68,7 +101,7 @@ export function AgentRegisterForm({ locale }: { locale: string }) {
           name="confirmPassword"
           type="password"
           required
-          minLength={8}
+          minLength={10}
           autoComplete="new-password"
           placeholder="Re-enter your password"
           value={confirmPassword}
@@ -95,7 +128,11 @@ export function AgentRegisterForm({ locale }: { locale: string }) {
         <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>
       ) : null}
 
-      <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
+      <Button
+        type="submit"
+        className="h-11 w-full rounded-lg text-sm font-semibold"
+        disabled={isPending || !canSubmit}
+      >
         {isPending ? "Creating account…" : "Apply as an agent"}
       </Button>
 
