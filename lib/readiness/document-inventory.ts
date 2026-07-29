@@ -12,7 +12,7 @@ import type { Locale } from "./types";
  * PDF already listed them. Adding a new document requirement now only
  * needs to happen here once.
  *
- * Scope note: 189/190/491/482/485 are modeled here. 500/820/801 have
+ * Scope note: 189/190/491/482/485/186 are modeled here. 500/820/801 have
  * entries in document-checklists.ts's PDF-only literal strings but are not
  * yet part of this canonical inventory or the interactive tool (tracked
  * separately as a follow-up).
@@ -29,9 +29,28 @@ import type { Locale } from "./types";
  * if it ever gains structured partner/dependant/residence-history fields --
  * out of scope for now, see visa-checklist-questionnaire in
  * DocumentChecklist2026Localized.tsx.
+ *
+ * 186 (Employer Nomination Scheme) sourcing note: DHA's own pages
+ * (immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/employer-nomination-scheme-186
+ * and its /direct-entry-stream sub-page) return HTTP 403 to automated
+ * fetches, so the 186 entries below are corroborated via search-engine
+ * snippets of those same DHA pages plus cross-referencing multiple
+ * registered-migration-agent summaries, and checked for consistency
+ * against this app's own existing engine.ts constants
+ * (TRT_186_MIN_SPONSORED_YEARS = 2, DIRECT_ENTRY_186_MAX_AGE = 45) --
+ * both matched independently, giving reasonable confidence. The CSIT
+ * salary figure is deliberately NOT hardcoded here (third-party sources
+ * disagreed on the exact 1 July 2026 number, ranging AUD 76,515-79,499);
+ * the tip text points users to confirm the current figure rather than
+ * risk stating a wrong one, matching this app's existing pattern for
+ * other periodically-indexed thresholds (see lib/readiness/generate-pdf.ts's
+ * VAC "should be verified before lodgement" wording). If this ever needs
+ * re-verifying (e.g. after a threshold date change), start from:
+ * https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/employer-nomination-scheme-186
+ * https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/employer-nomination-scheme-186/direct-entry-stream
  */
 
-export type DocInventorySubclass = "189" | "190" | "491" | "482" | "485";
+export type DocInventorySubclass = "189" | "190" | "491" | "482" | "485" | "186";
 
 export type CanonicalDocItem = {
   id: string;
@@ -956,6 +975,215 @@ export const DOCUMENT_INVENTORY: Record<DocInventorySubclass, CanonicalDocItem[]
         en: "Use the result you can prove at invitation and lodgement time.",
         tr: "Davet ve lodgement aşamasında kanıtlayabildiğiniz sonucu kullanın.",
         "zh-Hans": "使用你在邀请和递交时都能证明的成绩。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "police_check",
+      category: "Health",
+      name: { en: "Police clearances", tr: "Adli sicil kayıtları", "zh-Hans": "无犯罪记录证明" },
+      description: {
+        en: "Country clearances for all required jurisdictions",
+        tr: "Gerekli tüm ülkelerden alınmış kayıtlar",
+        "zh-Hans": "所有必需司法辖区的证明",
+      },
+      required: true,
+      expiryTracking: true,
+      expiryMonths: 12,
+      warningMonths: 3,
+      tips: {
+        en: "Order these after invitation so they remain valid at lodgement.",
+        tr: "Lodgement sırasında geçerli kalması için davetten sonra alın.",
+        "zh-Hans": "最好在收到邀请后再办理，以确保递交时有效。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+  ],
+  // 186 (Employer Nomination Scheme) has two streams with different
+  // document requirements -- TRT and Direct Entry -- but the interactive
+  // tool has no stream-selector UI. Shared items (identity, English,
+  // employer nomination/contract, health & character) are `required:
+  // true`; the 4 stream-specific items are `required: false` and their
+  // name/description/tips explicitly state which stream they belong to,
+  // the same pattern already used for 190/491's optional
+  // residence/regional-address items above.
+  "186": [
+    {
+      id: "passport",
+      category: "Identity",
+      name: { en: "Valid passport", tr: "Geçerli pasaport", "zh-Hans": "有效护照" },
+      description: {
+        en: "Biometric page and any visa pages",
+        tr: "Biyometrik sayfa ve vize sayfaları",
+        "zh-Hans": "个人信息页和所有签证页",
+      },
+      required: true,
+      expiryTracking: true,
+      expiryMonths: 120,
+      warningMonths: 6,
+      tips: {
+        en: "Keep a clean scanned copy of the bio page and all stamped pages.",
+        tr: "Pasaport biyometrik sayfanızın ve damgalı sayfaların net kopyasını saklayın.",
+        "zh-Hans": "保存护照信息页和盖章页的清晰扫描件。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "english_evidence",
+      category: "English",
+      name: { en: "English evidence", tr: "İngilizce kanıtı", "zh-Hans": "英语能力证明" },
+      description: {
+        en: "Competent English test result or exemption evidence",
+        tr: "Yeterli (Competent) İngilizce test sonucu veya muafiyet kanıtı",
+        "zh-Hans": "合格（Competent）英语考试成绩或豁免证明",
+      },
+      required: true,
+      expiryTracking: true,
+      expiryMonths: 36,
+      warningMonths: 6,
+      tips: {
+        en: "Passport-country or salary-based exemptions may apply -- confirm with your employer/agent before booking a test.",
+        tr: "Pasaport ülkesi veya maaş bazlı muafiyetler geçerli olabilir — test rezervasyonu öncesi işvereninize/danışmanınıza danışın.",
+        "zh-Hans": "护照国籍或薪资相关的豁免可能适用——预约考试前请与雇主/代理确认。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "employer_nomination",
+      category: "Employer",
+      name: { en: "Employer nomination approval", tr: "İşveren adaylık onayı", "zh-Hans": "雇主提名批准" },
+      description: {
+        en: "Approved ENS nomination from the sponsoring employer",
+        tr: "Sponsor işverenden onaylı ENS nomination'ı",
+        "zh-Hans": "担保雇主的已批准ENS提名",
+      },
+      required: true,
+      expiryTracking: false,
+      tips: {
+        en: "The nominated occupation must be on the relevant eligible list and the position genuine.",
+        tr: "Aday gösterilen meslek ilgili uygun meslek listesinde olmalı ve pozisyon gerçek olmalıdır.",
+        "zh-Hans": "提名职业须在相关合格清单上，且该职位必须真实存在。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "employment_contract",
+      category: "Finance",
+      name: {
+        en: "Employment contract & salary evidence",
+        tr: "İş sözleşmesi ve maaş kanıtı",
+        "zh-Hans": "雇佣合同与工资证明",
+      },
+      description: {
+        en: "Signed contract showing duties, hours and salary meeting the Core Skills Income Threshold (CSIT)",
+        tr: "Görev, saat ve Temel Beceri Gelir Eşiği'ni (CSIT) karşılayan maaşı gösteren imzalı sözleşme",
+        "zh-Hans": "显示职责、工时及达到核心技能收入门槛（CSIT）薪资的签字合同",
+      },
+      required: true,
+      expiryTracking: false,
+      tips: {
+        en: "Confirm the current CSIT figure with your employer/agent -- it is indexed periodically.",
+        tr: "Güncel CSIT rakamını işvereninize/danışmanınıza danışarak teyit edin — periyodik olarak güncellenir.",
+        "zh-Hans": "请与雇主/代理确认最新CSIT数额——该数额会定期调整。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "direct_entry_skills_assessment",
+      category: "Skills",
+      name: {
+        en: "Direct Entry: positive skills assessment (Direct Entry stream only)",
+        tr: "Direct Entry: olumlu beceri değerlendirmesi (sadece Direct Entry akışı)",
+        "zh-Hans": "Direct Entry：正面技能评估（仅限Direct Entry通道）",
+      },
+      description: {
+        en: "Outcome letter from the relevant assessing authority for the nominated occupation, unless exempt",
+        tr: "Muaf değilseniz, aday gösterilen meslek için ilgili değerlendirme kurumundan sonuç mektubu",
+        "zh-Hans": "如不符合豁免条件，需提供相关评估机构针对提名职业出具的结果信",
+      },
+      required: false,
+      expiryTracking: true,
+      expiryMonths: 36,
+      warningMonths: 6,
+      tips: {
+        en: "An exemption may apply if you've worked 2 of the last 3 years with the nominating employer in the occupation on a subclass 444/461 visa -- confirm exemption eligibility before assuming it applies.",
+        tr: "444/461 vizesiyle aynı işverende aynı meslekte son 3 yılın 2 yılında çalıştıysanız muafiyet uygulanabilir — muafiyetin geçerli olduğunu varsaymadan önce teyit edin.",
+        "zh-Hans": "若您持444/461签证在提名职业上为该雇主工作了过去3年中的2年，可能符合豁免条件——在假设适用前请先确认豁免资格。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "direct_entry_age_evidence",
+      category: "Identity",
+      name: {
+        en: "Direct Entry: age evidence / exemption documentation (Direct Entry stream only)",
+        tr: "Direct Entry: yaş kanıtı / muafiyet belgeleri (sadece Direct Entry akışı)",
+        "zh-Hans": "Direct Entry：年龄证明/豁免文件（仅限Direct Entry通道）",
+      },
+      description: {
+        en: "Passport/birth certificate confirming age under 45, or supporting evidence for an age exemption (e.g. senior academic, high-income earner, eligible 444/461 visa holder)",
+        tr: "45 yaşın altında olduğunuzu doğrulayan pasaport/doğum belgesi veya yaş muafiyeti için destekleyici kanıt (ör. kıdemli akademisyen, yüksek gelirli, uygun 444/461 vize sahibi)",
+        "zh-Hans": "证明未满45周岁的护照/出生证明，或年龄豁免的支持材料（如高级学者、高收入者、符合条件的444/461签证持有人）",
+      },
+      required: false,
+      expiryTracking: false,
+      tips: {
+        en: "Age exemptions are narrow and evidence-heavy -- confirm eligibility with a registered migration agent before relying on one.",
+        tr: "Yaş muafiyetleri dar kapsamlı ve kanıt yoğunludur — bir muafiyete güvenmeden önce kayıtlı bir göç danışmanıyla uygunluğu teyit edin.",
+        "zh-Hans": "年龄豁免适用范围窄且举证要求高——在依赖豁免前请与注册移民代理确认资格。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "trt_employment_evidence",
+      category: "Stream",
+      name: {
+        en: "TRT: 2-of-3-years full-time work evidence (TRT stream only)",
+        tr: "TRT: son 3 yılda 2 yıl tam zamanlı çalışma kanıtı (sadece TRT akışı)",
+        "zh-Hans": "TRT：近3年内2年全职工作证明（仅限TRT通道）",
+      },
+      description: {
+        en: "Payslips, PAYG summaries/group certificates and super contribution records showing at least 2 years full-time work with the nominating employer within the last 3 years",
+        tr: "Sponsor işverenle son 3 yıl içinde en az 2 yıl tam zamanlı çalışıldığını gösteren bordrolar, PAYG özetleri/grup sertifikaları ve emeklilik (super) katkı kayıtları",
+        "zh-Hans": "显示在过去3年内与担保雇主全职工作至少2年的工资单、PAYG汇总/团体证明及养老金（super）缴纳记录",
+      },
+      required: false,
+      expiryTracking: false,
+      tips: {
+        en: "Only required if applying via the Temporary Residence Transition (TRT) stream -- not needed for Direct Entry.",
+        tr: "Sadece Temporary Residence Transition (TRT) akışı için gereklidir — Direct Entry için gerekmez.",
+        "zh-Hans": "仅在通过临时居民过渡（TRT）通道申请时需要——Direct Entry通道不需要。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "trt_prior_visa_evidence",
+      category: "Stream",
+      name: {
+        en: "TRT: evidence of holding subclass 457/482 with the nominating employer (TRT stream only)",
+        tr: "TRT: sponsor işveren altında 457/482 vizesi tutulduğuna dair kanıt (sadece TRT akışı)",
+        "zh-Hans": "TRT：持有457/482签证并受雇于提名雇主的证明（仅限TRT通道）",
+      },
+      description: {
+        en: "Visa grant notice(s) showing the primary 457 or 482 visa held while working for the current nominating employer",
+        tr: "Mevcut sponsor işveren altında çalışırken tutulan ana 457 veya 482 vizesini gösteren vize onay bildirimi/bildirimleri",
+        "zh-Hans": "显示在为当前提名雇主工作期间持有主申请人457或482签证的签证批准通知",
+      },
+      required: false,
+      expiryTracking: false,
+      tips: {
+        en: "The nominating employer must be the same business that sponsored the 457/482 visa.",
+        tr: "Aday gösteren işveren, 457/482 vizesini sponsor eden işletmeyle aynı olmalıdır.",
+        "zh-Hans": "提名雇主必须与担保457/482签证的企业为同一雇主。",
       },
       apostilleRequired: false,
       naatiRequired: false,

@@ -6,7 +6,7 @@ import { defaultLocale, isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
-const VALID_SUBCLASSES = new Set(["189", "190", "491", "482", "485"]);
+const VALID_SUBCLASSES = new Set(["189", "190", "491", "482", "485", "186"]);
 
 type PageProps = {
   params: Promise<{ locale: string; subclass: string }>;

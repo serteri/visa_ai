@@ -27,7 +27,7 @@ type DocState = {
 type ChecklistState = Record<string, DocState>
 
 const EMPTY: DocState = { checked: false, expiryDate: '', notes: '' }
-const VISA_ORDER: VisaSubclass[] = ['189', '190', '491', '482', '485']
+const VISA_ORDER: VisaSubclass[] = ['189', '190', '491', '482', '485', '186']
 
 // Case-file-toned category palette -- fixed hex, not theme-flipping --cf-*
 // tokens, because these ten hues exist purely to let users tell document

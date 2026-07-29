@@ -1,7 +1,7 @@
 import { DOCUMENT_INVENTORY, type DocInventorySubclass } from "@/lib/readiness/document-inventory";
 
 export type ChecklistLocale = "en" | "tr" | "zh-Hans";
-export type VisaSubclass = "189" | "190" | "491" | "482" | "485";
+export type VisaSubclass = "189" | "190" | "491" | "482" | "485" | "186";
 
 export type ChecklistDoc = {
   id: string;
@@ -115,6 +115,7 @@ const visaBase = {
       "491": { title: "Subclass 491", description: "Skilled Work Regional" },
       "482": { title: "Subclass 482", description: "Skills in Demand" },
       "485": { title: "Subclass 485", description: "Temporary Graduate" },
+      "186": { title: "Subclass 186", description: "Employer Nomination Scheme (TRT / Direct Entry)" },
     },
     categories: {
       Identity: "Identity & Personal Documents",
@@ -126,6 +127,7 @@ const visaBase = {
       Employer: "Employer Documents",
       Finance: "Financial Evidence",
       Registration: "Registration & Study Documents",
+      Stream: "Stream-Specific Evidence (TRT / Direct Entry)",
     },
   },
   tr: {
@@ -135,6 +137,7 @@ const visaBase = {
       "491": { title: "Subclass 491", description: "Bölgesel Çalışma" },
       "482": { title: "Subclass 482", description: "Talep Üzerine Beceri" },
       "485": { title: "Subclass 485", description: "Geçici Mezun" },
+      "186": { title: "Subclass 186", description: "İşveren Adaylık Programı (TRT / Direct Entry)" },
     },
     categories: {
       Identity: "Kimlik ve Kişisel Belgeler",
@@ -146,6 +149,7 @@ const visaBase = {
       Employer: "İşveren Belgeleri",
       Finance: "Mali Kanıtlar",
       Registration: "Kayıt ve Eğitim Belgeleri",
+      Stream: "Akışa Özel Kanıtlar (TRT / Direct Entry)",
     },
   },
   "zh-Hans": {
@@ -155,6 +159,7 @@ const visaBase = {
       "491": { title: "491 子类", description: "偏远地区技术工作" },
       "482": { title: "482 子类", description: "技能需求签证" },
       "485": { title: "485 子类", description: "临时毕业生" },
+      "186": { title: "186 子类", description: "雇主提名计划（TRT / Direct Entry）" },
     },
     categories: {
       Identity: "身份与个人文件",
@@ -166,6 +171,7 @@ const visaBase = {
       Employer: "雇主文件",
       Finance: "资金与收入证明",
       Registration: "注册与学习文件",
+      Stream: "通道专属材料（TRT / Direct Entry）",
     },
   },
 } as const;

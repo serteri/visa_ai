@@ -84,6 +84,32 @@ export function getDocumentChecklist(
     });
   }
 
+  if (subclasses.includes("186")) {
+    categories.push({
+      category: t3(
+        locale,
+        "186 Employer Nomination Scheme (TRT / Direct Entry)",
+        "186 İşveren Adaylık Programı (TRT / Direct Entry)",
+        "186 雇主提名计划（TRT / Direct Entry）"
+      ),
+      // Fully sourced from document-inventory.ts -- unlike 482 above, this
+      // whole category is new (see that file's 186 entries and the DHA
+      // sourcing note there) so there's no pre-existing PDF wording to
+      // preserve. Stream-specific items (TRT vs Direct Entry) are included
+      // together since this flat string-list format has no way to flag an
+      // item as stream-conditional -- same limitation the 190/491 optional
+      // items above already have.
+      // "passport" is deliberately omitted -- it's already covered by the
+      // generic "Identity and passport" category pushed above for every
+      // subclass, matching the pattern the 482/skilled branches follow.
+      items: (
+        ["english_evidence", "employer_nomination", "employment_contract",
+         "direct_entry_skills_assessment", "direct_entry_age_evidence",
+         "trt_employment_evidence", "trt_prior_visa_evidence", "police_check"] as const
+      ).map((id) => getCanonicalDocName("186", id, locale)),
+    });
+  }
+
   const skilledSubclasses = subclasses.filter((s) =>
     ["189", "190", "491"].includes(s)
   );

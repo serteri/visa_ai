@@ -557,6 +557,10 @@
       "485": {
         "title": "Subclass 485",
         "description": "Temporary Graduate"
+      },
+      "186": {
+        "title": "Subclass 186",
+        "description": "İşveren Adaylık Programı (TRT / Direct Entry)"
       }
     }
   },

@@ -39,7 +39,6 @@
       "body3": "如有任何问题，请使用logivisa.com上的免费工具。"
     }
   },
-
   "nav.checker": "签证评估",
   "nav.legal": "法律",
   "hero.headline": "借助AI，2分钟内找到您的最佳签证路径",
@@ -551,6 +550,10 @@
       "485": {
         "title": "485 子类",
         "description": "临时毕业生"
+      },
+      "186": {
+        "title": "186 子类",
+        "description": "雇主提名计划（TRT / Direct Entry）"
       }
     }
   },

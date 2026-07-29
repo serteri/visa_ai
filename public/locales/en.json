@@ -550,6 +550,10 @@
       "485": {
         "title": "Subclass 485",
         "description": "Temporary Graduate"
+      },
+      "186": {
+        "title": "Subclass 186",
+        "description": "Employer Nomination Scheme (TRT / Direct Entry)"
       }
     }
   },
