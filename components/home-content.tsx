@@ -12,7 +12,6 @@ import { PdfGuides } from "@/components/landing/PdfGuides";
 import { FeaturesBento } from "@/components/landing/FeaturesBento";
 import { Faq } from "@/components/landing/Faq";
 import { Testimonials } from "@/components/landing/Testimonials";
-import { ClosingCta } from "@/components/landing/ClosingCta";
 
 const FREE_DOWNLOADS_FALLBACK = 18;
 const ASSESSMENT_SLOTS_FALLBACK = 14;
@@ -92,7 +91,10 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
       <FeaturesBento locale={locale} />
       <Faq locale={locale} />
       <Testimonials locale={locale} />
-      <ClosingCta locale={locale} />
+      {/* No landing-specific closing CTA here -- app/[locale]/(main)/layout.tsx
+          already renders PreFooterCta (now case-file-styled) after every
+          page's content, homepage included. A second closer here duplicated
+          it; see PreFooterCta for the one-and-only "final CTA" component. */}
     </div>
   );
 }

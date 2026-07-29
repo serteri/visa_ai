@@ -1,21 +1,26 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Site-wide tokens now use the "case file" palette (navy/paper/brass) --
+   see the .dark/.light class blocks further down for the full rationale.
+   :root here IS the light theme's values (same convention as before the
+   migration: bare :root = light, overridden for dark via media query and
+   the .dark class). */
 :root {
-  --background: #f6f8fb;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --muted: #eef2f9;
-  --muted-foreground: #4b5563;
-  --primary: #0b4a6f;
-  --primary-foreground: #f8fafc;
-  --secondary: #dce8f3;
-  --secondary-foreground: #0f172a;
-  --accent: #e2eef8;
-  --accent-foreground: #0f172a;
-  --border: #d9e2ef;
-  --ring: #0b4a6f;
+  --background: #f7f3e8;
+  --foreground: #241c10;
+  --card: #efe8d8;
+  --card-foreground: #241c10;
+  --muted: #e4dbc5;
+  --muted-foreground: #6b6250;
+  --primary: #8c6530;
+  --primary-foreground: #f7f3e8;
+  --secondary: #e4dbc5;
+  --secondary-foreground: #241c10;
+  --accent: #e4dbc5;
+  --accent-foreground: #241c10;
+  --border: rgba(36, 28, 16, 0.12);
+  --ring: #8c6530;
   --radius: 0.75rem;
 }
 
@@ -31,20 +36,20 @@
    on every load before next-themes' class kicks in. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #09090b;
-    --foreground: #f8fafc;
-    --card: #18181b;
-    --card-foreground: #f8fafc;
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-    --primary: #38bdf8;
-    --primary-foreground: #0f172a;
-    --secondary: #27272a;
-    --secondary-foreground: #f8fafc;
-    --accent: #27272a;
-    --accent-foreground: #f8fafc;
-    --border: #27272a;
-    --ring: #38bdf8;
+    --background: #0f1e33;
+    --foreground: #e8e4d9;
+    --card: #16233a;
+    --card-foreground: #e8e4d9;
+    --muted: #16233a;
+    --muted-foreground: #a9b2c0;
+    --primary: #d8a65c;
+    --primary-foreground: #091422;
+    --secondary: #16233a;
+    --secondary-foreground: #e8e4d9;
+    --accent: #16233a;
+    --accent-foreground: #e8e4d9;
+    --border: rgba(232, 228, 217, 0.14);
+    --ring: #d8a65c;
   }
 }
 
@@ -196,20 +201,20 @@ body {
    in either block -- they stay pinned to the values in the base :root above
    in every theme, so case-entry cards never flip to a light surface. */
 .dark {
-  --background: #09090b;
-  --foreground: #f8fafc;
-  --card: #18181b;
-  --card-foreground: #f8fafc;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --primary: #38bdf8;
-  --primary-foreground: #0f172a;
-  --secondary: #27272a;
-  --secondary-foreground: #f8fafc;
-  --accent: #27272a;
-  --accent-foreground: #f8fafc;
-  --border: #27272a;
-  --ring: #38bdf8;
+  --background: #0f1e33;
+  --foreground: #e8e4d9;
+  --card: #16233a;
+  --card-foreground: #e8e4d9;
+  --muted: #16233a;
+  --muted-foreground: #a9b2c0;
+  --primary: #d8a65c;
+  --primary-foreground: #091422;
+  --secondary: #16233a;
+  --secondary-foreground: #e8e4d9;
+  --accent: #16233a;
+  --accent-foreground: #e8e4d9;
+  --border: rgba(232, 228, 217, 0.14);
+  --ring: #d8a65c;
 
   --cf-bg: #0f1e33;
   --cf-bg-deep: #091422;
@@ -227,20 +232,20 @@ body {
 }
 
 .light {
-  --background: #f6f8fb;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --muted: #eef2f9;
-  --muted-foreground: #4b5563;
-  --primary: #0b4a6f;
-  --primary-foreground: #f8fafc;
-  --secondary: #dce8f3;
-  --secondary-foreground: #0f172a;
-  --accent: #e2eef8;
-  --accent-foreground: #0f172a;
-  --border: #d9e2ef;
-  --ring: #0b4a6f;
+  --background: #f7f3e8;
+  --foreground: #241c10;
+  --card: #efe8d8;
+  --card-foreground: #241c10;
+  --muted: #e4dbc5;
+  --muted-foreground: #6b6250;
+  --primary: #8c6530;
+  --primary-foreground: #f7f3e8;
+  --secondary: #e4dbc5;
+  --secondary-foreground: #241c10;
+  --accent: #e4dbc5;
+  --accent-foreground: #241c10;
+  --border: rgba(36, 28, 16, 0.12);
+  --ring: #8c6530;
 
   --cf-bg: #f7f3e8;
   --cf-bg-deep: #efe8d8;

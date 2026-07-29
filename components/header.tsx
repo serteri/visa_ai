@@ -45,7 +45,7 @@ function UserMenu({ locale }: { locale: string }) {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 transition-colors hover:border-indigo-300 hover:text-indigo-600 dark:border-white/10 dark:bg-transparent dark:text-slate-300"
+        className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-[var(--cf-line)] bg-transparent px-3 text-xs font-medium text-[var(--cf-muted)] transition-colors hover:border-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
       >
         <User className="h-3.5 w-3.5" />
         {portalLabel(session.user.role)}
@@ -54,13 +54,13 @@ function UserMenu({ locale }: { locale: string }) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-xl border border-slate-200/70 bg-white/95 py-1 shadow-xl backdrop-blur-lg dark:border-white/10 dark:bg-zinc-950/95"
+          className="absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-xl border border-[var(--cf-line)] bg-[var(--cf-cover-bg)]/95 py-1 shadow-xl backdrop-blur-lg"
         >
           <Link
             href={`/${locale}/dashboard`}
             role="menuitem"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+            className="flex items-center gap-2 px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
           >
             <LayoutDashboard className="h-4 w-4" />
             Dashboard
@@ -72,7 +72,7 @@ function UserMenu({ locale }: { locale: string }) {
               setOpen(false);
               signOut({ callbackUrl: `/${locale}` });
             }}
-            className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-slate-600 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-white/10"
+            className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-flag-rust-bg)] hover:text-[var(--cf-flag-rust-fg)]"
           >
             <LogOut className="h-4 w-4" />
             Sign out
@@ -127,10 +127,10 @@ export function Header({
 
   return (
     <header className="fixed inset-x-0 top-8 z-50">
-      <div className="relative mx-auto w-[95%] max-w-7xl rounded-2xl border border-gray-200/50 bg-white/70 px-8 py-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/70">
+      <div className="relative mx-auto w-[95%] max-w-7xl rounded-2xl border border-[var(--cf-line)] bg-[var(--cf-bg)]/80 px-8 py-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-md">
         <nav className="flex items-center justify-between">
-        <Link href={`/${locale}`} className="text-xl font-extrabold tracking-tight text-indigo-900 dark:text-white">
-          Logi<span className="text-violet-600">Visa</span>
+        <Link href={`/${locale}`} className="text-xl font-extrabold tracking-tight text-[var(--cf-fg)]">
+          Logi<span className="text-[var(--cf-accent)]">Visa</span>
         </Link>
 
         {/* Desktop Navigation - Hidden on lg and below */}
@@ -139,7 +139,7 @@ export function Header({
           <div className="group relative">
             <button
               type="button"
-              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
             >
               {visasLabel}
               <svg
@@ -152,16 +152,16 @@ export function Header({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[280px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[280px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href={`/${locale}/visas/australia`}
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               >
                 {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
               </Link>
               <Link
                 href={`/${locale}/visas/canada`}
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               >
                 {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
               </Link>
@@ -172,38 +172,38 @@ export function Header({
           <div className="group relative">
             <button
               type="button"
-              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
             >
               {toolsLabel}
-              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180 text-[var(--cf-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-white/40 bg-white/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/90">
-              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {pointsCalcLabel}
               </Link>
-              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {englishPointsLabel}
               </Link>
-              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {invRoundsLabel}
               </Link>
-              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {skillsAssessLabel}
               </Link>
-              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {occupationCodesLabel}
               </Link>
               {isTr && (
-                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-orange-100 text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-100 dark:hover:bg-orange-800">
+                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-[var(--cf-flag-brass-bg)] text-[var(--cf-flag-brass-fg)] transition-colors hover:opacity-80">
                   📥 Ücretsiz Rehber
                 </Link>
               )}
-              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
               </Link>
-              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
               </Link>
             </div>
@@ -213,19 +213,19 @@ export function Header({
           <div className="group relative">
             <button
               type="button"
-              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
             >
               {resourcesLabel}
-              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180 text-[var(--cf-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href={`/${locale}/resources/occupation-list`}
-                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               >
-                <BookOpen className="h-4 w-4 shrink-0 text-indigo-400" />
+                <BookOpen className="h-4 w-4 shrink-0 text-[var(--cf-accent)]" />
                 {occupationListLabel}
               </Link>
             </div>
@@ -233,21 +233,21 @@ export function Header({
 
           <Link
             href={`/${locale}/guides`}
-            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            className="whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
           >
             {guidesLabel}
           </Link>
 
           <Link
             href={`/${locale}/contact`}
-            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            className="whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
           >
             {contactLabel}
           </Link>
 
           <Link
             href={`/${locale}/ai-visa-match`}
-            className="whitespace-nowrap rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
+            className="whitespace-nowrap rounded-full bg-[var(--cf-accent)] px-4 py-2 text-sm font-semibold text-[var(--cf-bg-deep)] transition-all hover:opacity-90 hover:shadow-lg"
           >
             AI Visa Match ⚡
           </Link>
@@ -255,13 +255,13 @@ export function Header({
           {showAdmin ? (
             <Link
               href={`/${locale}/admin/dashboard`}
-              className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
             >
               {adminLabel}
             </Link>
           ) : null}
 
-          <div className="ml-2 flex items-center gap-2 border-l border-slate-200 pl-6 dark:border-white/10">
+          <div className="ml-2 flex items-center gap-2 border-l border-[var(--cf-line)] pl-6">
             <ThemeToggle />
             <LanguageSelector currentLocale={locale} compact />
 
@@ -269,7 +269,7 @@ export function Header({
               <>
                 <Button
                   asChild
-                  className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-4 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
+                  className="h-8 whitespace-nowrap rounded-full border-0 bg-[var(--cf-accent)] px-4 text-xs font-medium text-[var(--cf-bg-deep)] shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md"
                 >
                   <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
                 </Button>
@@ -286,7 +286,7 @@ export function Header({
           <div className="group relative">
             <button
               type="button"
-              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
             >
               {visasLabel}
               <svg
@@ -299,16 +299,16 @@ export function Header({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[280px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[280px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href={`/${locale}/visas/australia`}
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               >
                 {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
               </Link>
               <Link
                 href={`/${locale}/visas/canada`}
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               >
                 {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
               </Link>
@@ -319,38 +319,38 @@ export function Header({
           <div className="group relative">
             <button
               type="button"
-              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
             >
               {toolsLabel}
-              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180 text-[var(--cf-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-white/40 bg-white/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/90">
-              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/90 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {pointsCalcLabel}
               </Link>
-              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/english-points`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {englishPointsLabel}
               </Link>
-              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {invRoundsLabel}
               </Link>
-              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {skillsAssessLabel}
               </Link>
-              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {occupationCodesLabel}
               </Link>
               {isTr && (
-                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-orange-100 text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-100 dark:hover:bg-orange-800">
+                <Link href={`/${locale}/rehber`} className="block rounded-lg px-4 py-2.5 text-sm font-semibold bg-[var(--cf-flag-brass-bg)] text-[var(--cf-flag-brass-fg)] transition-colors hover:opacity-80">
                   📥 Ücretsiz Rehber
                 </Link>
               )}
-              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
               </Link>
-              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
+              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
               </Link>
             </div>
@@ -360,19 +360,19 @@ export function Header({
           <div className="group relative">
             <button
               type="button"
-              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+              className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
             >
               {resourcesLabel}
-              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180 text-[var(--cf-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-white/40 bg-white/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-black/95">
+            <div className="invisible absolute left-0 top-full z-50 mt-2 min-w-[220px] translate-y-2 rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href={`/${locale}/resources/occupation-list`}
-                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               >
-                <BookOpen className="h-4 w-4 shrink-0 text-indigo-400" />
+                <BookOpen className="h-4 w-4 shrink-0 text-[var(--cf-accent)]" />
                 {occupationListLabel}
               </Link>
             </div>
@@ -380,38 +380,38 @@ export function Header({
 
           <Link
             href={`/${locale}/guides`}
-            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            className="whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
           >
             {guidesLabel}
           </Link>
 
           <Link
             href={`/${locale}/contact`}
-            className="whitespace-nowrap text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-white"
+            className="whitespace-nowrap text-sm font-medium text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-accent)]"
           >
             {contactLabel}
           </Link>
 
           <Link
             href={`/${locale}/ai-visa-match`}
-            className="whitespace-nowrap rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-xs font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
+            className="whitespace-nowrap rounded-full bg-[var(--cf-accent)] px-3 py-1.5 text-xs font-semibold text-[var(--cf-bg-deep)] transition-all hover:opacity-90 hover:shadow-lg"
           >
             AI Visa Match ⚡
           </Link>
 
           <Button
             asChild
-            className="h-8 whitespace-nowrap rounded-full border-0 bg-gradient-to-r from-zinc-800 to-zinc-900 px-3 text-xs font-medium text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:from-zinc-100 dark:to-zinc-300 dark:text-zinc-900"
+            className="h-8 whitespace-nowrap rounded-full border-0 bg-[var(--cf-accent)] px-3 text-xs font-medium text-[var(--cf-bg-deep)] shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md"
           >
             <Link href={`/${locale}/full-check`}>{getReportLabel}</Link>
           </Button>
 
-          <div className="ml-2 flex items-center gap-2 border-l border-slate-200 pl-2 dark:border-white/10">
+          <div className="ml-2 flex items-center gap-2 border-l border-[var(--cf-line)] pl-2">
             <ThemeToggle />
             <LanguageSelector currentLocale={locale} compact />
             <button
               type="button"
-              className="text-slate-600 dark:text-slate-300"
+              className="text-[var(--cf-muted)]"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -425,7 +425,7 @@ export function Header({
           <LanguageSelector currentLocale={locale} />
           <button
             type="button"
-            className="text-slate-600 dark:text-slate-300"
+            className="text-[var(--cf-muted)]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
@@ -435,30 +435,30 @@ export function Header({
 
       {/* Mobile Navigation Panel */}
       {isMobileMenuOpen && (
-        <div className="absolute left-0 top-[calc(100%+0.5rem)] w-full rounded-3xl border border-white/20 bg-white/95 px-6 py-4 shadow-2xl backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/95 md:hidden">
+        <div className="absolute left-0 top-[calc(100%+0.5rem)] w-full rounded-3xl border border-[var(--cf-line)] bg-[var(--cf-bg)]/95 px-6 py-4 shadow-2xl backdrop-blur-xl md:hidden">
           <div className="flex flex-col space-y-4">
             <div className="space-y-1">
               <Link
                 href={`/${locale}/visas/australia`}
-                className="block rounded-lg px-2 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
+                className="block rounded-lg px-2 py-2 text-sm font-semibold text-[var(--cf-fg)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {isTr ? "Avustralya Vizeleri" : isZh ? "澳大利亚签证" : "Australia Visas"}
               </Link>
               <Link
                 href={`/${locale}/visas/canada`}
-                className="block rounded-lg px-2 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
+                className="block rounded-lg px-2 py-2 text-sm font-semibold text-[var(--cf-fg)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {isTr ? "Kanada Vizeleri" : isZh ? "加拿大签证" : "Canada Visas"}
               </Link>
             </div>
 
-            <div className="h-px w-full bg-slate-100 dark:bg-white/10" />
+            <div className="h-px w-full bg-[var(--cf-line)]" />
 
             <Link
               href={`/${locale}/ai-visa-match`}
-              className="block w-full rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-center text-sm font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
+              className="block w-full rounded-full bg-[var(--cf-accent)] px-4 py-2 text-center text-sm font-semibold text-[var(--cf-bg-deep)] transition-all hover:opacity-90 hover:shadow-lg"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               AI Visa Match ⚡
@@ -466,70 +466,70 @@ export function Header({
 
             <Link
               href={`/${locale}/checker`}
-              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {checkerLabel}
             </Link>
             <Link
               href={`/${locale}/assistant`}
-              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {assistantLabel}
             </Link>
             <div className="space-y-1">
-              <p className="px-2 text-xs font-semibold uppercase text-slate-400">{resourcesLabel}</p>
+              <p className="px-2 text-xs font-semibold uppercase text-[var(--cf-muted)]">{resourcesLabel}</p>
               <Link
                 href={`/${locale}/resources/occupation-list`}
-                className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <BookOpen className="h-4 w-4 text-indigo-400" />
+                <BookOpen className="h-4 w-4 text-[var(--cf-accent)]" />
                 {occupationListLabel}
               </Link>
             </div>
 
-            <div className="h-px w-full bg-slate-100 dark:bg-white/10" />
+            <div className="h-px w-full bg-[var(--cf-line)]" />
 
             <div className="space-y-1">
-              <p className="px-2 text-xs font-semibold uppercase text-slate-400">{toolsLabel}</p>
-              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+              <p className="px-2 text-xs font-semibold uppercase text-[var(--cf-muted)]">{toolsLabel}</p>
+              <Link href={`/${locale}/tools/points-calculator`} className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]" onClick={() => setIsMobileMenuOpen(false)}>
                 {pointsCalcLabel}
               </Link>
-              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href={`/${locale}/tools/invitation-rounds`} className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]" onClick={() => setIsMobileMenuOpen(false)}>
                 {invRoundsLabel}
               </Link>
-              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href={`/${locale}/tools/skills-assessment`} className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]" onClick={() => setIsMobileMenuOpen(false)}>
                 {skillsAssessLabel}
               </Link>
-              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href={`/${locale}/tools/anzsco-finder`} className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]" onClick={() => setIsMobileMenuOpen(false)}>
                 {occupationCodesLabel}
               </Link>
-              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href={`/${locale}/tools/document-checklist-2026`} className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]" onClick={() => setIsMobileMenuOpen(false)}>
                 {isTr ? "Belge Kontrol Listesi" : isZh ? "文件清单" : "Document Checklist"}
               </Link>
-              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href={`/${locale}/occupation-checker`} className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]" onClick={() => setIsMobileMenuOpen(false)}>
                 {isTr ? "Meslek Kontrol" : isZh ? "职业检查" : "Occupation Checker"}
               </Link>
             </div>
             <Link
               href={`/${locale}/guides`}
-              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {guidesLabel}
             </Link>
             <Link
               href={`/${locale}/contact`}
-              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {contactLabel}
             </Link>
             <Link
               href={`/${locale}/full-check`}
-              className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+              className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {fullReportLabel}
@@ -537,7 +537,7 @@ export function Header({
             {showAdmin ? (
               <Link
                 href={`/${locale}/admin/dashboard`}
-                className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                className="block rounded-lg px-2 py-2 text-sm font-medium text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {adminLabel}
@@ -549,7 +549,7 @@ export function Header({
                 <>
                   <Button
                     asChild
-                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
+                    className="w-full bg-[var(--cf-accent)] text-[var(--cf-bg-deep)] shadow-lg"
                   >
                     <Link href={`/${locale}/full-check`} onClick={() => setIsMobileMenuOpen(false)}>
                       {getReportLabel}
@@ -557,10 +557,10 @@ export function Header({
                   </Button>
                 </>
               ) : (
-                <div className="flex items-center justify-between rounded-xl border border-slate-100 px-3 py-2 dark:border-white/10">
+                <div className="flex items-center justify-between rounded-xl border border-[var(--cf-line)] px-3 py-2">
                   <Link
                     href={`/${locale}/dashboard`}
-                    className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-indigo-600"
+                    className="flex items-center gap-2 text-sm font-medium text-[var(--cf-fg)] hover:text-[var(--cf-accent)]"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <LayoutDashboard className="h-4 w-4" />
@@ -572,7 +572,7 @@ export function Header({
                       setIsMobileMenuOpen(false);
                       signOut({ callbackUrl: `/${locale}` });
                     }}
-                    className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-rose-500 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--cf-muted)] hover:text-[var(--cf-flag-rust-fg)] transition-colors"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                     Sign out

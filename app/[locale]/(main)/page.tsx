@@ -11,7 +11,7 @@ export default async function Home() {
   const displayedAssessmentSlots = calculateDisplayedSlots(maxFree, remainingSpots);
 
   return (
-    <main className="flex-1 bg-slate-50 pb-16 dark:bg-zinc-950">
+    <main className="flex-1 bg-[var(--cf-bg)] pb-16">
       <HomeContent
         initialFreeDownloadsLeft={freeRemaining}
         initialAssessmentSlotsLeft={displayedAssessmentSlots}
