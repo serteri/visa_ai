@@ -78,6 +78,11 @@ model UserReport {
   assignedViaRef        Boolean?  @default(false) @map("assigned_via_ref")
   transactions          Transaction[]
 
+  // agentId: FK filter for getAgentLeads/getUnassignedLeads (agentId: null),
+  // composite with pointsTier because getAllAgentMetrics groupBy's on both.
+  // createdAt: ORDER BY in admin/agent dashboard lead lists.
+  @@index([agentId, pointsTier])
+  @@index([createdAt])
   @@map("user_reports")
 }
 
@@ -112,6 +117,12 @@ model Transaction {
   lead  UserReport? @relation(fields: [leadId], references: [id], onDelete: SetNull)
   agent User?       @relation("AgentTransactions", fields: [agentId], references: [id], onDelete: SetNull)
 
+  // All three back dashboard WHERE clauses: agentId (getAgentTransactions,
+  // getAgentCommissionTotal aggregate), leadId (lead-detail transaction
+  // lookups), buyerEmail (non-agent sales with no leadId to key off).
+  @@index([agentId])
+  @@index([leadId])
+  @@index([buyerEmail])
   @@map("transactions")
 }
 
@@ -161,6 +172,10 @@ model User {
   assignedLeads     UserReport[]       @relation("AgentAssignedLeads")
   transactions      Transaction[]      @relation("AgentTransactions")
 
+  // role: only 3 values, but getAgents()/getAgentUser() filter on it directly
+  // (not alongside a more selective column) on every agent-portal/admin page
+  // load, so it earns an exception to the low-cardinality rule.
+  @@index([role])
   @@map("users")
 }
 
