@@ -99,19 +99,20 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
     matches.find((o) => o.code === selectedCode) ?? matches[0] ?? null;
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-slate-200 bg-slate-950">
-        <div className="absolute inset-x-0 top-0 h-1 bg-cyan-500" />
+    <main className="min-h-screen bg-[var(--cf-bg)]">
+      {/* Hero -- always-navy band (--cf-case-bg never flips with the page
+          theme), matching the case-log entry cards' convention. */}
+      <section className="relative overflow-hidden border-b border-[var(--cf-line)] bg-[var(--cf-case-bg)]">
+        <div className="absolute inset-x-0 top-0 h-1 bg-[var(--cf-accent)]" />
         <div className="mx-auto flex min-h-[380px] max-w-6xl flex-col justify-center px-4 pb-20 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <div className="mb-6 inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
+            <div className="mb-6 inline-flex rounded-sm border border-[var(--cf-flag-brass-bg)] bg-[var(--cf-flag-brass-bg)] px-4 py-2 text-sm font-semibold text-[var(--cf-flag-brass-fg)]">
               {t("af.badge")}
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+            <h1 className="cf-serif text-4xl font-medium tracking-tight text-[var(--cf-case-fg)] sm:text-6xl">
               {t("af.title")}
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--cf-case-muted)] sm:text-xl">
               {t("af.description")}
             </p>
           </div>
@@ -121,14 +122,14 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
       {/* Search tool */}
       <div className="-mt-12">
         <section className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.45)] sm:p-6">
+          <div className="rounded-sm border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)] p-4 shadow-[0_24px_70px_-45px_var(--cf-shadow)] sm:p-6">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-cyan-700" />
+              <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--cf-accent)]" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("af.searchPlaceholder")}
-                className="h-16 rounded-xl border-slate-300 bg-slate-50 pl-14 pr-5 text-lg shadow-inner focus-visible:border-cyan-700 focus-visible:ring-cyan-700/15"
+                className="h-16 rounded-sm border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] pl-14 pr-5 text-lg shadow-inner focus-visible:border-[var(--cf-accent)] focus-visible:ring-[var(--cf-accent-dim)]"
                 aria-label={t("af.searchPlaceholder")}
               />
             </div>
@@ -143,7 +144,7 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                   e.stopPropagation();
                   setPdfModalOpen(true);
                 }}
-                className="group inline-flex items-center gap-2 rounded-xl border border-cyan-700 bg-cyan-700 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-900/15 transition-all hover:bg-cyan-800 hover:shadow-cyan-900/25"
+                className="group inline-flex items-center gap-2 rounded-sm border border-[var(--cf-accent)] bg-[var(--cf-accent)] px-5 py-3 text-sm font-semibold text-[var(--cf-bg-deep)] shadow-lg transition-all hover:opacity-90"
               >
                 <Download className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
                 {t("af.downloadOfficialPdf")}
@@ -154,12 +155,12 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
               {/* Left: results list */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">
+                  <p className="text-sm font-bold uppercase tracking-wide text-[var(--cf-cover-muted)]">
                     {hasSearch
                       ? `${matches.length} ${t("af.matchingCount")}`
                       : t("af.popular")}
                   </p>
-                  <p className="text-xs font-semibold text-slate-400">
+                  <p className="text-xs font-semibold text-[var(--cf-cover-muted)]">
                     {OCCUPATIONS.length} {t("af.indexedCount")}
                   </p>
                 </div>
@@ -172,21 +173,21 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                         key={occ.code}
                         type="button"
                         onClick={() => setSelectedCode(occ.code)}
-                        className={`w-full rounded-xl border p-4 text-left transition-all ${
+                        className={`w-full rounded-sm border p-4 text-left transition-all ${
                           isSelected
-                            ? "border-cyan-700 bg-cyan-50 shadow-md"
-                            : "border-slate-200 bg-white hover:border-cyan-300 hover:bg-slate-50"
+                            ? "border-[var(--cf-accent)] bg-[var(--cf-accent-dim)] shadow-md"
+                            : "border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)] hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-cover-bg-dim)]"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-4">
                           <div>
-                            <p className="text-sm font-semibold text-cyan-800">{occ.code}</p>
-                            <p className="mt-1 text-base font-bold text-slate-950">
+                            <p className="text-sm font-semibold text-[var(--cf-accent)]">{occ.code}</p>
+                            <p className="mt-1 text-base font-bold text-[var(--cf-cover-fg)]">
                               {getLocalizedTitle(occ, locale)}
                             </p>
                           </div>
                           {occ.skillLevel ? (
-                            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 whitespace-nowrap">
+                            <span className="rounded-full border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)] px-3 py-1 text-xs font-semibold text-[var(--cf-cover-muted)] whitespace-nowrap">
                               Skill Level {occ.skillLevel}
                             </span>
                           ) : null}
@@ -195,29 +196,29 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                     );
                   })
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-cyan-200 bg-gradient-to-br from-slate-50 to-cyan-50 p-6 shadow-inner">
-                    <p className="text-base font-bold text-slate-950">{t("af.noResults.title")}</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{t("af.noResults.subtitle")}</p>
+                  <div className="rounded-sm border border-dashed border-[var(--cf-accent-dim)] bg-[var(--cf-cover-bg-dim)] p-6 shadow-inner">
+                    <p className="text-base font-bold text-[var(--cf-cover-fg)]">{t("af.noResults.title")}</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--cf-cover-muted)]">{t("af.noResults.subtitle")}</p>
                   </div>
                 )}
               </div>
 
               {/* Right: occupation detail */}
               {selectedOccupation ? (
-                <Card className="overflow-hidden rounded-2xl border-slate-200 bg-white shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)]">
+                <Card className="overflow-hidden rounded-sm border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)] shadow-[0_24px_70px_-45px_var(--cf-shadow)]">
                   <CardContent className="p-0">
-                    <div className="border-b border-slate-200 bg-slate-950 p-6 text-white">
+                    <div className="border-b border-[var(--cf-line)] bg-[var(--cf-case-bg)] p-6 text-[var(--cf-case-fg)]">
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div>
-                          <p className="text-sm font-semibold uppercase tracking-wide text-cyan-200">
+                          <p className="text-sm font-semibold uppercase tracking-wide text-[var(--cf-flag-brass-fg)]">
                             ANZSCO {selectedOccupation.code}
                           </p>
-                          <h2 className="mt-2 text-2xl font-bold tracking-tight">
+                          <h2 className="cf-serif mt-2 text-2xl font-medium tracking-tight">
                             {getLocalizedTitle(selectedOccupation, locale)}
                           </h2>
                         </div>
                         {selectedOccupation.skillLevel ? (
-                          <div className="rounded-full border border-cyan-200/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100 whitespace-nowrap">
+                          <div className="rounded-full border border-[var(--cf-flag-brass-bg)] bg-[var(--cf-flag-brass-bg)] px-4 py-2 text-sm font-semibold text-[var(--cf-flag-brass-fg)] whitespace-nowrap">
                             Skill Level {selectedOccupation.skillLevel}
                           </div>
                         ) : null}
@@ -226,21 +227,21 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
 
                     <div className="p-6">
                       <div className="grid gap-4 sm:grid-cols-2">
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
-                            <BriefcaseBusiness className="h-4 w-4 text-cyan-700" />
+                        <div className="rounded-sm border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] p-4">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-[var(--cf-cover-muted)]">
+                            <BriefcaseBusiness className="h-4 w-4 text-[var(--cf-accent)]" />
                             {t("af.detail.code")}
                           </div>
-                          <p className="mt-2 text-3xl font-bold text-slate-950">
+                          <p className="mt-2 text-3xl font-bold text-[var(--cf-cover-fg)]">
                             {selectedOccupation.code}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
-                            <BadgeCheck className="h-4 w-4 text-cyan-700" />
+                        <div className="rounded-sm border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] p-4">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-[var(--cf-cover-muted)]">
+                            <BadgeCheck className="h-4 w-4 text-[var(--cf-accent)]" />
                             {t("af.detail.skillLevel")}
                           </div>
-                          <p className="mt-2 text-3xl font-bold text-slate-950">
+                          <p className="mt-2 text-3xl font-bold text-[var(--cf-cover-fg)]">
                             {selectedOccupation.skillLevel
                               ? `Skill Level ${selectedOccupation.skillLevel}`
                               : "—"}
@@ -249,26 +250,26 @@ export function AnzscoSearchTool({ locale }: { locale: string }) {
                       </div>
 
                       <div className="mt-6">
-                        <h3 className="text-lg font-bold text-slate-950">{t("af.detail.tasks")}</h3>
+                        <h3 className="cf-serif text-lg font-medium text-[var(--cf-cover-fg)]">{t("af.detail.tasks")}</h3>
                         <ul className="mt-4 space-y-3">
                           {getLocalizedDuties(selectedOccupation, locale).map((duty) => (
-                            <li key={duty} className="flex gap-3 text-sm leading-6 text-slate-700">
-                              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-700" />
+                            <li key={duty} className="flex gap-3 text-sm leading-6 text-[var(--cf-cover-muted)]">
+                              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--cf-accent)]" />
                               <span>{duty}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
 
-                      <div className="mt-8 rounded-2xl border border-cyan-200 bg-gradient-to-br from-cyan-50 via-white to-slate-50 p-6 shadow-inner">
-                        <p className="text-xl font-bold leading-8 text-slate-950">
+                      <div className="mt-8 rounded-sm border border-[var(--cf-accent-dim)] bg-[var(--cf-cover-bg-dim)] p-6 shadow-inner">
+                        <p className="text-xl font-bold leading-8 text-[var(--cf-cover-fg)]">
                           {t("af.cta.text")}{" "}
                           {getLocalizedTitle(selectedOccupation, locale)}.
                         </p>
                         <Button
                           asChild
                           size="lg"
-                          className="mt-5 h-12 rounded-xl bg-cyan-700 px-6 text-base text-white shadow-lg shadow-cyan-900/15 hover:bg-cyan-800"
+                          className="mt-5 h-12 rounded-sm bg-[var(--cf-accent)] px-6 text-base text-[var(--cf-bg-deep)] shadow-lg hover:opacity-90"
                         >
                           <Link href={`/${locale}/full-check?occupation=${selectedOccupation.code}`}>
                             {t("af.cta.button")}
