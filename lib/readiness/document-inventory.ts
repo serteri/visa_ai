@@ -12,11 +12,23 @@ import type { Locale } from "./types";
  * PDF already listed them. Adding a new document requirement now only
  * needs to happen here once.
  *
- * Scope note: only the 5 subclasses the interactive tool currently
- * supports (189/190/491/482/485) are modeled here. 186 has no entry
- * anywhere in the app yet (tracked separately). 500/820/801 have entries
- * in document-checklists.ts's PDF-only literal strings but are not yet
- * part of this canonical inventory or the interactive tool.
+ * Scope note: 189/190/491/482/485 are modeled here. 500/820/801 have
+ * entries in document-checklists.ts's PDF-only literal strings but are not
+ * yet part of this canonical inventory or the interactive tool (tracked
+ * separately as a follow-up).
+ *
+ * 189 sourcing note: the partner/dependant/character items (relationship
+ * status evidence, partner documents, dependant under/over-18 documents,
+ * overseas police certificates, Form 80/1221, military records) were added
+ * from the official DHA "Skilled Independent visa (subclass 189) --
+ * Points-tested stream" document guide, pasted in full by the user.
+ * `relevantWhen` on these items drives the interactive tool's
+ * partner/dependants/overseas-residence questionnaire, which dims (never
+ * hides) items that don't apply based on the user's answers. TODO:
+ * full-check's ReadinessInput could feed this questionnaire automatically
+ * if it ever gains structured partner/dependant/residence-history fields --
+ * out of scope for now, see visa-checklist-questionnaire in
+ * DocumentChecklist2026Localized.tsx.
  */
 
 export type DocInventorySubclass = "189" | "190" | "491" | "482" | "485";
@@ -37,6 +49,16 @@ export type CanonicalDocItem = {
   tips: Record<Locale, string>;
   apostilleRequired: boolean;
   naatiRequired: boolean;
+  /** Optional conditional-relevance flags consumed by the interactive
+   *  tool's questionnaire (partner/dependants/overseas-residence) to dim
+   *  items that don't apply to the user's situation instead of hiding
+   *  them. Omit for items that are always relevant regardless of answers. */
+  relevantWhen?: {
+    partner?: boolean;
+    dependantsUnder18?: boolean;
+    dependantsOver18?: boolean;
+    overseasResidence?: boolean;
+  };
 };
 
 export const DOCUMENT_INVENTORY: Record<DocInventorySubclass, CanonicalDocItem[]> = {
@@ -164,20 +186,199 @@ export const DOCUMENT_INVENTORY: Record<DocInventorySubclass, CanonicalDocItem[]
     {
       id: "police_check",
       category: "Health",
-      name: { en: "Police clearances", tr: "Adli sicil kayıtları", "zh-Hans": "无犯罪记录证明" },
+      name: { en: "Australian Federal Police (AFP) national certificate", tr: "Avustralya Federal Polisi (AFP) ulusal sertifikası", "zh-Hans": "澳大利亚联邦警察（AFP）全国证明" },
       description: {
-        en: "Country clearances for all required jurisdictions",
-        tr: "Gerekli tüm ülkelerden alınmış kayıtlar",
-        "zh-Hans": "所有必需司法辖区的证明",
+        en: "AFP national police certificate covering full disclosure of your criminal history, valid for 12 months from issue",
+        tr: "Sabıka geçmişinizin tam açıklamasını içeren, verildiği tarihten itibaren 12 ay geçerli AFP ulusal adli sicil sertifikası",
+        "zh-Hans": "涵盖完整犯罪记录披露的AFP全国无犯罪证明，自签发起12个月内有效",
       },
       required: true,
       expiryTracking: true,
       expiryMonths: 12,
       warningMonths: 3,
       tips: {
-        en: "Order these after invitation so they remain valid at lodgement.",
-        tr: "Lodgement sırasında geçerli kalması için davetten sonra alın.",
-        "zh-Hans": "最好在收到邀请后再办理，以确保递交时有效。",
+        en: "Only the AFP national certificate is accepted for Australia -- a state/territory police check is not sufficient. Order it after invitation so it stays valid at lodgement.",
+        tr: "Avustralya için yalnızca AFP ulusal sertifikası kabul edilir — eyalet/bölge polis kaydı yeterli değildir. Lodgement sırasında geçerli kalması için davetten sonra sipariş edin.",
+        "zh-Hans": "在澳大利亚境内只接受AFP全国证明——州/领地警方证明不被接受。请在收到邀请后再申请，以确保递交时仍然有效。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "overseas_police_certificates",
+      category: "Health",
+      name: { en: "Overseas police certificates", tr: "Yurt dışı adli sicil sertifikaları", "zh-Hans": "海外无犯罪记录证明" },
+      description: {
+        en: "A police certificate from every country you lived in for a total of 12 months or more (in one or more visits) in the last 10 years, since turning 16",
+        tr: "16 yaşından bu yana, son 10 yıl içinde toplam 12 ay veya daha fazla (bir veya birden çok ziyarette) yaşadığınız her ülkeden adli sicil sertifikası",
+        "zh-Hans": "自16岁以来，过去10年内您在任何国家累计居住满12个月或以上（一次或多次累加），均需提供该国的无犯罪记录证明",
+      },
+      required: false,
+      expiryTracking: true,
+      expiryMonths: 12,
+      warningMonths: 3,
+      relevantWhen: { overseasResidence: true },
+      tips: {
+        en: "The 12-month threshold can be made up of separate stays that add up, not just one continuous period -- check each country's issuing process early as some take months.",
+        tr: "12 aylık eşik tek bir sürekli dönem olmak zorunda değildir, ayrı ayrı sürelerin toplamı olabilir — bazı ülkelerin süreci aylar sürebileceğinden erken başlayın.",
+        "zh-Hans": "12个月的门槛可以由多次分开的居住时间累加而成，不一定是连续一段——部分国家办理需数月，请尽早申请。",
+      },
+      apostilleRequired: false,
+      naatiRequired: true,
+    },
+    {
+      id: "character_forms",
+      category: "Health",
+      name: { en: "Form 80 and Form 1221", tr: "Form 80 ve Form 1221", "zh-Hans": "Form 80 及 Form 1221" },
+      description: {
+        en: "Personal particulars for character assessment (Form 80) and additional personal particulars for travel/residence history (Form 1221), if requested by the department",
+        tr: "Karakter değerlendirmesi için kişisel bilgiler (Form 80) ve seyahat/ikamet geçmişi için ek kişisel bilgiler (Form 1221) -- bakanlık talep ederse",
+        "zh-Hans": "用于品格评估的个人信息表（Form 80）以及旅行/居住历史的补充个人信息表（Form 1221）——如内政部要求提供",
+      },
+      required: true,
+      expiryTracking: false,
+      tips: {
+        en: "These forms ask for a full 10-year travel and address history -- start compiling dates and addresses early, they are commonly requested.",
+        tr: "Bu formlar 10 yıllık tam seyahat ve adres geçmişi ister — tarih ve adresleri erkenden toplamaya başlayın, sıkça talep edilirler.",
+        "zh-Hans": "这些表格要求提供完整10年的旅行和住址记录——请尽早整理日期与地址，这类表格经常被要求提交。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "military_records",
+      category: "Health",
+      name: { en: "Military service records", tr: "Askerlik hizmet kayıtları", "zh-Hans": "兵役记录" },
+      description: {
+        en: "Discharge papers or service record if you have served in any country's armed forces",
+        tr: "Herhangi bir ülkenin silahlı kuvvetlerinde hizmet ettiyseniz terhis belgesi veya hizmet kaydı",
+        "zh-Hans": "如曾在任何国家的军队服役，需提供退伍文件或服役记录",
+      },
+      required: false,
+      expiryTracking: false,
+      tips: {
+        en: "Only applicable if you have military service history -- not needed otherwise.",
+        tr: "Sadece askerlik geçmişiniz varsa geçerlidir — aksi halde gerekmez.",
+        "zh-Hans": "仅适用于有服役经历者——否则无需提供。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "relationship_status_evidence",
+      category: "Identity",
+      name: { en: "Relationship status evidence", tr: "Medeni durum kanıtı", "zh-Hans": "婚姻/关系状态证明" },
+      description: {
+        en: "Marriage, divorce, death or separation certificates if you are, or have been, married or in a de facto relationship",
+        tr: "Evli veya evli olmuş ya da de facto ilişki içindeyseniz evlilik, boşanma, ölüm veya ayrılık belgeleri",
+        "zh-Hans": "如您已婚、曾结婚或处于事实伴侣关系，需提供结婚、离婚、死亡或分居证明",
+      },
+      required: true,
+      expiryTracking: false,
+      tips: {
+        en: "This covers your own marital history and is separate from whether a partner is included in this application.",
+        tr: "Bu, kendi medeni durum geçmişinizi kapsar ve bu başvuruya bir partnerin dahil olup olmamasından ayrıdır.",
+        "zh-Hans": "这涉及您自身的婚姻历史，与本次申请是否包含伴侣无关。",
+      },
+      apostilleRequired: true,
+      naatiRequired: true,
+    },
+    {
+      id: "partner_documents",
+      category: "Identity",
+      name: { en: "Partner identity, character & relationship evidence", tr: "Partner kimlik, karakter ve ilişki kanıtı", "zh-Hans": "伴侣身份、品格及关系证明" },
+      description: {
+        en: "Partner's passport, police certificates, and evidence of a genuine relationship (joint bank accounts, lease, correspondence) if your partner is included in the application",
+        tr: "Partneriniz başvuruya dahilse partnerinizin pasaportu, adli sicil kayıtları ve gerçek bir ilişkiyi gösteren kanıtlar (ortak banka hesabı, kira sözleşmesi, yazışmalar)",
+        "zh-Hans": "如伴侣包含在申请中，需提供伴侣护照、无犯罪记录证明及真实关系证据（联名银行账户、租约、往来通信等）",
+      },
+      required: false,
+      expiryTracking: false,
+      relevantWhen: { partner: true },
+      tips: {
+        en: "Not applicable if you are applying without a partner, or your partner is not being included in this application.",
+        tr: "Partnersiz başvuruyorsanız veya partneriniz bu başvuruya dahil değilse gerekmez.",
+        "zh-Hans": "如您单独申请或伴侣未包含在本次申请中，则无需提供。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "partner_english_evidence",
+      category: "English",
+      name: { en: "Partner functional English evidence", tr: "Partner fonksiyonel İngilizce kanıtı", "zh-Hans": "伴侣功能性英语证明" },
+      description: {
+        en: "Evidence of your partner's functional English, or exemption evidence if they are a passport holder of UK, US, Canada, NZ or Ireland",
+        tr: "Partnerinizin fonksiyonel İngilizcesine dair kanıt, ya da İngiltere, ABD, Kanada, Yeni Zelanda veya İrlanda pasaportu sahibiyse muafiyet kanıtı",
+        "zh-Hans": "伴侣功能性英语能力的证明，若持有英国、美国、加拿大、新西兰或爱尔兰护照则提供豁免证明",
+      },
+      required: false,
+      expiryTracking: false,
+      relevantWhen: { partner: true },
+      tips: {
+        en: "Not applicable if you are applying without a partner, or your partner is not being included in this application.",
+        tr: "Partnersiz başvuruyorsanız veya partneriniz bu başvuruya dahil değilse gerekmez.",
+        "zh-Hans": "如您单独申请或伴侣未包含在本次申请中，则无需提供。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "dependant_under18_documents",
+      category: "Identity",
+      name: { en: "Dependent child documents (under 18)", tr: "Bağımlı çocuk belgeleri (18 yaş altı)", "zh-Hans": "受抚养子女文件（18岁以下）" },
+      description: {
+        en: "Birth certificate or family/household register, adoption papers if applicable, for each dependent child under 18 included in the application",
+        tr: "Başvuruya dahil edilen 18 yaş altındaki her bağımlı çocuk için doğum belgesi veya aile/hane kayıt defteri, varsa evlat edinme belgeleri",
+        "zh-Hans": "为申请中包含的每位18岁以下受抚养子女提供出生证明或户口簿，如适用还需提供领养文件",
+      },
+      required: false,
+      expiryTracking: false,
+      relevantWhen: { dependantsUnder18: true },
+      tips: {
+        en: "Not applicable if you have no dependent children under 18 included in this application.",
+        tr: "Bu başvuruya dahil 18 yaş altı bağımlı çocuğunuz yoksa gerekmez.",
+        "zh-Hans": "如本次申请不包含18岁以下受抚养子女，则无需提供。",
+      },
+      apostilleRequired: true,
+      naatiRequired: true,
+    },
+    {
+      id: "dependant_under18_consent",
+      category: "Identity",
+      name: { en: "Parental consent for dependent children (under 18)", tr: "18 yaş altı bağımlı çocuklar için veli izni", "zh-Hans": "18岁以下受抚养子女的监护人同意书" },
+      description: {
+        en: "Form 1229 or a statutory declaration/court order showing consent from anyone else with parental responsibility, for each dependent child under 18",
+        tr: "18 yaş altındaki her bağımlı çocuk için Form 1229 veya velayet hakkı olan diğer kişilerden izni gösteren yeminli beyan/mahkeme kararı",
+        "zh-Hans": "为每位18岁以下受抚养子女提供Form 1229，或显示其他监护人同意的法定声明/法院令" ,
+      },
+      required: false,
+      expiryTracking: false,
+      relevantWhen: { dependantsUnder18: true },
+      tips: {
+        en: "Not applicable if you have no dependent children under 18 included in this application.",
+        tr: "Bu başvuruya dahil 18 yaş altı bağımlı çocuğunuz yoksa gerekmez.",
+        "zh-Hans": "如本次申请不包含18岁以下受抚养子女，则无需提供。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
+      id: "dependant_over18_documents",
+      category: "Identity",
+      name: { en: "Dependent child documents (18 or over)", tr: "Bağımlı çocuk belgeleri (18 yaş ve üstü)", "zh-Hans": "受抚养子女文件（18岁及以上）" },
+      description: {
+        en: "Form 47A and evidence of financial and other dependency (and a medical report if the dependant is 23 or over), for each dependent child aged 18+ included in the application",
+        tr: "Başvuruya dahil 18 yaş ve üstü her bağımlı çocuk için Form 47A ve mali/diğer bağımlılık kanıtı (bağımlı 23 yaş veya üstündeyse tıbbi rapor)",
+        "zh-Hans": "为申请中包含的每位18岁及以上受抚养子女提供Form 47A及经济等方面的抚养关系证明（若受抚养人23岁及以上还需提供体检报告）",
+      },
+      required: false,
+      expiryTracking: false,
+      relevantWhen: { dependantsOver18: true },
+      tips: {
+        en: "Not applicable if you have no dependent children aged 18 or over included in this application.",
+        tr: "Bu başvuruya dahil 18 yaş veya üstü bağımlı çocuğunuz yoksa gerekmez.",
+        "zh-Hans": "如本次申请不包含18岁及以上受抚养子女，则无需提供。",
       },
       apostilleRequired: false,
       naatiRequired: false,

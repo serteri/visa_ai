@@ -15,6 +15,12 @@ export type ChecklistDoc = {
   tips: string;
   apostilleRequired: boolean;
   naatiRequired: boolean;
+  relevantWhen?: {
+    partner?: boolean;
+    dependantsUnder18?: boolean;
+    dependantsOver18?: boolean;
+    overseasResidence?: boolean;
+  };
 };
 
 export type ChecklistLocalePack = {
@@ -184,6 +190,7 @@ const docs: Record<ChecklistLocale, Record<VisaSubclass, ChecklistLocalePack["do
         tips: item.tips[locale],
         apostilleRequired: item.apostilleRequired,
         naatiRequired: item.naatiRequired,
+        relevantWhen: item.relevantWhen,
       }));
     }
   }
