@@ -75,6 +75,104 @@ function loadChecklistState(selectedVisa: VisaSubclass | null): ChecklistState {
   }
 }
 
+// Shared across every subclass (not per-visa, unlike loadChecklistState above)
+// since partner/dependant/residence facts don't change when switching which
+// visa's checklist you're viewing.
+const QUESTIONNAIRE_KEY = 'visa-checklist-questionnaire'
+
+type QuestionnaireState = {
+  partner: boolean
+  dependantsUnder18: number
+  dependantsOver18: number
+  overseasResidence: boolean
+}
+
+const EMPTY_QUESTIONNAIRE: QuestionnaireState = {
+  partner: false,
+  dependantsUnder18: 0,
+  dependantsOver18: 0,
+  overseasResidence: false,
+}
+
+function loadQuestionnaire(): QuestionnaireState {
+  if (typeof window === 'undefined') return EMPTY_QUESTIONNAIRE
+  try {
+    const saved = localStorage.getItem(QUESTIONNAIRE_KEY)
+    return saved ? { ...EMPTY_QUESTIONNAIRE, ...(JSON.parse(saved) as Partial<QuestionnaireState>) } : EMPTY_QUESTIONNAIRE
+  } catch {
+    return EMPTY_QUESTIONNAIRE
+  }
+}
+
+// Returns a locale-appropriate "not relevant" note if the document doesn't
+// apply given the questionnaire answers, or null if it's relevant (or the
+// document has no relevantWhen condition at all). Items are never hidden --
+// only dimmed with this note -- so the user can always change an earlier
+// answer and see the item reappear at full opacity.
+function getIrrelevanceNote(doc: ChecklistDoc, q: QuestionnaireState, locale: ChecklistLocale): string | null {
+  const rw = doc.relevantWhen
+  if (!rw) return null
+  if (rw.partner && !q.partner) {
+    return locale === 'tr' ? 'İlgili değil: partneriniz yok' : locale === 'zh-Hans' ? '不适用：您没有伴侣' : 'Not relevant: no partner'
+  }
+  if (rw.dependantsUnder18 && q.dependantsUnder18 === 0) {
+    return locale === 'tr' ? 'İlgili değil: 18 yaş altı bağımlınız yok' : locale === 'zh-Hans' ? '不适用：没有18岁以下受抚养子女' : 'Not relevant: no dependent children under 18'
+  }
+  if (rw.dependantsOver18 && q.dependantsOver18 === 0) {
+    return locale === 'tr' ? 'İlgili değil: 18 yaş üstü bağımlınız yok' : locale === 'zh-Hans' ? '不适用：没有18岁及以上受抚养子女' : 'Not relevant: no dependent children 18 or over'
+  }
+  if (rw.overseasResidence && !q.overseasResidence) {
+    return locale === 'tr' ? 'İlgili değil: son 10 yılda yurt dışında 12+ ay yaşamadınız' : locale === 'zh-Hans' ? '不适用：过去10年内海外居住未满12个月' : 'Not relevant: no 12+ month overseas residence in the last 10 years'
+  }
+  return null
+}
+
+const questionnaireText: Record<ChecklistLocale, {
+  title: string
+  subtitle: string
+  partnerQ: string
+  dependantsQ: string
+  under18Label: string
+  over18Label: string
+  overseasQ: string
+  yes: string
+  no: string
+}> = {
+  en: {
+    title: 'A few quick questions',
+    subtitle: 'These help us dim documents that don’t apply to you. You can change your answers anytime.',
+    partnerQ: 'Do you have a partner, and are they included in this application?',
+    dependantsQ: 'Do you have dependent children? If so, how many?',
+    under18Label: 'Under 18',
+    over18Label: '18 or over',
+    overseasQ: 'In the last 10 years, have you lived outside Australia for 12+ months in any single country?',
+    yes: 'Yes',
+    no: 'No',
+  },
+  tr: {
+    title: 'Birkaç kısa soru',
+    subtitle: 'Bu cevaplar size uymayan belgeleri soluklaştırmamıza yardımcı olur. Cevaplarınızı istediğiniz zaman değiştirebilirsiniz.',
+    partnerQ: 'Partneriniz var mı ve başvuruya dahil mi?',
+    dependantsQ: '18 yaş altı/üstü bağımlı çocuğunuz var mı? Varsa kaç?',
+    under18Label: '18 yaş altı',
+    over18Label: '18 yaş ve üstü',
+    overseasQ: 'Son 10 yılda Avustralya dışında herhangi bir ülkede 12+ ay yaşadığınız oldu mu?',
+    yes: 'Evet',
+    no: 'Hayır',
+  },
+  'zh-Hans': {
+    title: '几个简短问题',
+    subtitle: '这些答案能帮助我们淡化不适用于您的材料。您可以随时修改答案。',
+    partnerQ: '您有伴侣吗？伴侣是否包含在本次申请中？',
+    dependantsQ: '您有受抚养子女吗？如果有，有几位？',
+    under18Label: '18岁以下',
+    over18Label: '18岁及以上',
+    overseasQ: '过去10年内，您是否在澳大利亚以外的某个国家居住满12个月及以上？',
+    yes: '是',
+    no: '否',
+  },
+}
+
 function ChecklistCard({
   doc,
   state,
@@ -215,11 +313,18 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
   const [docStates, setDocStates] = useState<ChecklistState>(() => loadChecklistState(isVisaSubclass(initialVisa) ? initialVisa : null))
   const [expandedTips, setExpandedTips] = useState<Set<string>>(new Set())
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
+  const [questionnaire, setQuestionnaire] = useState<QuestionnaireState>(() => loadQuestionnaire())
 
   useEffect(() => {
     if (!selectedVisa) return
     localStorage.setItem(`visa-checklist-${selectedVisa}`, JSON.stringify(docStates))
   }, [docStates, selectedVisa])
+
+  useEffect(() => {
+    localStorage.setItem(QUESTIONNAIRE_KEY, JSON.stringify(questionnaire))
+  }, [questionnaire])
+
+  const qt = questionnaireText[locale] ?? questionnaireText.en
 
   const currentDocs = useMemo(() => (selectedVisa ? (pack.docs[selectedVisa] ?? []) : []), [pack.docs, selectedVisa])
 
@@ -358,6 +463,81 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
           </div>
         )}
 
+        <div className="rounded-lg border border-[var(--cf-accent-dim)] bg-[var(--cf-accent-dim)] p-4 print:hidden">
+          <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--cf-fg)]">
+            <Info className="h-4 w-4 shrink-0" /> {qt.title}
+          </h3>
+          <p className="mb-3 text-xs text-[var(--cf-cover-muted)]">{qt.subtitle}</p>
+
+          <div className="space-y-3">
+            <div>
+              <p className="mb-1.5 text-sm text-[var(--cf-fg)]">{qt.partnerQ}</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setQuestionnaire((prev) => ({ ...prev, partner: true }))}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.partner ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-[var(--cf-cover-line)] text-[var(--cf-fg)]'}`}
+                >
+                  {qt.yes}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuestionnaire((prev) => ({ ...prev, partner: false }))}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.partner ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-[var(--cf-cover-line)] text-[var(--cf-fg)]'}`}
+                >
+                  {qt.no}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-1.5 text-sm text-[var(--cf-fg)]">{qt.dependantsQ}</p>
+              <div className="flex flex-wrap gap-4">
+                <label className="flex items-center gap-2 text-xs text-[var(--cf-cover-muted)]">
+                  {qt.under18Label}
+                  <input
+                    type="number"
+                    min={0}
+                    value={questionnaire.dependantsUnder18}
+                    onChange={(e) => setQuestionnaire((prev) => ({ ...prev, dependantsUnder18: Math.max(0, Number(e.target.value) || 0) }))}
+                    className="w-16 rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                  />
+                </label>
+                <label className="flex items-center gap-2 text-xs text-[var(--cf-cover-muted)]">
+                  {qt.over18Label}
+                  <input
+                    type="number"
+                    min={0}
+                    value={questionnaire.dependantsOver18}
+                    onChange={(e) => setQuestionnaire((prev) => ({ ...prev, dependantsOver18: Math.max(0, Number(e.target.value) || 0) }))}
+                    className="w-16 rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-1.5 text-sm text-[var(--cf-fg)]">{qt.overseasQ}</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setQuestionnaire((prev) => ({ ...prev, overseasResidence: true }))}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.overseasResidence ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-[var(--cf-cover-line)] text-[var(--cf-fg)]'}`}
+                >
+                  {qt.yes}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuestionnaire((prev) => ({ ...prev, overseasResidence: false }))}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.overseasResidence ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-[var(--cf-cover-line)] text-[var(--cf-fg)]'}`}
+                >
+                  {qt.no}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {progress.expiryAlerts.length > 0 && (
           <div className="rounded-lg border border-[var(--cf-flag-brass-bg)] bg-[var(--cf-flag-brass-bg)] p-4 print:hidden">
             <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--cf-flag-brass-fg)]">
@@ -393,9 +573,10 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                   const state = docStates[doc.id] ?? EMPTY
                   const tipOpen = expandedTips.has(doc.id)
                   const noteOpen = expandedNotes.has(doc.id)
+                  const irrelevanceNote = getIrrelevanceNote(doc, questionnaire, locale)
 
                   return (
-                    <div key={doc.id} className={`bg-[var(--cf-cover-bg)] px-4 py-4 transition-opacity duration-150 ${state.checked ? 'opacity-55' : ''}`}>
+                    <div key={doc.id} className={`bg-[var(--cf-cover-bg)] px-4 py-4 transition-opacity duration-150 ${state.checked || irrelevanceNote ? 'opacity-55' : ''}`}>
                       <div className="flex gap-3">
                         <div className="shrink-0 pt-0.5">
                           <input
@@ -426,6 +607,9 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                               )}
                             </div>
                             <p className="mt-0.5 break-words whitespace-normal text-xs text-[var(--cf-cover-muted)]">{doc.description}</p>
+                            {irrelevanceNote && (
+                              <p className="mt-0.5 break-words whitespace-normal text-xs italic text-[var(--cf-accent)]">{irrelevanceNote}</p>
+                            )}
                           </label>
 
                           {doc.expiryTracking && (
