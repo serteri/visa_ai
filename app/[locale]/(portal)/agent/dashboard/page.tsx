@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Eye } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
@@ -213,9 +214,9 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
                         <td className="px-4 py-3 text-right">
                           <Link
                             href={`${prefix}/agent/lead/${lead.id}`}
-                            className="font-medium text-indigo-600 hover:underline"
+                            className="inline-flex items-center gap-1 font-medium text-indigo-600 hover:underline"
                           >
-                            View
+                            <Eye className="h-3.5 w-3.5" /> View
                           </Link>
                         </td>
                       </tr>

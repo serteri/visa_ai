@@ -23,7 +23,10 @@ export function RefCapture() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const ref = searchParams.get("ref");
+    // "agentId" is an alias for "ref" -- the agent dashboard's referral link
+    // uses ?agentId= for readability, but both write the same cookie so
+    // full-check/actions.ts and stripeActions.ts only ever need to check one.
+    const ref = searchParams.get("ref") ?? searchParams.get("agentId");
     if (!ref) return;
 
     const maxAge = REF_COOKIE_MAX_AGE_DAYS * 24 * 60 * 60;

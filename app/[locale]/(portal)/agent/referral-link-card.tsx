@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Check, Copy, Link2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -12,9 +13,11 @@ export function ReferralLinkCard({ agentId }: { agentId: string }) {
 
   // Built client-side from window.location so it works the same in every
   // environment (localhost, staging, prod) without needing NEXT_PUBLIC_BASE_URL
-  // wired through to this specific component.
+  // wired through to this specific component. agentId= is read by
+  // components/ref-capture.tsx as an alias for ?ref= -- both land in the
+  // same logivisa_ref cookie.
   useEffect(() => {
-    setLink(`${window.location.origin}/?ref=${agentId}`);
+    setLink(`${window.location.origin}/full-check?country=AU&agentId=${agentId}`);
   }, [agentId]);
 
   function handleCopy() {
@@ -28,7 +31,9 @@ export function ReferralLinkCard({ agentId }: { agentId: string }) {
   return (
     <Card className="border-indigo-200 bg-indigo-50">
       <CardHeader>
-        <CardTitle className="text-base text-indigo-900">🔗 Your referral link</CardTitle>
+        <CardTitle className="flex items-center gap-1.5 text-base text-indigo-900">
+          <Link2 className="h-4 w-4" /> Your referral link
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-indigo-800">
@@ -38,7 +43,8 @@ export function ReferralLinkCard({ agentId }: { agentId: string }) {
           <code className="flex-1 min-w-0 truncate rounded-md border border-indigo-200 bg-white px-3 py-2 text-sm text-slate-700">
             {link || "…"}
           </code>
-          <Button type="button" size="sm" onClick={handleCopy} disabled={!link}>
+          <Button type="button" size="sm" onClick={handleCopy} disabled={!link} className="gap-1.5">
+            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             {copied ? "Copied!" : "Copy"}
           </Button>
         </div>
