@@ -79,7 +79,7 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
         <div className="space-y-3">
           <Badge variant="secondary">{copy.badge}</Badge>
           <h1 className="text-3xl font-bold sm:text-4xl">{copy.title}</h1>
-          <p className="max-w-3xl rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 sm:text-base">
+          <p className="max-w-3xl rounded-md border border-[var(--cf-accent-dim)] bg-[var(--cf-accent-dim)] px-4 py-3 text-sm text-[var(--cf-fg)] sm:text-base">
             {copy.note}
           </p>
         </div>
