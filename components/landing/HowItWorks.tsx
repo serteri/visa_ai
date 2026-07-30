@@ -1,5 +1,4 @@
 import { EyeOff, Lock, ShieldCheck } from "lucide-react";
-import { SampleReportMockup } from "@/components/SampleReportMockup";
 import { ReportPreviewGallery } from "@/components/ReportPreviewGallery";
 
 interface HowItWorksProps {
@@ -82,13 +81,6 @@ export function HowItWorks({ locale }: HowItWorksProps) {
         <div className="mt-16">
           <p className="cf-mono mb-6 text-center text-xs uppercase tracking-wide text-[var(--cf-muted)]">
             {locale === "tr" ? "Raporunuz Bu Şekilde Görünecek" : locale === "zh-Hans" ? "您的报告将是这样的" : "Here's What Your Report Looks Like"}
-          </p>
-          <SampleReportMockup locale={locale} />
-        </div>
-
-        <div className="mt-14">
-          <p className="cf-mono mb-6 text-center text-xs uppercase tracking-wide text-[var(--cf-muted)]">
-            {locale === "tr" ? "Rapordan Daha Fazla Sayfa" : locale === "zh-Hans" ? "更多报告页面" : "More Pages From the Report"}
           </p>
           <ReportPreviewGallery />
         </div>
