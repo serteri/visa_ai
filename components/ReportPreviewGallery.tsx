@@ -33,14 +33,14 @@ export function ReportPreviewGallery({ images = PREVIEW_IMAGES }: { images?: Pre
             key={image.src}
             type="button"
             onClick={() => setActiveIndex(index)}
-            className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-slate-200/60 bg-white shadow-md ring-offset-2 transition-shadow duration-300 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+            className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-slate-200/60 bg-white shadow-md ring-offset-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
           >
             <Image
               src={image.src}
               alt={image.alt}
               fill
               sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
-              className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
             />
           </button>
         ))}
