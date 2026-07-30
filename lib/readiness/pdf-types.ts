@@ -182,6 +182,24 @@ export interface LocalizedText {
   readonly confidence: string;
   readonly noClearSecondarySignal: string;
   readonly noData: string;
+
+  // Glossary terms and definitions
+  readonly glossaryTermConfidence: string;
+  readonly glossaryTermStrength: string;
+  readonly glossaryTermFriction: string;
+  readonly glossaryTermSignalConfidence: string;
+  readonly glossaryTermEvidenceLoad: string;
+  readonly glossaryTermEvidenceStatus: string;
+  readonly glossaryTermPointsGap: string;
+  readonly glossaryTermHardGate: string;
+  readonly definitionConfidence: string;
+  readonly definitionStrength: string;
+  readonly definitionFriction: string;
+  readonly definitionSignalConfidence: string;
+  readonly definitionEvidenceLoad: string;
+  readonly definitionEvidenceStatus: string;
+  readonly definitionPointsGap: string;
+  readonly definitionHardGate: string;
 }
 
 /**
