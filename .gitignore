@@ -52,6 +52,5 @@ next-env.d.ts
 # one-off legacy data exports containing real customer PII -- never commit
 legacy_referrals_export.json
 
-# local Claude Code settings and generated image previews
+# local Claude Code settings
 .claude/settings.local.json
-/public/image_previews/
