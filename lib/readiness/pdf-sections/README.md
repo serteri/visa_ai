@@ -4,12 +4,18 @@ This directory contains the modular PDF generation system that replaces the orig
 
 ## Status: 🚧 In Progress (Phase 1/5)
 
-**Goal**: Expand PDF from 8-11 pages to 80 pages with genuine premium content.
+**Goal**: Expand PDF from 8-11 pages to **40 pages** (revised from 80) with genuine premium content.
+
+**Why 40 instead of 80?**
+- ⚡ **Performance**: <5s generation, no timeout risks on Vercel
+- 👤 **UX**: Users want clarity, not volume. 40 pages = premium without overwhelm
+- 🔧 **Maintenance**: Easier to keep visa regulations current
+- 📈 **Still Premium**: 5x more than current 8-11 pages
 
 **Progress**:
 - ✅ Task #2: Modular structure created
-- 🔄 Task #3: Extracting functions (in progress)
-- ⏳ Task #4: Write static content library
+- 🔄 Task #3: Extracting functions (20% done - typography, containers, tables extracted)
+- ⏳ Task #4: Write static content library (8 pages)
 - ⏳ Task #5: Expand data-driven sections
 - ⏳ Task #6: Add visual elements
 - ⏳ Task #7: Integration & testing
