@@ -181,6 +181,7 @@ export interface LocalizedText {
   readonly secondarySignals: string;
   readonly confidence: string;
   readonly noClearSecondarySignal: string;
+  readonly noData: string;
 }
 
 /**
