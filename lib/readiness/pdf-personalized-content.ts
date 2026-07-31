@@ -67,12 +67,20 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       65,
     );
 
-    // Header with user's name
-    addSectionHeading("", pointsData.title);
-    addSmallText(pointsData.summary, 0);
-    ctx.yPosition += 2;
+    // ── Premium Section Header with Gold Accent ────────────────────────
+    ctx.ensurePageSpace(60);
+    addSectionHeading("⭐", pointsData.title);
 
-    // Category breakdown table
+    // Gold accent bar under section heading
+    doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
+    doc.setLineWidth(1.5);
+    doc.line(margin, ctx.yPosition, margin + ctx.contentWidth * 0.3, ctx.yPosition);
+    ctx.yPosition += 4;
+
+    addSmallText(pointsData.summary, 0);
+    ctx.yPosition += 3;
+
+    // ── Category Breakdown Table (SaaS-style) ──────────────────────────
     const headers = [
       effectiveLocale === "tr" ? "Kategori" : effectiveLocale === "zh-Hans" ? "类别" : "Category",
       effectiveLocale === "tr" ? "Alınan" : effectiveLocale === "zh-Hans" ? "已得分" : "Earned",
@@ -80,30 +88,53 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       effectiveLocale === "tr" ? "Durum" : effectiveLocale === "zh-Hans" ? "状态" : "Status",
     ];
 
+    const statusLabels: Record<string, string> = {
+      excellent: "✅",
+      good: "👍",
+      needs_improvement: "⚠️",
+      missing: "❌",
+    };
+
     const rows = pointsData.categories.map((cat) => [
       cat.label,
       String(cat.earned),
       String(cat.max),
-      cat.status === "excellent"
-        ? "✅"
-        : cat.status === "good"
-          ? "👍"
-          : cat.status === "needs_improvement"
-            ? "⚠️"
-            : "❌",
+      statusLabels[cat.status] ?? "❌",
     ]);
 
-    // Use drawTable if available
+    // Color-coded status text for each row cell
+    const statusColors: Record<string, { r: number; g: number; b: number }> = {
+      excellent: { r: 22, g: 163, b: 74 },    // green
+      good: { r: 22, g: 100, b: 180 },         // blue
+      needs_improvement: { r: 217, g: 119, b: 6 }, // amber
+      missing: { r: 180, g: 60, b: 60 },       // muted red
+    };
+
     if (ctx.drawTable) {
-      ctx.drawTable(headers, rows, [0.4, 0.15, 0.15, 0.3]);
+      (ctx.drawTable as Function)(headers, rows, [0.38, 0.14, 0.14, 0.34],
+        (rowIndex: number, colIndex: number) => {
+          // Tint the status column (col 3) with the category's status color
+          if (colIndex === 3 && pointsData.categories[rowIndex]) {
+            return statusColors[pointsData.categories[rowIndex].status] ?? null;
+          }
+          return null;
+        }
+      );
     }
 
-    // Total
+    // ── Gold-accented Total Line ───────────────────────────────────────
+    // Gold separator before total
+    ctx.ensurePageSpace(14);
+    doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
+    doc.setLineWidth(0.8);
+    doc.line(margin, ctx.yPosition, margin + ctx.contentWidth, ctx.yPosition);
+    ctx.yPosition += 5;
+
     setBoldFont();
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
     doc.text(safeText(pointsData.totalLine), margin, ctx.yPosition);
-    ctx.yPosition += 6;
+    ctx.yPosition += 7;
 
     // Gap analysis
     addSmallText(pointsData.gapAnalysis, 0);

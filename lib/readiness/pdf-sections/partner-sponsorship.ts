@@ -148,7 +148,7 @@ export const drawPartnerSponsorshipReport: PDFSection = (ctx: PDFContext): void 
     isTr
       ? "Partner vizesi başvurusunda ilişkinin gerçekliğini kanıtlamak için gereken temel evraklar:"
       : isZh
-        ? "用于在配偶/伴侣签证申请中证明关系真实性的关键文件清单："
+        ? "用于在伴侣签证申请中证明关系真实性的关键文件清单："
         : "Key documents required to substantiate relationship genuineness in your partner application:",
     0,
   );

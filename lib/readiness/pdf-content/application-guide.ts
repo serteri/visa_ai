@@ -70,10 +70,10 @@ function getAustraliaGuide(locale: Locale): ReturnType<typeof getApplicationGuid
       {
         title: isTr ? "Adım 4: Davet ve Başvuru" : isZh ? "第四步：获邀与申请" : "Step 4: Invitation & Application",
         body: isTr
-          ? "Puan barajını aştığınızda davet alırsınız. Davet aldıktan sonra 60 gün içinde tam başvuruyu sunmalısınız. Başvuru ücreti: 4640 AUD (başvuran) + 2320 AUD (ek eş/çocuk). Bu aşama 6-12 ay sürer."
+          ? "Puan barajını aştığınızda davet alırsınız. Davet aldıktan sonra 60 gün içinde tam başvuruyu sunmalısınız. Başvuru ücreti: 4640 AUD (başvuran) + 2320 AUD (ek partner/çocuk). Bu aşama 6-12 ay sürer."
           : isZh
-            ? "达到积分门槛后您将收到邀请。收到邀请后须在60天内提交完整申请。申请费：4640澳元（主申请人）+ 2320澳元（随行配偶/子女）。此阶段需要6-12个月。"
-            : "Once you exceed the points threshold, you receive an invitation. You must lodge the full application within 60 days of invitation. Application fee: AUD 4,640 (primary applicant) + AUD 2,320 (additional spouse/child). This stage takes 6-12 months.",
+            ? "达到积分门槛后您将收到邀请。收到邀请后须在60天内提交完整申请。申请费：4640澳元（主申请人）+ 2320澳元（随行伴侣/子女）。此阶段需要6-12个月。"
+            : "Once you exceed the points threshold, you receive an invitation. You must lodge the full application within 60 days of invitation. Application fee: AUD 4,640 (primary applicant) + AUD 2,320 (additional partner/child). This stage takes 6-12 months.",
       },
       {
         title: isTr ? "Adım 5: Değerlendirme ve Sonuç" : isZh ? "第五步：审核与决定" : "Step 5: Assessment & Decision",
@@ -137,7 +137,7 @@ function getAustraliaGuide(locale: Locale): ReturnType<typeof getApplicationGuid
             "学历文件（成绩单+学位证书）",
             "无犯罪记录证明（所有居住超过12个月的国家）",
             "体检报告（仅在获邀后需要）",
-            "关系证明材料（如有配偶/伴侣）",
+            "关系证明材料（如有伴侣）",
           ]
         : [
             "Passport (must be valid for at least 6 months beyond application date)",
@@ -147,7 +147,7 @@ function getAustraliaGuide(locale: Locale): ReturnType<typeof getApplicationGuid
             "Educational documents (transcripts + degree certificates)",
             "Police clearances (from all countries where you lived 12+ months)",
             "Health examination report (only after invitation)",
-            "Relationship evidence (if applying with spouse/partner)",
+            "Relationship evidence (if applying with a partner)",
           ],
   };
 }

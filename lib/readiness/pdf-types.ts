@@ -322,6 +322,7 @@ export interface PDFContext {
   readonly COLORS: {
     readonly primary: ColorRGB;
     readonly accent: ColorRGB;
+    readonly gold: ColorRGB;
     readonly text: ColorRGB;
     readonly lightText: ColorRGB;
     readonly border: ColorRGB;

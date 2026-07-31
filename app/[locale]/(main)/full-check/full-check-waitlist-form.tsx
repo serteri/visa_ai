@@ -1408,8 +1408,9 @@ export function FullCheckWaitlistForm({
               </p>
             )}
 
-            {/* Skills Assessment Question — shown when occupation is selected */}
-            {(nocCode || resolvedAnzscoEntry) && (
+            {/* Skills Assessment Question — shown only when occupation is on a skilled list */}
+            {((selectedCountry === "AU" && resolvedAnzscoEntry && getSkilledListMembership(resolvedAnzscoEntry.code).length > 0) ||
+              (selectedCountry === "CA" && nocCode && nocTeer !== null && nocTeer <= 5)) && (
               <div className="mt-3 space-y-2 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
                 <Label className="text-sm font-semibold text-indigo-900 dark:text-indigo-300">
                   {txt(

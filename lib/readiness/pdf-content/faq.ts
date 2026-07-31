@@ -31,14 +31,14 @@ export function getFaqSection(locale: Locale, country: Country): {
       ? [
           { question: "等待申请期间我可以工作吗？", answer: "可以，只要您当前签证有工作许可，您可以在申请期间继续工作。" },
           { question: "如果英语成绩过期了怎么办？", answer: "语言考试成绩有效期为2-3年。过期前需要重新参加考试。" },
-          { question: "我的配偶/伴侣可以一起申请吗？", answer: "可以，配偶/伴侣可以作为副申请人加入主申请。需要额外材料和费用。" },
+          { question: "我的伴侣可以一起申请吗？", answer: "可以，伴侣可以作为副申请人加入主申请。需要额外材料和费用。" },
           { question: "如果我换了工作会怎样？", answer: "您可以更新EOI添加新的工作经验。EOI可以随时更新。" },
           { question: "如果申请被拒了怎么办？", answer: "有行政复审（merit review）或行政内部审查（AIR）途径。建议根据拒签信中的原因采取行动。" },
         ]
       : [
           { question: "Can I work while my application is being processed?", answer: "Yes, you can continue working if your current visa has work rights. Your application processing does not affect your current work authorization." },
           { question: "What if my English test score expires?", answer: "Language test results are valid for 2-3 years. You must retake the test before your current score expires." },
-          { question: "Can my spouse/partner be included?", answer: "Yes, your spouse or de facto partner can be included as a secondary applicant. Additional documents and fees apply." },
+          { question: "Can my partner be included?", answer: "Yes, your partner or de facto partner can be included as a secondary applicant. Additional documents and fees apply." },
           { question: "What if I change jobs during the process?", answer: "You can update your EOI to reflect new work experience. Your EOI is always editable." },
           { question: "What if my application is refused?", answer: "Merit review and judicial review options are available. Act on the specific reasons stated in your refusal letter." },
         ];

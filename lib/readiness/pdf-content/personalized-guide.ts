@@ -203,7 +203,7 @@ export function getPersonalizedApplicationGuide(
             "Beceri değerlendirmesi: AUD 500-1,200",
             "Dil testi: AUD 400-550",
             "Başvuru ücreti: AUD 4,640 (başvuran)",
-            "Ek eş/çocuk: AUD 2,320 kişi başı",
+            "Ek partner/çocuk: AUD 2,320 kişi başı",
             "Sağlık muayenesi: AUD 400-600",
             "Toplam tahmini: AUD 6,000-8,000",
           ]
@@ -212,7 +212,7 @@ export function getPersonalizedApplicationGuide(
               "技能评估：500-1200澳元",
               "语言考试：400-550澳元",
               "申请费：4640澳元（主申请人）",
-              "随行配偶/子女：每人2320澳元",
+              "随行伴侣/子女：每人2320澳元",
               "体检：400-600澳元",
               "预计总计：6000-8000澳元",
             ]
@@ -220,7 +220,7 @@ export function getPersonalizedApplicationGuide(
               "Skills assessment: AUD 500-1,200",
               "Language test: AUD 400-550",
               "Application fee: AUD 4,640 (primary)",
-              "Additional spouse/child: AUD 2,320 each",
+              "Additional partner/child: AUD 2,320 each",
               "Health examination: AUD 400-600",
               "Estimated total: AUD 6,000-8,000",
             ])
@@ -229,7 +229,7 @@ export function getPersonalizedApplicationGuide(
             "ECA değerlendirmesi: CAD 200-300",
             "Dil testi: CAD 300-400",
             "Başvuru ücreti: CAD 1,365 (başvuran)",
-            "Ek eş/çocuk: CAD 1,365 kişi başı",
+            "Ek partner/çocuk: CAD 1,365 kişi başı",
             "Sağlık muayenesi: CAD 300-450",
             "Toplam tahmini: CAD 2,500-4,000",
           ]
@@ -238,7 +238,7 @@ export function getPersonalizedApplicationGuide(
               "ECA认证：200-300加元",
               "语言考试：300-400加元",
               "申请费：1365加元（主申请人）",
-              "随行配偶/子女：每人1365加元",
+              "随行伴侣/子女：每人1365加元",
               "体检：300-450加元",
               "预计总计：2500-4000加元",
             ]
@@ -246,7 +246,7 @@ export function getPersonalizedApplicationGuide(
               "ECA assessment: CAD 200-300",
               "Language test: CAD 300-400",
               "Application fee: CAD 1,365 (primary)",
-              "Additional spouse/child: CAD 1,365 each",
+              "Additional partner/child: CAD 1,365 each",
               "Health examination: CAD 300-450",
               "Estimated total: CAD 2,500-4,000",
             ]);

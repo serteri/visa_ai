@@ -29,6 +29,7 @@ import { parsePartnerIntakeFromText } from "./partner-sponsorship";
 const COLORS = {
   primary: { r: 22, g: 78, b: 99 },
   accent: { r: 8, g: 145, b: 178 },
+  gold: { r: 180, g: 149, b: 83 },
   text: { r: 24, g: 24, b: 24 },
   lightText: { r: 107, g: 114, b: 128 },
   border: { r: 229, g: 231, b: 235 },
@@ -1435,7 +1436,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     appendixCategoryBanner("Category 1: Identity & Civil Status Documents", "ID");
     appendixCheckItem("Valid Passport (all pages)", "Must be valid for at least 6 months beyond your intended entry date. Upload all pages including blanks. If you have prior passports, include them too — they document your travel history.", "critical");
     appendixCheckItem("Birth Certificate", "Official government-issued birth certificate. Must be translated if not in English or French by a certified translator.", "critical");
-    appendixCheckItem("Marriage Certificate (if applicable)", "Required for spousal/common-law sponsorship. If divorced, provide divorce decree. If widowed, provide death certificate of prior spouse.", "important");
+    appendixCheckItem("Marriage Certificate (if applicable)", "Required for partner/common-law sponsorship. If divorced, provide divorce decree. If widowed, provide death certificate of prior partner.", "important");
     appendixCheckItem("National Identity Card", "For applicants from countries where national ID is the primary travel document.", "important");
     appendixCheckItem("Change of Name Document (if applicable)", "Court order or marriage certificate showing name change. Every name on every document must be reconciled.", "important");
     appendixCheckItem("Children's Birth Certificates (if applicable)", "For each dependent child included in the application. Include adoption orders if relevant.", "critical");
@@ -1735,6 +1736,58 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setFontSize(9);
       doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
       doc.text(safeText(userInputSummary.occupation), margin + 8, chipY + 6.5);
+    }
+
+    // ── Prominent Points Summary (premium hero block) ──────────────────────
+    const estimatedPoints = report.pointsEstimate?.estimatedPoints;
+    if (estimatedPoints !== undefined) {
+      const heroY = 215;
+
+      // "Migration Strategy Prepared for [Name]" headline
+      setBoldFont();
+      doc.setFontSize(13);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      const heroLabel = effectiveLocale === "tr"
+        ? `${subjectName} İçin Hazırlanan Göç Stratejisi`
+        : effectiveLocale === "zh-Hans"
+          ? `为 ${subjectName} 制定的移民策略`
+          : `Migration Strategy Prepared for ${subjectName}`;
+      doc.text(safeText(heroLabel), margin + 12, heroY);
+
+      // Gold accent line
+      doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
+      doc.setLineWidth(1.5);
+      doc.line(margin + 12, heroY + 3, margin + 90, heroY + 3);
+
+      // Big points number
+      setBoldFont();
+      doc.setFontSize(28);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      const pointsText = `${estimatedPoints}`;
+      doc.text(pointsText, margin + 12, heroY + 20);
+
+      // Threshold + label
+      setBaseFont();
+      doc.setFontSize(10);
+      doc.setTextColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
+      const thresholdLabel = effectiveLocale === "tr"
+        ? ` / 65 puan eşiği`
+        : effectiveLocale === "zh-Hans"
+          ? ` / 目标 65 分`
+          : ` / 65 points threshold`;
+      doc.text(thresholdLabel, margin + 12 + doc.getTextWidth(pointsText), heroY + 20);
+
+      // Points status line
+      setBaseFont();
+      doc.setFontSize(9);
+      const passedThreshold = estimatedPoints >= 65;
+      doc.setTextColor(passedThreshold ? COLORS.riskLow.r : COLORS.riskMedium.r,
+        passedThreshold ? COLORS.riskLow.g : COLORS.riskMedium.g,
+        passedThreshold ? COLORS.riskLow.b : COLORS.riskMedium.b);
+      const statusText = passedThreshold
+        ? (effectiveLocale === "tr" ? "Puan barajını aştınız" : effectiveLocale === "zh-Hans" ? "已超过积分门槛" : "Points threshold exceeded")
+        : (effectiveLocale === "tr" ? "Puan barajının altında" : effectiveLocale === "zh-Hans" ? "未达积分门槛" : "Below points threshold");
+      doc.text(safeText(statusText), margin + 12, heroY + 27);
     }
 
     setBaseFont();
@@ -3695,7 +3748,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       isTr
         ? "Partner vizesi başvurusunda ilişkinin gerçekliğini ve sponsorluğun geçerliliğini kanıtlamak için gereken temel evraklar:"
         : isZh
-          ? "用于在配偶/伴侣签证申请中证明关系真实性及担保资格的关键文件清单："
+          ? "用于在伴侣签证申请中证明关系真实性及担保资格的关键文件清单："
           : "Key documents required to substantiate relationship genuineness and sponsor eligibility in your partner application:",
       0
     );

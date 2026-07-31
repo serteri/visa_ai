@@ -123,14 +123,14 @@ export function getPersonalizedFaq(
   // ── Partner question ──────────────────────────────────────────────────
   items.push({
     question: isTr
-      ? "Eşim/partnerim de başvuruya dahil edilebilir mi?"
+      ? "Partnerim de başvuruya dahil edilebilir mi?"
       : isZh
-        ? "我的配偶/伴侣可以一起申请吗？"
-        : "Can my spouse/partner be included in the application?",
+        ? "我的伴侣可以一起申请吗？"
+        : "Can my partner be included in the application?",
     answer: isTr
       ? "Evet, partneriniz ana başvuruya ek olarak dahil edilebilir. Ek belgeler (ilişki kanıtları) ve ücret gerekir."
       : isZh
-        ? "可以，配偶/伴侣可以作为副申请人加入。需要额外材料（关系证明）和费用。"
+        ? "可以，伴侣可以作为副申请人加入。需要额外材料（关系证明）和费用。"
         : "Yes, your partner can be included as a secondary applicant. Additional documents (relationship evidence) and fees apply.",
   });
 
