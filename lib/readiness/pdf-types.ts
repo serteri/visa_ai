@@ -231,6 +231,13 @@ export interface LocalizedText {
   readonly qualitativeFitPotential: string;
   readonly qualitativeFitUnclear: string;
   readonly qualitativeFitUnlikely: string;
+
+  // Lodgement checklist
+  readonly urgent: string;
+  readonly blocked: string;
+  readonly ready: string;
+  readonly lodgementReadyChecklist: string;
+  readonly lodgementReadyChecklistIntro: string;
 }
 
 /**

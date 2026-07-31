@@ -101,5 +101,35 @@ export function createTypographyHelpers(ctx: PDFContext) {
         });
       });
     },
+
+    /**
+     * Draws a thin horizontal separator line and advances the cursor.
+     */
+    drawSeparator(): void {
+      ensurePageSpace(6);
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.35);
+      doc.line(margin, ctx.yPosition, pageWidth - margin, ctx.yPosition);
+      ctx.yPosition += 5;
+    },
+
+    /**
+     * Renders a ribbon-style section heading (navy background, white text).
+     * Calls drawSeparator() first for consistent spacing.
+     */
+    addSectionHeading(_symbol: string, heading: string): void {
+      // @ts-expect-error — drawSeparator is defined in this same factory
+      this.drawSeparator();
+      ensurePageSpace(13);
+      doc.setFillColor(22, 78, 99);
+      doc.roundedRect(margin, ctx.yPosition - 5, contentWidth, 10, 1.5, 1.5, "F");
+      setBoldFont();
+      doc.setFontSize(FONTS.heading);
+      doc.setTextColor(255, 255, 255);
+      doc.text(safeText(heading), margin + 4, ctx.yPosition + 1.5);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      setBaseFont();
+      ctx.yPosition += 9;
+    },
   };
 }
