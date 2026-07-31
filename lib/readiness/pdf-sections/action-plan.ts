@@ -19,6 +19,7 @@ export const drawImmediateActionPlan: PDFSection = (ctx: PDFContext): void => {
     report.suggestedNextSteps.map((step, idx) => ({
       label: `${idx + 1}. ${text.important}`,
       body: step,
+      level: "low" as const,
     })),
     "success",
   );
