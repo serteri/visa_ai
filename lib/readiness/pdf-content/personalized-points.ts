@@ -36,6 +36,7 @@ export function getPersonalizedPointsBreakdown(
   totalLine: string;
   gapAnalysis: string;
   improvementTips: string[];
+  additionalStrategies: string[];
 } {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -139,6 +140,31 @@ export function getPersonalizedPointsBreakdown(
     );
   }
 
+  // ── Additional Improvement Strategies ─────────────────────────────────
+  const additionalStrategies = isTr
+    ? [
+        "NAATI sertifikası: +5 puan (çift dil kanıtı)",
+        "Profesyonel yıl programı: +5 puan (Avustralya'da eğitim)",
+        "Bölgesel çalışma/yaşama: +5-15 puan",
+        "İş teklifi: +5-15 puan (LMIA ile)",
+        "Yüksek lisans/doktora: +10-20 puan",
+      ]
+    : isZh
+      ? [
+          "NAATI证书：+5分（双语证明）",
+          "职业年项目：+5分（澳大利亚学习）",
+          "偏远地区学习/居住：+5-15分",
+          "工作邀请：+5-15分（需LMIA）",
+          "硕士/博士学位：+10-20分",
+        ]
+      : [
+          "NAATI certification: +5 pts (bilingual evidence)",
+          "Professional Year program: +5 pts (Australian study)",
+          "Regional study/living: +5-15 pts",
+          "Job offer: +5-15 pts (with LMIA)",
+          "Masters/PhD degree: +10-20 pts",
+        ];
+
   return {
     title,
     userName,
@@ -147,5 +173,6 @@ export function getPersonalizedPointsBreakdown(
     totalLine,
     gapAnalysis,
     improvementTips,
+    additionalStrategies,
   };
 }

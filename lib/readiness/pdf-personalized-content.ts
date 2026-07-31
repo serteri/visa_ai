@@ -164,6 +164,18 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
         COLORS.riskLow,
       );
     }
+
+    // Additional strategies
+    if (pointsData.additionalStrategies && pointsData.additionalStrategies.length > 0) {
+      addSmallText(
+        effectiveLocale === "tr" ? "Ek Stratejiler:" : effectiveLocale === "zh-Hans" ? "其他策略：" : "Additional Strategies:",
+        0,
+      );
+      ctx.yPosition += 1;
+      pointsData.additionalStrategies.forEach((strategy) => {
+        addSmallText(`  • ${strategy}`, 0);
+      });
+    }
     ctx.yPosition += 3;
   }
 
