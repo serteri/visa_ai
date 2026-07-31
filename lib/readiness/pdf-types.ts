@@ -235,6 +235,18 @@ export interface LocalizedText {
   readonly urgent: string;
   readonly blocked: string;
   readonly ready: string;
+
+  // Points breakdown
+  readonly pointsBreakdownTable: string;
+  readonly pointsBreakdownIntro: string;
+  readonly pointsEarned: string;
+  readonly maxPoints: string;
+  readonly totalRow: string;
+  readonly minimumRequired: string;
+  readonly primaryLimitingFactor: string;
+  readonly realityCheck: string;
+  readonly positionChangers: string;
+  readonly pathwayTable: string;
 }
 
 /**
