@@ -85,7 +85,7 @@ export const drawPartnerSponsorshipReport: PDFSection = (ctx: PDFContext): void 
     isTr
       ? "Bu değerlendirme, başvuru formunda işaretlediğiniz birlikte yaşama süresi ve ilişki kanıtı çeşitliliğine dayanmaktadır. Bu resmi bir 'genuine relationship' kararı değildir."
       : isZh
-        ? "此评估基于您在申请表中填写的共同居住时间及关系证明材料。这并非官方的"真实关系"裁决。"
+        ? "此评估基于您在申请表中填写的共同居住时间及关系证明材料。这并非官方的“真实关系”裁决。"
         : "This assessment is based on the cohabitation duration and the variety of relationship evidence provided in your intake. It is not an official 'genuine relationship' decision.",
   );
   ctx.yPosition += 2;
