@@ -34,7 +34,7 @@ export function getCommonPitfalls(locale: Locale, country: Country): {
         ]
       : isZh
         ? [
-            { category: "技能评估", title: "选择了错误的NOC代码", body: "选择与职业描述不匹配的ANZSCO/NOC代码会导致拒签。请仔细阅读每个代码的"主要职责"列表。" },
+            { category: "技能评估", title: "选择了错误的NOC代码", body: "选择与职业描述不匹配的ANZSCO/NOC代码会导致拒签。请仔细阅读每个代码的主要职责列表。" },
             { category: "技能评估", title: "工作经验证明不全", body: "工作推荐信需包含ANZSCO代码、职责描述、工作时间和薪资。笼统的表述会被视为不合格。" },
             { category: "语言考试", title: "成绩过期问题", body: "语言考试成绩有效期为2-3年。使用过期成绩申请会自动被拒。" },
             { category: "语言考试", title: "选择了错误的考试", body: "不同签证类型接受的考试不同。例如，IELTS Academic不被技术移民接受。" },
