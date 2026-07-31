@@ -48,7 +48,7 @@ export const drawStateNominationTable: PDFSection = (ctx: PDFContext): void => {
       ];
     }),
     [0.15, 0.27, 0.13, 0.45],
-    (rowIndex: number, colIndex: number) => {
+    (rowIndex: number, colIndex?: number) => {
       if (colIndex !== 2) return null;
       const state = states[rowIndex];
       return state ? stateMatchColor(state.matchLevel, ctx.COLORS) : null;
