@@ -1421,14 +1421,14 @@ export function FullCheckWaitlistForm({
                 <p className="text-xs text-muted-foreground">
                   {txt(
                     nocCode
-                      ? `${nocCode} kodu için değerlendirme kurumundan onay aldıysanız "Evet" seçin.`
-                      : "Değerlendirme kurumundan onay aldıysanız "Evet" seçin.",
+                      ? `${nocCode} kodu için değerlendirme kurumundan onay aldıysanız Evet seçin.`
+                      : "Değerlendirme kurumundan onay aldıysanız Evet seçin.",
                     nocCode
-                      ? `Select "Yes" if you have received approval from the assessing authority for NOC ${nocCode}.`
-                      : "Select "Yes" if you have received approval from the assessing authority.",
+                      ? `Select Yes if you have received approval from the assessing authority for NOC ${nocCode}.`
+                      : "Select Yes if you have received approval from the assessing authority.",
                     nocCode
-                      ? `如果${nocCode}职业已通过评估机构认证，请选择"是"。`
-                      : "如果已通过评估机构认证，请选择"是"。"
+                      ? `如果${nocCode}职业已通过评估机构认证，请选择是。`
+                      : "如果已通过评估机构认证，请选择是。"
                   )}
                 </p>
                 <div className="flex gap-3 mt-2">
