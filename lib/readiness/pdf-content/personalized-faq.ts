@@ -134,6 +134,96 @@ export function getPersonalizedFaq(
         : "Yes, your partner can be included as a secondary applicant. Additional documents (relationship evidence) and fees apply.",
   });
 
+  // ── Work Experience Question ──────────────────────────────────────────
+  items.push({
+    question: isTr
+      ? "İş deneyimim nasıl doğrulanır?"
+      : isZh
+        ? "工作经验如何验证？"
+        : "How is my work experience verified?",
+    answer: isTr
+      ? "İşvereninizden imzalı mektup gerekir. Mektup ANZSCO/NOC kodu, görev tanımlarını, çalışma süresini ve maaşı içermelidir."
+      : isZh
+        ? "需要雇主签署的证明信。信中需包含ANZSCO/NOC代码、职责描述、工作时间和薪资。"
+        : "You need a signed letter from your employer. It must include ANZSCO/NOC code, duty descriptions, duration, and salary.",
+  });
+
+  // ── Points Booster Question ───────────────────────────────────────────
+  if (gap > 0) {
+    items.push({
+      question: isTr
+        ? "Puanlarımı hızlıca artırabilir miyim?"
+        : isZh
+          ? "我能快速提高积分吗？"
+          : "Can I quickly boost my points?",
+      answer: isTr
+        ? "Evet! En hızlı yollar: 1) Dil puanınızı yükseltin (+20-40 puan), 2) Eyalet/PNP adaylığı alın (+5/+600 puan), 3) Ek iş deneyimi edinin (+5-15 puan)."
+        : isZh
+          ? "可以！最快的方法：1）提高语言分数（+20-40分），2）获得州/PNP提名（+5/+600分），3）增加工作经验（+5-15分）。"
+          : "Yes! Fastest ways: 1) Improve English (+20-40 pts), 2) Get state/PNP nomination (+5/+600 pts), 3) Gain more work experience (+5-15 pts).",
+    });
+  }
+
+  // ── Bridging Visa Question ────────────────────────────────────────────
+  if (country === "AU") {
+    items.push({
+      question: isTr
+        ? "Bridging visa alabilir miyim?"
+        : isZh
+          ? "我可以获得过桥签证吗？"
+          : "Can I get a bridging visa?",
+      answer: isTr
+        ? "Evet, Avustralya'dayken başvurursanız Bridging Visa A alırsınız. Bu, mevcut vizeniz bittikten sonra çalışmaya devam etmenizi sağlar."
+        : isZh
+          ? "可以，如果您在澳大利亚境内申请，可以获得过桥签证A。这可以让您在当前签证到期后继续工作。"
+          : "Yes, if you apply while in Australia, you get a Bridging Visa A. This allows you to continue working after your current visa expires.",
+    });
+  }
+
+  // ── Provincial Nomination Question ────────────────────────────────────
+  if (country === "CA") {
+    items.push({
+      question: isTr
+        ? "PNP adaylığı için hangi eyaletler uygun?"
+        : isZh
+          ? "哪些省份适合PNP提名？"
+          : "Which provinces are suitable for PNP nomination?",
+      answer: isTr
+        ? "Her eyaletin kendi kriterleri vardır. Ontario, BC, Alberta en popüler olanlardır. Profilinize en uygun eyaleti belirlemek için danışmanınıza danışın."
+        : isZh
+          ? "每个省有自己的标准。安大略省、BC省、阿尔伯塔省是最受欢迎的。请咨询顾问确定最适合您档案的省份。"
+          : "Each province has its own criteria. Ontario, BC, and Alberta are the most popular. Consult an advisor to determine the best province for your profile.",
+    });
+  }
+
+  // ── Appeal Question ───────────────────────────────────────────────────
+  items.push({
+    question: isTr
+      ? "Başvurum reddedilirse ne yapabilirim?"
+      : isZh
+        ? "如果申请被拒，我该怎么办？"
+        : "What if my application is refused?",
+    answer: isTr
+      ? "Reddetme mektubundaki nedenlere göre hareket edin. Temyiz (merit review) veya idari inceleme yolları mevcuttur. Profesyonel yardım almanız önerilir."
+      : isZh
+        ? "请根据拒签信中的原因采取行动。有行政复审或司法审查途径。建议寻求专业帮助。"
+        : "Act on the reasons stated in your refusal letter. Merit review and judicial review options are available. Professional help is recommended.",
+  });
+
+  // ── Processing Time Question ──────────────────────────────────────────
+  items.push({
+    question: isTr
+      ? "Başvuru süresini hızlandırabilir miyim?"
+      : isZh
+        ? "我能加快申请进度吗？"
+        : "Can I speed up the processing time?",
+    answer: isTr
+      ? "Maalesef başvuru hızlandırılamaz. Ancak eksiksiz ve doğru belgeler sunarak gecikmeleri önleyebilirsiniz."
+      : isZh
+        ? "很遗憾，申请无法加速。但提交完整准确的文件可以避免延误。"
+        : "Unfortunately, processing cannot be expedited. However, submitting complete and accurate documents prevents delays.",
+  });
+
   return {
     title: isTr ? "Sizin İçin Önemli Sorular" : isZh ? "对您重要的问题" : "Questions Relevant to You",
     items,
