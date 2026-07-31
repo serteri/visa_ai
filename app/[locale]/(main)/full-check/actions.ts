@@ -913,6 +913,10 @@ export async function submitFullCheckWaitlist(
     : undefined;
   const annualSalaryAudRaw = String(formData.get("annualSalaryAud") ?? "").trim();
   const annualSalaryAud = annualSalaryAudRaw ? Number(annualSalaryAudRaw) : undefined;
+  // Skills assessment status — captured from the form radio button
+  const skillsAssessmentRaw = String(formData.get("skillsAssessment") ?? "").trim();
+  const skillsAssessmentDone = skillsAssessmentRaw === "yes";
+
   const qualificationAwardedInAustraliaResult = optionalYesNoSchema.safeParse(
     formData.get("qualificationAwardedInAustralia")
   );
@@ -1624,6 +1628,7 @@ export async function unlockPremiumReport(
           englishLevel: record.input.englishLevel,
           sponsorOrFamily: record.input.sponsorOrFamily,
           biggestConcern: record.input.biggestConcern,
+          skillsAssessmentDone,
         },
       });
     } catch (err) {

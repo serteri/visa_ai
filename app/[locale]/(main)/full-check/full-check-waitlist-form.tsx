@@ -1408,6 +1408,43 @@ export function FullCheckWaitlistForm({
               </p>
             )}
 
+            {/* Skills Assessment Question — shown when occupation is selected */}
+            {(nocCode || resolvedAnzscoEntry) && (
+              <div className="mt-3 space-y-2 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
+                <Label className="text-sm font-semibold text-indigo-900 dark:text-indigo-300">
+                  {txt(
+                    "Bu meslek için beceri değerlendirmesi (skills assessment) yaptıınız mı?",
+                    "Have you completed a skills assessment for this occupation?",
+                    "您是否已完成该职业的技能评估？"
+                  )}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {txt(
+                    nocCode
+                      ? `${nocCode} kodu için değerlendirme kurumundan onay aldıysanız "Evet" seçin.`
+                      : "Değerlendirme kurumundan onay aldıysanız "Evet" seçin.",
+                    nocCode
+                      ? `Select "Yes" if you have received approval from the assessing authority for NOC ${nocCode}.`
+                      : "Select "Yes" if you have received approval from the assessing authority.",
+                    nocCode
+                      ? `如果${nocCode}职业已通过评估机构认证，请选择"是"。`
+                      : "如果已通过评估机构认证，请选择"是"。"
+                  )}
+                </p>
+                <div className="flex gap-3 mt-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="skillsAssessment" value="yes" className="accent-indigo-600" />
+                    <span className="text-sm font-medium">{txt("Evet", "Yes", "是")}</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="skillsAssessment" value="no" className="accent-indigo-600" defaultChecked />
+                    <span className="text-sm font-medium">{txt("Hayır / Henüz Yapılmadı", "No / Not Yet Done", "否 / 尚未完成")}</span>
+                  </label>
+                </div>
+                <input type="hidden" name="skillsAssessment" value="no" />
+              </div>
+            )}
+
             <ErrorText message={state.errors?.occupation} />
           </div>
         )}
