@@ -200,6 +200,11 @@ export interface LocalizedText {
   readonly definitionEvidenceStatus: string;
   readonly definitionPointsGap: string;
   readonly definitionHardGate: string;
+
+  // Living cost labels
+  readonly livingCostSingle: string;
+  readonly livingCostFamily: string;
+  readonly livingCostProfileLabel: string;
 }
 
 /**
