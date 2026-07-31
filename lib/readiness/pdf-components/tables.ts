@@ -40,7 +40,7 @@ export function createTableHelper(ctx: PDFContext) {
       headers: string[],
       rows: string[][],
       colRatios: number[],
-      getCellColor?: (rowIndex: number, colIndex: number, cell: string) => ColorRGB | null,
+      getCellColor?: (rowIndex: number, colIndex?: number, cell?: string) => ColorRGB | null,
     ): void {
       const tableWidth = contentWidth;
       const colWidths = colRatios.map((ratio) => tableWidth * ratio);
@@ -97,7 +97,7 @@ export function createTableHelper(ctx: PDFContext) {
 
         let x = margin;
         row.forEach((cell, i) => {
-          const customColor = getCellColor?.(rowIndex, i, cell);
+          const customColor = getCellColor?.(rowIndex, i);
           const color = customColor ?? COLORS.text;
           if (customColor) setBoldFont();
           else setBaseFont();
