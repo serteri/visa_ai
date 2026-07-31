@@ -173,6 +173,7 @@ export interface LocalizedText {
   readonly crsTrends: string;
   readonly pnpHeatmap: string;
   readonly advisoryIntro: string;
+  readonly stateRadarSubtitle: string;
   readonly belowPointsThreshold: string;
   readonly belowPointsThresholdExplainer: string;
   readonly criticalComplianceAlertLabel: string;
