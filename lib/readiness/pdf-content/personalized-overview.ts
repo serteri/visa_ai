@@ -31,6 +31,8 @@ export function getPersonalizedOverview(
   keyFindings: string[];
   recommendation: string;
   confidenceNote: string;
+  riskAssessment: string[];
+  nextMilestones: string[];
 } {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -136,6 +138,50 @@ export function getPersonalizedOverview(
       ? "此分析基于您输入的档案信息。信息不完整可能影响分析的准确性。"
       : "This analysis is based on the information you provided. Missing data may affect accuracy.";
 
+  // ── Risk Assessment ───────────────────────────────────────────────────
+  const riskAssessment = isTr
+    ? [
+        gap > 20 ? "⚠️ Yüksek risk: Puan barajından uzakta" : gap > 10 ? "🟡 Orta risk: Kapatılabilir fark" : gap > 0 ? "🟢 Düşük risk: Küçük iyileştirmeler yeterli" : "✅ Düşük risk: Baraj aşıldı",
+        skillsAssessmentDone ? "✅ Beceri değerlendirmesi tamamlandı" : "❌ Beceri değerlendirmesi yapılmadı",
+        profile.englishLevel ? "✅ Dil kanıtı mevcut" : "❌ Dil kanıtı eksik",
+      ]
+    : isZh
+      ? [
+          gap > 20 ? "⚠️ 高风险：距离积分门槛较远" : gap > 10 ? "🟡 中等风险：差距可弥补" : gap > 0 ? "🟢 低风险：小幅改进即可" : "✅ 低风险：已超过门槛",
+          skillsAssessmentDone ? "✅ 技能评估已完成" : "❌ 技能评估未完成",
+          profile.englishLevel ? "✅ 语言证明已提供" : "❌ 语言证明缺失",
+        ]
+      : [
+          gap > 20 ? "⚠️ High risk: Far from threshold" : gap > 10 ? "🟡 Medium risk: Gap is closable" : gap > 0 ? "🟢 Low risk: Minor improvements needed" : "✅ Low risk: Threshold exceeded",
+          skillsAssessmentDone ? "✅ Skills assessment completed" : "❌ Skills assessment not done",
+          profile.englishLevel ? "✅ English evidence provided" : "❌ English evidence missing",
+        ];
+
+  // ── Next Milestones ───────────────────────────────────────────────────
+  const nextMilestones = isTr
+    ? [
+        "Beceri değerlendirmesi tamamlama",
+        "Dil testi puanını yükseltme",
+        "EOI oluşturma ve sunma",
+        "Davet alma",
+        "Başvuru hazırlığı",
+      ]
+    : isZh
+      ? [
+          "完成技能评估",
+          "提高语言分数",
+          "创建并提交EOI",
+          "收到邀请",
+          "准备申请材料",
+        ]
+      : [
+          "Complete skills assessment",
+          "Improve English score",
+          "Create and lodge EOI",
+          "Receive invitation",
+          "Prepare application",
+        ];
+
   return {
     title,
     userName: name,
@@ -143,5 +189,7 @@ export function getPersonalizedOverview(
     keyFindings,
     recommendation,
     confidenceNote,
+    riskAssessment,
+    nextMilestones,
   };
 }

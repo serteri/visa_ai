@@ -72,6 +72,32 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
 
   // Confidence note
   addSmallText(overview.confidenceNote, 0);
+  ctx.yPosition += 2;
+
+  // Risk Assessment
+  if (overview.riskAssessment && overview.riskAssessment.length > 0) {
+    addSmallText(
+      effectiveLocale === "tr" ? "Risk Değerlendirmesi:" : effectiveLocale === "zh-Hans" ? "风险评估：" : "Risk Assessment:",
+      0,
+    );
+    ctx.yPosition += 1;
+    overview.riskAssessment.forEach((item) => {
+      addSmallText(`  ${item}`, 0);
+    });
+  }
+  ctx.yPosition += 2;
+
+  // Next Milestones
+  if (overview.nextMilestones && overview.nextMilestones.length > 0) {
+    addSmallText(
+      effectiveLocale === "tr" ? "Sonraki Kilometre Taşları:" : effectiveLocale === "zh-Hans" ? "下一步里程碑：" : "Next Milestones:",
+      0,
+    );
+    ctx.yPosition += 1;
+    overview.nextMilestones.forEach((item, index) => {
+      addSmallText(`  ${index + 1}. ${item}`, 0);
+    });
+  }
   ctx.yPosition += 3;
 
   // ── 2. Skills Assessment Status ───────────────────────────────────────
