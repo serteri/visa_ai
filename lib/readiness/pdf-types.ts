@@ -382,6 +382,13 @@ export interface PDFContext {
   drawMissingInfoBox(): void;
   drawSparseDataDisclaimer(): void;
   drawVisualPlaceholder(sectionTitle: string): void;
+  formatDifficulty(level: "low" | "medium" | "high" | "extreme"): string;
+  formatStrength(level: "limited" | "moderate" | "strong"): string;
+  formatSignalConfidence(level: "limited" | "moderate" | "stronger"): string;
+  formatConfidenceLevel(level: "low" | "medium" | "high"): string;
+  formatLoad(level: "low" | "medium" | "high"): string;
+  formatEvidenceStatus(status: "provided" | "missing" | "unclear" | "typically_required"): string;
+  formatRecommendationTag(tag: string): string;
   drawAppendixDividerPage(
     letter: string,
     titleEn: string,
