@@ -1628,7 +1628,7 @@ export async function unlockPremiumReport(
           englishLevel: record.input.englishLevel,
           sponsorOrFamily: record.input.sponsorOrFamily,
           biggestConcern: record.input.biggestConcern,
-          skillsAssessmentDone,
+          skillsAssessmentDone: String(formData.get("skillsAssessment") ?? "").trim() === "yes",
         },
       });
     } catch (err) {
