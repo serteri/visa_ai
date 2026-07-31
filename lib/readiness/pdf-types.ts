@@ -247,6 +247,8 @@ export interface LocalizedText {
   readonly realityCheck: string;
   readonly positionChangers: string;
   readonly pathwayTable: string;
+  readonly pathwayFriction: string;
+  readonly pathwayFrictionIntro: string;
 }
 
 /**
