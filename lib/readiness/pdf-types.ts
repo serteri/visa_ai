@@ -235,8 +235,6 @@ export interface LocalizedText {
   readonly urgent: string;
   readonly blocked: string;
   readonly ready: string;
-  readonly lodgementReadyChecklist: string;
-  readonly lodgementReadyChecklistIntro: string;
 }
 
 /**
