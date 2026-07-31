@@ -103,6 +103,7 @@ interface PDFGeneratorInput {
     englishLevel?: string;
     sponsorOrFamily?: string;
     biggestConcern?: string;
+    skillsAssessmentDone?: boolean;
   };
 }
 
