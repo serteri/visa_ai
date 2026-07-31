@@ -217,6 +217,20 @@ export interface LocalizedText {
   readonly stateMatch: string;
   readonly stateTrackerIntro: string;
   readonly stateRadarMissingFieldsPrefix: string;
+
+  // Badge labels
+  readonly highPotentialBadge: string;
+  readonly conditionalBadge: string;
+  readonly highRiskBadge: string;
+  readonly belowPointsThreshold: string;
+  readonly ineligibleComplianceViolation: string;
+  readonly highlyRecommendedPathway: string;
+  readonly alternativeOption: string;
+  readonly highRiskLowProbability: string;
+  readonly preliminarySignalOnly: string;
+  readonly qualitativeFitPotential: string;
+  readonly qualitativeFitUnclear: string;
+  readonly qualitativeFitUnlikely: string;
 }
 
 /**
