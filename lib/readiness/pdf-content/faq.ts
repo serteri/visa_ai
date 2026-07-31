@@ -44,7 +44,7 @@ export function getFaqSection(locale: Locale, country: Country): {
         ];
 
   const countryItems: FAQItem[] = country === "CA"
-    ? (isTr
+    ? isTr
         ? [
             { question: "CRS puanım yeterli değilse ne yapabilirim?", answer: "Dil puanınızı artırın (+20-40 puan),province adaylığı alın (+600 puan), veya Kanada'da iş deneyimi edinin." },
             { question: "PNP (Province Nominee Program) nedir?", answer: "Eyaletlerin kendi adaylarını seçtiği bir programdır. Eyalet adaylığı +600 CRS puan ekler, davet garantisi sağlar." },
@@ -89,7 +89,7 @@ export function getFaqSection(locale: Locale, country: Country): {
               { question: "Do I need a job offer in Australia?", answer: "No, a job offer is not mandatory. However, it adds points and may be required in certain circumstances." },
               { question: "How long is the visa valid?", answer: "Subclass 189/190/491: 5 years. You must apply for PR Renewal within 4 years of your first entry." },
               { question: "How long until I can apply for citizenship?", answer: "You can apply for citizenship 4 years after receiving PR. You must have lived in Australia for 1 of the last 4 years." },
-            ]));
+            ];
 
   return {
     title: isTr ? "Sıkça Sorulan Sorular" : isZh ? "常见问题" : "Frequently Asked Questions",
