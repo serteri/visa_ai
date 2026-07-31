@@ -66,8 +66,8 @@ export function getFaqSection(locale: Locale, country: Country): {
               { question: "How long does Express Entry take?", answer: "Target: 6 months from profile to invitation, 6 months from invitation to decision. Total: ~12 months." },
               { question: "How much Settlement Funds do I need?", answer: "Depends on family size. Single: ~CAD 14,000. Family of 4: ~CAD 25,000. Current amounts are posted on the IRCC website." },
               { question: "Do I need a LMIA?", answer: "Express Entry does not require a LMIA (with exceptions). However, a job offer with LMIA adds +50 CRS points." },
-            ]))
-    : (isTr
+            ]
+    : isTr
         ? [
             { question: "Subclass 189, 190 ve 491 arasındaki fark nedir?", answer: "189: Bağımsız (eyalet desteği gerekmez). 190: Eyalet adaylığı (+5 puan). 491: Regional (+15 puan, taahhüt gerekli)." },
             { question: "Eyalet adaylığı nasıl alınır?", answer: "Her eyaletin kendi süreci ve kriterleri vardır. EOI'nizi eyalet tercihleriyle güncelleyin, eyaletler sizi davet eder." },
