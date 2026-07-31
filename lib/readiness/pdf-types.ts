@@ -249,6 +249,18 @@ export interface LocalizedText {
   readonly pathwayTable: string;
   readonly pathwayFriction: string;
   readonly pathwayFrictionIntro: string;
+
+  // Report overview labels
+  readonly notProvided: string;
+  readonly generatedDate: string;
+  readonly nameLabel: string;
+  readonly occupationLabel: string;
+  readonly ageLabel: string;
+  readonly currentCountryLabel: string;
+  readonly englishLevelLabel: string;
+  readonly goalLabel: string;
+  readonly userInfo: string;
+  readonly title: string;
 }
 
 /**
@@ -276,6 +288,7 @@ export interface UserInputSummary {
   biggestConcern?: string;
   estimatedBudgetRange?: string;
   timeline?: string;
+  englishLevel?: string;
 }
 
 /**
