@@ -290,6 +290,7 @@ export interface UserInputSummary {
   estimatedBudgetRange?: string;
   timeline?: string;
   englishLevel?: string;
+  skillsAssessmentDone?: boolean | null;
 }
 
 /**

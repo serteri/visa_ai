@@ -38,16 +38,25 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   const country = report.country || "AU";
   const estimatedPoints = report.pointsEstimate?.estimatedPoints ?? 0;
   const userName = userInputSummary.name || (effectiveLocale === "tr" ? "Başvuru Sahibi" : effectiveLocale === "zh-Hans" ? "申请人" : "Applicant");
+  const skillsAssessmentDone = userInputSummary.skillsAssessmentDone ?? false;
 
   // ── 1. Personalized Points Table (FIRST THING USER SEES) ──────────────
   // Shows user's name, all point categories, earned vs maximum, total score
   if (report.pointsEstimate && report.pointsEstimate.breakdown.length > 0) {
-    const breakdown = report.pointsEstimate.breakdown.map((item) => ({
-      label: item.label,
-      points: item.points,
-      max: item.max ?? 0,
-      note: item.note,
-    }));
+    const breakdown = report.pointsEstimate.breakdown.map((item) => {
+      // If skills assessment is NOT done, zero out occupation-related points
+      const isOccupationRelated = item.label.toLowerCase().includes("occupation") ||
+        item.label.toLowerCase().includes("skills") ||
+        item.label.toLowerCase().includes("meslek") ||
+        item.label.toLowerCase().includes("职业");
+
+      return {
+        label: item.label,
+        points: (isOccupationRelated && !skillsAssessmentDone) ? 0 : item.points,
+        max: item.max ?? 0,
+        note: item.note,
+      };
+    });
 
     const pointsData = getPersonalizedPointsBreakdown(
       effectiveLocale,
