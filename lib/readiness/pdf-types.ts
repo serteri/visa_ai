@@ -210,6 +210,12 @@ export interface LocalizedText {
   readonly yourImmediateActionPlan: string;
   readonly nextStepBoxIntro: string;
   readonly important: string;
+
+  // State nomination
+  readonly stateCode: string;
+  readonly stateStatus: string;
+  readonly stateMatch: string;
+  readonly stateTrackerIntro: string;
 }
 
 /**
