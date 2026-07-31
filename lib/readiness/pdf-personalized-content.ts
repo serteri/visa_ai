@@ -198,6 +198,45 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   // Timeline
   ctx.yPosition += 2;
   addSmallText(guide.timelineEstimate, 0);
+  ctx.yPosition += 2;
+
+  // Detailed Timeline
+  if (guide.detailedTimeline && guide.detailedTimeline.length > 0) {
+    addSmallText(
+      effectiveLocale === "tr" ? "Detaylı Zaman Çizelgesi:" : effectiveLocale === "zh-Hans" ? "详细时间线：" : "Detailed Timeline:",
+      0,
+    );
+    ctx.yPosition += 1;
+    guide.detailedTimeline.forEach((item) => {
+      addSmallText(`  ${item}`, 0);
+    });
+  }
+  ctx.yPosition += 2;
+
+  // Document Checklist
+  if (guide.documentChecklist && guide.documentChecklist.length > 0) {
+    addSmallText(
+      effectiveLocale === "tr" ? "Belge Hazırlık Kontrol Listesi:" : effectiveLocale === "zh-Hans" ? "文件准备清单：" : "Document Preparation Checklist:",
+      0,
+    );
+    ctx.yPosition += 1;
+    guide.documentChecklist.forEach((item) => {
+      addSmallText(`  ${item}`, 0);
+    });
+  }
+  ctx.yPosition += 2;
+
+  // Cost Estimate
+  if (guide.costEstimate && guide.costEstimate.length > 0) {
+    addSmallText(
+      effectiveLocale === "tr" ? "Tahmini Maliyetler:" : effectiveLocale === "zh-Hans" ? "预计费用：" : "Estimated Costs:",
+      0,
+    );
+    ctx.yPosition += 1;
+    guide.costEstimate.forEach((item) => {
+      addSmallText(`  ${item}`, 0);
+    });
+  }
   ctx.yPosition += 3;
 
   // ── 5. Personalized FAQ ───────────────────────────────────────────────

@@ -30,6 +30,9 @@ export function getPersonalizedApplicationGuide(
   currentStatus: string;
   nextSteps: Array<{ priority: "high" | "medium" | "low"; title: string; detail: string }>;
   timelineEstimate: string;
+  detailedTimeline: string[];
+  documentChecklist: string[];
+  costEstimate: string[];
 } {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -131,6 +134,123 @@ export function getPersonalizedApplicationGuide(
       ? "预计时间：从建档到提交申请6-12个月，从申请到审核结果6-12个月。总计：12-24个月。"
       : "Estimated timeline: Profile to application 6-12 months, application to decision 6-12 months. Total: 12-24 months.";
 
+  // ── Detailed Timeline ─────────────────────────────────────────────────
+  const detailedTimeline = isTr
+    ? [
+        "Ay 1-2: Beceri değerlendirmesi başvurusu ve dil testi",
+        "Ay 3-4: Değerlendirme sonuçlarını bekleme, EOI oluşturma",
+        "Ay 5-8: Davet beklemesi (puanınıza bağlı)",
+        "Ay 9-10: Başvuru hazırlığı ve belge toplama",
+        "Ay 11-12: Başvuru sunma",
+        "Ay 13-24: Değerlendirme süreci ve sonuç",
+      ]
+    : isZh
+      ? [
+          "第1-2个月：提交技能评估申请和语言考试",
+          "第3-4个月：等待评估结果，创建EOI",
+          "第5-8个月：等待邀请（取决于积分）",
+          "第9-10个月：准备申请材料",
+          "第11-12个月：提交申请",
+          "第13-24个月：审核过程和结果",
+        ]
+      : [
+          "Month 1-2: Skills assessment application and language test",
+          "Month 3-4: Wait for assessment results, create EOI",
+          "Month 5-8: Wait for invitation (depends on your points)",
+          "Month 9-10: Prepare application and gather documents",
+          "Month 11-12: Lodge application",
+          "Month 13-24: Assessment process and decision",
+        ];
+
+  // ── Document Checklist ────────────────────────────────────────────────
+  const documentChecklist = isTr
+    ? [
+        "✅ Pasaport (geçerli)",
+        "✅ Dil testi sonuçları",
+        skillsAssessmentDone ? "✅ Beceri değerlendirmesi" : "❌ Beceri değerlendirmesi (gerekli)",
+        "✅ İş deneyimi mektupları",
+        "✅ Eğitim belgeleri",
+        "⬜ Polis sabıka kayıtları",
+        "⬜ Sağlık muayene raporu (davet sonrası)",
+        profile.englishLevel ? "✅ Dil kanıtı" : "❌ Dil kanıtı (gerekli)",
+      ]
+    : isZh
+      ? [
+          "✅ 有效护照",
+          "✅ 语言测试成绩",
+          skillsAssessmentDone ? "✅ 技能评估" : "❌ 技能评估（必要）",
+          "✅ 工作经验证明信",
+          "✅ 学历文件",
+          "⬜ 无犯罪记录证明",
+          "⬜ 体检报告（获邀后）",
+          profile.englishLevel ? "✅ 语言证明" : "❌ 语言证明（必要）",
+        ]
+      : [
+          "✅ Valid passport",
+          "✅ Language test results",
+          skillsAssessmentDone ? "✅ Skills assessment" : "❌ Skills assessment (required)",
+          "✅ Employment reference letters",
+          "✅ Educational documents",
+          "⬜ Police clearances",
+          "⬜ Health examination (after invitation)",
+          profile.englishLevel ? "✅ English evidence" : "❌ English evidence (required)",
+        ];
+
+  // ── Cost Estimate ─────────────────────────────────────────────────────
+  const costEstimate = country === "AU"
+    ? (isTr
+        ? [
+            "Beceri değerlendirmesi: AUD 500-1,200",
+            "Dil testi: AUD 400-550",
+            "Başvuru ücreti: AUD 4,640 (başvuran)",
+            "Ek eş/çocuk: AUD 2,320 kişi başı",
+            "Sağlık muayenesi: AUD 400-600",
+            "Toplam tahmini: AUD 6,000-8,000",
+          ]
+        : isZh
+          ? [
+              "技能评估：500-1200澳元",
+              "语言考试：400-550澳元",
+              "申请费：4640澳元（主申请人）",
+              "随行配偶/子女：每人2320澳元",
+              "体检：400-600澳元",
+              "预计总计：6000-8000澳元",
+            ]
+          : [
+              "Skills assessment: AUD 500-1,200",
+              "Language test: AUD 400-550",
+              "Application fee: AUD 4,640 (primary)",
+              "Additional spouse/child: AUD 2,320 each",
+              "Health examination: AUD 400-600",
+              "Estimated total: AUD 6,000-8,000",
+            ])
+    : (isTr
+        ? [
+            "ECA değerlendirmesi: CAD 200-300",
+            "Dil testi: CAD 300-400",
+            "Başvuru ücreti: CAD 1,365 (başvuran)",
+            "Ek eş/çocuk: CAD 1,365 kişi başı",
+            "Sağlık muayenesi: CAD 300-450",
+            "Toplam tahmini: CAD 2,500-4,000",
+          ]
+        : isZh
+          ? [
+              "ECA认证：200-300加元",
+              "语言考试：300-400加元",
+              "申请费：1365加元（主申请人）",
+              "随行配偶/子女：每人1365加元",
+              "体检：300-450加元",
+              "预计总计：2500-4000加元",
+            ]
+          : [
+              "ECA assessment: CAD 200-300",
+              "Language test: CAD 300-400",
+              "Application fee: CAD 1,365 (primary)",
+              "Additional spouse/child: CAD 1,365 each",
+              "Health examination: CAD 300-450",
+              "Estimated total: CAD 2,500-4,000",
+            ]);
+
   return {
     title: isTr ? "Kişisel Başvuru Rehberiniz" : isZh ? "您的个人申请指南" : "Your Personalized Application Guide",
     userName: name,
@@ -138,5 +258,8 @@ export function getPersonalizedApplicationGuide(
     currentStatus: skillsAssessmentStatus,
     nextSteps,
     timelineEstimate,
+    detailedTimeline,
+    documentChecklist,
+    costEstimate,
   };
 }
