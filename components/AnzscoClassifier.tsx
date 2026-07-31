@@ -244,6 +244,7 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
   const [termsError, setTermsError] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [slotStatus, setSlotStatus] = useState<{ isFree: boolean; freeRemaining: number } | null>(null);
+  const [skillsAssessmentDone, setSkillsAssessmentDone] = useState<boolean | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const t = DICT[locale];
@@ -480,6 +481,57 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
                   <span className="rounded-full border border-emerald-300 bg-white px-4 py-1.5 text-sm font-semibold text-emerald-700">
                     {t.confidenceLabel(Math.round(result.confidence_score * 100))}
                   </span>
+                </div>
+
+                {/* Skills Assessment Question */}
+                <div className="mt-4 rounded-xl border border-emerald-200 bg-white p-4">
+                  <p className="text-sm font-semibold text-slate-800">
+                    {locale === "tr"
+                      ? "Beceri değerlendirmesi yaptınız mı?"
+                      : locale === "zh" || locale === "zh-Hans"
+                        ? "您是否已完成技能评估？"
+                        : "Have you completed your skills assessment?"}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {locale === "tr"
+                      ? `${result.occupation_title} mesleği için değerlendirme kuruluştan onay aldıysanız "Evet" seçin.`
+                      : locale === "zh" || locale === "zh-Hans"
+                        ? `如果${result.occupation_title}职业已通过评估机构认证，请选择"是"。`
+                        : `Select "Yes" if you have received approval from the assessing authority for ${result.occupation_title}.`}
+                  </p>
+                  <div className="mt-3 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSkillsAssessmentDone(true)}
+                      className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                        skillsAssessmentDone
+                          ? "bg-emerald-500 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {locale === "tr" ? "Evet" : locale === "zh" || locale === "zh-Hans" ? "是" : "Yes"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSkillsAssessmentDone(false)}
+                      className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                        skillsAssessmentDone === false
+                          ? "bg-amber-500 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {locale === "tr" ? "Hayır" : locale === "zh" || locale === "zh-Hans" ? "否" : "No"}
+                    </button>
+                  </div>
+                  {skillsAssessmentDone === false && (
+                    <p className="mt-2 text-xs text-amber-600">
+                      {locale === "tr"
+                        ? "⚠️ Beceri değerlendirmesi yapılmadan puanlarınız hesaplanamaz. Bu zorunlu bir adımdır."
+                        : locale === "zh" || locale === "zh-Hans"
+                          ? "⚠️ 未完成技能评估，积分无法计算。这是必要步骤。"
+                          : "⚠️ Without skills assessment, your points cannot be calculated. This is a mandatory step."}
+                    </p>
+                  )}
                 </div>
 
                 <p className="mt-4 text-sm leading-relaxed text-slate-700">{result.reasoning}</p>
