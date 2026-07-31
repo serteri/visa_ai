@@ -3,6 +3,7 @@ import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
+import { renderPersonalizedContent } from "./pdf-personalized-content";
 import {
   frictionBandLabel,
   frictionBandDefinition,
@@ -3738,6 +3739,94 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     drawPartnerSponsorshipReport();
   } else {
     addReportOverview();
+    // ── Personalized Content ─────────────────────────────────────────────
+    // Render personalized sections based on user's actual profile data
+    try {
+      renderPersonalizedContent({
+        doc,
+        report,
+        locale,
+        effectiveLocale,
+        userInputSummary,
+        text,
+        feedbackText,
+        yPosition,
+        pageCount: doc.getNumberOfPages(),
+        pageWidth,
+        pageHeight,
+        margin,
+        contentWidth,
+        lineHeight,
+        contentBottom: 267,
+        COLORS,
+        FONTS,
+        cjkFontAvailable,
+        cjkBoldFontAvailable,
+        activeFontName,
+        activeBoldAvailable,
+        setBaseFont,
+        setBoldFont,
+        safeText,
+        cleanNum,
+        clipToWidth,
+        ensurePageSpace,
+        drawSeparator,
+        addSectionHeading,
+        addTitle,
+        addHeading,
+        addBody,
+        addSmallText,
+        addBulletPoints,
+        addCriticalAlertText,
+        addPremiumBulletContainer,
+        addPremiumKeyValueContainer,
+        drawTable,
+        drawGanttTimeline,
+        drawCrsBarChart,
+        drawPnpHeatmap,
+        drawStateRadar,
+        drawFamilyLivingCosts,
+        drawAlertCollection,
+        drawActionRequiredBox,
+        drawAuditChecklistBox,
+        drawMissingInfoBox,
+        drawSparseDataDisclaimer,
+        drawVisualPlaceholder,
+        drawAppendixDividerPage,
+        drawNocEcaSection,
+        drawImmediateActionPlan,
+        drawVisaViabilityRanking,
+        drawLodgementReadyChecklist,
+        drawTopRecommendedStates,
+        drawStateNominationTable,
+        drawStateNominationBlockedNotice,
+        drawPartialDataWarning,
+        drawGlossary,
+        drawReportOverview: addReportOverview,
+        drawCoverPage: addCoverPage,
+        drawPartnerSponsorshipReport,
+        drawPointsBreakdownPointerBox: () => {},
+        drawAuditChecklistBoxInline: drawAuditChecklistBox,
+        drawFamilyLivingCostsInline: drawFamilyLivingCosts,
+        drawGanttTimelineInline: drawGanttTimeline,
+        drawCrsBarChartInline: drawCrsBarChart,
+        drawPnpHeatmapInline: drawPnpHeatmap,
+        drawStateRadarInline: drawStateRadar,
+        addViralCTABanner,
+        addGlobalFooters,
+        formatDifficulty,
+        formatStrength,
+        formatSignalConfidence,
+        formatConfidenceLevel,
+        formatLoad,
+        formatEvidenceStatus,
+        formatRecommendationTag,
+      } as any);
+    } catch (err) {
+      // Gracefully skip personalized content if it fails
+      console.error("Personalized content render failed:", err);
+    }
+    // ── End Personalized Content ─────────────────────────────────────────
     drawGlossary();
     drawMissingInfoBox();
     drawVisaViabilityRanking();
