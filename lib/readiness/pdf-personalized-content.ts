@@ -39,7 +39,91 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   const estimatedPoints = report.pointsEstimate?.estimatedPoints ?? 0;
   const userName = userInputSummary.name || (effectiveLocale === "tr" ? "Başvuru Sahibi" : effectiveLocale === "zh-Hans" ? "申请人" : "Applicant");
 
-  // ── 1. Personalized Overview ──────────────────────────────────────────
+  // ── 1. Personalized Points Table (FIRST THING USER SEES) ──────────────
+  // Shows user's name, all point categories, earned vs maximum, total score
+  if (report.pointsEstimate && report.pointsEstimate.breakdown.length > 0) {
+    const breakdown = report.pointsEstimate.breakdown.map((item) => ({
+      label: item.label,
+      points: item.points,
+      max: item.max ?? 0,
+      note: item.note,
+    }));
+
+    const pointsData = getPersonalizedPointsBreakdown(
+      effectiveLocale,
+      country,
+      userName,
+      estimatedPoints,
+      breakdown,
+      65,
+    );
+
+    // Header with user's name
+    addSectionHeading("", pointsData.title);
+    addSmallText(pointsData.summary, 0);
+    ctx.yPosition += 2;
+
+    // Category breakdown table
+    const headers = [
+      effectiveLocale === "tr" ? "Kategori" : effectiveLocale === "zh-Hans" ? "类别" : "Category",
+      effectiveLocale === "tr" ? "Alınan" : effectiveLocale === "zh-Hans" ? "已得分" : "Earned",
+      effectiveLocale === "tr" ? "Maks." : effectiveLocale === "zh-Hans" ? "最高" : "Max",
+      effectiveLocale === "tr" ? "Durum" : effectiveLocale === "zh-Hans" ? "状态" : "Status",
+    ];
+
+    const rows = pointsData.categories.map((cat) => [
+      cat.label,
+      String(cat.earned),
+      String(cat.max),
+      cat.status === "excellent"
+        ? "✅"
+        : cat.status === "good"
+          ? "👍"
+          : cat.status === "needs_improvement"
+            ? "⚠️"
+            : "❌",
+    ]);
+
+    // Use drawTable if available
+    if (ctx.drawTable) {
+      ctx.drawTable(headers, rows, [0.4, 0.15, 0.15, 0.3]);
+    }
+
+    // Total
+    setBoldFont();
+    doc.setFontSize(10);
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    doc.text(safeText(pointsData.totalLine), margin, ctx.yPosition);
+    ctx.yPosition += 6;
+
+    // Gap analysis
+    addSmallText(pointsData.gapAnalysis, 0);
+    ctx.yPosition += 2;
+
+    // Improvement tips
+    if (pointsData.improvementTips.length > 0) {
+      addPremiumBulletContainer(
+        effectiveLocale === "tr" ? "Puan Artırma Önerileri" : effectiveLocale === "zh-Hans" ? "积分提升建议" : "Points Improvement Tips",
+        pointsData.improvementTips,
+        COLORS.riskLow,
+      );
+    }
+
+    // Additional strategies
+    if (pointsData.additionalStrategies && pointsData.additionalStrategies.length > 0) {
+      addSmallText(
+        effectiveLocale === "tr" ? "Ek Stratejiler:" : effectiveLocale === "zh-Hans" ? "其他策略：" : "Additional Strategies:",
+        0,
+      );
+      ctx.yPosition += 1;
+      pointsData.additionalStrategies.forEach((strategy) => {
+        addSmallText(`  • ${strategy}`, 0);
+      });
+    }
+    ctx.yPosition += 3;
+  }
+
+  // ── 2. Personalized Overview ──────────────────────────────────────────
   const overview = getPersonalizedOverview(
     effectiveLocale,
     country,
@@ -123,89 +207,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   }
   ctx.yPosition += 3;
 
-  // ── 3. Personalized Points Breakdown ──────────────────────────────────
-  if (report.pointsEstimate && report.pointsEstimate.breakdown.length > 0) {
-    const breakdown = report.pointsEstimate.breakdown.map((item) => ({
-      label: item.label,
-      points: item.points,
-      max: item.max ?? 0,
-      note: item.note,
-    }));
-
-    const pointsData = getPersonalizedPointsBreakdown(
-      effectiveLocale,
-      country,
-      userName,
-      estimatedPoints,
-      breakdown,
-      65,
-    );
-
-    addSectionHeading("", pointsData.title);
-    addSmallText(pointsData.summary, 0);
-    ctx.yPosition += 2;
-
-    // Category breakdown table
-    const headers = [
-      effectiveLocale === "tr" ? "Kategori" : effectiveLocale === "zh-Hans" ? "类别" : "Category",
-      effectiveLocale === "tr" ? "Alınan" : effectiveLocale === "zh-Hans" ? "已得分" : "Earned",
-      effectiveLocale === "tr" ? "Maks." : effectiveLocale === "zh-Hans" ? "最高" : "Max",
-      effectiveLocale === "tr" ? "Durum" : effectiveLocale === "zh-Hans" ? "状态" : "Status",
-    ];
-
-    const rows = pointsData.categories.map((cat) => [
-      cat.label,
-      String(cat.earned),
-      String(cat.max),
-      cat.status === "excellent"
-        ? "✅"
-        : cat.status === "good"
-          ? "👍"
-          : cat.status === "needs_improvement"
-            ? "⚠️"
-            : "❌",
-    ]);
-
-    // Use drawTable if available
-    if (ctx.drawTable) {
-      ctx.drawTable(headers, rows, [0.4, 0.15, 0.15, 0.3]);
-    }
-
-    // Total
-    setBoldFont();
-    doc.setFontSize(10);
-    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.text(safeText(pointsData.totalLine), margin, ctx.yPosition);
-    ctx.yPosition += 6;
-
-    // Gap analysis
-    addSmallText(pointsData.gapAnalysis, 0);
-    ctx.yPosition += 2;
-
-    // Improvement tips
-    if (pointsData.improvementTips.length > 0) {
-      addPremiumBulletContainer(
-        effectiveLocale === "tr" ? "Puan Artırma Önerileri" : effectiveLocale === "zh-Hans" ? "积分提升建议" : "Points Improvement Tips",
-        pointsData.improvementTips,
-        COLORS.riskLow,
-      );
-    }
-
-    // Additional strategies
-    if (pointsData.additionalStrategies && pointsData.additionalStrategies.length > 0) {
-      addSmallText(
-        effectiveLocale === "tr" ? "Ek Stratejiler:" : effectiveLocale === "zh-Hans" ? "其他策略：" : "Additional Strategies:",
-        0,
-      );
-      ctx.yPosition += 1;
-      pointsData.additionalStrategies.forEach((strategy) => {
-        addSmallText(`  • ${strategy}`, 0);
-      });
-    }
-    ctx.yPosition += 3;
-  }
-
-  // ── 4. Personalized Application Guide ─────────────────────────────────
+  // ── 3. Personalized Application Guide ─────────────────────────────────
   const guide = getPersonalizedApplicationGuide(
     effectiveLocale,
     country,
