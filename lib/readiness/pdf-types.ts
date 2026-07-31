@@ -216,6 +216,7 @@ export interface LocalizedText {
   readonly stateStatus: string;
   readonly stateMatch: string;
   readonly stateTrackerIntro: string;
+  readonly stateRadarMissingFieldsPrefix: string;
 }
 
 /**
