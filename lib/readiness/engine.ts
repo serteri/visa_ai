@@ -3491,15 +3491,23 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // it carries no points-table score of its own (see occupationNote below).
   const breakdown: PointsBreakdownItem[] = [
     {
-      label: isTr ? "Yaş" : isZh ? "年龄" : "Age",
+      label: isTr
+        ? `Yaş (${ageOption ? AGE_BRACKET_LABEL[ageOption].tr : "belirtilmedi"})`
+        : isZh ? `年龄 (${ageOption ? AGE_BRACKET_LABEL[ageOption].zh : "未提供"})`
+        : `Age${ageOption ? ` (${AGE_BRACKET_LABEL[ageOption].en})` : " (Not Provided)"}`,
       points: result.breakdown.age,
       max: 30,
       note: ageOption
-        ? isTr ? AGE_BRACKET_LABEL[ageOption].tr : isZh ? AGE_BRACKET_LABEL[ageOption].zh : AGE_BRACKET_LABEL[ageOption].en
+        ? isTr ? `${result.breakdown.age} puan — ${AGE_BRACKET_LABEL[ageOption].tr}`
+          : isZh ? `${result.breakdown.age} 分 — ${AGE_BRACKET_LABEL[ageOption].zh}`
+          : `${result.breakdown.age} pts — ${AGE_BRACKET_LABEL[ageOption].en}`
         : isTr ? "Yaş girilmedi" : isZh ? "未提供年龄" : "Age not provided",
     },
     {
-      label: isTr ? "İngilizce" : isZh ? "英语能力" : "English",
+      label: isTr
+        ? `İngilizce Dil (${input.englishLevel || "belirtilmedi"})`
+        : isZh ? `英语能力 (${input.englishLevel || "未提供"})`
+        : `English Language (${input.englishLevel || "Not Provided"})`,
       points: result.breakdown.english,
       max: 20,
       note: englishOption
@@ -3507,7 +3515,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : isTr ? "Test sonucu girilmedi" : isZh ? "未提供考试成绩" : "Test score not provided",
     },
     {
-      label: isTr ? "Yurt dışı deneyim" : isZh ? "海外工作经验" : "Overseas experience",
+      label: isTr
+        ? `Yurt Dışı Nitelikli İstihdam${input.offshoreExperienceYears !== undefined ? ` (${input.offshoreExperienceYears} yıl)` : ""}`
+        : isZh ? `海外技术工作${input.offshoreExperienceYears !== undefined ? ` (${input.offshoreExperienceYears}年)` : ""}`
+        : `Skilled Employment (Overseas${input.offshoreExperienceYears !== undefined ? `, ${input.offshoreExperienceYears} yrs` : ""})`,
       points: canApplyExperiencePoints ? result.breakdown.overseasEmployment : 0,
       max: 15,
       note: !canApplyExperiencePoints
@@ -3517,7 +3528,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
     },
     {
-      label: isTr ? "Avustralya deneyimi" : isZh ? "澳大利亚工作经验" : "Australian experience",
+      label: isTr
+        ? `Avustralya Nitelikli İstihdam${input.onshoreExperienceYears !== undefined ? ` (${input.onshoreExperienceYears} yıl)` : ""}`
+        : isZh ? `澳大利亚技术工作${input.onshoreExperienceYears !== undefined ? ` (${input.onshoreExperienceYears}年)` : ""}`
+        : `Skilled Employment (Australian${input.onshoreExperienceYears !== undefined ? `, ${input.onshoreExperienceYears} yrs` : ""})`,
       points: canApplyExperiencePoints ? result.breakdown.australianEmployment : 0,
       max: 20,
       note: !canApplyExperiencePoints
@@ -3527,7 +3541,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
     },
     {
-      label: isTr ? "Eğitim" : isZh ? "教育背景" : "Education",
+      label: isTr
+        ? `Eğitim Nitelikleri (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "belirtilmedi"})`
+        : isZh ? `教育背景 (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "未提供"})`
+        : `Educational Qualifications (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "Not Provided"})`,
       points: result.breakdown.education,
       max: 20,
       note: hasEducationInput
@@ -3535,7 +3552,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
     },
     {
-      label: isTr ? "Partner durumu" : isZh ? "伴侣状态" : "Partner status",
+      label: isTr
+        ? `Partner Nitelikleri (${partner.reason})`
+        : isZh ? `伴侣技能 (${partner.reason})`
+        : `Partner Skills (${partner.reason})`,
       points: result.breakdown.partner,
       max: 10,
       note: partner.reason,

@@ -24,6 +24,8 @@ export function getPersonalizedOverview(
   targetVisa: string,
   skillsAssessmentDone: boolean,
   matchPercentage?: number,
+  migrationGoals?: string[],
+  annualSalary?: string,
 ): {
   title: string;
   userName: string;
@@ -46,13 +48,36 @@ export function getPersonalizedOverview(
       ? `${name} — 准备报告摘要`
       : `${name} — Readiness Report Summary`;
 
-  // ── Executive Summary ─────────────────────────────────────────────────
-  const executiveSummary: string[] = [
-    isTr
+  // ── Executive Summary (goal-adaptive) ────────────────────────────────
+  const goals = migrationGoals ?? [];
+  const hasDirectPR = goals.includes("direct_pr");
+  const hasEmployer = goals.includes("employer_sponsorship");
+  const hasRegional = goals.includes("regional");
+
+  // Goal-specific opening paragraph
+  let goalIntro: string;
+  if (goals.length === 0) {
+    // Fallback: generic
+    goalIntro = isTr
       ? `${name}, bu rapor ${profile.occupation || 'mesleğiniz'} mesleğindeki profilinizi ${country === 'AU' ? 'Avustralya' : 'Kanada'} göçmenlik sistemine göre değerlendirmektedir.`
       : isZh
         ? `${name}，本报告根据${country === 'AU' ? '澳大利亚' : '加拿大'}移民系统评估您在${profile.occupation || '您选择的'}职业方面的档案。`
-        : `${name}, this report evaluates your profile for ${profile.occupation || 'your occupation'} against the ${country === 'AU' ? 'Australian' : 'Canadian'} immigration system.`,
+        : `${name}, this report evaluates your profile for ${profile.occupation || 'your occupation'} against the ${country === 'AU' ? 'Australian' : 'Canadian'} immigration system.`;
+  } else {
+    const goalNames: string[] = [];
+    if (hasDirectPR) goalNames.push(isTr ? "bağımsız/eyalet adaylığı kalıcı oturum (189/190)" : isZh ? "独立/州担保永久居留(189/190)" : "permanent residency via skilled migration (189/190)");
+    if (hasEmployer) goalNames.push(isTr ? "işveren sponsorluğu (482/186)" : isZh ? "雇主担保(482/186)" : "employer sponsorship (482/186)");
+    if (hasRegional) goalNames.push(isTr ? "bölgesel yol (491)" : isZh ? "偏远地区路径(491)" : "regional pathway (491)");
+    const goalStr = goalNames.join(isTr ? " ve " : isZh ? "和" : " and ");
+
+    goalIntro = isTr
+      ? `${name}, bu rapor ${profile.occupation || 'mesleğiniz'} mesleğinizle ilgili ${goalStr} seçeneklerini değerlendirmektedir.`
+      : isZh
+        ? `${name}，本报告评估您的${profile.occupation || '所选'}职业在${goalStr}方面的可行性。`
+        : `${name}, this report evaluates ${profile.occupation || 'your occupation'} for ${goalStr}.`;
+  }
+
+  const executiveSummary: string[] = [goalIntro,
 
     isTr
       ? `Tahmini puanınız ${estimatedPoints} puandır. ${targetVisa} vizesi için gereken minimum baraj ${threshold} puandır.`
@@ -91,6 +116,23 @@ export function getPersonalizedOverview(
         ? (isTr ? "✅ Güçlü dil seviyesi — ekstra puan kazanıyorsunuz." : isZh ? "✅ 语言水平较高——可获得额外积分。" : "✅ Strong English level — earning extra points.")
         : (isTr ? "⚠️ Dil seviyenizi yükseltmek +20 puana kadar kazandırabilir." : isZh ? "⚠️ 提高语言分数可获得最多+20分加分。" : "⚠️ Upgrading English could earn up to +20 more points."),
     );
+  }
+
+  // Salary viability (for employer-sponsored goals)
+  if (annualSalary && hasEmployer) {
+    const salaryNum = Number(annualSalary);
+    if (Number.isFinite(salaryNum) && salaryNum > 0) {
+      const meetsCsit = salaryNum >= 79423;
+      keyFindings.push(
+        meetsCsit
+          ? (isTr ? `✅ Maaş (AUD $${salaryNum.toLocaleString("en-AU")}) CSIT eşiğini karşılıyor.`
+              : isZh ? `✅ 薪资(AUD $${salaryNum.toLocaleString("en-AU")})已达CSIT门槛。`
+              : `✅ Salary (AUD $${salaryNum.toLocaleString("en-AU")}) meets CSIT threshold.`)
+          : (isTr ? `❌ Maaş (AUD $${salaryNum.toLocaleString("en-AU")}) CSIT eşiğinin altında.`
+              : isZh ? `❌ 薪资(AUD $${salaryNum.toLocaleString("en-AU")})低于CSIT门槛。`
+              : `❌ Salary (AUD $${salaryNum.toLocaleString("en-AU")}) is below CSIT threshold.`)
+      );
+    }
   }
 
   // Age

@@ -10,7 +10,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
-import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship } from "@/lib/countries";
+import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, getVisaSubclassesForGoals, type MigrationGoalId } from "@/lib/countries";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import {
   completeFullCheckProgress,
@@ -878,6 +878,13 @@ export async function submitFullCheckWaitlist(
   const email = String(formData.get("email") ?? "").trim();
   const fullName = String(formData.get("fullName") ?? "").trim();
   const visaInterest = String(formData.get("visaInterest") ?? "").trim();
+  let migrationGoals: string[] = [];
+  try {
+    const raw = String(formData.get("migrationGoals") ?? "").trim();
+    if (raw) migrationGoals = JSON.parse(raw);
+  } catch { /* ignore malformed JSON */ }
+  const mappedVisas = getVisaSubclassesForGoals(migrationGoals as MigrationGoalId[]);
+  const effectiveVisaInterest = visaInterest || mappedVisas.join(",") || "";
   const rawTargetCountry = String(formData.get("targetCountry") ?? "").trim();
   const submittedLocale = String(
     formData.get("routeLocale") ?? formData.get("locale") ?? formData.get("preferredLanguage") ?? ""
@@ -1189,7 +1196,7 @@ export async function submitFullCheckWaitlist(
     estimatedBudgetRange: estimatedBudgetRange || undefined,
     timeline: timeline || undefined,
     sponsorOrFamily: sponsorOrFamily || undefined,
-    preferredPathway: visaInterest || undefined,
+    preferredPathway: effectiveVisaInterest || undefined,
     biggestConcern: biggestConcern || undefined,
   });
 
@@ -1277,6 +1284,7 @@ export async function submitFullCheckWaitlist(
       annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
         ? annualSalaryAud
         : undefined,
+      migrationGoals: migrationGoals.length > 0 ? migrationGoals : undefined,
       qualificationAwardedInAustralia,
       qualificationRegionalAustralia,
       specialistEducationStemResponse,
@@ -1294,7 +1302,7 @@ export async function submitFullCheckWaitlist(
       estimatedBudgetRange: estimatedBudgetRange || undefined,
       timeline: timeline || undefined,
       sponsorOrFamily: sponsorOrFamily || undefined,
-      preferredPathway: visaInterest || undefined,
+      preferredPathway: effectiveVisaInterest || undefined,
       biggestConcern: biggestConcern || undefined,
       nocCode: nocCode || undefined,
       nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
@@ -1372,7 +1380,7 @@ export async function submitFullCheckWaitlist(
     estimatedBudgetRange: estimatedBudgetRange || undefined,
     timeline: timeline || undefined,
     sponsorOrFamily: sponsorOrFamily || undefined,
-    preferredPathway: visaInterest || undefined,
+    preferredPathway: effectiveVisaInterest || undefined,
     biggestConcern: biggestConcern || undefined,
   };
 
@@ -1382,7 +1390,7 @@ export async function submitFullCheckWaitlist(
   const reportRecord = await createUserReport({
     fullName,
     email,
-    preferredPath: visaInterest || undefined,
+    preferredPath: effectiveVisaInterest || undefined,
     source,
     locale: resolvedLocale,
     leadScore: leadQuality.leadScore,
@@ -1628,6 +1636,8 @@ export async function unlockPremiumReport(
           englishLevel: record.input.englishLevel,
           sponsorOrFamily: record.input.sponsorOrFamily,
           biggestConcern: record.input.biggestConcern,
+          annualSalaryAud: record.input.annualSalaryAud != null ? String(record.input.annualSalaryAud) : null,
+          migrationGoals: record.input.migrationGoals,
           skillsAssessmentDone: String(formData.get("skillsAssessment") ?? "").trim() === "yes",
         },
       });

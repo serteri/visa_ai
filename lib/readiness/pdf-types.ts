@@ -290,6 +290,8 @@ export interface UserInputSummary {
   estimatedBudgetRange?: string;
   timeline?: string;
   englishLevel?: string;
+  annualSalaryAud?: string | null;
+  migrationGoals?: string[];
   skillsAssessmentDone?: boolean | null;
 }
 

@@ -30,6 +30,61 @@ export const countryComplianceBadge: Record<SupportedCountry, { en: string; tr: 
   },
 };
 
+// ── Intent-Based Migration Goals ──────────────────────────────────────────────
+// Replaces the visa-subclass select with user-friendly intent checkboxes.
+// Each goal maps to one or more visa subclasses for downstream processing.
+
+export type MigrationGoalId = "direct_pr" | "employer_sponsorship" | "regional";
+
+export const migrationGoalOptions: Array<{
+  id: MigrationGoalId;
+  label: { en: string; tr: string; "zh-Hans": string };
+  description: { en: string; tr: string; "zh-Hans": string };
+  mapsToVisas: string[];
+}> = [
+  {
+    id: "direct_pr",
+    label: { en: "Direct Permanent Residency", tr: "Doğrudan Kalıcı Oturum", "zh-Hans": "直接永久居留" },
+    description: {
+      en: "Skilled Independent (189) or State-Nominated (190)",
+      tr: "Bağımsız (189) veya Eyalet Adaylığı (190)",
+      "zh-Hans": "独立技术移民(189)或州担保(190)",
+    },
+    mapsToVisas: ["189", "190"],
+  },
+  {
+    id: "employer_sponsorship",
+    label: { en: "Employer Sponsorship", tr: "İşveren Sponsorluğu", "zh-Hans": "雇主担保" },
+    description: {
+      en: "Work first on 482, then transition to PR via 186",
+      tr: "Önce 482 ile çalış, sonra 186 ile PR'a geç",
+      "zh-Hans": "先持482工作，再通过186转永居",
+    },
+    mapsToVisas: ["482", "186"],
+  },
+  {
+    id: "regional",
+    label: { en: "Open to Regional Pathways", tr: "Bölgesel Yollara Açık", "zh-Hans": "考虑偏远地区路径" },
+    description: {
+      en: "Skilled Work Regional visa (491) — extra points for regional commitment",
+      tr: "Bölgesel Vize (491) — bölgesel taahhüt için ek puanlar",
+      "zh-Hans": "偏远地区技术签证(491) — 区域承诺可获额外积分",
+    },
+    mapsToVisas: ["491"],
+  },
+];
+
+/** Returns all visa subclass codes that map to the given goal IDs. */
+export function getVisaSubclassesForGoals(goalIds: MigrationGoalId[]): string[] {
+  const visas = new Set<string>();
+  for (const goal of migrationGoalOptions) {
+    if (goalIds.includes(goal.id)) {
+      for (const v of goal.mapsToVisas) visas.add(v);
+    }
+  }
+  return Array.from(visas);
+}
+
 export type VisaPathwayOption = {
   value: string;
   label: { en: string; tr: string; "zh-Hans": string };

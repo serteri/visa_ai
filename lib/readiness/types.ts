@@ -20,6 +20,8 @@ export type ReadinessInput = {
   hasGraduateVisaPathwayIntent?: boolean;
   sponsorOrFamily?: string;
   annualSalaryAud?: number;
+  /** Intent-based migration goals selected by the user (e.g. ["direct_pr", "regional"]). */
+  migrationGoals?: string[];
   preferredPathway?: string;
   biggestConcern?: string;
   qualificationLevel?:

@@ -20,7 +20,7 @@ import {
   type FullCheckWaitlistState,
   submitFullCheckWaitlist,
 } from "./actions";
-import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, type SupportedCountry, type VisaPathwayOption } from "@/lib/countries";
+import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, migrationGoalOptions, getVisaSubclassesForGoals, type SupportedCountry, type VisaPathwayOption, type MigrationGoalId } from "@/lib/countries";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
@@ -557,7 +557,17 @@ export function FullCheckWaitlistForm({
   const [qualificationRegionalAustralia, setQualificationRegionalAustralia] = useState("");
   const [specialistEducationStemResponse, setSpecialistEducationStemResponse] = useState("");
   const [visaInterest, setVisaInterest] = useState(initialValues.visaInterest ?? "");
+  const [migrationGoals, setMigrationGoals] = useState<MigrationGoalId[]>([]);
   const isPartner = isPartnerFamilySponsorship(visaInterest);
+
+  /** Toggle a migration goal. Max 2 selections — deselects the oldest when a 3rd is picked. */
+  function toggleMigrationGoal(id: MigrationGoalId) {
+    setMigrationGoals((prev) => {
+      if (prev.includes(id)) return prev.filter((g) => g !== id);
+      if (prev.length >= 2) return [prev[1], id];
+      return [...prev, id];
+    });
+  }
 
   const [relationshipType, setRelationshipType] = useState("");
   const [cohabitationDuration, setCohabitationDuration] = useState("");
@@ -1035,23 +1045,93 @@ export function FullCheckWaitlistForm({
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-visa-interest">
-            {txt("Bu rapor hangi vize yoluna odaklanmalı?", "Which visa pathway should this report focus on?", "本报告应重点分析哪条签证路径？")}
+        <div className="space-y-3">
+          <Label>
+            {txt("Birincil göç hedefiniz nedir? (en fazla 2 seçim)", "What is your primary migration goal? (max 2 selections)", "您的主要移民目标是什么？（最多选2项）")}
+            <RequiredMark />
           </Label>
-          <select
-            id="waitlist-visa-interest"
-            name="visaInterest"
-            value={visaInterest}
-            onChange={(e) => setVisaInterest(e.target.value)}
-            className={selectClassName}
-          >
-            <option value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
-            {renderVisaPathwayOptions(countryVisaPathways[selectedCountry], isTr, isZh)}
-          </select>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {migrationGoalOptions.map((goal) => {
+              const isSelected = migrationGoals.includes(goal.id);
+              return (
+                <button
+                  key={goal.id}
+                  type="button"
+                  onClick={() => toggleMigrationGoal(goal.id)}
+                  className={`rounded-xl border-2 p-4 text-left transition-all ${
+                    isSelected
+                      ? "border-primary bg-primary/5 shadow-md ring-1 ring-primary/20"
+                      : "border-border/60 bg-background/60 hover:border-primary/40 hover:bg-primary/[0.02]"
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <div className={`mt-0.5 h-4 w-4 shrink-0 rounded border-2 flex items-center justify-center ${
+                      isSelected ? "border-primary bg-primary" : "border-muted-foreground/40"
+                    }`}>
+                      {isSelected && (
+                        <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none">
+                          <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <p className={`text-sm font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}>
+                        {goal.label[locale as "en" | "tr" | "zh-Hans"] ?? goal.label.en}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {goal.description[locale as "en" | "tr" | "zh-Hans"] ?? goal.description.en}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <input type="hidden" name="migrationGoals" value={JSON.stringify(migrationGoals)} />
+          {/* Backward-compat: populate mainGoal from selected intents */}
+          <input
+            type="hidden"
+            name="mainGoal"
+            value={migrationGoals
+              .map((id) => migrationGoalOptions.find((g) => g.id === id)?.label.en ?? id)
+              .join(", ")
+            }
+          />
+          {migrationGoals.length === 0 && (
+            <p className="text-xs text-muted-foreground">
+              {txt(
+                "En az bir hedef seçin. Belirli bir vize bilginiz varsa aşağıdan seçebilirsiniz.",
+                "Select at least one goal. If you know a specific visa subclass, you can choose it below.",
+                "请至少选择一个目标。如果您了解具体签证类别，可在下方选择。"
+              )}
+            </p>
+          )}
         </div>
 
-        {visaInterest === "186" && (
+        {/* Fallback: specific visa subclass select — shown only when no goals selected */}
+        {migrationGoals.length === 0 && (
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-visa-interest">
+              {txt("veya belirli bir vize yolunu seçin", "or select a specific visa pathway", "或选择具体签证路径")}
+            </Label>
+            <select
+              id="waitlist-visa-interest"
+              name="visaInterest"
+              value={visaInterest}
+              onChange={(e) => setVisaInterest(e.target.value)}
+              className={selectClassName}
+            >
+              <option value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
+              {renderVisaPathwayOptions(countryVisaPathways[selectedCountry], isTr, isZh)}
+            </select>
+          </div>
+        )}
+        {/* When goals are selected, still pass visaInterest for backward compat */}
+        {migrationGoals.length > 0 && (
+          <input type="hidden" name="visaInterest" value={getVisaSubclassesForGoals(migrationGoals).join(",")} />
+        )}
+
+        {(visaInterest === "186" && migrationGoals.length === 0) && (
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="waitlist-nomination-stream">
@@ -1191,24 +1271,6 @@ export function FullCheckWaitlistForm({
             placeholder={txt("Avustralya, Türkiye, Hindistan veya başka bir ülke", "Australia, Turkiye, India, or elsewhere", "例如：澳大利亚、中国、土耳其等")}
           />
           <ErrorText message={state.errors?.currentCountry} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-main-goal">
-            {txt("Ana hedef", "Main goal", "主要目标")}
-            <RequiredMark />
-          </Label>
-          <Textarea
-            id="waitlist-main-goal"
-            name="mainGoal"
-            defaultValue={initialValues.mainGoal ?? ""}
-            {...noAutofill("mainGoal")}
-            className="min-h-28 rounded-xl border-border/70 bg-background/80 px-4 py-3 shadow-sm transition focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            placeholder={txt("Raporun hangi konuda yardımcı olmasını istediğinizi belirtin", "Tell us what you want the report to help with", "请说明你希望报告重点解决的问题")}
-            rows={3}
-            required
-          />
-          <ErrorText message={state.errors?.mainGoal} />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

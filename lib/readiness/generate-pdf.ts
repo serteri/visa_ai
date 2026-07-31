@@ -104,6 +104,8 @@ interface PDFGeneratorInput {
     englishLevel?: string;
     sponsorOrFamily?: string;
     biggestConcern?: string;
+    annualSalaryAud?: string | null;
+    migrationGoals?: string[];
     skillsAssessmentDone?: boolean;
   };
 }
@@ -610,6 +612,10 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
 }
 
 const INELIGIBLE_RANKING_SUBCLASSES = ["482", "485", "189", "190", "491", "186"] as const;
+
+/** Core Skills Income Threshold — employer-sponsored visa minimum salary (1 July 2026). */
+const CSIT_THRESHOLD_AUD = 79423;
+const CSIT_THRESHOLD_LABEL = "AUD $79,423";
 
 /**
  * Hard Gate (1 July 2026): pathways the readiness engine marked "ineligible"
@@ -3818,42 +3824,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     [text.confidence, formatSignalConfidence(report.signalSnapshot.confidenceLabel)],
   ]);
 
-  // A real category-by-category points breakdown replaces the generic
-  // "Primary Limiting Factor" prose whenever real AU points-tested data is
-  // available -- the engine already computes per-category figures
-  // (pointsEstimate.breakdown), so show those instead of a templated
-  // paragraph. Falls back to the old prose box for non-points-tested
-  // contexts (e.g. only 482/500/820 in scope) where there's nothing numeric
-  // to show.
-  if (report.pointsEstimate && report.pointsEstimate.breakdown.length > 0) {
-    addHeading(text.pointsBreakdownTable);
-    addSmallText(text.pointsBreakdownIntro, 0);
-    const breakdownRows = report.pointsEstimate.breakdown;
-    drawTable(
-      [text.category, text.pointsEarned, text.maxPoints, text.note],
-      breakdownRows.map((item) => [
-        item.label,
-        String(item.points),
-        item.max !== undefined ? String(item.max) : "—",
-        item.note ?? "",
-      ]),
-      [0.24, 0.14, 0.14, 0.48]
-    );
-    const total = report.pointsEstimate.estimatedPoints;
-    if (total !== undefined) {
-      setBoldFont();
-      doc.setFontSize(FONTS.body);
-      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      ensurePageSpace(lineHeight + 2);
-      doc.text(safeText(`${text.totalRow}: ${total} pts (65 ${text.minimumRequired})`), margin, yPosition);
-      yPosition += lineHeight + 2;
-      setBaseFont();
-    }
-    if (report.pointsEstimate.occupationNote) {
-      addSmallText(cleanNum(report.pointsEstimate.occupationNote), 0);
-    }
-    yPosition += 2;
-  } else {
+  // Points breakdown is now rendered by renderPersonalizedContent
+  // (immediately after cover page + executive summary). Only show the
+  // fallback "Primary Limiting Factor" box when no points estimate exists.
+  if (!(report.pointsEstimate && report.pointsEstimate.breakdown.length > 0)) {
     addPremiumKeyValueContainer(
       text.primaryLimitingFactor,
       [
