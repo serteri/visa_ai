@@ -109,7 +109,7 @@ export function createTypographyHelpers(ctx: PDFContext) {
       ensurePageSpace(6);
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
       doc.setLineWidth(0.35);
-      doc.line(margin, ctx.yPosition, pageWidth - margin, ctx.yPosition);
+      doc.line(margin, ctx.yPosition, ctx.pageWidth - margin, ctx.yPosition);
       ctx.yPosition += 5;
     },
 

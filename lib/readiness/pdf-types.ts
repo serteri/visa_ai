@@ -222,7 +222,6 @@ export interface LocalizedText {
   readonly highPotentialBadge: string;
   readonly conditionalBadge: string;
   readonly highRiskBadge: string;
-  readonly belowPointsThreshold: string;
   readonly ineligibleComplianceViolation: string;
   readonly highlyRecommendedPathway: string;
   readonly alternativeOption: string;
