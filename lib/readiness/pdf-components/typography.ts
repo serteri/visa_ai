@@ -118,7 +118,6 @@ export function createTypographyHelpers(ctx: PDFContext) {
      * Calls drawSeparator() first for consistent spacing.
      */
     addSectionHeading(_symbol: string, heading: string): void {
-      // @ts-expect-error — drawSeparator is defined in this same factory
       this.drawSeparator();
       ensurePageSpace(13);
       doc.setFillColor(22, 78, 99);
