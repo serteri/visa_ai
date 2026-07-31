@@ -21,6 +21,6 @@ export const drawImmediateActionPlan: PDFSection = (ctx: PDFContext): void => {
       body: step,
       level: "low" as const,
     })),
-    "success",
+    "info",
   );
 };
