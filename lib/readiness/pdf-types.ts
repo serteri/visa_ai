@@ -205,6 +205,11 @@ export interface LocalizedText {
   readonly livingCostSingle: string;
   readonly livingCostFamily: string;
   readonly livingCostProfileLabel: string;
+
+  // Action plan labels
+  readonly yourImmediateActionPlan: string;
+  readonly nextStepBoxIntro: string;
+  readonly important: string;
 }
 
 /**
