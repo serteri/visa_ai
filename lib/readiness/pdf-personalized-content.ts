@@ -102,6 +102,33 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
           ? "递交EOI必须年满45周岁以下。"
           : "You must be under 45 to lodge an EOI.";
       doc.text(safeText(ineligibleDetail), margin + 8, bannerY + 13);
+    } else if (!isEoiEligible && eoiReason === "english") {
+      // RED: BLOCKED — Competent English not met
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(220, 38, 38);
+      doc.setLineWidth(0.8);
+      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
+      doc.setFillColor(220, 38, 38);
+      doc.rect(margin, bannerY, 3, bannerH, "F");
+
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(180, 38, 38);
+      const englishTitle = t === "tr"
+        ? "EOI DURUMU: ENGELLİ."
+        : t === "zh" ? "EOI 状态：已阻止。"
+        : "EOI STATUS: BLOCKED.";
+      doc.text(safeText(englishTitle), margin + 8, bannerY + 7);
+
+      setBaseFont();
+      doc.setFontSize(7.5);
+      doc.setTextColor(120, 40, 40);
+      const englishDetail = t === "tr"
+        ? "Eylem Gerekli: Bir EOI sunmak için en azından Competent English (yetkin İngilizce) seviyesini kanıtlamanız gerekir."
+        : t === "zh"
+          ? "需要采取行动：递交EOI前，您必须证明至少具备能力级英语水平。"
+          : "Action Required: You must demonstrate at least Competent English to lodge an EOI.";
+      doc.text(safeText(englishDetail), margin + 8, bannerY + 13);
     } else if (!isEoiEligible) {
       // RED: BLOCKED — skills assessment missing
       doc.setFillColor(254, 242, 242);

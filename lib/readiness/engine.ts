@@ -3435,16 +3435,30 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   const ageOption = input.age ? parseAgeOption(input.age) : null;
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
 
-  // ── Absolute Age Gate (DHA): applicants 45 or older cannot lodge an EOI ──
+  // ── Absolute EOI Hard Gates (DHA) ──────────────────────────────────────
+  // 1. Age: applicants 45 or older cannot lodge an EOI.
+  // 2. Skills Assessment: a positive assessment is legally required.
+  // 3. English: at least "Competent English" (the legal minimum) is required.
+  //    NOTE: parseEnglishOption("none") maps to "competent" for the points
+  //    tiering, but the "none" dropdown option means "no valid test / test
+  //    older than 3 years" — that does NOT satisfy the Competent English gate.
   const numericAge = input.age ? parseInt(input.age, 10) : undefined;
   const isOverAgeLimit = numericAge !== undefined && !isNaN(numericAge) && numericAge >= 45;
   const assessmentDone = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
-  const isEoiEligible = !isOverAgeLimit && assessmentDone;
-  const eoiIneligibilityReason: "age" | "skills_assessment" | null = isEoiEligible
+  const englishLevelRaw = (input.englishLevel ?? "").trim().toLowerCase();
+  const meetsCompetentEnglish =
+    englishOption !== null &&
+    englishLevelRaw !== "none" &&
+    (englishOption === "competent" || englishOption === "proficient" || englishOption === "superior");
+
+  const isEoiEligible = !isOverAgeLimit && assessmentDone && meetsCompetentEnglish;
+  const eoiIneligibilityReason: "age" | "skills_assessment" | "english" | null = isEoiEligible
     ? null
     : isOverAgeLimit
       ? "age"
-      : "skills_assessment";
+      : !assessmentDone
+        ? "skills_assessment"
+        : "english";
   const hasExperienceInput =
     input.offshoreExperienceYears !== undefined || input.onshoreExperienceYears !== undefined;
   const hasEducationInput = Boolean(input.qualificationLevel);
