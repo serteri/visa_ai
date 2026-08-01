@@ -883,6 +883,10 @@ export async function submitFullCheckWaitlist(
     const raw = String(formData.get("migrationGoals") ?? "").trim();
     if (raw) migrationGoals = JSON.parse(raw);
   } catch { /* ignore malformed JSON */ }
+  const preferredStateRaw = String(formData.get("preferredState") ?? "").trim();
+  const preferredState = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"].includes(preferredStateRaw)
+    ? preferredStateRaw
+    : undefined;
   const mappedVisas = getVisaSubclassesForGoals(migrationGoals as MigrationGoalId[]);
   const effectiveVisaInterest = visaInterest || mappedVisas.join(",") || "";
   const rawTargetCountry = String(formData.get("targetCountry") ?? "").trim();
@@ -1302,6 +1306,7 @@ export async function submitFullCheckWaitlist(
         ? annualSalaryAud
         : undefined,
       migrationGoals: migrationGoals.length > 0 ? migrationGoals : undefined,
+      preferredState,
       qualificationAwardedInAustralia,
       qualificationRegionalAustralia,
       specialistEducationStemResponse,
@@ -1639,7 +1644,7 @@ export async function unlockPremiumReport(
     let pdfBytes: Uint8Array;
 
     try {
-      // ── Fetch viability data from invitation rounds ──────────────────
+      // ── Fetch viability data from invitation rounds & state allocations ──
       let viabilityData: {
         cutoffScore: number;
         roundDate: string;
@@ -1647,13 +1652,58 @@ export async function unlockPremiumReport(
         occupationTitle: string;
         gap: number;
         viability: "strong" | "viable" | "borderline" | "below_threshold";
+        stateAllocation?: {
+          state: string;
+          visaSubclass: string;
+          allocation: number;
+          nominationsUsed?: number | null;
+        } | null;
       } | null = null;
+
+      // Preferred state for 190/491 nomination
+      const preferredState = record.input.preferredState;
+      const targetedStateNomination = (record.input.migrationGoals ?? []).some(
+        (g) => g === "direct_pr" || g === "regional"
+      );
 
       try {
         const occupation = record.input.occupation;
         const calculatedPoints = record.report.pointsEstimate?.estimatedPoints ?? 0;
 
-        if (occupation) {
+        // Fetch state allocation for the preferred state (190/491)
+        if (preferredState && targetedStateNomination) {
+          const subclass = (record.input.migrationGoals ?? []).includes("regional")
+            ? "491"
+            : "190";
+          const stateAlloc = await prisma.stateAllocation.findUnique({
+            where: {
+              programYear_state_visaSubclass: {
+                programYear: "2025-26",
+                state: preferredState,
+                visaSubclass: subclass,
+              },
+            },
+          });
+          if (stateAlloc) {
+            viabilityData = {
+              cutoffScore: 0,
+              roundDate: "2026-06",
+              totalInvited: 0,
+              occupationTitle: occupation ?? "your occupation",
+              gap: 0,
+              viability: "viable",
+              stateAllocation: {
+                state: stateAlloc.state,
+                visaSubclass: stateAlloc.visaSubclass,
+                allocation: stateAlloc.allocation,
+                nominationsUsed: stateAlloc.nominationsUsed,
+              },
+            };
+          }
+        }
+
+        // Fetch federal 189 cutoff only when not already resolved via state
+        if (occupation && !viabilityData) {
           const occRecord = await prisma.occupation.findFirst({
             where: {
               OR: [
@@ -1711,6 +1761,7 @@ export async function unlockPremiumReport(
           biggestConcern: record.input.biggestConcern,
           annualSalaryAud: record.input.annualSalaryAud != null ? String(record.input.annualSalaryAud) : null,
           migrationGoals: record.input.migrationGoals,
+          preferredState: record.input.preferredState,
           skillsAssessmentDone: String(formData.get("skillsAssessment") ?? "").trim() === "yes",
           isAustralianQualification: record.input.qualificationAwardedInAustralia,
           isQualificationRecognized: record.input.isQualificationRecognized,

@@ -64,15 +64,46 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   const showPoints = hasPointsTestedVisa || (!hasEmployerSponsored && estimatedPoints > 0);
 
   // ════════════════════════════════════════════════════════════════════════
-  // 1. EOI STATUS BANNER
+  // 1. EOI STATUS BANNER (reason-aware)
   // ════════════════════════════════════════════════════════════════════════
   if (showPoints) {
+    // Read the engine's EOI eligibility flag (age < 45 AND skills assessment done)
+    const isEoiEligible = report.pointsEstimate?.isEoiEligible ?? false;
+    const eoiReason = report.pointsEstimate?.eoiIneligibilityReason ?? null;
+
     ctx.ensurePageSpace(20);
     const bannerY = ctx.yPosition;
     const bannerH = 18;
 
-    if (!skillsAssessmentDone) {
-      // RED: BLOCKED
+    if (!isEoiEligible && eoiReason === "age") {
+      // RED: INELIGIBLE — age limit exceeded
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(220, 38, 38);
+      doc.setLineWidth(0.8);
+      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
+      doc.setFillColor(220, 38, 38);
+      doc.rect(margin, bannerY, 3, bannerH, "F");
+
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(180, 38, 38);
+      const ineligibleTitle = t === "tr"
+        ? "EOI DURUMU: UYGUN DEĞİL. Yaş Sınırı Aşıldı."
+        : t === "zh" ? "EOI 状态：不符合资格。已超过年龄上限。"
+        : "EOI STATUS: INELIGIBLE. Age Limit Exceeded.";
+      doc.text(safeText(ineligibleTitle), margin + 8, bannerY + 7);
+
+      setBaseFont();
+      doc.setFontSize(7.5);
+      doc.setTextColor(120, 40, 40);
+      const ineligibleDetail = t === "tr"
+        ? "Bir EOI sunmak için 45 yaşın altında olmanız gerekir."
+        : t === "zh"
+          ? "递交EOI必须年满45周岁以下。"
+          : "You must be under 45 to lodge an EOI.";
+      doc.text(safeText(ineligibleDetail), margin + 8, bannerY + 13);
+    } else if (!isEoiEligible) {
+      // RED: BLOCKED — skills assessment missing
       doc.setFillColor(254, 242, 242);
       doc.setDrawColor(220, 38, 38);
       doc.setLineWidth(0.8);
@@ -96,7 +127,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
         ? "Eylem Gerekli: Bir EOI sunmadan önce mesleğiniz için olumlu bir Beceri Değerlendirmesi yasal olarak zorunludur."
         : t === "zh"
           ? "需要采取行动：递交EOI之前，获得提名职业的正面技能评估是法律强制要求。"
-          : "Action Required: A positive Skills Assessment for your nominated occupation is legally required before lodging an EOI.";
+          : "Action Required: A positive Skills Assessment is legally required before lodging an EOI.";
       doc.text(safeText(blockedDetail), margin + 8, bannerY + 13);
     } else {
       // GREEN: READY
@@ -364,73 +395,155 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 4. PREDICTIVE VIABILITY INSIGHTS (enhanced with gap comparison)
+  // 4. PREDICTIVE VIABILITY INSIGHTS (isolated & route-split)
   // ════════════════════════════════════════════════════════════════════════
   if (showPoints && userInputSummary.viability) {
     const viab = userInputSummary.viability;
+    const isEoiEligible = report.pointsEstimate?.isEoiEligible ?? false;
 
-    // Use claimable points (from breakdown) instead of raw estimated points
+    // Claimable total (respects assessment/recognition/age gates from engine)
     const claimableTotal = report.pointsEstimate?.breakdown
       ? report.pointsEstimate.breakdown.reduce((sum: number, item: { points: number }) => sum + item.points, 0)
       : estimatedPoints;
 
-    const viabData = getViabilityInsights(effectiveLocale, {
-      occupationTitle: viab.occupationTitle,
-      calculatedPoints: claimableTotal,
-      cutoffScore: viab.cutoffScore,
-      roundDate: viab.roundDate,
-      totalInvited: viab.totalInvited,
-      gap: claimableTotal - viab.cutoffScore,
-      viability: claimableTotal >= viab.cutoffScore + 10
-        ? "strong"
-        : claimableTotal >= viab.cutoffScore
-          ? "viable"
-          : claimableTotal >= viab.cutoffScore - 5
-            ? "borderline"
-            : "below_threshold",
-      hasSkillsAssessment: skillsAssessmentDone,
-    });
-
     ctx.ensurePageSpace(35);
-    addSectionHeading("📊", viabData.title);
-    addBody(viabData.summary);
-    ctx.yPosition += 2;
+    addSectionHeading("📊",
+      t === "tr" ? "Tahmini Uygunluk Analizi"
+        : t === "zh" ? "预测可行性分析"
+        : "Predictive Viability Insights"
+    );
 
-    // Dynamic gap text block
-    if (claimableTotal >= viab.cutoffScore) {
-      const competitiveText = t === "tr"
-        ? "Son davet turlarına göre yüksek rekabet gücüne sahipsiniz."
-        : t === "zh"
-          ? "基于近期邀请轮次，您具有很强的竞争力。"
-          : "Highly competitive based on recent rounds.";
+    // ── Condition A: EOI is BLOCKED → locked state ─────────────────────
+    if (!isEoiEligible) {
+      const boxY = ctx.yPosition;
+      const boxH = 22;
+      doc.setFillColor(250, 250, 250);
+      doc.setDrawColor(148, 163, 184);
+      doc.setLineWidth(0.8);
+      doc.roundedRect(margin, boxY, contentWidth, boxH, 2, 2, "FD");
+      doc.setFillColor(148, 163, 184);
+      doc.rect(margin, boxY, 3, boxH, "F");
+
       setBoldFont();
       doc.setFontSize(9);
-      doc.setTextColor(22, 101, 52);
-      doc.text(safeText(competitiveText), margin + 4, ctx.yPosition);
+      doc.setTextColor(71, 85, 105);
+      const lockedTitle = t === "tr"
+        ? "🔒 Tahminler Kilitli"
+        : t === "zh" ? "🔒 预测已锁定"
+        : "🔒 Predictive Insights Locked";
+      doc.text(safeText(lockedTitle), margin + 8, boxY + 7);
+
       setBaseFont();
-      ctx.yPosition += 5;
-    } else {
-      const gap = viab.cutoffScore - claimableTotal;
-      const shortText = t === "tr"
-        ? `Son kesim puanının ${gap} puan altındasınız. Daha yüksek dil puanı, NAATI veya Partner puanları gibi ek puan yollarını değerlendirin.`
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 116, 139);
+      const lockedDetail = t === "tr"
+        ? "Tahmini analiz şu anda kilitli. Tarihsel uygunluğu analiz etmeden önce EOI engellerini (Yaş veya Beceri Değerlendirmesi) çözmelisiniz."
         : t === "zh"
-          ? `您目前距离最近的历史分数线还差${gap}分。建议探索额外加分途径（如优秀语言成绩、NAATI或伴侣积分）。`
-          : `You are currently ${gap} points short of the recent historical cut-off. We recommend exploring additional point avenues (e.g., superior English, NAATI, or Partner points).`;
-      setBoldFont();
-      doc.setFontSize(9);
-      doc.setTextColor(180, 38, 38);
-      doc.text(safeText(shortText), margin + 4, ctx.yPosition);
-      setBaseFont();
-      ctx.yPosition += 5;
+          ? "预测分析当前已锁定。在分析历史可行性之前，您必须先解决EOI障碍（年龄或技能评估）。"
+          : "Predictive insights are currently locked. You must resolve the EOI blockers (Age or Skills Assessment) before analyzing historical viability.";
+      doc.text(safeText(lockedDetail), margin + 8, boxY + 14);
+
+      ctx.yPosition = boxY + boxH + 3;
     }
+    // ── Condition C: State Nomination (190/491) outlook ────────────────
+    else if (viab.stateAllocation) {
+      const sa = viab.stateAllocation;
+      const subclass = sa.visaSubclass;
 
-    viabData.details.forEach((detail) => {
-      addSmallText(detail, 4);
-    });
-    ctx.yPosition += 2;
+      // Key-value box: state allocation
+      const allocText = t === "tr"
+        ? `${sa.state} eyaletinin ${subclass} programı için bu yıl ${sa.allocation.toLocaleString("en-AU")} kontenjanı bulunmaktadır.`
+        : t === "zh"
+          ? `${sa.state} 州在${subclass}计划本年度拥有 ${sa.allocation.toLocaleString("en-AU")} 个配额。`
+          : `${sa.state} has an allocation of ${sa.allocation.toLocaleString("en-AU")} places for the ${subclass} program this year.`;
 
-    addSmallText(viabData.recommendation, 0);
-    ctx.yPosition += 3;
+      addPremiumKeyValueContainer(
+        t === "tr" ? `Eyalet Adaylığı (${subclass}) Görünümü`
+          : t === "zh" ? `州提名（${subclass}）展望`
+          : `State Nomination (${subclass}) Outlook`,
+        [[
+          t === "tr" ? "Tahsis" : t === "zh" ? "配额" : "Allocation",
+          allocText,
+        ]],
+        COLORS.primary,
+      );
+      ctx.yPosition += 2;
+
+      const stateNote = t === "tr"
+        ? `Eyalet adaylıkları katı federal puan kesim çizgileri yerine yerel beceri kıtlıklarını ve benzersiz demografik ihtiyaçları önceliklendirir. ${sa.state} eyaletinin belirli yerel kriterlerini karşıladığınızdan emin olun.`
+        : t === "zh"
+          ? `州提名优先考虑本地技能短缺和独特的人口需求，而非严格的联邦分数线。请确保您满足${sa.state}州的具体当地标准。`
+          : `State nominations prioritize local skill shortages and unique demographic needs rather than strict federal point cut-offs. Ensure you meet ${sa.state}'s specific local criteria.`;
+      addSmallText(stateNote, 0);
+      ctx.yPosition += 3;
+    }
+    // ── Condition B: Federal 189 Viability ─────────────────────────────
+    else {
+      const viabData = getViabilityInsights(effectiveLocale, {
+        occupationTitle: viab.occupationTitle,
+        calculatedPoints: claimableTotal,
+        cutoffScore: viab.cutoffScore,
+        roundDate: viab.roundDate,
+        totalInvited: viab.totalInvited,
+        gap: claimableTotal - viab.cutoffScore,
+        viability: claimableTotal >= viab.cutoffScore + 10
+          ? "strong"
+          : claimableTotal >= viab.cutoffScore
+            ? "viable"
+            : claimableTotal >= viab.cutoffScore - 5
+              ? "borderline"
+              : "below_threshold",
+        hasSkillsAssessment: skillsAssessmentDone,
+      });
+
+      addBody(viabData.summary);
+      ctx.yPosition += 2;
+
+      // Historical cut-off headline
+      const headline = t === "tr"
+        ? `Federal 189 Uygunluğu: ${viab.occupationTitle} için en son federal turda (Haziran 2026) tarihsel kesim puanı ${viab.cutoffScore} puandı.`
+        : t === "zh"
+          ? `联邦189可行性：${viab.occupationTitle}在最近联邦轮次（2026年6月）的历史分数线为${viab.cutoffScore}分。`
+          : `Federal 189 Viability: The historical cut-off for ${viab.occupationTitle} in the recent federal round (June 2026) was ${viab.cutoffScore} points.`;
+      addBody(headline);
+      ctx.yPosition += 2;
+
+      // Dynamic gap text block
+      if (claimableTotal >= viab.cutoffScore) {
+        const competitiveText = t === "tr"
+          ? "Son davet turlarına göre yüksek rekabet gücüne sahipsiniz."
+          : t === "zh"
+            ? "基于近期邀请轮次，您具有很强的竞争力。"
+            : "Highly competitive based on recent rounds.";
+        setBoldFont();
+        doc.setFontSize(9);
+        doc.setTextColor(22, 101, 52);
+        doc.text(safeText(competitiveText), margin + 4, ctx.yPosition);
+        setBaseFont();
+        ctx.yPosition += 5;
+      } else {
+        const gap = viab.cutoffScore - claimableTotal;
+        const shortText = t === "tr"
+          ? `Son kesim puanının ${gap} puan altındasınız. Daha yüksek dil puanı, NAATI veya Partner puanları gibi ek puan yollarını değerlendirin.`
+          : t === "zh"
+            ? `您目前距离最近的历史分数线还差${gap}分。建议探索额外加分途径（如优秀语言成绩、NAATI或伴侣积分）。`
+            : `You are currently ${gap} points short of the recent historical cut-off. We recommend exploring additional point avenues (e.g., superior English, NAATI, or Partner points).`;
+        setBoldFont();
+        doc.setFontSize(9);
+        doc.setTextColor(180, 38, 38);
+        doc.text(safeText(shortText), margin + 4, ctx.yPosition);
+        setBaseFont();
+        ctx.yPosition += 5;
+      }
+
+      viabData.details.forEach((detail) => {
+        addSmallText(detail, 4);
+      });
+      ctx.yPosition += 2;
+
+      addSmallText(viabData.recommendation, 0);
+      ctx.yPosition += 3;
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════

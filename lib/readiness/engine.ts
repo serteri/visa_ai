@@ -3281,6 +3281,8 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
       note: isTr
         ? "CRS tahmini için yaş ve İngilizce seviyesi sağlanmadı. Puan hesaplaması mevcut değil."
         : "Age and English level were not provided. A CRS estimate is not available.",
+      isEoiEligible: true,
+      eoiIneligibilityReason: null,
     };
   }
 
@@ -3329,6 +3331,8 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
     estimatedPoints,
     breakdown,
     note,
+    isEoiEligible: true,
+    eoiIneligibilityReason: null,
   };
 }
 
@@ -3430,6 +3434,17 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
 
   const ageOption = input.age ? parseAgeOption(input.age) : null;
   const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+
+  // ── Absolute Age Gate (DHA): applicants 45 or older cannot lodge an EOI ──
+  const numericAge = input.age ? parseInt(input.age, 10) : undefined;
+  const isOverAgeLimit = numericAge !== undefined && !isNaN(numericAge) && numericAge >= 45;
+  const assessmentDone = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
+  const isEoiEligible = !isOverAgeLimit && assessmentDone;
+  const eoiIneligibilityReason: "age" | "skills_assessment" | null = isEoiEligible
+    ? null
+    : isOverAgeLimit
+      ? "age"
+      : "skills_assessment";
   const hasExperienceInput =
     input.offshoreExperienceYears !== undefined || input.onshoreExperienceYears !== undefined;
   const hasEducationInput = Boolean(input.qualificationLevel);
@@ -3446,6 +3461,8 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
       note: isTr
         ? "Puan tahmini için yaş ve İngilizce seviyesi sağlanmadı. Puan hesaplaması mevcut değil."
         : "Age and English level were not provided. A points estimate is not available.",
+      isEoiEligible,
+      eoiIneligibilityReason,
     };
   }
 
@@ -3503,13 +3520,18 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         ? `Yaş (${ageOption ? AGE_BRACKET_LABEL[ageOption].tr : "belirtilmedi"})`
         : isZh ? `年龄 (${ageOption ? AGE_BRACKET_LABEL[ageOption].zh : "未提供"})`
         : `Age${ageOption ? ` (${AGE_BRACKET_LABEL[ageOption].en})` : " (Not Provided)"}`,
-      points: result.breakdown.age,
+      // DHA absolute age gate: applicants 45+ get 0 age points and cannot lodge an EOI.
+      points: isOverAgeLimit ? 0 : result.breakdown.age,
       max: 30,
-      note: ageOption
-        ? isTr ? `${result.breakdown.age} puan — ${AGE_BRACKET_LABEL[ageOption].tr}`
-          : isZh ? `${result.breakdown.age} 分 — ${AGE_BRACKET_LABEL[ageOption].zh}`
-          : `${result.breakdown.age} pts — ${AGE_BRACKET_LABEL[ageOption].en}`
-        : isTr ? "Yaş girilmedi" : isZh ? "未提供年龄" : "Age not provided",
+      note: isOverAgeLimit
+        ? (isTr ? "Yaş sınırı aşıldı (45+) — 0 puan, EOI uygun değil"
+          : isZh ? "超过年龄上限（45岁）— 0分，不符合EOI条件"
+          : "Age limit exceeded (45+) — 0 pts, EOI ineligible")
+        : ageOption
+          ? isTr ? `${result.breakdown.age} puan — ${AGE_BRACKET_LABEL[ageOption].tr}`
+            : isZh ? `${result.breakdown.age} 分 — ${AGE_BRACKET_LABEL[ageOption].zh}`
+            : `${result.breakdown.age} pts — ${AGE_BRACKET_LABEL[ageOption].en}`
+          : isTr ? "Yaş girilmedi" : isZh ? "未提供年龄" : "Age not provided",
     },
     {
       label: isTr
@@ -3651,6 +3673,8 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     breakdown,
     note,
     occupationNote,
+    isEoiEligible,
+    eoiIneligibilityReason,
   };
 }
 

@@ -22,6 +22,8 @@ export type ReadinessInput = {
   annualSalaryAud?: number;
   /** Intent-based migration goals selected by the user (e.g. ["direct_pr", "regional"]). */
   migrationGoals?: string[];
+  /** Preferred Australian state/territory for 190/491 nomination (NSW, VIC, QLD, SA, WA, TAS, NT, ACT) */
+  preferredState?: string;
   preferredPathway?: string;
   biggestConcern?: string;
   qualificationLevel?:
@@ -154,6 +156,10 @@ export type PointsEstimate = {
   note: string;
   /** One-line note about occupation/skills-assessment status, shown under the breakdown table -- occupation itself does not carry points-table score, so it's kept out of the scored breakdown array but still needs surfacing. */
   occupationNote?: string;
+  /** TRUE only when the applicant can validly lodge an EOI: under 45 years old AND has a skills assessment. */
+  isEoiEligible: boolean;
+  /** Why EOI lodgement is blocked (only set when isEoiEligible === false). */
+  eoiIneligibilityReason?: "age" | "skills_assessment" | null;
 };
 
 export type OccupationMatch = {

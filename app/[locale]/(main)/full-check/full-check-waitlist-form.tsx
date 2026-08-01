@@ -559,6 +559,7 @@ export function FullCheckWaitlistForm({
   const [isQualificationRecognized, setIsQualificationRecognized] = useState("");
   const [visaInterest, setVisaInterest] = useState(initialValues.visaInterest ?? "");
   const [migrationGoals, setMigrationGoals] = useState<MigrationGoalId[]>([]);
+  const [preferredState, setPreferredState] = useState("");
   const isPartner = isPartnerFamilySponsorship(visaInterest);
 
   /** Toggle a migration goal. Max 2 selections — deselects the oldest when a 3rd is picked. */
@@ -1130,6 +1131,50 @@ export function FullCheckWaitlistForm({
         {/* When goals are selected, still pass visaInterest for backward compat */}
         {migrationGoals.length > 0 && (
           <input type="hidden" name="visaInterest" value={getVisaSubclassesForGoals(migrationGoals).join(",")} />
+        )}
+
+        {/* Preferred state for 190/491 state nomination — shown when a state-nominated goal is selected */}
+        {selectedCountry === "AU" && (migrationGoals.includes("direct_pr") || migrationGoals.includes("regional")) && (
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-preferred-state">
+              {txt(
+                "Tercih ettiğiniz eyalet? (190/491 adaylığı için)",
+                "Preferred state? (for 190/491 nomination)",
+                "您偏好哪个州？（用于190/491提名）"
+              )}
+            </Label>
+            <select
+              id="waitlist-preferred-state"
+              name="preferredState"
+              value={preferredState}
+              onChange={(e) => setPreferredState(e.target.value)}
+              className={selectClassName}
+            >
+              <option value="">{txt("Seçin / Kararsızım", "Select / Undecided", "请选择/未决定")}</option>
+              {[
+                ["NSW", "New South Wales"],
+                ["VIC", "Victoria"],
+                ["QLD", "Queensland"],
+                ["SA", "South Australia"],
+                ["WA", "Western Australia"],
+                ["TAS", "Tasmania"],
+                ["NT", "Northern Territory"],
+                ["ACT", "Australian Capital Territory"],
+              ].map(([code, name]) => (
+                <option key={code} value={code}>
+                  {code} — {name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground">
+              {txt(
+                "Eyalet adaylığı analizi, seçtiğiniz eyaletin yıllık tahsisiyle karşılaştırılacaktır.",
+                "State nomination analysis will compare against your selected state's annual allocation.",
+                "州提名分析将根据您所选州的年度配额进行比较。"
+              )}
+            </p>
+            <ErrorText message={state.errors?.preferredState} />
+          </div>
         )}
 
         {(visaInterest === "186" && migrationGoals.length === 0) && (

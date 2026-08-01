@@ -106,6 +106,7 @@ interface PDFGeneratorInput {
     biggestConcern?: string;
     annualSalaryAud?: string | null;
     migrationGoals?: string[];
+    preferredState?: string;
     skillsAssessmentDone?: boolean;
     isAustralianQualification?: boolean | null;
     isQualificationRecognized?: boolean | null;
@@ -116,6 +117,12 @@ interface PDFGeneratorInput {
       occupationTitle: string;
       gap: number;
       viability: "strong" | "viable" | "borderline" | "below_threshold";
+      stateAllocation?: {
+        state: string;
+        visaSubclass: string;
+        allocation: number;
+        nominationsUsed?: number | null;
+      } | null;
     } | null;
   };
 }
