@@ -1097,10 +1097,10 @@ export async function submitFullCheckWaitlist(
   }
   if (!isPartner && !qualificationAwardedInAustraliaResult.success) {
     errors.qualificationAwardedInAustralia = isTr
-      ? "Avustralya kurumunda tamamlama bilgisi geçersiz."
+      ? "Bu alan zorunludur. Evet veya Hayır seçin."
       : isZh
-        ? "澳大利亚院校完成情况无效。"
-        : "Australian institution answer is invalid.";
+        ? "此项为必填。请选择是或否。"
+        : "This field is required. Please select Yes or No.";
   }
   if (!isPartner && qualificationAwardedInAustralia === true && !qualificationRegionalAustraliaResult.success) {
     errors.qualificationRegionalAustralia = isTr

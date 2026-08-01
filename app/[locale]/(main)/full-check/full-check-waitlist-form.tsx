@@ -1721,6 +1721,7 @@ export function FullCheckWaitlistForm({
                       "Did you complete this qualification at an Australian institution?",
                       "你是否在澳大利亚教育机构完成了这一学历？"
                     )}
+                <RequiredMark />
               </Label>
               <select
                 id="waitlist-qualification-awarded-in-australia"
@@ -1736,7 +1737,6 @@ export function FullCheckWaitlistForm({
                 }}
                 className={selectClassName}
               >
-                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
                 <option value="yes">{txt("Evet", "Yes", "是")}</option>
                 <option value="no">{txt("Hayır", "No", "否")}</option>
               </select>
@@ -1748,9 +1748,9 @@ export function FullCheckWaitlistForm({
                       "在加拿大境外完成的学历需要进行 ECA 证书评估才能计分。"
                     )
                   : txt(
-                      "Bu yanıt, Australian study requirement (+5) ve varsa regional study (+5) puanlarını belirler.",
-                      "This answer drives the Australian study requirement (+5) and, if relevant, regional study (+5) points.",
-                      "此答案将决定 Australian study requirement（+5）以及如适用的 regional study（+5）积分。"
+                      "Bu yanıt, Australian study requirement (+5) ve varsa regional study (+5) puanlarını belirler. Yabancı diplomalar için skills assessment zorunludur.",
+                      "This answer drives the Australian study requirement (+5) and, if relevant, regional study (+5) points. Overseas qualifications require a skills assessment to claim points.",
+                      "此答案将决定 Australian study requirement（+5）以及如适用的 regional study（+5）积分。海外学历需要技能评估才能计分。"
                     )}
               </p>
               <ErrorText message={state.errors?.qualificationAwardedInAustralia} />
