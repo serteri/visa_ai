@@ -3456,6 +3456,13 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     canApplyExperiencePoints ? input.onshoreExperienceYears : undefined
   );
   const education = qualificationToEducationOption(input.qualificationLevel, isAustralianQualification(input));
+
+  // ── DHA Skills Assessment Gate ────────────────────────────────────────
+  // Per DHA rules: skilled employment points require a valid skills assessment.
+  // Education points from overseas qualifications also require assessment.
+  // Australian qualifications are exempt from assessment for points purposes.
+  const hasSkillsAssessmentDone = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
+  const isOverseasQualification = !isAustralianQualification(input);
   const specialistEducation = hasSpecialistEducationClaim(input);
   const australianStudyRequirement = isAustralianQualification(input);
   const regionalStudy = isRegionalAustralianQualification(input);
@@ -3519,37 +3526,51 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         ? `Yurt Dışı Nitelikli İstihdam${input.offshoreExperienceYears !== undefined ? ` (${input.offshoreExperienceYears} yıl)` : ""}`
         : isZh ? `海外技术工作${input.offshoreExperienceYears !== undefined ? ` (${input.offshoreExperienceYears}年)` : ""}`
         : `Skilled Employment (Overseas${input.offshoreExperienceYears !== undefined ? `, ${input.offshoreExperienceYears} yrs` : ""})`,
-      points: canApplyExperiencePoints ? result.breakdown.overseasEmployment : 0,
+      points: (canApplyExperiencePoints && hasSkillsAssessmentDone) ? result.breakdown.overseasEmployment : 0,
       max: 15,
-      note: !canApplyExperiencePoints
-        ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
-        : input.offshoreExperienceYears !== undefined
-          ? `${input.offshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
-          : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
+      note: !hasSkillsAssessmentDone
+        ? (isTr ? "Beceri değerlendirmesi gerekli — puan talep edilemez"
+          : isZh ? "需要技能评估 — 无法计分"
+          : "Assessment Required — points cannot be claimed")
+        : !canApplyExperiencePoints
+          ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
+          : input.offshoreExperienceYears !== undefined
+            ? `${input.offshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
+            : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
     },
     {
       label: isTr
         ? `Avustralya Nitelikli İstihdam${input.onshoreExperienceYears !== undefined ? ` (${input.onshoreExperienceYears} yıl)` : ""}`
         : isZh ? `澳大利亚技术工作${input.onshoreExperienceYears !== undefined ? ` (${input.onshoreExperienceYears}年)` : ""}`
         : `Skilled Employment (Australian${input.onshoreExperienceYears !== undefined ? `, ${input.onshoreExperienceYears} yrs` : ""})`,
-      points: canApplyExperiencePoints ? result.breakdown.australianEmployment : 0,
+      points: (canApplyExperiencePoints && hasSkillsAssessmentDone) ? result.breakdown.australianEmployment : 0,
       max: 20,
-      note: !canApplyExperiencePoints
-        ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
-        : input.onshoreExperienceYears !== undefined
-          ? `${input.onshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
-          : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
+      note: !hasSkillsAssessmentDone
+        ? (isTr ? "Beceri değerlendirmesi gerekli — puan talep edilemez"
+          : isZh ? "需要技能评估 — 无法计分"
+          : "Assessment Required — points cannot be claimed")
+        : !canApplyExperiencePoints
+          ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
+          : input.onshoreExperienceYears !== undefined
+            ? `${input.onshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
+            : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
     },
     {
       label: isTr
         ? `Eğitim Nitelikleri (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "belirtilmedi"})`
         : isZh ? `教育背景 (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "未提供"})`
         : `Educational Qualifications (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "Not Provided"})`,
-      points: result.breakdown.education,
+      // DHA rule: Australian qualifications are exempt from assessment for points.
+      // Overseas qualifications require a valid skills assessment to claim points.
+      points: (isOverseasQualification && !hasSkillsAssessmentDone) ? 0 : result.breakdown.education,
       max: 20,
-      note: hasEducationInput
-        ? getLocalizedQualification(input.qualificationLevel, locale)
-        : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
+      note: (isOverseasQualification && !hasSkillsAssessmentDone)
+        ? (isTr ? "Yabancı diploma — değerlendirme gerekli"
+          : isZh ? "海外学历 — 需要技能评估"
+          : "Overseas qualification — assessment required")
+        : hasEducationInput
+          ? getLocalizedQualification(input.qualificationLevel, locale)
+          : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
     },
     {
       label: isTr
@@ -3595,10 +3616,11 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     });
   }
 
-  // The true total respects the employment cap; it is NOT a naive sum of the
-  // displayed rows, since overseas/Australian experience are shown as their
-  // own uncapped category values (see employmentCapNote above).
-  const estimatedPoints = result.total189;
+  // The true total respects both the employment cap AND the skills-assessment
+  // gate (education/employment zeroed when assessment is missing). We sum the
+  // final breakdown values rather than using result.total189, which doesn't
+  // account for the assessment gate applied above.
+  const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
 
   const occupationNote = isTr
     ? "Meslek / Skills Assessment doğrudan puan vermez, ama diğer pathway'lerin (482/186 gibi) uygunluğunu belirler."

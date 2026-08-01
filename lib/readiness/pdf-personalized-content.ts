@@ -145,48 +145,20 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 2. POINTS BREAKDOWN TABLE (with hard gate) — OR — EMPLOYER READINESS
+  // 2. POINTS BREAKDOWN TABLE — OR — EMPLOYER READINESS
   // ════════════════════════════════════════════════════════════════════════
   if (showPoints && report.pointsEstimate && report.pointsEstimate.breakdown.length > 0) {
-    // ── Build breakdown with hard gate zero-out ────────────────────────
-    const fullBreakdown = report.pointsEstimate.breakdown;
-    let claimableTotal = estimatedPoints;
-    let projectedTotal = estimatedPoints;
-
-    const breakdown = fullBreakdown.map((item) => {
-      const isOccupationRelated =
-        item.label.toLowerCase().includes("occupation") ||
-        item.label.toLowerCase().includes("skills") ||
-        item.label.toLowerCase().includes("meslek") ||
-        item.label.toLowerCase().includes("职业") ||
-        item.label.toLowerCase().includes("overseas") ||
-        item.label.toLowerCase().includes("australian experience") ||
-        item.label.toLowerCase().includes("yurt dışı") ||
-        item.label.toLowerCase().includes("avustralya deneyimi") ||
-        item.label.toLowerCase().includes("海外") ||
-        item.label.toLowerCase().includes("澳大利亚工作");
-
-      const zeroed = isOccupationRelated && !skillsAssessmentDone;
-      if (zeroed) {
-        claimableTotal -= item.points;
-      }
-
-      return {
-        label: item.label,
-        points: zeroed ? 0 : item.points,
-        max: item.max ?? 0,
-        note: item.note,
-        _originalPoints: item.points,
-        _zeroed: zeroed,
-      };
-    });
+    // The engine now handles skills-assessment gating (education + employment
+    // zeroed when assessment is missing), so breakdown already reflects the
+    // correct claimable points. No additional zero-out needed here.
+    const breakdown = report.pointsEstimate.breakdown;
 
     const pointsData = getPersonalizedPointsBreakdown(
       effectiveLocale,
       country,
       userName,
-      skillsAssessmentDone ? estimatedPoints : claimableTotal,
-      breakdown,
+      estimatedPoints,
+      breakdown.map((item) => ({ ...item, max: item.max ?? 0 })),
       65,
     );
 
@@ -203,40 +175,91 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     addSmallText(pointsData.summary, 0);
     ctx.yPosition += 3;
 
-    // ── Category Breakdown Table ───────────────────────────────────────
-    const headers = [
-      effectiveLocale === "tr" ? "Kategori" : effectiveLocale === "zh-Hans" ? "类别" : "Category",
-      effectiveLocale === "tr" ? "Alınan" : effectiveLocale === "zh-Hans" ? "已得分" : "Earned",
-      effectiveLocale === "tr" ? "Maks." : effectiveLocale === "zh-Hans" ? "最高" : "Max",
-      effectiveLocale === "tr" ? "Durum" : effectiveLocale === "zh-Hans" ? "状态" : "Status",
-    ];
+    // ── CRITICAL COMPLIANCE BANNER (above table) ───────────────────────
+    if (!skillsAssessmentDone) {
+      ctx.ensurePageSpace(24);
+      const bannerY = ctx.yPosition;
+      const bannerH = 20;
+      doc.setFillColor(254, 242, 242); // light red bg
+      doc.setDrawColor(220, 38, 38); // red border
+      doc.setLineWidth(0.8);
+      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
 
-    const statusLabels: Record<string, string> = {
-      excellent: "✅",
-      good: "👍",
-      needs_improvement: "⚠️",
-      missing: "❌",
+      // Red left accent bar
+      doc.setFillColor(220, 38, 38);
+      doc.rect(margin, bannerY, 3, bannerH, "F");
+
+      setBoldFont();
+      doc.setFontSize(8.5);
+      doc.setTextColor(180, 38, 38);
+      const bannerText =
+        effectiveLocale === "tr"
+          ? "KRİTİK UYUMLULUK UYARISI: Geçerli Bir Beceri Değerlendirmesi Yok."
+          : effectiveLocale === "zh-Hans"
+            ? "关键合规警告：无有效技能评估。"
+            : "CRITICAL COMPLIANCE ALERT: No Valid Skills Assessment.";
+      doc.text(safeText(bannerText), margin + 8, bannerY + 7);
+
+      setBaseFont();
+      doc.setFontSize(7.5);
+      doc.setTextColor(120, 40, 40);
+      const bannerDetail =
+        effectiveLocale === "tr"
+          ? "Mesleğiniz için uygun beceri değerlendirmesi almak yasal bir zorunluluktur. Değerlendirme olmadan EOI sunulamaz. Bazı puan talepleri kısıtlanmıştır."
+          : effectiveLocale === "zh-Hans"
+            ? "获得提名职业的合适技能评估是法定要求。未通过评估无法有效递交EOI。部分积分已被限制。"
+            : "Obtaining a suitable skills assessment for your nominated occupation is a mandatory legal requirement. An EOI cannot be validly lodged without it. Some points claims have been restricted accordingly.";
+      doc.text(safeText(bannerDetail), margin + 8, bannerY + 14);
+
+      ctx.yPosition = bannerY + bannerH + 3;
+    }
+
+    // ── 4-Column Points Breakdown Table ────────────────────────────────
+    // Column 1: Category | Column 2: User's Exact Input | Column 3: Claimed Points | Column 4: Max Possible
+    const t = effectiveLocale === "tr" ? "tr" : effectiveLocale === "zh-Hans" ? "zh" : "en";
+    const colHeaders: Record<string, string[]> = {
+      en: ["Category", "Your Input", "Claimed Points", "Max Possible"],
+      tr: ["Kategori", "Girdiniz", "Talep Edilen", "Maksimum"],
+      zh: ["类别", "您的输入", "已获积分", "最高积分"],
     };
+    const headers = colHeaders[t];
 
-    const rows = pointsData.categories.map((cat) => [
-      cat.label,
-      String(cat.earned),
-      String(cat.max),
-      statusLabels[cat.status] ?? "❌",
-    ]);
+    const blockedLabel = !skillsAssessmentDone
+      ? (t === "tr" ? " (Değerlendirme Gerekli)" : t === "zh" ? " (需要评估)" : " (Assessment Required)")
+      : "";
 
-    const statusColors: Record<string, { r: number; g: number; b: number }> = {
-      excellent: { r: 22, g: 163, b: 74 },
-      good: { r: 22, g: 100, b: 180 },
-      needs_improvement: { r: 217, g: 119, b: 6 },
-      missing: { r: 180, g: 60, b: 60 },
-    };
+    // Build rows from the breakdown — use engine-gated points directly
+    const rows = breakdown.map((item) => {
+      const userInput = item.note || "—";
+      const maxPts = item.max ?? 0;
+      const pointsDisplay = item.points === 0 && maxPts > 0 && !skillsAssessmentDone
+        ? `0${blockedLabel}`
+        : String(item.points);
+      return [
+        item.label,
+        userInput,
+        pointsDisplay,
+        String(maxPts),
+      ];
+    });
+
+    // Color-coded points column: red for blocked zeros, green for earned, gray for zero
+    const pointsColors = breakdown.map((item) => {
+      const maxPts = item.max ?? 0;
+      if (item.points === 0 && maxPts > 0 && !skillsAssessmentDone) {
+        return { r: 180, g: 38, b: 38 }; // red for blocked
+      }
+      if (item.points > 0) {
+        return { r: 22, g: 101, b: 52 }; // green for earned
+      }
+      return { r: 120, g: 130, b: 145 }; // gray for zero
+    });
 
     if (ctx.drawTable) {
-      (ctx.drawTable as Function)(headers, rows, [0.38, 0.14, 0.14, 0.34],
+      (ctx.drawTable as Function)(headers, rows, [0.30, 0.30, 0.20, 0.20],
         (rowIndex: number, colIndex: number) => {
-          if (colIndex === 3 && pointsData.categories[rowIndex]) {
-            return statusColors[pointsData.categories[rowIndex].status] ?? null;
+          if (colIndex === 2 && pointsColors[rowIndex]) {
+            return pointsColors[rowIndex];
           }
           return null;
         }
@@ -259,54 +282,6 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     // Gap analysis
     addSmallText(pointsData.gapAnalysis, 0);
     ctx.yPosition += 2;
-
-    // ── CRITICAL BLOCKER: Skills Assessment Hard Gate ──────────────────
-    if (!skillsAssessmentDone && claimableTotal !== estimatedPoints) {
-      ctx.ensurePageSpace(30);
-
-      // Red/gold accent border box
-      const boxY = ctx.yPosition;
-      const boxH = 28;
-      doc.setFillColor(254, 242, 242); // light red bg
-      doc.setDrawColor(220, 38, 38); // red border
-      doc.setLineWidth(0.8);
-      doc.roundedRect(margin, boxY, contentWidth, boxH, 2, 2, "FD");
-
-      // Gold left accent bar
-      doc.setFillColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
-      doc.rect(margin, boxY, 3, boxH, "F");
-
-      // Title
-      setBoldFont();
-      doc.setFontSize(10);
-      doc.setTextColor(180, 38, 38);
-      doc.text(
-        safeText("🚨 CRITICAL BLOCKER: Skills Assessment Not Completed"),
-        margin + 8,
-        boxY + 8,
-      );
-
-      // Current claimable
-      setBaseFont();
-      doc.setFontSize(9);
-      doc.setTextColor(120, 40, 40);
-      const claimableLabel =
-        effectiveLocale === "tr" ? "Mevcut Talep Edilebilir Puan:"
-          : effectiveLocale === "zh-Hans" ? "当前可主张积分："
-          : "Current Claimable Points:";
-      doc.text(safeText(`${claimableLabel} ${claimableTotal} pts`), margin + 8, boxY + 16);
-
-      // Projected points
-      setBoldFont();
-      doc.setTextColor(22, 101, 52);
-      const projectedLabel =
-        effectiveLocale === "tr" ? "Tahmini Puan (Değerlendirme Sonrası):"
-          : effectiveLocale === "zh-Hans" ? "预计积分（评估通过后）："
-          : "Projected Points (upon successful assessment):";
-      doc.text(safeText(`${projectedLabel} ${estimatedPoints} pts`), margin + 8, boxY + 23);
-
-      ctx.yPosition = boxY + boxH + 4;
-    }
 
     // Improvement tips
     if (pointsData.improvementTips.length > 0) {
@@ -410,15 +385,6 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   skillsStatus.details.forEach((detail) => {
     addSmallText(detail, 4);
   });
-
-  // Show projected points in skills assessment section too
-  if (!skillsAssessmentDone && showPoints && estimatedPoints > 0) {
-    const projectedLabel =
-      effectiveLocale === "tr" ? "Değerlendirme sonrası tahmini puanınız:"
-        : effectiveLocale === "zh-Hans" ? "评估通过后预计积分："
-        : "Projected points upon successful assessment:";
-    addSmallText(`${projectedLabel} ${estimatedPoints} pts`, 0);
-  }
 
   if (skillsStatus.nextAction) {
     addSmallText(
