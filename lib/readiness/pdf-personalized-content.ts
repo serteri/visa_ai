@@ -3,6 +3,7 @@ import type { Locale } from "./types";
 import { getPersonalizedPointsBreakdown } from "./pdf-content/personalized-points";
 import { getPersonalizedOverview } from "./pdf-content/personalized-overview";
 import { getSkillsAssessmentStatus } from "./pdf-content/skills-assessment-status";
+import { getViabilityInsights } from "./pdf-content/viability-insights";
 
 /** Core Skills Income Threshold — employer-sponsored visa minimum salary (1 July 2026). */
 const CSIT_THRESHOLD_AUD = 79423;
@@ -369,7 +370,37 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 3. SKILLS ASSESSMENT STATUS
+  // 3. VIABILITY INSIGHTS (invitation round comparison)
+  // ════════════════════════════════════════════════════════════════════════
+  if (showPoints && userInputSummary.viability) {
+    const viab = userInputSummary.viability;
+    const viabData = getViabilityInsights(effectiveLocale, {
+      occupationTitle: viab.occupationTitle,
+      calculatedPoints: estimatedPoints,
+      cutoffScore: viab.cutoffScore,
+      roundDate: viab.roundDate,
+      totalInvited: viab.totalInvited,
+      gap: viab.gap,
+      viability: viab.viability,
+      hasSkillsAssessment: skillsAssessmentDone,
+    });
+
+    ctx.ensurePageSpace(35);
+    addSectionHeading("📊", viabData.title);
+    addBody(viabData.summary);
+    ctx.yPosition += 2;
+
+    viabData.details.forEach((detail) => {
+      addSmallText(detail, 4);
+    });
+    ctx.yPosition += 2;
+
+    addSmallText(viabData.recommendation, 0);
+    ctx.yPosition += 3;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // 4. SKILLS ASSESSMENT STATUS
   // ════════════════════════════════════════════════════════════════════════
   ctx.ensurePageSpace(25);
   const skillsStatus = getSkillsAssessmentStatus(

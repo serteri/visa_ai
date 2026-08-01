@@ -1621,6 +1621,61 @@ export async function unlockPremiumReport(
     let pdfBytes: Uint8Array;
 
     try {
+      // ── Fetch viability data from invitation rounds ──────────────────
+      let viabilityData: {
+        cutoffScore: number;
+        roundDate: string;
+        totalInvited: number;
+        occupationTitle: string;
+        gap: number;
+        viability: "strong" | "viable" | "borderline" | "below_threshold";
+      } | null = null;
+
+      try {
+        const occupation = record.input.occupation;
+        const calculatedPoints = record.report.pointsEstimate?.estimatedPoints ?? 0;
+
+        if (occupation) {
+          const occRecord = await prisma.occupation.findFirst({
+            where: {
+              OR: [
+                { anzscoCode: occupation },
+                { title: { contains: occupation, mode: "insensitive" } },
+              ],
+            },
+          });
+
+          if (occRecord) {
+            const cutoff = await prisma.roundCutoff.findFirst({
+              where: {
+                occupationId: occRecord.id,
+                round: { visaSubclass: "189" },
+              },
+              include: { round: true },
+              orderBy: { round: { date: "desc" } },
+            });
+
+            if (cutoff) {
+              const gap = calculatedPoints - cutoff.minimumScore;
+              viabilityData = {
+                cutoffScore: cutoff.minimumScore,
+                roundDate: cutoff.round.date.toISOString().split("T")[0],
+                totalInvited: cutoff.round.totalInvited,
+                occupationTitle: occRecord.title,
+                gap,
+                viability:
+                  gap >= 10 ? "strong"
+                    : gap >= 0 ? "viable"
+                    : gap >= -5 ? "borderline"
+                    : "below_threshold",
+              };
+            }
+          }
+        }
+      } catch (viabilityErr) {
+        console.warn("Viability lookup failed (non-fatal):", viabilityErr);
+      }
+
       pdfBytes = await generateReadinessPDF({
         report: record.report,
         locale: record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en",
@@ -1639,6 +1694,7 @@ export async function unlockPremiumReport(
           annualSalaryAud: record.input.annualSalaryAud != null ? String(record.input.annualSalaryAud) : null,
           migrationGoals: record.input.migrationGoals,
           skillsAssessmentDone: String(formData.get("skillsAssessment") ?? "").trim() === "yes",
+          viability: viabilityData,
         },
       });
     } catch (err) {

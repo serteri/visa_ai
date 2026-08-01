@@ -107,6 +107,14 @@ interface PDFGeneratorInput {
     annualSalaryAud?: string | null;
     migrationGoals?: string[];
     skillsAssessmentDone?: boolean;
+    viability?: {
+      cutoffScore: number;
+      roundDate: string;
+      totalInvited: number;
+      occupationTitle: string;
+      gap: number;
+      viability: "strong" | "viable" | "borderline" | "below_threshold";
+    } | null;
   };
 }
 

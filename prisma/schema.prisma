@@ -348,6 +348,63 @@ model CaEoiRound {
   @@map("ca_eoi_rounds")
 }
 
+// ── DHA Invitation Rounds & Predictive Analytics ──────────────────────────────
+
+model InvitationRound {
+  id            String        @id @default(cuid())
+  date          DateTime
+  visaSubclass  String        // e.g. "189", "491"
+  totalInvited  Int
+  tieBreakDate  DateTime?     // Latest date of subclass scored at the minimum score
+  notes         String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  cutoffs       RoundCutoff[]
+
+  @@unique([date, visaSubclass])
+  @@index([visaSubclass, date])
+  @@map("invitation_rounds")
+}
+
+model Occupation {
+  id            String        @id @default(cuid())
+  anzscoCode    String        @unique @map("anzsco_code")
+  title         String
+  createdAt     DateTime      @default(now()) @map("created_at")
+  cutoffs       RoundCutoff[]
+
+  @@index([title])
+  @@map("occupations")
+}
+
+model RoundCutoff {
+  id            String          @id @default(cuid())
+  roundId       String          @map("round_id")
+  occupationId  String          @map("occupation_id")
+  minimumScore  Int             @map("minimum_score")
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  round         InvitationRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  occupation    Occupation      @relation(fields: [occupationId], references: [id], onDelete: Cascade)
+
+  @@unique([roundId, occupationId])
+  @@index([occupationId, roundId])
+  @@map("round_cutoffs")
+}
+
+model StateAllocation {
+  id              String    @id @default(cuid())
+  programYear     String    @map("program_year")  // e.g. "2025-26"
+  state           String    // e.g. "NSW", "VIC"
+  visaSubclass    String    @map("visa_subclass") // "190" or "491"
+  allocation      Int       // Total allocation for the year
+  nominationsUsed Int?      @map("nominations_used") // EOIs already nominated
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@unique([programYear, state, visaSubclass])
+  @@index([programYear, state])
+  @@map("state_allocations")
+}
+
 // Drizzle-owned (see db/schema.ts's campaigns) — same as above. Introspected
 // after this table nearly got dropped by an uninformed `prisma db push` --
 // see the warning at the top of this file. Columns verified directly against

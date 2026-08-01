@@ -293,6 +293,15 @@ export interface UserInputSummary {
   annualSalaryAud?: string | null;
   migrationGoals?: string[];
   skillsAssessmentDone?: boolean | null;
+  /** Historical invitation round cutoff data for the user's occupation */
+  viability?: {
+    cutoffScore: number;
+    roundDate: string;
+    totalInvited: number;
+    occupationTitle: string;
+    gap: number;
+    viability: "strong" | "viable" | "borderline" | "below_threshold";
+  } | null;
 }
 
 /**
