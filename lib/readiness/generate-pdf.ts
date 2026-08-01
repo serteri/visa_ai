@@ -1787,15 +1787,17 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setLineWidth(1.5);
       doc.line(margin + 12, heroY + 3.5, margin + 90, heroY + 3.5);
 
-      // Big points number (baseline sits well below the gold line)
+      // Big points number + threshold aligned on the same baseline (flex-end)
+      // with a clear gap so the large glyph and small label never overlap.
+      const pointsY = heroY + 18;
+
       setBoldFont();
       doc.setFontSize(28);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
       const pointsText = `${estimatedPoints}`;
-      const pointsY = heroY + 16;
       doc.text(pointsText, margin + 12, pointsY);
 
-      // Threshold + label
+      // Threshold label — baseline-aligned with the score, gap of 4mm
       setBaseFont();
       doc.setFontSize(10);
       doc.setTextColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
@@ -1804,7 +1806,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         : effectiveLocale === "zh-Hans"
           ? ` / 目标 65 分`
           : ` / 65 points threshold`;
-      doc.text(thresholdLabel, margin + 12 + doc.getTextWidth(pointsText), pointsY);
+      doc.text(thresholdLabel, margin + 12 + doc.getTextWidth(pointsText) + 4, pointsY);
 
       // Points status line
       setBaseFont();
@@ -2269,12 +2271,14 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.rect(margin, yPosition, tableWidth, rowHeight);
       yPosition += rowHeight;
 
-      // ── Explanation sub-row (spans all columns, light-gray, smaller font) ──
+      // ── Explanation sub-row (full-width, light-gray bg, smaller font) ──
       const subText = subRows?.[rowIndex];
       if (subText && subText.trim().length > 0) {
-        const subWrapped = doc.splitTextToSize(safeText(subText), tableWidth - cellPadX * 2);
-        const subLineHeight = 4.0;
-        const subHeight = Math.max(9, cellPadY + subWrapped.length * subLineHeight);
+        const subPadX = 8;
+        const subPadY = 4;
+        const subLineHeight = 3.8;
+        const subWrapped = doc.splitTextToSize(safeText(subText), tableWidth - subPadX * 2);
+        const subHeight = Math.max(10, subPadY * 2 + subWrapped.length * subLineHeight);
 
         if (yPosition + subHeight > contentBottom) {
           doc.addPage();
@@ -2282,18 +2286,27 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
           drawHeader();
         }
 
-        doc.setFillColor(242, 244, 247); // light gray
+        // Light gray background spanning full table width
+        doc.setFillColor(243, 244, 246); // #f3f4f6
         doc.rect(margin, yPosition, tableWidth, subHeight, "F");
+
+        // Left accent bar for visual distinction
+        doc.setFillColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
+        doc.rect(margin, yPosition, 1.5, subHeight, "F");
+
+        // Sub-row text — smaller font, muted color, clear padding
         setBaseFont();
-        doc.setFontSize(7.2);
-        doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-        doc.text(subWrapped, margin + cellPadX + 2, yPosition + cellPadY + 2.8, {
-          maxWidth: tableWidth - (cellPadX + 2) * 2,
-          lineHeightFactor: 1.12,
+        doc.setFontSize(7);
+        doc.setTextColor(120, 130, 145); // muted gray
+        doc.text(subWrapped, margin + subPadX, yPosition + subPadY + 2.5, {
+          maxWidth: tableWidth - subPadX * 2,
+          lineHeightFactor: 1.1,
         });
+
+        // Thin bottom border
         doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
-        doc.setLineWidth(0.2);
-        doc.rect(margin, yPosition, tableWidth, subHeight);
+        doc.setLineWidth(0.15);
+        doc.line(margin, yPosition + subHeight, margin + tableWidth, yPosition + subHeight);
         yPosition += subHeight;
       }
     });
