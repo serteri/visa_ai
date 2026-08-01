@@ -10,14 +10,13 @@ const CSIT_THRESHOLD_AUD = 79423;
 
 /**
  * Renders PERSONALIZED content sections into the PDF.
- * These sections adapt to the user's actual profile data.
  *
  * Section order:
- *   1. Executive Summary (goal-adaptive intro)
- *   2. Points Breakdown (if points-tested visas in scope) OR Employer Sponsored Readiness
- *   3. Skills Assessment Status (with projected points when blocked)
- *
- * Removed: Personalized FAQ ("Questions Relevant to You"), Application Guide (duplicated main body).
+ *   1. EOI Status Banner (BLOCKED / READY)
+ *   2. Executive Summary (goal-adaptive intro)
+ *   3. Points Breakdown Table (4 columns: Category | Potential | Claimable | Action/Status)
+ *   4. Predictive Viability Insights (historical cutoff comparison)
+ *   5. Skills Assessment Status
  */
 export function renderPersonalizedContent(ctx: PDFContext): void {
   const {
@@ -46,10 +45,13 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   const userName = userInputSummary.name ||
     (effectiveLocale === "tr" ? "Başvuru Sahibi" : effectiveLocale === "zh-Hans" ? "申请人" : "Applicant");
   const skillsAssessmentDone = userInputSummary.skillsAssessmentDone ?? false;
+  const isAusQual = userInputSummary.isAustralianQualification ?? null;
+  const isQualRecognized = userInputSummary.isQualificationRecognized ?? null;
   const annualSalary = userInputSummary.annualSalaryAud
     ? Number(userInputSummary.annualSalaryAud)
     : undefined;
   const hasSalary = annualSalary !== undefined && Number.isFinite(annualSalary) && annualSalary > 0;
+  const t = effectiveLocale === "tr" ? "tr" : effectiveLocale === "zh-Hans" ? "zh" : "en";
 
   // ── Determine which visa types are in scope ──────────────────────────
   const goals = userInputSummary.migrationGoals ?? [];
@@ -59,12 +61,67 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   const hasEmployerSponsored =
     goals.includes("employer_sponsorship") ||
     (report.detectedSubclasses ?? []).some((s) => ["482", "186"].includes(s));
-
-  // Fallback: if no goals detected, show points if breakdown exists
   const showPoints = hasPointsTestedVisa || (!hasEmployerSponsored && estimatedPoints > 0);
 
   // ════════════════════════════════════════════════════════════════════════
-  // 1. EXECUTIVE SUMMARY (goal-adaptive)
+  // 1. EOI STATUS BANNER
+  // ════════════════════════════════════════════════════════════════════════
+  if (showPoints) {
+    ctx.ensurePageSpace(20);
+    const bannerY = ctx.yPosition;
+    const bannerH = 18;
+
+    if (!skillsAssessmentDone) {
+      // RED: BLOCKED
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(220, 38, 38);
+      doc.setLineWidth(0.8);
+      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
+      doc.setFillColor(220, 38, 38);
+      doc.rect(margin, bannerY, 3, bannerH, "F");
+
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(180, 38, 38);
+      const blockedTitle = t === "tr"
+        ? "EOI DURUMU: ENGELLİ."
+        : t === "zh" ? "EOI 状态：已阻止。"
+        : "EOI STATUS: BLOCKED.";
+      doc.text(safeText(blockedTitle), margin + 8, bannerY + 7);
+
+      setBaseFont();
+      doc.setFontSize(7.5);
+      doc.setTextColor(120, 40, 40);
+      const blockedDetail = t === "tr"
+        ? "Eylem Gerekli: Bir EOI sunmadan önce mesleğiniz için olumlu bir Beceri Değerlendirmesi yasal olarak zorunludur."
+        : t === "zh"
+          ? "需要采取行动：递交EOI之前，获得提名职业的正面技能评估是法律强制要求。"
+          : "Action Required: A positive Skills Assessment for your nominated occupation is legally required before lodging an EOI.";
+      doc.text(safeText(blockedDetail), margin + 8, bannerY + 13);
+    } else {
+      // GREEN: READY
+      doc.setFillColor(220, 253, 230);
+      doc.setDrawColor(22, 163, 74);
+      doc.setLineWidth(0.8);
+      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
+      doc.setFillColor(22, 163, 74);
+      doc.rect(margin, bannerY, 3, bannerH, "F");
+
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(22, 101, 52);
+      const readyTitle = t === "tr"
+        ? "EOI DURUMU: HAZIR."
+        : t === "zh" ? "EOI 状态：就绪。"
+        : "EOI STATUS: READY.";
+      doc.text(safeText(readyTitle), margin + 8, bannerY + 10);
+    }
+
+    ctx.yPosition = bannerY + bannerH + 5;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // 2. EXECUTIVE SUMMARY (goal-adaptive)
   // ════════════════════════════════════════════════════════════════════════
   const overview = getPersonalizedOverview(
     effectiveLocale,
@@ -86,72 +143,52 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   });
   ctx.yPosition += 2;
 
-  // Key findings
   if (overview.keyFindings.length > 0) {
     addPremiumBulletContainer(
-      effectiveLocale === "tr" ? "Ana Bulgular" : effectiveLocale === "zh-Hans" ? "主要发现" : "Key Findings",
+      t === "tr" ? "Ana Bulgular" : t === "zh" ? "主要发现" : "Key Findings",
       overview.keyFindings,
       COLORS.accent,
     );
   }
 
-  // Recommendation
   addSmallText(overview.recommendation, 0);
   ctx.yPosition += 1;
-
-  // Confidence note
   addSmallText(overview.confidenceNote, 0);
   ctx.yPosition += 2;
 
-  // Employer Sponsored Viability (inline, salary-based)
+  // Employer Sponsored Viability (salary-based)
   if (hasSalary && hasEmployerSponsored) {
     ctx.ensurePageSpace(20);
     const meetsCsit = annualSalary! >= CSIT_THRESHOLD_AUD;
     const csitLabel = `CSIT: AUD $${CSIT_THRESHOLD_AUD.toLocaleString("en-AU")}`;
 
-    if (meetsCsit) {
-      addPremiumKeyValueContainer(
-        effectiveLocale === "tr" ? "İşveren Sponsorluğu Uygunluğu"
-          : effectiveLocale === "zh-Hans" ? "雇主担保可行性"
-          : "Employer Sponsored Viability",
-        [[
-          effectiveLocale === "tr" ? "Maaş Durumu"
-            : effectiveLocale === "zh-Hans" ? "薪资状况"
-            : "Salary Status",
-          `✅ AUD $${annualSalary!.toLocaleString("en-AU")} — ${csitLabel}` +
-          (effectiveLocale === "tr" ? " eşiğini karşılıyor. 482/186 yolları uygundur."
-            : effectiveLocale === "zh-Hans" ? " 已达标。482/186路径可行。"
-            : " threshold met. 482/186 pathways viable."),
-        ]],
-        COLORS.riskLow,
-      );
-    } else {
-      addPremiumKeyValueContainer(
-        effectiveLocale === "tr" ? "İşveren Sponsorluğu Uygunluğu"
-          : effectiveLocale === "zh-Hans" ? "雇主担保可行性"
-          : "Employer Sponsored Viability",
-        [[
-          effectiveLocale === "tr" ? "Maaş Durumu"
-            : effectiveLocale === "zh-Hans" ? "薪资状况"
-            : "Salary Status",
-          `❌ AUD $${annualSalary!.toLocaleString("en-AU")} — ${csitLabel}` +
-          (effectiveLocale === "tr" ? " eşiğinin altında. Maaş ayarlaması gerekiyor."
-            : effectiveLocale === "zh-Hans" ? " 未达标。需调整薪资。"
-            : " below threshold. Salary adjustment required."),
-        ]],
-        COLORS.riskHigh,
-      );
-    }
+    addPremiumKeyValueContainer(
+      t === "tr" ? "İşveren Sponsorluğu Uygunluğu"
+        : t === "zh" ? "雇主担保可行性"
+        : "Employer Sponsored Viability",
+      [[
+        t === "tr" ? "Maaş Durumu" : t === "zh" ? "薪资状况" : "Salary Status",
+        meetsCsit
+          ? `✅ AUD $${annualSalary!.toLocaleString("en-AU")} — ${csitLabel} ${
+              t === "tr" ? "eşiğini karşılıyor. 482/186 yolları uygundur."
+              : t === "zh" ? " 已达标。482/186路径可行。"
+              : " threshold met. 482/186 pathways viable."
+            }`
+          : `❌ AUD $${annualSalary!.toLocaleString("en-AU")} — ${csitLabel} ${
+              t === "tr" ? "eşiğinin altında. Maaş ayarlaması gerekiyor."
+              : t === "zh" ? " 未达标。需调整薪资。"
+              : " below threshold. Salary adjustment required."
+            }`,
+      ]],
+      meetsCsit ? COLORS.riskLow : COLORS.riskHigh,
+    );
     ctx.yPosition += 2;
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 2. POINTS BREAKDOWN TABLE — OR — EMPLOYER READINESS
+  // 3. POINTS BREAKDOWN TABLE (4 columns)
   // ════════════════════════════════════════════════════════════════════════
   if (showPoints && report.pointsEstimate && report.pointsEstimate.breakdown.length > 0) {
-    // The engine now handles skills-assessment gating (education + employment
-    // zeroed when assessment is missing), so breakdown already reflects the
-    // correct claimable points. No additional zero-out needed here.
     const breakdown = report.pointsEstimate.breakdown;
 
     const pointsData = getPersonalizedPointsBreakdown(
@@ -163,101 +200,88 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       65,
     );
 
-    // ── Section Header ─────────────────────────────────────────────────
+    // Section Header
     ctx.ensurePageSpace(60);
     addSectionHeading("⭐", pointsData.title);
-
-    // Gold accent bar
     doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
     doc.setLineWidth(1.5);
     doc.line(margin, ctx.yPosition, margin + ctx.contentWidth * 0.3, ctx.yPosition);
     ctx.yPosition += 4;
-
     addSmallText(pointsData.summary, 0);
     ctx.yPosition += 3;
 
-    // ── CRITICAL COMPLIANCE BANNER (above table) ───────────────────────
-    if (!skillsAssessmentDone) {
-      ctx.ensurePageSpace(24);
-      const bannerY = ctx.yPosition;
-      const bannerH = 20;
-      doc.setFillColor(254, 242, 242); // light red bg
-      doc.setDrawColor(220, 38, 38); // red border
-      doc.setLineWidth(0.8);
-      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
-
-      // Red left accent bar
-      doc.setFillColor(220, 38, 38);
-      doc.rect(margin, bannerY, 3, bannerH, "F");
-
-      setBoldFont();
-      doc.setFontSize(8.5);
-      doc.setTextColor(180, 38, 38);
-      const bannerText =
-        effectiveLocale === "tr"
-          ? "KRİTİK UYUMLULUK UYARISI: Geçerli Bir Beceri Değerlendirmesi Yok."
-          : effectiveLocale === "zh-Hans"
-            ? "关键合规警告：无有效技能评估。"
-            : "CRITICAL COMPLIANCE ALERT: No Valid Skills Assessment.";
-      doc.text(safeText(bannerText), margin + 8, bannerY + 7);
-
-      setBaseFont();
-      doc.setFontSize(7.5);
-      doc.setTextColor(120, 40, 40);
-      const bannerDetail =
-        effectiveLocale === "tr"
-          ? "Mesleğiniz için uygun beceri değerlendirmesi almak yasal bir zorunluluktur. Değerlendirme olmadan EOI sunulamaz. Bazı puan talepleri kısıtlanmıştır."
-          : effectiveLocale === "zh-Hans"
-            ? "获得提名职业的合适技能评估是法定要求。未通过评估无法有效递交EOI。部分积分已被限制。"
-            : "Obtaining a suitable skills assessment for your nominated occupation is a mandatory legal requirement. An EOI cannot be validly lodged without it. Some points claims have been restricted accordingly.";
-      doc.text(safeText(bannerDetail), margin + 8, bannerY + 14);
-
-      ctx.yPosition = bannerY + bannerH + 3;
-    }
-
-    // ── 4-Column Points Breakdown Table ────────────────────────────────
-    // Column 1: Category | Column 2: User's Exact Input | Column 3: Claimed Points | Column 4: Max Possible
-    const t = effectiveLocale === "tr" ? "tr" : effectiveLocale === "zh-Hans" ? "zh" : "en";
+    // ── 4-Column Table: Category | Potential Points | Claimable Points | Action/Status ──
     const colHeaders: Record<string, string[]> = {
-      en: ["Category", "Your Input", "Claimed Points", "Max Possible"],
-      tr: ["Kategori", "Girdiniz", "Talep Edilen", "Maksimum"],
-      zh: ["类别", "您的输入", "已获积分", "最高积分"],
+      en: ["Category", "Potential Points", "Claimable Points", "Action / Status"],
+      tr: ["Kategori", "Potansiyel Puan", "Talep Edilen Puan", "Durum"],
+      zh: ["类别", "潜在积分", "可主张积分", "状态"],
     };
     const headers = colHeaders[t];
 
-    const blockedLabel = !skillsAssessmentDone
-      ? (t === "tr" ? " (Değerlendirme Gerekli)" : t === "zh" ? " (需要评估)" : " (Assessment Required)")
-      : "";
-
-    // Build rows from the breakdown — use engine-gated points directly
+    // Build rows with Potential vs Claimable distinction
     const rows = breakdown.map((item) => {
-      const userInput = item.note || "—";
       const maxPts = item.max ?? 0;
-      const pointsDisplay = item.points === 0 && maxPts > 0 && !skillsAssessmentDone
-        ? `0${blockedLabel}`
-        : String(item.points);
+      const claimedPts = item.points;
+      const potentialPts = maxPts; // Maximum they could potentially earn
+
+      // Determine action/status label
+      let actionStatus: string;
+      const isEducation = item.label.toLowerCase().includes("education") ||
+        item.label.toLowerCase().includes("eğitim") ||
+        item.label.toLowerCase().includes("教育");
+      const isEmployment = item.label.toLowerCase().includes("employment") ||
+        item.label.toLowerCase().includes("istihdam") ||
+        item.label.toLowerCase().includes("工作");
+      const isPartner = item.label.toLowerCase().includes("partner") ||
+        item.label.toLowerCase().includes("伴侣");
+
+      if (claimedPts > 0) {
+        actionStatus = t === "tr" ? "✅ Tamamlandı"
+          : t === "zh" ? "✅ 已完成"
+          : "✅ Complete";
+      } else if (isEducation && !isAusQual && !isQualRecognized) {
+        actionStatus = t === "tr" ? "Yabancı tanıma gerekli"
+          : t === "zh" ? "需要海外资格认可"
+          : "Requires Overseas Qualification Recognition";
+      } else if (isEducation && !isAusQual && !skillsAssessmentDone) {
+        actionStatus = t === "tr" ? "Değerlendirme gerekli"
+          : t === "zh" ? "需要技能评估"
+          : "Requires Skills Assessment";
+      } else if (isEmployment && !skillsAssessmentDone) {
+        actionStatus = t === "tr" ? "Değerlendirme gerekli"
+          : t === "zh" ? "需要技能评估"
+          : "Requires Skills Assessment";
+      } else if (isPartner && claimedPts === 0) {
+        actionStatus = t === "tr" ? "Beceri dil doğrulanmadı"
+          : t === "zh" ? "技能/语言未验证"
+          : "Skills/English Not Verified";
+      } else if (claimedPts === 0 && maxPts > 0) {
+        actionStatus = t === "tr" ? "Bilgi eksik"
+          : t === "zh" ? "信息缺失"
+          : "Information Missing";
+      } else {
+        actionStatus = t === "tr" ? "Uygulanmıyor"
+          : t === "zh" ? "不适用"
+          : "N/A";
+      }
+
       return [
         item.label,
-        userInput,
-        pointsDisplay,
-        String(maxPts),
+        String(potentialPts),
+        String(claimedPts),
+        actionStatus,
       ];
     });
 
-    // Color-coded points column: red for blocked zeros, green for earned, gray for zero
+    // Color the Claimable Points column (col 2)
     const pointsColors = breakdown.map((item) => {
-      const maxPts = item.max ?? 0;
-      if (item.points === 0 && maxPts > 0 && !skillsAssessmentDone) {
-        return { r: 180, g: 38, b: 38 }; // red for blocked
-      }
-      if (item.points > 0) {
-        return { r: 22, g: 101, b: 52 }; // green for earned
-      }
-      return { r: 120, g: 130, b: 145 }; // gray for zero
+      if (item.points > 0) return { r: 22, g: 101, b: 52 }; // green
+      if ((item.max ?? 0) > 0) return { r: 180, g: 38, b: 38 }; // red = blocked
+      return { r: 120, g: 130, b: 145 }; // gray
     });
 
     if (ctx.drawTable) {
-      (ctx.drawTable as Function)(headers, rows, [0.30, 0.30, 0.20, 0.20],
+      (ctx.drawTable as Function)(headers, rows, [0.30, 0.17, 0.17, 0.36],
         (rowIndex: number, colIndex: number) => {
           if (colIndex === 2 && pointsColors[rowIndex]) {
             return pointsColors[rowIndex];
@@ -267,7 +291,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       );
     }
 
-    // ── Gold-accented Total Line ───────────────────────────────────────
+    // Gold-accented Total Line
     ctx.ensurePageSpace(14);
     doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
     doc.setLineWidth(0.8);
@@ -280,27 +304,23 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     doc.text(safeText(pointsData.totalLine), margin, ctx.yPosition);
     ctx.yPosition += 7;
 
-    // Gap analysis
     addSmallText(pointsData.gapAnalysis, 0);
     ctx.yPosition += 2;
 
     // Improvement tips
     if (pointsData.improvementTips.length > 0) {
       addPremiumBulletContainer(
-        effectiveLocale === "tr" ? "Puan Artırma Önerileri"
-          : effectiveLocale === "zh-Hans" ? "积分提升建议"
+        t === "tr" ? "Puan Artırma Önerileri"
+          : t === "zh" ? "积分提升建议"
           : "Points Improvement Tips",
         pointsData.improvementTips,
         COLORS.riskLow,
       );
     }
 
-    // Additional strategies
     if (pointsData.additionalStrategies && pointsData.additionalStrategies.length > 0) {
       addSmallText(
-        effectiveLocale === "tr" ? "Ek Stratejiler:"
-          : effectiveLocale === "zh-Hans" ? "其他策略："
-          : "Additional Strategies:",
+        t === "tr" ? "Ek Stratejiler:" : t === "zh" ? "其他策略：" : "Additional Strategies:",
         0,
       );
       ctx.yPosition += 1;
@@ -311,77 +331,63 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     ctx.yPosition += 3;
 
   } else if (hasEmployerSponsored && !showPoints) {
-    // ── EMPLOYER SPONSORSHIP READINESS (no points table) ───────────────
+    // ── EMPLOYER SPONSORSHIP READINESS ────────────────────────────────
     ctx.ensurePageSpace(40);
-    const title =
-      effectiveLocale === "tr" ? "İşveren Sponsorluğu Hazırlık Analizi"
-        : effectiveLocale === "zh-Hans" ? "雇主担保准备度分析"
-        : "Employer Sponsorship Readiness";
-    addSectionHeading("📋", title);
+    addSectionHeading("📋",
+      t === "tr" ? "İşveren Sponsorluğu Hazırlık Analizi"
+        : t === "zh" ? "雇主担保准备度分析"
+        : "Employer Sponsorship Readiness"
+    );
 
     const csitLabel = `AUD $${CSIT_THRESHOLD_AUD.toLocaleString("en-AU")}`;
-    const items: string[] = [];
-
-    // Salary check
     if (hasSalary) {
       const meets = annualSalary! >= CSIT_THRESHOLD_AUD;
-      items.push(
+      addSmallText(
         meets
-          ? `✅ ${effectiveLocale === "tr" ? "Maaş" : effectiveLocale === "zh-Hans" ? "薪资" : "Salary"}: AUD $${annualSalary!.toLocaleString("en-AU")} — ${csitLabel} ${effectiveLocale === "tr" ? "eşik değerini karşılıyor" : effectiveLocale === "zh-Hans" ? "已达门槛" : "threshold met"}`
-          : `❌ ${effectiveLocale === "tr" ? "Maaş" : effectiveLocale === "zh-Hans" ? "薪资" : "Salary"}: AUD $${annualSalary!.toLocaleString("en-AU")} — ${csitLabel} ${effectiveLocale === "tr" ? "eşik değerinin altında" : effectiveLocale === "zh-Hans" ? "未达门槛" : "below threshold"}`
+          ? `✅ ${t === "tr" ? "Maaş" : t === "zh" ? "薪资" : "Salary"}: AUD $${annualSalary!.toLocaleString("en-AU")} — ${csitLabel} ${t === "tr" ? "eşik değerini karşılıyor" : t === "zh" ? "已达门槛" : "threshold met"}`
+          : `❌ ${t === "tr" ? "Maaş" : t === "zh" ? "薪资" : "Salary"}: AUD $${annualSalary!.toLocaleString("en-AU")} — ${csitLabel} ${t === "tr" ? "eşik değerinin altında" : t === "zh" ? "未达门槛" : "below threshold"}`,
+        0,
       );
     } else {
-      items.push(
-        `⚠️ ${effectiveLocale === "tr" ? "Maaş bilgisi girilmedi" : effectiveLocale === "zh-Hans" ? "未提供薪资信息" : "Salary not provided"} — ${csitLabel} ${effectiveLocale === "tr" ? "eşik kontrolü yapılamadı" : effectiveLocale === "zh-Hans" ? "无法校验门槛" : "threshold check unavailable"}`
+      addSmallText(
+        `⚠️ ${t === "tr" ? "Maaş bilgisi girilmedi" : t === "zh" ? "未提供薪资信息" : "Salary not provided"} — ${csitLabel}`,
+        0,
       );
     }
-
-    // Key requirements
-    const reqTitle =
-      effectiveLocale === "tr" ? "Temel Gereklilikler"
-        : effectiveLocale === "zh-Hans" ? "核心要求"
-        : "Key Requirements";
-    items.push(
-      effectiveLocale === "tr"
-        ? `• Beceri değerlendirmesi zorunludur (pozisyonunuza göre)`
-        : effectiveLocale === "zh-Hans"
-          ? `• 必须完成技能评估（根据您的职业）`
-          : `• Skills assessment mandatory (for your occupation)`
-    );
-    items.push(
-      effectiveLocale === "tr"
-        ? `• İşvereninizin onaylı sponsor olması gerekir`
-        : effectiveLocale === "zh-Hans"
-          ? `• 雇主必须是获批担保方`
-          : `• Employer must be an approved sponsor`
-    );
-    items.push(
-      effectiveLocale === "tr"
-        ? `• Pozisyonunuz mesleğinizle uyumlu olmalıdır`
-        : effectiveLocale === "zh-Hans"
-          ? `• 岗位必须与您的职业匹配`
-          : `• Position must align with your nominated occupation`
-    );
-
-    items.forEach((item) => {
-      addSmallText(item, 0);
-    });
+    ctx.yPosition += 1;
+    [
+      t === "tr" ? "• Beceri değerlendirmesi zorunludur" : t === "zh" ? "• 必须完成技能评估" : "• Skills assessment mandatory",
+      t === "tr" ? "• İşvereninizin onaylı sponsor olması gerekir" : t === "zh" ? "• 雇主必须是获批担保方" : "• Employer must be an approved sponsor",
+      t === "tr" ? "• Pozisyonunuz mesleğinizle uyumlu olmalıdır" : t === "zh" ? "• 岗位必须与您的职业匹配" : "• Position must align with your nominated occupation",
+    ].forEach((item) => addSmallText(item, 0));
     ctx.yPosition += 3;
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 3. VIABILITY INSIGHTS (invitation round comparison)
+  // 4. PREDICTIVE VIABILITY INSIGHTS (enhanced with gap comparison)
   // ════════════════════════════════════════════════════════════════════════
   if (showPoints && userInputSummary.viability) {
     const viab = userInputSummary.viability;
+
+    // Use claimable points (from breakdown) instead of raw estimated points
+    const claimableTotal = report.pointsEstimate?.breakdown
+      ? report.pointsEstimate.breakdown.reduce((sum: number, item: { points: number }) => sum + item.points, 0)
+      : estimatedPoints;
+
     const viabData = getViabilityInsights(effectiveLocale, {
       occupationTitle: viab.occupationTitle,
-      calculatedPoints: estimatedPoints,
+      calculatedPoints: claimableTotal,
       cutoffScore: viab.cutoffScore,
       roundDate: viab.roundDate,
       totalInvited: viab.totalInvited,
-      gap: viab.gap,
-      viability: viab.viability,
+      gap: claimableTotal - viab.cutoffScore,
+      viability: claimableTotal >= viab.cutoffScore + 10
+        ? "strong"
+        : claimableTotal >= viab.cutoffScore
+          ? "viable"
+          : claimableTotal >= viab.cutoffScore - 5
+            ? "borderline"
+            : "below_threshold",
       hasSkillsAssessment: skillsAssessmentDone,
     });
 
@@ -389,6 +395,34 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     addSectionHeading("📊", viabData.title);
     addBody(viabData.summary);
     ctx.yPosition += 2;
+
+    // Dynamic gap text block
+    if (claimableTotal >= viab.cutoffScore) {
+      const competitiveText = t === "tr"
+        ? "Son davet turlarına göre yüksek rekabet gücüne sahipsiniz."
+        : t === "zh"
+          ? "基于近期邀请轮次，您具有很强的竞争力。"
+          : "Highly competitive based on recent rounds.";
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(22, 101, 52);
+      doc.text(safeText(competitiveText), margin + 4, ctx.yPosition);
+      setBaseFont();
+      ctx.yPosition += 5;
+    } else {
+      const gap = viab.cutoffScore - claimableTotal;
+      const shortText = t === "tr"
+        ? `Son kesim puanının ${gap} puan altındasınız. Daha yüksek dil puanı, NAATI veya Partner puanları gibi ek puan yollarını değerlendirin.`
+        : t === "zh"
+          ? `您目前距离最近的历史分数线还差${gap}分。建议探索额外加分途径（如优秀语言成绩、NAATI或伴侣积分）。`
+          : `You are currently ${gap} points short of the recent historical cut-off. We recommend exploring additional point avenues (e.g., superior English, NAATI, or Partner points).`;
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(180, 38, 38);
+      doc.text(safeText(shortText), margin + 4, ctx.yPosition);
+      setBaseFont();
+      ctx.yPosition += 5;
+    }
 
     viabData.details.forEach((detail) => {
       addSmallText(detail, 4);
@@ -400,7 +434,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 4. SKILLS ASSESSMENT STATUS
+  // 5. SKILLS ASSESSMENT STATUS
   // ════════════════════════════════════════════════════════════════════════
   ctx.ensurePageSpace(25);
   const skillsStatus = getSkillsAssessmentStatus(
@@ -419,9 +453,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
 
   if (skillsStatus.nextAction) {
     addSmallText(
-      effectiveLocale === "tr" ? "Sonraki adım: "
-        : effectiveLocale === "zh-Hans" ? "下一步："
-        : "Next step: ",
+      t === "tr" ? "Sonraki adım: " : t === "zh" ? "下一步：" : "Next step: ",
       0,
     );
     addBody(skillsStatus.nextAction);

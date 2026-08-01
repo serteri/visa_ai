@@ -954,6 +954,16 @@ export async function submitFullCheckWaitlist(
       ? specialistEducationStemResponseResult.data
       : undefined
     : undefined;
+
+  // ── Overseas Qualification Recognition (shown when isAustralianQual === false) ──
+  const isQualificationRecognizedResult = optionalYesNoSchema.safeParse(
+    formData.get("isQualificationRecognized")
+  );
+  const isQualificationRecognized = qualificationAwardedInAustralia === false
+    ? isQualificationRecognizedResult.success
+      ? isQualificationRecognizedResult.data === "yes"
+      : undefined
+    : undefined;
   const offshoreExperienceYearsResult = optionalExperienceYearsSchema.safeParse(
     formData.get("offshoreExperienceYears")
   );
@@ -1108,6 +1118,13 @@ export async function submitFullCheckWaitlist(
       : isZh
         ? "偏远地区校区答案无效。"
         : "Regional Australia answer is invalid.";
+  }
+  if (!isPartner && qualificationAwardedInAustralia === false && !isQualificationRecognizedResult.success) {
+    errors.isQualificationRecognized = isTr
+      ? "Bu alan zorunludur. Evet veya Hayır seçin."
+      : isZh
+        ? "此项为必填。请选择是或否。"
+        : "This field is required. Please select Yes or No.";
   }
   if (qualificationAwardedInAustralia === true) {
     const isResearchOrDoctorateQualification =
@@ -1288,6 +1305,7 @@ export async function submitFullCheckWaitlist(
       qualificationAwardedInAustralia,
       qualificationRegionalAustralia,
       specialistEducationStemResponse,
+      isQualificationRecognized,
       offshoreExperienceYears,
       onshoreExperienceYears,
       yearsInSponsoredPosition,
@@ -1694,6 +1712,8 @@ export async function unlockPremiumReport(
           annualSalaryAud: record.input.annualSalaryAud != null ? String(record.input.annualSalaryAud) : null,
           migrationGoals: record.input.migrationGoals,
           skillsAssessmentDone: String(formData.get("skillsAssessment") ?? "").trim() === "yes",
+          isAustralianQualification: record.input.qualificationAwardedInAustralia,
+          isQualificationRecognized: record.input.isQualificationRecognized,
           viability: viabilityData,
         },
       });

@@ -556,6 +556,7 @@ export function FullCheckWaitlistForm({
   const [qualificationAwardedInAustralia, setQualificationAwardedInAustralia] = useState("");
   const [qualificationRegionalAustralia, setQualificationRegionalAustralia] = useState("");
   const [specialistEducationStemResponse, setSpecialistEducationStemResponse] = useState("");
+  const [isQualificationRecognized, setIsQualificationRecognized] = useState("");
   const [visaInterest, setVisaInterest] = useState(initialValues.visaInterest ?? "");
   const [migrationGoals, setMigrationGoals] = useState<MigrationGoalId[]>([]);
   const isPartner = isPartnerFamilySponsorship(visaInterest);
@@ -1777,6 +1778,37 @@ export function FullCheckWaitlistForm({
                   <option value="no">{txt("Hayır", "No", "否")}</option>
                 </select>
                 <ErrorText message={state.errors?.qualificationRegionalAustralia} />
+              </div>
+            )}
+
+            {selectedCountry === "AU" && qualificationAwardedInAustralia === "no" && (
+              <div className="space-y-2">
+                <Label htmlFor="waitlist-qualification-recognized">
+                  {txt(
+                    "Yabancı diplomanız Avustralya'daki ilgili değerlendirme kurumu tarafından tanındı mı?",
+                    "Has your overseas qualification been recognized by the relevant Australian assessing authority?",
+                    "您的海外学历是否已获得澳大利亚相关评估机构的认可？"
+                  )}
+                  <RequiredMark />
+                </Label>
+                <select
+                  id="waitlist-qualification-recognized"
+                  name="isQualificationRecognized"
+                  value={isQualificationRecognized}
+                  onChange={(e) => setIsQualificationRecognized(e.target.value)}
+                  className={selectClassName}
+                >
+                  <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                  <option value="no">{txt("Hayır", "No", "否")}</option>
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  {txt(
+                    "Tanınma olmadan yabancı diplomanız için eğitim puanı talep edilemez. Değerlendirme kurumu yetkinliklerinizi doğrulamalıdır.",
+                    "Without recognition, you cannot claim educational points for an overseas qualification. The assessing authority must verify your credentials.",
+                    "未获认可的海外学历无法主张教育积分。评估机构必须核实您的资历。"
+                  )}
+                </p>
+                <ErrorText message={state.errors?.isQualificationRecognized} />
               </div>
             )}
 

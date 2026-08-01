@@ -38,6 +38,8 @@ export type ReadinessInput = {
   qualificationAwardedInAustralia?: boolean;
   qualificationRegionalAustralia?: boolean;
   specialistEducationStemResponse?: "yes" | "no" | "not_sure";
+  /** Whether the overseas qualification has been recognized by the relevant assessing authority */
+  isQualificationRecognized?: boolean;
   offshoreExperienceYears?: number;
   onshoreExperienceYears?: number;
   regionalWilling?: boolean;

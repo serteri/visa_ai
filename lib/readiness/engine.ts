@@ -3463,6 +3463,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // Australian qualifications are exempt from assessment for points purposes.
   const hasSkillsAssessmentDone = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
   const isOverseasQualification = !isAustralianQualification(input);
+  const isQualificationRecognized = input.isQualificationRecognized === true;
   const specialistEducation = hasSpecialistEducationClaim(input);
   const australianStudyRequirement = isAustralianQualification(input);
   const regionalStudy = isRegionalAustralianQualification(input);
@@ -3561,14 +3562,18 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : isZh ? `教育背景 (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "未提供"})`
         : `Educational Qualifications (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "Not Provided"})`,
       // DHA rule: Australian qualifications are exempt from assessment for points.
-      // Overseas qualifications require a valid skills assessment to claim points.
-      points: (isOverseasQualification && !hasSkillsAssessmentDone) ? 0 : result.breakdown.education,
+      // Overseas qualifications require BOTH recognition AND assessment to claim points.
+      points: (isOverseasQualification && (!hasSkillsAssessmentDone || !isQualificationRecognized)) ? 0 : result.breakdown.education,
       max: 20,
-      note: (isOverseasQualification && !hasSkillsAssessmentDone)
-        ? (isTr ? "Yabancı diploma — değerlendirme gerekli"
-          : isZh ? "海外学历 — 需要技能评估"
-          : "Overseas qualification — assessment required")
-        : hasEducationInput
+      note: (isOverseasQualification && !isQualificationRecognized)
+        ? (isTr ? "Yabancı diploma — tanıma gerekli"
+          : isZh ? "海外学历 — 需要资格认可"
+          : "Overseas qualification — recognition required")
+        : (isOverseasQualification && !hasSkillsAssessmentDone)
+          ? (isTr ? "Yabancı diploma — değerlendirme gerekli"
+            : isZh ? "海外学历 — 需要技能评估"
+            : "Overseas qualification — assessment required")
+          : hasEducationInput
           ? getLocalizedQualification(input.qualificationLevel, locale)
           : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
     },
