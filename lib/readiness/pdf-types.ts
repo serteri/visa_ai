@@ -380,6 +380,10 @@ export interface PDFContext {
 
   // ── Layout helpers ──────────────────────────────────────────────────
   ensurePageSpace(heightNeeded?: number): void;
+  /** Checks if `currentY + requiredSpace` exceeds the page bottom.
+   *  If so, adds a new page and returns the top margin Y. Otherwise returns
+   *  currentY unchanged. Pure function — does not mutate yPosition. */
+  checkPageBreak(currentY: number, requiredSpace: number): number;
   drawSeparator(): void;
   addSectionHeading(symbol: string, heading: string): void;
   addTitle(title: string): void;

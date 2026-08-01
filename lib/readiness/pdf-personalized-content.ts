@@ -2,6 +2,8 @@ import type { PDFContext } from "./pdf-types";
 import type { Locale } from "./types";
 import { getPersonalizedPointsBreakdown } from "./pdf-content/personalized-points";
 import { getPersonalizedOverview } from "./pdf-content/personalized-overview";
+import { getPersonalizedApplicationGuide } from "./pdf-content/personalized-guide";
+import { getPersonalizedFaq } from "./pdf-content/personalized-faq";
 import { getSkillsAssessmentStatus } from "./pdf-content/skills-assessment-status";
 import { getViabilityInsights } from "./pdf-content/viability-insights";
 
@@ -620,5 +622,113 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     );
     addBody(skillsStatus.nextAction);
   }
+  ctx.yPosition += 3;
+
+  // ════════════════════════════════════════════════════════════════════════
+  // 6. PERSONALIZED APPLICATION GUIDE
+  // ════════════════════════════════════════════════════════════════════════
+  ctx.ensurePageSpace(50);
+  const guide = getPersonalizedApplicationGuide(
+    effectiveLocale,
+    country,
+    userInputSummary,
+    skillsAssessmentDone,
+    estimatedPoints,
+  );
+
+  addSectionHeading("📋", guide.title);
+  addBody(guide.personalSummary);
+  ctx.yPosition += 2;
+
+  // Current Status
+  addSmallText(guide.currentStatus, 0);
+  ctx.yPosition += 2;
+
+  // Next Steps (priority-ordered)
+  if (guide.nextSteps.length > 0) {
+    addSmallText(
+      t === "tr" ? "Öncelik sırasına göre yapılması gerekenler:"
+        : t === "zh" ? "按优先顺序需要完成的事项："
+        : "Actions in priority order:",
+      0,
+    );
+    ctx.yPosition += 1;
+
+    guide.nextSteps.forEach((step) => {
+      const priorityIcon = step.priority === "high" ? "🔴" : step.priority === "medium" ? "🟡" : "🟢";
+      addBody(`${priorityIcon} ${step.title}`);
+      addSmallText(step.detail, 4);
+    });
+  }
+
+  // Timeline
+  ctx.yPosition += 2;
+  addSmallText(guide.timelineEstimate, 0);
+  ctx.yPosition += 2;
+
+  // Detailed Timeline
+  if (guide.detailedTimeline && guide.detailedTimeline.length > 0) {
+    addSmallText(
+      t === "tr" ? "Detaylı Zaman Çizelgesi:"
+        : t === "zh" ? "详细时间线："
+        : "Detailed Timeline:",
+      0,
+    );
+    ctx.yPosition += 1;
+    guide.detailedTimeline.forEach((item) => {
+      addSmallText(`  ${item}`, 0);
+    });
+  }
+  ctx.yPosition += 2;
+
+  // Document Checklist
+  if (guide.documentChecklist && guide.documentChecklist.length > 0) {
+    addSmallText(
+      t === "tr" ? "Belge Hazırlık Kontrol Listesi:"
+        : t === "zh" ? "文件准备清单："
+        : "Document Preparation Checklist:",
+      0,
+    );
+    ctx.yPosition += 1;
+    guide.documentChecklist.forEach((item) => {
+      addSmallText(`  • ${item}`, 0);
+    });
+  }
+  ctx.yPosition += 2;
+
+  // Cost Estimate
+  if (guide.costEstimate && guide.costEstimate.length > 0) {
+    addSmallText(
+      t === "tr" ? "Tahmini Maliyetler:"
+        : t === "zh" ? "预计费用："
+        : "Estimated Costs:",
+      0,
+    );
+    ctx.yPosition += 1;
+    guide.costEstimate.forEach((item) => {
+      addSmallText(`  • ${item}`, 0);
+    });
+  }
+  ctx.yPosition += 3;
+
+  // ════════════════════════════════════════════════════════════════════════
+  // 7. PERSONALIZED FAQ
+  // ════════════════════════════════════════════════════════════════════════
+  ctx.ensurePageSpace(40);
+  const faq = getPersonalizedFaq(
+    effectiveLocale,
+    country,
+    userInputSummary,
+    estimatedPoints,
+    65,
+    skillsAssessmentDone,
+  );
+
+  addSectionHeading("❓", faq.title);
+  faq.items.forEach((item) => {
+    addBody(item.question);
+    addSmallText(item.answer, 4);
+    ctx.yPosition += 1;
+  });
   ctx.yPosition += 3;
 }

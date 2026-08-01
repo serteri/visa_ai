@@ -928,6 +928,14 @@ export async function submitFullCheckWaitlist(
   const skillsAssessmentRaw = String(formData.get("skillsAssessment") ?? "").trim();
   const skillsAssessmentDone = skillsAssessmentRaw === "yes";
 
+  // Bridge: engine uses occupationConfirmed for hasSkillsAssessment check.
+  // When skillsAssessment is explicitly answered, override occupationConfirmed
+  // so the engine's points calculation reflects the user's actual assessment status.
+  let occupationConfirmedRaw = String(formData.get("occupationConfirmed") ?? "").trim();
+  if (skillsAssessmentRaw === "yes" || skillsAssessmentRaw === "no") {
+    occupationConfirmedRaw = skillsAssessmentDone ? "yes" : "no";
+  }
+
   const qualificationAwardedInAustraliaResult = optionalYesNoSchema.safeParse(
     formData.get("qualificationAwardedInAustralia")
   );
@@ -998,7 +1006,7 @@ export async function submitFullCheckWaitlist(
   );
   const courseCompletionStatus = courseCompletionStatusResult.success ? courseCompletionStatusResult.data : undefined;
   const englishTestTaken = String(formData.get("englishTestTaken") ?? "").trim();
-  const occupationConfirmed = String(formData.get("occupationConfirmed") ?? "").trim();
+  const occupationConfirmed = occupationConfirmedRaw || String(formData.get("occupationConfirmed") ?? "").trim();
   const hasGraduateVisaPathwayIntentRaw = String(formData.get("hasGraduateVisaPathwayIntent") ?? "").trim();
   const hasGraduateVisaPathwayIntent =
     hasGraduateVisaPathwayIntentRaw === "yes"

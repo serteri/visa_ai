@@ -4,6 +4,8 @@ import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { renderPersonalizedContent } from "./pdf-personalized-content";
+import { getCommonPitfalls } from "./pdf-content/common-pitfalls";
+import { getResourcesSection } from "./pdf-content/resources";
 import {
   frictionBandLabel,
   frictionBandDefinition,
@@ -982,6 +984,17 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.addPage();
       yPosition = 20;
     }
+  }
+
+  /** Pure function: if currentY + requiredSpace exceeds page bottom, add a page
+   *  and return top Y (20mm). Otherwise return currentY unchanged.
+   *  Does NOT mutate yPosition — callers assign the return value themselves. */
+  function checkPageBreak(currentY: number, requiredSpace: number): number {
+    if (currentY + requiredSpace > contentBottom) {
+      doc.addPage();
+      return 20;
+    }
+    return currentY;
   }
 
   // Helper functions
@@ -4404,6 +4417,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
           cleanNum,
           clipToWidth,
           ensurePageSpace,
+          checkPageBreak,
           drawSeparator,
           addSectionHeading,
           addTitle,
@@ -4471,6 +4485,69 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
   }
   // ── End Personalized Content ───────────────────────────────────────────
+
+  // ── Common Pitfalls (all locales, AU/CA) ───────────────────────────────
+  if (!report.partnerSponsorshipAssessment) {
+    try {
+      const pitfalls = getCommonPitfalls(effectiveLocale, report.country || "AU");
+      ensurePageSpace(40);
+      addSectionHeading("⚠️", pitfalls.title);
+      addSmallText(pitfalls.intro, 0);
+      yPosition += 3;
+      pitfalls.pitfalls.forEach((item) => {
+        ensurePageSpace(20);
+        setBoldFont();
+        doc.setFontSize(FONTS.subheading);
+        doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+        doc.text(safeText(`${item.category}: ${item.title}`), margin, yPosition);
+        yPosition += 5;
+        setBaseFont();
+        const bodyLines = doc.splitTextToSize(safeText(item.body), contentWidth - 4);
+        bodyLines.forEach((line: string) => {
+          ensurePageSpace(lineHeight + 1);
+          doc.text(safeText(line), margin + 4, yPosition);
+          yPosition += lineHeight;
+        });
+        yPosition += 4;
+      });
+    } catch (err) {
+      console.error("Common pitfalls render failed:", err);
+    }
+  }
+
+  // ── Official Resources & Links (all locales, AU/CA) ───────────────────
+  if (!report.partnerSponsorshipAssessment) {
+    try {
+      const resources = getResourcesSection(effectiveLocale, report.country || "AU");
+      ensurePageSpace(40);
+      addSectionHeading("🔗", resources.title);
+      addSmallText(resources.intro, 0);
+      yPosition += 3;
+      resources.sections.forEach((section) => {
+        ensurePageSpace(16);
+        addSmallText(section.heading, 0);
+        yPosition += 1;
+        section.links.forEach((link) => {
+          ensurePageSpace(8);
+          setBoldFont();
+          doc.setFontSize(FONTS.small);
+          doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+          doc.textWithLink(safeText(link.label), margin + 4, yPosition, { url: link.url });
+          yPosition += 4;
+          setBaseFont();
+          const descLines = doc.splitTextToSize(safeText(link.description), contentWidth - 8);
+          descLines.forEach((line: string) => {
+            doc.text(safeText(line), margin + 4, yPosition);
+            yPosition += lineHeight;
+          });
+          yPosition += 2;
+        });
+        yPosition += 2;
+      });
+    } catch (err) {
+      console.error("Resources render failed:", err);
+    }
+  }
 
   // ── Appendix Architecture (CA only) ─────────────────────────────────────
   if (report.country === "CA" && !report.partnerSponsorshipAssessment) drawAppendixSection();
