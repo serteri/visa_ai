@@ -33,7 +33,9 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     doc,
     margin,
     contentWidth,
+    lineHeight,
     COLORS,
+    FONTS,
     setBaseFont,
     setBoldFont,
     safeText,
@@ -72,7 +74,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     const eoiReason = report.pointsEstimate?.eoiIneligibilityReason ?? null;
 
     ctx.ensurePageSpace(20);
-    const bannerY = ctx.yPosition;
+    const bannerY = ctx.getCurrentY();
     const bannerH = 18;
 
     if (!isEoiEligible && eoiReason === "age") {
@@ -175,7 +177,13 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       doc.text(safeText(readyTitle), margin + 8, bannerY + 10);
     }
 
-    ctx.yPosition = bannerY + bannerH + 5;
+    // Advance closure yPosition past the 18mm banner + 5mm gap.
+    // Each addSmallText("", 0) advances by lineHeight (~5mm).
+    addSmallText("", 0);
+    addSmallText("", 0);
+    addSmallText("", 0);
+    addSmallText("", 0);
+    addSmallText("", 0);
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -261,10 +269,6 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     // Section Header
     ctx.ensurePageSpace(60);
     addSectionHeading("⭐", pointsData.title);
-    doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
-    doc.setLineWidth(1.5);
-    doc.line(margin, ctx.yPosition, margin + ctx.contentWidth * 0.3, ctx.yPosition);
-    ctx.yPosition += 4;
     addSmallText(pointsData.summary, 0);
     ctx.yPosition += 3;
 
@@ -338,34 +342,56 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       return { r: 120, g: 130, b: 145 }; // gray
     });
 
+    // ── Explanation sub-rows: why a scored category shows 0 claimable points ──
+    // Spans all columns under its category row, light-gray, smaller font.
+    const subRows: Record<number, string> = {};
+    breakdown.forEach((item, idx) => {
+      const maxPts = item.max ?? 0;
+      if (maxPts <= 0 || item.points > 0) return; // not scored or already claimed → no sub-row
+      const reason = item.note && item.note.trim().length > 0
+        ? item.note
+        : t === "tr"
+          ? "Bilgi eksik: Bu kategoride puan talep etmek için gerekli bilgileri sağlamalısınız."
+          : t === "zh"
+            ? "信息缺失：您必须提供必要信息才能在此类别中主张积分。"
+            : "Information Missing: You must provide the required information to claim points in this category.";
+      subRows[idx] = `${item.label}: ${reason}`;
+    });
+
     if (ctx.drawTable) {
-      (ctx.drawTable as Function)(headers, rows, [0.30, 0.17, 0.17, 0.36],
+      (ctx.drawTable as Function)(headers, rows, [0.30, 0.13, 0.13, 0.44],
         (rowIndex: number, colIndex: number) => {
           if (colIndex === 2 && pointsColors[rowIndex]) {
             return pointsColors[rowIndex];
           }
           return null;
-        }
+        },
+        subRows
       );
     }
+    // Sync ctx.yPosition after drawTable (which advances closure yPosition).
+    // No sync needed — all rendering uses closure helpers, so cursors stay in sync.
 
-    // Gold-accented Total Line
+    // ── Gold total line + Gap analysis + Tips + Strategies ─────────────
+    // ALL rendering uses closure-based helpers (addSmallText, addBody, etc.)
+    // to keep the cursor in sync. The gold line uses ctx.getCurrentY() for
+    // the exact y-coordinate.
+
+    // Gold separator line at the closure's current position
     ctx.ensurePageSpace(14);
+    const goldLineY = ctx.getCurrentY();
     doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
     doc.setLineWidth(0.8);
-    doc.line(margin, ctx.yPosition, margin + ctx.contentWidth, ctx.yPosition);
-    ctx.yPosition += 5;
+    doc.line(margin, goldLineY, margin + ctx.contentWidth, goldLineY);
 
-    setBoldFont();
-    doc.setFontSize(11);
-    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-    doc.text(safeText(pointsData.totalLine), margin, ctx.yPosition);
-    ctx.yPosition += 7;
+    // Total line text (rendered via addSmallText which advances closure y)
+    ctx.ensurePageSpace(12);
+    addSmallText(pointsData.totalLine, 0);
 
+    // Gap analysis text
     addSmallText(pointsData.gapAnalysis, 0);
-    ctx.yPosition += 2;
 
-    // Improvement tips
+    // Improvement tips (closure-based container)
     if (pointsData.improvementTips.length > 0) {
       addPremiumBulletContainer(
         t === "tr" ? "Puan Artırma Önerileri"
@@ -376,17 +402,18 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       );
     }
 
+    // Additional strategies (closure-based text)
     if (pointsData.additionalStrategies && pointsData.additionalStrategies.length > 0) {
       addSmallText(
-        t === "tr" ? "Ek Stratejiler:" : t === "zh" ? "其他策略：" : "Additional Strategies:",
+        t === "tr" ? "Ek Stratejiler:"
+          : t === "zh" ? "其他策略："
+          : "Additional Strategies:",
         0,
       );
-      ctx.yPosition += 1;
       pointsData.additionalStrategies.forEach((strategy) => {
         addSmallText(`  • ${strategy}`, 0);
       });
     }
-    ctx.yPosition += 3;
 
   } else if (hasEmployerSponsored && !showPoints) {
     // ── EMPLOYER SPONSORSHIP READINESS ────────────────────────────────
@@ -442,7 +469,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
 
     // ── Condition A: EOI is BLOCKED → locked state ─────────────────────
     if (!isEoiEligible) {
-      const boxY = ctx.yPosition;
+      const boxY = ctx.getCurrentY();
       const boxH = 22;
       doc.setFillColor(250, 250, 250);
       doc.setDrawColor(148, 163, 184);
@@ -470,7 +497,12 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
           : "Predictive insights are currently locked. You must resolve the EOI blockers (Age or Skills Assessment) before analyzing historical viability.";
       doc.text(safeText(lockedDetail), margin + 8, boxY + 14);
 
-      ctx.yPosition = boxY + boxH + 3;
+      // Advance closure yPosition past the 22mm box + gap
+      addSmallText("", 0);
+      addSmallText("", 0);
+      addSmallText("", 0);
+      addSmallText("", 0);
+      addSmallText("", 0);
     }
     // ── Condition C: State Nomination (190/491) outlook ────────────────
     else if (viab.stateAllocation) {
@@ -535,19 +567,14 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       addBody(headline);
       ctx.yPosition += 2;
 
-      // Dynamic gap text block
+      // Dynamic gap text block (rendered via closure helpers for cursor sync)
       if (claimableTotal >= viab.cutoffScore) {
         const competitiveText = t === "tr"
           ? "Son davet turlarına göre yüksek rekabet gücüne sahipsiniz."
           : t === "zh"
             ? "基于近期邀请轮次，您具有很强的竞争力。"
             : "Highly competitive based on recent rounds.";
-        setBoldFont();
-        doc.setFontSize(9);
-        doc.setTextColor(22, 101, 52);
-        doc.text(safeText(competitiveText), margin + 4, ctx.yPosition);
-        setBaseFont();
-        ctx.yPosition += 5;
+        addSmallText(competitiveText, 4);
       } else {
         const gap = viab.cutoffScore - claimableTotal;
         const shortText = t === "tr"
@@ -555,12 +582,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
           : t === "zh"
             ? `您目前距离最近的历史分数线还差${gap}分。建议探索额外加分途径（如优秀语言成绩、NAATI或伴侣积分）。`
             : `You are currently ${gap} points short of the recent historical cut-off. We recommend exploring additional point avenues (e.g., superior English, NAATI, or Partner points).`;
-        setBoldFont();
-        doc.setFontSize(9);
-        doc.setTextColor(180, 38, 38);
-        doc.text(safeText(shortText), margin + 4, ctx.yPosition);
-        setBaseFont();
-        ctx.yPosition += 5;
+        addSmallText(shortText, 4);
       }
 
       viabData.details.forEach((detail) => {

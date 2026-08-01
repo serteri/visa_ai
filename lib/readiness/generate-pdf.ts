@@ -1749,22 +1749,27 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     });
 
     // ── Occupation / goal summary chip ────────────────────────────────────────
+    // Strict vertical flow cursor: each cover element advances a Y cursor with
+    // an explicit gap, so no two elements ever stack on top of one another.
+    let stackY = 205;
+
     if (userInputSummary.occupation) {
-      const chipY = 212;
+      const chipY = stackY;
       doc.setFillColor(236, 254, 255);
       doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
       doc.setLineWidth(0.3);
-      doc.roundedRect(margin + 4, chipY, contentWidth - 8, 10, 1.5, 1.5, "FD");
+      doc.roundedRect(margin + 4, chipY, contentWidth - 8, 9, 1.5, 1.5, "FD");
       doc.setFont(PDF_FONT_NAME, "normal");
       doc.setFontSize(9);
       doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-      doc.text(safeText(userInputSummary.occupation), margin + 8, chipY + 6.5);
+      doc.text(safeText(userInputSummary.occupation), margin + 8, chipY + 6);
+      stackY = chipY + 9 + 4;
     }
 
     // ── Prominent Points Summary (premium hero block) ──────────────────────
     const estimatedPoints = report.pointsEstimate?.estimatedPoints;
     if (estimatedPoints !== undefined) {
-      const heroY = 215;
+      const heroY = stackY;
 
       // "Migration Strategy Prepared for [Name]" headline
       setBoldFont();
@@ -1780,14 +1785,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       // Gold accent line
       doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
       doc.setLineWidth(1.5);
-      doc.line(margin + 12, heroY + 3, margin + 90, heroY + 3);
+      doc.line(margin + 12, heroY + 3.5, margin + 90, heroY + 3.5);
 
-      // Big points number
+      // Big points number (baseline sits well below the gold line)
       setBoldFont();
       doc.setFontSize(28);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
       const pointsText = `${estimatedPoints}`;
-      doc.text(pointsText, margin + 12, heroY + 20);
+      const pointsY = heroY + 16;
+      doc.text(pointsText, margin + 12, pointsY);
 
       // Threshold + label
       setBaseFont();
@@ -1798,7 +1804,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         : effectiveLocale === "zh-Hans"
           ? ` / 目标 65 分`
           : ` / 65 points threshold`;
-      doc.text(thresholdLabel, margin + 12 + doc.getTextWidth(pointsText), heroY + 20);
+      doc.text(thresholdLabel, margin + 12 + doc.getTextWidth(pointsText), pointsY);
 
       // Points status line
       setBaseFont();
@@ -1810,13 +1816,17 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       const statusText = passedThreshold
         ? (effectiveLocale === "tr" ? "Puan barajını aştınız" : effectiveLocale === "zh-Hans" ? "已超过积分门槛" : "Points threshold exceeded")
         : (effectiveLocale === "tr" ? "Puan barajının altında" : effectiveLocale === "zh-Hans" ? "未达积分门槛" : "Below points threshold");
-      doc.text(safeText(statusText), margin + 12, heroY + 27);
+      doc.text(safeText(statusText), margin + 12, heroY + 22.5);
+
+      stackY = heroY + 22.5 + 5;
     }
 
+    // Advisory intro — always rendered last, below the hero stack
     setBaseFont();
     doc.setFontSize(9.5);
     doc.setTextColor(71, 85, 105);
-    doc.text(doc.splitTextToSize(safeText(text.advisoryIntro), contentWidth - 18), margin + 8, 238);
+    const advisoryLines = doc.splitTextToSize(safeText(text.advisoryIntro), contentWidth - 18);
+    doc.text(advisoryLines, margin + 8, stackY);
 
     doc.addPage();
     yPosition = 20;
@@ -2179,16 +2189,25 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     headers: string[],
     rows: string[][],
     colRatios: number[],
-    getCellColor?: (rowIndex: number, colIndex: number, cell: string) => { r: number; g: number; b: number } | null
+    getCellColor?: (rowIndex: number, colIndex: number, cell: string) => { r: number; g: number; b: number } | null,
+    subRows?: Record<number, string>
   ) {
     const tableWidth = contentWidth;
     const colWidths = colRatios.map((ratio) => tableWidth * ratio);
-    const headerHeight = 10;
     const cellPadX = 3;
     const cellPadY = 3;
     const bodyLineHeight = 4.6;
+    const headerLineHeight = 3.4;
 
+    // Word-wrap every header and size the header band to the tallest one so
+    // long localized headers never get truncated or collide.
     const drawHeader = () => {
+      const headerLines = headers.map((h, i) =>
+        doc.splitTextToSize(safeText(h), Math.max(14, colWidths[i] - cellPadX * 2))
+      );
+      const headerMaxLines = Math.max(...headerLines.map((lines) => lines.length));
+      const headerHeight = Math.max(10, cellPadY * 2 + headerMaxLines * headerLineHeight);
+
       ensurePageSpace(headerHeight + 6);
       doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
       doc.roundedRect(margin, yPosition, tableWidth, headerHeight, 1.2, 1.2, "F");
@@ -2198,10 +2217,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setFontSize(8.5);
       doc.setTextColor(255, 255, 255);
       headers.forEach((h, i) => {
-        const wrappedHeader = doc.splitTextToSize(safeText(h), colWidths[i] - cellPadX * 2);
-        doc.text(wrappedHeader.slice(0, 2), cursorX + cellPadX, yPosition + 6, {
+        doc.text(headerLines[i], cursorX + cellPadX, yPosition + headerHeight / 2 + 1.2, {
           maxWidth: colWidths[i] - cellPadX * 2,
-          lineHeightFactor: 1.1,
+          lineHeightFactor: 1.05,
         });
         cursorX += colWidths[i];
       });
@@ -2250,6 +2268,34 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setLineWidth(0.2);
       doc.rect(margin, yPosition, tableWidth, rowHeight);
       yPosition += rowHeight;
+
+      // ── Explanation sub-row (spans all columns, light-gray, smaller font) ──
+      const subText = subRows?.[rowIndex];
+      if (subText && subText.trim().length > 0) {
+        const subWrapped = doc.splitTextToSize(safeText(subText), tableWidth - cellPadX * 2);
+        const subLineHeight = 4.0;
+        const subHeight = Math.max(9, cellPadY + subWrapped.length * subLineHeight);
+
+        if (yPosition + subHeight > contentBottom) {
+          doc.addPage();
+          yPosition = margin;
+          drawHeader();
+        }
+
+        doc.setFillColor(242, 244, 247); // light gray
+        doc.rect(margin, yPosition, tableWidth, subHeight, "F");
+        setBaseFont();
+        doc.setFontSize(7.2);
+        doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+        doc.text(subWrapped, margin + cellPadX + 2, yPosition + cellPadY + 2.8, {
+          maxWidth: tableWidth - (cellPadX + 2) * 2,
+          lineHeightFactor: 1.12,
+        });
+        doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+        doc.setLineWidth(0.2);
+        doc.rect(margin, yPosition, tableWidth, subHeight);
+        yPosition += subHeight;
+      }
     });
 
     yPosition += 4;
@@ -3816,6 +3862,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     drawPartnerSponsorshipReport();
   } else {
     addReportOverview();
+    // Personalized sections (EOI banner → points breakdown → viability)
+    // render immediately after the executive summary so the most critical
+    // data appears on pages 2-3 rather than buried at the end.
+    renderPersonalizedSections();
     drawGlossary();
     drawMissingInfoBox();
     drawVisaViabilityRanking();
@@ -4300,93 +4350,111 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   });
   yPosition += 5;
 
-  // ── Personalized Content (NEW SECTIONS) ────────────────────────────────
-  // Added AFTER existing content to preserve the original report structure.
-  // These sections provide personalized guidance based on the user's profile.
-  if (!report.partnerSponsorshipAssessment) {
-    try {
-      renderPersonalizedContent({
-        doc,
-        report,
-        locale,
-        effectiveLocale,
-        userInputSummary,
-        text,
-        feedbackText,
-        yPosition,
-        pageCount: doc.getNumberOfPages(),
-        pageWidth,
-        pageHeight,
-        margin,
-        contentWidth,
-        lineHeight,
-        contentBottom: 267,
-        COLORS,
-        FONTS,
-        cjkFontAvailable,
-        cjkBoldFontAvailable,
-        activeFontName,
-        activeBoldAvailable,
-        setBaseFont,
-        setBoldFont,
-        safeText,
-        cleanNum,
-        clipToWidth,
-        ensurePageSpace,
-        drawSeparator,
-        addSectionHeading,
-        addTitle,
-        addHeading,
-        addBody,
-        addSmallText,
-        addBulletPoints,
-        addCriticalAlertText,
-        addPremiumBulletContainer,
-        addPremiumKeyValueContainer,
-        drawTable,
-        drawGanttTimeline,
-        drawCrsBarChart,
-        drawPnpHeatmap,
-        drawStateRadar,
-        drawFamilyLivingCosts,
-        drawAlertCollection,
-        drawActionRequiredBox,
-        drawAuditChecklistBox,
-        drawMissingInfoBox,
-        drawSparseDataDisclaimer,
-        drawVisualPlaceholder,
-        drawAppendixDividerPage,
-        drawNocEcaSection,
-        drawImmediateActionPlan,
-        drawVisaViabilityRanking,
-        drawLodgementReadyChecklist,
-        drawTopRecommendedStates,
-        drawStateNominationTable,
-        drawStateNominationBlockedNotice,
-        drawPartialDataWarning,
-        drawGlossary,
-        drawReportOverview: addReportOverview,
-        drawCoverPage: addCoverPage,
-        drawPartnerSponsorshipReport,
-        drawPointsBreakdownPointerBox: () => {},
-        drawAuditChecklistBoxInline: drawAuditChecklistBox,
-        drawFamilyLivingCostsInline: drawFamilyLivingCosts,
-        drawGanttTimelineInline: drawGanttTimeline,
-        drawCrsBarChartInline: drawCrsBarChart,
-        drawPnpHeatmapInline: drawPnpHeatmap,
-        drawStateRadarInline: drawStateRadar,
-        addViralCTABanner,
-        addGlobalFooters,
-        formatDifficulty,
-        formatStrength,
-        formatSignalConfidence,
-        formatConfidenceLevel,
-        formatLoad,
-        formatEvidenceStatus,
-        formatRecommendationTag,
-      } as any);
-    } catch (err) {
-      console.error("Personalized content render failed:", err);
+  /**
+   * Renders the PERSONALIZED sections (EOI Status Banner, Points Breakdown,
+   * Predictive Viability, Skills Assessment) into the report flow.
+   *
+   * Hoisted function declaration: invoked immediately after the cover page
+   * and executive summary so the EOI banner + points table appear on
+   * pages 2-3 instead of being buried at the end of the document.
+   */
+  function renderPersonalizedSections() {
+    if (!report.partnerSponsorshipAssessment) {
+      try {
+        const entryY = yPosition;
+        const ctx: any = {
+          getCurrentY: () => yPosition,
+          doc,
+          report,
+          locale,
+          effectiveLocale,
+          userInputSummary,
+          text,
+          feedbackText,
+          yPosition,
+          pageCount: doc.getNumberOfPages(),
+          pageWidth,
+          pageHeight,
+          margin,
+          contentWidth,
+          lineHeight,
+          contentBottom: 267,
+          COLORS,
+          FONTS,
+          cjkFontAvailable,
+          cjkBoldFontAvailable,
+          activeFontName,
+          activeBoldAvailable,
+          setBaseFont,
+          setBoldFont,
+          safeText,
+          cleanNum,
+          clipToWidth,
+          ensurePageSpace,
+          drawSeparator,
+          addSectionHeading,
+          addTitle,
+          addHeading,
+          addBody,
+          addSmallText,
+          addBulletPoints,
+          addCriticalAlertText,
+          addPremiumBulletContainer,
+          addPremiumKeyValueContainer,
+          drawTable,
+          drawGanttTimeline,
+          drawCrsBarChart,
+          drawPnpHeatmap,
+          drawStateRadar,
+          drawFamilyLivingCosts,
+          drawAlertCollection,
+          drawActionRequiredBox,
+          drawAuditChecklistBox,
+          drawMissingInfoBox,
+          drawSparseDataDisclaimer,
+          drawVisualPlaceholder,
+          drawAppendixDividerPage,
+          drawNocEcaSection,
+          drawImmediateActionPlan,
+          drawVisaViabilityRanking,
+          drawLodgementReadyChecklist,
+          drawTopRecommendedStates,
+          drawStateNominationTable,
+          drawStateNominationBlockedNotice,
+          drawPartialDataWarning,
+          drawGlossary,
+          drawReportOverview: addReportOverview,
+          drawCoverPage: addCoverPage,
+          drawPartnerSponsorshipReport,
+          drawPointsBreakdownPointerBox: () => {},
+          drawAuditChecklistBoxInline: drawAuditChecklistBox,
+          drawFamilyLivingCostsInline: drawFamilyLivingCosts,
+          drawGanttTimelineInline: drawGanttTimeline,
+          drawCrsBarChartInline: drawCrsBarChart,
+          drawPnpHeatmapInline: drawPnpHeatmap,
+          drawStateRadarInline: drawStateRadar,
+          addViralCTABanner,
+          addGlobalFooters,
+          formatDifficulty,
+          formatStrength,
+          formatSignalConfidence,
+          formatConfidenceLevel,
+          formatLoad,
+          formatEvidenceStatus,
+          formatRecommendationTag,
+        };
+
+        renderPersonalizedContent(ctx);
+
+        // Reconcile the outer cursor: the helper closures advance the local
+        // `yPosition`, while renderPersonalizedContent also applies direct
+        // `ctx.yPosition +=` spacing increments that are otherwise lost on the
+        // primitive copy. Re-add that delta so the next section starts exactly
+        // where the personalized content ended.
+        yPosition = yPosition + (ctx.yPosition - entryY);
+      } catch (err) {
+        console.error("Personalized content render failed:", err);
+      }
     }
   }
   // ── End Personalized Content ───────────────────────────────────────────

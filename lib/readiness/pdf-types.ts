@@ -366,6 +366,8 @@ export interface PDFContext {
    * the next section should start.
    */
   yPosition: number;
+  /** Return the current closure y-position (the actual rendering cursor). */
+  getCurrentY(): number;
   /** Number of pages currently in the document (sections may add pages). */
   pageCount: number;
 
@@ -398,7 +400,8 @@ export interface PDFContext {
     headers: string[],
     rows: string[][],
     columnWidths: number[],
-    highlightRow?: (rowIndex: number) => ColorRGB | null,
+    getCellColor?: (rowIndex: number, colIndex: number, cell: string) => ColorRGB | null,
+    subRows?: Record<number, string>,
   ): void;
   drawGanttTimeline(): void;
   drawCrsBarChart(): void;
