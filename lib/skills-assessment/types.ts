@@ -98,6 +98,8 @@ export interface SkillsAssessmentAuthority {
   /** Citation / source document name (e.g. "AACA OQA Applicants Guide, October 2025"). */
   sourceDocument: string;
   pathways: SkillsAssessmentPathway[];
+  /** General authority-level notes (policy, membership, DAMA support, etc.). */
+  notes?: string[];
   englishRequirements?: EnglishRequirement[];
   /** How long the issued assessment remains valid for migration purposes. */
   validityPeriod?: {

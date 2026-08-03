@@ -56,9 +56,13 @@ function testAuthorityLookup() {
   const d = getSkillsAssessmentAuthority("241131 Architect");
   ASSERT.ok(d?.authorityId === "AACA", "'241131 Architect' resolves to AACA");
 
-  // Fallback: unknown code returns null
-  const e = getSkillsAssessmentAuthority("261313"); // Software Engineer
-  ASSERT.ok(e === null, "unknown code '261313' returns null (generic fallback)");
+  // ACS covers Software Engineer (261313)
+  const e = getSkillsAssessmentAuthority("261313");
+  ASSERT.ok(e?.authorityId === "ACS", "Software Engineer '261313' resolves to ACS");
+
+  // Unknown code returns null
+  const f = getSkillsAssessmentAuthority("999999"); // truly unknown
+  ASSERT.ok(f === null, "truly unknown code '999999' returns null (generic fallback)");
 }
 
 function testAACADataIntegrity() {
