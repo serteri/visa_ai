@@ -14,6 +14,7 @@ import { isFSTPEligibleOccupation } from "@/lib/readiness/noc-fstp-groups";
 import {
   getSkillsAssessmentAuthority,
   getDefaultPathway,
+  resolveACSPathway,
 } from "@/lib/skills-assessment";
 import {
   type ProvinceCode,
@@ -4798,11 +4799,23 @@ function buildFinancialRoadmap(
 
   if (hasSkilled || has482) {
     // Look up an occupation-specific assessing authority. For occupations
-    // covered by a registered authority (e.g. Architect → AACA), the line
-    // renders the specific pathway + fee + processing time + doc checklist
+    // covered by a registered authority (e.g. Architect → AACA, Software Engineer → ACS),
+    // the line renders the specific pathway + fee + processing time + doc checklist
     // instead of the generic ACS/EA/VETASSESS/CPA fallback.
+    // For ACS, the pathway is resolved from intake data (education + experience).
     const authority = getSkillsAssessmentAuthority(input.occupation);
-    const primaryPathway = getDefaultPathway(authority);
+    let primaryPathway = getDefaultPathway(authority);
+
+    // ACS-specific: resolve pathway from intake data instead of default
+    if (authority?.authorityId === "ACS") {
+      const resolvedId = resolveACSPathway({
+        qualificationLevel: input.qualificationLevel ?? "",
+        completedAtAustralianInstitution: input.qualificationAwardedInAustralia === true,
+        yearsOfExperience: (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0),
+      });
+      const resolved = authority.pathways.find((p) => p.pathwayId === resolvedId);
+      if (resolved) primaryPathway = resolved;
+    }
 
     if (authority && primaryPathway) {
       const primaryFee = primaryPathway.fees.find((f) => typeof f.amountAUD === "number")
