@@ -39,12 +39,12 @@ function testAuthorityLookup() {
   const a = getSkillsAssessmentAuthority("232111");
   ASSERT.ok(a !== null, "'232111' (ANZSCO) resolves to AACA");
   ASSERT.ok(a?.authorityId === "AACA", "resolved authority is AACA");
-  ASSERT.ok(a?.authorityName.includes("Architects"), "authority name contains 'Architects'");
+  ASSERT.ok(a?.authorityName?.includes("Architects") ?? false, "authority name contains 'Architects'");
 
   const b = getSkillsAssessmentAuthority("241131");
   ASSERT.ok(b !== null, "'241131' (OSCA) resolves to AACA");
   ASSERT.ok(b?.authorityId === "AACA", "resolved authority is AACA");
-  ASSERT.ok(b?.authorityName.includes("Architects"), "authority name contains 'Architects'");
+  ASSERT.ok(b?.authorityName?.includes("Architects") ?? false, "authority name contains 'Architects'");
 
   // Both resolve to the SAME authority object
   ASSERT.ok(a === b, "both codes resolve to the same AACA authority object");
@@ -68,10 +68,10 @@ function testAACADataIntegrity() {
   ASSERT.ok(a?.occupations[0]?.anzscoCode === "232111", "ANZSCO code is 232111");
   ASSERT.ok(a?.occupations[0]?.oscaCode === "241131", "OSCA code is 241131");
   ASSERT.ok(a?.occupations[0]?.title === "Architect", "title is 'Architect'");
-  ASSERT.ok(a?.pathways.length >= 4, "AACA has at least 4 pathways (OQA, Verification, UK MRA, EPA)");
+  ASSERT.ok((a?.pathways?.length ?? 0) >= 4, "AACA has at least 4 pathways (OQA, Verification, UK MRA, EPA)");
   ASSERT.ok(a?.lastVerified === "2025-10-01", "lastVerified is '2025-10-01'");
   ASSERT.ok(a?.validityPeriod?.years === 3, "validity period is 3 years");
-  ASSERT.ok(a?.fraudPolicy !== undefined, "fraud policy exists");
+  ASSERT.ok((a?.fraudPolicy ?? "") !== "", "fraud policy exists");
 }
 
 function testOQAPathway() {
