@@ -12,6 +12,10 @@ import { checkOccupation } from "@/lib/occupations/check-occupation";
 import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
 import { isFSTPEligibleOccupation } from "@/lib/readiness/noc-fstp-groups";
 import {
+  getSkillsAssessmentAuthority,
+  getDefaultPathway,
+} from "@/lib/skills-assessment";
+import {
   type ProvinceCode,
   type ProvinceStream,
   type OntarioPathwayId,
@@ -4793,16 +4797,47 @@ function buildFinancialRoadmap(
   }
 
   if (hasSkilled || has482) {
-    items.push({
-      category: isTr ? "Beceri Değerlendirmesi (Assessing Authority'ye göre)" : "Skills Assessment (by Assessing Authority)",
-      estimateType: "third_party_estimate",
-      amountLabel: isTr
-        ? "AUD 530–900+ (kuruma ve mesleğe göre)"
-        : "AUD $530–$900+ (varies by authority and occupation)",
-      explanation: isTr
-        ? "Değerlendirme kurumu ANZSCO meslek koduna göre belirlenir: BT/ICT rolleri (ANZSCO Major Group 26) → ACS (AUD 530–665, 6–12 hafta); Mühendislik → Engineers Australia (AUD 735–900, 4–10 hafta); Sağlık meslekleri → AHPRA (AUD 890+, lisans gereklidir); Muhasebe → CPA Australia, CAANZ veya IPA (AUD 600–800); Genel meslekler → VETASSESS (AUD 850, 10–16 hafta). Değerlendirme genellikle noterli belge kopyaları, iş referans mektupları ve resmi transkriptleri kapsar. ACS değerlendirmeleri için, son 8 yıl içinde en az 1 yıl BT ile ilgili iş deneyimi zorunludur. Bazı değerlendirme kurumları tekrar başvuru için indirimli ücret uygular."
-        : "The assessing authority is determined by your ANZSCO occupation code: IT/ICT roles (ANZSCO Major Group 26) → ACS (AUD $530–$665, 6–12 weeks); Engineering → Engineers Australia (AUD $735–$900, 4–10 weeks); Healthcare professions → AHPRA (AUD $890+, requires registration); Accounting → CPA Australia, CAANZ, or IPA (AUD $600–$800); General professional and trade occupations → VETASSESS (AUD $850, 10–16 weeks). All assessments require certified copies of qualifications, official transcripts, and detailed employment reference letters specifying duties, dates, and hours worked. ACS requires a minimum of 1 year of relevant IT work experience in the past 8 years. Negative assessment outcomes can be challenged or a re-assessment sought, which incurs additional fees (typically 50–80% of the original charge).",
-    });
+    // Look up an occupation-specific assessing authority. For occupations
+    // covered by a registered authority (e.g. Architect → AACA), the line
+    // renders the specific pathway + fee + processing time + doc checklist
+    // instead of the generic ACS/EA/VETASSESS/CPA fallback.
+    const authority = getSkillsAssessmentAuthority(input.occupation);
+    const primaryPathway = getDefaultPathway(authority);
+
+    if (authority && primaryPathway) {
+      const primaryFee = primaryPathway.fees.find((f) => typeof f.amountAUD === "number")
+        ?? primaryPathway.fees[0];
+      const feeLabel = primaryFee?.amountAUD !== undefined
+        ? `AUD $${primaryFee.amountAUD.toLocaleString("en-AU")} ${primaryFee.note ? `(${primaryFee.note})` : ""}`
+        : (primaryFee?.label ?? "");
+      const processing = primaryPathway.processingTimeWeeks
+        ? `${primaryPathway.processingTimeWeeks.standard} wk${primaryPathway.processingTimeWeeks.ifIncomplete ? ` (${primaryPathway.processingTimeWeeks.ifIncomplete} wk if incomplete)` : ""}`
+        : "";
+
+      items.push({
+        category: isTr
+          ? `Beceri Değerlendirmesi — ${authority.authorityName} (${authority.authorityId})`
+          : `Skills Assessment — ${authority.authorityName} (${authority.authorityId})`,
+        estimateType: "third_party_estimate",
+        amountLabel: isTr
+          ? feeLabel
+          : feeLabel,
+        explanation: isTr
+          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${primaryPathway.name}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${primaryPathway.notes?.length ? "Notlar: " + primaryPathway.notes.slice(0, 2).join(" ") : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
+          : `Assessing authority: ${authority.authorityName}. Default pathway: ${primaryPathway.name}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${primaryPathway.notes?.length ? "Notes: " + primaryPathway.notes.slice(0, 2).join(" ") : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
+      });
+    } else {
+      items.push({
+        category: isTr ? "Beceri Değerlendirmesi (Assessing Authority'ye göre)" : "Skills Assessment (by Assessing Authority)",
+        estimateType: "third_party_estimate",
+        amountLabel: isTr
+          ? "AUD 530–900+ (kuruma ve mesleğe göre)"
+          : "AUD $530–$900+ (varies by authority and occupation)",
+        explanation: isTr
+          ? "Değerlendirme kurumu ANZSCO meslek koduna göre belirlenir: BT/ICT rolleri (ANZSCO Major Group 26) → ACS (AUD 530–665, 6–12 hafta); Mühendislik → Engineers Australia (AUD 735–900, 4–10 hafta); Sağlık meslekleri → AHPRA (AUD 890+, lisans gereklidir); Muhasebe → CPA Australia, CAANZ veya IPA (AUD 600–800); Genel meslekler → VETASSESS (AUD 850, 10–16 hafta). Değerlendirme genellikle noterli belge kopyaları, iş referans mektupları ve resmi transkriptleri kapsar. ACS değerlendirmeleri için, son 8 yıl içinde en az 1 yıl BT ile ilgili iş deneyimi zorunludur. Bazı değerlendirme kurumları tekrar başvuru için indirimli ücret uygular."
+          : "The assessing authority is determined by your ANZSCO occupation code: IT/ICT roles (ANZSCO Major Group 26) → ACS (AUD $530–$665, 6–12 weeks); Engineering → Engineers Australia (AUD $735–$900, 4–10 weeks); Healthcare professions → AHPRA (AUD $890+, requires registration); Accounting → CPA Australia, CAANZ, or IPA (AUD $600–$800); General professional and trade occupations → VETASSESS (AUD $850, 10–16 weeks). All assessments require certified copies of qualifications, official transcripts, and detailed employment reference letters specifying duties, dates, and hours worked. ACS requires a minimum of 1 year of relevant IT work experience in the past 8 years. Negative assessment outcomes can be challenged or a re-assessment sought, which incurs additional fees (typically 50–80% of the original charge).",
+      });
+    }
   }
 
   items.push(
