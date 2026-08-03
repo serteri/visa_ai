@@ -99,7 +99,7 @@ function testPathwayResolver() {
   // Verify Software Engineer resolves to ACS with correct pathway
   const seAuthority = getSkillsAssessmentAuthority("261313");
   ASSERT.ok(seAuthority?.authorityId === "ACS", "Software Engineer → ACS");
-  ASSERT.ok(seAuthority?.pathways.length >= 4, "ACS has 4+ pathways");
+  ASSERT.ok((seAuthority?.pathways?.length ?? 0) >= 4, "ACS has 4+ pathways");
 }
 
 function testFinancialRoadmapIntegration() {

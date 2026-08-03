@@ -1,6 +1,7 @@
 import type { SkillsAssessmentAuthority } from "./types";
 import { aacaAuthority } from "./authorities/aaca";
 import { acsAuthority } from "./authorities/acs";
+import { adcAuthority } from "./authorities/adc";
 import { normalizeOccupationCode } from "./types";
 
 /**
@@ -8,7 +9,7 @@ import { normalizeOccupationCode } from "./types";
  * Engineers Australia, VETASSESS, CPA Australia, AHPRA, WES, ICAS) are added
  * here and exposed through `getSkillsAssessmentAuthority()` by occupation code.
  */
-const AUTHORITIES: SkillsAssessmentAuthority[] = [aacaAuthority, acsAuthority];
+const AUTHORITIES: SkillsAssessmentAuthority[] = [aacaAuthority, acsAuthority, adcAuthority];
 
 /**
  * Looks up the assessing authority for a given occupation code.
