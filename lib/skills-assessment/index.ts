@@ -3,11 +3,12 @@ import { aacaAuthority } from "./authorities/aaca";
 import { acsAuthority } from "./authorities/acs";
 import { adcAuthority } from "./authorities/adc";
 import { engineersAustraliaAuthority } from "./authorities/engineers-australia";
+import { vetassessAuthority } from "./authorities/vetassess";
 import { normalizeOccupationCode } from "./types";
 
 /**
- * Registry of all skills assessment authorities. New authorities (VETASSESS,
- * CPA Australia, AHPRA, WES, ICAS) are added here and exposed through
+ * Registry of all skills assessment authorities. New authorities (CPA Australia,
+ * AHPRA, WES, ICAS) are added here and exposed through
  * `getSkillsAssessmentAuthority()` by occupation code.
  */
 const AUTHORITIES: SkillsAssessmentAuthority[] = [
@@ -15,6 +16,7 @@ const AUTHORITIES: SkillsAssessmentAuthority[] = [
   acsAuthority,
   adcAuthority,
   engineersAustraliaAuthority,
+  vetassessAuthority,
 ];
 
 /**

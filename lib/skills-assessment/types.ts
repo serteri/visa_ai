@@ -90,6 +90,22 @@ export interface EnglishRequirement {
   note?: string;
 }
 
+/**
+ * For authorities with multiple independent assessment services
+ * (e.g. VETASSESS Professional + Trade streams).
+ */
+export interface SkillsAssessmentService {
+  serviceId: string;
+  serviceName: string;
+  appliesTo: string;
+  pathways: SkillsAssessmentPathway[];
+  /** Service-level fees (may differ from pathway fees; e.g. onshore/offshore). */
+  fees?: AuthorityFee[];
+  notes?: string[];
+  /** Programs available under this service (e.g. TSS, OSAP for trade). */
+  programs?: Array<{ name: string; purpose: string }>;
+}
+
 export interface SkillsAssessmentAuthority {
   authorityId: string;
   authorityName: string;
@@ -102,6 +118,13 @@ export interface SkillsAssessmentAuthority {
   pathways: SkillsAssessmentPathway[];
   /** General authority-level notes (policy, membership, DAMA support, etc.). */
   notes?: string[];
+  /**
+   * For authorities with multiple independent assessment services (e.g. VETASSESS
+   * has both a Professional stream and a Trade stream), each service is modeled
+   * as a separate `SkillsAssessmentService`. When `services` is present, the
+   * top-level `pathways` should be left empty — callers iterate services instead.
+   */
+  services?: SkillsAssessmentService[];
   englishRequirements?: EnglishRequirement[];
   /** Exemptions from the English language requirement (e.g. Australian degree, native speaker countries). */
   englishExemptions?: string[];
