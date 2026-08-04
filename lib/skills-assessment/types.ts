@@ -98,6 +98,8 @@ export interface SkillsAssessmentPathway {
   postgraduateExperienceRequired?: boolean;
   /** Fallback pathway if the applicant doesn't qualify or fails. */
   fallback?: string;
+  /** Pathway ID that must be completed before this one (e.g. employment requires qualification assessment first). */
+  prerequisite?: string;
 }
 
 export interface EnglishRequirement {
@@ -105,6 +107,8 @@ export interface EnglishRequirement {
   test: string;
   /** Minimum score (raw string to support mixed formats like "Overall band 6.5"). */
   minimumScore: string;
+  /** How many years the test result remains valid. */
+  validityYears?: number;
   /** Optional context note. */
   note?: string;
 }
@@ -196,6 +200,78 @@ export interface SkillsAssessmentAuthority {
   };
   /** Transcript verification instructions. */
   transcriptVerification?: Record<string, string>;
+  /** Competency matrix across occupations (for authorities like CA ANZ that map competencies per ANZSCO). */
+  competencyMatrix?: {
+    columns?: string[];
+    rows?: Array<{
+      area: string;
+      status?: Array<"Mandatory" | "Optional" | null>;
+      _needsVerification?: boolean;
+      note?: string;
+    }>;
+  };
+  /** Required document checklist grouped by category. */
+  requiredDocuments?: {
+    identity?: string[];
+    englishProficiencyEvidence?: string[];
+    educationalQualifications?: string[];
+    professionalMembership?: string[];
+    translations?: string[];
+    syllabusOrCourseDescription?: string[];
+    chineseQualificationVerification?: string[];
+    skilledEmploymentDocuments?: string[];
+    selfEmployedDocuments?: string[];
+    scanningRequirements?: Record<string, unknown>;
+  };
+  /** Fee schedule with current and previous amounts. */
+  feesSchedule?: Array<{
+    type: string;
+    previousFeeAUD?: number;
+    currentFeeAUD: number;
+    processingTime?: string;
+    effectiveDate?: string;
+    note?: string;
+  }>;
+  /** Processing time notes. */
+  processingNotes?: {
+    initialReviewDays?: number;
+    additionalInfoResponseDays?: number;
+    holdPeriodMonths?: Record<string, number>;
+    urgentProcessing?: {
+      available?: boolean;
+      criteria?: string[];
+    };
+  };
+  /** Outcome and validity information. */
+  outcomeAndValidity?: {
+    validityYears?: number;
+    reassessmentWindowDays?: number;
+    reissueFee?: number | string;
+  };
+  /** Review, appeal, and fraud policy. */
+  reviewAppealFraud?: {
+    internalReview?: {
+      windowDays?: number;
+      newDocumentsAccepted?: boolean;
+    };
+    externalAppeal?: {
+      windowDays?: number;
+      tribunal?: string;
+    };
+    fraudPolicy?: {
+      responseWindowDays?: number;
+      banYears?: number;
+      feeRefunded?: boolean;
+    };
+  };
+  /** Discontinued programs (historical reference only). */
+  discontinuedPrograms?: Array<{
+    name: string;
+    closureDate?: string;
+    note?: string;
+  }>;
+  /** Role disclaimer (e.g. "skills assessment only, no migration advice"). */
+  role?: string;
   /** How long the issued assessment remains valid for migration purposes. */
   validityPeriod?: {
     years: number;
