@@ -12,8 +12,18 @@ interface UserProfile {
 }
 
 /**
+ * Optional assessment authority data for dynamic FAQ content.
+ */
+interface AssessmentAuthorityData {
+  authorityId?: string;
+  authorityName?: string;
+  authorityNote?: string;
+}
+
+/**
  * Generates PERSONALIZED FAQ based on the user's specific situation.
  * Questions adapt to their occupation, country, and current status.
+ * If an assessingAuthority is provided, answers include authority-specific details.
  */
 export function getPersonalizedFaq(
   locale: Locale,
@@ -22,6 +32,7 @@ export function getPersonalizedFaq(
   estimatedPoints: number,
   threshold: number,
   skillsAssessmentDone: boolean,
+  assessingAuthority?: AssessmentAuthorityData | null,
 ): {
   title: string;
   items: Array<{ question: string; answer: string }>;
@@ -34,17 +45,52 @@ export function getPersonalizedFaq(
 
   // ── Occupation-specific question ──────────────────────────────────────
   if (profile.occupation) {
+    // Build dynamic answer using assessingAuthority data when available
+    const authorityName = assessingAuthority?.authorityName ?? null;
+    const authorityNote = assessingAuthority?.authorityNote ?? null;
+    let answerEn = `Assessment for ${profile.occupation}`;
+    if (authorityName) {
+      answerEn += ` is handled by ${authorityName}.`;
+    } else {
+      answerEn += ` is done by the relevant assessing authority.`;
+    }
+    if (authorityNote) {
+      answerEn += ` ${authorityNote}`;
+    } else {
+      answerEn += ` The process typically takes 8-12 weeks. Required documents include employment reference letters, qualification certificates, and passport.`;
+    }
+
+    let answerTr = `${profile.occupation} mesleği`;
+    if (authorityName) {
+      answerTr += ` değerlendirmesi ${authorityName} tarafından yürütülür.`;
+    } else {
+      answerTr += ` için değerlendirmeyi ilgili kurum yapar.`;
+    }
+    if (authorityNote) {
+      answerTr += ` ${authorityNote}`;
+    } else {
+      answerTr += ` Değerlendirme süreci 8-12 hafta sürer. Gerekli belgeler: iş deneyimi mektupları, diploma, pasaport.`;
+    }
+
+    let answerZh = `${profile.occupation}职业`;
+    if (authorityName) {
+      answerZh += `的评估由${authorityName}完成。`;
+    } else {
+      answerZh += `的评估由相关机构完成。`;
+    }
+    if (authorityNote) {
+      answerZh += `${authorityNote}`;
+    } else {
+      answerZh += `评估过程需要8-12周。所需文件：工作经验证明信、学位证书、护照。`;
+    }
+
     items.push({
       question: isTr
         ? `${profile.occupation} mesleği için beceri değerlendirmesi nasıl yapılır?`
         : isZh
           ? `如何为${profile.occupation}职业进行技能评估？`
           : `How do I get a skills assessment for ${profile.occupation}?`,
-      answer: isTr
-        ? `${profile.occupation} mesleği için değerlendirmeyi ilgili kurum yapar. Değerlendirme süreci 8-12 hafta sürer. Gerekli belgeler: iş deneyimi mektupları, diploma, pasaport.`
-        : isZh
-          ? `${profile.occupation}职业的评估由相关机构完成。评估过程需要8-12周。所需文件：工作经验证明信、学位证书、护照。`
-          : `Assessment for ${profile.occupation} is done by the relevant authority. The process takes 8-12 weeks. Required documents: employment letters, degree, passport.`,
+      answer: isTr ? answerTr : isZh ? answerZh : answerEn,
     });
   }
 
@@ -73,10 +119,10 @@ export function getPersonalizedFaq(
           ? "不进行技能评估可以提交申请吗？"
           : "Can I apply without a skills assessment?",
       answer: isTr
-        ? "Hayır, beceri değerlendirmesi olmadan ${country === 'AU' ? 'Avustralya' : 'Kanada'} skilled migration başvurusu yapamazsınız. Bu zorunlu bir adımdır."
+        ? `Hayır, beceri değerlendirmesi olmadan ${country === 'AU' ? 'Avustralya' : 'Kanada'} skilled migration başvurusu yapamazsınız. Bu zorunlu bir adımdır.`
         : isZh
-          ? "不可以，没有技能评估结果无法提交${country === 'AU' ? '澳大利亚' : '加拿大'}技术移民申请。这是必要步骤。"
-          : "No, you cannot apply for ${country === 'AU' ? 'Australian' : 'Canadian'} skilled migration without a skills assessment. This is mandatory.",
+          ? `不可以，没有技能评估结果无法提交${country === 'AU' ? '澳大利亚' : '加拿大'}技术移民申请。这是必要步骤。`
+          : `No, you cannot apply for ${country === 'AU' ? 'Australian' : 'Canadian'} skilled migration without a skills assessment. This is mandatory.`,
     });
   }
 

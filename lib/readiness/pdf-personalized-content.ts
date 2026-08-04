@@ -715,6 +715,25 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   // 7. PERSONALIZED FAQ
   // ════════════════════════════════════════════════════════════════════════
   ctx.ensurePageSpace(40);
+  // Build assessingAuthority data for the FAQ from the engine's financial roadmap data
+  let faqAssessingAuthority: { authorityId?: string; authorityName?: string; authorityNote?: string } | null = null;
+  if (userInputSummary.occupation) {
+    // Check if we have authority data from the skills-assessment module
+    try {
+      const { getSkillsAssessmentAuthority } = require("@/lib/skills-assessment");
+      const authority = getSkillsAssessmentAuthority(userInputSummary.occupation);
+      if (authority) {
+        faqAssessingAuthority = {
+          authorityId: authority.authorityId,
+          authorityName: authority.authorityName,
+          authorityNote: authority.notes?.[0] ?? null,
+        };
+      }
+    } catch {
+      // Fallback: no authority data available
+    }
+  }
+
   const faq = getPersonalizedFaq(
     effectiveLocale,
     country,
@@ -722,6 +741,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     estimatedPoints,
     65,
     skillsAssessmentDone,
+    faqAssessingAuthority,
   );
 
   addSectionHeading("❓", faq.title);
