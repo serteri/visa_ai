@@ -81,6 +81,23 @@ export interface SkillsAssessmentPathway {
   competencyAssessment?: CompetencyAssessment;
   /** Additional context-specific notes (policy changes, caveats). */
   notes?: string[];
+  /** Which occupation this pathway applies to (when an authority covers multiple occupations). */
+  occupation?: string;
+  /** Whether this pathway requires a professional examination. */
+  examRequired?: boolean;
+  /** Examination details if examRequired is true. */
+  examDetails?: {
+    name: string;
+    format: string;
+    sittings: string;
+    sections?: Array<{ discipline: string; questions: number; mustPass: boolean }>;
+    topics?: string[];
+    passRequirement: string;
+  };
+  /** Minimum postgraduate experience required. */
+  postgraduateExperienceRequired?: boolean;
+  /** Fallback pathway if the applicant doesn't qualify or fails. */
+  fallback?: string;
 }
 
 export interface EnglishRequirement {
@@ -120,6 +137,8 @@ export interface SkillsAssessmentAuthority {
   pathways: SkillsAssessmentPathway[];
   /** General authority-level notes (policy, membership, DAMA support, etc.). */
   notes?: string[];
+  /** General fees that apply across all pathways (not pathway-specific). */
+  fees?: AuthorityFee[];
   /**
    * For authorities with multiple independent assessment services (e.g. VETASSESS
    * has both a Professional stream and a Trade stream), each service is modeled
@@ -154,12 +173,29 @@ export interface SkillsAssessmentAuthority {
   }>;
   /** Evidence types that are explicitly excluded from the assessment. */
   excludedEvidence?: string[];
+  /** Shared document requirements across all pathways (when they're common). */
+  documentRequirements?: string[];
   /** Occupation-specific competency/subject mapping (e.g. CPA's mandatory competencies per ANZSCO code). */
   occupationCompetencyMapping?: {
     note?: string;
     sharedCompetencies?: string[];
     byOccupation?: Record<string, string[]>;
   };
+  /** If the source document is ambiguous about whether this is a standard migration skills assessment vs employer-assisted, note it here. */
+  assessmentContext?: string;
+  /** Processing time (alternative to pathway-level processingTimeWeeks). */
+  processingTime?: {
+    standardWeeks?: number;
+    maxWeeksIfVerificationDelayed?: number;
+    note?: string;
+  };
+  /** Review and appeal process details. */
+  reviewAndAppeal?: {
+    review?: { feeAUD?: number; windowMonths?: number; note?: string };
+    appeal?: { feeAUD?: number; windowMonths?: number; note?: string };
+  };
+  /** Transcript verification instructions. */
+  transcriptVerification?: Record<string, string>;
   /** How long the issued assessment remains valid for migration purposes. */
   validityPeriod?: {
     years: number;
