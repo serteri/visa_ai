@@ -40,6 +40,8 @@ export interface ProcessingTime {
   standard: number;
   /** Optional "if incomplete" or "expedited" alternative. */
   ifIncomplete?: number;
+  /** Optional context note (e.g. "Fast Track applies only to..."). */
+  note?: string;
 }
 
 export interface CompetencyAssessment {
@@ -152,6 +154,12 @@ export interface SkillsAssessmentAuthority {
   }>;
   /** Evidence types that are explicitly excluded from the assessment. */
   excludedEvidence?: string[];
+  /** Occupation-specific competency/subject mapping (e.g. CPA's mandatory competencies per ANZSCO code). */
+  occupationCompetencyMapping?: {
+    note?: string;
+    sharedCompetencies?: string[];
+    byOccupation?: Record<string, string[]>;
+  };
   /** How long the issued assessment remains valid for migration purposes. */
   validityPeriod?: {
     years: number;
