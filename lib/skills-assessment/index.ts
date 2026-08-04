@@ -7,6 +7,7 @@ import { vetassessAuthority } from "./authorities/vetassess";
 import { cpaAustraliaAuthority } from "./authorities/cpa-australia";
 import { aimsAuthority } from "./authorities/aims";
 import { caanzAuthority } from "./authorities/caanz";
+import { ipaAustraliaAuthority } from "./authorities/ipa-australia";
 import { normalizeOccupationCode } from "./types";
 
 /**
@@ -23,6 +24,7 @@ const AUTHORITIES: SkillsAssessmentAuthority[] = [
   cpaAustraliaAuthority,
   aimsAuthority,
   caanzAuthority,
+  ipaAustraliaAuthority,
 ];
 
 /**
