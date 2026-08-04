@@ -71,6 +71,8 @@ export interface SkillsAssessmentPathway {
   minWorkExperienceYears?: number;
   /** Free-form course duration requirement string, e.g. "5-year full-time equivalent". */
   qualificationDurationRequirement?: string;
+  /** Minimum academic level required, e.g. "AQF Level 6 (Advanced Diploma / Associate Degree) minimum". */
+  minAcademicLevel?: string;
   fees: AuthorityFee[];
   processingTimeWeeks?: ProcessingTime;
   documentRequirements: string[];
@@ -101,6 +103,32 @@ export interface SkillsAssessmentAuthority {
   /** General authority-level notes (policy, membership, DAMA support, etc.). */
   notes?: string[];
   englishRequirements?: EnglishRequirement[];
+  /** Exemptions from the English language requirement (e.g. Australian degree, native speaker countries). */
+  englishExemptions?: string[];
+  /** How long the English test result remains valid for the assessment. */
+  englishTestValidity?: string;
+  /** Occupational categories (e.g. EA's Professional Engineer / Technologist / Associate / Manager). */
+  occupationalCategories?: Array<{
+    name: string;
+    qualification: string;
+    skillFocus: string;
+    notes?: string[];
+  }>;
+  /** Additional assessment services beyond the main pathways (e.g. PhD assessment, employment assessment). */
+  additionalAssessmentServices?: Array<{
+    name: string;
+    additionalDocuments?: string[];
+    mandatoryFor?: string[];
+    employeeDocuments?: {
+      primary: string[];
+      secondary: string[];
+    };
+    selfEmployedDocuments?: string[];
+    when?: string;
+    documentRequirements?: string[];
+  }>;
+  /** Evidence types that are explicitly excluded from the assessment. */
+  excludedEvidence?: string[];
   /** How long the issued assessment remains valid for migration purposes. */
   validityPeriod?: {
     years: number;
