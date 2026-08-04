@@ -34,25 +34,25 @@ export function Hero({ locale, t, assessmentSlotsLeft, hasFreeAssessmentSlots, o
           <a
             href="#pdf-download-section"
             onClick={onScrollToPdfSection}
-            className="mb-5 flex w-fit max-w-full items-center gap-2 rounded-sm border border-[var(--cf-accent-dim)] px-4 py-2.5 text-sm font-medium text-[var(--cf-fg)] transition-colors hover:border-[var(--cf-accent)]"
+            className="mb-5 flex w-fit max-w-full items-center gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-2.5 text-sm font-medium text-[var(--cf-fg)] transition-all hover:border-amber-500/60 hover:bg-amber-500/10 hover:shadow-sm"
           >
             {locale === "tr" ? (
               <>
-                📘 Ücretsiz 80 Sayfalık Avustralya &amp; Kanada PR Kılavuzu 2026 Yayınlandı!{" "}
-                <strong className="text-[var(--cf-accent)]">Hemen İndirin →</strong>
+                <span className="inline-flex items-center rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">YENİ</span>
+                Ücretsiz 80 Sayfalık Avustralya &amp; Kanada PR Kılavuzu 2026 Yayınlandı!
+                <span className="ml-1 rounded border border-[var(--cf-accent)] bg-[var(--cf-accent)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--cf-accent)] transition-colors hover:bg-[var(--cf-accent)] hover:text-white">Hemen İndirin →</span>
               </>
             ) : (
               <>
-                📘 Free 80-Page Australia &amp; Canada PR Guide 2026 is now available!{" "}
-                <strong className="text-[var(--cf-accent)]">Get Free Copy →</strong>
+                <span className="inline-flex items-center rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white tracking-wide">2026 GUIDE</span>
+                Free 80-Page Australia &amp; Canada PR Guide 2026 is now available!
+                <span className="ml-1 rounded border border-[var(--cf-accent)] bg-[var(--cf-accent)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--cf-accent)] transition-colors hover:bg-[var(--cf-accent)] hover:text-white">Get Free Copy →</span>
               </>
             )}
           </a>
 
-          <div className="cf-mono mb-6 inline-flex items-center gap-2 rounded-sm border border-[var(--cf-accent-dim)] px-3 py-1.5 text-[0.7rem] uppercase tracking-[0.12em] text-[var(--cf-accent)]">
-            <span aria-hidden className="text-[0.55rem] text-[#B1502E]">
-              ●
-            </span>
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--cf-accent-dim)] bg-[var(--cf-accent)]/5 px-3.5 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-[var(--cf-accent)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)] animate-pulse" />
             {t("hero.trustBadge")}
           </div>
 
@@ -78,29 +78,22 @@ export function Hero({ locale, t, assessmentSlotsLeft, hasFreeAssessmentSlots, o
           </div>
 
           {hasFreeAssessmentSlots && (
-            <p className="cf-mono mt-6 max-w-[52ch] text-xs leading-relaxed text-[var(--cf-accent)]">
-              {locale === "tr" ? (
-                <>
-                  İki ülke için ortak — bugün sadece{" "}
-                  <span className="line-through opacity-60">{DISPLAY_START_SLOTS}</span>{" "}
-                  <strong className="text-sm">{assessmentSlotsLeft}</strong> ücretsiz analiz hakkı kaldı. (Normalde
-                  $49 — ücretsiz haklar bittiğinde bu fiyata döner.)
-                </>
-              ) : locale === "zh-Hans" ? (
-                <>
-                  两国共享 — 今日仅剩 <span className="line-through opacity-60">{DISPLAY_START_SLOTS}</span>{" "}
-                  <strong className="text-sm">{assessmentSlotsLeft}</strong> 个免费评估名额。（原价 $49 —
-                  免费名额用尽后将恢复原价）
-                </>
-              ) : (
-                <>
-                  Shared across both countries — only{" "}
-                  <span className="line-through opacity-60">{DISPLAY_START_SLOTS}</span>{" "}
-                  <strong className="text-sm">{assessmentSlotsLeft}</strong> free assessment slots left. (Normally
-                  $49 — reverts to this price once free slots run out.)
-                </>
-              )}
-            </p>
+            <div className="mt-6 inline-flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 shadow-sm">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(239,68,68,0.5)]" />
+              </span>
+              <span className="text-sm font-semibold text-[var(--cf-fg)]">
+                <span className="text-amber-600 font-bold">{assessmentSlotsLeft}</span>
+                {locale === "tr" ? (
+                  <> ücretsiz analiz hakkı kaldı — <span className="line-through opacity-50">${DISPLAY_START_SLOTS}</span> → <span className="text-emerald-600 font-bold">ÜCRETSİZ</span></>
+                ) : locale === "zh-Hans" ? (
+                  <> 个免费评估名额 — <span className="line-through opacity-50">${DISPLAY_START_SLOTS}</span> → <span className="text-emerald-600 font-bold">免费</span></>
+                ) : (
+                  <> free assessment slots left — <span className="line-through opacity-50">${DISPLAY_START_SLOTS}</span> → <span className="text-emerald-600 font-bold">FREE</span></>
+                )}
+              </span>
+            </div>
           )}
 
           <div className="cf-mono mt-10 flex flex-wrap gap-x-7 gap-y-3 text-xs text-[var(--cf-muted)]">
