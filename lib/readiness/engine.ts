@@ -15,6 +15,7 @@ import {
   getSkillsAssessmentAuthority,
   getDefaultPathway,
   resolveACSPathway,
+  resolveLocalized,
 } from "@/lib/skills-assessment";
 import {
   type ProvinceCode,
@@ -4821,8 +4822,8 @@ function buildFinancialRoadmap(
       const primaryFee = primaryPathway.fees.find((f) => typeof f.amountAUD === "number")
         ?? primaryPathway.fees[0];
       const feeLabel = primaryFee?.amountAUD !== undefined
-        ? `AUD $${primaryFee.amountAUD.toLocaleString("en-AU")} ${primaryFee.note ? `(${primaryFee.note})` : ""}`
-        : (primaryFee?.label ?? "");
+        ? `AUD $${primaryFee.amountAUD.toLocaleString("en-AU")} ${primaryFee.note ? `(${resolveLocalized(primaryFee.note, locale)})` : ""}`
+        : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "");
       const processing = primaryPathway.processingTimeWeeks
         ? `${primaryPathway.processingTimeWeeks.standard} wk${primaryPathway.processingTimeWeeks.ifIncomplete ? ` (${primaryPathway.processingTimeWeeks.ifIncomplete} wk if incomplete)` : ""}`
         : "";

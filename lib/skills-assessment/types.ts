@@ -13,6 +13,15 @@
 
 export type SupportedCountry = "AU" | "CA";
 
+/**
+ * A string that may be localized. Accepts either:
+ * - A plain string (backward-compatible, assumed to be English)
+ * - A localized object with { en, tr, zh } keys
+ */
+export type LocalizedString =
+  | string
+  | { en: string; tr: string; "zh-Hans": string };
+
 export interface AuthorityOccupation {
   /** Australian occupation code (e.g. ANZSCO or new OSCA codes). */
   anzscoCode?: string;
@@ -26,13 +35,13 @@ export interface AuthorityOccupation {
 
 export interface AuthorityFee {
   /** Free-form label: "OQA — New Applicants", "Renewal of Assessment", etc. */
-  label: string;
+  label: LocalizedString;
   /** Fee in AUD when the authority is Australian. */
   amountAUD?: number;
   /** Fee in CAD when the authority is Canadian. */
   amountCAD?: number;
   /** Footnote explaining variations (e.g. "Card surcharge applies"). */
-  note?: string;
+  note?: LocalizedString;
 }
 
 export interface ProcessingTime {
@@ -59,7 +68,7 @@ export interface SkillsAssessmentPathway {
   /** Stable identifier for this pathway, e.g. "OQA", "EPA", "UK_ARB_MRA". */
   pathwayId: string;
   /** Human-readable name, e.g. "Overseas Qualifications Assessment (OQA)". */
-  name: string;
+  name: LocalizedString;
   /**
    * Which source-country qualifications are eligible for this pathway
    * (e.g. ["AU", "NZ", "HK", "SG"]). Omit or leave empty for "all origins".
@@ -72,15 +81,15 @@ export interface SkillsAssessmentPathway {
   /** Minimum paid work experience in years, if applicable. */
   minWorkExperienceYears?: number;
   /** Free-form course duration requirement string, e.g. "5-year full-time equivalent". */
-  qualificationDurationRequirement?: string;
+  qualificationDurationRequirement?: LocalizedString;
   /** Minimum academic level required, e.g. "AQF Level 6 (Advanced Diploma / Associate Degree) minimum". */
   minAcademicLevel?: string;
   fees: AuthorityFee[];
   processingTimeWeeks?: ProcessingTime;
-  documentRequirements: string[];
+  documentRequirements: LocalizedString[];
   competencyAssessment?: CompetencyAssessment;
   /** Additional context-specific notes (policy changes, caveats). */
-  notes?: string[];
+  notes?: LocalizedString[];
   /** Which occupation this pathway applies to (when an authority covers multiple occupations). */
   occupation?: string;
   /** Whether this pathway requires a professional examination. */
@@ -277,10 +286,10 @@ export interface SkillsAssessmentAuthority {
   /** How long the issued assessment remains valid for migration purposes. */
   validityPeriod?: {
     years: number;
-    note?: string;
+    note?: LocalizedString;
   };
   /** Anti-fraud policy statement (e.g. consequences of submitting fraudulent documents). */
-  fraudPolicy?: string;
+  fraudPolicy?: LocalizedString;
   /** Notes for post-assessment requirements (e.g. registration exams after the assessment). */
   postAssessmentPathway?: {
     name: string;

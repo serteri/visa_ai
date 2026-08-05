@@ -12,6 +12,8 @@ import { traAustraliaAuthority } from "./authorities/tra-australia";
 import { casaAustraliaAuthority } from "./authorities/casa-australia";
 import { otcAustraliaAuthority } from "./authorities/otc-australia";
 import { normalizeOccupationCode } from "./types";
+export { resolveLocalized, resolveLocalizedArray, loc } from "./i18n";
+export type { LocalizedString, Locale } from "./i18n";
 
 /**
  * Registry of all skills assessment authorities. New authorities (AHPRA,
