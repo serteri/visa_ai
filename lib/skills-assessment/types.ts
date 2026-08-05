@@ -133,7 +133,7 @@ export interface SkillsAssessmentService {
   pathways: SkillsAssessmentPathway[];
   /** Service-level fees (may differ from pathway fees; e.g. onshore/offshore). */
   fees?: AuthorityFee[];
-  notes?: string[];
+  notes?: LocalizedString[];
   /** Programs available under this service (e.g. TSS, OSAP for trade). */
   programs?: Array<{ name: string; purpose: string }>;
 }
@@ -149,7 +149,7 @@ export interface SkillsAssessmentAuthority {
   sourceDocument: string;
   pathways: SkillsAssessmentPathway[];
   /** General authority-level notes (policy, membership, DAMA support, etc.). */
-  notes?: string[];
+  notes?: LocalizedString[];
   /** General fees that apply across all pathways (not pathway-specific). */
   fees?: AuthorityFee[];
   /**
@@ -169,7 +169,7 @@ export interface SkillsAssessmentAuthority {
     name: string;
     qualification: string;
     skillFocus: string;
-    notes?: string[];
+    notes?: LocalizedString[];
   }>;
   /** Additional assessment services beyond the main pathways (e.g. PhD assessment, employment assessment). */
   additionalAssessmentServices?: Array<{
