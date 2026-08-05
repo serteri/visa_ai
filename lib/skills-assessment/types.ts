@@ -270,6 +270,8 @@ export interface SkillsAssessmentAuthority {
     closureDate?: string;
     note?: string;
   }>;
+  /** Occupations that require a specific alternative assessment pathway (e.g. OSAP for licensed trades). */
+  licensedOccupations?: string[];
   /** Role disclaimer (e.g. "skills assessment only, no migration advice"). */
   role?: string;
   /** How long the issued assessment remains valid for migration purposes. */
