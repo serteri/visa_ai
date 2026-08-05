@@ -10,6 +10,7 @@ import { caanzAuthority } from "./authorities/caanz";
 import { ipaAustraliaAuthority } from "./authorities/ipa-australia";
 import { traAustraliaAuthority } from "./authorities/tra-australia";
 import { casaAustraliaAuthority } from "./authorities/casa-australia";
+import { otcAustraliaAuthority } from "./authorities/otc-australia";
 import { normalizeOccupationCode } from "./types";
 
 /**
@@ -29,6 +30,7 @@ const AUTHORITIES: SkillsAssessmentAuthority[] = [
   ipaAustraliaAuthority,
   traAustraliaAuthority,
   casaAustraliaAuthority,
+  otcAustraliaAuthority,
 ];
 
 /**
