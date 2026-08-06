@@ -33,7 +33,7 @@ export const acsAuthority: SkillsAssessmentAuthority = {
       "zh-Hans": "ACS支持指定区域移民协议（DAMA）。",
     },
   ],
-  occupations: [
+    occupations: [
     // Data Science
     { anzscoCode: "224999", title: "Information and Organisation Professionals nec" },
     { anzscoCode: "224114", title: "Data Analyst" },
@@ -81,6 +81,12 @@ export const acsAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "262116", title: "Cyber Security Analyst" },
     { anzscoCode: "262117", title: "Cyber Security Architect" },
     { anzscoCode: "262118", title: "Cyber Security Operations Coordinator" },
+    { anzscoCode: "313111", title: "Hardware Technician" },
+    { anzscoCode: "313112", title: "ICT Customer Support Officer" },
+    { anzscoCode: "313199", title: "ICT Support Technicians nec" },
+    { anzscoCode: "263114", title: "Network Engineer" },
+    { anzscoCode: "225211", title: "ICT Account Manager" },
+    { anzscoCode: "225212", title: "ICT Business Development Manager" },
   ],
   pathways: [
     // ── Pathway 1: Post Australian Study ──────────────────────────────

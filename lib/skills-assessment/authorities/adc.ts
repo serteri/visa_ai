@@ -25,9 +25,10 @@ export const adcAuthority: SkillsAssessmentAuthority = {
       "zh-Hans": "技能评估自签发之日起3年内有效（依据内政部规定）。过期评估可根据申请由ADC重新签发，需支付行政费用。",
     },
   },
-  occupations: [
+    occupations: [
     { anzscoCode: "252311", title: "Dental Specialist" },
     { anzscoCode: "252312", title: "Dentist" },
+    { anzscoCode: "411215", title: "Oral Health Therapist" },
   ],
   pathways: [
     // ── Pathway 1: Skills Assessment Only ──────────────────────────────

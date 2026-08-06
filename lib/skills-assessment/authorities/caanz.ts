@@ -15,7 +15,7 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
   authorityName: "Chartered Accountants Australia and New Zealand",
   country: "AU",
   role: "Skills assessment only — CA ANZ does not provide migration advice and does not advise on visa eligibility.",
-  occupations: [
+    occupations: [
     { anzscoCode: "221111", title: "Accountant (General)" },
     { anzscoCode: "221112", title: "Management Accountant" },
     { anzscoCode: "221113", title: "Taxation Accountant" },

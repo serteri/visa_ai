@@ -15,7 +15,7 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
   authorityName:
     "Australian Institute of Medical Scientists (AIMS) / Australian Institute of Medical and Clinical Scientists",
   country: "AU",
-  occupations: [
+    occupations: [
     { anzscoCode: "234611", title: "Medical Laboratory Scientist" },
     { anzscoCode: "311213", title: "Medical Laboratory Technician" },
   ],

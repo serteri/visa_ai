@@ -11,7 +11,7 @@ export const aacaAuthority: SkillsAssessmentAuthority = {
   authorityId: "AACA",
   authorityName: "Architects Accreditation Council of Australia",
   country: "AU",
-  occupations: [
+    occupations: [
     { anzscoCode: "232111", oscaCode: "241131", title: "Architect" },
   ],
   lastVerified: "2025-10-01",

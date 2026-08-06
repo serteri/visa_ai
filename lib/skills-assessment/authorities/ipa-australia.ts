@@ -17,7 +17,7 @@ export const ipaAustraliaAuthority: SkillsAssessmentAuthority = {
   authorityName: "Institute of Public Accountants Ltd",
   country: "AU",
   role: "Skills assessment only — IPA does not provide migration advice.",
-  occupations: [
+    occupations: [
     { anzscoCode: "221111", title: "Accountant (General)" },
     { anzscoCode: "221213", title: "External Auditor" },
     { anzscoCode: "221112", title: "Management Accountant" },

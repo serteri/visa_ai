@@ -18,7 +18,7 @@ export const casaAustraliaAuthority: SkillsAssessmentAuthority = {
   authorityName: "Civil Aviation Safety Authority",
   country: "AU",
   role: "Skills assessment only — CASA does not provide migration advice.",
-  occupations: [
+    occupations: [
     { anzscoCode: "231111", title: "Aeroplane Pilot" },
     { anzscoCode: "231113", title: "Flying Instructor" },
     { anzscoCode: "231114", title: "Helicopter Pilot" },

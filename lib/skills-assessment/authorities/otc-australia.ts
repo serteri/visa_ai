@@ -17,7 +17,7 @@ export const otcAustraliaAuthority: SkillsAssessmentAuthority = {
   authorityName: "Occupational Therapy Council of Australia Ltd",
   country: "AU",
   role: "Skills assessment only — OTC does not provide migration advice.",
-  occupations: [
+    occupations: [
     { anzscoCode: "252411", title: "Occupational Therapist" },
   ],
   lastVerified: "2026-08-05",

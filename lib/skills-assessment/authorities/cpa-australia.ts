@@ -14,7 +14,7 @@ export const cpaAustraliaAuthority: SkillsAssessmentAuthority = {
   authorityId: "CPA",
   authorityName: "CPA Australia Ltd",
   country: "AU",
-  occupations: [
+    occupations: [
     { anzscoCode: "221111", title: "Accountant (General)" },
     { anzscoCode: "221212", title: "Corporate Treasurer" },
     { anzscoCode: "221213", title: "External Auditor" },

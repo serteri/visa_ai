@@ -93,7 +93,7 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
   },
   // Occupations: 27 engineering roles across 233xxx/312xxx/133211 series.
   // Mapped from occupations.json where authority === "Engineers Australia".
-  occupations: [
+    occupations: [
     { anzscoCode: "233911", title: "Aeronautical Engineer" },
     { anzscoCode: "233912", title: "Agricultural Engineer" },
     { anzscoCode: "233913", title: "Biomedical Engineer" },
