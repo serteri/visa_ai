@@ -1,4 +1,4 @@
-import type { SkillsAssessmentAuthority } from "../types";
+import type { SkillsAssessmentAuthority, LocalizedString } from "../types";
 
 /**
  * Chartered Accountants Australia and New Zealand (CA ANZ)
@@ -7,6 +7,8 @@ import type { SkillsAssessmentAuthority } from "../types";
  *
  * Fee schedule effective 1 July 2026 — "current" values below.
  * Previous fees (pre-1 Jul 2026) are retained as `previousFeeAUD` for historical reference.
+ *
+ * Multilanguage support: EN, TR, ZH-Hans
  */
 export const caanzAuthority: SkillsAssessmentAuthority = {
   authorityId: "CA-ANZ",
@@ -25,84 +27,202 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
   sourceDocument:
     "Chartered Accountants Australia and New Zealand — Migration Skills Assessment (PDF, 22 pages)",
   notes: [
-    "CA ANZ full members pay $0 for all assessment services (noted in fee schedule).",
-    "Provisional assessment was discontinued effective 1 July 2024.",
-    "CA ANZ is one of three authorised assessing authorities for accounting occupations (alongside CPA Australia and IPA).",
+    {
+      en: "CA ANZ full members pay $0 for all assessment services (noted in fee schedule).",
+      tr: "CA ANZ tam üyeleri tüm değerlendirme hizmetleri için $0 öder (ücret tarifesinde belirtilmiştir).",
+      "zh-Hans": "CA ANZ正式会员所有评估服务费用为$0（费用表中注明）。",
+    },
+    {
+      en: "Provisional assessment was discontinued effective 1 July 2024.",
+      tr: "Geçici değerlendirme 1 Temmuz 2024 tarihinden itibaren sonlandırılmıştır.",
+      "zh-Hans": "临时评估已于2024年7月1日起终止。",
+    },
+    {
+      en: "CA ANZ is one of three authorised assessing authorities for accounting occupations (alongside CPA Australia and IPA).",
+      tr: "CA ANZ, muhasebe meslekleri için üç yetkili değerlendirme kurumundan biridir (CPA Australia ve IPA ile birlikte).",
+      "zh-Hans": "CA ANZ是会计职业的三个授权评估机构之一（与CPA Australia和IPA并列）。",
+    },
   ],
   pathways: [
     {
       pathwayId: "qualification-assessment",
-      name: "Qualification Assessment",
+      name: {
+        en: "Qualification Assessment",
+        tr: "Yeterlilik Değerlendirmesi",
+        "zh-Hans": "资格评估",
+      },
       occupation: "ALL",
       requiresPriorAssessment: false,
-      eligibleFor: ["All applicants seeking a CA ANZ skills assessment for a listed ANZSCO occupation"],
+      eligibleFor: [
+        {
+          en: "All applicants seeking a CA ANZ skills assessment for a listed ANZSCO occupation",
+          tr: "Listelenmiş ANZSCO meslekleri için CA ANZ beceri değerlendirmesi isteyen tüm başvuru sahipleri",
+          "zh-Hans": "所有为列出的ANZSCO职业申请CA ANZ技能评估的申请人",
+        },
+      ],
       fees: [
-        { label: "Qualification assessment (onshore)", amountAUD: 565 },
-        { label: "Qualification assessment (offshore)", amountAUD: 514 },
-        { label: "Qualification assessment (Singapore)", amountAUD: 560 },
-        { label: "Fast Track qualification assessment (onshore)", amountAUD: 675 },
-        { label: "Fast Track qualification assessment (offshore)", amountAUD: 614 },
-        { label: "Fast Track qualification assessment (Singapore)", amountAUD: 669 },
+        { label: { en: "Qualification assessment (onshore)", tr: "Yeterlilik değerlendirmesi (yerli)", "zh-Hans": "资格评估（境内）" }, amountAUD: 565 },
+        { label: { en: "Qualification assessment (offshore)", tr: "Yeterlilik değerlendirmesi (yabancı)", "zh-Hans": "资格评估（境外）" }, amountAUD: 514 },
+        { label: { en: "Qualification assessment (Singapore)", tr: "Yeterlilik değerlendirmesi (Singapur)", "zh-Hans": "资格评估（新加坡）" }, amountAUD: 560 },
+        { label: { en: "Fast Track qualification assessment (onshore)", tr: "Hızlı Yeterlilik değerlendirmesi (yerli)", "zh-Hans": "快速资格评估（境内）" }, amountAUD: 675 },
+        { label: { en: "Fast Track qualification assessment (offshore)", tr: "Hızlı Yeterlilik değerlendirmesi (yabancı)", "zh-Hans": "快速资格评估（境外）" }, amountAUD: 614 },
+        { label: { en: "Fast Track qualification assessment (Singapore)", tr: "Hızlı Yeterlilik değerlendirmesi (Singapur)", "zh-Hans": "快速资格评估（新加坡）" }, amountAUD: 669 },
       ],
       documentRequirements: [
-        "Passport (photo page) or national ID card.",
-        "Official name-change document if applicable.",
-        "English language proficiency evidence (unless exempt): PYP certificate + transcript OR recognised test result.",
-        "Official academic award/degree certificates.",
-        "Official academic transcripts, including prior-study transcripts if exemptions were granted.",
-        "Official translations (with originals) for non-English academic documents.",
-        "Professional body membership certificate + exam results/marksheets, if applicable.",
-        "Official syllabus for non-accredited qualifications (or statutory declaration in exceptional circumstances).",
-        "Chinese Degree Verification for PRC qualifications — verification body must send reports directly to CA ANZ.",
+        {
+          en: "Passport (photo page) or national ID card.",
+          tr: "Pasaport (fotoğraflı sayfa) veya ulusal kimlik kartı.",
+          "zh-Hans": "护照（照片页）或国民身份证。",
+        },
+        {
+          en: "Official name-change document if applicable.",
+          tr: "Varsa resmi isim değişikliği belgesi.",
+          "zh-Hans": "如适用，正式更名文件。",
+        },
+        {
+          en: "English language proficiency evidence (unless exempt): PYP certificate + transcript OR recognised test result.",
+          tr: "İngilizce yeterlilik kanıtı (muaf değilse): PYP sertifikası + transkript VEYA tanınan test sonucu.",
+          "zh-Hans": "英语能力证明（除非豁免）：PYP证书+成绩单或认可的测试成绩。",
+        },
+        {
+          en: "Official academic award/degree certificates.",
+          tr: "Resmi akademik ödül/lisans derecesi sertifikaları.",
+          "zh-Hans": "正式学术奖项/学位证书。",
+        },
+        {
+          en: "Official academic transcripts, including prior-study transcripts if exemptions were granted.",
+          tr: "Resmi akademik transkriptler, muafiyet verildiyse önceki eğitim transkriptleri dahil.",
+          "zh-Hans": "正式学术成绩单，如获得豁免则包括先前学习的成绩单。",
+        },
+        {
+          en: "Official translations (with originals) for non-English academic documents.",
+          tr: "İngilizce olmayan akademik belgeler için resmi çeviriler (orijinalleriyle birlikte).",
+          "zh-Hans": "非英语学术文件的正式翻译（附原件）。",
+        },
+        {
+          en: "Professional body membership certificate + exam results/marksheets, if applicable.",
+          tr: "Varsa, profesyonel kurum üyelik sertifikası + sınav sonuçları/karneler.",
+          "zh-Hans": "如适用，专业机构会员证书+考试成绩/成绩单。",
+        },
+        {
+          en: "Official syllabus for non-accredited qualifications (or statutory declaration in exceptional circumstances).",
+          tr: "Akredite edilmemiş yeterlilikler için resmi müfredat (veya istisnai durumlarda yeminli beyan).",
+          "zh-Hans": "非认可资格的正式课程大纲（或在特殊情况下法定声明）。",
+        },
+        {
+          en: "Chinese Degree Verification for PRC qualifications — verification body must send reports directly to CA ANZ.",
+          tr: "ÇHC yeterlilikleri için Çin Derece Doğrulaması — doğrulama kurumu raporları doğrudan CA ANZ'a göndermelidir.",
+          "zh-Hans": "中国学历验证——验证机构必须将报告直接发送给CA ANZ。",
+        },
       ],
       notes: [
-        "Accredited course search tool available to check if a qualification is pre-recognised.",
-        "AQF Level 7+ equivalence required; CEP/UK ENIC reference for overseas comparability.",
+        {
+          en: "Accredited course search tool available to check if a qualification is pre-recognised.",
+          tr: "Bir yeterliliğin önceden tanınıp tanınmadığını kontrol etmek için akredite kurs arama aracı mevcuttur.",
+          "zh-Hans": "可使用认证课程搜索工具检查资格是否已预先认可。",
+        },
+        {
+          en: "AQF Level 7+ equivalence required; CEP/UK ENIC reference for overseas comparability.",
+          tr: "AQF Seviye 7+ denkliği gerekli; yurt dışı karşılaştırılabilirliği için CEP/UK ENIC referansı.",
+          "zh-Hans": "需要AQF 7级以上同等学历；海外可比性参考CEP/UK ENIC。",
+        },
       ],
     },
     {
       pathwayId: "employment-assessment",
-      name: "Skilled Employment Assessment",
+      name: {
+        en: "Skilled Employment Assessment",
+        tr: "Becerili İstihdam Değerlendirmesi",
+        "zh-Hans": "技能就业评估",
+      },
       occupation: "ALL",
       requiresPriorAssessment: true,
       prerequisite: "qualification-assessment",
-      fallback: "Cannot be assessed without a 'Suitable' qualification assessment outcome.",
+      fallback: {
+        en: "Cannot be assessed without a 'Suitable' qualification assessment outcome.",
+        tr: "'Uygun' yeterlilik değerlendirme sonucu olmadan değerlendirilemez.",
+        "zh-Hans": "没有'合适'的资格评估结果无法进行评估。",
+      },
       fees: [
-        { label: "Employment only (onshore)", amountAUD: 260 },
-        { label: "Employment only (offshore)", amountAUD: 236 },
-        { label: "Employment only (Singapore)", amountAUD: 257 },
+        { label: { en: "Employment only (onshore)", tr: "Yalnızca istihdam (yerli)", "zh-Hans": "仅就业（境内）" }, amountAUD: 260 },
+        { label: { en: "Employment only (offshore)", tr: "Yalnızca istihdam (yabancı)", "zh-Hans": "仅就业（境外）" }, amountAUD: 236 },
+        { label: { en: "Employment only (Singapore)", tr: "Yalnızca istihdam (Singapur)", "zh-Hans": "仅就业（新加坡）" }, amountAUD: 257 },
       ],
       documentRequirements: [
-        "Employer testimonial per role: letterhead, full contact details, signature from higher-level person, DD/MM/YYYY dates, specific duties, employment terms, weekly hours, annual salary.",
-        "Minimum 3 pay slips per role (start, middle, end of role ideally).",
-        "Self-employed: testimonial + statutory declaration + business registration + practising certificate + tax returns + 2+ client references.",
+        {
+          en: "Employer testimonial per role: letterhead, full contact details, signature from higher-level person, DD/MM/YYYY dates, specific duties, employment terms, weekly hours, annual salary.",
+          tr: "Her pozisyon için işveren referans mektubu: antetli kağıt, tam iletişim bilgileri, üst düzey kişinin imzası, GG/AA/YYYY tarihleri, belirli görevler, çalışma şartları, haftalık saatler, yıllık maaş.",
+          "zh-Hans": "每个职位的雇主证明信：抬头纸、完整联系方式、上级签字、DD/MM/YYYY日期、具体职责、雇佣条款、每周工时、年薪。",
+        },
+        {
+          en: "Minimum 3 pay slips per role (start, middle, end of role ideally).",
+          tr: "Her pozisyon için en az 3 maaş bordrosu (tercihen başlangıç, orta, bitiş).",
+          "zh-Hans": "每个职位至少3份工资单（最好为开始、中期、结束）。",
+        },
+        {
+          en: "Self-employed: testimonial + statutory declaration + business registration + practising certificate + tax returns + 2+ client references.",
+          tr: "Serbest çalışan: referans mektubu + yeminli beyan + iş kaydı + çalışma sertifikası + vergi beyannameleri + 2+ müşteri referansı.",
+          "zh-Hans": "自雇：证明信+法定声明+营业执照+执业证书+纳税申报表+2份以上客户推荐信。",
+        },
       ],
       notes: [
-        "CVs/resumes are NOT accepted as employment evidence.",
-        "No new/altered references accepted after an outcome has been determined.",
-        "Employment must be within 10 years, minimum 1 year, minimum 20 hours/week, paid and continuous.",
-        "At least 12 months in the most recent 12-month period.",
+        {
+          en: "CVs/resumes are NOT accepted as employment evidence.",
+          tr: "CV/özgeçmişler istihdam kanıtı olarak KABUL EDİLMEZ.",
+          "zh-Hans": "简历/履历不作为就业证明接受。",
+        },
+        {
+          en: "No new/altered references accepted after an outcome has been determined.",
+          tr: "Sonuç belirlendikten sonra yeni/değiştirilmiş referanslar kabul edilmez.",
+          "zh-Hans": "结果确定后不接受新的/更改的推荐信。",
+        },
+        {
+          en: "Employment must be within 10 years, minimum 1 year, minimum 20 hours/week, paid and continuous.",
+          tr: "İstihdam son 10 yıl içinde, en az 1 yıl, hafta en az 20 saat, ücretli ve sürekli olmalıdır.",
+          "zh-Hans": "就业必须在10年内，至少1年，每周至少20小时，有薪且连续。",
+        },
+        {
+          en: "At least 12 months in the most recent 12-month period.",
+          tr: "En son 12 aylık dönemde en az 12 ay.",
+          "zh-Hans": "最近12个月内至少有12个月。",
+        },
       ],
     },
     {
       pathwayId: "combined",
-      name: "Combined Qualification + Skilled Employment Assessment",
+      name: {
+        en: "Combined Qualification + Skilled Employment Assessment",
+        tr: "Kombine Yeterlilik + Becerili İstihdam Değerlendirmesi",
+        "zh-Hans": "联合资格+技能就业评估",
+      },
       occupation: "ALL",
       requiresPriorAssessment: false,
       fees: [
-        { label: "Combined (onshore)", amountAUD: 620 },
-        { label: "Combined (offshore)", amountAUD: 564 },
-        { label: "Combined (Singapore)", amountAUD: 615 },
-        { label: "Additional ANZSCO (onshore)", amountAUD: 350 },
-        { label: "Additional ANZSCO (offshore)", amountAUD: 318 },
-        { label: "Additional ANZSCO (Singapore)", amountAUD: 347 },
+        { label: { en: "Combined (onshore)", tr: "Kombine (yerli)", "zh-Hans": "联合（境内）" }, amountAUD: 620 },
+        { label: { en: "Combined (offshore)", tr: "Kombine (yabancı)", "zh-Hans": "联合（境外）" }, amountAUD: 564 },
+        { label: { en: "Combined (Singapore)", tr: "Kombine (Singapur)", "zh-Hans": "联合（新加坡）" }, amountAUD: 615 },
+        { label: { en: "Additional ANZSCO (onshore)", tr: "Ek ANZSCO (yerli)", "zh-Hans": "额外ANZSCO（境内）" }, amountAUD: 350 },
+        { label: { en: "Additional ANZSCO (offshore)", tr: "Ek ANZSCO (yabancı)", "zh-Hans": "额外ANZSCO（境外）" }, amountAUD: 318 },
+        { label: { en: "Additional ANZSCO (Singapore)", tr: "Ek ANZSCO (Singapur)", "zh-Hans": "额外ANZSCO（新加坡）" }, amountAUD: 347 },
       ],
       documentRequirements: [
-        "All documents from Qualification Assessment pathway.",
-        "All documents from Skilled Employment Assessment pathway.",
+        {
+          en: "All documents from Qualification Assessment pathway.",
+          tr: "Yeterlilik Değerlendirmesi yolundaki tüm belgeler.",
+          "zh-Hans": "资格评估路径的所有文件。",
+        },
+        {
+          en: "All documents from Skilled Employment Assessment pathway.",
+          tr: "Becerili İstihdam Değerlendirmesi yolundaki tüm belgeler.",
+          "zh-Hans": "技能就业评估路径的所有文件。",
+        },
       ],
       notes: [
-        "If qualification outcome is 'Not Suitable', the employment assessment is automatically determined as 'Not Suitable' — no separate employment outcome is issued.",
+        {
+          en: "If qualification outcome is 'Not Suitable', the employment assessment is automatically determined as 'Not Suitable' — no separate employment outcome is issued.",
+          tr: "Yeterlilik sonucu 'Uygun Değil' ise, istihdam değerlendirmesi otomatik olarak 'Uygun Değil' olarak belirlenir — ayrı bir istihdam sonucu verilmez.",
+          "zh-Hans": "如果资格结果为'不合适'，就业评估将自动判定为'不合适'——不会发出单独的就业结果。",
+        },
       ],
     },
   ],
@@ -150,9 +270,16 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
     "Passport holder of the United Kingdom",
     "Passport holder of the United States of America",
   ],
-  englishTestValidity: "3 years from test date. Online/at-home test versions are NOT accepted.",
-  assessmentContext:
-    "CA ANZ is one of three authorised accounting assessing authorities (alongside CPA Australia and IPA). The source document covers migration skills assessment only — CA ANZ does not provide migration advice.",
+  englishTestValidity: {
+    en: "3 years from test date. Online/at-home test versions are NOT accepted.",
+    tr: "Test tarihinden itibaren 3 yıl. Online/evde test versiyonları KABUL EDİLMEZ.",
+    "zh-Hans": "自考试之日起3年。在线/居家考试版本不接受。",
+  },
+  assessmentContext: {
+    en: "CA ANZ is one of three authorised accounting assessing authorities (alongside CPA Australia and IPA). The source document covers migration skills assessment only — CA ANZ does not provide migration advice.",
+    tr: "CA ANZ, üç yetkili muhasebe değerlendirme kurumundan biridir (CPA Australia ve IPA ile birlikte). Kaynak belge yalnızca göçmenlik beceri değerlendirmesini kapsar — CA ANZ göçmenlik danışmanlığı sağlamaz.",
+    "zh-Hans": "CA ANZ是三个授权会计评估机构之一（与CPA Australia和IPA并列）。源文件仅涵盖移民技能评估——CA ANZ不提供移民建议。",
+  },
   competencyMatrix: {
     columns: ["221111", "221112", "132211", "221212", "221113", "221213"],
     rows: [

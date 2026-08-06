@@ -50,7 +50,7 @@ export interface ProcessingTime {
   /** Optional "if incomplete" or "expedited" alternative. */
   ifIncomplete?: number;
   /** Optional context note (e.g. "Fast Track applies only to..."). */
-  note?: string;
+  note?: LocalizedString;
 }
 
 export interface CompetencyAssessment {
@@ -61,7 +61,7 @@ export interface CompetencyAssessment {
   /** Duration of the competency interview in minutes. */
   interviewDurationMinutes: number;
   /** Optional list of topic areas covered by the competency assessment. */
-  topicAreas?: string[];
+  topicAreas?: LocalizedString[];
 }
 
 export interface SkillsAssessmentPathway {
@@ -73,7 +73,7 @@ export interface SkillsAssessmentPathway {
    * Which source-country qualifications are eligible for this pathway
    * (e.g. ["AU", "NZ", "HK", "SG"]). Omit or leave empty for "all origins".
    */
-  eligibleFor?: string[];
+  eligibleFor?: LocalizedString[];
   /** True if the applicant must complete a prior assessment (e.g. EPA) before this one. */
   requiresPriorAssessment?: boolean;
   /** Minimum paid work experience in months, if applicable. */
@@ -96,17 +96,17 @@ export interface SkillsAssessmentPathway {
   examRequired?: boolean;
   /** Examination details if examRequired is true. */
   examDetails?: {
-    name: string;
-    format: string;
-    sittings: string;
+    name: LocalizedString;
+    format: LocalizedString;
+    sittings: LocalizedString;
     sections?: Array<{ discipline: string; questions: number; mustPass: boolean }>;
-    topics?: string[];
-    passRequirement: string;
+    topics?: LocalizedString[];
+    passRequirement: LocalizedString;
   };
   /** Minimum postgraduate experience required. */
   postgraduateExperienceRequired?: boolean;
   /** Fallback pathway if the applicant doesn't qualify or fails. */
-  fallback?: string;
+  fallback?: LocalizedString;
   /** Pathway ID that must be completed before this one (e.g. employment requires qualification assessment first). */
   prerequisite?: string;
 }
@@ -128,14 +128,23 @@ export interface EnglishRequirement {
  */
 export interface SkillsAssessmentService {
   serviceId: string;
-  serviceName: string;
-  appliesTo: string;
+  serviceName: LocalizedString;
+  appliesTo: LocalizedString;
   pathways: SkillsAssessmentPathway[];
   /** Service-level fees (may differ from pathway fees; e.g. onshore/offshore). */
   fees?: AuthorityFee[];
   notes?: LocalizedString[];
   /** Programs available under this service (e.g. TSS, OSAP for trade). */
-  programs?: Array<{ name: string; purpose: string }>;
+  programs?: Array<{ name: LocalizedString; purpose: LocalizedString }>;
+  /** Document requirements specific to this service. */
+  documentRequirements?: LocalizedString[];
+  /** Competency assessment details for trade/technical services. */
+  competencyAssessment?: {
+    portfolioProjectsMin: number;
+    portfolioProjectsMax: number;
+    interviewDurationMinutes: number;
+    topicAreas: LocalizedString[];
+  };
 }
 
 export interface SkillsAssessmentAuthority {
@@ -163,7 +172,7 @@ export interface SkillsAssessmentAuthority {
   /** Exemptions from the English language requirement (e.g. Australian degree, native speaker countries). */
   englishExemptions?: string[];
   /** How long the English test result remains valid for the assessment. */
-  englishTestValidity?: string;
+  englishTestValidity?: LocalizedString;
   /** Occupational categories (e.g. EA's Professional Engineer / Technologist / Associate / Manager). */
   occupationalCategories?: Array<{
     name: string;
@@ -182,10 +191,10 @@ export interface SkillsAssessmentAuthority {
     };
     selfEmployedDocuments?: string[];
     when?: string;
-    documentRequirements?: string[];
+    documentRequirements?: LocalizedString[];
   }>;
   /** Evidence types that are explicitly excluded from the assessment. */
-  excludedEvidence?: string[];
+  excludedEvidence?: LocalizedString[];
   /** Shared document requirements across all pathways (when they're common). */
   documentRequirements?: string[];
   /** Occupation-specific competency/subject mapping (e.g. CPA's mandatory competencies per ANZSCO code). */
@@ -195,17 +204,17 @@ export interface SkillsAssessmentAuthority {
     byOccupation?: Record<string, string[]>;
   };
   /** If the source document is ambiguous about whether this is a standard migration skills assessment vs employer-assisted, note it here. */
-  assessmentContext?: string;
+  assessmentContext?: LocalizedString;
   /** Processing time (alternative to pathway-level processingTimeWeeks). */
   processingTime?: {
     standardWeeks?: number;
     maxWeeksIfVerificationDelayed?: number;
-    note?: string;
+    note?: LocalizedString;
   };
   /** Review and appeal process details. */
   reviewAndAppeal?: {
-    review?: { feeAUD?: number; windowMonths?: number; note?: string };
-    appeal?: { feeAUD?: number; windowMonths?: number; note?: string };
+    review?: { feeAUD?: number; windowMonths?: number; note?: LocalizedString };
+    appeal?: { feeAUD?: number; windowMonths?: number; note?: LocalizedString };
   };
   /** Transcript verification instructions. */
   transcriptVerification?: Record<string, string>;
