@@ -8,6 +8,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3
 
 type PageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ q?: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -38,13 +39,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function AnzscoFinderPage({ params }: PageProps) {
+export default async function AnzscoFinderPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
+  const { q } = await searchParams;
   const seoContent = getAnzscoSeoContent(locale);
   const schemaJson = buildAnzscoSchema(locale);
   return (
     <>
-      <AnzscoSearchTool locale={locale} />
+      <AnzscoSearchTool locale={locale} initialQuery={q} />
       <SeoContentSection {...seoContent} schemaJson={schemaJson} />
     </>
   );

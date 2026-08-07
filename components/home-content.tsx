@@ -2,9 +2,10 @@
 
 import { useState, type MouseEvent } from "react";
 import { useParams } from "next/navigation";
-import { useTranslation } from "@/contexts/language-context";
 import { PdfDownloadModal, type PdfProduct } from "@/components/PdfDownloadModal";
+import { LandingHeader } from "@/components/landing/header";
 import { Hero } from "@/components/landing/Hero";
+import { InstitutionsMarquee } from "@/components/landing/institutions-marquee";
 import { StatsBar } from "@/components/landing/StatsBar";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { CaseLog } from "@/components/landing/CaseLog";
@@ -12,6 +13,7 @@ import { PdfGuides } from "@/components/landing/PdfGuides";
 import { FeaturesBento } from "@/components/landing/FeaturesBento";
 import { Faq } from "@/components/landing/Faq";
 import { Testimonials } from "@/components/landing/Testimonials";
+import { LandingFooter } from "@/components/landing/footer";
 
 const FREE_DOWNLOADS_FALLBACK = 18;
 const ASSESSMENT_SLOTS_FALLBACK = 14;
@@ -47,7 +49,6 @@ interface HomeContentProps {
 export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLeft }: HomeContentProps) {
   const params = useParams();
   const locale = params.locale as string;
-  const { t } = useTranslation();
 
   function handleScrollToPdfSection(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
@@ -66,13 +67,14 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
 
   return (
     <div className="case-file">
+      <LandingHeader locale={locale} />
       <Hero
         locale={locale}
-        t={t}
         assessmentSlotsLeft={assessmentSlotsLeft}
         hasFreeAssessmentSlots={hasFreeAssessmentSlots}
         onScrollToPdfSection={handleScrollToPdfSection}
       />
+      <InstitutionsMarquee locale={locale} />
       <StatsBar locale={locale} />
       <HowItWorks locale={locale} />
       <CaseLog locale={locale} />
@@ -91,10 +93,10 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
       <FeaturesBento locale={locale} />
       <Faq locale={locale} />
       <Testimonials locale={locale} />
-      {/* No landing-specific closing CTA here -- app/[locale]/(main)/layout.tsx
-          already renders PreFooterCta (now case-file-styled) after every
-          page's content, homepage included. A second closer here duplicated
-          it; see PreFooterCta for the one-and-only "final CTA" component. */}
+      {/* Closing CTA + footer: the homepage carries its own (see
+          components/landing/footer.tsx); the layout's global PreFooterCta /
+          GlobalDisclaimerFooter are suppressed here by ShellFooterGate. */}
+      <LandingFooter locale={locale} />
     </div>
   );
 }

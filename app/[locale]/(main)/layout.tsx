@@ -4,10 +4,9 @@ import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 import { LanguageProvider } from "@/contexts/language-context";
-import { Header } from "@/components/header";
-import { GlobalDisclaimerFooter } from "@/components/global-disclaimer-footer";
-import { PreFooterCta } from "@/components/pre-footer-cta";
+import { ShellHeaderGate, ShellFooterGate } from "@/components/shell-gates";
 import { RefCapture } from "@/components/ref-capture";
+import { Toaster } from "@/components/ui/sonner";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
 
@@ -151,10 +150,10 @@ export default async function LocaleLayout({
       <Suspense fallback={null}>
         <RefCapture />
       </Suspense>
-      <Header locale={locale} showAdmin={showAdmin} />
+      <ShellHeaderGate locale={locale} showAdmin={showAdmin} />
       <main className="overflow-x-hidden pt-28 sm:pt-32">{children}</main>
-      <PreFooterCta locale={locale} />
-      <GlobalDisclaimerFooter />
+      <ShellFooterGate locale={locale} />
+      <Toaster />
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </LanguageProvider>
   );

@@ -54,11 +54,18 @@ const POPULAR_CODES = [
   "271311", // Solicitor (Legal)
 ];
 
-export function AnzscoSearchTool({ locale }: { locale: string }) {
+export function AnzscoSearchTool({
+  locale,
+  initialQuery,
+}: {
+  locale: string;
+  initialQuery?: string;
+}) {
   const { t } = useTranslation();
-  const [query, setQuery] = useState("");
-  const [selectedCode, setSelectedCode] = useState<string | null>("261313");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  // Initialized from the URL ?q= param (the landing hero's search flows here)
+  const [query, setQuery] = useState(initialQuery ?? "");
+  const [selectedCode, setSelectedCode] = useState<string | null>(initialQuery ?? "261313");
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery ?? "");
   const [pdfModalOpen, setPdfModalOpen] = useState(false);
 
   // Debounce search input 300ms

@@ -1,172 +1,365 @@
 "use client";
 
-import type { MouseEvent } from "react";
-import Link from "next/link";
-import { activeCountries, countryComplianceBadge, DISPLAY_START_SLOTS } from "@/lib/countries";
-
-interface HeroProps {
-  locale: string;
-  t: (key: string) => string;
-  assessmentSlotsLeft: number;
-  hasFreeAssessmentSlots: boolean;
-  onScrollToPdfSection: (event: MouseEvent<HTMLAnchorElement>) => void;
-}
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Search } from "lucide-react";
+import { toast } from "sonner";
+import { activeCountries, countryComplianceBadge } from "@/lib/countries";
 
 /**
- * Hero — "case file cover" concept (see design/logivisa_landing_redesign.html).
- * All copy/state/i18n logic is unchanged from the original home-content.tsx
- * hero block; only the visual language changed (serif headline, case-tag
- * eyebrow, brass CTA, cover-card preview panel instead of a stock hero image).
+ * Hero — search-first, Google-like landing hero (redesign).
+ *
+ * Big serif headline, a single wide search bar over the full ANZSCO
+ * occupation index (lazily imported so it never bloats the initial bundle),
+ * quick-occupation pills, and the trust/scarcity strip underneath. Searching
+ * flows into the existing ANZSCO Finder (`/tools/anzsco-finder?q=...`), which
+ * already renders code, skill level, duties and the full-check CTA.
  */
-export function Hero({ locale, t, assessmentSlotsLeft, hasFreeAssessmentSlots, onScrollToPdfSection }: HeroProps) {
+interface HeroProps {
+  locale: string;
+  assessmentSlotsLeft: number;
+  hasFreeAssessmentSlots: boolean;
+  onScrollToPdfSection?: (event: MouseEvent<HTMLAnchorElement>) => void;
+}
+
+type Occupation = {
+  code: string;
+  title_en: string;
+  title_tr?: string;
+  title_zh?: string;
+  keywords?: string[];
+  /** true if the occupation is eligible for skilled migration */
+  isEligibleForMigration?: boolean;
+};
+
+const QUICK_PILLS = [
+  "Software Engineer",
+  "Chef",
+  "Motor Mechanic",
+  "Registered Nurse",
+];
+
+export function Hero({
+  locale,
+  assessmentSlotsLeft,
+  hasFreeAssessmentSlots,
+  onScrollToPdfSection,
+}: HeroProps) {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Occupation[]>([]);
+  const [open, setOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<Occupation[] | null>(null);
+
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+
+  const localize = (o: Occupation) =>
+    isTr ? o.title_tr || o.title_en : isZh ? o.title_zh || o.title_en : o.title_en;
+
+  // Lazy-load the full occupation index on first keystroke so the homepage
+  // bundle stays lean. All 1,400+ occupations are searched; those with
+  // isEligibleForMigration=false render muted with a "Not on Skilled List"
+  // badge and are blocked from flowing into the migration funnel.
+  useEffect(() => {
+    if (query.trim().length === 0) {
+      setResults([]);
+      setOpen(false);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      if (!listRef.current) {
+        const mod = await import("@/src/data/occupations.json");
+        const raw = (mod.default ?? mod) as {
+          occupations?: Array<{
+            anzsco_code: string;
+            occupation_name: string;
+            isEligibleForMigration?: boolean;
+            keywords?: string[];
+          }>;
+        };
+        const src = Array.isArray(raw) ? raw : raw.occupations ?? [];
+        listRef.current = src.map((o) => ({
+          code: o.anzsco_code,
+          title_en: o.occupation_name,
+          keywords: o.keywords,
+          isEligibleForMigration: o.isEligibleForMigration,
+        }));
+      }
+      const q = query.trim().toLowerCase();
+      const matches = listRef.current
+        .filter((o) => {
+          const titles = [
+            o.title_en,
+            isTr ? o.title_tr : isZh ? o.title_zh : undefined,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+          const kw = (o.keywords ?? []).join(" ").toLowerCase();
+          return titles.includes(q) || o.code.includes(q) || kw.includes(q);
+        })
+        .slice(0, 8);
+      setResults(matches);
+      setOpen(true);
+    }, 180);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
+
+  // Close the suggestion dropdown on outside click.
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent | globalThis.MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const goToOccupation = (code: string) => {
+    router.push(`/${locale}/tools/anzsco-finder?q=${encodeURIComponent(code)}`);
+  };
+
+  /**
+   * Entry point for every occupation picked from the suggestion dropdown.
+   * Occupations flagged `isEligibleForMigration=false` are NOT on the current
+   * skilled migration lists: the forward flow is blocked (no navigation into
+   * the ANZSCO Finder / skills-assessment / points steps) and a warning toast
+   * explains why.
+   */
+  const selectOccupation = (occ: Occupation | null | undefined) => {
+    if (!occ?.code) return;
+    if (occ.isEligibleForMigration === false) {
+      toast.warning(
+        isTr
+          ? "Seçtiğiniz meslek şu anki Avustralya göçmenlik listelerinde bulunmamaktadır"
+          : isZh
+            ? "您选择的职业目前不在澳大利亚技术移民职业清单上"
+            : "Your selected occupation is not currently on Australia's skilled migration lists",
+        { duration: 5000 }
+      );
+      return;
+    }
+    goToOccupation(occ.code);
+  };
+
+  const headline = isTr
+    ? "Avustralya Göçmenlik Sürecinizi Saniyeler İçinde Keşfedin"
+    : isZh
+      ? "几秒内发现您的澳大利亚移民路径"
+      : "Discover Your Australia Migration Path in Seconds";
+
+  const subheadline = isTr
+    ? "Mesleğinizi aratın, vize uyumluluğunuzu ve özel değerlendirme kurumunuzu anında öğrenin."
+    : isZh
+      ? "搜索您的职业，立即了解您的签证资格与对应的官方评估机构。"
+      : "Search your occupation and instantly learn your visa eligibility and dedicated assessing authority.";
+
+  const placeholder = isTr
+    ? "Örn: Software Engineer, Chef, Mechanic..."
+    : isZh
+      ? "例如：软件工程师、厨师、机械师…"
+      : "e.g. Software Engineer, Chef, Mechanic...";
+
+  const searchNote = useMemo(() => {
+    const q = query.trim();
+    if (open && q && results.length > 0) {
+      return isTr
+        ? `${results.length} eşleşen meslek bulundu`
+        : isZh
+          ? `找到 ${results.length} 个匹配职业`
+          : `${results.length} matching occupations`;
+    }
+    return isTr
+      ? "1.400'den fazla ANZSCO mesleği içinde arama yapın"
+      : isZh
+        ? "搜索 1,400+ 个 ANZSCO 职业"
+        : "Search across 1,400+ ANZSCO occupations";
+  }, [open, query, results.length, isTr, isZh]);
+
   return (
-    <section className="case-file relative overflow-hidden bg-[var(--cf-bg)] pb-20 pt-16 sm:pb-28 sm:pt-20">
+    <section className="case-file relative overflow-hidden bg-[var(--cf-bg)] pb-20 pt-16 sm:pb-24 sm:pt-20">
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.05]"
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)'/%3E%3C/svg%3E\")",
         }}
       />
 
-      <div className="section-shell relative grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-        <div>
+      <div className="section-shell relative mx-auto flex max-w-3xl flex-col items-center text-center">
+        {/* 2026 guide banner — kept as a slim lead-magnet strip */}
+        {onScrollToPdfSection ? (
           <a
             href="#pdf-download-section"
             onClick={onScrollToPdfSection}
-            className="mb-5 flex w-fit max-w-full items-center gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-2.5 text-sm font-medium text-[var(--cf-fg)] transition-all hover:border-amber-500/60 hover:bg-amber-500/10 hover:shadow-sm"
+            className="mb-8 inline-flex max-w-full items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/5 px-4 py-2 text-sm font-medium text-[var(--cf-fg)] transition-all hover:border-amber-500/60 hover:bg-amber-500/10"
           >
-            {locale === "tr" ? (
+            {isTr ? (
               <>
-                <span className="inline-flex items-center rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">YENİ</span>
-                Ücretsiz 80 Sayfalık Avustralya &amp; Kanada PR Kılavuzu 2026 Yayınlandı!
-                <span className="ml-1 rounded border border-[var(--cf-accent)] bg-[var(--cf-accent)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--cf-accent)] transition-colors hover:bg-[var(--cf-accent)] hover:text-white">Hemen İndirin →</span>
+                <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">YENİ</span>
+                Ücretsiz 80 Sayfalık Avustralya &amp; Kanada PR Kılavuzu 2026
+                <span aria-hidden>→</span>
+              </>
+            ) : isZh ? (
+              <>
+                <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">2026</span>
+                免费 80 页澳大利亚 &amp; 加拿大 PR 指南 2026
+                <span aria-hidden>→</span>
               </>
             ) : (
               <>
-                <span className="inline-flex items-center rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white tracking-wide">2026 GUIDE</span>
-                Free 80-Page Australia &amp; Canada PR Guide 2026 is now available!
-                <span className="ml-1 rounded border border-[var(--cf-accent)] bg-[var(--cf-accent)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--cf-accent)] transition-colors hover:bg-[var(--cf-accent)] hover:text-white">Get Free Copy →</span>
+                <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">2026</span>
+                Free 80-Page Australia &amp; Canada PR Guide 2026
+                <span aria-hidden>→</span>
               </>
             )}
           </a>
+        ) : null}
 
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--cf-accent-dim)] bg-[var(--cf-accent)]/5 px-3.5 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-[var(--cf-accent)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)] animate-pulse" />
-            {t("hero.trustBadge")}
+        <h1 className="cf-serif max-w-[18ch] text-4xl font-medium leading-[1.08] tracking-tight text-[var(--cf-fg)] sm:text-5xl lg:text-6xl">
+          {headline}
+        </h1>
+
+        <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-[var(--cf-muted)] sm:text-xl">
+          {subheadline}
+        </p>
+
+        {/* Wide search bar — Google-style, results flow into ANZSCO Finder */}
+        <div ref={searchRef} className="relative mt-10 w-full max-w-2xl">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--cf-accent)]" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const target = results[0] ?? { code: query.trim() };
+                  if (target.code) selectOccupation(target);
+                }
+              }}
+              placeholder={placeholder}
+              aria-label={placeholder}
+              className="h-16 w-full rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] pl-14 pr-14 text-base text-[var(--cf-fg)] shadow-[0_18px_50px_-30px_var(--cf-shadow)] outline-none transition-all placeholder:text-[var(--cf-muted)]/70 focus:border-[var(--cf-accent-dim)] focus:ring-2 focus:ring-[var(--cf-accent-dim)] sm:text-lg"
+            />
+            <kbd className="cf-mono pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 rounded border border-[var(--cf-line)] px-2 py-0.5 text-[0.65rem] text-[var(--cf-muted)] sm:block">
+              ↵
+            </kbd>
           </div>
 
-          <h1 className="cf-serif max-w-[16ch] text-4xl font-medium leading-[1.08] tracking-tight text-[var(--cf-fg)] sm:text-5xl lg:text-6xl">
-            {t("hero.headline")}
-          </h1>
-
-          <p className="mt-6 max-w-[46ch] text-lg text-[var(--cf-muted)]">{t("hero.subheadline")}</p>
-
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Link
-              href={`/${locale}/full-check?country=AU`}
-              className="inline-flex items-center justify-center gap-2 rounded-sm bg-[var(--cf-accent)] px-8 py-4 text-base font-semibold text-[var(--cf-bg-deep)] shadow-[0_20px_40px_-15px_var(--cf-shadow)] transition-transform hover:-translate-y-0.5"
-            >
-              {t("hero.btnAustralia")} <span aria-hidden>→</span>
-            </Link>
-            <Link
-              href={`/${locale}/full-check?country=CA`}
-              className="inline-flex items-center justify-center gap-2 rounded-sm border border-[var(--cf-line)] px-8 py-4 text-base font-semibold text-[var(--cf-fg)] transition-colors hover:border-[var(--cf-fg)]"
-            >
-              {t("hero.btnCanada")} <span aria-hidden>→</span>
-            </Link>
-          </div>
-
-          {hasFreeAssessmentSlots && (
-            <div className="mt-6 inline-flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 shadow-sm">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(239,68,68,0.5)]" />
-              </span>
-              <span className="text-sm font-semibold text-[var(--cf-fg)]">
-                <span className="text-amber-600 font-bold">{assessmentSlotsLeft}</span>
-                {locale === "tr" ? (
-                  <> ücretsiz analiz hakkı kaldı — <span className="line-through opacity-50">${DISPLAY_START_SLOTS}</span> → <span className="text-emerald-600 font-bold">ÜCRETSİZ</span></>
-                ) : locale === "zh-Hans" ? (
-                  <> 个免费评估名额 — <span className="line-through opacity-50">${DISPLAY_START_SLOTS}</span> → <span className="text-emerald-600 font-bold">免费</span></>
-                ) : (
-                  <> free assessment slots left — <span className="line-through opacity-50">${DISPLAY_START_SLOTS}</span> → <span className="text-emerald-600 font-bold">FREE</span></>
-                )}
-              </span>
+          {open && results.length > 0 ? (
+            <div className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-40 overflow-hidden rounded-2xl border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] shadow-2xl shadow-[var(--cf-shadow)]">
+              {results.map((o) => {
+                const ineligible = o.isEligibleForMigration === false;
+                return (
+                  <button
+                    key={o.code}
+                    type="button"
+                    onClick={() => selectOccupation(o)}
+                    className={`flex w-full items-center justify-between gap-4 border-b border-[var(--cf-line)] px-5 py-3.5 text-left transition-colors last:border-0 hover:bg-[var(--cf-accent)]/10 ${
+                      ineligible ? "opacity-50" : ""
+                    }`}
+                  >
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="truncate text-sm font-medium text-[var(--cf-cover-fg)]">
+                        {localize(o)}
+                      </span>
+                      {ineligible ? (
+                        <span className="shrink-0 rounded-full border border-[var(--cf-line)] bg-[var(--cf-bg-deep)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--cf-muted)]">
+                          {isTr
+                            ? "Skilled List'te Değil"
+                            : isZh
+                              ? "不在技术移民清单上"
+                              : "Not on Skilled List"}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="cf-mono shrink-0 text-xs text-[var(--cf-accent)]">{o.code}</span>
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => {
+                  const top = results[0] ?? null;
+                  if (top && top.isEligibleForMigration === false) {
+                    selectOccupation(top);
+                    return;
+                  }
+                  goToOccupation(query.trim());
+                }}
+                className="flex w-full items-center justify-center gap-2 bg-[var(--cf-case-bg)] px-5 py-3.5 text-sm font-semibold text-[var(--cf-case-fg)] transition-colors hover:bg-[var(--cf-bg-deep)]"
+              >
+                {isTr ? "Tüm sonuçları gör" : isZh ? "查看全部结果" : "View all results"}
+                <ArrowRight className="h-4 w-4" />
+              </button>
             </div>
-          )}
+          ) : null}
 
-          <div className="cf-mono mt-10 flex flex-wrap gap-x-7 gap-y-3 text-xs text-[var(--cf-muted)]">
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />
-              {t("socialProof.users")}
-            </div>
-            {activeCountries.map((code) => (
-              <div key={code} className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />
-                {countryComplianceBadge[code][locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en"]}
-              </div>
-            ))}
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />
-              {t("socialProof.dha")}
-            </div>
-          </div>
+          <p className="cf-mono mt-4 text-[0.7rem] uppercase tracking-[0.12em] text-[var(--cf-muted)]">
+            {searchNote}
+          </p>
         </div>
 
-        {/* Cover-card: an anonymized preview of the report's shape, not a
-            fabricated persona -- avoids duplicating the real case studies
-            further down the page with a fake "sample customer". */}
-        <div
-          className="relative -rotate-1 rounded-sm bg-[var(--cf-cover-bg)] p-8 text-[var(--cf-cover-fg)] shadow-[0_30px_60px_-20px_var(--cf-shadow)]"
-        >
-          <div className="pointer-events-none absolute inset-2.5 border border-[var(--cf-cover-line)]" />
-          <div className="cf-mono flex items-center justify-between text-[0.65rem] uppercase tracking-[0.08em] text-[var(--cf-cover-muted)]">
-            <span>
-              {locale === "tr" ? "Uygunluk Raporu · Önizleme" : locale === "zh-Hans" ? "资格报告 · 预览" : "Readiness Report · Preview"}
+        {/* Quick-occupation pills */}
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
+          <span className="text-xs font-medium uppercase tracking-wide text-[var(--cf-muted)]">
+            {isTr ? "Popüler:" : isZh ? "热门：" : "Popular:"}
+          </span>
+          {QUICK_PILLS.map((pill) => (
+            <button
+              key={pill}
+              type="button"
+              onClick={() => setQuery(pill)}
+              className="rounded-full border border-[var(--cf-line)] px-3.5 py-1.5 text-xs font-medium text-[var(--cf-muted)] transition-colors hover:border-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+            >
+              {pill}
+            </button>
+          ))}
+        </div>
+
+        {/* Scarcity strip — kept subtle, drives the free-slot funnel */}
+        {hasFreeAssessmentSlots ? (
+          <div className="mt-9 inline-flex items-center gap-3 rounded-full border border-amber-500/20 bg-amber-500/10 px-5 py-2.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
             </span>
-            <span>AU / 189-190-491</span>
-          </div>
-
-          <h3 className="cf-serif mt-6 text-2xl font-semibold">
-            {locale === "tr" ? "Sizin Dosyanız" : locale === "zh-Hans" ? "您的案卷" : "Your File"}
-          </h3>
-          <p className="mt-1 text-sm text-[var(--cf-cover-muted)]">
-            {locale === "tr"
-              ? "Profil ve meslek girildikten sonra doldurulur"
-              : locale === "zh-Hans"
-                ? "填写档案与职业信息后生成"
-                : "Fills in once you submit your profile & occupation"}
-          </p>
-
-          <div className="mt-5 space-y-0">
-            {[
-              [
-                locale === "tr" ? "Meslek Kodu" : locale === "zh-Hans" ? "职业代码" : "Occupation Code",
-                locale === "tr" ? "—" : "—",
-              ],
-              [
-                locale === "tr" ? "İngilizce Kanıtı" : locale === "zh-Hans" ? "英语证明" : "English Evidence",
-                "—",
-              ],
-              [locale === "tr" ? "Puan (tahmini)" : locale === "zh-Hans" ? "预估分数" : "Points (est.)", "—"],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="flex justify-between border-b border-dashed border-[var(--cf-cover-line)] py-2.5 text-sm"
-              >
-                <span className="text-[var(--cf-cover-muted)]">{label}</span>
-                <span className="cf-mono text-[0.85rem] font-semibold">{value}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-5 flex items-center justify-between bg-[color-mix(in_srgb,var(--cf-cover-fg)_6%,transparent)] px-4 py-3.5">
-            <span className="cf-mono text-[0.68rem] uppercase tracking-[0.08em] text-[var(--cf-cover-muted)]">
-              {locale === "tr" ? "Eşleşme Olasılığı" : locale === "zh-Hans" ? "匹配概率" : "Match Probability"}
+            <span className="text-sm font-semibold text-[var(--cf-fg)]">
+              <span className="font-bold text-amber-600">{assessmentSlotsLeft}</span>{" "}
+              {isTr
+                ? "ücretsiz analiz hakkı kaldı"
+                : isZh
+                  ? "个免费评估名额"
+                  : "free assessment slots left"}
             </span>
-            <span className="cf-serif text-2xl font-semibold text-[#B98A4A]">?</span>
           </div>
+        ) : null}
+
+        {/* Trust strip */}
+        <div className="cf-mono mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-xs text-[var(--cf-muted)]">
+          <span className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />
+            {isTr ? "5.000+ Değerlendirme" : isZh ? "5,000+ 次评估" : "5,000+ Assessments"}
+          </span>
+          {activeCountries.map((code) => (
+            <span key={code} className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />
+              {countryComplianceBadge[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"]}
+            </span>
+          ))}
+          <span className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />
+            {isTr
+              ? "İçişleri Bakanlığı Uyumlu"
+              : isZh
+                ? "内政部合规"
+                : "Home Affairs Compliant"}
+          </span>
         </div>
       </div>
     </section>

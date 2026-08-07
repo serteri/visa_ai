@@ -272,3 +272,30 @@ body {
 .cf-sans {
   font-family: var(--font-inter), Inter, sans-serif;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Institutions marquee — infinite horizontal scroll for the assessing
+   authority strip on the landing page. The track holds two copies of the
+   list and translates -50% to loop seamlessly.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes cf-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: cf-marquee 48s linear infinite;
+  will-change: transform;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
