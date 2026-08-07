@@ -197,9 +197,10 @@ function runVersionTest(occupations: Occupation[]) {
   console.log(`    → Sonuç: ${ruleFail === 0 ? 'PASS ✔' : 'FAIL ✘'}`);
   if (failures.length > 0) {
     console.log('    Örnek uyumsuzluklar:');
-    failures.slice(0, 8).forEach((f) =>
-      console.log(`      ${f.code} | ${f.name} | lists=${JSON.stringify(f.lists)} | gerçek=${JSON.stringify(f.actual)} | beklenen=${JSON.stringify([...(f.expected ?? [])])}`)
-    );
+    failures.slice(0, 8).forEach((f) => {
+      const expectedArr = f.expected instanceof Set ? [...f.expected] : Array.isArray(f.expected) ? f.expected : [];
+      console.log(`      ${f.code} | ${f.name} | lists=${JSON.stringify(f.lists)} | gerçek=${JSON.stringify(f.actual)} | beklenen=${JSON.stringify(expectedArr)}`);
+    });
     if (failures.length > 8) console.log(`      ... ve ${failures.length - 8} uyumsuzluk daha`);
   }
 
