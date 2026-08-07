@@ -88,17 +88,32 @@ export function Hero({
         }));
       }
       const q = query.trim().toLowerCase();
-      const matches = listRef.current
+      const rawMatches = listRef.current.filter((o) => {
+        const titles = [
+          o.title_en,
+          isTr ? o.title_tr : isZh ? o.title_zh : undefined,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        const kw = (o.keywords ?? []).join(" ").toLowerCase();
+        return titles.includes(q) || o.code.includes(q) || kw.includes(q);
+      });
+
+      // Smart deduplication: if a职业 name has both eligible and non-eligible
+      // versions (e.g. old ANZSCO code vs new), keep ONLY the eligible one.
+      const titleHasEligible = new Set<string>();
+      for (const o of rawMatches) {
+        if (o.isEligibleForMigration === true) {
+          titleHasEligible.add(o.title_en.toLowerCase());
+        }
+      }
+      const matches = rawMatches
         .filter((o) => {
-          const titles = [
-            o.title_en,
-            isTr ? o.title_tr : isZh ? o.title_zh : undefined,
-          ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
-          const kw = (o.keywords ?? []).join(" ").toLowerCase();
-          return titles.includes(q) || o.code.includes(q) || kw.includes(q);
+          if (o.isEligibleForMigration === false && titleHasEligible.has(o.title_en.toLowerCase())) {
+            return false; // drop duplicate non-eligible entry
+          }
+          return true;
         })
         .slice(0, 8);
       setResults(matches);
@@ -244,7 +259,7 @@ export function Hero({
               }}
               placeholder={placeholder}
               aria-label={placeholder}
-              className="h-16 w-full rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] pl-14 pr-14 text-base text-[var(--cf-fg)] shadow-[0_18px_50px_-30px_var(--cf-shadow)] outline-none transition-all placeholder:text-[var(--cf-muted)]/70 focus:border-[var(--cf-accent-dim)] focus:ring-2 focus:ring-[var(--cf-accent-dim)] sm:text-lg"
+              className="h-16 w-full rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] pl-14 pr-14 text-base text-white shadow-[0_18px_50px_-30px_var(--cf-shadow)] outline-none transition-all placeholder:text-slate-400 focus:border-[var(--cf-accent-dim)] focus:ring-2 focus:ring-[var(--cf-accent-dim)] sm:text-lg"
             />
             <kbd className="cf-mono pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 rounded border border-[var(--cf-line)] px-2 py-0.5 text-[0.65rem] text-[var(--cf-muted)] sm:block">
               ↵
