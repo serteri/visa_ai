@@ -10,6 +10,7 @@ import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import visaDetails from "@/src/data/visa-details.json";
+import subclass186Raw from "@/src/data/visas/subclass-186.json";
 
 type PageProps = {
   params: Promise<{ locale: string; subclass: string }>;
@@ -96,13 +97,24 @@ type VisaDetail = {
   };
 };
 
-const VISA_DETAILS = visaDetails as VisaDetail[];
+const VISA_DETAILS: VisaDetail[] = [
+  ...(visaDetails as VisaDetail[]),
+  ...(subclass186Raw as Array<Record<string, unknown>>).map((v) => ({
+    ...v,
+    nameKey: `visa${String(v.subclass).replace(/[^a-zA-Z0-9]/g, "")}`,
+    officialUrl: v.sourceUrl,
+    processingTimeUnit: "",
+    secondInstalment: typeof v.secondInstallmentFee === "number"
+      ? { amount: v.secondInstallmentFee, note: v.secondInstallmentTrigger }
+      : undefined,
+  })) as VisaDetail[],
+];
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
 export const dynamic = "force-static";
 export const revalidate = false;
 
-const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820", "801", "canada-express-entry"] as const;
+const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820", "801", "canada-express-entry", "186_direct_entry", "186_labour_agreement", "186_trt"] as const;
 
 function normalizeSubclass(subclass: string) {
   const value = subclass.trim();

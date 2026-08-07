@@ -1197,6 +1197,7 @@ export function FullCheckWaitlistForm({
                 <option value="">{txt("Emin değilim / ikisini de değerlendir", "Not sure / evaluate both", "不确定 / 两者都评估")}</option>
                 <option value="direct_entry">{txt("Direct Entry", "Direct Entry", "Direct Entry")}</option>
                 <option value="trt">{txt("Temporary Residence Transition (TRT)", "Temporary Residence Transition (TRT)", "Temporary Residence Transition (TRT)")}</option>
+                <option value="labour_agreement">{txt("Labour Agreement", "Labour Agreement", "Labour Agreement")}</option>
               </select>
             </div>
 

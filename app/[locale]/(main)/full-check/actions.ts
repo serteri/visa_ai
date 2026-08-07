@@ -151,7 +151,7 @@ const optionalNominationStreamSchema = z.preprocess(
     const normalized = String(value).trim();
     return normalized ? normalized : undefined;
   },
-  z.enum(["direct_entry", "trt"]).optional()
+  z.enum(["direct_entry", "trt", "labour_agreement", "not_sure"]).optional()
 );
 
 const optionalCourseCompletionStatusSchema = z.preprocess(

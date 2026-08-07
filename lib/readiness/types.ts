@@ -55,8 +55,8 @@ export type ReadinessInput = {
    * have been under an approved sponsor, not a single continuous employer).
    */
   yearsInSponsoredPosition?: number;
-  /** Which subclass 186 stream the user is targeting. Left undefined to evaluate both. */
-  nominationStream?: "direct_entry" | "trt";
+  /** Which subclass 186 stream the user is targeting. Left undefined (or "not_sure") to evaluate all viable streams. */
+  nominationStream?: "direct_entry" | "trt" | "labour_agreement" | "not_sure";
   /** Official NOC 2021 V1.0 unit group code (5 digits), set when user picks from autocomplete. */
   nocCode?: string;
   /** TEER level (0–5) derived from the selected NOC code. */

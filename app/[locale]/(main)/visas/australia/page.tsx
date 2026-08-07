@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
 import visaDetails from "@/src/data/visa-details.json";
+import subclass186 from "@/src/data/visas/subclass-186.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
@@ -11,6 +12,8 @@ type PageProps = {
 
 type AustraliaVisaCard = {
   subclass: string;
+  parentSubclass?: string;
+  stream?: string;
   name: string;
   name_tr?: string;
   name_zh?: string;
@@ -59,14 +62,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 const AU_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820", "801"];
+const AU_PARENT_SUBCLASSES = ["186"];
 
 export default async function AustraliaVisasPage({ params }: PageProps) {
   const { locale } = await params;
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
 
-  const visas = (visaDetails as Array<Partial<AustraliaVisaCard>>).filter(
-    (v): v is AustraliaVisaCard => typeof v.subclass === "string" && AU_SUBCLASSES.includes(v.subclass)
+  const allVisaData = [...(visaDetails as Array<Partial<AustraliaVisaCard>>), ...subclass186 as Array<Partial<AustraliaVisaCard>>];
+  const visas = allVisaData.filter(
+    (v): v is AustraliaVisaCard => typeof v.subclass === "string" && (
+      AU_SUBCLASSES.includes(v.subclass) ||
+      Boolean(v.parentSubclass && AU_PARENT_SUBCLASSES.includes(v.parentSubclass))
+    )
   );
 
   const title = isTr ? "Avustralya Vize Yolları" : isZh ? "澳大利亚签证通道" : "Australia Visa Pathways";
@@ -159,7 +167,10 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
                 <div>
                   <div className="flex items-center justify-between">
                     <span className="inline-block rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-extrabold tracking-wider text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400">
-                      Subclass {v.subclass.replace("_", "/")}
+                      {v.parentSubclass
+                        ? `Subclass ${v.parentSubclass}`
+                        : `Subclass ${v.subclass.replace("_", "/")}`}
+                      {v.stream && <span className="ml-1 font-semibold opacity-70">· {v.stream}</span>}
                     </span>
                     <span className="text-xs font-semibold text-slate-400">{localizeType(v)}</span>
                   </div>

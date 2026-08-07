@@ -2224,11 +2224,11 @@ function getPathwaySpecificRisks(
           : "Occupation appears likely on CSOL based on an MLTSSL-match proxy — this is an approximation, not a direct CSOL lookup; verify against the current CSOL separately."
       );
     }
-    if (!input.nominationStream) {
+    if (!input.nominationStream || input.nominationStream === "not_sure") {
       risks.push(
         isTr
-          ? "Direct Entry mi yoksa TRT akışı mı hedeflendiği belirtilmediği için değerlendirme her iki akışı da kapsayacak şekilde genel tutuldu."
-          : "Because it wasn't specified whether Direct Entry or TRT is the target stream, this assessment covers both generally."
+          ? "Hedeflenen 186 akışı (Direct Entry, TRT veya Labour Agreement) belirtilmediği için değerlendirme tüm akışları kapsayacak şekilde genel tutuldu."
+          : "Because no specific 186 stream (Direct Entry, TRT, or Labour Agreement) was targeted, this assessment covers all streams generally."
       );
     }
   }
@@ -2547,10 +2547,36 @@ function buildPathwayEntry(
     const directEntryGate = evaluate186DirectEntryGate(input);
     const trtGate = evaluate186TrtGate(input);
 
-    if (salaryGate186.isBelowCsit && salaryGate186.declaredSalaryAud !== null) {
-      // Hard Gate: the CSIT salary floor applies to both 186 streams (employer-sponsored).
+    const isLabourAgreementStream = input.nominationStream === "labour_agreement";
+
+    // CSIT salary gate: applies to Direct Entry and TRT (employer-sponsored),
+    // but NOT to Labour Agreement (agreement sets its own salary floor) and
+    // NOT when stream is "not_sure" (user might be eligible for LA, so don't
+    // gate on CSIT prematurely).
+    const isKnownNonLA = input.nominationStream === "direct_entry" || input.nominationStream === "trt";
+    if (isKnownNonLA && salaryGate186.isBelowCsit && salaryGate186.declaredSalaryAud !== null) {
       relevance = "ineligible";
       reason = formatIneligibleSalaryReason(locale, salaryGate186.declaredSalaryAud);
+    } else if (isLabourAgreementStream) {
+      // Labour Agreement stream: no CSOL membership check, no upfront skills
+      // assessment, and no fixed age/English/work-experience floor — those are
+      // set by the specific labour agreement. The only gate is whether the
+      // nominating employer is party to a labour agreement.
+      const labourAgreementContext = hasKw(
+        [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "),
+        ["labour agreement", "labor agreement", "iş anlaşması", "iş sözleşmesi"]
+      );
+      if (labourAgreementContext) {
+        relevance = "possible";
+        reason = isTr
+          ? "İşverenin bir labour agreement (iş anlaşması) tarafı olması, Labour Agreement akışının olası bir yol olabileceğini gösteriyor. Yaş, İngilizce ve iş deneyimi şartları ilgili anlaşmada belirlenir."
+          : "The employer being party to a labour agreement indicates the Labour Agreement stream may be a possible pathway. Age, English, and work experience requirements are set by the specific agreement.";
+      } else {
+        relevance = "needs_more_information";
+        reason = isTr
+          ? "Labour Agreement akışı, işverenin bir labour agreement (iş anlaşması) tarafı olmasını gerektirir. İşverenin böyle bir anlaşmaya taraf olup olmadığı henüz net değil."
+          : "The Labour Agreement stream requires the employer to be party to a labour agreement. Whether the employer holds one is not yet clear.";
+      }
     } else if (input.nominationStream === "trt") {
       if (trtGate.yearsInSponsoredPosition !== null && !trtGate.meetsTenureThreshold) {
         relevance = "ineligible";
@@ -2584,23 +2610,39 @@ function buildPathwayEntry(
           : "Skills assessment and work experience context indicate the Direct Entry stream may be a possible pathway. This is general information only and depends on individual circumstances.";
       }
     } else {
-      // No stream specified — evaluate both and report whichever looks viable.
+      // No stream specified (or "not_sure") — evaluate all three streams and
+      // report whichever look viable.
       const trtViable = trtGate.meetsTenureThreshold;
       const directEntryViable =
         directEntryGate.hasSkillsAssessment && directEntryGate.meetsExperienceThreshold && !directEntryGate.isAgeIneligible;
-      if (trtViable || directEntryViable) {
+      const labourAgreementViable = hasKw(
+        [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "),
+        ["labour agreement", "labor agreement", "iş anlaşması", "iş sözleşmesi"]
+      );
+      if (trtViable || directEntryViable || labourAgreementViable) {
         relevance = "possible";
-        reason = isTr
-          ? trtViable && directEntryViable
-            ? "Mevcut sinyaller hem TRT hem de Direct Entry akışı için olası bir uyum gösteriyor. Hangi akışın hedeflendiği belirtilirse değerlendirme netleşir."
-            : trtViable
-              ? "Mevcut sinyaller TRT akışı için olası bir uyum gösteriyor (onaylı sponsor süresi eşiği karşılanıyor)."
-              : "Mevcut sinyaller Direct Entry akışı için olası bir uyum gösteriyor (beceri değerlendirmesi ve deneyim eşiği karşılanıyor)."
-          : trtViable && directEntryViable
-            ? "Current signals suggest a possible fit for both the TRT and Direct Entry streams. Specifying which stream is targeted would sharpen this assessment."
-            : trtViable
-              ? "Current signals suggest a possible fit for the TRT stream (approved-sponsor tenure threshold is met)."
-              : "Current signals suggest a possible fit for the Direct Entry stream (skills assessment and experience thresholds are met).";
+        if (trtViable && !directEntryViable && !labourAgreementViable) {
+          reason = isTr
+            ? "Mevcut sinyaller TRT akışı için olası bir uyum gösteriyor (onaylı sponsor süresi eşiği karşılanıyor)."
+            : "Current signals suggest a possible fit for the TRT stream (approved-sponsor tenure threshold is met).";
+        } else if (directEntryViable && !trtViable && !labourAgreementViable) {
+          reason = isTr
+            ? "Mevcut sinyaller Direct Entry akışı için olası bir uyum gösteriyor (beceri değerlendirmesi ve deneyim eşiği karşılanıyor)."
+            : "Current signals suggest a possible fit for the Direct Entry stream (skills assessment and experience thresholds are met).";
+        } else if (labourAgreementViable && !trtViable && !directEntryViable) {
+          reason = isTr
+            ? "Mevcut sinyaller Labour Agreement akışı için olası bir uyum gösteriyor (işveren bir labour agreement tarafı görünüyor)."
+            : "Current signals suggest a possible fit for the Labour Agreement stream (the employer appears to be party to a labour agreement).";
+        } else {
+          const viableStreams = [
+            ...(trtViable ? ["TRT"] : []),
+            ...(directEntryViable ? ["Direct Entry"] : []),
+            ...(labourAgreementViable ? ["Labour Agreement"] : []),
+          ].join(", ");
+          reason = isTr
+            ? `Mevcut sinyaller şu akışlar için olası bir uyum gösteriyor: ${viableStreams}. Hangi akışın hedeflendiği belirtilirse değerlendirme netleşir.`
+            : `Current signals suggest a possible fit for the following stream(s): ${viableStreams}. Specifying which stream is targeted would sharpen this assessment.`;
+        }
       } else if (directEntryGate.isAgeIneligible && trtGate.yearsInSponsoredPosition !== null && !trtGate.meetsTenureThreshold) {
         relevance = "ineligible";
         reason = isTr
@@ -2609,8 +2651,8 @@ function buildPathwayEntry(
       } else {
         relevance = "needs_more_information";
         reason = isTr
-          ? "Subclass 186, Direct Entry (beceri değerlendirmesi, yaş, CSOL) veya TRT (en az 2 yıllık onaylı sponsor süresi) akışlarından biri üzerinden değerlendirilebilir. Hangi akışın hedeflendiği ve ilgili detaylar henüz net değil."
-          : "Subclass 186 can be assessed via Direct Entry (skills assessment, age, CSOL) or TRT (at least 2 years under an approved sponsor). Which stream is targeted, and the related details, are not yet clear.";
+          ? "Subclass 186, Direct Entry (beceri değerlendirmesi, yaş, CSOL), TRT (en az 2 yıllık onaylı sponsor süresi) veya Labour Agreement (işverenin labour agreement tarafı olması) akışlarından biri üzerinden değerlendirilebilir. Hangi akışın hedeflendiği ve ilgili detaylar henüz net değil."
+          : "Subclass 186 can be assessed via Direct Entry (skills assessment, age, CSOL), TRT (at least 2 years under an approved sponsor), or Labour Agreement (employer party to a labour agreement). Which stream is targeted, and the related details, are not yet clear.";
       }
     }
   } else {
