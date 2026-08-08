@@ -1209,11 +1209,7 @@ export function FullCheckWaitlistForm({
                 className="h-4 w-4 rounded border-[var(--cf-line)] accent-[var(--cf-accent)]"
               />
               <Label htmlFor="waitlist-labour-agreement-employer" className="cursor-pointer text-sm font-medium text-[var(--cf-fg)]">
-                {txt(
-                  "İşvereniniz bir Labour Agreement / DAMA'ya taraf mı?",
-                  "Is your employer party to a Labour Agreement / DAMA?",
-                  "您的雇主是否为劳工协议/DAMA的签约方？"
-                )}
+                Is your employer party to a Labour Agreement / DAMA?
               </Label>
             </div>
 
