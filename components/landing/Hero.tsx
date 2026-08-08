@@ -330,12 +330,23 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           ))}
         </div>
 
+        {/* Assessment intake badge */}
+        <div className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+            {isTr ? "Değerlendirme Alımı: Açık (Sınırlı Kapasite)" : isZh ? "评估名额：开放（名额有限）" : "Assessment Intake: Open (Limited Capacity)"}
+          </span>
+        </div>
+
         {/* Country assessment buttons */}
-        <div className="mt-9 flex items-center justify-center gap-4">
+        <div className="mt-4 flex items-center justify-center gap-4">
           <button
             type="button"
             onClick={() => router.push(`/${locale}/tools/anzsco-finder`)}
-            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-[var(--cf-fg)] shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
+            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
           >
             <span className="text-base">🇦🇺</span>
             {isTr ? "AU Değerlendirmesi" : isZh ? "澳大利亚评估" : "AU Assessment"}
@@ -343,7 +354,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           <button
             type="button"
             onClick={() => router.push(`/${locale}/visas/canada`)}
-            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-[var(--cf-fg)] shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
+            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
           >
             <span className="text-base">🇨🇦</span>
             {isTr ? "CA Değerlendirmesi" : isZh ? "加拿大评估" : "CA Assessment"}
