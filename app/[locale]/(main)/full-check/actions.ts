@@ -1323,6 +1323,7 @@ export async function submitFullCheckWaitlist(
       onshoreExperienceYears,
       yearsInSponsoredPosition,
       nominationStream,
+      isLabourAgreementEmployer: formData.get("isLabourAgreementEmployer") === "on" || undefined,
       courseName,
       courseCricosCode,
       courseCompletionStatus,

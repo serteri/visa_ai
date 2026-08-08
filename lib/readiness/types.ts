@@ -60,6 +60,8 @@ export type ReadinessInput = {
   yearsInSponsoredPosition?: number;
   /** Which subclass 186 stream the user is targeting. Left undefined (or "not_sure") to evaluate all viable streams. */
   nominationStream?: NominationStream;
+  /** Whether the user's nominating employer is party to a labour agreement (e.g. DAMA). When true, the Labour Agreement stream is viable regardless of free-text signals. */
+  isLabourAgreementEmployer?: boolean;
   /** Official NOC 2021 V1.0 unit group code (5 digits), set when user picks from autocomplete. */
   nocCode?: string;
   /** TEER level (0–5) derived from the selected NOC code. */

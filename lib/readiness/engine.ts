@@ -2563,10 +2563,14 @@ function buildPathwayEntry(
       // assessment, and no fixed age/English/work-experience floor — those are
       // set by the specific labour agreement. The only gate is whether the
       // nominating employer is party to a labour agreement.
-      const labourAgreementContext = hasKw(
-        [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "),
-        ["labour agreement", "labor agreement", "iş anlaşması", "iş sözleşmesi"]
-      );
+      // Primary signal: explicit checkbox (isLabourAgreementEmployer).
+      // Fallback: free-text keyword matching in sponsorOrFamily/mainGoal.
+      const labourAgreementContext =
+        input.isLabourAgreementEmployer === true ||
+        hasKw(
+          [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "),
+          ["labour agreement", "labor agreement", "iş anlaşması", "iş sözleşmesi"]
+        );
       if (labourAgreementContext) {
         relevance = "possible";
         reason = isTr
@@ -2616,10 +2620,12 @@ function buildPathwayEntry(
       const trtViable = trtGate.meetsTenureThreshold;
       const directEntryViable =
         directEntryGate.hasSkillsAssessment && directEntryGate.meetsExperienceThreshold && !directEntryGate.isAgeIneligible;
-      const labourAgreementViable = hasKw(
-        [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "),
-        ["labour agreement", "labor agreement", "iş anlaşması", "iş sözleşmesi"]
-      );
+      const labourAgreementViable =
+        input.isLabourAgreementEmployer === true ||
+        hasKw(
+          [input.sponsorOrFamily ?? "", input.mainGoal ?? ""].join(" "),
+          ["labour agreement", "labor agreement", "iş anlaşması", "iş sözleşmesi"]
+        );
       if (trtViable || directEntryViable || labourAgreementViable) {
         relevance = "possible";
         if (trtViable && !directEntryViable && !labourAgreementViable) {
