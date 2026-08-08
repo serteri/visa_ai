@@ -17,8 +17,6 @@ import { activeCountries, countryComplianceBadge } from "@/lib/countries";
  */
 interface HeroProps {
   locale: string;
-  assessmentSlotsLeft: number;
-  hasFreeAssessmentSlots: boolean;
   onScrollToPdfSection?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
@@ -39,12 +37,7 @@ const QUICK_PILLS = [
   "Registered Nurse",
 ];
 
-export function Hero({
-  locale,
-  assessmentSlotsLeft,
-  hasFreeAssessmentSlots,
-  onScrollToPdfSection,
-}: HeroProps) {
+export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Occupation[]>([]);
@@ -337,23 +330,25 @@ export function Hero({
           ))}
         </div>
 
-        {/* Scarcity strip — kept subtle, drives the free-slot funnel */}
-        {hasFreeAssessmentSlots ? (
-          <div className="mt-9 inline-flex items-center gap-3 rounded-full border border-amber-500/20 bg-amber-500/10 px-5 py-2.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
-            </span>
-            <span className="text-sm font-semibold text-[var(--cf-fg)]">
-              <span className="font-bold text-amber-600">{assessmentSlotsLeft}</span>{" "}
-              {isTr
-                ? "ücretsiz analiz hakkı kaldı"
-                : isZh
-                  ? "个免费评估名额"
-                  : "free assessment slots left"}
-            </span>
-          </div>
-        ) : null}
+        {/* Country assessment buttons */}
+        <div className="mt-9 flex items-center justify-center gap-4">
+          <button
+            type="button"
+            onClick={() => router.push(`/${locale}/tools/anzsco-finder`)}
+            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-[var(--cf-fg)] shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
+          >
+            <span className="text-base">🇦🇺</span>
+            {isTr ? "AU Değerlendirmesi" : isZh ? "澳大利亚评估" : "AU Assessment"}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push(`/${locale}/visas/canada`)}
+            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-[var(--cf-fg)] shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
+          >
+            <span className="text-base">🇨🇦</span>
+            {isTr ? "CA Değerlendirmesi" : isZh ? "加拿大评估" : "CA Assessment"}
+          </button>
+        </div>
 
         {/* Trust strip */}
         <div className="cf-mono mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-xs text-[var(--cf-muted)]">

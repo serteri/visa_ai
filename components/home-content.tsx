@@ -70,8 +70,6 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
       <LandingHeader locale={locale} />
       <Hero
         locale={locale}
-        assessmentSlotsLeft={assessmentSlotsLeft}
-        hasFreeAssessmentSlots={hasFreeAssessmentSlots}
         onScrollToPdfSection={handleScrollToPdfSection}
       />
       <InstitutionsMarquee locale={locale} />
