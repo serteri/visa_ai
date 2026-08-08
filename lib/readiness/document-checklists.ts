@@ -1,6 +1,6 @@
 import { t3 } from "@/src/lib/readiness/localization";
 import expressEntryConfig from "@/src/data/countries/ca/express-entry.json";
-import type { DocumentCategory, Locale } from "./types";
+import type { DocumentCategory, DocumentChecklistItem, Locale, NominationStream } from "./types";
 import type { CanadaPathwayCode } from "./engine";
 import { getCanonicalDocName } from "./document-inventory";
 
@@ -13,7 +13,8 @@ function localizedItems(
 
 export function getDocumentChecklist(
   subclasses: string[],
-  locale: Locale
+  locale: Locale,
+  nominationStream?: NominationStream,
 ): DocumentCategory[] {
   if (subclasses.length === 0) return [];
 
@@ -85,29 +86,41 @@ export function getDocumentChecklist(
   }
 
   if (subclasses.includes("186")) {
-    categories.push({
-      category: t3(
-        locale,
-        "186 Employer Nomination Scheme (TRT / Direct Entry)",
-        "186 İşveren Adaylık Programı (TRT / Direct Entry)",
-        "186 雇主提名计划（TRT / Direct Entry）"
-      ),
-      // Fully sourced from document-inventory.ts -- unlike 482 above, this
-      // whole category is new (see that file's 186 entries and the DHA
-      // sourcing note there) so there's no pre-existing PDF wording to
-      // preserve. Stream-specific items (TRT vs Direct Entry) are included
-      // together since this flat string-list format has no way to flag an
-      // item as stream-conditional -- same limitation the 190/491 optional
-      // items above already have.
-      // "passport" is deliberately omitted -- it's already covered by the
-      // generic "Identity and passport" category pushed above for every
-      // subclass, matching the pattern the 482/skilled branches follow.
-      items: (
-        ["english_evidence", "employer_nomination", "employment_contract",
-         "direct_entry_skills_assessment", "direct_entry_age_evidence",
-         "trt_employment_evidence", "trt_prior_visa_evidence", "police_check"] as const
-      ).map((id) => getCanonicalDocName("186", id, locale)),
-    });
+    // Build stream-specific heading when the target stream is known.
+    const knownStream = nominationStream && nominationStream !== "not_sure" ? nominationStream : undefined;
+    const heading = (() => {
+      const base = locale === "tr"
+        ? "186 İşveren Adaylık Programı"
+        : locale === "zh-Hans"
+          ? "186 雇主提名计划"
+          : "186 Employer Nomination Scheme";
+      if (knownStream === "direct_entry") return `${base} (Direct Entry)`;
+      if (knownStream === "trt") return `${base} (TRT)`;
+      if (knownStream === "labour_agreement") return `${base} (Labour Agreement)`;
+      return locale === "tr"
+        ? `${base} (TRT / Direct Entry / Labour Agreement)`
+        : locale === "zh-Hans"
+          ? `${base}（TRT / Direct Entry / Labour Agreement）`
+          : `${base} (TRT / Direct Entry / Labour Agreement)`;
+    })();
+
+    // Fully sourced from document-inventory.ts.
+    // Stream-specific items carry a `streams` array so the PDF renderer can
+    // filter them when the target stream is known, or group them under
+    // sub-headers when the stream is unspecified.
+    const items: DocumentChecklistItem[] = [
+      getCanonicalDocName("186", "english_evidence", locale),
+      getCanonicalDocName("186", "employer_nomination", locale),
+      getCanonicalDocName("186", "employment_contract", locale),
+      { text: getCanonicalDocName("186", "direct_entry_skills_assessment", locale), streams: ["direct_entry"] },
+      { text: getCanonicalDocName("186", "direct_entry_age_evidence", locale), streams: ["direct_entry"] },
+      { text: getCanonicalDocName("186", "trt_employment_evidence", locale), streams: ["trt"] },
+      { text: getCanonicalDocName("186", "trt_prior_visa_evidence", locale), streams: ["trt"] },
+      { text: getCanonicalDocName("186", "labour_agreement_evidence", locale), streams: ["labour_agreement"] },
+      getCanonicalDocName("186", "police_check", locale),
+    ];
+
+    categories.push({ category: heading, items });
   }
 
   const skilledSubclasses = subclasses.filter((s) =>

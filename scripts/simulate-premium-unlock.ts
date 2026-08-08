@@ -52,7 +52,7 @@ async function run() {
       unlockState.report?.documentChecklist
         ?.flatMap((c) => c.items)
         ?.filter((i) => {
-          const n = i.toLowerCase();
+          const n = (typeof i === "string" ? i : i.text).toLowerCase();
           return (
             n.includes("spouse") ||
             n.includes("marriage") ||

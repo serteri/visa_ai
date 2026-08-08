@@ -1189,6 +1189,29 @@ export const DOCUMENT_INVENTORY: Record<DocInventorySubclass, CanonicalDocItem[]
       naatiRequired: false,
     },
     {
+      id: "labour_agreement_evidence",
+      category: "Stream",
+      name: {
+        en: "Labour Agreement: approved agreement evidence (Labour Agreement stream only)",
+        tr: "Labour Agreement: onaylı anlaşma kanıtı (sadece Labour Agreement akışı)",
+        "zh-Hans": "Labour Agreement：已批准的协议证据（仅限Labour Agreement通道）",
+      },
+      description: {
+        en: "Copy of the approved labour agreement or DAMA head agreement, and evidence that the nominated occupation is covered under the agreement",
+        tr: "Onaylı labour agreement veya DAMA ana anlaşması kopyası ve aday gösterilen mesleğin anlaşma kapsamında olduğuna dair kanıt",
+        "zh-Hans": "已批准的劳工协议或DAMA总协议副本，以及提名职业在协议覆盖范围内的证据",
+      },
+      required: false,
+      expiryTracking: false,
+      tips: {
+        en: "The employer must hold an approved labour agreement and the nominated occupation must be listed as eligible under it.",
+        tr: "İşverenin onaylı bir labour agreement'ı olmalı ve aday gösterilen meslek bu kapsamda uygun listede olmalıdır.",
+        "zh-Hans": "雇主须持有已批准的劳工协议，且提名职业须在该协议的合格清单上。",
+      },
+      apostilleRequired: false,
+      naatiRequired: false,
+    },
+    {
       id: "police_check",
       category: "Health",
       name: { en: "Police clearances", tr: "Adli sicil kayıtları", "zh-Hans": "无犯罪记录证明" },

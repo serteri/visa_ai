@@ -2,6 +2,7 @@ import type {
   AssessmentState,
   ConfidenceLevel,
   Locale,
+  NominationStream,
   PathwayComparison,
   QualitativeFitTier,
   RankedPathway,
@@ -24,6 +25,17 @@ const AU_RANKED_VISA_LABELS: Record<"189" | "190" | "491", Record<Locale, string
 
 function clampPercentage(value: number): number {
   return Math.max(0, Math.min(98, Math.round(value)));
+}
+
+/**
+ * Appends the stream suffix (e.g. " — Direct Entry") to a 186 visa label
+ * when the nominationStream is explicitly set.
+ */
+export function appendNominationStreamSuffix(label: string, nominationStream?: NominationStream): string {
+  if (nominationStream === "direct_entry") return `${label} — Direct Entry`;
+  if (nominationStream === "trt") return `${label} — TRT`;
+  if (nominationStream === "labour_agreement") return `${label} — Labour Agreement`;
+  return label;
 }
 
 function parseAgeNumber(age?: string): number | undefined {
@@ -332,7 +344,12 @@ function buildGateBasedRankedPathways(report: ReadinessReport, locale: Locale): 
     )
     .map((p) => ({
       subclass: p.subclass,
-      visaLabel: getLocalizedPathwayLabel(p.subclass, locale, p.visaName ?? p.subclass),
+      visaLabel: p.subclass === "186"
+        ? appendNominationStreamSuffix(
+            getLocalizedPathwayLabel(p.subclass, locale, p.visaName ?? p.subclass),
+            report.nominationStream,
+          )
+        : getLocalizedPathwayLabel(p.subclass, locale, p.visaName ?? p.subclass),
       qualitativeTier: confidenceToQualitativeTier(p.confidenceLevel),
       isPreliminaryOnly: true,
       isGateBased: true,

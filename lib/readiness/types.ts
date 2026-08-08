@@ -1,5 +1,8 @@
 export type Locale = "en" | "tr" | "zh-Hans";
 
+/** Which subclass 186 stream the user is targeting. */
+export type NominationStream = "direct_entry" | "trt" | "labour_agreement" | "not_sure";
+
 export type ReadinessInput = {
   locale: Locale;
   /** Defaults to "AU" when omitted, preserving existing behavior. */
@@ -56,7 +59,7 @@ export type ReadinessInput = {
    */
   yearsInSponsoredPosition?: number;
   /** Which subclass 186 stream the user is targeting. Left undefined (or "not_sure") to evaluate all viable streams. */
-  nominationStream?: "direct_entry" | "trt" | "labour_agreement" | "not_sure";
+  nominationStream?: NominationStream;
   /** Official NOC 2021 V1.0 unit group code (5 digits), set when user picks from autocomplete. */
   nocCode?: string;
   /** TEER level (0–5) derived from the selected NOC code. */
@@ -181,9 +184,24 @@ export type RiskIndicator = {
   explanation: string;
 };
 
+export type DocumentChecklistItem =
+  | string
+  | {
+      /** Localized document name. */
+      text: string;
+      /**
+       * Subclass 186 streams this item applies to. Omitted (or empty) when the
+       * item is required by every 186 stream. Renderers must filter items by the
+       * report's nominationStream: explicit streams show only matching items;
+       * "not_sure"/undefined shows everything (stream-specific items grouped under
+       * stream sub-headers).
+       */
+      streams?: Array<Exclude<NominationStream, "not_sure">>;
+    };
+
 export type DocumentCategory = {
   category: string;
-  items: string[];
+  items: DocumentChecklistItem[];
 };
 
 export type PathwayStrengthComparison = {
@@ -535,6 +553,8 @@ export type PremiumSections = {
 export type ReadinessReport = {
   /** Defaults to "AU" when omitted, preserving existing behavior. */
   country?: "AU" | "CA";
+  /** Which subclass 186 stream the user is targeting. Carried forward so the PDF can render stream-specific visa labels and document-checklist filtering. */
+  nominationStream?: NominationStream;
   executiveSummary: string[];
   detectedSubclasses?: string[];
   rankedPathways?: RankedPathway[];

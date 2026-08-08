@@ -5153,7 +5153,7 @@ function buildPathwayFriction(
       // instead of "CRITICAL COMPLIANCE ALERT", which is reserved for
       // genuine hard-gate breaches (age cap, salary floor, tenure, etc).
       const visaLabel =
-        pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName} (${pathway.subclass})`;
+        pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "")} (${pathway.subclass})`;
       const isPointsThresholdOnly = pathway.ineligiblePointsLine !== undefined;
       return {
         pathway: visaLabel,
@@ -5166,7 +5166,7 @@ function buildPathwayFriction(
       };
     }
     const visaLabel =
-      pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName} (${pathway.subclass})`;
+      pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "")} (${pathway.subclass})`;
     const detail: Record<string, { en: string; tr: string }> = {
       "500": {
         en: "Course enrolment, OSHC, and genuine student settings may affect this pathway.",
@@ -5331,11 +5331,20 @@ function buildSignalSnapshot(
         ? "moderate"
         : "limited";
 
+  // Strip any existing "(subclass N)" or "(N)" suffix from visaName before
+  // appending the subclass code, to avoid duplication (e.g. 186's VISA_NAMES
+  // entry already contains "(subclass 186)", so appending "(186)" would
+  // produce "... (subclass 186) (186)").
+  const formatVisaLabel = (name: string, sub: string): string => {
+    const stripped = name.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "");
+    return `${stripped} (${sub})`;
+  };
+
   return {
     strongest: strongestPathway
-      ? `${strongestPathway.visaName} (${strongestPathway.subclass})`
+      ? formatVisaLabel(strongestPathway.visaName, strongestPathway.subclass)
       : "General pathway signal",
-    secondary: sorted.slice(1, 3).map((item) => `${item.visaName} (${item.subclass})`),
+    secondary: sorted.slice(1, 3).map((item) => formatVisaLabel(item.visaName, item.subclass)),
     confidenceLabel,
     confidenceExplanation,
   };
@@ -6418,7 +6427,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   const documentChecklist: DocumentCategory[] = getDocumentChecklist(
     detectedSubclasses,
-    locale
+    locale,
+    input.nominationStream,
   );
 
   const missingInformation = buildMissingInformation(
@@ -6572,6 +6582,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 
   return {
     country: "AU",
+    nominationStream: input.nominationStream,
     executiveSummary,
     signalSnapshot,
     primaryLimitingFactor,

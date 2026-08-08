@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
-import { buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
+import { appendNominationStreamSuffix, buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { renderPersonalizedContent } from "./pdf-personalized-content";
 import { getCommonPitfalls } from "./pdf-content/common-pitfalls";
 import { getResourcesSection } from "./pdf-content/resources";
@@ -664,7 +664,9 @@ function buildIneligiblePathwayEntries(report: ReadinessReport): RankedPathway[]
         : "❌ Ineligible (Compliance Violation)";
       return {
         subclass: p.subclass,
-        visaLabel: `${p.subclass} - ${p.visaName}`,
+        visaLabel: p.subclass === "186"
+          ? `${p.subclass} - ${appendNominationStreamSuffix(p.visaName, report.nominationStream)}`
+          : `${p.subclass} - ${p.visaName}`,
         matchPercentage: 0,
         pointsSignal: 0,
         recommendationTag,
@@ -2431,10 +2433,75 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSmallText(text.auditReadyChecklistIntro, 0);
     yPosition += 2;
 
+    /** Resolve the display text of a DocumentChecklistItem. */
+    const itemText = (item: import("./types").DocumentChecklistItem): string =>
+      typeof item === "string" ? item : item.text;
+
+    /** True when a stream-conditional item applies to the current nomination stream. */
+    const streamApplies = (item: import("./types").DocumentChecklistItem): boolean => {
+      if (typeof item === "string") return true;
+      const streams = item.streams;
+      if (!streams || streams.length === 0) return true;
+      const s = report.nominationStream;
+      if (s === "direct_entry" || s === "trt" || s === "labour_agreement") return streams.includes(s);
+      // "not_sure" or undefined: all items shown (grouped under sub-headers).
+      return true;
+    };
+
+    const STREAM_HEADERS: Record<string, string> = {
+      direct_entry: effectiveLocale === "tr" ? "Direct Entry akışı" : effectiveLocale === "zh-Hans" ? "Direct Entry 通道" : "Direct Entry",
+      trt: effectiveLocale === "tr" ? "TRT akışı" : effectiveLocale === "zh-Hans" ? "TRT 通道" : "TRT",
+      labour_agreement: effectiveLocale === "tr" ? "Labour Agreement akışı" : effectiveLocale === "zh-Hans" ? "Labour Agreement 通道" : "Labour Agreement",
+    };
+
+    type ChecklistLine =
+      | { kind: "item"; text: string }
+      | { kind: "subheader"; text: string };
+
     report.documentChecklist.forEach((category) => {
       const isCritical = category.category.toUpperCase() === "CRITICAL";
-      const itemCount = Math.max(1, category.items.length);
-      const boxHeight = 8 + itemCount * 5;
+
+      // --- build render lines ---
+      const hasStreamConditioned = category.items.some(
+        (item) => typeof item !== "string" && item.streams && item.streams.length > 0,
+      );
+      const lines: ChecklistLine[] = [];
+
+      if (!hasStreamConditioned) {
+        // No stream-conditional items — render every item as before.
+        category.items.forEach((item) => lines.push({ kind: "item", text: itemText(item) }));
+      } else if (report.nominationStream && report.nominationStream !== "not_sure") {
+        // Explicit stream: shared items + items for this stream only.
+        category.items.filter(streamApplies).forEach((item) => {
+          if (typeof item === "string" || !item.streams || item.streams.length === 0) {
+            lines.push({ kind: "item", text: itemText(item) });
+          } else {
+            lines.push({ kind: "item", text: itemText(item) });
+          }
+        });
+      } else {
+        // "not_sure" / undefined: show all, grouped by stream sub-headers.
+        // Shared items first (no streams or streams omitted).
+        category.items.forEach((item) => {
+          if (typeof item === "string" || !item.streams || item.streams.length === 0) {
+            lines.push({ kind: "item", text: itemText(item) });
+          }
+        });
+        // Then per-stream sub-headers.
+        (["direct_entry", "trt", "labour_agreement"] as const).forEach((s) => {
+          const matching = category.items.filter(
+            (item): item is import("./types").DocumentChecklistItem & { streams: Array<"direct_entry" | "trt" | "labour_agreement"> } =>
+              typeof item !== "string" && (item.streams?.includes(s) ?? false),
+          );
+          if (matching.length === 0) return;
+          lines.push({ kind: "subheader", text: STREAM_HEADERS[s] });
+          matching.forEach((item) => lines.push({ kind: "item", text: itemText(item) }));
+        });
+      }
+
+      if (lines.length === 0) return;
+
+      const boxHeight = 8 + lines.length * 5;
       ensurePageSpace(boxHeight + 6);
 
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
@@ -2451,15 +2518,23 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       }
       doc.text(safeText(category.category), margin + 2, yPosition + 5);
 
-      setBaseFont();
-      doc.setFontSize(FONTS.body);
-      category.items.forEach((item, idx) => {
-        if (isCritical) {
-          doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
-          doc.text(safeText(`[ ] ${item}`), margin + 4, yPosition + 10 + idx * 5);
+      lines.forEach((line, idx) => {
+        const y = yPosition + 10 + idx * 5;
+        if (line.kind === "subheader") {
+          setBoldFont();
+          doc.setFontSize(FONTS.small);
+          doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+          doc.text(safeText(line.text), margin + 6, y);
+          setBaseFont();
+          doc.setFontSize(FONTS.body);
         } else {
-          doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-          doc.text(safeText(`[ ] ${item}`), margin + 4, yPosition + 10 + idx * 5);
+          if (isCritical) {
+            doc.setTextColor(COLORS.riskHigh.r, COLORS.riskHigh.g, COLORS.riskHigh.b);
+          } else {
+            doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+          }
+          doc.setFontSize(FONTS.body);
+          doc.text(safeText(`[ ] ${line.text}`), margin + 4, y);
         }
       });
 
