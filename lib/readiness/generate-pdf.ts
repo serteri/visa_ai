@@ -4026,8 +4026,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const pathwayRows = report.pathwayComparison.map((item) => {
       const friction = getFrictionForPathway(item.subclass);
       const frictionScore = friction?.frictionScore ?? "MEDIUM";
+      const visaLabel = item.subclass === "186"
+        ? appendNominationStreamSuffix(item.visaName, report.nominationStream)
+        : item.visaName;
       return {
-        visa: `${item.visaName} (${item.subclass})`,
+        visa: `${visaLabel} (${item.subclass})`,
         confidence: formatConfidenceLevel(item.confidenceLevel),
         frictionScore,
         frictionLabel: frictionBandLabel(effectiveLocale, frictionScore),
@@ -4107,7 +4110,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSmallText(`${text.limitingFactorsLabel}: ${text.limitingFactorsExplainer}`, 0);
     yPosition += 2;
     report.pathwayStrengthComparison.forEach((item) => {
-      addBody(`${item.visaName} (${item.subclass})`);
+      const strengthVisaLabel = item.subclass === "186"
+        ? appendNominationStreamSuffix(item.visaName, report.nominationStream)
+        : item.visaName;
+      addBody(`${strengthVisaLabel} (${item.subclass})`);
       if (item.isHardIneligible && item.ineligibleReason) {
         // Hard Gate (1 July 2026): the ineligibility reason is always the
         // FIRST item in the breakdown, rendered ahead of strength/friction/
