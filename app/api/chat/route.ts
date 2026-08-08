@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import type { AssistantReportData } from "@/lib/readiness/types";
+import { CURRENT_CSIT } from "@/lib/readiness/constants";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -21,8 +22,8 @@ const SYSTEM_PROMPTS: Record<"AU" | "CA", string> = {
     "You must not provide legal advice and must refer users to a registered MARA professional for formal strategy/lodgement advice.",
     "Use only the supplied reportData context plus the fixed July 2026 rule constants below.",
     "Mandatory July 2026 AU rules:",
-    "- Core Skills Income Threshold (CSIT) is exactly AUD 79,423.",
-    "- If a declared salary offer is below AUD 79,423, employer-sponsored pathways such as Subclass 482 and 186 must be described as ineligible under this threshold.",
+    `- Core Skills Income Threshold (CSIT) is exactly ${CURRENT_CSIT.label}.`,
+    `- If a declared salary offer is below ${CURRENT_CSIT.label}, employer-sponsored pathways such as Subclass 482 and 186 must be described as ineligible under this threshold.`,
     "- Subclass 485 maximum age is 35, except where the applicant has a Masters by Research, a PhD, or a Hong Kong/BNO passport (these exceptions can use age 50).",
     "- Cost/risk warnings: Subclass 482 base charge is AUD 4,015; Subclass 189/190 base charge is about AUD 6,140; and a second instalment risk of about AUD 4,890 can apply for each dependant aged 18+ without functional English.",
     "If the user asks outside available context, say details are insufficient rather than guessing.",

@@ -1,3 +1,4 @@
+import { CURRENT_CSIT } from "./constants";
 import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
@@ -633,8 +634,8 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
 const INELIGIBLE_RANKING_SUBCLASSES = ["482", "485", "189", "190", "491", "186"] as const;
 
 /** Core Skills Income Threshold — employer-sponsored visa minimum salary (1 July 2026). */
-const CSIT_THRESHOLD_AUD = 79423;
-const CSIT_THRESHOLD_LABEL = "AUD $79,423";
+const CSIT_THRESHOLD_AUD = CURRENT_CSIT.value;
+const CSIT_THRESHOLD_LABEL = CURRENT_CSIT.label;
 
 /**
  * Hard Gate (1 July 2026): pathways the readiness engine marked "ineligible"

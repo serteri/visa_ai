@@ -39,9 +39,9 @@ import type { Locale } from "./types";
  * against this app's own existing engine.ts constants
  * (TRT_186_MIN_SPONSORED_YEARS = 2, DIRECT_ENTRY_186_MAX_AGE = 45) --
  * both matched independently, giving reasonable confidence. The CSIT
- * salary figure is deliberately NOT hardcoded here (third-party sources
- * disagreed on the exact 1 July 2026 number, ranging AUD 76,515-79,499);
- * the tip text points users to confirm the current figure rather than
+ * salary figure is deliberately NOT hardcoded here — it lives in
+ * lib/readiness/constants.ts (CURRENT_CSIT) and is re-indexed annually.
+ * The tip text points users to confirm the current figure rather than
  * risk stating a wrong one, matching this app's existing pattern for
  * other periodically-indexed thresholds (see lib/readiness/generate-pdf.ts's
  * VAC "should be verified before lodgement" wording). If this ever needs

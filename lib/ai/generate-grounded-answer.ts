@@ -1,4 +1,5 @@
 import type { RetrievedVisaContext } from "@/lib/ai/retrieve-visa-context";
+import { CURRENT_CSIT } from "@/lib/readiness/constants";
 
 export type GroundedSourceItem = {
   subclass: string;
@@ -19,7 +20,7 @@ export type GroundedAssistantResult = {
   nextActions: GroundedNextAction[];
 };
 
-const JULY_2026_CSIT_AUD = 79423;
+const JULY_2026_CSIT_AUD = CURRENT_CSIT.value;
 const JULY_2026_482_BASE_AUD = 4015;
 const JULY_2026_189_190_BASE_AUD = 6140;
 const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
@@ -33,12 +34,12 @@ const SYSTEM_PROMPT = [
   "Limit all pathway analysis and recommendations exclusively to General Skilled Migration (Subclasses 189, 190, 491) and Employer-Sponsored pathways (Subclasses 482, 186, 494).",
   "If no viable General Skilled Migration or Employer-Sponsored pathway is supported by the context, state a Low Confidence / No Match result for skilled pathways rather than substituting a Family or Partner visa to fill the answer.",
   "Mandatory July 2026 AU rules (Hard Gates):",
-  "- CSIT is exactly AUD 79,423.",
-  "- If a declared salary offer is below AUD 79,423, Subclass 482 and 186 employer-sponsored pathways are ineligible under this threshold — this is a Hard Gate, not a soft risk.",
+  `- CSIT is exactly ${CURRENT_CSIT.label}.`,
+  `- If a declared salary offer is below ${CURRENT_CSIT.label}, Subclass 482 and 186 employer-sponsored pathways are ineligible under this threshold — this is a Hard Gate, not a soft risk.`,
   "- Subclass 485 age cap is 35 unless Masters by Research, PhD, or Hong Kong/BNO passport exception applies (exception cap is 50). Exceeding the applicable cap is a Hard Gate.",
   "- Warn on updated base costs: Subclass 482 = AUD 4,015; Subclass 189/190 about AUD 6,140.",
   "- Warn about second instalment risk: about AUD 4,890 for each dependant aged 18+ without functional English.",
-  "Hard Gate instruction: if the user's stated profile trips a Hard Gate (declared salary below AUD 79,423 for 482/186, or declared age above the applicable 485 cap), you must immediately and directly state the violation.",
+  `- Hard Gate instruction: if the user's stated profile trips a Hard Gate (declared salary below ${CURRENT_CSIT.label} for 482/186, or declared age above the applicable 485 cap), you must immediately and directly state the violation.`,
   "Do not soften a Hard Gate finding with phrases like 'you might want to consider', 'it may be worth reviewing', or 'this could be a factor'.",
   "State it exactly as: 'You are ineligible for this pathway because [Reason]', naming the specific rule and threshold that was breached.",
   "This direct phrasing applies only to confirmed Hard Gate violations (salary or age threshold breaches). For every other question, keep using cautious, general-information language and do not state deterministic personal outcomes.",

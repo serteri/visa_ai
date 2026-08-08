@@ -1,4 +1,5 @@
 import type { Locale } from "../types";
+import { CURRENT_CSIT } from "../constants";
 
 type Country = "AU" | "CA";
 
@@ -122,7 +123,7 @@ export function getPersonalizedOverview(
   if (annualSalary && hasEmployer) {
     const salaryNum = Number(annualSalary);
     if (Number.isFinite(salaryNum) && salaryNum > 0) {
-      const meetsCsit = salaryNum >= 79423;
+      const meetsCsit = salaryNum >= CURRENT_CSIT.value;
       keyFindings.push(
         meetsCsit
           ? (isTr ? `✅ Maaş (AUD $${salaryNum.toLocaleString("en-AU")}) CSIT eşiğini karşılıyor.`

@@ -1,3 +1,4 @@
+import { CURRENT_CSIT } from "@/lib/readiness/constants";
 import { buildAssessmentState } from "@/lib/readiness/assessment-state";
 import {
   buildEmploymentExperienceCaveat,
@@ -125,7 +126,7 @@ function hasSponsorContext(raw?: string): boolean {
   return !noneKeywords.some((kw) => s === kw || s.includes(kw));
 }
 
-const JULY_2026_CSIT_AUD = 79423;
+const JULY_2026_CSIT_AUD = CURRENT_CSIT.value;
 const JULY_2026_485_STANDARD_MAX_AGE = 35;
 const JULY_2026_485_EXCEPTION_MAX_AGE = 50;
 const JULY_2026_482_BASE_COST_AUD = 4015;

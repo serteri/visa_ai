@@ -6,9 +6,10 @@ import { getPersonalizedApplicationGuide } from "./pdf-content/personalized-guid
 import { getPersonalizedFaq } from "./pdf-content/personalized-faq";
 import { getSkillsAssessmentStatus } from "./pdf-content/skills-assessment-status";
 import { getViabilityInsights } from "./pdf-content/viability-insights";
+import { CURRENT_CSIT } from "./constants";
 
 /** Core Skills Income Threshold — employer-sponsored visa minimum salary (1 July 2026). */
-const CSIT_THRESHOLD_AUD = 79423;
+const CSIT_THRESHOLD_AUD = CURRENT_CSIT.value;
 
 /**
  * Renders PERSONALIZED content sections into the PDF.

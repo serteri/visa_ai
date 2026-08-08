@@ -1,5 +1,6 @@
 import type { Locale, PathwayComparison } from "./types";
 import type { CanadaPathwayCode } from "./engine";
+import { CURRENT_CSIT } from "./constants";
 
 type NextStepsContext = {
   locale: Locale;
@@ -59,8 +60,8 @@ export function buildNextSteps(ctx: NextStepsContext): string[] {
   if (ctx.has482Pathway) {
     steps.push(
       isTr
-        ? "482 yolu için işveren sponsorluğu bağlamı, rol uyumu ve ücret eşikleri ana veri değişkenleridir; 1 Temmuz 2026 CSIT tabanı AUD 79,423 olarak uygulanır."
-        : "For the 482 pathway, employer sponsorship context, role alignment, and salary thresholds are core variables; the 1 July 2026 CSIT floor is AUD 79,423."
+        ? `482 yolu için işveren sponsorluğu bağlamı, rol uyumu ve ücret eşikleri ana veri değişkenleridir; 1 Temmuz 2026 CSIT tabanı ${CURRENT_CSIT.label} olarak uygulanır.`
+        : `For the 482 pathway, employer sponsorship context, role alignment, and salary thresholds are core variables; the 1 July 2026 CSIT floor is ${CURRENT_CSIT.label}.`
     );
   }
 
