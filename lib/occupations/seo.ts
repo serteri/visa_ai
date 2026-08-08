@@ -39,6 +39,10 @@ export function getUniqueOccupations(): OccupationRecord[] {
 
   for (const item of OCCUPATION_ROWS) {
     if (!item?.anzsco_code || seen.has(item.anzsco_code)) continue;
+    // Only include occupations eligible for skilled migration — non-eligible
+    // (isEligibleForMigration: false) entries must NOT appear in the sitemap
+    // to avoid Google Search Console "Soft 404" and "Not found" errors.
+    if ((item as any).isEligibleForMigration === false) continue;
     seen.add(item.anzsco_code);
     unique.push(item);
   }
