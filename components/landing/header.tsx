@@ -41,7 +41,7 @@ export function LandingHeader({ locale }: LandingHeaderProps) {
     },
   ];
 
-  const ctaLabel = isTr ? "Ücretsiz Rapor Al" : isZh ? "获取免费报告" : "Get Free Report";
+  const ctaLabel = isTr ? "Değerlendirme Başlat" : isZh ? "开始评估" : "Start Assessment";
 
   return (
     <header className="sticky top-0 z-50 -mt-28 border-b border-[var(--cf-line)] bg-[var(--cf-bg)]/85 backdrop-blur-md sm:-mt-32">

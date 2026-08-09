@@ -111,7 +111,7 @@ export function Header({
   const fullReportLabel = isTr ? "Tam Rapor" : isZh ? "完整报告" : "Full Report";
   const visasLabel = isTr ? "Vizeler" : isZh ? "签证" : "Visas";
   const adminLabel = "Admin";
-  const getReportLabel = isTr ? "Ücretsiz Rapor Al" : isZh ? "获取免费报告" : "Get Free Report";
+  const getReportLabel = isTr ? "Değerlendirme Başlat" : isZh ? "开始评估" : "Start Assessment";
   const pointsCalcLabel = isTr ? "Puan Hesapla (AUS)" : isZh ? "算分器 (AUS)" : "Points Calculator (AUS)";
   const englishPointsLabel = isTr ? "İngilizce Puanları" : isZh ? "英语分数" : "English Points";
   const guidesLabel = isTr ? "Rehberler" : isZh ? "指南" : "Guides";
