@@ -4026,9 +4026,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const pathwayRows = report.pathwayComparison.map((item) => {
       const friction = getFrictionForPathway(item.subclass);
       const frictionScore = friction?.frictionScore ?? "MEDIUM";
+      // Strip any existing "(subclass N)" from visaName before appending
+      // stream suffix + subclass code, to avoid duplication.
+      const baseName = item.visaName.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "");
       const visaLabel = item.subclass === "186"
-        ? appendNominationStreamSuffix(item.visaName, report.nominationStream)
-        : item.visaName;
+        ? appendNominationStreamSuffix(baseName, report.nominationStream)
+        : baseName;
       return {
         visa: `${visaLabel} (${item.subclass})`,
         confidence: formatConfidenceLevel(item.confidenceLevel),
@@ -4110,9 +4113,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSmallText(`${text.limitingFactorsLabel}: ${text.limitingFactorsExplainer}`, 0);
     yPosition += 2;
     report.pathwayStrengthComparison.forEach((item) => {
+      const baseStrengthName = item.visaName.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "");
       const strengthVisaLabel = item.subclass === "186"
-        ? appendNominationStreamSuffix(item.visaName, report.nominationStream)
-        : item.visaName;
+        ? appendNominationStreamSuffix(baseStrengthName, report.nominationStream)
+        : baseStrengthName;
       addBody(`${strengthVisaLabel} (${item.subclass})`);
       if (item.isHardIneligible && item.ineligibleReason) {
         // Hard Gate (1 July 2026): the ineligibility reason is always the
