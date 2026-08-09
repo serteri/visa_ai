@@ -1199,6 +1199,13 @@ export function FullCheckWaitlistForm({
                 <option value="trt">{txt("Temporary Residence Transition (TRT)", "Temporary Residence Transition (TRT)", "Temporary Residence Transition (TRT)")}</option>
                 <option value="labour_agreement">{txt("Labour Agreement", "Labour Agreement", "Labour Agreement")}</option>
               </select>
+              <p className="text-xs text-muted-foreground">
+                {txt(
+                  "Direct Entry: yeni başvurular için. TRT: halihazırda 457/482 vizesiyle 2+ yıl sponsorlu çalışanlar için. Labour Agreement: işvereni bir labour agreement'a taraf olanlar için.",
+                  "Direct Entry: for new applicants without a current 457/482 visa. TRT: requires currently holding a 457 or 482 visa with 2+ years of eligible sponsored employment. Labour Agreement: for applicants whose employer is party to a labour agreement.",
+                  "Direct Entry：适用于无当前457/482签证的新申请人。TRT：需持有457或482签证且有2年以上合格担保就业经历。Labour Agreement：适用于雇主为劳工协议签约方的申请人。"
+                )}
+              </p>
             </div>
 
             <div className="flex items-center gap-3 rounded-lg border border-[var(--cf-line)] px-4 py-3">

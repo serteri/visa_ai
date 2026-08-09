@@ -56,7 +56,7 @@ export const migrationGoalOptions: Array<{
     id: "employer_sponsorship",
     label: { en: "Employer Sponsorship", tr: "İşveren Sponsorluğu", "zh-Hans": "雇主担保" },
     description: {
-      en: "Work first on 482, then transition to PR via 186",
+      en: "Aim for employer-sponsored permanent residency via Subclass 186. The next step will ask which situation applies to you.",
       tr: "Önce 482 ile çalış, sonra 186 ile PR'a geç",
       "zh-Hans": "先持482工作，再通过186转永居",
     },
