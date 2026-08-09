@@ -1201,14 +1201,14 @@ export function FullCheckWaitlistForm({
               </select>
             </div>
 
-            <div className="flex items-center gap-3 rounded-lg border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-4 py-3">
+            <div className="flex items-center gap-3 rounded-lg border border-[var(--cf-line)] px-4 py-3">
               <input
                 type="checkbox"
                 id="waitlist-labour-agreement-employer"
                 name="isLabourAgreementEmployer"
                 className="h-4 w-4 rounded border-[var(--cf-line)] accent-[var(--cf-accent)]"
               />
-              <Label htmlFor="waitlist-labour-agreement-employer" className="cursor-pointer text-sm font-medium text-[var(--cf-fg)]">
+              <Label htmlFor="waitlist-labour-agreement-employer" className="cursor-pointer text-sm font-medium text-foreground">
                 Is your employer party to a Labour Agreement / DAMA?
               </Label>
             </div>
