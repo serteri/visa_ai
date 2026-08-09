@@ -1177,7 +1177,7 @@ export function FullCheckWaitlistForm({
           </div>
         )}
 
-        {(visaInterest === "186" && migrationGoals.length === 0) && (
+        {visaInterest === "186" && (
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="waitlist-nomination-stream">
