@@ -345,7 +345,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
         <div className="mt-4 flex items-center justify-center gap-4">
           <button
             type="button"
-            onClick={() => router.push(`/${locale}/tools/anzsco-finder`)}
+            onClick={() => router.push(`/${locale}/full-check?country=au`)}
             className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
           >
             <span className="text-base">🇦🇺</span>
@@ -353,7 +353,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           </button>
           <button
             type="button"
-            onClick={() => router.push(`/${locale}/visas/canada`)}
+            onClick={() => router.push(`/${locale}/full-check?country=ca`)}
             className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
           >
             <span className="text-base">🇨🇦</span>
