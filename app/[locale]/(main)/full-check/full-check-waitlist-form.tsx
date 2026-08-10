@@ -1005,6 +1005,9 @@ export function FullCheckWaitlistForm({
           {t("mandatory_fields_warning")}
         </p>
 
+        {/* ── STEP 1: Personal Details ─────────────────────────────── */}
+        <div className={currentStep !== 1 ? "hidden" : "space-y-6"}>
+
         <div className="space-y-2">
           <Label htmlFor="waitlist-full-name">
             {txt("Ad soyad", "Full name", "姓名")}
@@ -1392,6 +1395,11 @@ export function FullCheckWaitlistForm({
           </div>
         </div>
 
+        </div>{/* end Step 1 */}
+
+        {/* ── STEP 2: Career & Education ───────────────────────────── */}
+        <div className={currentStep !== 2 ? "hidden" : "space-y-6"}>
+
         {!isPartner && (
           <div className="space-y-2">
             <Label htmlFor="waitlist-occupation">
@@ -1743,6 +1751,11 @@ export function FullCheckWaitlistForm({
             </div>
           </div>
         )}
+
+        </div>{/* end Step 2 */}
+
+        {/* ── STEP 3: Language & Profile ────────────────────────────── */}
+        <div className={currentStep !== 3 ? "hidden" : "space-y-6"}>
 
         {!isPartner && (
           <>
@@ -2165,6 +2178,8 @@ export function FullCheckWaitlistForm({
             {state.message}
           </p>
         )}
+
+        </div>{/* end Step 3 */}
 
         <TermsGate
           isTermsAccepted={isTermsAccepted}
