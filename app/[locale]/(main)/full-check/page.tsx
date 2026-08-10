@@ -84,7 +84,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const initialValues = {
     visaInterest: query.visaInterest ?? query.preferredPathway ?? "",
     currentCountry: query.currentCountry ?? "",
-    targetCountry: isSupportedCountry(query.country) ? query.country : "",
+    targetCountry: isSupportedCountry(query.country?.toUpperCase()) ? query.country!.toUpperCase() : "",
     occupation: query.occupation ?? "",
     source: query.source ?? "full_check",
     mainGoal: buildPrefilledGoal({
@@ -123,24 +123,6 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                 <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                   {tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告")}
                 </h2>
-                <div className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${
-                  isFreeActive
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border-primary/20 bg-background/80 text-foreground"
-                }`}>
-                  {isFreeActive
-                    ? tx(
-                        `🔥 Hurry up: FREE for the first ${DISPLAY_START_SLOTS} users. Only ${displayedRemainingSpots} spots left!`,
-                        `🔥 Acele edin: İlk ${DISPLAY_START_SLOTS} kullanıcıya ÜCRETSİZ. Yalnızca ${displayedRemainingSpots} kontenjan kaldı!`,
-                        `🔥 抓紧：前 ${DISPLAY_START_SLOTS} 名用户免费。仅剩 ${displayedRemainingSpots} 个名额！`
-                      )
-                    : tx(
-                        "Premium Report — $49 per report.",
-                        "Premium Rapor — Rapor başına $49.",
-                        "高级报告 — 每份报告 $49。"
-                      )
-                  }
-                </div>
               </div>
 
               {(cameFromReadinessReview || cameFromResults) && (

@@ -516,6 +516,7 @@ export function FullCheckWaitlistForm({
     submitFullCheckWaitlist,
     initialState
   );
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState<SupportedCountry>(
     isSupportedCountry(initialValues.targetCountry) ? initialValues.targetCountry : defaultCountry
   );
@@ -977,6 +978,23 @@ export function FullCheckWaitlistForm({
 
       {!shouldHideIntakeForm && (
       <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4 overflow-visible" autoComplete="off" noValidate>
+        {/* ── Progress bar ───────────────────────────────────────────── */}
+        <div className="flex items-center gap-3 rounded-xl border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-4 py-3">
+          {[1, 2, 3].map((step) => (
+            <div key={step} className="flex-1">
+              <div className={`h-1.5 rounded-full transition-colors ${currentStep >= step ? "bg-[var(--cf-accent)]" : "bg-[var(--cf-line)]"}`} />
+              <p className="mt-1 text-center text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--cf-muted)]">
+                {step === 1
+                  ? txt("Kişisel", "Personal", "个人")
+                  : step === 2
+                    ? txt("Kariyer", "Career", "职业")
+                    : txt("Dil & Profil", "Language", "语言")}
+                <span className="ml-1 text-[var(--cf-muted)]/60">{`(${step}/3)`}</span>
+              </p>
+            </div>
+          ))}
+        </div>
+
         <input type="hidden" name="routeLocale" value={locale} />
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="preferredLanguage" value={locale} />
@@ -2148,25 +2166,6 @@ export function FullCheckWaitlistForm({
           </p>
         )}
 
-        {isFreeActive && remainingSpots > 0 && (
-          <div className="rounded-xl border border-amber-300/60 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-3 text-center space-y-1">
-            <p className="text-sm font-bold text-amber-900">
-              {txt(
-                `Ücretsiz rapor için yalnızca ${remainingSpots} kontenjan kaldı!`,
-                `Only ${remainingSpots} spots left for the free report!`,
-                `免费报告仅剩 ${remainingSpots} 个名额！`
-              )}
-            </p>
-            <p className="text-xs text-amber-700">
-              {txt(
-                "Kontenjan dolduğunda rapor $49 olacak.",
-                "Report will be $49 once spots run out.",
-                "名额用完后报告将收费 $49。"
-              )}
-            </p>
-          </div>
-        )}
-
         <TermsGate
           isTermsAccepted={isTermsAccepted}
           termsError={termsError}
@@ -2178,25 +2177,46 @@ export function FullCheckWaitlistForm({
           errorText={termsErrorText}
         />
 
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
-          {t("mandatory_fields_warning")}
-        </p>
 
-        <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
-          {isPending
-            ? txt("Oluşturuluyor...", "Generating...", "生成中...")
-            : isFreeActive
-              ? txt(
-                  "Ücretsiz hazırlık raporunuzu oluşturun",
-                  "Generate your FREE readiness report",
-                  "生成免费准备度报告"
-                )
-              : txt(
-                  "Hazırlık raporunuzu oluşturun ($49)",
-                  "Generate your readiness report ($49)",
-                  "生成准备度报告 ($49)"
-                )}
-        </Button>
+        {/* ── Form fields ──────────────────────────────────────────────── */}
+        {currentStep < 3 && (
+          <Button
+            type="button"
+            onClick={() => setCurrentStep((s) => Math.min(s + 1, 3))}
+            className="h-11 w-full rounded-lg text-sm font-semibold"
+          >
+            {txt("İleri", "Next", "下一步")}
+          </Button>
+        )}
+
+        {currentStep > 1 && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setCurrentStep((s) => Math.max(s - 1, 1))}
+            className="h-11 w-full rounded-lg text-sm font-semibold"
+          >
+            {txt("Geri", "Back", "上一步")}
+          </Button>
+        )}
+
+        {currentStep === 3 && (
+          <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
+            {isPending
+              ? txt("Oluşturuluyor...", "Generating...", "生成中...")
+              : isFreeActive
+                ? txt(
+                    "Ücretsiz hazırlık raporunuzu oluşturun",
+                    "Generate your FREE readiness report",
+                    "生成免费准备度报告"
+                  )
+                : txt(
+                    "Hazırlık raporunuzu oluşturun ($49)",
+                    "Generate your readiness report ($49)",
+                    "生成准备度报告 ($49)"
+                  )}
+          </Button>
+        )}
       </form>
       )}
 
