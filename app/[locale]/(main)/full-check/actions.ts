@@ -1062,7 +1062,7 @@ export async function submitFullCheckWaitlist(
     errors.passportCountry = isTr ? "Pasaport ulkesi gereklidir." : isZh ? "护照国家为必填项。" : "Passport country is required.";
   }
   if (!age) errors.age = isTr ? "Yas gereklidir." : isZh ? "年龄为必填项。" : "Age is required.";
-  if (!mainGoal) errors.mainGoal = isTr ? "Ana hedef gereklidir." : isZh ? "主要目标为必填项。" : "Main goal is required.";
+  // mainGoal is optional — users may not know their target yet
   if (!fullName) errors.fullName = isTr ? "Ad soyad gereklidir." : isZh ? "姓名为必填项。" : "Full name is required.";
   if (!currentCountry) errors.currentCountry = isTr ? "Bulundugunuz ulke gereklidir." : isZh ? "当前国家为必填项。" : "Current country is required.";
 

@@ -207,10 +207,10 @@ export function Step3Language(props: Step3Props) {
         <div className="space-y-2">
           <Label htmlFor="waitlist-timeline">{txt("Zamanlama", "Timeline", "时间规划")}</Label>
           <select id="waitlist-timeline" name="timeline" defaultValue="" className={selectClassName}>
-            <option value="">Belirtmek istemiyorum</option>
-            <option value="0-6">0-6 ay</option>
-            <option value="6-12">6-12 ay</option>
-            <option value="12+">12+ ay</option>
+            <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+            <option value="0-6">{txt("0-6 ay", "0-6 months", "0-6 个月")}</option>
+            <option value="6-12">{txt("6-12 ay", "6-12 months", "6-12 个月")}</option>
+            <option value="12+">{txt("12+ ay", "12+ months", "12 个月以上")}</option>
           </select>
         </div>
       </div>
