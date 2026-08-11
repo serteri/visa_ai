@@ -81,7 +81,7 @@ export function Step1Personal({
             <option key={code} value={code}>{countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"]}</option>
           ))}
         </select>
-        {initialValues.targetCountry && <input type="hidden" name="targetCountry" value={initialValues.targetCountry} />}
+        <input type="hidden" name="targetCountry" value={selectedCountry} />
       </div>
 
       <div className="space-y-3">
