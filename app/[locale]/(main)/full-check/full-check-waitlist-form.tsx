@@ -187,8 +187,33 @@ export function FullCheckWaitlistForm({
   const txt = (tr: string, en: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   const [currentStep, setCurrentStep] = useState(1);
-  const nextStep = () => setCurrentStep((s) => Math.min(s + 1, 3));
-  const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 1));
+  const [stepErrors, setStepErrors] = useState<string | null>(null);
+
+  const validateStep = (step: number): boolean => {
+    setStepErrors(null);
+    if (step === 1) {
+      const name = (document.getElementById("waitlist-full-name") as HTMLInputElement)?.value?.trim();
+      const email = (document.getElementById("waitlist-email") as HTMLInputElement)?.value?.trim();
+      const country = (document.getElementById("waitlist-current-country") as HTMLInputElement)?.value?.trim();
+      const passport = (document.getElementById("waitlist-passport-country") as HTMLInputElement)?.value?.trim();
+      const age = (document.getElementById("waitlist-age") as HTMLInputElement)?.value?.trim();
+      const errors: string[] = [];
+      if (!name) errors.push(txt("Ad soyad gerekli", "Full name is required", "姓名为必填项"));
+      if (!email) errors.push(txt("E-posta gerekli", "Email is required", "邮箱为必填项"));
+      if (!country) errors.push(txt("Bulunduğunuz ülke gerekli", "Current country is required", "当前国家为必填项"));
+      if (!passport) errors.push(txt("Pasaport ülkesi gerekli", "Passport country is required", "护照国家为必填项"));
+      if (!age) errors.push(txt("Yaş gerekli", "Age is required", "年龄为必填项"));
+      if (errors.length > 0) { setStepErrors(errors.join(" · ")); return false; }
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    if (!validateStep(currentStep)) return;
+    setCurrentStep((s) => Math.min(s + 1, 3));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const prevStep = () => { setStepErrors(null); setCurrentStep((s) => Math.max(s - 1, 1)); };
 
   const initialState: FullCheckWaitlistState = { status: "idle" };
   const [state, formAction, isPending] = useActionState(submitFullCheckWaitlist, initialState);
@@ -407,6 +432,13 @@ export function FullCheckWaitlistForm({
           <input type="hidden" name="preferredLanguage" value={locale} />
           <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
           <input type="hidden" name="analysisProgressId" value={analysisProgressId} />
+
+          {/* Step validation error */}
+          {stepErrors && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">
+              {stepErrors}
+            </div>
+          )}
 
           {/* Progress bar */}
           <div className="flex items-center gap-3 rounded-xl border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-4 py-3">

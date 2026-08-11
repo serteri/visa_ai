@@ -121,8 +121,8 @@ export function Step2Career(props: Step2Props) {
             <div className="mt-3 space-y-2 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
               <Label className="text-sm font-semibold text-indigo-900">{txt("Beceri değerlendirmesi yaptınız mı?", "Have you completed a skills assessment?", "您是否已完成技能评估？")}</Label>
               <div className="flex gap-3 mt-2">
-                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="skillsAssessment" value="yes" className="accent-indigo-600" /><span className="text-sm font-medium">Evet</span></label>
-                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="skillsAssessment" value="no" className="accent-indigo-600" defaultChecked /><span className="text-sm font-medium">Hayır</span></label>
+                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="skillsAssessment" value="yes" className="accent-indigo-600" /><span className="text-sm font-medium">{txt("Evet", "Yes", "是")}</span></label>
+                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="skillsAssessment" value="no" className="accent-indigo-600" defaultChecked /><span className="text-sm font-medium">{txt("Hayır / Henüz Yapılmadı", "No / Not Yet Done", "否 / 尚未完成")}</span></label>
               </div>
               <input type="hidden" name="skillsAssessment" value="no" />
             </div>

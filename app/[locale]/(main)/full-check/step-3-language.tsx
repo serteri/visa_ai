@@ -90,8 +90,8 @@ export function Step3Language(props: Step3Props) {
               <RequiredMark />
             </Label>
             <select id="waitlist-qualification-awarded-in-australia" name="qualificationAwardedInAustralia" value={qualificationAwardedInAustralia} onChange={(e) => { const v = e.target.value; setQualificationAwardedInAustralia(v); if (v !== "yes") { setQualificationRegionalAustralia(""); setSpecialistEducationStemResponse(""); } }} className={selectClassName}>
-              <option value="yes">Evet / Yes</option>
-              <option value="no">Hayır / No</option>
+              <option value="yes">{txt("Evet", "Yes", "是")}</option>
+              <option value="no">{txt("Hayır", "No", "否")}</option>
             </select>
             <ErrorText message={state.errors?.qualificationAwardedInAustralia} />
           </div>
@@ -100,9 +100,9 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label>{txt("Bölgesel kampüs mü?", "Regional campus?", "偏远地区校区？")}</Label>
               <select name="qualificationRegionalAustralia" value={qualificationRegionalAustralia} onChange={(e) => setQualificationRegionalAustralia(e.target.value)} className={selectClassName}>
-                <option value="">Belirtmek istemiyorum</option>
-                <option value="yes">Evet</option>
-                <option value="no">Hayır</option>
+                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option value="no">{txt("Hayır", "No", "否")}</option>
               </select>
             </div>
           )}
@@ -111,8 +111,8 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label>{txt("Yabancı diploma tanındı mı?", "Overseas qualification recognized?", "海外学历已获认可？")}<RequiredMark /></Label>
               <select name="isQualificationRecognized" value={isQualificationRecognized} onChange={(e) => setIsQualificationRecognized(e.target.value)} className={selectClassName}>
-                <option value="yes">Evet</option>
-                <option value="no">Hayır</option>
+                <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option value="no">{txt("Hayır", "No", "否")}</option>
               </select>
             </div>
           )}
@@ -121,10 +121,10 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label>{txt("STEM alanında mı?", "In a STEM field?", "STEM领域？")}</Label>
               <select name="specialistEducationStemResponse" value={specialistEducationStemResponse} onChange={(e) => setSpecialistEducationStemResponse(e.target.value)} className={selectClassName}>
-                <option value="">Belirtmek istemiyorum</option>
-                <option value="yes">Evet</option>
-                <option value="no">Hayır</option>
-                <option value="not_sure">Emin değilim</option>
+                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option value="no">{txt("Hayır", "No", "否")}</option>
+                <option value="not_sure">{txt("Emin değilim", "Not sure", "不确定")}</option>
               </select>
             </div>
           )}
@@ -174,26 +174,26 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label htmlFor="waitlist-english-test-taken">{txt("İngilizce testi alındı mı?", "English test taken?", "英语考试？")}</Label>
               <select id="waitlist-english-test-taken" name="englishTestTaken" defaultValue="" className={selectClassName}>
-                <option value="">Belirtmek istemiyorum</option>
-                <option value="yes">Evet</option>
-                <option value="no">Hayır</option>
+                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option value="no">{txt("Hayır", "No", "否")}</option>
               </select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="waitlist-occupation-confirmed">{txt("Meslek net mi?", "Occupation confirmed?", "职业已确认？")}</Label>
               <select id="waitlist-occupation-confirmed" name="occupationConfirmed" defaultValue="" className={selectClassName}>
-                <option value="">Belirtmek istemiyorum</option>
-                <option value="yes">Evet</option>
-                <option value="no">Hayır</option>
+                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option value="no">{txt("Hayır", "No", "否")}</option>
               </select>
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="waitlist-graduate-visa-intent">{txt("Mezun vizesi hedefliyor musunuz?", "Graduate visa intent?", "毕业生签证意向？")}</Label>
             <select id="waitlist-graduate-visa-intent" name="hasGraduateVisaPathwayIntent" defaultValue="" className={selectClassName}>
-              <option value="">Belirtmek istemiyorum</option>
-              <option value="yes">Evet</option>
-              <option value="no">Hayır</option>
+              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+              <option value="yes">{txt("Evet", "Yes", "是")}</option>
+              <option value="no">{txt("Hayır", "No", "否")}</option>
             </select>
           </div>
         </>
