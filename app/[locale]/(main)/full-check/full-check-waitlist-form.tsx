@@ -452,16 +452,22 @@ export function FullCheckWaitlistForm({
             </div>
           )}
 
-          {/* Progress bar */}
+          {/* Progress bar — clickable for backward navigation */}
           <div className="flex items-center gap-3 rounded-xl border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-4 py-3">
             {[1, 2, 3].map((step) => (
-              <div key={step} className="flex-1">
+              <button
+                key={step}
+                type="button"
+                onClick={() => { if (step < currentStep) { setStepErrors(null); setCurrentStep(step); window.scrollTo({ top: 0, behavior: "smooth" }); } }}
+                disabled={step >= currentStep}
+                className={`flex-1 text-left ${step < currentStep ? "cursor-pointer" : "cursor-default"}`}
+              >
                 <div className={`h-1.5 rounded-full transition-colors ${currentStep >= step ? "bg-[var(--cf-accent)]" : "bg-[var(--cf-line)]"}`} />
-                <p className="mt-1 text-center text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--cf-muted)]">
+                <p className={`mt-1 text-center text-[0.65rem] font-semibold uppercase tracking-wide ${step < currentStep ? "text-[var(--cf-accent)]" : "text-[var(--cf-muted)]"}`}>
                   {step === 1 ? txt("Kişisel", "Personal", "个人") : step === 2 ? txt("Kariyer", "Career", "职业") : txt("Dil & Profil", "Language", "语言")}
                   <span className="ml-1 text-[var(--cf-muted)]/60">{`(${step}/3)`}</span>
                 </p>
-              </div>
+              </button>
             ))}
           </div>
 

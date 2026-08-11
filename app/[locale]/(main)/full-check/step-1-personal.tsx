@@ -85,7 +85,7 @@ export function Step1Personal({
       </div>
 
       <div className="space-y-3">
-        <Label>{txt("Birincil göç hedefiniz nedir?", "What is your primary migration goal?", "您的主要移民目标是什么？")}<RequiredMark /></Label>
+        <Label>{txt("Birincil göç hedefiniz nedir?", "What is your primary migration goal?", "您的主要移民目标是什么？")}</Label>
         <div className="grid gap-3 sm:grid-cols-3">
           {migrationGoalOptions.map((goal) => {
             const sel = migrationGoals.includes(goal.id);
