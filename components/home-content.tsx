@@ -67,7 +67,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
 
   return (
     <div className="case-file">
-      <LandingHeader locale={locale} />
+      {/* LandingHeader removed — unified Header used via ShellHeaderGate */}
       <Hero
         locale={locale}
         onScrollToPdfSection={handleScrollToPdfSection}
