@@ -187,29 +187,41 @@ export function FullCheckWaitlistForm({
   const txt = (tr: string, en: string, zh: string) => (isTr ? tr : isZh ? zh : en);
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [stepErrors, setStepErrors] = useState<string | null>(null);
+  const [stepErrors, setStepErrors] = useState<Record<string, string> | null>(null);
 
   const validateStep = (step: number): boolean => {
-    setStepErrors(null);
+    setStepErrors({});
     if (step === 1) {
-      const name = (document.getElementById("waitlist-full-name") as HTMLInputElement)?.value?.trim();
-      const email = (document.getElementById("waitlist-email") as HTMLInputElement)?.value?.trim();
-      const country = (document.getElementById("waitlist-current-country") as HTMLInputElement)?.value?.trim();
-      const passport = (document.getElementById("waitlist-passport-country") as HTMLInputElement)?.value?.trim();
-      const age = (document.getElementById("waitlist-age") as HTMLInputElement)?.value?.trim();
-      const errors: string[] = [];
-      if (!name) errors.push(txt("Ad soyad gerekli", "Full name is required", "姓名为必填项"));
-      if (!email) errors.push(txt("E-posta gerekli", "Email is required", "邮箱为必填项"));
-      if (!country) errors.push(txt("Bulunduğunuz ülke gerekli", "Current country is required", "当前国家为必填项"));
-      if (!passport) errors.push(txt("Pasaport ülkesi gerekli", "Passport country is required", "护照国家为必填项"));
-      if (!age) errors.push(txt("Yaş gerekli", "Age is required", "年龄为必填项"));
-      if (errors.length > 0) { setStepErrors(errors.join(" · ")); return false; }
+      const fields: [string, string][] = [
+        ["waitlist-full-name", txt("Ad soyad gerekli", "Full name is required", "姓名为必填项")],
+        ["waitlist-email", txt("E-posta gerekli", "Email is required", "邮箱为必填项")],
+        ["waitlist-current-country", txt("Bulunduğunuz ülke gerekli", "Current country is required", "当前国家为必填项")],
+        ["waitlist-passport-country", txt("Pasaport ülkesi gerekli", "Passport country is required", "护照国家为必填项")],
+        ["waitlist-age", txt("Yaş gerekli", "Age is required", "年龄为必填项")],
+      ];
+      const errors: Record<string, string> = {};
+      for (const [id, msg] of fields) {
+        const val = (document.getElementById(id) as HTMLInputElement)?.value?.trim();
+        if (!val) errors[id] = msg;
+      }
+      if (Object.keys(errors).length > 0) { setStepErrors(errors); return false; }
     }
     return true;
   };
 
   const nextStep = () => {
-    if (!validateStep(currentStep)) return;
+    if (!validateStep(currentStep)) {
+      setTimeout(() => {
+        const first = document.querySelector("[data-field-error]");
+        if (first) {
+          first.scrollIntoView({ behavior: "smooth", block: "center" });
+          const input = (first.tagName === "INPUT" || first.tagName === "SELECT" || first.tagName === "TEXTAREA")
+            ? first : first.querySelector("input, select, textarea");
+          if (input) (input as HTMLElement).focus();
+        }
+      }, 100);
+      return;
+    }
     setCurrentStep((s) => Math.min(s + 1, 3));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -434,9 +446,9 @@ export function FullCheckWaitlistForm({
           <input type="hidden" name="analysisProgressId" value={analysisProgressId} />
 
           {/* Step validation error */}
-          {stepErrors && (
+          {stepErrors && Object.keys(stepErrors).length > 0 && (
             <div className="rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">
-              {stepErrors}
+              {Object.values(stepErrors).join(" · ")}
             </div>
           )}
 
@@ -458,7 +470,7 @@ export function FullCheckWaitlistForm({
           </p>
 
           {/* Step content */}
-          {currentStep === 1 && <Step1Personal locale={locale} selectedCountry={selectedCountry} onCountryChange={(c) => { setSelectedCountry(c); onCountryChange?.(c); }} initialValues={initialValues} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} />}
+          {currentStep === 1 && <Step1Personal locale={locale} selectedCountry={selectedCountry} onCountryChange={(c) => { setSelectedCountry(c); onCountryChange?.(c); }} initialValues={initialValues} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} fieldErrors={stepErrors} />}
           {currentStep === 2 && <Step2Career locale={locale} selectedCountry={selectedCountry} isPartner={isPartner} nocSearch={nocSearch} setNocSearch={setNocSearch} nocCode={nocCode} setNocCode={setNocCode} nocTeer={nocTeer} setNocTeer={setNocTeer} nocResults={nocResults} setNocResults={setNocResults} nocOpen={nocOpen} setNocOpen={setNocOpen} searchNoc={searchNoc} anzscoSearch={anzscoSearch} setAnzscoSearch={setAnzscoSearch} anzscoCode={anzscoCode} setAnzscoCode={setAnzscoCode} resolvedAnzscoEntry={resolvedAnzscoEntry} anzscoResults={anzscoResults} setAnzscoResults={setAnzscoResults} anzscoOpen={anzscoOpen} setAnzscoOpen={setAnzscoOpen} searchAnzsco={searchAnzsco} getLocalizedAnzscoTitle={getLocalizedAnzscoTitle} submittedOccupationValue={submittedOccupationValue} setOccupationModalOpen={setOccupationModalOpen} relationshipType={relationshipType} setRelationshipType={setRelationshipType} cohabitationDuration={cohabitationDuration} setCohabitationDuration={setCohabitationDuration} sponsorStatus={sponsorStatus} setSponsorStatus={setSponsorStatus} previousSponsorship={previousSponsorship} setPreviousSponsorship={setPreviousSponsorship} applicationLocationPreference={applicationLocationPreference} setApplicationLocationPreference={setApplicationLocationPreference} relationshipEvidence={relationshipEvidence} setRelationshipEvidence={setRelationshipEvidence} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} />}
           {currentStep === 3 && <Step3Language locale={locale} selectedCountry={selectedCountry} isPartner={isPartner} englishLevel={englishLevel} setEnglishLevel={setEnglishLevel} englishLevelOptions={englishLevelOptions} qualificationLevel={qualificationLevel} setQualificationLevel={setQualificationLevel} educationOptions={educationOptions} qualificationAwardedInAustralia={qualificationAwardedInAustralia} setQualificationAwardedInAustralia={setQualificationAwardedInAustralia} qualificationRegionalAustralia={qualificationRegionalAustralia} setQualificationRegionalAustralia={setQualificationRegionalAustralia} specialistEducationStemResponse={specialistEducationStemResponse} setSpecialistEducationStemResponse={setSpecialistEducationStemResponse} isQualificationRecognized={isQualificationRecognized} setIsQualificationRecognized={setIsQualificationRecognized} isResearchOrDoctorateQualification={isResearchOrDoctorateQualification} annualSalaryAud={annualSalaryAud} setAnnualSalaryAud={setAnnualSalaryAud} sponsorFamilyStatus={sponsorFamilyStatus} setSponsorFamilyStatus={setSponsorFamilyStatus} sponsorFamilyOptions={sponsorFamilyOptions} experienceHelpText={experienceHelpText} budgetCurrency={budgetCurrency} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} />}
 

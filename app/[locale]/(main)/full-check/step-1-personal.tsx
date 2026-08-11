@@ -21,6 +21,7 @@ interface Step1Props {
   initialValues: Record<string, string>;
   migrationGoals: MigrationGoalId[];
   toggleMigrationGoal: (id: MigrationGoalId) => void;
+  fieldErrors?: Record<string, string> | null;
   visaInterest: string;
   setVisaInterest: (v: string) => void;
   nominationStream: string;
@@ -52,23 +53,25 @@ export function Step1Personal({
   courseCompletionStatus, setCourseCompletionStatus, courseCompletionDate, setCourseCompletionDate,
   preferredState, setPreferredState, state, fieldClassName, selectClassName, noAutofill,
   showsCourseFields,
+  fieldErrors,
 }: Step1Props) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const txt = (tr: string, en: string, zh: string) => isTr ? tr : isZh ? zh : en;
+  const errCls = (id: string) => fieldErrors?.[id] ? "border-red-500 focus:ring-red-500 focus:border-red-500" : "";
 
   return (
     <>
-      <div className="space-y-2">
+      <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-full-name"] || undefined}>
         <Label htmlFor="waitlist-full-name">{txt("Ad soyad", "Full name", "姓名")}<RequiredMark /></Label>
-        <Input id="waitlist-full-name" name="fullName" required {...noAutofill("fullName")} className={fieldClassName} placeholder={txt("Adınız", "Your name", "请输入姓名")} />
-        <ErrorText message={state.errors?.fullName} />
+        <Input id="waitlist-full-name" name="fullName" required {...noAutofill("fullName")} className={`${fieldClassName} ${errCls("waitlist-full-name")}`} placeholder={txt("Adınız", "Your name", "请输入姓名")} />
+        {fieldErrors?.["waitlist-full-name"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-full-name"]}</p>}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-email"] || undefined}>
         <Label htmlFor="waitlist-email">{txt("E-posta adresi", "Email address", "邮箱地址")}<RequiredMark /></Label>
-        <Input id="waitlist-email" name="email" type="email" placeholder="you@example.com" {...noAutofill("email")} className={fieldClassName} required />
-        <ErrorText message={state.errors?.email} />
+        <Input id="waitlist-email" name="email" type="email" placeholder="you@example.com" {...noAutofill("email")} className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
+        {fieldErrors?.["waitlist-email"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-email"]}</p>}
       </div>
 
       <div className="space-y-2">
@@ -177,22 +180,22 @@ export function Step1Personal({
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-current-country"] || undefined}>
         <Label htmlFor="waitlist-current-country">{txt("Bulunduğunuz ülke", "Current country", "当前国家")}<RequiredMark /></Label>
-        <Input id="waitlist-current-country" name="currentCountry" required defaultValue={initialValues.currentCountry ?? ""} {...noAutofill("currentCountry")} className={fieldClassName} placeholder={txt("Avustralya, Türkiye...", "Australia, Turkiye...", "例如：澳大利亚...")} />
-        <ErrorText message={state.errors?.currentCountry} />
+        <Input id="waitlist-current-country" name="currentCountry" required defaultValue={initialValues.currentCountry ?? ""} {...noAutofill("currentCountry")} className={`${fieldClassName} ${errCls("waitlist-current-country")}`} placeholder={txt("Avustralya, Türkiye...", "Australia, Turkiye...", "例如：澳大利亚...")} />
+        {fieldErrors?.["waitlist-current-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-current-country"]}</p>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
+        <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-passport-country"] || undefined}>
           <Label htmlFor="waitlist-passport-country">{txt("Pasaport ülkesi", "Passport country", "护照国家")}<RequiredMark /></Label>
-          <Input id="waitlist-passport-country" name="passportCountry" required {...noAutofill("passportCountry")} className={fieldClassName} placeholder={txt("Ülke adı", "Country name", "国家名称")} />
-          <ErrorText message={state.errors?.passportCountry} />
+          <Input id="waitlist-passport-country" name="passportCountry" required {...noAutofill("passportCountry")} className={`${fieldClassName} ${errCls("waitlist-passport-country")}`} placeholder={txt("Ülke adı", "Country name", "国家名称")} />
+          {fieldErrors?.["waitlist-passport-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-passport-country"]}</p>}
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-age"] || undefined}>
           <Label htmlFor="waitlist-age">{txt("Yaş", "Age", "年龄")}<RequiredMark /></Label>
-          <Input id="waitlist-age" name="age" type="number" required {...noAutofill("age")} className={fieldClassName} placeholder={txt("Örn: 28", "E.g., 28", "例如：28")} />
-          <ErrorText message={state.errors?.age} />
+          <Input id="waitlist-age" name="age" type="number" required {...noAutofill("age")} className={`${fieldClassName} ${errCls("waitlist-age")}`} placeholder={txt("Örn: 28", "E.g., 28", "例如：28")} />
+          {fieldErrors?.["waitlist-age"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-age"]}</p>}
         </div>
       </div>
     </>
