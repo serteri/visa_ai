@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Combobox } from "@/components/ui/combobox";
+import { useSearchParams } from "next/navigation";
 
 function RequiredMark() {
   return <span className="text-red-500 ml-1" aria-hidden="true">*</span>;
@@ -78,6 +79,15 @@ export function Step1Personal({
   const txt = (tr: string, en: string, zh: string) => isTr ? tr : isZh ? zh : en;
   const errCls = (id: string) => fieldErrors?.[id] ? "border-red-500 focus:ring-red-500 focus:border-red-500" : "";
 
+  // GÖREV 1: URL'den ülke kilidi
+  const searchParams = useSearchParams();
+  const lockedCountry = ((): SupportedCountry | null => {
+    const code = searchParams.get("country");
+    if (!code) return null;
+    const upper = code.toUpperCase();
+    return ["AU", "CA"].includes(upper) ? (upper as SupportedCountry) : null;
+  })();
+
   return (
     <>
       <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-full-name"] || undefined}>
@@ -88,7 +98,9 @@ export function Step1Personal({
 
       <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-email"] || undefined}>
         <Label htmlFor="waitlist-e">{txt("E-posta adresi", "Email address", "邮箱地址")}<RequiredMark /></Label>
-        <Input id="waitlist-e" name="contactEmail" type="text" inputMode="email" placeholder="you@example.com" autoCorrect="off" autoCapitalize="off" spellCheck="false" className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
+        {/* Chrome autofill honeypot — redirects Chrome's saved-email dropdown to this invisible field */}
+        <input type="email" name="fake_email" autoComplete="email" className="hidden" aria-hidden="true" tabIndex={-1} />
+        <Input id="waitlist-e" name="contactEmail" type="text" inputMode="email" placeholder="you@example.com" autoComplete="nope" autoCorrect="off" autoCapitalize="off" spellCheck="false" data-lpignore="true" className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
         {fieldErrors?.["waitlist-email"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-email"]}</p>}
       </div>
 
@@ -99,7 +111,7 @@ export function Step1Personal({
           items={activeCountries.map(code => ({ value: code, label: countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"] }))}
           value={selectedCountry}
           onChange={(val) => onCountryChange(val as SupportedCountry)}
-          disabled={Boolean(initialValues.targetCountry)}
+          disabled={lockedCountry !== null}
           className={selectClassName}
         />
         <input type="hidden" name="targetCountry" value={selectedCountry} />
