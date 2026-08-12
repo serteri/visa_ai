@@ -157,7 +157,7 @@ function RequiredMark() {
 }
 
 function noAutofill(field: string): Record<string, string> {
-  return { autoComplete: `no-fill-${field}`, autoCorrect: "off", autoCapitalize: "off", spellCheck: "false", "data-lpignore": "true", "data-1p-ignore": "true" };
+  return { autoComplete: "off", autoCorrect: "off", autoCapitalize: "off", spellCheck: "false", "data-lpignore": "true", "data-1p-ignore": "true" };
 }
 
 export { renderVisaPathwayOptions };
