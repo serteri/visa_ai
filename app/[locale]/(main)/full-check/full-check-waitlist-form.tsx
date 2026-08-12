@@ -201,7 +201,7 @@ export function FullCheckWaitlistForm({
     if (step === 1) {
       const fields: [string, string][] = [
         ["waitlist-full-name", txt("Ad soyad gerekli", "Full name is required", "姓名为必填项")],
-        ["waitlist-email", txt("E-posta gerekli", "Email is required", "邮箱为必填项")],
+        ["waitlist-e", txt("E-posta gerekli", "Email is required", "邮箱为必填项")],
         ["waitlist-current-country", txt("Bulunduğunuz ülke gerekli", "Current country is required", "当前国家为必填项")],
         ["waitlist-passport-country", txt("Pasaport ülkesi gerekli", "Passport country is required", "护照国家为必填项")],
         ["waitlist-age", txt("Yaş gerekli", "Age is required", "年龄为必填项")],
@@ -424,6 +424,10 @@ export function FullCheckWaitlistForm({
   const handleIntakeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     if (!isTermsAccepted) { e.preventDefault(); setTermsError(true); return; }
     setTermsError(false);
+    // Map contactEmail → email so server-side reads formData.get("email") correctly
+    const hidden = e.currentTarget.querySelector<HTMLInputElement>('input[name="email"]');
+    const visible = document.getElementById("waitlist-e") as HTMLInputElement | null;
+    if (hidden && visible) hidden.value = visible.value;
     trackGaEvent("full_check_submit", { country: selectedCountry });
   };
 
@@ -527,6 +531,8 @@ export function FullCheckWaitlistForm({
           <input type="hidden" name="preferredLanguage" value={locale} />
           <input type="hidden" name="source" value={initialValues.source ?? "full_check"} />
           <input type="hidden" name="analysisProgressId" value={analysisProgressId} />
+          {/* email: populated from waitlist-e on submit to avoid Chrome autofill */}
+          <input type="hidden" name="email" value="" />
 
           {/* Step validation error */}
           {stepErrors && Object.keys(stepErrors).length > 0 && (

@@ -87,8 +87,8 @@ export function Step1Personal({
       </div>
 
       <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-email"] || undefined}>
-        <Label htmlFor="waitlist-email">{txt("E-posta adresi", "Email address", "邮箱地址")}<RequiredMark /></Label>
-        <Input id="waitlist-email" name="email" type="text" inputMode="email" placeholder="you@example.com" autoCorrect="off" autoCapitalize="off" spellCheck="false" className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
+        <Label htmlFor="waitlist-e">{txt("E-posta adresi", "Email address", "邮箱地址")}<RequiredMark /></Label>
+        <Input id="waitlist-e" name="contactEmail" type="text" inputMode="email" placeholder="you@example.com" autoCorrect="off" autoCapitalize="off" spellCheck="false" className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
         {fieldErrors?.["waitlist-email"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-email"]}</p>}
       </div>
 
