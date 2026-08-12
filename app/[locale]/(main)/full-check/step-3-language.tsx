@@ -132,7 +132,7 @@ export function Step3Language(props: Step3Props) {
           {selectedCountryIsAU && (
             <div className="space-y-2">
               <Label htmlFor="waitlist-salary-aud">{txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}<RequiredMark /></Label>
-              <Input id="waitlist-salary-aud" name="annualSalaryAud" type="number" min={0} step={1} inputMode="numeric" value={annualSalaryAud} onChange={(e) => setAnnualSalaryAud(e.target.value)} {...noAutofill("annualSalaryAud")} className={fieldClassName} placeholder="E.g., 85000" />
+              <Input id="waitlist-salary-aud" name="annualSalaryAud" type="number" min={0} step={1} inputMode="numeric" value={annualSalaryAud} onChange={(e) => setAnnualSalaryAud(e.target.value)} {...noAutofill("annualSalaryAud")} className={fieldClassName} placeholder="E.g., 85000" autoComplete="off" />
               <ErrorText message={state.errors?.annualSalaryAud} />
             </div>
           )}
