@@ -22,7 +22,7 @@ type RankedPathwayLike = {
 
 type LogiAIAssistantProps = {
   locale: string;
-  reportData: AssistantReportData;
+  reportData: AssistantReportData | null;
 };
 
 type SupportedAssistantLocale = "en" | "tr" | "zh-Hans";
@@ -59,6 +59,8 @@ function uid() {
 }
 
 export function LogiAIAssistant({ locale, reportData }: LogiAIAssistantProps) {
+  if (!reportData) return null;
+
   const resolvedLocale = normalizeAssistantLocale(locale);
   const reportCountry = resolveReportCountry(reportData.country);
   const isCanada = reportCountry === "CA";

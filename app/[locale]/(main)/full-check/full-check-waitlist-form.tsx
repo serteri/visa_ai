@@ -241,8 +241,8 @@ export function FullCheckWaitlistForm({
   const [analysisProgressId, setAnalysisProgressId] = useState(() => typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`);
   const wasPendingRef = useRef(false);
   const trackedReportIdRef = useRef<string | null>(null);
-  const [unlockedReportState, setUnlockedReportState] = useState<{ reportId?: string; report: ReadinessReport; name?: string; email?: string } | null>(null);
-  const reportSectionRef = useRef<HTMLElement | null>(null);
+  const [unlockedReportState, setUnlockedReportState] = useState<{ reportId?: string; report: ReadinessReport; name?: string; email?: string; isUnlocked?: boolean } | null>(null);
+  const reportSectionRef = useRef<HTMLDivElement | null>(null);
   const budgetCurrency = selectedCountry === "CA" ? "CAD" : "AUD";
 
   // ── Search state ──
@@ -357,6 +357,58 @@ export function FullCheckWaitlistForm({
     }
   }, [isPending, state]);
 
+  // ── Auto-scroll to Quick Result when report is generated ──
+  useEffect(() => {
+    if (state.status === "success" && state.reportId && !unlockedReportState?.isUnlocked) {
+      setTimeout(() => {
+        document.getElementById("quick-result-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  }, [state.status, state.reportId, unlockedReportState?.isUnlocked]);
+
+  // ── Auto-scroll to Full Report + Auto PDF download when unlocked ──
+  useEffect(() => {
+    if (unlockedReportState?.isUnlocked && unlockedReportState?.report) {
+      // Scroll to full report section
+      setTimeout(() => {
+        document.getElementById("full-report-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+
+      // Auto-download PDF
+      const downloadPdf = async () => {
+        try {
+          const pdfBytes = await generateReadinessPDF({
+            report: unlockedReportState.report,
+            locale: locale as "en" | "tr" | "zh-Hans",
+            saveToFile: false,
+            userInputSummary: {
+              name: unlockedReportState.name,
+              email: unlockedReportState.email,
+              occupation: unlockedReportState.report.pathwayComparison?.[0]?.visaName,
+              mainGoal: initialValues.mainGoal,
+              currentCountry: initialValues.currentCountry,
+              age: initialValues.age,
+              englishLevel,
+            },
+          });
+          const blob = new Blob([pdfBytes as unknown as ArrayBuffer], { type: "application/pdf" });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", "LogiVisa_Assessment_Report.pdf");
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode?.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error("Auto PDF download failed:", error);
+        }
+      };
+
+      downloadPdf();
+    }
+  }, [unlockedReportState?.isUnlocked, unlockedReportState?.report]);
+
   const [report, setReport] = useState<ReadinessReport | null>(null);
   const [assistantReportData, setAssistantReportData] = useState<AssistantReportData | null>(null);
 
@@ -388,26 +440,51 @@ export function FullCheckWaitlistForm({
 
   // ── Report display section ──
   const reportSection = state.status === "success" && state.preview && state.reportId && !report && (
-    <PremiumFeatureGate
-      locale={locale}
-      reportId={state.reportId}
-      preview={state.preview}
-      defaultEmail={state.userInput?.email}
-      defaultName={state.userInput?.name}
-      isFreeActive={isFreeActive}
-      remainingSpots={remainingSpots}
-      onUnlocked={({ report: unlocked, email, name }) => {
-        setUnlockedReportState({ reportId: state.reportId, report: unlocked, name, email });
-        setReport(unlocked);
-        if (unlocked) {
-          setAssistantReportData({
-            country: selectedCountry,
-            user: { name: unlockedReportState?.name, email: unlockedReportState?.email, occupation: unlocked.pathwayComparison?.[0]?.visaName },
-            targetVisa: unlocked.pathwayComparison?.[0]?.subclass,
-          } as any);
-        }
-      }}
-    />
+    <div id="quick-result-section" ref={reportSectionRef}>
+      <PremiumFeatureGate
+        locale={locale}
+        reportId={state.reportId}
+        preview={state.preview}
+        defaultEmail={state.userInput?.email}
+        defaultName={state.userInput?.name}
+        isFreeActive={isFreeActive}
+        remainingSpots={remainingSpots}
+        onUnlocked={({ report: unlocked, email, name }) => {
+          setUnlockedReportState({ reportId: state.reportId, report: unlocked, name, email, isUnlocked: !!unlocked });
+          setReport(unlocked);
+          if (unlocked) {
+            setAssistantReportData({
+              country: selectedCountry,
+              user: { name: name, email: email, occupation: unlocked.pathwayComparison?.[0]?.visaName },
+              targetVisa: unlocked.pathwayComparison?.[0]?.subclass,
+            } as any);
+          }
+        }}
+      />
+    </div>
+  );
+
+  // ── Full Report section (unlocked) ──
+  const fullReportSection = unlockedReportState?.report && (
+    <div id="full-report-section" style={{ marginTop: "2rem" }}>
+      <div className="rounded-xl border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">
+            {isTr ? "Tam Rapor" : isZh ? "完整报告" : "Full Report"}
+          </h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDownloadPDF}
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {isTr ? "PDF İndir" : isZh ? "下载 PDF" : "Download PDF"}
+          </Button>
+        </div>
+        <LogiAIAssistant locale={locale} reportData={assistantReportData} />
+      </div>
+    </div>
   );
 
   // ── Render ──
@@ -507,7 +584,11 @@ export function FullCheckWaitlistForm({
 
       {reportSection}
 
-      {state.status === "success" && assistantReportData && <LogiAIAssistant locale={locale} reportData={assistantReportData} />}
+      {fullReportSection}
+
+      {state.status === "success" && assistantReportData && (
+        <LogiAIAssistant locale={locale} reportData={assistantReportData} />
+      )}
 
       {selectedCountry === "AU" && (
         <Dialog open={occupationModalOpen} onOpenChange={(v) => !v && setOccupationModalOpen(false)}>

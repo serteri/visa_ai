@@ -45,7 +45,7 @@ export function PremiumFeatureGate({
   defaultName?: string;
   isFreeActive?: boolean;
   remainingSpots?: number;
-  onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string }) => void;
+  onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string; isUnlocked?: boolean }) => void;
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -78,6 +78,7 @@ export function PremiumFeatureGate({
         report: unlockState.report,
         email: unlockState.userInput?.email,
         name: unlockState.userInput?.name,
+        isUnlocked: true,
       });
     }
 

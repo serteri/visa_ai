@@ -2,6 +2,8 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Combobox } from "@/components/ui/combobox";
+
 function RequiredMark() {
   return <span className="text-red-500 ml-1" aria-hidden="true">*</span>;
 }
@@ -13,6 +15,17 @@ function ErrorText({ message }: { message?: string }) {
 import { activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
 import { useTranslation } from "@/contexts/language-context";
 import { renderVisaPathwayOptions } from "./full-check-waitlist-form";
+
+const COUNTRIES = [
+  { code: "AU", label: "Australia" }, { code: "TR", label: "Turkey" }, { code: "IN", label: "India" },
+  { code: "CN", label: "China" }, { code: "GB", label: "United Kingdom" }, { code: "US", label: "United States" },
+  { code: "CA", label: "Canada" }, { code: "NZ", label: "New Zealand" }, { code: "PK", label: "Pakistan" },
+  { code: "BD", label: "Bangladesh" }, { code: "NP", label: "Nepal" }, { code: "PH", label: "Philippines" },
+  { code: "VN", label: "Vietnam" }, { code: "ID", label: "Indonesia" }, { code: "MY", label: "Malaysia" },
+  { code: "SG", label: "Singapore" }, { code: "ZA", label: "South Africa" }, { code: "BR", label: "Brazil" },
+  { code: "MX", label: "Mexico" }, { code: "DE", label: "Germany" }, { code: "FR", label: "France" },
+  { code: "IT", label: "Italy" }, { code: "ES", label: "Spain" }, { code: "OTHER", label: "Other" },
+] as const;
 
 interface Step1Props {
   locale: string;
@@ -76,11 +89,14 @@ export function Step1Personal({
 
       <div className="space-y-2">
         <Label htmlFor="waitlist-target-country">{txt("Hangi ülke için rapor istiyorsunuz?", "Which country is this report for?", "您希望针对哪个国家生成报告？")}</Label>
-        <select id="waitlist-target-country" name="targetCountry" value={selectedCountry} onChange={(e) => { const next = e.target.value as SupportedCountry; onCountryChange(next); }} disabled={Boolean(initialValues.targetCountry)} className={selectClassName}>
-          {activeCountries.map((code) => (
-            <option key={code} value={code}>{countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"]}</option>
-          ))}
-        </select>
+        <Combobox
+          placeholder={txt("Ülke seçin", "Select country", "请选择国家")}
+          items={activeCountries.map(code => ({ value: code, label: countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"] }))}
+          value={selectedCountry}
+          onChange={(val) => onCountryChange(val as SupportedCountry)}
+          disabled={Boolean(initialValues.targetCountry)}
+          className={selectClassName}
+        />
         <input type="hidden" name="targetCountry" value={selectedCountry} />
       </div>
 
@@ -182,14 +198,28 @@ export function Step1Personal({
 
       <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-current-country"] || undefined}>
         <Label htmlFor="waitlist-current-country">{txt("Bulunduğunuz ülke", "Current country", "当前国家")}<RequiredMark /></Label>
-        <Input id="waitlist-current-country" name="currentCountry" required defaultValue={initialValues.currentCountry ?? ""} {...noAutofill("currentCountry")} className={`${fieldClassName} ${errCls("waitlist-current-country")}`} placeholder={txt("Avustralya, Türkiye...", "Australia, Turkiye...", "例如：澳大利亚...")} />
+        <Combobox
+          placeholder={txt("Seçiniz", "Select", "请选择")}
+          items={COUNTRIES.map(c => ({ value: c.code, label: c.label }))}
+          value={initialValues.currentCountry ?? ""}
+          onChange={(val) => {}}
+          className={`${selectClassName} ${errCls("waitlist-current-country")}`}
+        />
+        <input type="hidden" name="currentCountry" value={initialValues.currentCountry ?? ""} />
         {fieldErrors?.["waitlist-current-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-current-country"]}</p>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-passport-country"] || undefined}>
-          <Label htmlFor="waitlist-passport-country">{txt("Pasaport ülkesi", "Passport country", "护照国家")}<RequiredMark /></Label>
-          <Input id="waitlist-passport-country" name="passportCountry" required {...noAutofill("passportCountry")} className={`${fieldClassName} ${errCls("waitlist-passport-country")}`} placeholder={txt("Ülke adı", "Country name", "国家名称")} />
+          <Label htmlFor="waitlist-passport-country">{txt("Pasaport ülke", "Passport country", "护照国家")}<RequiredMark /></Label>
+          <Combobox
+            placeholder={txt("Seçiniz", "Select", "请选择")}
+            items={COUNTRIES.map(c => ({ value: c.code, label: c.label }))}
+            value={initialValues.passportCountry ?? ""}
+            onChange={(val) => {}}
+            className={`${selectClassName} ${errCls("waitlist-passport-country")}`}
+          />
+          <input type="hidden" name="passportCountry" value={initialValues.passportCountry ?? ""} />
           {fieldErrors?.["waitlist-passport-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-passport-country"]}</p>}
         </div>
         <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-age"] || undefined}>
