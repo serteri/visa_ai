@@ -156,8 +156,15 @@ function RequiredMark() {
   return <span className="text-red-500 ml-1" aria-hidden="true">*</span>;
 }
 
-function noAutofill(field: string): Record<string, string> {
-  return { autoComplete: "off", autoCorrect: "off", autoCapitalize: "off", spellCheck: "false", "data-lpignore": "true", "data-1p-ignore": "true" };
+function noAutofill(field: string, override?: string): Record<string, string> {
+  return {
+    autoComplete: override ?? "off",
+    autoCorrect: "off",
+    autoCapitalize: "off",
+    spellCheck: "false",
+    "data-lpignore": "true",
+    "data-1p-ignore": "true",
+  };
 }
 
 export { renderVisaPathwayOptions };
@@ -233,6 +240,8 @@ export function FullCheckWaitlistForm({
   const [selectedCountry, setSelectedCountry] = useState<SupportedCountry>(
     isSupportedCountry(initialValues.targetCountry) ? (initialValues.targetCountry as SupportedCountry) : defaultCountry
   );
+  const [currentCountry, setCurrentCountry] = useState(initialValues.currentCountry ?? "");
+  const [passportCountry, setPassportCountry] = useState(initialValues.passportCountry ?? "");
   const initialAnzscoEntry = resolveAnzscoEntry(initialValues.occupation);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
@@ -551,7 +560,7 @@ export function FullCheckWaitlistForm({
 
           {/* Step content — CSS hidden keeps all mounted in DOM */}
           <div className={currentStep === 1 ? "" : "hidden"}>
-            <Step1Personal locale={locale} selectedCountry={selectedCountry} onCountryChange={(c) => { setSelectedCountry(c); onCountryChange?.(c); }} initialValues={initialValues} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} fieldErrors={stepErrors} />
+            <Step1Personal locale={locale} selectedCountry={selectedCountry} onCountryChange={(c) => { setSelectedCountry(c); onCountryChange?.(c); }} initialValues={initialValues} currentCountry={currentCountry} setCurrentCountry={setCurrentCountry} passportCountry={passportCountry} setPassportCountry={setPassportCountry} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} fieldErrors={stepErrors} />
           </div>
           <div className={currentStep === 2 ? "" : "hidden"}>
             <Step2Career locale={locale} selectedCountry={selectedCountry} isPartner={isPartner} nocSearch={nocSearch} setNocSearch={setNocSearch} nocCode={nocCode} setNocCode={setNocCode} nocTeer={nocTeer} setNocTeer={setNocTeer} nocResults={nocResults} setNocResults={setNocResults} nocOpen={nocOpen} setNocOpen={setNocOpen} searchNoc={searchNoc} anzscoSearch={anzscoSearch} setAnzscoSearch={setAnzscoSearch} anzscoCode={anzscoCode} setAnzscoCode={setAnzscoCode} resolvedAnzscoEntry={resolvedAnzscoEntry} anzscoResults={anzscoResults} setAnzscoResults={setAnzscoResults} anzscoOpen={anzscoOpen} setAnzscoOpen={setAnzscoOpen} searchAnzsco={searchAnzsco} getLocalizedAnzscoTitle={getLocalizedAnzscoTitle} submittedOccupationValue={submittedOccupationValue} setOccupationModalOpen={setOccupationModalOpen} relationshipType={relationshipType} setRelationshipType={setRelationshipType} cohabitationDuration={cohabitationDuration} setCohabitationDuration={setCohabitationDuration} sponsorStatus={sponsorStatus} setSponsorStatus={setSponsorStatus} previousSponsorship={previousSponsorship} setPreviousSponsorship={setPreviousSponsorship} applicationLocationPreference={applicationLocationPreference} setApplicationLocationPreference={setApplicationLocationPreference} relationshipEvidence={relationshipEvidence} setRelationshipEvidence={setRelationshipEvidence} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} />

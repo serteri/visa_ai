@@ -32,6 +32,10 @@ interface Step1Props {
   selectedCountry: SupportedCountry;
   onCountryChange: (c: SupportedCountry) => void;
   initialValues: Record<string, string>;
+  currentCountry: string;
+  setCurrentCountry: (v: string) => void;
+  passportCountry: string;
+  setPassportCountry: (v: string) => void;
   migrationGoals: MigrationGoalId[];
   toggleMigrationGoal: (id: MigrationGoalId) => void;
   fieldErrors?: Record<string, string> | null;
@@ -54,12 +58,13 @@ interface Step1Props {
   state: { errors?: Record<string, string> };
   fieldClassName: string;
   selectClassName: string;
-  noAutofill: (name: string) => Record<string, string>;
+  noAutofill: (name: string, override?: string) => Record<string, string>;
   showsCourseFields: (visa: string) => boolean;
 }
 
 export function Step1Personal({
   locale, selectedCountry, onCountryChange, initialValues,
+  currentCountry, setCurrentCountry, passportCountry, setPassportCountry,
   migrationGoals, toggleMigrationGoal, visaInterest, setVisaInterest,
   nominationStream, setNominationStream, yearsInSponsoredPosition, setYearsInSponsoredPosition,
   courseName, setCourseName, courseCricosCode, setCourseCricosCode,
@@ -83,7 +88,7 @@ export function Step1Personal({
 
       <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-email"] || undefined}>
         <Label htmlFor="waitlist-email">{txt("E-posta adresi", "Email address", "邮箱地址")}<RequiredMark /></Label>
-        <Input id="waitlist-email" name="email" type="email" placeholder="you@example.com" {...noAutofill("email")} className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
+        <Input id="waitlist-email" name="email" type="email" placeholder="you@example.com" {...noAutofill("email", "new-password")} className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
         {fieldErrors?.["waitlist-email"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-email"]}</p>}
       </div>
 
@@ -201,11 +206,11 @@ export function Step1Personal({
         <Combobox
           placeholder={txt("Seçiniz", "Select", "请选择")}
           items={COUNTRIES.map(c => ({ value: c.code, label: c.label }))}
-          value={initialValues.currentCountry ?? ""}
-          onChange={(val) => {}}
+          value={currentCountry}
+          onChange={(val) => { setCurrentCountry(val as SupportedCountry); }}
           className={`${selectClassName} ${errCls("waitlist-current-country")}`}
         />
-        <input type="hidden" name="currentCountry" value={initialValues.currentCountry ?? ""} />
+        <input type="hidden" name="currentCountry" value={currentCountry} />
         {fieldErrors?.["waitlist-current-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-current-country"]}</p>}
       </div>
 
@@ -215,11 +220,11 @@ export function Step1Personal({
           <Combobox
             placeholder={txt("Seçiniz", "Select", "请选择")}
             items={COUNTRIES.map(c => ({ value: c.code, label: c.label }))}
-            value={initialValues.passportCountry ?? ""}
-            onChange={(val) => {}}
+            value={passportCountry}
+            onChange={(val) => { setPassportCountry(val as SupportedCountry); }}
             className={`${selectClassName} ${errCls("waitlist-passport-country")}`}
           />
-          <input type="hidden" name="passportCountry" value={initialValues.passportCountry ?? ""} />
+          <input type="hidden" name="passportCountry" value={passportCountry} />
           {fieldErrors?.["waitlist-passport-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-passport-country"]}</p>}
         </div>
         <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-age"] || undefined}>
