@@ -353,9 +353,6 @@ export function FullCheckWaitlistForm({
       wasPendingRef.current = false;
       if (state.status === "success" && state.reportId) {
         trackGaEvent("full_check_complete", { reportId: state.reportId, country: selectedCountry });
-        if (state.userInput?.name) {
-          setUnlockedReportState({ reportId: state.reportId, report: null as any, name: state.userInput.name, email: state.userInput.email });
-        }
       }
     }
   }, [isPending, state]);
