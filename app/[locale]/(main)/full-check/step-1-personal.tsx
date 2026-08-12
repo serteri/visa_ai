@@ -88,9 +88,7 @@ export function Step1Personal({
 
       <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-email"] || undefined}>
         <Label htmlFor="waitlist-email">{txt("E-posta adresi", "Email address", "邮箱地址")}<RequiredMark /></Label>
-        {/* Off-screen password field to break Chrome's email autofill detection */}
-        <input type="password" name="_email_fake_password" autoComplete="new-password" className="!absolute !-left-[9999px] !top-0 !visible" tabIndex={-1} aria-hidden="true" />
-        <Input id="waitlist-email" name="email" type="email" placeholder="you@example.com" autoComplete="nope" autoCorrect="off" autoCapitalize="off" spellCheck="false" className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
+        <Input id="waitlist-email" name="email" type="text" inputMode="email" placeholder="you@example.com" autoCorrect="off" autoCapitalize="off" spellCheck="false" className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
         {fieldErrors?.["waitlist-email"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-email"]}</p>}
       </div>
 
