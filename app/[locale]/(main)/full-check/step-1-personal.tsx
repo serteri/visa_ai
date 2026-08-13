@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Combobox } from "@/components/ui/combobox";
 import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 function RequiredMark() {
   return <span className="text-red-500 ml-1" aria-hidden="true">*</span>;
@@ -87,6 +88,12 @@ export function Step1Personal({
     const upper = code.toUpperCase();
     return ["AU", "CA"].includes(upper) ? (upper as SupportedCountry) : null;
   })();
+
+  useEffect(() => {
+    if (lockedCountry) {
+      onCountryChange(lockedCountry);
+    }
+  }, [lockedCountry, onCountryChange]);
 
   return (
     <>
