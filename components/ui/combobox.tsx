@@ -40,7 +40,7 @@ export function Combobox<T extends React.ComponentType<any>>({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
+      <PopoverTrigger disabled={disabled}>
         <Button
           variant="outline"
           role="combobox"
