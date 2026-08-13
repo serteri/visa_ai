@@ -37,9 +37,33 @@ export function Combobox<T extends React.ComponentType<any>>({
   disabled = false,
 }: ComboboxProps<T>) {
   const [open, setOpen] = React.useState(false);
+  const scrollYRef = React.useRef(0);
+
+  const handleOpenChange = (next: boolean) => {
+    if (next) {
+      scrollYRef.current = window.scrollY;
+    }
+    setOpen(next);
+  };
+
+  React.useLayoutEffect(() => {
+    if (!open) return;
+    const targetY = scrollYRef.current;
+    // Base UI's opening focus/positioning sequence can force a native scroll after
+    // this effect runs, so keep correcting for a couple of frames instead of once.
+    let frames = 0;
+    let rafId: number;
+    const correct = () => {
+      if (window.scrollY !== targetY) window.scrollTo(0, targetY);
+      frames += 1;
+      if (frames < 5) rafId = requestAnimationFrame(correct);
+    };
+    rafId = requestAnimationFrame(correct);
+    return () => cancelAnimationFrame(rafId);
+  }, [open]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen} modal={false}>
+    <Popover open={open} onOpenChange={handleOpenChange} modal={false}>
       <PopoverTrigger disabled={disabled}>
         <Button
           variant="outline"
@@ -56,7 +80,7 @@ export function Combobox<T extends React.ComponentType<any>>({
       </PopoverTrigger>
       <PopoverContent side="bottom" align="start" sideOffset={4} collisionAvoidance={{ side: "none", align: "shift", fallbackAxisSide: "none" }} initialFocus={false} className="w-[--radix-popover-trigger-width] bg-background z-50 shadow-md border">
         <Command>
-          <CommandInput placeholder={placeholder} />
+          <CommandInput placeholder={placeholder} autoFocus={false} />
           <CommandList>
             <CommandEmpty>No item found.</CommandEmpty>
             <CommandGroup>
