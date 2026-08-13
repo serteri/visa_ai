@@ -54,7 +54,7 @@ export function Combobox<T extends React.ComponentType<any>>({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] bg-background z-50 shadow-md border">
+      <PopoverContent side="bottom" align="start" sideOffset={4} className="w-[--radix-popover-trigger-width] bg-background z-50 shadow-md border">
         <Command>
           <CommandInput placeholder={placeholder} />
           <CommandList>
