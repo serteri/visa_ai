@@ -39,7 +39,7 @@ export function Combobox<T extends React.ComponentType<any>>({
   const [open, setOpen] = React.useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger disabled={disabled}>
         <Button
           variant="outline"
@@ -54,7 +54,7 @@ export function Combobox<T extends React.ComponentType<any>>({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent side="bottom" align="start" sideOffset={4} collisionAvoidance={{ side: "none", align: "shift", fallbackAxisSide: "none" }} className="w-[--radix-popover-trigger-width] bg-background z-50 shadow-md border">
+      <PopoverContent side="bottom" align="start" sideOffset={4} collisionAvoidance={{ side: "none", align: "shift", fallbackAxisSide: "none" }} initialFocus={false} className="w-[--radix-popover-trigger-width] bg-background z-50 shadow-md border">
         <Command>
           <CommandInput placeholder={placeholder} />
           <CommandList>
