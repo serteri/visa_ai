@@ -405,6 +405,57 @@ model StateAllocation {
   @@map("state_allocations")
 }
 
+// ── AI Chatbot: anonymous visitor tracking + chat history ──────────────────
+
+model ChatVisitor {
+  id            String        @id @default(uuid())
+  ipAddress     String?       @map("ip_address")
+  userAgent     String?       @map("user_agent")
+  // Optional client-side hash (e.g. canvas/audio fingerprint) for de-duping
+  // visitors whose IP changes (mobile networks, VPNs) — not required for
+  // the basic IP+UA lookup in getVisitorContext().
+  fingerprint   String?
+  messageCount  Int           @default(0) @map("message_count")
+  isPremium     Boolean       @default(false) @map("is_premium")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  sessions      ChatSession[]
+
+  // Looked up by ipAddress+userAgent on every anonymous chat request in
+  // getVisitorContext(); fingerprint indexed separately for the optional
+  // client-hash lookup path.
+  @@index([ipAddress, userAgent])
+  @@index([fingerprint])
+  @@map("chat_visitors")
+}
+
+model ChatSession {
+  id        String        @id @default(uuid())
+  visitorId String        @map("visitor_id")
+  title     String?
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+  visitor   ChatVisitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+
+  @@index([visitorId])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String      @id @default(uuid())
+  sessionId String      @map("session_id")
+  // 'user' | 'assistant' | 'system' — plain String rather than an enum since
+  // this mirrors the role field the LLM SDK message objects already use.
+  role      String
+  content   String      @db.Text
+  createdAt DateTime    @default(now()) @map("created_at")
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@map("chat_messages")
+}
+
 // Drizzle-owned (see db/schema.ts's campaigns) — same as above. Introspected
 // after this table nearly got dropped by an uninformed `prisma db push` --
 // see the warning at the top of this file. Columns verified directly against
