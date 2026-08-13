@@ -16,6 +16,7 @@
     "prisma:push": "prisma db push"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.41",
     "@auth/drizzle-adapter": "^1.11.2",
     "@auth/prisma-adapter": "^2.11.2",
     "@base-ui/react": "^1.4.1",

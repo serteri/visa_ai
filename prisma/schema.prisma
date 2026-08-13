@@ -25,12 +25,14 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
 }
 
 model UserReport {
@@ -454,6 +456,20 @@ model ChatMessage {
 
   @@index([sessionId, createdAt])
   @@map("chat_messages")
+}
+
+// RAG knowledge base: PDF chunks + embeddings for the chatbot to retrieve
+// context from. embedding is Unsupported because Prisma Client has no
+// native vector type -- reads/writes to that column go through $queryRaw /
+// $executeRaw (see lib/pdf-processor.ts).
+model DocumentChunk {
+  id        String                @id @default(cuid())
+  content   String                @db.Text
+  metadata  Json // source PDF filename, page number, etc.
+  embedding Unsupported("vector(1536)")? // text-embedding-3-small dimension
+  createdAt DateTime              @default(now()) @map("created_at")
+
+  @@map("document_chunks")
 }
 
 // Drizzle-owned (see db/schema.ts's campaigns) — same as above. Introspected
