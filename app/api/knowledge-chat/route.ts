@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { streamText, generateText, embed, convertToModelMessages, type UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
 
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getVisitorContext } from "@/lib/visitor-tracking";
 
@@ -11,6 +12,10 @@ const CHAT_MODEL_ID = "gpt-4o-mini";
 const EMBEDDING_MODEL_ID = "text-embedding-3-small";
 const FREE_MESSAGE_LIMIT = 5;
 const RETRIEVED_CHUNK_COUNT = 6;
+// Founder account -- always bypasses the free-message paywall regardless of
+// messageCount/isPremium. Not read from env since it's a single fixed
+// identity, not per-environment config.
+const VIP_BYPASS_EMAIL = "serteri@gmail.com";
 
 interface KnowledgeChatRequestBody {
   // useChat/DefaultChatTransport posts UIMessage[] (parts-based), not
@@ -60,7 +65,10 @@ KESİN KURALLAR (GUARDRAILS):
 1. Yasal Sınırlar ve Garanti: ASLA vize onayı veya Kalıcı Oturum (PR) için kesin garanti verme ("Kesin PR alırsın", "Vizen %100 onaylanır" gibi ifadeler YASAKTIR). Dilini her zaman olasılıklar üzerine kur ("... şartlarını sağlarsanız bu uygun bir yol olabilir", "Bu rota genellikle şu adımları içerir...").
 2. MARA Yönlendirmesi: Sen bir yapay zekasın, lisanslı bir MARA ajanı değilsin. Ancak bunu her cümlenin sonuna ekleyip kullanıcıyı sıkma. Sadece çok kritik, yasal olarak riskli veya tamamen sana verilen verilerin dışına çıkan karmaşık vakalarda profesyonel destek almalarını öner.
 3. Planlama ve Strateji: Kullanıcı spesifik bir durum verdiğinde (örn: yaş, meslek, deneyim) sadece kural okuma. Sağlanan referansları kullanarak adım adım bir eylem planı veya alternatif senaryolar (A Planı, B Planı) oluştur.
-4. Eksik Veri Yönetimi (Kritik): Eğer kullanıcının sorduğu vize türü (Örn: 485 veya 482) sağlanan [REFERANS BİLGİLERİ] içinde eksikse veya hiç yoksa, KESİNLİKLE doğrudan "Bu konuda bilgi yok" deyip kestirip atma. Kendi genel ön eğitimini kullanarak o vize hakkında yapılandırılmış genel bir özet ver, ancak şeffaf ol: "Sistemimdeki LogiVisa güncel referanslarında bu vizenin tüm spesifik alt detayları şu an tam yer almıyor, ancak genel Avustralya göçmenlik kurallarına göre 482 vizesi şudur..." şeklinde yanıt ver ve ardından kullanıcıdan daha spesifik detaylar isteyerek aramayı derinleştir.
+4. Eksik Veri Yönetimi: Eğer kullanıcının sorduğu vize türü sağlanan referanslarda eksikse KESİNLİKLE doğrudan "Bu konuda bilgi yok" deme. Kendi genel ön eğitimini kullanarak o vize hakkında yapılandırılmış genel bir özet ver, ancak şeffaf ol: "Sistemimdeki güncel referanslarda bu vizenin tüm spesifik detayları şu an tam yer almıyor, ancak genel kurallara göre..." diyerek yanıt ver ve kullanıcıdan daha spesifik detaylar isteyerek aramayı derinleştir.
+5. Kesin Rakamlar ve Ücretler: Referanslarda vize başvuru ücretleri (Örn: AUD), vizelerin geçerlilik süreleri, İngilizce skor gereksinimleri veya yaş sınırları gibi KESİN VERİLER geçiyorsa bunları ASLA özetleme veya atlama. Yanıtına birebir ve kesin olarak dahil et.
+6. Kompleks Senaryo Analizi: Kullanıcı kendi eğitim süresini, yaşını ve iş geçmişini detaylıca verdiğinde (Örn: "4 yıldır buradayım, 2 yıl trade okudum, tecrübem yok"); bu bilgileri referanslardaki uygun vize alt türleriyle (Örn: Subclass 485) eşleştir. Tecrübe eksikliği gibi engelleri filtrele, uygun olan ve olmayan rotaları analitik olarak açıkla.
+7. Dil Uyumu (Cross-Lingual): Kullanıcı soruyu hangi dilde soruyorsa (Türkçe, Çince, İngilizce vb.), tüm planlamayı, terimleri ve yanıtını KESİNLİKLE kullanıcının dilinde ver.
 
 [REFERANS BİLGİLERİ]:
 ${chunkContents}
@@ -79,7 +87,10 @@ ${chunkContents}
 export async function POST(req: NextRequest) {
   const visitor = await getVisitorContext(req);
 
-  if (visitor.messageCount >= FREE_MESSAGE_LIMIT && !visitor.isPremium) {
+  const session = await auth();
+  const isVipBypass = session?.user?.email === VIP_BYPASS_EMAIL;
+
+  if (!isVipBypass && visitor.messageCount >= FREE_MESSAGE_LIMIT && !visitor.isPremium) {
     return Response.json({ error: "limit_reached", message: "Free limit reached." }, { status: 403 });
   }
 

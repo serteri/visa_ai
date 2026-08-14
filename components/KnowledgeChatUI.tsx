@@ -10,10 +10,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const FREE_LIMIT_ERROR_CODE = "limit_reached";
+const PREMIUM_UPGRADE_PATH = "/pricing";
 
 interface KnowledgeChatUIProps {
   className?: string;
-  /** Called when the user clicks "Unlock Premium" on the paywall overlay. */
+  /**
+   * Called when the user clicks "Unlock Premium" on the paywall overlay.
+   * Defaults to navigating to PREMIUM_UPGRADE_PATH ("/pricing") when omitted.
+   */
   onUpgradeClick?: () => void;
 }
 
@@ -44,6 +48,14 @@ export function KnowledgeChatUI({ className, onUpgradeClick }: KnowledgeChatUIPr
 
   const isBusy = status === "submitted" || status === "streaming";
   const inputDisabled = isLimitReached || isBusy;
+
+  const handleUpgradeClick = () => {
+    if (onUpgradeClick) {
+      onUpgradeClick();
+      return;
+    }
+    window.location.href = PREMIUM_UPGRADE_PATH;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,7 +145,7 @@ export function KnowledgeChatUI({ className, onUpgradeClick }: KnowledgeChatUIPr
             Ücretsiz 5 mesaj limitinize ulaştınız. Sınırsız RAG vize danışmanlığı ve detaylı raporlar için Premium
             kilidini açın.
           </p>
-          <Button onClick={onUpgradeClick} className="px-6">
+          <Button onClick={handleUpgradeClick} className="px-6">
             Unlock Premium
           </Button>
         </div>
