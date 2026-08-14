@@ -735,5 +735,18 @@
   "pricing.comprehensive.description": "一次性购买",
   "pricing.comprehensive.feature1": "150条高级AI消息",
   "pricing.comprehensive.feature2": "优先响应",
-  "pricing.comprehensive.feature3": "无限RAG访问"
+  "pricing.comprehensive.feature3": "无限RAG访问",
+  "assistant.title": "LogiVisa AI 顾问",
+  "assistant.subtitle": "询问有关澳大利亚签证的任何问题。回复基于官方移民指南生成。",
+  "chat.typing": "正在输入...",
+  "chat.inputPlaceholder": "询问有关您签证流程的问题...",
+  "chat.send": "发送",
+  "chat.errorGeneric": "发生错误，请重试。",
+  "chat.limitReachedMessage": "您已达到免费5条消息的上限。解锁高级版以获得无限RAG签证咨询和详细报告。",
+  "chat.emailPlaceholder": "请输入您的电子邮件地址",
+  "chat.emailRequired": "请输入您的电子邮件地址。",
+  "chat.unlockError": "出现问题，请刷新页面后重试。",
+  "chat.verifying": "验证中...",
+  "chat.unlockPremium": "Unlock Premium",
+  "chat.unlockFailed": "验证失败，请重试。"
 }

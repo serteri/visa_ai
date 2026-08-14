@@ -742,5 +742,18 @@
   "pricing.comprehensive.description": "Tek seferlik satın alım",
   "pricing.comprehensive.feature1": "150 Premium AI Mesajı",
   "pricing.comprehensive.feature2": "Öncelikli Yanıt",
-  "pricing.comprehensive.feature3": "Sınırsız RAG Erişimi"
+  "pricing.comprehensive.feature3": "Sınırsız RAG Erişimi",
+  "assistant.title": "LogiVisa AI Danışmanı",
+  "assistant.subtitle": "Avustralya vizeleri hakkında her şeyi sorun. Yanıtlar resmi göçmenlik yönergelerine dayanılarak üretilir.",
+  "chat.typing": "Yazıyor...",
+  "chat.inputPlaceholder": "Vize sürecinizle ilgili bir soru sorun...",
+  "chat.send": "Gönder",
+  "chat.errorGeneric": "Bir hata oluştu, lütfen tekrar deneyin.",
+  "chat.limitReachedMessage": "Ücretsiz 5 mesaj limitinize ulaştınız. Sınırsız RAG vize danışmanlığı ve detaylı raporlar için Premium kilidini açın.",
+  "chat.emailPlaceholder": "E-posta adresinizi girin",
+  "chat.emailRequired": "Lütfen e-posta adresinizi girin.",
+  "chat.unlockError": "Bir sorun oluştu, lütfen sayfayı yenileyip tekrar deneyin.",
+  "chat.verifying": "Doğrulanıyor...",
+  "chat.unlockPremium": "Unlock Premium",
+  "chat.unlockFailed": "Doğrulama başarısız oldu, lütfen tekrar deneyin."
 }

@@ -735,5 +735,18 @@
   "pricing.comprehensive.description": "One-time purchase",
   "pricing.comprehensive.feature1": "150 Premium AI Messages",
   "pricing.comprehensive.feature2": "Priority Response",
-  "pricing.comprehensive.feature3": "Unlimited RAG Access"
+  "pricing.comprehensive.feature3": "Unlimited RAG Access",
+  "assistant.title": "LogiVisa AI Consultant",
+  "assistant.subtitle": "Ask anything about Australian visas. Responses are generated based on official immigration guidelines.",
+  "chat.typing": "Typing...",
+  "chat.inputPlaceholder": "Ask a question about your visa process...",
+  "chat.send": "Send",
+  "chat.errorGeneric": "An error occurred, please try again.",
+  "chat.limitReachedMessage": "You've reached your free 5-message limit. Unlock Premium for unlimited RAG visa consulting and detailed reports.",
+  "chat.emailPlaceholder": "Enter your email address",
+  "chat.emailRequired": "Please enter your email address.",
+  "chat.unlockError": "Something went wrong, please refresh the page and try again.",
+  "chat.verifying": "Verifying...",
+  "chat.unlockPremium": "Unlock Premium",
+  "chat.unlockFailed": "Verification failed, please try again."
 }

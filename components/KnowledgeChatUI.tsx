@@ -8,6 +8,7 @@ import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
 
 const FREE_LIMIT_ERROR_CODE = "limit_reached";
@@ -32,6 +33,7 @@ function isLimitReachedError(error: Error): boolean {
 }
 
 export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
+  const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [isLimitReached, setIsLimitReached] = useState(false);
   const [visitorId, setVisitorId] = useState<string | null>(null);
@@ -84,7 +86,7 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
     setUnlockEmailError(null);
 
     if (!trimmedEmail) {
-      setUnlockEmailError("Lütfen e-posta adresinizi girin.");
+      setUnlockEmailError(t("chat.emailRequired", "Please enter your email address."));
       return;
     }
 
@@ -94,7 +96,7 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
     }
 
     if (!visitorId) {
-      setUnlockEmailError("Bir sorun oluştu, lütfen sayfayı yenileyip tekrar deneyin.");
+      setUnlockEmailError(t("chat.unlockError", "Something went wrong, please refresh the page and try again."));
       return;
     }
 
@@ -114,7 +116,7 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
       setIsLimitReached(false);
     } catch (err) {
       console.error("[knowledge-chat] VIP unlock failed", err);
-      setUnlockEmailError("Doğrulama başarısız oldu, lütfen tekrar deneyin.");
+      setUnlockEmailError(t("chat.unlockFailed", "Verification failed, please try again."));
     } finally {
       setIsUnlocking(false);
     }
@@ -162,14 +164,14 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
         {isBusy && (
           <div className="flex justify-start">
             <div className="rounded-2xl bg-muted px-4 py-2 text-sm text-muted-foreground">
-              Yazıyor...
+              {t("chat.typing", "Typing...")}
             </div>
           </div>
         )}
 
         {error && !isLimitReached && (
           <p className="text-center text-xs text-red-600">
-            Bir hata oluştu, lütfen tekrar deneyin.
+            {t("chat.errorGeneric", "An error occurred, please try again.")}
           </p>
         )}
 
@@ -192,12 +194,12 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
               handleSubmit(e);
             }
           }}
-          placeholder="Vize sürecinizle ilgili bir soru sorun..."
+          placeholder={t("chat.inputPlaceholder", "Ask a question about your visa process...")}
           disabled={inputDisabled}
           className="min-h-11 flex-1 resize-none"
         />
         <Button type="submit" disabled={inputDisabled || !input.trim()}>
-          Gönder
+          {t("chat.send", "Send")}
         </Button>
       </form>
 
@@ -207,8 +209,10 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
             <Lock className="h-6 w-6" />
           </div>
           <p className="max-w-sm text-sm font-medium text-foreground">
-            Ücretsiz 5 mesaj limitinize ulaştınız. Sınırsız RAG vize danışmanlığı ve detaylı raporlar için Premium
-            kilidini açın.
+            {t(
+              "chat.limitReachedMessage",
+              "You've reached your free 5-message limit. Unlock Premium for unlimited RAG visa consulting and detailed reports.",
+            )}
           </p>
           <div className="w-full max-w-xs space-y-2">
             <Input
@@ -218,13 +222,13 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
                 setUnlockEmail(e.target.value);
                 setUnlockEmailError(null);
               }}
-              placeholder="E-posta adresinizi girin"
+              placeholder={t("chat.emailPlaceholder", "Enter your email address")}
               disabled={isUnlocking}
               className="text-center"
             />
             {unlockEmailError && <p className="text-xs text-red-600">{unlockEmailError}</p>}
             <Button onClick={handleUpgradeClick} disabled={isUnlocking} className="w-full px-6">
-              {isUnlocking ? "Doğrulanıyor..." : "Unlock Premium"}
+              {isUnlocking ? t("chat.verifying", "Verifying...") : t("chat.unlockPremium", "Unlock Premium")}
             </Button>
           </div>
         </div>
