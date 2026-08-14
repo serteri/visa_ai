@@ -281,7 +281,18 @@ export function PremiumFeatureGate({
       </Card>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/45 p-4 pt-8 sm:items-center sm:pt-4">
+          {/*
+            items-start + overflow-y-auto (not just items-center) so a
+            modal taller than the viewport scrolls into view instead of
+            overflowing above y=0 with no way to reach the top of it --
+            items-center alone visually centers short content fine, but
+            on shorter/mobile viewports this form (name/email/phone/
+            unlock method/terms/submit) can exceed viewport height, and a
+            plain "items-center justify-center" with no scroll clips the
+            unreachable overflow. sm:items-center restores true vertical
+            centering once there's a screen wide enough to usually fit it.
+          */}
           <Card className="w-full max-w-lg">
             <CardHeader className="space-y-2">
               <CardTitle>{isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}</CardTitle>
