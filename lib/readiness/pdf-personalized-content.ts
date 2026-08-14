@@ -7,6 +7,11 @@ import { getPersonalizedFaq } from "./pdf-content/personalized-faq";
 import { getSkillsAssessmentStatus } from "./pdf-content/skills-assessment-status";
 import { getViabilityInsights } from "./pdf-content/viability-insights";
 import { CURRENT_CSIT } from "./constants";
+import {
+  getSkillsAssessmentAuthority,
+  resolveLocalized,
+  type LocalizedString,
+} from "@/lib/skills-assessment";
 
 /** Core Skills Income Threshold — employer-sponsored visa minimum salary (1 July 2026). */
 const CSIT_THRESHOLD_AUD = CURRENT_CSIT.value;
@@ -601,13 +606,31 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   // ════════════════════════════════════════════════════════════════════════
   // 5. SKILLS ASSESSMENT STATUS
   // ════════════════════════════════════════════════════════════════════════
+  // Resolve the occupation-specific assessing authority once so both this
+  // section and the FAQ section below (which used to re-derive it
+  // separately) share the same lookup instead of hardcoding "undefined" and
+  // always falling back to the generic "Relevant assessing authority"
+  // placeholder -- the financial roadmap section already knows the real
+  // authority (e.g. ACS) for this occupation, so the skills-assessment
+  // status page should say so too.
+  let assessingAuthorityInfo: {
+    authorityId: string;
+    authorityName: string;
+    notes?: LocalizedString[];
+  } | null = null;
+  if (userInputSummary.occupation) {
+    assessingAuthorityInfo = getSkillsAssessmentAuthority(userInputSummary.occupation);
+  }
+
   ctx.ensurePageSpace(25);
   const skillsStatus = getSkillsAssessmentStatus(
     effectiveLocale,
     country,
     userInputSummary.occupation,
     skillsAssessmentDone,
-    undefined,
+    assessingAuthorityInfo
+      ? `${assessingAuthorityInfo.authorityName} (${assessingAuthorityInfo.authorityId})`
+      : undefined,
   );
 
   addSectionHeading("", skillsStatus.title);
@@ -716,23 +739,21 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   // 7. PERSONALIZED FAQ
   // ════════════════════════════════════════════════════════════════════════
   ctx.ensurePageSpace(40);
-  // Build assessingAuthority data for the FAQ from the engine's financial roadmap data
+  // Reuses assessingAuthorityInfo resolved for section 5 above instead of
+  // re-deriving it here. authorityNote must be resolved through
+  // resolveLocalized() -- authority.notes entries are LocalizedString
+  // ({ en, tr, "zh-Hans" } | string), not plain strings, and this used to
+  // pass the raw object through, which string-concatenates as
+  // "[object Object]" wherever the FAQ answer renders it.
   let faqAssessingAuthority: { authorityId?: string; authorityName?: string; authorityNote?: string } | null = null;
-  if (userInputSummary.occupation) {
-    // Check if we have authority data from the skills-assessment module
-    try {
-      const { getSkillsAssessmentAuthority } = require("@/lib/skills-assessment");
-      const authority = getSkillsAssessmentAuthority(userInputSummary.occupation);
-      if (authority) {
-        faqAssessingAuthority = {
-          authorityId: authority.authorityId,
-          authorityName: authority.authorityName,
-          authorityNote: authority.notes?.[0] ?? null,
-        };
-      }
-    } catch {
-      // Fallback: no authority data available
-    }
+  if (assessingAuthorityInfo) {
+    faqAssessingAuthority = {
+      authorityId: assessingAuthorityInfo.authorityId,
+      authorityName: assessingAuthorityInfo.authorityName,
+      authorityNote: assessingAuthorityInfo.notes?.[0]
+        ? resolveLocalized(assessingAuthorityInfo.notes[0], effectiveLocale)
+        : undefined,
+    };
   }
 
   const faq = getPersonalizedFaq(

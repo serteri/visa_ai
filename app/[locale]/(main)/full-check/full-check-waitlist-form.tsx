@@ -393,7 +393,7 @@ export function FullCheckWaitlistForm({
             userInputSummary: {
               name: unlockedReportState.name,
               email: unlockedReportState.email,
-              occupation: unlockedReportState.report.pathwayComparison?.[0]?.visaName,
+              occupation: initialValues.occupation,
               mainGoal: initialValues.mainGoal,
               currentCountry: initialValues.currentCountry,
               age: initialValues.age,
@@ -438,7 +438,7 @@ export function FullCheckWaitlistForm({
       report: unlockedReportState.report,
       locale: locale as "en" | "tr" | "zh-Hans",
       saveToFile: false,
-      userInputSummary: { name: unlockedReportState.name, email: unlockedReportState.email, occupation: unlockedReportState.report.pathwayComparison?.[0]?.visaName, mainGoal: initialValues.mainGoal, currentCountry: initialValues.currentCountry, age: initialValues.age, englishLevel },
+      userInputSummary: { name: unlockedReportState.name, email: unlockedReportState.email, occupation: initialValues.occupation, mainGoal: initialValues.mainGoal, currentCountry: initialValues.currentCountry, age: initialValues.age, englishLevel },
     });
     const blob = new Blob([pdfBytes as unknown as ArrayBuffer], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
@@ -468,7 +468,7 @@ export function FullCheckWaitlistForm({
           if (unlocked) {
             setAssistantReportData({
               country: selectedCountry,
-              user: { name: name, email: email, occupation: unlocked.pathwayComparison?.[0]?.visaName },
+              user: { name: name, email: email, occupation: initialValues.occupation },
               targetVisa: unlocked.pathwayComparison?.[0]?.subclass,
             } as any);
           }

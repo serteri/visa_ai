@@ -17,6 +17,7 @@ import {
   getDefaultPathway,
   resolveACSPathway,
   resolveLocalized,
+  resolveLocalizedArray,
 } from "@/lib/skills-assessment";
 import {
   type ProvinceCode,
@@ -4876,6 +4877,13 @@ function buildFinancialRoadmap(
       const processing = primaryPathway.processingTimeWeeks
         ? `${primaryPathway.processingTimeWeeks.standard} wk${primaryPathway.processingTimeWeeks.ifIncomplete ? ` (${primaryPathway.processingTimeWeeks.ifIncomplete} wk if incomplete)` : ""}`
         : "";
+      // primaryPathway.notes is LocalizedString[] ({ en, tr, "zh-Hans" } |
+      // string), not string[] -- joining it directly stringifies each
+      // object entry as "[object Object]". Resolve to the current locale
+      // first.
+      const notesText = primaryPathway.notes?.length
+        ? resolveLocalizedArray(primaryPathway.notes, locale).slice(0, 2).join(" ")
+        : "";
 
       items.push({
         category: isTr
@@ -4886,8 +4894,8 @@ function buildFinancialRoadmap(
           ? feeLabel
           : feeLabel,
         explanation: isTr
-          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${primaryPathway.name}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${primaryPathway.notes?.length ? "Notlar: " + primaryPathway.notes.slice(0, 2).join(" ") : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
-          : `Assessing authority: ${authority.authorityName}. Default pathway: ${primaryPathway.name}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${primaryPathway.notes?.length ? "Notes: " + primaryPathway.notes.slice(0, 2).join(" ") : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
+          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${primaryPathway.name}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
+          : `Assessing authority: ${authority.authorityName}. Default pathway: ${primaryPathway.name}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
       });
     } else {
       items.push({
