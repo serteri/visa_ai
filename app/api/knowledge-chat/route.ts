@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
   const result = streamText({
     model: openai.chat(CHAT_MODEL_ID),
     system: buildSystemPrompt(retrievedChunks),
-    messages: convertToModelMessages(messages),
+    messages: await convertToModelMessages(messages),
     onFinish: async () => {
       // Free-message counter only advances once the model actually
       // produced a reply -- a request that fails/aborts mid-stream
