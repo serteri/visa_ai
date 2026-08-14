@@ -419,6 +419,11 @@ model ChatVisitor {
   fingerprint   String?
   messageCount  Int           @default(0) @map("message_count")
   isPremium     Boolean       @default(false) @map("is_premium")
+  // Pay-as-you-go credit balance from one-time Stripe purchases (see
+  // app/[locale]/pricing). Decremented per premium message once the free
+  // messageCount limit is hit; isPremium above stays reserved for a
+  // separate unlimited/subscription grant.
+  premiumCredits Int          @default(0) @map("premium_credits")
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
   sessions      ChatSession[]
