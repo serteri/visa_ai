@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { streamText, embed, type ModelMessage } from "ai";
+import { streamText, embed, convertToModelMessages, type UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
 
 import { prisma } from "@/lib/prisma";
@@ -12,13 +12,17 @@ const EMBEDDING_MODEL_ID = "text-embedding-3-small";
 const FREE_MESSAGE_LIMIT = 5;
 const RETRIEVED_CHUNK_COUNT = 6;
 
-interface IncomingMessage {
-  role: "user" | "assistant" | "system";
-  content: string;
+interface KnowledgeChatRequestBody {
+  // useChat/DefaultChatTransport posts UIMessage[] (parts-based), not
+  // {role, content} pairs.
+  messages?: UIMessage[];
 }
 
-interface KnowledgeChatRequestBody {
-  messages?: IncomingMessage[];
+function getMessageText(message: UIMessage): string {
+  return message.parts
+    .filter((part): part is Extract<typeof part, { type: "text" }> => part.type === "text")
+    .map((part) => part.text)
+    .join("\n");
 }
 
 interface RetrievedChunk {
@@ -59,8 +63,9 @@ export async function POST(req: NextRequest) {
   const body = (await req.json()) as KnowledgeChatRequestBody;
   const messages = body.messages ?? [];
   const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
+  const lastUserText = lastUserMessage ? getMessageText(lastUserMessage).trim() : "";
 
-  if (!lastUserMessage?.content?.trim()) {
+  if (!lastUserText) {
     return Response.json(
       { error: "invalid_request", message: "A non-empty user message is required." },
       { status: 400 },
@@ -69,7 +74,7 @@ export async function POST(req: NextRequest) {
 
   const { embedding } = await embed({
     model: openai.textEmbeddingModel(EMBEDDING_MODEL_ID),
-    value: lastUserMessage.content,
+    value: lastUserText,
   });
   const vectorLiteral = `[${embedding.join(",")}]`;
 
@@ -85,7 +90,7 @@ export async function POST(req: NextRequest) {
   const result = streamText({
     model: openai.chat(CHAT_MODEL_ID),
     system: buildSystemPrompt(retrievedChunks),
-    messages: messages as ModelMessage[],
+    messages: convertToModelMessages(messages),
     onFinish: async () => {
       // Free-message counter only advances once the model actually
       // produced a reply -- a request that fails/aborts mid-stream
@@ -97,5 +102,8 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return result.toTextStreamResponse();
+  // toUIMessageStreamResponse (not toTextStreamResponse) -- required for the
+  // ai/@ai-sdk/react useChat + DefaultChatTransport pairing on the client,
+  // which parses the UI Message Stream protocol, not a plain text stream.
+  return result.toUIMessageStreamResponse();
 }
