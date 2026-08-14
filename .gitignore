@@ -55,5 +55,5 @@ legacy_referrals_export.json
 # local Claude Code settings
 .claude/settings.local.json
 
-# chatbot training PDFs -- never commit (size + not meant to be public)
-data/pdfs/
+# chatbot training knowledge base (PDF/xlsx/md/json) -- never commit (size + not meant to be public)
+data/knowledge/
