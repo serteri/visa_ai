@@ -5,14 +5,15 @@ import { Check, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
 
 interface Plan {
   id: string;
-  name: string;
+  nameKey: string;
+  descriptionKey: string;
   price: string;
-  description: string;
-  features: string[];
+  featureKeys: string[];
   highlighted?: boolean;
   priceId?: string;
 }
@@ -20,24 +21,29 @@ interface Plan {
 const PLANS: Plan[] = [
   {
     id: "starter",
-    name: "Başlangıç Paketi",
+    nameKey: "pricing.starter.name",
+    descriptionKey: "pricing.starter.description",
     price: "$9.99",
-    description: "Tek seferlik satın alım",
-    features: ["50 Premium AI Mesajı", "Detaylı Vize Analizi", "Çok Dilli Destek"],
+    featureKeys: ["pricing.starter.feature1", "pricing.starter.feature2", "pricing.starter.feature3"],
     priceId: process.env.NEXT_PUBLIC_STRIPE_STARTER_CREDITS_PRICE_ID,
   },
   {
     id: "comprehensive",
-    name: "Kapsamlı Paket",
+    nameKey: "pricing.comprehensive.name",
+    descriptionKey: "pricing.comprehensive.description",
     price: "$19.99",
-    description: "Tek seferlik satın alım",
-    features: ["150 Premium AI Mesajı", "Öncelikli Yanıt", "Sınırsız RAG Erişimi"],
+    featureKeys: [
+      "pricing.comprehensive.feature1",
+      "pricing.comprehensive.feature2",
+      "pricing.comprehensive.feature3",
+    ],
     highlighted: true,
     priceId: process.env.NEXT_PUBLIC_STRIPE_COMPREHENSIVE_CREDITS_PRICE_ID,
   },
 ];
 
 export function PricingPlans() {
+  const { t } = useTranslation();
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
 
   async function handleBuyNow(plan: Plan) {
@@ -82,23 +88,25 @@ export function PricingPlans() {
             <CardHeader>
               {plan.highlighted && (
                 <span className="mb-2 inline-flex w-fit items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                  En Popüler
+                  {t("pricing.mostPopular", "Most Popular")}
                 </span>
               )}
-              <CardTitle className="text-xl">{plan.name}</CardTitle>
-              <p className="text-sm text-muted-foreground">{plan.description}</p>
+              <CardTitle className="text-xl">{t(plan.nameKey)}</CardTitle>
+              <p className="text-sm text-muted-foreground">{t(plan.descriptionKey)}</p>
               <p className="pt-2 text-4xl font-bold text-foreground">
                 {plan.price}
-                <span className="text-base font-normal text-muted-foreground"> / tek seferlik</span>
+                <span className="text-base font-normal text-muted-foreground">
+                  {t("pricing.perOneTime", " / one-time")}
+                </span>
               </p>
             </CardHeader>
 
             <CardContent className="flex-1">
               <ul className="space-y-3">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm text-foreground">
+                {plan.featureKeys.map((featureKey) => (
+                  <li key={featureKey} className="flex items-start gap-2 text-sm text-foreground">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    {feature}
+                    {t(featureKey)}
                   </li>
                 ))}
               </ul>
@@ -115,10 +123,10 @@ export function PricingPlans() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Yönlendiriliyor...
+                    {t("pricing.redirecting", "Redirecting...")}
                   </>
                 ) : (
-                  "Satın Al"
+                  t("pricing.buyNow", "Buy Now")
                 )}
               </Button>
             </CardFooter>

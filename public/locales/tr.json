@@ -538,6 +538,10 @@
     "viewChecklist": "Kontrol listesini görüntüle ->",
     "autoSaveNotice": "İlerlemeniz otomatik olarak tarayıcı hafızasına kaydedilir.",
     "visas": {
+      "186": {
+        "title": "Subclass 186",
+        "description": "İşveren Adaylık Programı (TRT / Direct Entry)"
+      },
       "189": {
         "title": "Subclass 189",
         "description": "Skilled Independent"
@@ -545,10 +549,6 @@
       "190": {
         "title": "Subclass 190",
         "description": "Skilled Nominated"
-      },
-      "491": {
-        "title": "Subclass 491",
-        "description": "Skilled Work Regional"
       },
       "482": {
         "title": "Subclass 482",
@@ -558,9 +558,9 @@
         "title": "Subclass 485",
         "description": "Temporary Graduate"
       },
-      "186": {
-        "title": "Subclass 186",
-        "description": "İşveren Adaylık Programı (TRT / Direct Entry)"
+      "491": {
+        "title": "Subclass 491",
+        "description": "Skilled Work Regional"
       }
     }
   },
@@ -726,5 +726,21 @@
   "dc.checklist.pt8": "Eyalet / bölge nominasyon mektubu (subclass 190 veya 491)",
   "dc.checklist.pt9": "Partner becerisi: partner'in pozitif beceri değerlendirmesi + İngilizce kanıtı",
   "dc.checklist.pt10": "Topluluk dili: NAATI akreditasyon sertifikası (5+ puan talep ediyorsanız)",
-  "ir.varied": "Değişken"
+  "ir.varied": "Değişken",
+  "pricing.title": "Premium Kredi Paketleri",
+  "pricing.subtitle": "Ücretsiz mesaj limitinizi aştıysanız, ihtiyacınıza uygun kredi paketiyle LogiVisa AI Asistan'ı kullanmaya devam edin.",
+  "pricing.perOneTime": " / tek seferlik",
+  "pricing.mostPopular": "En Popüler",
+  "pricing.buyNow": "Satın Al",
+  "pricing.redirecting": "Yönlendiriliyor...",
+  "pricing.starter.name": "Başlangıç Paketi",
+  "pricing.starter.description": "Tek seferlik satın alım",
+  "pricing.starter.feature1": "50 Premium AI Mesajı",
+  "pricing.starter.feature2": "Detaylı Vize Analizi",
+  "pricing.starter.feature3": "Çok Dilli Destek",
+  "pricing.comprehensive.name": "Kapsamlı Paket",
+  "pricing.comprehensive.description": "Tek seferlik satın alım",
+  "pricing.comprehensive.feature1": "150 Premium AI Mesajı",
+  "pricing.comprehensive.feature2": "Öncelikli Yanıt",
+  "pricing.comprehensive.feature3": "Sınırsız RAG Erişimi"
 }

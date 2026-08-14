@@ -531,6 +531,10 @@
     "viewChecklist": "查看清单 ->",
     "autoSaveNotice": "你的进度会自动保存在浏览器中。",
     "visas": {
+      "186": {
+        "title": "186 子类",
+        "description": "雇主提名计划（TRT / Direct Entry）"
+      },
       "189": {
         "title": "189 子类",
         "description": "独立技术移民"
@@ -538,10 +542,6 @@
       "190": {
         "title": "190 子类",
         "description": "州担保技术移民"
-      },
-      "491": {
-        "title": "491 子类",
-        "description": "偏远地区技术工作"
       },
       "482": {
         "title": "482 子类",
@@ -551,9 +551,9 @@
         "title": "485 子类",
         "description": "临时毕业生"
       },
-      "186": {
-        "title": "186 子类",
-        "description": "雇主提名计划（TRT / Direct Entry）"
+      "491": {
+        "title": "491 子类",
+        "description": "偏远地区技术工作"
       }
     }
   },
@@ -719,5 +719,21 @@
   "dc.checklist.pt8": "州/领地提名信(子类190或491)",
   "dc.checklist.pt9": "伴侣技能：伴侣的成功技能评估+英语证明",
   "dc.checklist.pt10": "社区语言：NAATI认证证书(如声称5分加分)",
-  "ir.varied": "不定"
+  "ir.varied": "不定",
+  "pricing.title": "高级积分套餐",
+  "pricing.subtitle": "如果您已达到免费消息上限，请选择适合您需求的积分套餐，继续使用 LogiVisa AI 助手。",
+  "pricing.perOneTime": " / 一次性",
+  "pricing.mostPopular": "最受欢迎",
+  "pricing.buyNow": "立即购买",
+  "pricing.redirecting": "正在跳转...",
+  "pricing.starter.name": "入门套餐",
+  "pricing.starter.description": "一次性购买",
+  "pricing.starter.feature1": "50条高级AI消息",
+  "pricing.starter.feature2": "详细签证分析",
+  "pricing.starter.feature3": "多语言支持",
+  "pricing.comprehensive.name": "综合套餐",
+  "pricing.comprehensive.description": "一次性购买",
+  "pricing.comprehensive.feature1": "150条高级AI消息",
+  "pricing.comprehensive.feature2": "优先响应",
+  "pricing.comprehensive.feature3": "无限RAG访问"
 }

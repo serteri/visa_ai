@@ -531,6 +531,10 @@
     "viewChecklist": "View checklist ->",
     "autoSaveNotice": "Your progress is automatically saved in your browser.",
     "visas": {
+      "186": {
+        "title": "Subclass 186",
+        "description": "Employer Nomination Scheme (TRT / Direct Entry)"
+      },
       "189": {
         "title": "Subclass 189",
         "description": "Skilled Independent"
@@ -538,10 +542,6 @@
       "190": {
         "title": "Subclass 190",
         "description": "Skilled Nominated"
-      },
-      "491": {
-        "title": "Subclass 491",
-        "description": "Skilled Work Regional"
       },
       "482": {
         "title": "Subclass 482",
@@ -551,9 +551,9 @@
         "title": "Subclass 485",
         "description": "Temporary Graduate"
       },
-      "186": {
-        "title": "Subclass 186",
-        "description": "Employer Nomination Scheme (TRT / Direct Entry)"
+      "491": {
+        "title": "Subclass 491",
+        "description": "Skilled Work Regional"
       }
     }
   },
@@ -719,5 +719,21 @@
   "dc.checklist.pt8": "State / territory nomination letter (subclass 190 or 491)",
   "dc.checklist.pt9": "Partner skills: partner's positive skills assessment + English evidence",
   "dc.checklist.pt10": "Community language: NAATI accreditation certificate (if claiming +5 pts)",
-  "ir.varied": "Varied"
+  "ir.varied": "Varied",
+  "pricing.title": "Premium Credit Packages",
+  "pricing.subtitle": "If you've reached your free message limit, keep using the LogiVisa AI Assistant with a credit package that fits your needs.",
+  "pricing.perOneTime": " / one-time",
+  "pricing.mostPopular": "Most Popular",
+  "pricing.buyNow": "Buy Now",
+  "pricing.redirecting": "Redirecting...",
+  "pricing.starter.name": "Starter Package",
+  "pricing.starter.description": "One-time purchase",
+  "pricing.starter.feature1": "50 Premium AI Messages",
+  "pricing.starter.feature2": "Detailed Visa Analysis",
+  "pricing.starter.feature3": "Multilingual Support",
+  "pricing.comprehensive.name": "Comprehensive Package",
+  "pricing.comprehensive.description": "One-time purchase",
+  "pricing.comprehensive.feature1": "150 Premium AI Messages",
+  "pricing.comprehensive.feature2": "Priority Response",
+  "pricing.comprehensive.feature3": "Unlimited RAG Access"
 }
