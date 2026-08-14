@@ -64,20 +64,23 @@ export function Combobox<T extends React.ComponentType<any>>({
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange} modal={false}>
-      <PopoverTrigger disabled={disabled}>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className={cn("w-full justify-between font-normal", className, disabled && "opacity-50 cursor-not-allowed")}
-          disabled={disabled}
-        >
-          {value
-            ? items.find((item) => item.value === value)?.label
-            : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger
+        disabled={disabled}
+        render={
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className={cn("w-full justify-between font-normal", className, disabled && "opacity-50 cursor-not-allowed")}
+            disabled={disabled}
+          >
+            {value
+              ? items.find((item) => item.value === value)?.label
+              : placeholder}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        }
+      />
       <PopoverContent side="bottom" align="start" sideOffset={4} collisionAvoidance={{ side: "none", align: "shift", fallbackAxisSide: "none" }} initialFocus={false} className="w-[--radix-popover-trigger-width] bg-background z-50 shadow-md border">
         <Command>
           <CommandInput placeholder={placeholder} autoFocus={false} />
