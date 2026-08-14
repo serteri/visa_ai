@@ -198,12 +198,15 @@ export async function saveDocumentChunks(
   for (let i = 0; i < chunks.length; i++) {
     const { content, metadata } = chunks[i];
     const vectorLiteral = `[${embeddings[i].join(",")}]`;
+    // Postgres text/jsonb columns reject the NUL byte outright (error 22021);
+    // pdf-parse occasionally emits one from malformed embedded PDF content.
+    const sanitizedContent = content.replace(new RegExp(String.fromCharCode(0), "g"), "");
 
     await prisma.$executeRaw`
       INSERT INTO document_chunks (id, content, metadata, embedding, created_at)
       VALUES (
         gen_random_uuid()::text,
-        ${content},
+        ${sanitizedContent},
         ${metadata}::jsonb,
         ${vectorLiteral}::vector,
         now()
