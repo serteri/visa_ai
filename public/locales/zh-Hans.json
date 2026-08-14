@@ -748,5 +748,6 @@
   "chat.unlockError": "出现问题，请刷新页面后重试。",
   "chat.verifying": "验证中...",
   "chat.unlockPremium": "Unlock Premium",
-  "chat.unlockFailed": "验证失败，请重试。"
+  "chat.unlockFailed": "验证失败，请重试。",
+  "assistant.backToHome": "返回首页"
 }

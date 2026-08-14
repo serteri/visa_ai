@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { LanguageProvider } from "@/contexts/language-context";
 import { getTranslations, t } from "@/lib/i18n/get-translations";
@@ -35,7 +37,16 @@ export default async function AiAssistantPage({ params }: PageProps) {
   return (
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
       <div className="min-h-screen bg-slate-50">
-        <header className="mx-auto max-w-4xl px-4 pt-10 pb-6 text-center sm:pt-16">
+        <div className="mx-auto max-w-4xl px-4 pt-6">
+          <Link
+            href={`/${locale}`}
+            className="group inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-200/60 hover:text-slate-900"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+            {t(translations, "assistant.backToHome", "Back to Home")}
+          </Link>
+        </div>
+        <header className="mx-auto max-w-4xl px-4 pt-4 pb-6 text-center sm:pt-8">
           <h1 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
             {t(translations, "assistant.title", "LogiVisa AI Consultant")}
           </h1>

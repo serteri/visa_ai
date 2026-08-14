@@ -748,5 +748,6 @@
   "chat.unlockError": "Something went wrong, please refresh the page and try again.",
   "chat.verifying": "Verifying...",
   "chat.unlockPremium": "Unlock Premium",
-  "chat.unlockFailed": "Verification failed, please try again."
+  "chat.unlockFailed": "Verification failed, please try again.",
+  "assistant.backToHome": "Back to Home"
 }

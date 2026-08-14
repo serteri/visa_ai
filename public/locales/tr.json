@@ -755,5 +755,6 @@
   "chat.unlockError": "Bir sorun oluştu, lütfen sayfayı yenileyip tekrar deneyin.",
   "chat.verifying": "Doğrulanıyor...",
   "chat.unlockPremium": "Unlock Premium",
-  "chat.unlockFailed": "Doğrulama başarısız oldu, lütfen tekrar deneyin."
+  "chat.unlockFailed": "Doğrulama başarısız oldu, lütfen tekrar deneyin.",
+  "assistant.backToHome": "Ana Sayfaya Dön"
 }
