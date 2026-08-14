@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { streamText, generateText, embed, convertToModelMessages, type UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { getVisitorContext } from "@/lib/visitor-tracking";
@@ -10,7 +11,26 @@ export const runtime = "nodejs";
 const CHAT_MODEL_ID = "gpt-4o-mini";
 const EMBEDDING_MODEL_ID = "text-embedding-3-small";
 const FREE_MESSAGE_LIMIT = 5;
-const RETRIEVED_CHUNK_COUNT = 6;
+const PRIMARY_CHUNK_COUNT = 8;
+const OCCUPATION_LIST_CHUNK_COUNT = 2;
+
+// These 4 files are occupation-code lookup tables (ANZSCO/ROL/STSOL rows),
+// not visa-detail content -- each row repeats visa names like "186 -
+// Employer Nomination Scheme visa" across ~1,300 near-duplicate chunks
+// (28% of the whole knowledge base). Left unfiltered, they dominate
+// cosine-similarity search for any "explain visa X" question and crowd out
+// the actual PDF chunks that contain fees/eligibility/processing-time
+// details -- e.g. a Subclass 186 overview query put 5 of the top 6 results
+// in this bucket and pushed the chunk with the AUD6,140 application cost
+// down to rank 10. Querying them separately with a small dedicated slot
+// keeps them useful for genuine occupation-eligibility questions without
+// starving every other question of real visa content.
+const OCCUPATION_LIST_SOURCES = [
+  "Skilled Occupation List.md",
+  "Skilled list.md",
+  "Skilled occupation list.xlsx",
+  "skilled-occupation-list.json",
+];
 
 interface KnowledgeChatRequestBody {
   // useChat/DefaultChatTransport posts UIMessage[] (parts-based), not
@@ -119,13 +139,27 @@ export async function POST(req: NextRequest) {
   const vectorLiteral = `[${embedding.join(",")}]`;
 
   // $queryRaw (tagged template, not $queryRawUnsafe) so the vector literal
-  // is bound as a parameter rather than interpolated into the SQL string.
-  const retrievedChunks = await prisma.$queryRaw<RetrievedChunk[]>`
-    SELECT content, metadata
-    FROM document_chunks
-    ORDER BY embedding <=> ${vectorLiteral}::vector
-    LIMIT ${RETRIEVED_CHUNK_COUNT}
-  `;
+  // and source list are bound as parameters rather than interpolated into
+  // the SQL string. Two separate queries (see OCCUPATION_LIST_SOURCES
+  // above) so the occupation-list noise can never fill more than its
+  // reserved slots.
+  const [primaryChunks, occupationListChunks] = await Promise.all([
+    prisma.$queryRaw<RetrievedChunk[]>`
+      SELECT content, metadata
+      FROM document_chunks
+      WHERE metadata->>'source' NOT IN (${Prisma.join(OCCUPATION_LIST_SOURCES)})
+      ORDER BY embedding <=> ${vectorLiteral}::vector
+      LIMIT ${PRIMARY_CHUNK_COUNT}
+    `,
+    prisma.$queryRaw<RetrievedChunk[]>`
+      SELECT content, metadata
+      FROM document_chunks
+      WHERE metadata->>'source' IN (${Prisma.join(OCCUPATION_LIST_SOURCES)})
+      ORDER BY embedding <=> ${vectorLiteral}::vector
+      LIMIT ${OCCUPATION_LIST_CHUNK_COUNT}
+    `,
+  ]);
+  const retrievedChunks = [...primaryChunks, ...occupationListChunks];
 
   const result = streamText({
     model: openai.chat(CHAT_MODEL_ID),
