@@ -114,6 +114,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <DropdownLink href={`/${locale}/tools/points-calculator`}>{tx("Puan Hesapla (AUS)", "Points Calculator", "积分计算器")}</DropdownLink>
               <DropdownLink href={`/${locale}/tools/skills-assessment`}>{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</DropdownLink>
               <DropdownLink href={`/${locale}/ai-visa-match`}>AI Visa Match ⚡</DropdownLink>
+              <DropdownLink href={`/${locale}/ai-assistant`}>AI Assistant ✨</DropdownLink>
             </DropdownMenu>
 
             {/* Resources Dropdown */}
@@ -156,6 +157,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <Link href={`/${locale}/tools/points-calculator`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Puan Hesapla", "Points Calculator", "积分计算器")}</Link>
               <Link href={`/${locale}/tools/skills-assessment`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</Link>
               <Link href={`/${locale}/ai-visa-match`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--cf-accent)]">AI Visa Match ⚡</Link>
+              <Link href={`/${locale}/ai-assistant`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--cf-accent)]">AI Assistant ✨</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
               <Link href={`/${locale}/guides`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Rehberler", "Guides", "指南")}</Link>
               <Link href={`/${locale}/tools/document-checklist-2026`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Belge Kontrol", "Document Checklist", "文件清单")}</Link>
