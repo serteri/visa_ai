@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Lock } from "lucide-react";
@@ -65,6 +65,19 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
 
   const isBusy = status === "submitted" || status === "streaming";
   const inputDisabled = isLimitReached || isBusy;
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Re-run on every message list change and on every status transition
+  // (submitted/streaming/ready) so the view follows both new messages and
+  // the assistant's reply as it streams in, not just once it's finished.
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, status]);
 
   const handleUpgradeClick = async () => {
     const trimmedEmail = unlockEmail.trim();
@@ -159,6 +172,8 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
             Bir hata oluştu, lütfen tekrar deneyin.
           </p>
         )}
+
+        <div ref={messagesEndRef} />
       </div>
 
       <form
