@@ -1586,7 +1586,30 @@ export async function submitFullCheckWaitlist(
   };
 }
 
+// Public entry point: guarantees the action always settles with a defined
+// PremiumUnlockState rather than rejecting. useActionState's `pending` flag
+// only flips back to false when the action's promise settles either way, but
+// an uncaught throw here (from any of the several DB/PDF/email calls in
+// unlockPremiumReportInternal, including markUserReportUnlocked at the very
+// end, which had no error handling of its own) surfaces as an unhandled
+// server-action rejection instead of a graceful { status: "error" } the form
+// can render -- functionally indistinguishable from a stuck submit button.
 export async function unlockPremiumReport(
+  prevState: PremiumUnlockState,
+  formData: FormData
+): Promise<PremiumUnlockState> {
+  try {
+    return await unlockPremiumReportInternal(prevState, formData);
+  } catch (err) {
+    console.error("unlockPremiumReport: unexpected failure", err);
+    return {
+      status: "error",
+      message: "Something went wrong. Please try again.",
+    };
+  }
+}
+
+async function unlockPremiumReportInternal(
   _prevState: PremiumUnlockState,
   formData: FormData
 ): Promise<PremiumUnlockState> {
