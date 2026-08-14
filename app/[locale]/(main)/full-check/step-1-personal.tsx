@@ -229,7 +229,7 @@ export function Step1Personal({
           onChange={(val) => { setCurrentCountry(val as SupportedCountry); }}
           className={`${selectClassName} ${errCls("waitlist-current-country")}`}
         />
-        <input type="hidden" name="currentCountry" value={currentCountry} />
+        <input id="waitlist-current-country" type="hidden" name="currentCountry" value={currentCountry} />
         {fieldErrors?.["waitlist-current-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-current-country"]}</p>}
       </div>
 
@@ -243,7 +243,7 @@ export function Step1Personal({
             onChange={(val) => { setPassportCountry(val as SupportedCountry); }}
             className={`${selectClassName} ${errCls("waitlist-passport-country")}`}
           />
-          <input type="hidden" name="passportCountry" value={passportCountry} />
+          <input id="waitlist-passport-country" type="hidden" name="passportCountry" value={passportCountry} />
           {fieldErrors?.["waitlist-passport-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-passport-country"]}</p>}
         </div>
         <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-age"] || undefined}>
