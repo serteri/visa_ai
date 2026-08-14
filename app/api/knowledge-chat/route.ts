@@ -2,7 +2,6 @@ import { NextRequest } from "next/server";
 import { streamText, generateText, embed, convertToModelMessages, type UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getVisitorContext } from "@/lib/visitor-tracking";
 
@@ -12,10 +11,6 @@ const CHAT_MODEL_ID = "gpt-4o-mini";
 const EMBEDDING_MODEL_ID = "text-embedding-3-small";
 const FREE_MESSAGE_LIMIT = 5;
 const RETRIEVED_CHUNK_COUNT = 6;
-// Founder account -- always bypasses the free-message paywall regardless of
-// messageCount/isPremium. Not read from env since it's a single fixed
-// identity, not per-environment config.
-const VIP_BYPASS_EMAIL = "serteri@gmail.com";
 
 interface KnowledgeChatRequestBody {
   // useChat/DefaultChatTransport posts UIMessage[] (parts-based), not
@@ -80,17 +75,20 @@ ${chunkContents}
  * visa terminology (see expandQueryKeywords), embeds the combined
  * original+expanded string, retrieves the closest DocumentChunk rows via
  * pgvector cosine distance, and streams a gpt-4o-mini answer grounded in
- * that context. Anonymous visitors (tracked by IP+User-Agent, see
- * getVisitorContext) get 5 free messages before this route starts
- * returning 403 limit_reached instead of calling the model.
+ * that context. Fully anonymous -- no session/auth check. Access is gated
+ * purely on the ChatVisitor row resolved from IP+User-Agent (see
+ * getVisitorContext): 5 free messages, then isPremium (VIP unlock, see
+ * app/api/stripe/vip-unlock) or a positive premiumCredits balance (paid
+ * packages, see app/[locale]/pricing) are required, or this route returns
+ * 403 limit_reached instead of calling the model.
  */
 export async function POST(req: NextRequest) {
   const visitor = await getVisitorContext(req);
 
-  const session = await auth();
-  const isVipBypass = session?.user?.email === VIP_BYPASS_EMAIL;
+  const isOverFreeLimit = visitor.messageCount >= FREE_MESSAGE_LIMIT;
+  const hasPaidAccess = visitor.isPremium || visitor.premiumCredits > 0;
 
-  if (!isVipBypass && visitor.messageCount >= FREE_MESSAGE_LIMIT && !visitor.isPremium) {
+  if (isOverFreeLimit && !hasPaidAccess) {
     return Response.json({ error: "limit_reached", message: "Free limit reached." }, { status: 403 });
   }
 
@@ -129,12 +127,18 @@ export async function POST(req: NextRequest) {
     system: buildSystemPrompt(retrievedChunks),
     messages: await convertToModelMessages(messages),
     onFinish: async () => {
-      // Free-message counter only advances once the model actually
-      // produced a reply -- a request that fails/aborts mid-stream
-      // shouldn't cost the visitor part of their free quota.
+      // Free-message counter and credit consumption only advance once the
+      // model actually produced a reply -- a request that fails/aborts
+      // mid-stream shouldn't cost the visitor part of their free quota or a
+      // paid credit. isPremium (VIP unlock) never consumes credits; a
+      // premiumCredits-funded message beyond the free limit does.
+      const consumesCredit = isOverFreeLimit && !visitor.isPremium && visitor.premiumCredits > 0;
       await prisma.chatVisitor.update({
         where: { id: visitor.id },
-        data: { messageCount: { increment: 1 } },
+        data: {
+          messageCount: { increment: 1 },
+          ...(consumesCredit ? { premiumCredits: { decrement: 1 } } : {}),
+        },
       });
     },
   });

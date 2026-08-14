@@ -1,24 +1,25 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Lock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const FREE_LIMIT_ERROR_CODE = "limit_reached";
 const PREMIUM_UPGRADE_PATH = "/pricing";
+// Founder account -- matches VIP_BYPASS_EMAIL in
+// app/api/stripe/vip-unlock/route.ts. Only decides which path this
+// component takes (self-unlock vs. redirect to pricing); the actual grant
+// is enforced server-side, this check is not a security boundary.
+const VIP_BYPASS_EMAIL = "serteri@gmail.com";
 
 interface KnowledgeChatUIProps {
   className?: string;
-  /**
-   * Called when the user clicks "Unlock Premium" on the paywall overlay.
-   * Defaults to navigating to PREMIUM_UPGRADE_PATH ("/pricing") when omitted.
-   */
-  onUpgradeClick?: () => void;
 }
 
 function isLimitReachedError(error: Error): boolean {
@@ -30,9 +31,25 @@ function isLimitReachedError(error: Error): boolean {
   }
 }
 
-export function KnowledgeChatUI({ className, onUpgradeClick }: KnowledgeChatUIProps) {
+export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
   const [input, setInput] = useState("");
   const [isLimitReached, setIsLimitReached] = useState(false);
+  const [visitorId, setVisitorId] = useState<string | null>(null);
+  const [unlockEmail, setUnlockEmail] = useState("");
+  const [unlockEmailError, setUnlockEmailError] = useState<string | null>(null);
+  const [isUnlocking, setIsUnlocking] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/visitor")
+      .then((res) => res.json())
+      .then((data: { visitorId?: string }) => {
+        if (data.visitorId) setVisitorId(data.visitorId);
+      })
+      .catch(() => {
+        // Non-fatal -- the VIP self-unlock path just won't work without a
+        // visitorId; the /pricing redirect path doesn't need one.
+      });
+  }, []);
 
   const transport = useMemo(
     () => new DefaultChatTransport({ api: "/api/knowledge-chat" }),
@@ -49,12 +66,45 @@ export function KnowledgeChatUI({ className, onUpgradeClick }: KnowledgeChatUIPr
   const isBusy = status === "submitted" || status === "streaming";
   const inputDisabled = isLimitReached || isBusy;
 
-  const handleUpgradeClick = () => {
-    if (onUpgradeClick) {
-      onUpgradeClick();
+  const handleUpgradeClick = async () => {
+    const trimmedEmail = unlockEmail.trim();
+    setUnlockEmailError(null);
+
+    if (!trimmedEmail) {
+      setUnlockEmailError("Lütfen e-posta adresinizi girin.");
       return;
     }
-    window.location.href = PREMIUM_UPGRADE_PATH;
+
+    if (trimmedEmail !== VIP_BYPASS_EMAIL) {
+      window.location.assign(`${PREMIUM_UPGRADE_PATH}?email=${encodeURIComponent(trimmedEmail)}`);
+      return;
+    }
+
+    if (!visitorId) {
+      setUnlockEmailError("Bir sorun oluştu, lütfen sayfayı yenileyip tekrar deneyin.");
+      return;
+    }
+
+    setIsUnlocking(true);
+    try {
+      const res = await fetch("/api/stripe/vip-unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmedEmail, visitorId }),
+      });
+      const data = (await res.json()) as { success?: boolean; error?: string };
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Unlock failed.");
+      }
+
+      setIsLimitReached(false);
+    } catch (err) {
+      console.error("[knowledge-chat] VIP unlock failed", err);
+      setUnlockEmailError("Doğrulama başarısız oldu, lütfen tekrar deneyin.");
+    } finally {
+      setIsUnlocking(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -145,9 +195,23 @@ export function KnowledgeChatUI({ className, onUpgradeClick }: KnowledgeChatUIPr
             Ücretsiz 5 mesaj limitinize ulaştınız. Sınırsız RAG vize danışmanlığı ve detaylı raporlar için Premium
             kilidini açın.
           </p>
-          <Button onClick={handleUpgradeClick} className="px-6">
-            Unlock Premium
-          </Button>
+          <div className="w-full max-w-xs space-y-2">
+            <Input
+              type="email"
+              value={unlockEmail}
+              onChange={(e) => {
+                setUnlockEmail(e.target.value);
+                setUnlockEmailError(null);
+              }}
+              placeholder="E-posta adresinizi girin"
+              disabled={isUnlocking}
+              className="text-center"
+            />
+            {unlockEmailError && <p className="text-xs text-red-600">{unlockEmailError}</p>}
+            <Button onClick={handleUpgradeClick} disabled={isUnlocking} className="w-full px-6">
+              {isUnlocking ? "Doğrulanıyor..." : "Unlock Premium"}
+            </Button>
+          </div>
         </div>
       )}
     </div>
