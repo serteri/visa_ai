@@ -33,12 +33,61 @@ type CheckoutSessionMeta = {
    * more than "an agent id that passed getAgentUser() at checkout-creation
    * time", not currently-still-valid until re-checked. */
   agentId?: string;
+  /** Set by app/api/stripe/checkout/route.ts for the AI-assistant credit
+   * packages (app/[locale]/pricing) -- the anonymous ChatVisitor id to
+   * credit, paired with `credits` (a stringified integer, since Stripe
+   * metadata values are strings only). */
+  visitorId?: string;
+  credits?: string;
 };
 
 function resolvePdfSlug(productType: CheckoutSessionMeta["productType"]): string | null {
   if (productType === "pdf_book") return PDF_SLUGS.turkish;
   if (productType === "pdf_book_global") return PDF_SLUGS.global;
   return null;
+}
+
+/**
+ * AI-assistant credit-package purchase (app/[locale]/pricing, checkout
+ * created in app/api/stripe/checkout/route.ts). Grants the purchased
+ * premiumCredits to the anonymous ChatVisitor named in metadata.visitorId
+ * and flips isPremium true -- isPremium alone is what
+ * app/api/knowledge-chat/route.ts checks to skip the free-message gate;
+ * premiumCredits is metered separately (decremented per paid message once
+ * the free limit is hit) as a spend record, not the access flag itself.
+ */
+async function handleCreditsPurchase(session: Stripe.Checkout.Session): Promise<Response> {
+  const metadata = (session.metadata || {}) as CheckoutSessionMeta;
+  const visitorId = metadata.visitorId;
+  const credits = metadata.credits ? Number.parseInt(metadata.credits, 10) : NaN;
+
+  if (!visitorId || !Number.isFinite(credits) || credits <= 0) {
+    console.error("Webhook: Missing or invalid visitorId/credits in session metadata", {
+      sessionId: session.id,
+      visitorId,
+      creditsRaw: metadata.credits,
+    });
+    return new Response("Missing or invalid visitorId/credits", { status: 400 });
+  }
+
+  try {
+    await prisma.chatVisitor.update({
+      where: { id: visitorId },
+      data: {
+        premiumCredits: { increment: credits },
+        isPremium: true,
+      },
+    });
+  } catch (err) {
+    // Includes Prisma's "record not found" (P2025) if visitorId doesn't
+    // match any ChatVisitor -- surfaced as a 500 so Stripe retries and this
+    // gets noticed instead of silently dropping a paid purchase.
+    console.error("Webhook: failed to credit ChatVisitor:", err, { sessionId: session.id, visitorId });
+    return new Response("Processing failed", { status: 500 });
+  }
+
+  console.log(`Webhook: credited ${credits} premiumCredits to visitor ${visitorId}`, { sessionId: session.id });
+  return Response.json({ received: true });
 }
 
 /**
@@ -319,6 +368,13 @@ export async function POST(request: NextRequest) {
         return new Response("Processing failed", { status: 500 });
       }
       return new Response("OK", { status: 200 });
+    }
+
+    // AI-assistant credit packages (checked before the reportId fallback --
+    // this checkout flow never sets reportId, so falling through to
+    // handleReportUnlock would just log a "Missing reportId" error).
+    if (metadata.visitorId) {
+      return handleCreditsPurchase(session);
     }
 
     return handleReportUnlock(session);

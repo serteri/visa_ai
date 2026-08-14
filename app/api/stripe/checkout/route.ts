@@ -10,6 +10,16 @@ interface CheckoutPayload {
   priceId?: string;
 }
 
+// Maps each credit package's Stripe Price id to the credit amount it grants.
+// The webhook (app/api/stripe/webhook/route.ts) reads the resolved amount
+// back out of session.metadata.credits rather than re-deriving it from
+// priceId, so this mapping only needs to exist here.
+function getCreditsForPriceId(priceId: string): number | null {
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_STARTER_CREDITS_PRICE_ID) return 50;
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_COMPREHENSIVE_CREDITS_PRICE_ID) return 150;
+  return null;
+}
+
 /**
  * One-time credit-package checkout for the AI assistant paywall (see
  * app/[locale]/pricing). Unlike app/api/checkout/route.ts (fixed product
@@ -23,12 +33,18 @@ interface CheckoutPayload {
  * are attached too when available, purely for reconciliation.
  */
 export async function POST(req: NextRequest) {
+  console.log("KULLANILAN STRIPE KEY SON 4 HANE:", process.env.STRIPE_SECRET_KEY?.slice(-4));
   try {
     const body = (await req.json()) as CheckoutPayload;
     const priceId = body.priceId;
 
     if (!priceId) {
       return NextResponse.json({ error: "priceId is required." }, { status: 400 });
+    }
+
+    const credits = getCreditsForPriceId(priceId);
+    if (credits === null) {
+      return NextResponse.json({ error: "Unknown priceId." }, { status: 400 });
     }
 
     const [visitor, session] = await Promise.all([getVisitorContext(req), auth()]);
@@ -48,6 +64,9 @@ export async function POST(req: NextRequest) {
         userId: session?.user?.id || "",
         email: session?.user?.email || "",
         priceId,
+        // Stripe metadata values are strings only; the webhook parses this
+        // back to a number before incrementing premiumCredits.
+        credits: String(credits),
       },
     });
 
