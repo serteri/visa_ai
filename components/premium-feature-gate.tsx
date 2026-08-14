@@ -53,6 +53,20 @@ export function PremiumFeatureGate({
   const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">(
     isFreeActive ? "lead_capture" : "payment"
   );
+
+  // Lock background scroll while the modal is open -- Radix's Dialog does
+  // this automatically, but this modal is a hand-rolled overlay, not that
+  // component. Without it the page behind stays scrollable while the
+  // overlay is also independently scrollable, which can make the modal
+  // feel like it "jumps" relative to the page instead of staying put.
+  useEffect(() => {
+    if (!showModal) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [showModal]);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
   const trackedUnlockReportIdRef = useRef<string | null>(null);

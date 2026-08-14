@@ -145,6 +145,16 @@ function findOccupationByCanonicalOrLocalizedAlias(occupation?: string): Occupat
   const raw = normalize(occupation);
   const folded = normalizeForLookup(occupation);
 
+  // Empty input must never reach the partial-match check below: every
+  // string.includes("") is true, so an empty raw/folded would silently
+  // "match" the first row in NORMALIZED_OCCUPATION_NAMES and return that
+  // occupation's name as if the user had actually selected it (e.g. a
+  // Partner-visa report, which never collects an occupation, wrongly
+  // showing a specific unrelated occupation in generated report text).
+  if (!raw && !folded) {
+    return undefined;
+  }
+
   // Generic role words like "doctor" are ambiguous between multiple ANZSCO entries.
   // We intentionally avoid guessing a single code.
   if (isAmbiguousGenericTerm(occupation)) {
