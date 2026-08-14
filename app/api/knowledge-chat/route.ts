@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { streamText, embed, convertToModelMessages, type UIMessage } from "ai";
+import { streamText, generateText, embed, convertToModelMessages, type UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
 
 import { prisma } from "@/lib/prisma";
@@ -30,6 +30,24 @@ interface RetrievedChunk {
   metadata: unknown;
 }
 
+/**
+ * The knowledge base is embedded from English-language PDFs, but visitors
+ * often ask in Turkish -- a raw Turkish query embeds far from the English
+ * chunk vectors, so cosine similarity retrieval misses relevant content.
+ * This does a quick gpt-4o-mini pre-call to pull out the English visa
+ * terminology (subclass numbers, official visa names, keywords) so the
+ * embedded search string carries both the original intent and the English
+ * terms the knowledge base actually uses.
+ */
+async function expandQueryKeywords(currentMessageContent: string): Promise<string> {
+  const { text } = await generateText({
+    model: openai.chat(CHAT_MODEL_ID),
+    prompt: `Kullanıcının aşağıdaki vize sorusunu analiz et. Avustralya göçmenlik sistemindeki doğru İngilizce vize adını, Subclass numarasını (örn: 500, 482, 189) ve kritik İngilizce anahtar kelimeleri (requirements, eligibility vb.) çıkar. Sadece bu İngilizce anahtar kelimeleri ve numaraları boşlukla ayırarak dön. Asla tam cümle kurma.
+Kullanıcı Sorusu: ${currentMessageContent}`,
+  });
+  return text.trim();
+}
+
 function buildSystemPrompt(chunks: RetrievedChunk[]): string {
   const chunkContents =
     chunks.length > 0
@@ -50,11 +68,13 @@ ${chunkContents}
 }
 
 /**
- * RAG chatbot endpoint: embeds the visitor's latest message, retrieves the
- * closest DocumentChunk rows via pgvector cosine distance, and streams a
- * gpt-4o-mini answer grounded in that context. Anonymous visitors (tracked
- * by IP+User-Agent, see getVisitorContext) get 5 free messages before this
- * route starts returning 403 limit_reached instead of calling the model.
+ * RAG chatbot endpoint: expands the visitor's latest message into English
+ * visa terminology (see expandQueryKeywords), embeds the combined
+ * original+expanded string, retrieves the closest DocumentChunk rows via
+ * pgvector cosine distance, and streams a gpt-4o-mini answer grounded in
+ * that context. Anonymous visitors (tracked by IP+User-Agent, see
+ * getVisitorContext) get 5 free messages before this route starts
+ * returning 403 limit_reached instead of calling the model.
  */
 export async function POST(req: NextRequest) {
   const visitor = await getVisitorContext(req);
@@ -75,9 +95,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const expandedKeywords = await expandQueryKeywords(lastUserText);
+  const searchString = `${lastUserText} ${expandedKeywords}`;
+
   const { embedding } = await embed({
     model: openai.textEmbeddingModel(EMBEDDING_MODEL_ID),
-    value: lastUserText,
+    value: searchString,
   });
   const vectorLiteral = `[${embedding.join(",")}]`;
 
