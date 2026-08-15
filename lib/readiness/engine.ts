@@ -4884,6 +4884,10 @@ function buildFinancialRoadmap(
       const notesText = primaryPathway.notes?.length
         ? resolveLocalizedArray(primaryPathway.notes, locale).slice(0, 2).join(" ")
         : "";
+      // primaryPathway.name is also LocalizedString, not a plain string --
+      // same "[object Object]" risk as notes above (this one showed up as
+      // "Default pathway: [object Object]" in the rendered PDF).
+      const pathwayName = resolveLocalized(primaryPathway.name, locale);
 
       items.push({
         category: isTr
@@ -4894,8 +4898,8 @@ function buildFinancialRoadmap(
           ? feeLabel
           : feeLabel,
         explanation: isTr
-          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${primaryPathway.name}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
-          : `Assessing authority: ${authority.authorityName}. Default pathway: ${primaryPathway.name}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
+          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
+          : `Assessing authority: ${authority.authorityName}. Default pathway: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
       });
     } else {
       items.push({
