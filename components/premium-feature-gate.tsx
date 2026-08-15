@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { CheckCircle2, Lock, Mail, Phone, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { sendGAEvent } from "@next/third-parties/google";
 
@@ -56,18 +57,25 @@ export function PremiumFeatureGate({
 
   // Lock background scroll while the modal is open -- Radix's Dialog does
   // this automatically, but this modal is a hand-rolled overlay, not that
-  // component. Resets unconditionally to "" (not a captured "previous"
-  // value) on both close and unmount, so this can never leave the page
-  // permanently locked even if some earlier run left body.style.overflow
-  // in an unexpected state -- "" is always the correct at-rest value here,
-  // since this is the only place in the app that touches it.
+  // component. Locks both <html> and <body>: document.scrollingElement is
+  // <html> in this app (confirmed live -- this page has no wrapper with its
+  // own overflow-y-auto), so locking only body.style.overflow was a no-op
+  // and the page kept scrolling underneath the "locked" modal. Resets
+  // unconditionally to "" (not a captured "previous" value) on both close
+  // and unmount, so this can never leave the page permanently locked even
+  // if some earlier run left it in an unexpected state -- "" is always the
+  // correct at-rest value here, since this is the only place in the app
+  // that touches either element's overflow.
   useEffect(() => {
     if (!showModal) {
+      document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
       return;
     }
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     return () => {
+      document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
     };
   }, [showModal]);
@@ -298,7 +306,17 @@ export function PremiumFeatureGate({
         </div>
       </Card>
 
-      {showModal && (
+      {showModal && typeof document !== "undefined" && createPortal(
+        // Portaled directly to document.body instead of rendering in place.
+        // This overlay is `fixed`, which positions relative to the nearest
+        // ancestor with a transform/filter/perspective/will-change/contain
+        // property instead of the viewport if one exists -- and adjusting
+        // this overlay's own flex/overflow classes alone (twice now, see
+        // git history on this block) didn't fix reports of the modal
+        // opening somewhere unreachable, which is exactly the symptom of a
+        // hijacked containing block, not a centering/overflow bug. A portal
+        // sidesteps this entirely: as a direct child of <body>, there are no
+        // report-content ancestors left for it to inherit a transform from.
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
           <Card className="relative w-full max-w-lg my-auto shadow-2xl">
             <CardHeader className="space-y-2">
@@ -414,7 +432,8 @@ export function PremiumFeatureGate({
               </form>
             </CardContent>
           </Card>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
