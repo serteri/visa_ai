@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
           }
 
           return NextResponse.json({
-            url: `${baseUrl}/${locale}/checkout/success?product=${productType}&free=true`,
+            url: `${baseUrl}/${locale}/checkout/success?product=${productType}&free=true&reportId=${body.reportId}`,
           });
         }
         // No row updated: either the promo quota is full, or this report was
@@ -100,7 +100,11 @@ export async function POST(request: NextRequest) {
     const stripe = getStripeClient();
     const priceId = getPriceIdForProduct(productType);
 
-    const successUrl = `${baseUrl}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&product=${productType}`;
+    // reportId is only meaningful for the "premium" product (pdf_book/
+    // pdf_book_global purchases aren't tied to a UserReport) -- appended
+    // when present so the success page can offer a "Download Report" button
+    // without waiting on the webhook-driven email.
+    const successUrl = `${baseUrl}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&product=${productType}${body.reportId ? `&reportId=${body.reportId}` : ""}`;
     const cancelUrl = `${baseUrl}/${locale}/checkout/cancel?product=${productType}`;
 
     const session = await stripe.checkout.sessions.create({

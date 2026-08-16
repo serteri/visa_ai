@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 
 declare global {
   interface Window {
@@ -15,6 +16,7 @@ export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams();
   const locale = (params.locale as string) ?? "en";
   const product = searchParams.get("product");
+  const reportId = searchParams.get("reportId");
 
   useEffect(() => {
     if (typeof window !== "undefined" && typeof window.fbq === "function") {
@@ -45,22 +47,33 @@ export default function CheckoutSuccessPage() {
         </h1>
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
           {t(
-            "Your purchase is complete. Check your email for next steps.",
-            "Satın alma işleminiz tamamlandı. Sonraki adımlar için e-postanızı kontrol edin.",
-            "您的购买已完成。请查收邮件了解后续步骤。"
+            "Your report is ready. Download it below now, or keep the copy sent to your inbox.",
+            "Raporunuz hazır. Aşağıdaki butondan hemen indirebilir veya e-posta kutunuza gönderilen kopyasını saklayabilirsiniz.",
+            "您的报告已准备就绪。您可以立即在下方下载，或保留发送到您邮箱的副本。"
           )}
         </p>
+
         {/* No "Go to Dashboard" link here on purpose: most people landing on
             this page are guest checkouts with no LogiVisa account, so a
             dashboard link just routes them into next-auth's sign-in wall
-            instead of anything useful. The report itself is delivered by
-            email (see lib/services/report-service.ts), not this page. */}
-        <div className="mt-8 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-900 dark:border-emerald-800/40 dark:bg-emerald-900/20 dark:text-emerald-200">
-          {t(
-            "Your report has been sent to your email address. Please check your inbox (and Spam folder).",
-            "Raporunuz e-posta adresinize gönderildi. Lütfen gelen kutunuzu (ve Spam klasörünü) kontrol edin.",
-            "您的报告已发送至您的邮箱。请查收收件箱（以及垃圾邮件文件夹）。"
+            instead of anything useful. */}
+        <div className="mt-8 flex flex-col gap-3">
+          {reportId && (
+            <a
+              href={`/api/reports/${reportId}/pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-indigo-600 hover:to-purple-700"
+            >
+              {t("Download Report →", "Raporu İndir →", "下载报告 →")}
+            </a>
           )}
+          <Link
+            href={`/${locale}`}
+            className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-slate-200 dark:hover:bg-zinc-800"
+          >
+            {t("Back to Home", "Ana Sayfaya Dön", "返回首页")}
+          </Link>
         </div>
       </div>
     </main>

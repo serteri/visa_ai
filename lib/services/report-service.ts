@@ -169,6 +169,70 @@ async function lookupViabilityData(input: {
   }
 }
 
+type UserReportRecord = NonNullable<Awaited<ReturnType<typeof getUserReportById>>>;
+
+/**
+ * Regenerates the premium PDF's bytes from a report's stored report_json/
+ * input_json. Shared by generateAndSendReport (email attachment) and the
+ * guest-facing download route (app/api/reports/[reportId]/pdf/route.ts) so
+ * the PDF a customer downloads from the success page is byte-for-byte the
+ * same generation path as the one emailed to them.
+ */
+async function buildReportPdf(record: UserReportRecord, fullName?: string): Promise<Uint8Array> {
+  const locale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
+
+  const calculatedPoints = record.report.pointsEstimate?.estimatedPoints ?? 0;
+  const migrationGoals = record.input.migrationGoals ?? [];
+  const viabilityData = await lookupViabilityData({
+    occupation: record.input.occupation,
+    calculatedPoints,
+    preferredState: record.input.preferredState,
+    targetedStateNomination: migrationGoals.some((g) => g === "direct_pr" || g === "regional"),
+    regionalGoal: migrationGoals.includes("regional"),
+  });
+
+  return generateReadinessPDF({
+    report: record.report,
+    locale,
+    saveToFile: false,
+    userInputSummary: {
+      name: fullName || record.fullName || undefined,
+      email: record.email,
+      mainGoal: record.input.mainGoal,
+      currentCountry: record.input.currentCountry,
+      passportCountry: record.input.passportCountry,
+      age: record.input.age,
+      occupation: record.input.occupation,
+      englishLevel: record.input.englishLevel,
+      sponsorOrFamily: record.input.sponsorOrFamily,
+      biggestConcern: record.input.biggestConcern,
+      annualSalaryAud: record.input.annualSalaryAud != null ? String(record.input.annualSalaryAud) : null,
+      migrationGoals: record.input.migrationGoals,
+      preferredState: record.input.preferredState,
+      isAustralianQualification: record.input.qualificationAwardedInAustralia,
+      isQualificationRecognized: record.input.isQualificationRecognized,
+      viability: viabilityData,
+    },
+  });
+}
+
+/**
+ * Regenerates the PDF for an already-unlocked report, for the guest-facing
+ * "Download Report" button on the checkout success page. Returns null if the
+ * report doesn't exist or isn't unlocked yet -- callers must not serve a PDF
+ * for a report nobody has paid for (or been granted the free promo on) just
+ * because its (unguessable, UUID) reportId leaked into a URL.
+ */
+export async function getReportPdfForDownload(
+  reportId: string
+): Promise<{ pdfBytes: Uint8Array; fileName: string } | null> {
+  const record = await getUserReportById(reportId);
+  if (!record || !record.isUnlocked) return null;
+
+  const pdfBytes = await buildReportPdf(record);
+  return { pdfBytes, fileName: `visa-readiness-report-${reportId}.pdf` };
+}
+
 /**
  * Generates the premium PDF and emails it to the report's owner, then marks
  * pdf_sent on the UserReport row. Shared by both unlock paths that grant
@@ -196,64 +260,48 @@ export async function generateAndSendReport(
       return { pdfSent: false };
     }
 
+    const recipientEmail = email || record.email;
+
     if (process.env.SIMULATE_EMAIL_DELIVERY === "true") {
-      console.log(`[report-service] [simulate] PDF email delivery for report ${reportId} → ${email}`);
+      console.log(
+        `[report-service] Müşteri e-postası atlandı (SIMULATE_EMAIL_DELIVERY=true) -- report ${reportId} → ${recipientEmail}`
+      );
       await markReportPdfSent(reportId);
       return { pdfSent: true };
     }
 
     if (!isEmailDeliveryEnabled()) {
       console.warn(
-        `[report-service] Email delivery disabled (no RESEND_API_KEY / ENABLE_TRANSACTIONAL_EMAILS=false); skipping PDF/email for report ${reportId}`
+        `[report-service] Müşteri e-postası atlandı (RESEND_API_KEY yok / ENABLE_TRANSACTIONAL_EMAILS=false) -- report ${reportId} → ${recipientEmail}`
       );
       return { pdfSent: false };
     }
 
     const locale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
-    const recipientEmail = email || record.email;
 
-    const calculatedPoints = record.report.pointsEstimate?.estimatedPoints ?? 0;
-    const migrationGoals = record.input.migrationGoals ?? [];
-    const viabilityData = await lookupViabilityData({
-      occupation: record.input.occupation,
-      calculatedPoints,
-      preferredState: record.input.preferredState,
-      targetedStateNomination: migrationGoals.some((g) => g === "direct_pr" || g === "regional"),
-      regionalGoal: migrationGoals.includes("regional"),
-    });
+    let pdfBytes: Uint8Array;
+    try {
+      pdfBytes = await buildReportPdf(record, fullName);
+    } catch (pdfErr) {
+      console.error(`[report-service] PDF generation failed for report ${reportId}:`, pdfErr);
+      return { pdfSent: false };
+    }
 
-    const pdfBytes = await generateReadinessPDF({
-      report: record.report,
-      locale,
-      saveToFile: false,
-      userInputSummary: {
-        name: fullName || undefined,
+    try {
+      console.log(`[report-service] Müşteriye onay e-postası gönderiliyor -- report ${reportId} → ${recipientEmail}`);
+      await sendFullCheckConfirmationEmail({
         email: recipientEmail,
-        mainGoal: record.input.mainGoal,
-        currentCountry: record.input.currentCountry,
-        passportCountry: record.input.passportCountry,
-        age: record.input.age,
-        occupation: record.input.occupation,
-        englishLevel: record.input.englishLevel,
-        sponsorOrFamily: record.input.sponsorOrFamily,
-        biggestConcern: record.input.biggestConcern,
-        annualSalaryAud: record.input.annualSalaryAud != null ? String(record.input.annualSalaryAud) : null,
-        migrationGoals: record.input.migrationGoals,
-        preferredState: record.input.preferredState,
-        isAustralianQualification: record.input.qualificationAwardedInAustralia,
-        isQualificationRecognized: record.input.isQualificationRecognized,
-        viability: viabilityData,
-      },
-    });
-
-    await sendFullCheckConfirmationEmail({
-      email: recipientEmail,
-      fullName: fullName ?? "",
-      locale,
-      pdfAttachment: pdfBytes,
-    });
+        fullName: fullName ?? "",
+        locale,
+        pdfAttachment: pdfBytes,
+      });
+    } catch (emailErr) {
+      console.error(`[report-service] Müşteri e-postası GÖNDERİLEMEDİ -- report ${reportId} → ${recipientEmail}:`, emailErr);
+      return { pdfSent: false };
+    }
 
     await markReportPdfSent(reportId);
+    console.log(`[report-service] Müşteri e-postası gönderildi -- report ${reportId} → ${recipientEmail}`);
 
     return { pdfSent: true };
   } catch (err) {
