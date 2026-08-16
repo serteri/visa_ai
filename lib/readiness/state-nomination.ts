@@ -60,6 +60,25 @@ type StateDatasetRow = {
 
 const STATE_ROWS = (stateNominationData as { states: StateDatasetRow[] }).states;
 
+const KNOWN_STATE_NOMINATION_STATUSES: readonly StateNominationStatus[] = [
+  "Open for Offshore",
+  "High Demand",
+  "Closed",
+  "Onshore Only",
+];
+
+/**
+ * StateIntelligence.status is a free-form string written by the scraper
+ * (app/api/cron/sync-states), not guaranteed to be one of the four literal
+ * values the scoring logic and PDF status badges switch on. Only accept it
+ * as a display override when it's an exact match; otherwise fall back to
+ * the static JSON row rather than pushing an unrecognized status string
+ * into strictly-typed rendering.
+ */
+function asKnownStatus(value: string | undefined): StateNominationStatus | undefined {
+  return KNOWN_STATE_NOMINATION_STATUSES.find((known) => known === value);
+}
+
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
 }
@@ -427,10 +446,18 @@ export function calculateStateNominationTracker(
 
     const matchLevel: StateMatchLevel = score >= 70 ? "high" : score >= 45 ? "medium" : "low";
 
+    // Live DB override (see lib/state-intelligence.ts) for this state, if
+    // the caller fetched one. Only the *displayed* status/citation fields
+    // are overridden here -- the scoring math above always runs against the
+    // static JSON row's status, so an in-progress or malformed scrape can't
+    // silently corrupt the match-score algorithm.
+    const intel = input.stateIntelligence?.[row.code];
+    const displayStatus = asKnownStatus(intel?.status) ?? row.status;
+
     return {
       code: row.code,
       name: row.name,
-      status: row.status,
+      status: displayStatus,
       matchLevel,
       score,
       summary: buildSummary({
@@ -456,6 +483,9 @@ export function calculateStateNominationTracker(
         englishScore,
         residenceGap,
       }),
+      officialNote: intel?.officialNote,
+      sourceUrl: intel?.sourceUrl,
+      lastVerifiedAt: intel?.lastVerifiedAt,
     };
   }).sort((a, b) => b.score - a.score);
 

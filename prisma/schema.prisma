@@ -407,6 +407,28 @@ model StateAllocation {
   @@map("state_allocations")
 }
 
+// Autonomous state-migration status intelligence, kept fresh by a
+// fortnightly scraper (app/api/cron/sync-states/route.ts) instead of manual
+// edits to src/data/state-nomination-status.json. One row per state/
+// territory/province code (AU + Canada PNP, sharing the same
+// StateNominationCode space as lib/readiness/types.ts). lastVerifiedAt is
+// when the bot last successfully re-checked the official source, not when
+// this row was last written -- a failed scrape run should leave the
+// previous verified data + timestamp in place rather than overwrite it with
+// a false "just verified" claim.
+model StateIntelligence {
+  id             String    @id @default(uuid())
+  stateCode      String    @unique @map("state_code")
+  status         String
+  officialNote   String?   @map("official_note") @db.Text
+  sourceUrl      String?   @map("source_url")
+  lastVerifiedAt DateTime? @map("last_verified_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@map("state_intelligence")
+}
+
 // ── AI Chatbot: anonymous visitor tracking + chat history ──────────────────
 
 model ChatVisitor {

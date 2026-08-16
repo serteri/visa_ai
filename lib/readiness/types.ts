@@ -12,6 +12,20 @@ export type ReadinessInput = {
   preferredCity?: string;
   /** Canada only: explicit province target for PNP eligibility (lib/readiness/pnp-provinces.ts). When omitted, resolveTargetProvince() falls back to keyword inference from mainGoal/preferredCity/preferredPathway. */
   targetProvince?: "ON" | "BC" | "AB";
+  /**
+   * Live StateIntelligence rows (lib/state-intelligence.ts), keyed by state
+   * code, fetched by the caller (a server action -- runReadinessEngine
+   * itself stays synchronous) before invoking the engine. When a code is
+   * present here, calculateStateNominationTracker/
+   * buildCanadaStateNominationTracker use its status/officialNote/sourceUrl/
+   * lastVerifiedAt for that state instead of (or alongside) the static
+   * src/data/state-nomination-status.json row. Omit entirely to preserve
+   * existing JSON-only behavior.
+   */
+  stateIntelligence?: Record<
+    string,
+    { status?: string; officialNote?: string; sourceUrl?: string; lastVerifiedAt?: string }
+  >;
   passportCountry?: string;
   age?: string;
   occupation?: string;
@@ -399,6 +413,19 @@ export type StateNominationState = {
   score: number;
   summary: string;
   requirements: string[];
+  /**
+   * Present only when this state's status/note was sourced from the
+   * StateIntelligence DB table (lib/state-intelligence.ts) rather than the
+   * static src/data/state-nomination-status.json fallback -- i.e. when the
+   * fortnightly scraper (app/api/cron/sync-states) has actually verified
+   * this state. Drives the "Source: ... | Last verified: ..." citation line
+   * in the PDF's state nomination table.
+   */
+  officialNote?: string;
+  sourceUrl?: string;
+  /** ISO 8601 string, not a Date -- ReadinessReport round-trips through
+   *  JSON (stored as report_json), which doesn't preserve Date instances. */
+  lastVerifiedAt?: string;
 };
 
 export type StateNominationTracker = {

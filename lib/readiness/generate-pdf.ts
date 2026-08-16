@@ -3700,7 +3700,18 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     drawTable(
       [text.stateCode, text.stateStatus, text.stateMatch, text.note],
       states.map((state) => {
-        const note = state.requirements.slice(0, 2).join('; ') || state.summary;
+        let note = state.requirements.slice(0, 2).join('; ') || state.summary;
+        // Only present when this state's data came from the live
+        // StateIntelligence DB table (lib/state-intelligence.ts), not the
+        // static JSON fallback -- see StateNominationState in
+        // lib/readiness/types.ts.
+        if (state.lastVerifiedAt) {
+          const verifiedDate = new Date(state.lastVerifiedAt);
+          const formattedDate = Number.isNaN(verifiedDate.getTime())
+            ? state.lastVerifiedAt
+            : new Intl.DateTimeFormat(locale, { year: "numeric", month: "short", day: "numeric" }).format(verifiedDate);
+          note += ` (Source: Official State Migration Update | Last verified: ${formattedDate})`;
+        }
         return [
           state.name ? state.code + ' ' + state.name : state.code,
           state.status,

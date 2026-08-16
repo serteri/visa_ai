@@ -19,6 +19,7 @@ import {
   updateFullCheckProgress,
 } from "@/lib/full-check-progress";
 import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
+import { getStateIntelligenceMap } from "@/lib/state-intelligence";
 import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
@@ -1299,6 +1300,12 @@ export async function submitFullCheckWaitlist(
     await updateFullCheckProgress(analysisProgressId, "scanning_occupations");
   }
 
+  // Live state-nomination status/citations (see lib/state-intelligence.ts
+  // and app/api/cron/sync-states) -- runReadinessEngine itself stays
+  // synchronous, so this DB read has to happen here, before calling it.
+  // Never throws; degrades to the static JSON fallback on failure.
+  const stateIntelligence = await getStateIntelligenceMap();
+
   const generatedReport = ensureCountrySpecificReportSchema(
     runReadinessEngine({
       locale: resolvedLocale,
@@ -1308,6 +1315,7 @@ export async function submitFullCheckWaitlist(
       passportCountry,
       age,
       occupation: occupation || undefined,
+      stateIntelligence,
       englishLevel: englishLevel || undefined,
       qualificationLevel,
       annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)
