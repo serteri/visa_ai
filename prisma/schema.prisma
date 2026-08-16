@@ -429,6 +429,33 @@ model StateIntelligence {
   @@map("state_intelligence")
 }
 
+// Structured, exact-value counterpart to the RAG pipeline: parsed directly
+// from state occupation-list spreadsheets/CSVs (see
+// scripts/sync-state-occupation-lists.ts, data/knowledge/State
+// Immigrations/<state>/*.xlsx|*.csv) instead of embedded as vector chunks.
+// Occupation lists are exact yes/no membership data -- letting the chatbot
+// answer "is my occupation on the NSW 190 list" from a vector-similarity
+// match over PDF text invites hallucination; a direct DB lookup here
+// doesn't. sourceFile + syncedAt make re-running the sync idempotent (each
+// run deletes-then-reinserts rows for the files it processed, see the
+// script) and let a stale/failed sync be identified.
+model StateOccupationListEntry {
+  id              String   @id @default(cuid())
+  stateCode       String   @map("state_code")
+  anzscoCode      String?  @map("anzsco_code")
+  occupationTitle String   @map("occupation_title")
+  /** e.g. ["190", "491"] -- which visa subclass list(s) this occupation appears on on this sheet/row. */
+  visaSubclasses  String[] @map("visa_subclasses")
+  /** Raw extra columns from the source row (Status, Minimum Points, Stream, Priority Occupation, etc.) -- varies per state/file, so kept as JSON rather than one column per possible field. */
+  metadata        Json?
+  sourceFile      String   @map("source_file")
+  syncedAt        DateTime @default(now()) @map("synced_at")
+
+  @@index([stateCode])
+  @@index([anzscoCode])
+  @@map("state_occupation_list_entries")
+}
+
 // ── AI Chatbot: anonymous visitor tracking + chat history ──────────────────
 
 model ChatVisitor {
