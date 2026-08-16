@@ -310,13 +310,14 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
           : t === "zh" ? "✅ 已完成"
           : "✅ Complete";
       } else if (isEducation && !isAusQual && !isQualRecognized) {
+        // Overseas education points are gated on recognition only -- NOT on
+        // skillsAssessmentDone (that only gates the employment rows below).
+        // A recognized overseas qualification already has claimedPts > 0
+        // and hits the branch above; this only fires when recognition is
+        // actually missing/false.
         actionStatus = t === "tr" ? "Yabancı tanıma gerekli"
           : t === "zh" ? "需要海外资格认可"
           : "Requires Overseas Qualification Recognition";
-      } else if (isEducation && !isAusQual && !skillsAssessmentDone) {
-        actionStatus = t === "tr" ? "Değerlendirme gerekli"
-          : t === "zh" ? "需要技能评估"
-          : "Requires Skills Assessment";
       } else if (isEmployment && !skillsAssessmentDone) {
         actionStatus = t === "tr" ? "Değerlendirme gerekli"
           : t === "zh" ? "需要技能评估"

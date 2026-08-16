@@ -3654,18 +3654,18 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : isZh ? `教育背景 (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "未提供"})`
         : `Educational Qualifications (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "Not Provided"})`,
       // DHA rule: Australian qualifications are exempt from assessment for points.
-      // Overseas qualifications require BOTH recognition AND assessment to claim points.
-      points: (isOverseasQualification && (!hasSkillsAssessmentDone || !isQualificationRecognized)) ? 0 : result.breakdown.education,
+      // Overseas qualifications require recognition to claim education points --
+      // a separate, unrelated skills assessment (occupationConfirmed) does NOT
+      // gate education points; that only gates the employment rows above. A
+      // user who declares their overseas qualification recognized ('yes') gets
+      // the education points regardless of hasSkillsAssessmentDone.
+      points: (isOverseasQualification && !isQualificationRecognized) ? 0 : result.breakdown.education,
       max: 20,
       note: (isOverseasQualification && !isQualificationRecognized)
         ? (isTr ? "Yabancı diploma — tanıma gerekli"
           : isZh ? "海外学历 — 需要资格认可"
           : "Overseas qualification — recognition required")
-        : (isOverseasQualification && !hasSkillsAssessmentDone)
-          ? (isTr ? "Yabancı diploma — değerlendirme gerekli"
-            : isZh ? "海外学历 — 需要技能评估"
-            : "Overseas qualification — assessment required")
-          : hasEducationInput
+        : hasEducationInput
           ? getLocalizedQualification(input.qualificationLevel, locale)
           : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
     },
