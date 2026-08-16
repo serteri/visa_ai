@@ -1637,6 +1637,12 @@ export async function unlockPremiumReport(
   prevState: PremiumUnlockState,
   formData: FormData
 ): Promise<PremiumUnlockState> {
+  console.log("🚀 UNLOCK ACTION TETİKLENDİ. Gelen payload:", {
+    prevStateStatus: prevState.status,
+    reportId: formData.get("reportId"),
+    email: formData.get("email"),
+    unlockMethod: formData.get("unlockMethod"),
+  });
   try {
     return await unlockPremiumReportInternal(prevState, formData);
   } catch (err) {
@@ -1663,24 +1669,37 @@ async function unlockPremiumReportInternal(
   const unlockMethod: "payment" | "lead_capture" =
     unlockMethodRaw === "payment" ? "payment" : "lead_capture";
 
+  console.log("unlockPremiumReportInternal: parsed formData", { reportId, email, unlockMethod });
+
   const errors: Record<string, string> = {};
   if (!reportId) errors.reportId = "Missing report id.";
   if (!email) errors.email = "Email is required.";
   if (email && !isValidEmail(email)) errors.email = "Enter a valid email address.";
 
   if (Object.keys(errors).length > 0) {
-    return { status: "error", errors, message: "Please fix the highlighted fields." };
+    console.error("unlockPremiumReportInternal: early return -- validation failed", errors);
+    return {
+      status: "error",
+      errors,
+      message: errors.reportId
+        ? "Missing report id. Please refresh the page and try again."
+        : "Please fix the highlighted fields.",
+    };
   }
 
+  console.log("Adım 1: Validasyon geçti, DB'den rapor okunuyor", { reportId });
   const record = await getUserReportById(reportId);
   if (!record) {
+    console.error("unlockPremiumReportInternal: early return -- report not found", { reportId });
     return { status: "error", message: "Report could not be found. Please submit the form again." };
   }
+  console.log("Adım 1 tamam: DB okundu", { reportId, email: record.email, locale: record.locale });
 
   const isAdmin = isAdminWhitelistedEmail(email);
 
   const betaStatus = await getFreeBetaStatus();
   const freeBeta = betaStatus.isFreeActive;
+  console.log("Adım 2: Stripe gate değerlendiriliyor", { isAdmin, freeBeta, unlockMethod });
 
   // ── Stripe gate ───────────────────────────────────────────────────────────
   // Active when free limit is exhausted OR user explicitly chooses payment
@@ -1688,6 +1707,7 @@ async function unlockPremiumReportInternal(
     if (unlockMethod === "payment" || !freeBeta) {
       try {
         const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
+        console.log("Adım 3: /api/checkout fetch başlatılıyor", { reportId, locale });
         const { url } = await createCheckoutSession({ reportId, email, locale, agentId: record.agentId });
         // Not calling next/navigation's redirect() here on purpose: this
         // branch runs inside unlockPremiumReportInternal, which the exported
@@ -1721,6 +1741,12 @@ async function unlockPremiumReportInternal(
       }
     }
   }
+
+  console.log("Adım 2 sonucu: Stripe gate atlandı, ücretsiz/lead-capture yoluna devam ediliyor", {
+    isAdmin,
+    freeBeta,
+    unlockMethod,
+  });
 
   // ── Effective unlock method ───────────────────────────────────────────────
   const effectiveUnlockMethod: UnlockMethod = isAdmin || freeBeta ? "beta_free" : "lead_capture";
