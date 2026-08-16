@@ -1696,60 +1696,64 @@ async function unlockPremiumReportInternal(
   console.log("Adım 1 tamam: DB okundu", { reportId, email: record.email, locale: record.locale });
 
   const isAdmin = isAdminWhitelistedEmail(email);
+  console.log("Adım 2: Checkout gate değerlendiriliyor", { isAdmin, unlockMethod });
 
-  const betaStatus = await getFreeBetaStatus();
-  const freeBeta = betaStatus.isFreeActive;
-  console.log("Adım 2: Stripe gate değerlendiriliyor", { isAdmin, freeBeta, unlockMethod });
-
-  // ── Stripe gate ───────────────────────────────────────────────────────────
-  // Active when free limit is exhausted OR user explicitly chooses payment
-  if (!isAdmin && (!freeBeta || unlockMethod === "payment")) {
-    if (unlockMethod === "payment" || !freeBeta) {
-      try {
-        const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
-        console.log("Adım 3: /api/checkout fetch başlatılıyor", { reportId, locale });
-        const { url } = await createCheckoutSession({ reportId, email, locale, agentId: record.agentId });
-        // Not calling next/navigation's redirect() here on purpose: this
-        // branch runs inside unlockPremiumReportInternal, which the exported
-        // unlockPremiumReport wraps in a blanket try/catch (see comment
-        // above) so a rejected server action always settles instead of
-        // throwing. redirect() works by throwing a special NEXT_REDIRECT
-        // error for the framework to catch -- that blanket catch would
-        // swallow it as a normal failure before it ever reaches the client.
-        // Returning the URL and letting the client component navigate
-        // (PremiumFeatureGate's useEffect on state.redirectUrl) sidesteps
-        // that trap entirely.
-        return {
-          status: "redirect",
-          redirectUrl: url,
-        };
-      } catch (err) {
-        console.error("unlockPremiumReport: /api/checkout request failed", err);
-        // createCheckoutSession only ever throws Errors with a user-safe
-        // message (network failure, non-2xx, bad JSON) -- surface it so the
-        // error banner in PremiumFeatureGate tells the user (and us, via
-        // screenshots/support tickets) *why* it failed instead of a generic
-        // "something's wrong, try again" that looks identical for every
-        // possible cause.
-        return {
-          status: "error",
-          message:
-            err instanceof Error
-              ? err.message
-              : "Payment processing is temporarily unavailable. Please try again later.",
-        };
-      }
+  // ── Checkout gate ─────────────────────────────────────────────────────────
+  // Every non-admin unlock -- regardless of unlockMethod ("payment" or
+  // "lead_capture") -- goes through /api/checkout now. unlockMethod used to
+  // pick between this branch and a local free/lead-capture unlock below
+  // based on the OLD full_check_usage-backed getFreeBetaStatus() quota, which
+  // let the client's default unlockMethod="lead_capture" skip /api/checkout
+  // (and its own, newer isFreePromo-backed 14-free-report quota) entirely --
+  // the redirect would just never happen. /api/checkout is the only place
+  // that quota decision gets made now, so this function has no business
+  // branching on unlockMethod itself anymore.
+  if (!isAdmin) {
+    try {
+      const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
+      console.log("Adım 3: /api/checkout fetch başlatılıyor", { reportId, locale });
+      const { url } = await createCheckoutSession({ reportId, email, locale, agentId: record.agentId });
+      // Not calling next/navigation's redirect() here on purpose: this
+      // branch runs inside unlockPremiumReportInternal, which the exported
+      // unlockPremiumReport wraps in a blanket try/catch (see comment
+      // above) so a rejected server action always settles instead of
+      // throwing. redirect() works by throwing a special NEXT_REDIRECT
+      // error for the framework to catch -- that blanket catch would
+      // swallow it as a normal failure before it ever reaches the client.
+      // Returning the URL and letting the client component navigate
+      // (PremiumFeatureGate's useEffect on state.redirectUrl) sidesteps
+      // that trap entirely.
+      return {
+        status: "redirect",
+        redirectUrl: url,
+      };
+    } catch (err) {
+      console.error("unlockPremiumReport: /api/checkout request failed", err);
+      // createCheckoutSession only ever throws Errors with a user-safe
+      // message (network failure, non-2xx, bad JSON) -- surface it so the
+      // error banner in PremiumFeatureGate tells the user (and us, via
+      // screenshots/support tickets) *why* it failed instead of a generic
+      // "something's wrong, try again" that looks identical for every
+      // possible cause.
+      return {
+        status: "error",
+        message:
+          err instanceof Error
+            ? err.message
+            : "Payment processing is temporarily unavailable. Please try again later.",
+      };
     }
   }
 
-  console.log("Adım 2 sonucu: Stripe gate atlandı, ücretsiz/lead-capture yoluna devam ediliyor", {
+  console.log("Adım 2 sonucu: isAdmin=true, checkout gate atlandı (yerel ücretsiz açma)", {
     isAdmin,
-    freeBeta,
     unlockMethod,
   });
 
   // ── Effective unlock method ───────────────────────────────────────────────
-  const effectiveUnlockMethod: UnlockMethod = isAdmin || freeBeta ? "beta_free" : "lead_capture";
+  // Only the isAdmin branch reaches here now -- every non-admin unlock
+  // returns via the /api/checkout redirect above.
+  const effectiveUnlockMethod: UnlockMethod = "beta_free";
 
   // ── PDF generation & email delivery ──────────────────────────────────────
   const emailEnabled = isEmailDeliveryEnabled();
@@ -1922,9 +1926,7 @@ async function unlockPremiumReportInternal(
 
   return {
     status: "success",
-    message: freeBeta
-      ? "Full report unlocked. PDF sent to your email."
-      : "Details received. Full report unlocked and PDF sent.",
+    message: "Full report unlocked. PDF sent to your email.",
     report: record.report,
     userInput: {
       name: fullName || undefined,
