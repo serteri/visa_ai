@@ -78,6 +78,13 @@ model UserReport {
   // that agent's ?ref=<agentId> link (see the ref cookie flow in
   // full-check/actions.ts), instead of landing in the manual pool.
   assignedViaRef        Boolean?  @default(false) @map("assigned_via_ref")
+  // Free-launch-promo grant: true when this report's premium unlock was
+  // given away as one of the first N free spots (see app/api/checkout/
+  // route.ts) rather than paid for. Counted against the promo cap via an
+  // atomic UPDATE ... WHERE (SELECT COUNT...) < N, so this column also
+  // doubles as the concurrency guard -- never set it directly outside that
+  // query.
+  isFreePromo           Boolean   @default(false) @map("is_free_promo")
   transactions          Transaction[]
 
   // agentId: FK filter for getAgentLeads/getUnassignedLeads (agentId: null),

@@ -6,8 +6,13 @@ import {
   getStripeBaseUrl,
   type StripeProductType,
 } from "@/lib/stripe";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+
+// First-N-users launch promo: the first FREE_PROMO_LIMIT "premium" report
+// unlocks are granted for free instead of going through Stripe.
+const FREE_PROMO_LIMIT = 14;
 
 type CheckoutPayload = {
   productType?: StripeProductType;
@@ -32,7 +37,6 @@ function normalizeLocale(value?: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const stripe = getStripeClient();
     const body = (await request.json()) as CheckoutPayload;
 
     const productType = body.productType;
@@ -47,8 +51,43 @@ export async function POST(request: NextRequest) {
     }
 
     const locale = normalizeLocale(body.locale);
-    const priceId = getPriceIdForProduct(productType);
     const baseUrl = getStripeBaseUrl();
+
+    // Free-promo path: only applies to report unlocks (productType "premium")
+    // that identify a specific UserReport via reportId. The UPDATE's WHERE
+    // clause re-checks the live count inside the same statement, so it's
+    // atomic under concurrent requests -- no separate count-then-update race,
+    // no locking/retry logic needed.
+    if (productType === "premium" && body.reportId) {
+      try {
+        const granted = await prisma.$queryRaw<{ id: string }[]>`
+          UPDATE user_reports
+          SET is_free_promo = true,
+              is_unlocked = true,
+              payment_status = 'paid',
+              unlock_method = 'free_promo',
+              unlocked_at = now()
+          WHERE id = ${body.reportId}
+            AND is_free_promo = false
+            AND (SELECT COUNT(*) FROM user_reports WHERE is_free_promo = true) < ${FREE_PROMO_LIMIT}
+          RETURNING id
+        `;
+
+        if (granted.length > 0) {
+          return NextResponse.json({
+            url: `${baseUrl}/${locale}/checkout/success?product=${productType}&free=true`,
+          });
+        }
+        // No row updated: either the promo quota is full, or this report was
+        // already granted/unlocked previously. Fall through to Stripe below.
+      } catch (promoError) {
+        console.error("[checkout] free-promo grant failed, falling back to Stripe", promoError);
+        // Fall through to Stripe rather than failing the request outright.
+      }
+    }
+
+    const stripe = getStripeClient();
+    const priceId = getPriceIdForProduct(productType);
 
     const successUrl = `${baseUrl}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&product=${productType}`;
     const cancelUrl = `${baseUrl}/${locale}/checkout/cancel?product=${productType}`;
