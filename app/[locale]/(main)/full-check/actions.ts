@@ -90,9 +90,10 @@ export type FullCheckWaitlistState = {
 };
 
 export type PremiumUnlockState = {
-  status: "idle" | "success" | "error";
+  status: "idle" | "success" | "error" | "redirect";
   message?: string;
   errors?: Record<string, string>;
+  redirectUrl?: string;
   report?: ReadinessReport;
   userInput?: {
     name?: string;
@@ -1655,9 +1656,19 @@ async function unlockPremiumReportInternal(
       try {
         const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
         const { url } = await createCheckoutSession({ reportId, email, locale, agentId: record.agentId });
+        // Not calling next/navigation's redirect() here on purpose: this
+        // branch runs inside unlockPremiumReportInternal, which the exported
+        // unlockPremiumReport wraps in a blanket try/catch (see comment
+        // above) so a rejected server action always settles instead of
+        // throwing. redirect() works by throwing a special NEXT_REDIRECT
+        // error for the framework to catch -- that blanket catch would
+        // swallow it as a normal failure before it ever reaches the client.
+        // Returning the URL and letting the client component navigate
+        // (PremiumFeatureGate's useEffect on state.redirectUrl) sidesteps
+        // that trap entirely.
         return {
-          status: "error",
-          message: `STRIPE_REDIRECT:${url}`,
+          status: "redirect",
+          redirectUrl: url,
         };
       } catch (err) {
         console.error("unlockPremiumReport: /api/checkout request failed", err);

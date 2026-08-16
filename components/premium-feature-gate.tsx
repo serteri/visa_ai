@@ -108,13 +108,13 @@ export function PremiumFeatureGate({
       });
     }
 
-    // Handle Stripe redirect
-    if (
-      unlockState.status === "error" &&
-      unlockState.message?.startsWith("STRIPE_REDIRECT:")
-    ) {
-      const url = unlockState.message.replace("STRIPE_REDIRECT:", "");
-      window.location.href = url;
+    // Handle checkout redirect (free-promo success or Stripe session URL --
+    // see app/api/checkout/route.ts). The server action can't call
+    // next/navigation's redirect() itself here (its outer try/catch would
+    // swallow the NEXT_REDIRECT it throws), so it hands the URL back in
+    // state and this effect forces the navigation on the client instead.
+    if (unlockState.status === "redirect" && unlockState.redirectUrl) {
+      window.location.href = unlockState.redirectUrl;
     }
   }, [locale, onUnlocked, reportId, unlockState]);
 
@@ -387,7 +387,7 @@ export function PremiumFeatureGate({
                   )}
                 </div>
 
-                {unlockState.status === "error" && unlockState.message && !unlockState.message.startsWith("STRIPE_REDIRECT:") && (
+                {unlockState.status === "error" && unlockState.message && (
                   <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
                     {unlockState.message}
                   </p>
