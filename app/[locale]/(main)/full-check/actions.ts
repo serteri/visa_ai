@@ -3,7 +3,6 @@
 import { and, eq, gte, sql } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
 import { revalidateTag } from "next/cache";
-import Stripe from "stripe";
 import { Resend } from "resend";
 import { z } from "zod";
 
@@ -716,46 +715,42 @@ async function sendReportReadyEmail(payload: {
   });
 }
 
-// ─── Stripe checkout (active when IS_FREE_BETA = false) ───────────────────────
+// ─── Checkout (hybrid free-promo / Stripe, see app/api/checkout/route.ts) ─────
+//
+// Delegates to the shared /api/checkout endpoint instead of creating a Stripe
+// session directly, so this "payment" path and the standalone report-unlock
+// button both go through the same first-14-free promo + Stripe fallback
+// logic (a single source of truth for the promo quota, instead of two
+// checkout implementations drifting apart).
 
-async function createStripeCheckoutSession(input: {
+async function createCheckoutSession(input: {
   reportId: string;
   email: string;
   locale: SupportedLocale;
   agentId?: string | null;
 }): Promise<{ url: string }> {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  // Founder reminder: Please remember to create a new $49 product in your Stripe Dashboard
-  // and update the STRIPE_PRICE_ID environment variable.
-  const priceId = process.env.STRIPE_REPORT_PRICE_ID;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-  if (!secretKey) throw new Error("STRIPE_SECRET_KEY is not configured.");
-  if (!priceId) throw new Error("STRIPE_REPORT_PRICE_ID is not configured.");
-
-  const stripe = new Stripe(secretKey);
-
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    customer_email: input.email,
-    line_items: [{ price: priceId, quantity: 1 }],
-    mode: "payment",
-    success_url: `${baseUrl}/${input.locale}/full-check?payment=success&reportId=${input.reportId}`,
-    cancel_url: `${baseUrl}/${input.locale}/full-check?payment=cancelled`,
-    // leadId/agentId let the webhook (recordCommissionTransaction, lib/stripe/
-    // commission.ts) attribute this sale to the right agent for commission
-    // tracking -- agentId is only set when this report was auto-assigned via
-    // a referral link (see resolveReferralAgent() above).
-    metadata: {
+  const response = await fetch(`${baseUrl}/api/checkout`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      productType: "premium",
       reportId: input.reportId,
-      leadId: input.reportId,
       email: input.email,
-      agentId: input.agentId ?? "",
-    },
+      locale: input.locale,
+      agentId: input.agentId ?? undefined,
+    }),
+    cache: "no-store",
   });
 
-  if (!session.url) throw new Error("Stripe did not return a checkout URL.");
-  return { url: session.url };
+  const payload = (await response.json().catch(() => null)) as { url?: string; error?: string } | null;
+
+  if (!response.ok || !payload?.url) {
+    throw new Error(payload?.error || `/api/checkout returned ${response.status}`);
+  }
+
+  return { url: payload.url };
 }
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
@@ -1659,13 +1654,13 @@ async function unlockPremiumReportInternal(
     if (unlockMethod === "payment" || !freeBeta) {
       try {
         const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
-        const { url } = await createStripeCheckoutSession({ reportId, email, locale, agentId: record.agentId });
+        const { url } = await createCheckoutSession({ reportId, email, locale, agentId: record.agentId });
         return {
           status: "error",
           message: `STRIPE_REDIRECT:${url}`,
         };
       } catch (err) {
-        console.error("Stripe session creation failed:", err);
+        console.error("unlockPremiumReport: /api/checkout request failed", err);
         return {
           status: "error",
           message: "Payment processing is temporarily unavailable. Please try again later.",
