@@ -11,7 +11,7 @@ import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
 import { getStripeBaseUrl } from "@/lib/stripe";
 import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, getVisaSubclassesForGoals, type MigrationGoalId } from "@/lib/countries";
-import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
+import { generateAndSendReport } from "@/lib/services/report-service";
 import {
   completeFullCheckProgress,
   failFullCheckProgress,
@@ -524,68 +524,6 @@ async function sendInternalLeadTierEmail(payload: {
   });
 
   return true;
-}
-
-async function sendFullCheckConfirmationEmail(payload: {
-  email: string;
-  fullName: string;
-  locale: "en" | "tr" | "zh-Hans";
-  pdfAttachment?: Uint8Array;
-}) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error("RESEND_API_KEY is not configured.");
-
-  const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
-  const isTr = payload.locale === "tr";
-  const isZh = payload.locale === "zh-Hans";
-  const greeting = payload.fullName
-    ? `${isTr ? "Merhaba" : isZh ? "您好" : "Hi"} ${payload.fullName},`
-    : isTr
-      ? "Merhaba,"
-      : isZh
-        ? "您好，"
-        : "Hi,";
-
-  await resend.emails.send({
-    from: fromEmail,
-    to: [payload.email],
-    subject: isTr
-      ? "Tam vize hazirlik raporu talebiniz"
-      : isZh
-        ? "你的完整签证准备度报告"
-        : "Your full visa readiness report request",
-    text: isTr
-      ? [
-          greeting,
-          "",
-          "Tam vize hazirlik raporu talebiniz alindi.",
-          "Yapilandirilmis rapor ekranda olusturuldu. Bu genel bilgi niteligindedir ve goc tavsiyesi degildir.",
-        ].join("\n")
-      : isZh
-        ? [
-            greeting,
-            "",
-            "我们已收到你的完整签证准备度报告请求。",
-            "你的高级 PDF 报告已作为附件发送。",
-            "本内容仅供一般信息参考，不构成移民建议。",
-          ].join("\n")
-        : [
-            greeting,
-            "",
-            "Your full visa readiness report request has been received.",
-            "Your premium PDF report is attached.",
-            "This is general information only and not migration advice.",
-          ].join("\n"),
-    attachments: payload.pdfAttachment
-      ? [
-          {
-            filename: "visa-readiness-report.pdf",
-            content: Buffer.from(payload.pdfAttachment),
-          },
-        ]
-      : undefined,
-  });
 }
 
 async function sendReportReadyEmail(payload: {
@@ -1756,164 +1694,21 @@ async function unlockPremiumReportInternal(
   const effectiveUnlockMethod: UnlockMethod = "beta_free";
 
   // ── PDF generation & email delivery ──────────────────────────────────────
-  const emailEnabled = isEmailDeliveryEnabled();
-  const simulateEmailDelivery = process.env.SIMULATE_EMAIL_DELIVERY === "true";
+  // Shared with the free-promo and Stripe-webhook unlock paths -- see
+  // lib/services/report-service.ts. Swallows its own PDF/email errors and
+  // never throws, so a failure here can't crash this admin unlock; we just
+  // log it and still mark the report unlocked (isAdmin already has access to
+  // the on-screen report regardless of whether the emailed PDF went out).
   let pdfSent = false;
-
-  if (simulateEmailDelivery) {
-    pdfSent = true;
-    console.log(`[simulate] PDF email delivery for report ${reportId} → ${email}`);
-  } else if (emailEnabled) {
-    let pdfBytes: Uint8Array;
-
-    try {
-      // ── Fetch viability data from invitation rounds & state allocations ──
-      let viabilityData: {
-        cutoffScore: number;
-        roundDate: string;
-        totalInvited: number;
-        occupationTitle: string;
-        gap: number;
-        viability: "strong" | "viable" | "borderline" | "below_threshold";
-        stateAllocation?: {
-          state: string;
-          visaSubclass: string;
-          allocation: number;
-          nominationsUsed?: number | null;
-        } | null;
-      } | null = null;
-
-      // Preferred state for 190/491 nomination
-      const preferredState = record.input.preferredState;
-      const targetedStateNomination = (record.input.migrationGoals ?? []).some(
-        (g) => g === "direct_pr" || g === "regional"
-      );
-
-      try {
-        const occupation = record.input.occupation;
-        const calculatedPoints = record.report.pointsEstimate?.estimatedPoints ?? 0;
-
-        // Fetch state allocation for the preferred state (190/491)
-        if (preferredState && targetedStateNomination) {
-          const subclass = (record.input.migrationGoals ?? []).includes("regional")
-            ? "491"
-            : "190";
-          const stateAlloc = await prisma.stateAllocation.findUnique({
-            where: {
-              programYear_state_visaSubclass: {
-                programYear: "2025-26",
-                state: preferredState,
-                visaSubclass: subclass,
-              },
-            },
-          });
-          if (stateAlloc) {
-            viabilityData = {
-              cutoffScore: 0,
-              roundDate: "2026-06",
-              totalInvited: 0,
-              occupationTitle: occupation ?? "your occupation",
-              gap: 0,
-              viability: "viable",
-              stateAllocation: {
-                state: stateAlloc.state,
-                visaSubclass: stateAlloc.visaSubclass,
-                allocation: stateAlloc.allocation,
-                nominationsUsed: stateAlloc.nominationsUsed,
-              },
-            };
-          }
-        }
-
-        // Fetch federal 189 cutoff only when not already resolved via state
-        if (occupation && !viabilityData) {
-          const occRecord = await prisma.occupation.findFirst({
-            where: {
-              OR: [
-                { anzscoCode: occupation },
-                { title: { contains: occupation, mode: "insensitive" } },
-              ],
-            },
-          });
-
-          if (occRecord) {
-            const cutoff = await prisma.roundCutoff.findFirst({
-              where: {
-                occupationId: occRecord.id,
-                round: { visaSubclass: "189" },
-              },
-              include: { round: true },
-              orderBy: { round: { date: "desc" } },
-            });
-
-            if (cutoff) {
-              const gap = calculatedPoints - cutoff.minimumScore;
-              viabilityData = {
-                cutoffScore: cutoff.minimumScore,
-                roundDate: cutoff.round.date.toISOString().split("T")[0],
-                totalInvited: cutoff.round.totalInvited,
-                occupationTitle: occRecord.title,
-                gap,
-                viability:
-                  gap >= 10 ? "strong"
-                    : gap >= 0 ? "viable"
-                    : gap >= -5 ? "borderline"
-                    : "below_threshold",
-              };
-            }
-          }
-        }
-      } catch (viabilityErr) {
-        console.warn("Viability lookup failed (non-fatal):", viabilityErr);
-      }
-
-      pdfBytes = await generateReadinessPDF({
-        report: record.report,
-        locale: record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en",
-        saveToFile: false,
-        userInputSummary: {
-          name: fullName || undefined,
-          email,
-          mainGoal: record.input.mainGoal,
-          currentCountry: record.input.currentCountry,
-          passportCountry: record.input.passportCountry,
-          age: record.input.age,
-          occupation: record.input.occupation,
-          englishLevel: record.input.englishLevel,
-          sponsorOrFamily: record.input.sponsorOrFamily,
-          biggestConcern: record.input.biggestConcern,
-          annualSalaryAud: record.input.annualSalaryAud != null ? String(record.input.annualSalaryAud) : null,
-          migrationGoals: record.input.migrationGoals,
-          preferredState: record.input.preferredState,
-          skillsAssessmentDone: String(formData.get("skillsAssessment") ?? "").trim() === "yes",
-          isAustralianQualification: record.input.qualificationAwardedInAustralia,
-          isQualificationRecognized: record.input.isQualificationRecognized,
-          viability: viabilityData,
-        },
-      });
-    } catch (err) {
-      console.error("PDF generation failed:", err);
-      return {
-        status: "error",
-        message: "PDF generation failed. Please try again.",
-      };
+  try {
+    const result = await generateAndSendReport(reportId, email, fullName || undefined);
+    pdfSent = result.pdfSent;
+    if (!pdfSent && isEmailDeliveryEnabled()) {
+      console.error(`unlockPremiumReport: generateAndSendReport reported failure for report ${reportId}`);
     }
-
-    try {
-      await sendFullCheckConfirmationEmail({
-        email,
-        fullName,
-        locale: record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en",
-        pdfAttachment: pdfBytes,
-      });
-      pdfSent = true;
-    } catch (err) {
-      console.error("Email delivery failed:", err);
-      return {
-        status: "error",
-        message: "Report is ready but email delivery failed. Please contact support.",
-      };
-    }
+  } catch (err) {
+    // generateAndSendReport is contracted not to throw, but guard anyway.
+    console.error("unlockPremiumReport: generateAndSendReport threw unexpectedly", err);
   }
 
   await markUserReportUnlocked({

@@ -114,6 +114,19 @@ export async function getUserReportById(reportId: string): Promise<{
   };
 }
 
+/**
+ * Marks pdf_sent without touching unlock_method/payment_status/is_unlocked --
+ * for callers (checkout free-promo grant, Stripe webhook) that already set
+ * those themselves via their own atomic UPDATE and just need to record that
+ * the PDF/email step (see lib/services/report-service.ts) also succeeded.
+ */
+export async function markReportPdfSent(reportId: string): Promise<void> {
+  await prisma.$executeRawUnsafe(
+    `UPDATE user_reports SET pdf_sent = TRUE WHERE id::text = $1::text`,
+    reportId
+  );
+}
+
 export async function markUserReportUnlocked(input: {
   reportId: string;
   email: string;

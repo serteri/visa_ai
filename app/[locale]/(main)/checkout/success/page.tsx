@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 
 declare global {
@@ -51,12 +50,18 @@ export default function CheckoutSuccessPage() {
             "您的购买已完成。请查收邮件了解后续步骤。"
           )}
         </p>
-        <Link
-          href={`/${locale}/dashboard`}
-          className="mt-8 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-indigo-600 hover:to-purple-700"
-        >
-          {t("Go to Dashboard →", "Dashboard'a Git →", "前往控制台 →")}
-        </Link>
+        {/* No "Go to Dashboard" link here on purpose: most people landing on
+            this page are guest checkouts with no LogiVisa account, so a
+            dashboard link just routes them into next-auth's sign-in wall
+            instead of anything useful. The report itself is delivered by
+            email (see lib/services/report-service.ts), not this page. */}
+        <div className="mt-8 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-900 dark:border-emerald-800/40 dark:bg-emerald-900/20 dark:text-emerald-200">
+          {t(
+            "Your report has been sent to your email address. Please check your inbox (and Spam folder).",
+            "Raporunuz e-posta adresinize gönderildi. Lütfen gelen kutunuzu (ve Spam klasörünü) kontrol edin.",
+            "您的报告已发送至您的邮箱。请查收收件箱（以及垃圾邮件文件夹）。"
+          )}
+        </div>
       </div>
     </main>
   );

@@ -7,6 +7,7 @@ import {
   type StripeProductType,
 } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { generateAndSendReport } from "@/lib/services/report-service";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,16 @@ export async function POST(request: NextRequest) {
         `;
 
         if (granted.length > 0) {
+          // Best-effort: generateAndSendReport already swallows its own
+          // PDF/email errors and never throws, but this call is wrapped
+          // anyway so a bug in that contract can never take down a checkout
+          // response that already told the client the report is unlocked.
+          try {
+            await generateAndSendReport(body.reportId, body.email ?? "");
+          } catch (reportError) {
+            console.error("[checkout] free-promo PDF/email generation failed (non-fatal)", reportError);
+          }
+
           return NextResponse.json({
             url: `${baseUrl}/${locale}/checkout/success?product=${productType}&free=true`,
           });
