@@ -9,6 +9,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
+import { getStripeBaseUrl } from "@/lib/stripe";
 import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, getVisaSubclassesForGoals, type MigrationGoalId } from "@/lib/countries";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import {
@@ -730,25 +731,54 @@ async function createCheckoutSession(input: {
   locale: SupportedLocale;
   agentId?: string | null;
 }): Promise<{ url: string }> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  // Must be absolute -- this fetch runs server-side inside a Server Action,
+  // where there is no browser location to resolve a relative "/api/checkout"
+  // against. Reuses the same env var (and fallback) that /api/checkout's own
+  // Stripe success/cancel URLs are built from (lib/stripe.ts's
+  // getStripeBaseUrl), so both sides of this call always agree on the host.
+  const endpoint = `${getStripeBaseUrl()}/api/checkout`;
 
-  const response = await fetch(`${baseUrl}/api/checkout`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      productType: "premium",
-      reportId: input.reportId,
-      email: input.email,
-      locale: input.locale,
-      agentId: input.agentId ?? undefined,
-    }),
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        productType: "premium",
+        reportId: input.reportId,
+        email: input.email,
+        locale: input.locale,
+        agentId: input.agentId ?? undefined,
+      }),
+      cache: "no-store",
+    });
+  } catch (networkErr) {
+    console.error(`[unlockPremiumReport] fetch to ${endpoint} failed`, networkErr);
+    throw new Error("Could not reach the checkout service. Please try again.");
+  }
 
-  const payload = (await response.json().catch(() => null)) as { url?: string; error?: string } | null;
+  // Read as text first: a 500 from /api/checkout (or a proxy/edge error page
+  // in front of it) can come back as HTML, and calling response.json()
+  // directly on that throws a SyntaxError that looks identical to every
+  // other failure in the caller's catch block -- logging the raw body here
+  // is what actually makes a bad deploy/route distinguishable from a normal
+  // application error.
+  const rawBody = await response.text();
+  let payload: { url?: string; error?: string } | null = null;
+  try {
+    payload = rawBody ? JSON.parse(rawBody) : null;
+  } catch {
+    console.error(
+      `[unlockPremiumReport] /api/checkout returned non-JSON (status ${response.status}): ${rawBody.slice(0, 500)}`
+    );
+  }
 
   if (!response.ok || !payload?.url) {
-    throw new Error(payload?.error || `/api/checkout returned ${response.status}`);
+    console.error(
+      `[unlockPremiumReport] /api/checkout failed (status ${response.status}):`,
+      payload?.error ?? rawBody.slice(0, 500)
+    );
+    throw new Error(payload?.error || "Checkout service returned an unexpected response. Please try again.");
   }
 
   return { url: payload.url };
@@ -1610,7 +1640,10 @@ export async function unlockPremiumReport(
   try {
     return await unlockPremiumReportInternal(prevState, formData);
   } catch (err) {
-    console.error("unlockPremiumReport: unexpected failure", err);
+    console.error(
+      "unlockPremiumReport: unexpected failure",
+      err instanceof Error ? { message: err.message, stack: err.stack } : err
+    );
     return {
       status: "error",
       message: "Something went wrong. Please try again.",
@@ -1672,9 +1705,18 @@ async function unlockPremiumReportInternal(
         };
       } catch (err) {
         console.error("unlockPremiumReport: /api/checkout request failed", err);
+        // createCheckoutSession only ever throws Errors with a user-safe
+        // message (network failure, non-2xx, bad JSON) -- surface it so the
+        // error banner in PremiumFeatureGate tells the user (and us, via
+        // screenshots/support tickets) *why* it failed instead of a generic
+        // "something's wrong, try again" that looks identical for every
+        // possible cause.
         return {
           status: "error",
-          message: "Payment processing is temporarily unavailable. Please try again later.",
+          message:
+            err instanceof Error
+              ? err.message
+              : "Payment processing is temporarily unavailable. Please try again later.",
         };
       }
     }
