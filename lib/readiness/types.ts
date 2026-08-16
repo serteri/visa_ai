@@ -26,6 +26,14 @@ export type ReadinessInput = {
     string,
     { status?: string; officialNote?: string; sourceUrl?: string; lastVerifiedAt?: string }
   >;
+  /**
+   * Real occupation-list membership per state (lib/state-intelligence.ts's
+   * getStateOccupationMatches), fetched by the caller for the same reason
+   * as stateIntelligence above. A missing key means "no list data loaded
+   * for this state" (must NOT be treated as "occupation not on list");
+   * calculateStateNominationTracker relies on this distinction.
+   */
+  stateOccupationMatches?: Record<string, { onList: boolean; subclasses: string[] }>;
   passportCountry?: string;
   age?: string;
   occupation?: string;

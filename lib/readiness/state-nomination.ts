@@ -444,8 +444,6 @@ export function calculateStateNominationTracker(
 
     score = Math.max(0, Math.min(95, score));
 
-    const matchLevel: StateMatchLevel = score >= 70 ? "high" : score >= 45 ? "medium" : "low";
-
     // Live DB override (see lib/state-intelligence.ts) for this state, if
     // the caller fetched one. Only the *displayed* status/citation fields
     // are overridden here -- the scoring math above always runs against the
@@ -453,6 +451,66 @@ export function calculateStateNominationTracker(
     // silently corrupt the match-score algorithm.
     const intel = input.stateIntelligence?.[row.code];
     const displayStatus = asKnownStatus(intel?.status) ?? row.status;
+
+    // ── Real-data hard rules (StateOccupationListEntry + points + onshore
+    // status), applied AFTER the heuristic score above and able to override
+    // it. Priority: rule 3 (onshore hard block) > rule 1 (not on list) >
+    // rule 2 (on list but under points threshold) -- checked in that order
+    // so a stricter rule's note isn't clobbered by a weaker one.
+    let ruleOverrideNote: string | undefined;
+
+    const occupationMatch = input.stateOccupationMatches?.[row.code];
+    // Rule 1: occupation-list data exists for this state AND we positively
+    // confirmed the occupation is NOT on it. A missing occupationMatch
+    // entry means "no list data for this state" (see getStateOccupationMatches's
+    // doc comment) and must NOT trigger this -- that would falsely zero out
+    // states we simply haven't synced list data for yet.
+    if (occupationMatch && !occupationMatch.onList) {
+      score = 2;
+      ruleOverrideNote = t(
+        input.locale,
+        "Your occupation is currently not on this state's skilled list.",
+        "Mesleginiz su anda bu eyaletin nitelikli meslek listesinde degil.",
+        "您的职业目前不在该州的技术职业清单上。"
+      );
+    } else if (occupationMatch?.onList && typeof assessmentState.estimatedPoints === "number" && assessmentState.estimatedPoints < row.minimumPoints) {
+      // Rule 2: confirmed on the list, but real computed points are below
+      // this state's threshold -- heavy penalty, not a full zero (the
+      // occupation itself IS eligible, points can still improve).
+      score = Math.min(score, 15);
+      ruleOverrideNote = t(
+        input.locale,
+        "Occupation is on the list, but points are below the competitive threshold.",
+        "Meslek listede yer aliyor, ancak puan rekabetci esigin altinda.",
+        "该职业在清单上，但分数低于具有竞争力的门槛。"
+      );
+    }
+
+    // Rule 3: onshore-only state and the applicant isn't currently in
+    // Australia -- hard block, takes priority over rules 1/2's note.
+    if (displayStatus === "Onshore Only" && offshore) {
+      score = 0;
+      ruleOverrideNote = t(
+        input.locale,
+        "Requires an onshore profile.",
+        "Avustralya icinde bulunma sarti gerektirir.",
+        "需要在境内（澳大利亚）申请资料。"
+      );
+    }
+
+    const matchLevel: StateMatchLevel = score >= 70 ? "high" : score >= 45 ? "medium" : "low";
+
+    const requirements = buildRequirements({
+      locale: input.locale,
+      row,
+      offshore,
+      occupationIsPriority,
+      experienceYears,
+      regionalWilling,
+      pointsEstimate,
+      englishScore,
+      residenceGap,
+    });
 
     return {
       code: row.code,
@@ -472,17 +530,10 @@ export function calculateStateNominationTracker(
         englishGap,
         residenceGap,
       }),
-      requirements: buildRequirements({
-        locale: input.locale,
-        row,
-        offshore,
-        occupationIsPriority,
-        experienceYears,
-        regionalWilling,
-        pointsEstimate,
-        englishScore,
-        residenceGap,
-      }),
+      // Rule-triggered note goes first so it's always within the PDF/UI's
+      // "first 2 requirements" note preview (see drawStateNominationTable
+      // in lib/readiness/generate-pdf.ts).
+      requirements: ruleOverrideNote ? [ruleOverrideNote, ...requirements] : requirements,
       officialNote: intel?.officialNote,
       sourceUrl: intel?.sourceUrl,
       lastVerifiedAt: intel?.lastVerifiedAt,
