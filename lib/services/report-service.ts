@@ -20,7 +20,15 @@ async function sendFullCheckConfirmationEmail(payload: {
   if (!apiKey) throw new Error("RESEND_API_KEY is not configured.");
 
   const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
+  // Must match a verified sending domain, NOT Resend's onboarding@resend.dev
+  // sandbox address -- that sandbox sender can only deliver to the Resend
+  // account owner's own inbox (serter@logivisa.com), and returns a normal
+  // 200 while doing it, so every other recipient (i.e. every real customer)
+  // silently never received their report. lib/email/pdf-delivery.ts and
+  // sendFullCheckAdminEmail (full-check/actions.ts) already use this
+  // verified domain and deliver correctly -- this was the one holdout still
+  // defaulting to the sandbox address.
+  const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
   const isTr = payload.locale === "tr";
   const isZh = payload.locale === "zh-Hans";
   const greeting = payload.fullName
