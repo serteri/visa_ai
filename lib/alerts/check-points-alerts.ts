@@ -24,7 +24,11 @@ function formatDate(date: Date): string {
 
 export async function checkAndSendAlerts(): Promise<AlertCheckResult> {
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
+  // Must be a verified sending domain -- Resend's onboarding@resend.dev
+  // sandbox sender only delivers to the Resend account owner's own inbox
+  // (returns 200 while silently not delivering to anyone else), which is
+  // exactly wrong here since these alerts go out to arbitrary subscribers.
+  const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
   const appBaseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "https://logivisa.com").replace(/\/$/, "");
 
   const alerts = await prisma.pointsAlert.findMany({

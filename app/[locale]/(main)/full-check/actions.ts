@@ -536,7 +536,11 @@ async function sendReportReadyEmail(payload: {
   if (!apiKey) return;
 
   const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "Logivisa <onboarding@resend.dev>";
+  // Must be a verified sending domain -- Resend's onboarding@resend.dev
+  // sandbox sender only reliably delivers to the Resend account owner's own
+  // inbox, returning 200 while silently not delivering to this function's
+  // actual recipient (payload.email, a customer).
+  const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
   const isTr = payload.locale === "tr";
   const isZh = payload.locale === "zh-Hans";
 

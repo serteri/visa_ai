@@ -135,7 +135,10 @@ export async function POST(req: NextRequest) {
   if (apiKey) {
     try {
       const resend = new Resend(apiKey);
-      const fromEmail = process.env.FROM_EMAIL || "LogiVisa <onboarding@resend.dev>";
+      // Must be a verified sending domain -- Resend's onboarding@resend.dev
+      // sandbox sender only reliably delivers to the Resend account owner's
+      // own inbox, returning 200 while silently not delivering otherwise.
+      const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
 
       await resend.emails.send({
         from: fromEmail,
