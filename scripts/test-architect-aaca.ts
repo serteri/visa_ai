@@ -71,7 +71,6 @@ async function main() {
         email: "qa@example.com",
         occupation: input.occupation,
         englishLevel: input.englishLevel,
-        skillsAssessmentDone: true,
       },
     });
 

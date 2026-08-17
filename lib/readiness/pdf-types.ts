@@ -293,7 +293,6 @@ export interface UserInputSummary {
   annualSalaryAud?: string | null;
   migrationGoals?: string[];
   preferredState?: string;
-  skillsAssessmentDone?: boolean | null;
   isAustralianQualification?: boolean | null;
   isQualificationRecognized?: boolean | null;
   /** Historical invitation round cutoff data for the user's occupation */

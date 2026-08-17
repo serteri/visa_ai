@@ -110,7 +110,6 @@ interface PDFGeneratorInput {
     annualSalaryAud?: string | null;
     migrationGoals?: string[];
     preferredState?: string;
-    skillsAssessmentDone?: boolean;
     isAustralianQualification?: boolean | null;
     isQualificationRecognized?: boolean | null;
     viability?: {

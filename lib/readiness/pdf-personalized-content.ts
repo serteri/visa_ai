@@ -54,7 +54,15 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   const estimatedPoints = report.pointsEstimate?.estimatedPoints ?? 0;
   const userName = userInputSummary.name ||
     (effectiveLocale === "tr" ? "Başvuru Sahibi" : effectiveLocale === "zh-Hans" ? "申请人" : "Applicant");
-  const skillsAssessmentDone = userInputSummary.skillsAssessmentDone ?? false;
+  // Single source of truth: report.assessmentState.fieldsPresent.skillsAssessment
+  // is computed once in assessment-state.ts from input.occupationConfirmed, the
+  // same field engine.ts's hasSkillsAssessmentDone (and the EOI Status banner's
+  // report.pointsEstimate.isEoiEligible) reads. userInputSummary.skillsAssessmentDone
+  // used to be read here instead -- a separate prop no production caller of
+  // generateReadinessPDF (report-service.ts, app/api/agent/lead/[id]/pdf/
+  // route.ts) ever actually populated, so it silently defaulted to false and
+  // disagreed with every other section of the same PDF.
+  const skillsAssessmentDone = report.assessmentState.fieldsPresent.skillsAssessment;
   const isAusQual = userInputSummary.isAustralianQualification ?? null;
   const isQualRecognized = userInputSummary.isQualificationRecognized ?? null;
   const annualSalary = userInputSummary.annualSalaryAud
