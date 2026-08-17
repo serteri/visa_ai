@@ -3629,7 +3629,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
           : input.offshoreExperienceYears !== undefined
             ? `${input.offshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
-            : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
+            // Left blank -- a valid claim of zero years, not missing data
+            // (see state-nomination.ts's buildPartialDataWarning, which
+            // stopped flagging this as an error for the same reason).
+            : isTr ? "Beyan Edilen Tecrübe: 0 Yıl" : isZh ? "申报经验：0 年" : "Claimed Experience: 0 Years",
     },
     {
       label: isTr
@@ -3646,7 +3649,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
           : input.onshoreExperienceYears !== undefined
             ? `${input.onshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
-            : isTr ? "Deneyim girilmedi" : isZh ? "未提供经验" : "Experience not provided",
+            // Left blank -- a valid claim of zero years, not missing data
+            // (see state-nomination.ts's buildPartialDataWarning, which
+            // stopped flagging this as an error for the same reason).
+            : isTr ? "Beyan Edilen Tecrübe: 0 Yıl" : isZh ? "申报经验：0 年" : "Claimed Experience: 0 Years",
     },
     {
       label: isTr
