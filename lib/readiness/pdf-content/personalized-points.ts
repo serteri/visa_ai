@@ -54,20 +54,22 @@ export function getPersonalizedPointsBreakdown(
   // ── Summary ───────────────────────────────────────────────────────────
   // Same hard gate as the Gap Analysis section below: a score at/above
   // threshold is not a green light without a positive Skills Assessment.
+  // gap === 0 means estimatedPoints === threshold exactly -- "exceeded" is
+  // mathematically wrong for that case (65/65 is met, not exceeded).
   const thresholdClauseEn = gap > 0
     ? `You need ${gap} more points.`
     : isAssessmentDone
-      ? "You have exceeded the points threshold!"
+      ? gap === 0 ? "You have met the points threshold!" : "You have exceeded the points threshold!"
       : "Potential threshold reached. Mandatory Skills Assessment required.";
   const thresholdClauseTr = gap > 0
     ? `${gap} puana ihtiyacınız var.`
     : isAssessmentDone
-      ? "Puan barajını aştınız!"
+      ? gap === 0 ? "Puan barajını karşıladınız!" : "Puan barajını aştınız!"
       : "Potansiyel baraj aşıldı. Zorunlu Beceri Değerlendirmesi gereklidir.";
   const thresholdClauseZh = gap > 0
     ? `您还需要${gap}分。`
     : isAssessmentDone
-      ? "您已超过积分门槛！"
+      ? gap === 0 ? "您已达到积分门槛！" : "您已超过积分门槛！"
       : "已达到潜在门槛。必须完成强制性技能评估。";
 
   const summary = isTr
@@ -132,15 +134,15 @@ export function getPersonalizedPointsBreakdown(
     // without one, so the congratulatory line would be legally false here.
     : !isAssessmentDone
       ? (isTr
-          ? `${userName}, potansiyel puanınız barajı aşıyor. Ancak bu puanları resmi olarak talep edip başvuru yapabilmek için olumlu bir Beceri Değerlendirmesi zorunludur.`
+          ? `${userName}, potansiyel puanınız barajı ${gap === 0 ? "karşılıyor" : "aşıyor"}. Ancak bu puanları resmi olarak talep edip başvuru yapabilmek için olumlu bir Beceri Değerlendirmesi zorunludur.`
           : isZh
-            ? `${userName}，您的潜在积分已超过门槛。但是，要正式主张这些积分并提交申请，必须获得积极的技能评估结果。`
-            : `${userName}, your potential score exceeds the threshold. However, a positive Skills Assessment is mandatory to officially claim these points and lodge an application.`)
+            ? `${userName}，您的潜在积分已${gap === 0 ? "达到" : "超过"}门槛。但是，要正式主张这些积分并提交申请，必须获得积极的技能评估结果。`
+            : `${userName}, your potential score ${gap === 0 ? "meets" : "exceeds"} the threshold. However, a positive Skills Assessment is mandatory to officially claim these points and lodge an application.`)
       : (isTr
-          ? `${userName}, puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+          ? `${userName}, puan barajını ${gap === 0 ? "karşıladınız" : "aştınız"}! Şimdi başvuru sürecine odaklanabilirsiniz.`
           : isZh
-            ? `${userName}，您已超过积分门槛！现在可以专注于申请流程。`
-            : `${userName}, you have exceeded the points threshold! You can now focus on the application process.`);
+            ? `${userName}，您已${gap === 0 ? "达到" : "超过"}积分门槛！现在可以专注于申请流程。`
+            : `${userName}, you have ${gap === 0 ? "met" : "exceeded"} the points threshold! You can now focus on the application process.`);
 
   // ── Improvement Tips ──────────────────────────────────────────────────
   const improvementTips: string[] = [];

@@ -103,11 +103,19 @@ export function getPersonalizedOverview(
             : isZh
               ? `您的潜在积分为${estimatedPoints}。但是，在提交EOI之前，法律要求必须获得积极的技能评估结果。您当前的首要任务是获得该评估，以使这些积分生效。`
               : `Your potential score is ${estimatedPoints}. However, a positive Skills Assessment is legally required before lodging an EOI. Your immediate priority is to obtain this assessment to validate these points.`)
-        : (isTr
-            ? `Puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
-            : isZh
-              ? `您已超过积分门槛！现在可以专注于申请流程。`
-              : `You have exceeded the threshold! You can now focus on the application process.`),
+        // gap === 0 means estimatedPoints === threshold exactly -- "exceeded"
+        // is mathematically wrong for that case (65/65 is met, not exceeded).
+        : gap === 0
+          ? (isTr
+              ? `Minimum puan barajını karşıladınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+              : isZh
+                ? `您已达到最低积分门槛！现在可以专注于申请流程。`
+                : `You have met the minimum points threshold! You can now focus on the application process.`)
+          : (isTr
+              ? `Puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+              : isZh
+                ? `您已超过积分门槛！现在可以专注于申请流程。`
+                : `You have exceeded the threshold! You can now focus on the application process.`),
   ];
 
   // ── Key Findings ──────────────────────────────────────────────────────

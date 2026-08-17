@@ -314,6 +314,21 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       const isPartner = item.label.toLowerCase().includes("partner") ||
         item.label.toLowerCase().includes("伴侣");
 
+      // 0 claimed years is a definitive, complete answer (see engine.ts's
+      // "Claimed Experience: 0 Years" note), not missing data -- must not
+      // read as "Information Missing" below.
+      const claimedZeroExperience = isEmployment && (
+        item.note === "Claimed Experience: 0 Years" ||
+        item.note === "Beyan Edilen Tecrübe: 0 Yıl" ||
+        item.note === "申报经验：0 年"
+      );
+      // "WITHOUT Functional English" is an explicit, definitive declaration
+      // (the user stated their partner doesn't meet the bar) -- distinct
+      // from the other partner reasons, which genuinely reflect data DHA's
+      // points table needs but the intake form never collected.
+      const partnerExplicitlyDeclaredNoEnglish =
+        isPartner && userInputSummary.sponsorOrFamily === "Partner / Dependants WITHOUT Functional English";
+
       if (claimedPts > 0) {
         actionStatus = t === "tr" ? "✅ Tamamlandı"
           : t === "zh" ? "✅ 已完成"
@@ -331,6 +346,14 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
         actionStatus = t === "tr" ? "Değerlendirme gerekli"
           : t === "zh" ? "需要技能评估"
           : "Requires Skills Assessment";
+      } else if (claimedZeroExperience) {
+        actionStatus = t === "tr" ? "Tecrübe Beyan Edilmedi"
+          : t === "zh" ? "未申报经验"
+          : "Experience Not Claimed";
+      } else if (partnerExplicitlyDeclaredNoEnglish) {
+        actionStatus = t === "tr" ? "✅ Tamamlandı"
+          : t === "zh" ? "✅ 已完成"
+          : "✅ Complete";
       } else if (isPartner && claimedPts === 0) {
         actionStatus = t === "tr" ? "Beceri dil doğrulanmadı"
           : t === "zh" ? "技能/语言未验证"

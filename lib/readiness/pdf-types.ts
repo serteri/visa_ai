@@ -286,6 +286,7 @@ export interface UserInputSummary {
   age?: string;
   occupation?: string;
   preferredPathway?: string;
+  sponsorOrFamily?: string;
   biggestConcern?: string;
   estimatedBudgetRange?: string;
   timeline?: string;

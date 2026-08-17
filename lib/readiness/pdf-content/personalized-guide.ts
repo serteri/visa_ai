@@ -135,9 +135,22 @@ export function getPersonalizedApplicationGuide(
       : "Estimated timeline: Profile to application 6-12 months, application to decision 6-12 months. Total: 12-24 months.";
 
   // ── Detailed Timeline ─────────────────────────────────────────────────
+  // Step 1 assumes Skills Assessment still needs to be lodged -- if the user
+  // already declared it done, that step is dynamically replaced instead of
+  // telling them to do something they've already completed.
+  const skillsAssessmentStepTr = skillsAssessmentDone
+    ? "Ay 1-2: Beceri değerlendirmesi zaten tamamlandı — doğrudan EOI oluşturmaya geçin"
+    : "Ay 1-2: Beceri değerlendirmesi başvurusu ve dil testi";
+  const skillsAssessmentStepZh = skillsAssessmentDone
+    ? "第1-2个月：技能评估已完成——可直接进入创建EOI阶段"
+    : "第1-2个月：提交技能评估申请和语言考试";
+  const skillsAssessmentStepEn = skillsAssessmentDone
+    ? "Month 1-2: Skills assessment already completed — proceed directly to EOI creation"
+    : "Month 1-2: Skills assessment application and language test";
+
   const detailedTimeline = isTr
     ? [
-        "Ay 1-2: Beceri değerlendirmesi başvurusu ve dil testi",
+        skillsAssessmentStepTr,
         "Ay 3-4: Değerlendirme sonuçlarını bekleme, EOI oluşturma",
         "Ay 5-8: Davet beklemesi (puanınıza bağlı)",
         "Ay 9-10: Başvuru hazırlığı ve belge toplama",
@@ -146,7 +159,7 @@ export function getPersonalizedApplicationGuide(
       ]
     : isZh
       ? [
-          "第1-2个月：提交技能评估申请和语言考试",
+          skillsAssessmentStepZh,
           "第3-4个月：等待评估结果，创建EOI",
           "第5-8个月：等待邀请（取决于积分）",
           "第9-10个月：准备申请材料",
@@ -154,7 +167,7 @@ export function getPersonalizedApplicationGuide(
           "第13-24个月：审核过程和结果",
         ]
       : [
-          "Month 1-2: Skills assessment application and language test",
+          skillsAssessmentStepEn,
           "Month 3-4: Wait for assessment results, create EOI",
           "Month 5-8: Wait for invitation (depends on your points)",
           "Month 9-10: Prepare application and gather documents",
