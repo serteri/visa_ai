@@ -21,6 +21,7 @@ export function getPersonalizedPointsBreakdown(
   estimatedPoints: number,
   breakdown: PointCategory[],
   threshold: number,
+  skillsAssessmentDone: boolean | string = false,
 ): {
   title: string;
   userName: string;
@@ -41,6 +42,7 @@ export function getPersonalizedPointsBreakdown(
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const gap = threshold - estimatedPoints;
+  const isAssessmentDone = skillsAssessmentDone === true || skillsAssessmentDone === "yes";
 
   // ── Title ─────────────────────────────────────────────────────────────
   const title = isTr
@@ -106,11 +108,21 @@ export function getPersonalizedPointsBreakdown(
         : isZh
           ? `${userName}，您还差${gap}分。最快的方式是提高语言分数或获得州提名。`
           : `${userName}, you have a ${gap}-point gap. The fastest ways to improve are upgrading your English score or obtaining state nomination.`)
-    : (isTr
-        ? `${userName}, puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
-        : isZh
-          ? `${userName}，您已超过积分门槛！现在可以专注于申请流程。`
-          : `${userName}, you have exceeded the points threshold! You can now focus on the application process.`);
+    // Hard gate, matching lib/readiness/pdf-content/personalized-overview.ts:
+    // a score at/above threshold is not itself a green light without a
+    // positive Skills Assessment -- DHA won't accept an EOI at any score
+    // without one, so the congratulatory line would be legally false here.
+    : !isAssessmentDone
+      ? (isTr
+          ? `${userName}, potansiyel puanınız barajı aşıyor. Ancak bu puanları resmi olarak talep edip başvuru yapabilmek için olumlu bir Beceri Değerlendirmesi zorunludur.`
+          : isZh
+            ? `${userName}，您的潜在积分已超过门槛。但是，要正式主张这些积分并提交申请，必须获得积极的技能评估结果。`
+            : `${userName}, your potential score exceeds the threshold. However, a positive Skills Assessment is mandatory to officially claim these points and lodge an application.`)
+      : (isTr
+          ? `${userName}, puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+          : isZh
+            ? `${userName}，您已超过积分门槛！现在可以专注于申请流程。`
+            : `${userName}, you have exceeded the points threshold! You can now focus on the application process.`);
 
   // ── Improvement Tips ──────────────────────────────────────────────────
   const improvementTips: string[] = [];

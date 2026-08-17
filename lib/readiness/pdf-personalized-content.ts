@@ -272,6 +272,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       estimatedPoints,
       breakdown.map((item) => ({ ...item, max: item.max ?? 0 })),
       65,
+      skillsAssessmentDone,
     );
 
     // Section Header
