@@ -147,6 +147,35 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
           ? "需要采取行动：递交EOI前，您必须证明至少具备能力级英语水平。"
           : "Action Required: You must demonstrate at least Competent English to lodge an EOI.";
       doc.text(safeText(englishDetail), margin + 8, bannerY + 13);
+    } else if (!isEoiEligible && eoiReason === "points") {
+      // RED: BLOCKED — Skills Assessment done (and age/English clear), but
+      // estimatedPoints is still below the 65 threshold. A positive
+      // assessment alone is not enough to lodge a competitive EOI.
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(220, 38, 38);
+      doc.setLineWidth(0.8);
+      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
+      doc.setFillColor(220, 38, 38);
+      doc.rect(margin, bannerY, 3, bannerH, "F");
+
+      setBoldFont();
+      doc.setFontSize(9);
+      doc.setTextColor(180, 38, 38);
+      const pointsBlockedTitle = t === "tr"
+        ? "EOI DURUMU: ENGELLİ (Puan Barajı Karşılanmadı)."
+        : t === "zh" ? "EOI 状态：已阻止（未达到积分门槛）。"
+        : "EOI STATUS: BLOCKED (Points Below Threshold).";
+      doc.text(safeText(pointsBlockedTitle), margin + 8, bannerY + 7);
+
+      setBaseFont();
+      doc.setFontSize(7.5);
+      doc.setTextColor(120, 40, 40);
+      const pointsBlockedDetail = t === "tr"
+        ? "Beceri Değerlendirmeniz tamamlanmış olsa da, tahmini puanınız asgari 65 barajının altında. Bir EOI sunmadan önce puanınızı artırmanız gerekir."
+        : t === "zh"
+          ? "尽管您的技能评估已完成，您的预估积分仍低于最低65分门槛。递交EOI前需要先提高积分。"
+          : "Although your Skills Assessment is complete, your estimated points are below the minimum threshold of 65. You must raise your score before lodging an EOI.";
+      doc.text(safeText(pointsBlockedDetail), margin + 8, bannerY + 13);
     } else if (!isEoiEligible) {
       // RED: BLOCKED — skills assessment missing
       doc.setFillColor(254, 242, 242);

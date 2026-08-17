@@ -3507,8 +3507,14 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     englishLevelRaw !== "none" &&
     (englishOption === "competent" || englishOption === "proficient" || englishOption === "superior");
 
-  const isEoiEligible = !isOverAgeLimit && assessmentDone && meetsCompetentEnglish;
-  const eoiIneligibilityReason: "age" | "skills_assessment" | "english" | null = isEoiEligible
+  // Preliminary eligibility, used only for the "no age/English at all" early
+  // return below where estimatedPoints can't be calculated -- the points
+  // threshold can't be checked without a real number, so that path is left
+  // on the original 3-factor gate. The real isEoiEligible (age + assessment
+  // + English + points >= 65) is computed further down, once estimatedPoints
+  // is known -- see its definition after the breakdown is built.
+  const preliminaryEoiEligible = !isOverAgeLimit && assessmentDone && meetsCompetentEnglish;
+  const preliminaryEoiIneligibilityReason: "age" | "skills_assessment" | "english" | null = preliminaryEoiEligible
     ? null
     : isOverAgeLimit
       ? "age"
@@ -3531,8 +3537,8 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
       note: isTr
         ? "Puan tahmini için yaş ve İngilizce seviyesi sağlanmadı. Puan hesaplaması mevcut değil."
         : "Age and English level were not provided. A points estimate is not available.",
-      isEoiEligible,
-      eoiIneligibilityReason,
+      isEoiEligible: preliminaryEoiEligible,
+      eoiIneligibilityReason: preliminaryEoiIneligibilityReason,
     };
   }
 
@@ -3660,14 +3666,16 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : isZh ? `教育背景 (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "未提供"})`
         : `Educational Qualifications (${hasEducationInput ? getLocalizedQualification(input.qualificationLevel, locale) : "Not Provided"})`,
       // DHA rule: Australian qualifications are exempt from assessment for points.
-      // Overseas qualifications require recognition to claim education points --
-      // a separate, unrelated skills assessment (occupationConfirmed) does NOT
-      // gate education points; that only gates the employment rows above. A
-      // user who declares their overseas qualification recognized ('yes') gets
-      // the education points regardless of hasSkillsAssessmentDone.
-      points: (isOverseasQualification && !isQualificationRecognized) ? 0 : result.breakdown.education,
+      // Overseas qualifications need EITHER a positive Skills Assessment OR an
+      // explicit recognition declaration to claim education points -- a
+      // positive Skills Assessment outcome already means the assessing
+      // authority evaluated the qualification as part of determining skill
+      // level, so it supersedes (and can't be contradicted by) a separate
+      // "is your qualification recognized?" answer of "No". Only zero out
+      // points when NEITHER signal confirms recognition.
+      points: (isOverseasQualification && !hasSkillsAssessmentDone && !isQualificationRecognized) ? 0 : result.breakdown.education,
       max: 20,
-      note: (isOverseasQualification && !isQualificationRecognized)
+      note: (isOverseasQualification && !hasSkillsAssessmentDone && !isQualificationRecognized)
         ? (isTr ? "Yabancı diploma — tanıma gerekli"
           : isZh ? "海外学历 — 需要资格认可"
           : "Overseas qualification — recognition required")
@@ -3724,6 +3732,17 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // final breakdown values rather than using result.total189, which doesn't
   // account for the assessment gate applied above.
   const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
+
+  // Real EOI eligibility, now that estimatedPoints is known: age + Skills
+  // Assessment + Competent English are necessary but not sufficient -- DHA
+  // only invites EOIs that also clear the points threshold (65). A positive
+  // Skills Assessment alone (preliminaryEoiEligible above) must not read as
+  // "READY" when the points position doesn't support an invitation.
+  const meetsPointsThreshold = estimatedPoints >= 65;
+  const isEoiEligible = preliminaryEoiEligible && meetsPointsThreshold;
+  const eoiIneligibilityReason: "age" | "skills_assessment" | "english" | "points" | null = isEoiEligible
+    ? null
+    : preliminaryEoiIneligibilityReason ?? "points";
 
   const occupationNote = isTr
     ? "Meslek / Skills Assessment doğrudan puan vermez, ama diğer pathway'lerin (482/186 gibi) uygunluğunu belirler."

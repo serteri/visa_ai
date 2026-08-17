@@ -183,10 +183,10 @@ export type PointsEstimate = {
   note: string;
   /** One-line note about occupation/skills-assessment status, shown under the breakdown table -- occupation itself does not carry points-table score, so it's kept out of the scored breakdown array but still needs surfacing. */
   occupationNote?: string;
-  /** TRUE only when the applicant can validly lodge an EOI: under 45 years old, has a skills assessment, AND has at least Competent English. */
+  /** TRUE only when the applicant can validly lodge an EOI: under 45 years old, has a skills assessment, has at least Competent English, AND meets the points threshold (65). */
   isEoiEligible: boolean;
   /** Why EOI lodgement is blocked (only set when isEoiEligible === false). */
-  eoiIneligibilityReason?: "age" | "skills_assessment" | "english" | null;
+  eoiIneligibilityReason?: "age" | "skills_assessment" | "english" | "points" | null;
 };
 
 export type OccupationMatch = {
