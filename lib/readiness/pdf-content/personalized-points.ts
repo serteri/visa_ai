@@ -52,11 +52,29 @@ export function getPersonalizedPointsBreakdown(
       : `${userName} — Your Points Breakdown`;
 
   // ── Summary ───────────────────────────────────────────────────────────
+  // Same hard gate as the Gap Analysis section below: a score at/above
+  // threshold is not a green light without a positive Skills Assessment.
+  const thresholdClauseEn = gap > 0
+    ? `You need ${gap} more points.`
+    : isAssessmentDone
+      ? "You have exceeded the points threshold!"
+      : "Potential threshold reached. Mandatory Skills Assessment required.";
+  const thresholdClauseTr = gap > 0
+    ? `${gap} puana ihtiyacınız var.`
+    : isAssessmentDone
+      ? "Puan barajını aştınız!"
+      : "Potansiyel baraj aşıldı. Zorunlu Beceri Değerlendirmesi gereklidir.";
+  const thresholdClauseZh = gap > 0
+    ? `您还需要${gap}分。`
+    : isAssessmentDone
+      ? "您已超过积分门槛！"
+      : "已达到潜在门槛。必须完成强制性技能评估。";
+
   const summary = isTr
-    ? `${userName}, tahmini toplam puanınız ${estimatedPoints} puandır. Hedef: ${threshold} puan. ${gap > 0 ? `${gap} puana ihtiyacınız var.` : 'Puan barajını aştınız!'}`
+    ? `${userName}, tahmini toplam puanınız ${estimatedPoints} puandır. Hedef: ${threshold} puan. ${thresholdClauseTr}`
     : isZh
-      ? `${userName}，您的预估总分为${estimatedPoints}分。目标：${threshold}分。${gap > 0 ? `您还需要${gap}分。` : '您已超过积分门槛！'}`
-      : `${userName}, your estimated total is ${estimatedPoints} points. Target: ${threshold} points. ${gap > 0 ? `You need ${gap} more points.` : 'You have exceeded the points threshold!'}`;
+      ? `${userName}，您的预估总分为${estimatedPoints}分。目标：${threshold}分。${thresholdClauseZh}`
+      : `${userName}, your estimated total is ${estimatedPoints} points. Target: ${threshold} points. ${thresholdClauseEn}`;
 
   // ── Categories ────────────────────────────────────────────────────────
   const categories = breakdown.map((cat) => {

@@ -239,22 +239,49 @@ function qualitativeTierRank(tier: QualitativeFitTier): number {
   return 0;
 }
 
-function buildPreliminaryNote(missingFieldLabels: string[], locale: Locale = "en"): string {
+/**
+ * Names THE single most fundamental hard gate blocking a numeric ranking,
+ * instead of the old generic "Preliminary signal only — points cannot be
+ * calculated until X, Y, Z are provided" copy-pasted across all three of
+ * 189/190/491 (robotic, and unhelpful since it dumps every missing field at
+ * once instead of telling the user what to fix first). Priority order
+ * mirrors DHA's actual gating: a missing Skills Assessment blocks the EOI
+ * outright regardless of points, so it's named before a threshold gap.
+ */
+function pickHardGateReason(assessmentState: AssessmentState, locale: Locale = "en"): string {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
-  if (missingFieldLabels.length === 0) {
+
+  if (!assessmentState.fieldsPresent.skillsAssessment) {
     return isTr
-      ? "Yalnızca ön sinyal — bu yol için puan hesaplanamıyor. Ek profil bilgisi sağlayın."
+      ? "Yol Engellendi: Olumlu Beceri Değerlendirmesi eksik"
       : isZh
-        ? "仅初步信号——该路径的分数暂无法计算。请提供更多档案信息。"
-        : "Preliminary signal only — points cannot be calculated for this pathway. Provide additional profile details.";
+        ? "路径受阻：缺少积极的技能评估结果"
+        : "Pathway Blocked: Positive Skills Assessment is missing";
   }
-  const missing = missingFieldLabels.join(isZh ? "、" : ", ");
+
+  if (typeof assessmentState.estimatedPoints === "number" && assessmentState.estimatedPoints < 65) {
+    return isTr
+      ? "Yol Engellendi: Puan barajı karşılanmadı"
+      : isZh
+        ? "路径受阻：未达到积分门槛"
+        : "Pathway Blocked: Points threshold not met";
+  }
+
+  const firstMissing = assessmentState.missingFieldLabels[0];
+  if (firstMissing) {
+    return isTr
+      ? `Yol Engellendi: ${firstMissing} eksik`
+      : isZh
+        ? `路径受阻：缺少${firstMissing}`
+        : `Pathway Blocked: ${firstMissing} missing`;
+  }
+
   return isTr
-    ? `Yalnızca ön sinyal — ${missing} sağlanana kadar puan hesaplanamaz.`
+    ? "Yol Engellendi: Profil bilgisi eksik"
     : isZh
-      ? `仅初步信号——在提供${missing}之前无法计算分数。`
-      : `Preliminary signal only — points cannot be calculated until ${missing} are provided.`;
+      ? "路径受阻：档案信息不完整"
+      : "Pathway Blocked: Profile information incomplete";
 }
 
 /**
@@ -280,7 +307,7 @@ function resolveQualitativeNote(
   if (assessmentState.occupationEligibility === "unverified" && assessmentState.fieldsPresent.occupation) {
     return { note: assessmentState.occupationEligibilityReason, forcedTier: "Unclear fit" };
   }
-  return { note: buildPreliminaryNote(assessmentState.missingFieldLabels, locale) };
+  return { note: pickHardGateReason(assessmentState, locale) };
 }
 
 /**

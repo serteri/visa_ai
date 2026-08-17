@@ -347,9 +347,14 @@ function buildPartialDataWarning(
   if (!assessmentState.fieldsPresent.englishLevel) {
     missing.push(t(locale, "English level not provided", "İngilizce seviyesi girilmedi", "未提供英语水平"));
   }
-  if (!assessmentState.fieldsPresent.workExperienceYears) {
-    missing.push(t(locale, "Work experience not provided", "İş deneyimi girilmedi", "未提供工作经验"));
-  }
+  // Deliberately NOT flagged as missing/incomplete data: a user who left
+  // work experience unanswered is making a valid claim of zero years, not
+  // leaving the form incomplete -- this used to render as a red "Missing:
+  // Work experience not provided" warning here, which incorrectly framed a
+  // fresh graduate / no-experience profile as a data error rather than a
+  // neutral fact. The score formula already treats unanswered years as 0
+  // (maxExperienceYears), so there is nothing actually incomplete to warn
+  // about on this axis.
 
   if (missing.length === 0) return undefined;
 
