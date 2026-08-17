@@ -8,6 +8,7 @@ import {
 } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { generateAndSendReport } from "@/lib/services/report-service";
+import { getUserReportById } from "@/src/lib/user-reports";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,34 @@ export async function POST(request: NextRequest) {
 
     const locale = normalizeLocale(body.locale);
     const baseUrl = getStripeBaseUrl();
+
+    // Ownership check: reportId is a UUID, not a secret -- if it ever leaks
+    // (referrer header, browser history, a shared screenshot), anyone who
+    // has it could otherwise grant themselves a free-promo slot on someone
+    // else's report and have that report's PDF emailed to their own inbox
+    // (generateAndSendReport uses whatever email is passed in). Requiring
+    // the submitted email to match the report's own stored email closes
+    // that off -- the "credential" for an anonymous report is its UUID
+    // *and* the email it was created under, not the UUID alone. Applies to
+    // both the free-promo grant and the Stripe path below, since both
+    // ultimately deliver the PDF using body.email.
+    if (productType === "premium" && body.reportId) {
+      const record = await getUserReportById(body.reportId);
+      if (!record) {
+        return NextResponse.json({ error: "Report not found." }, { status: 404 });
+      }
+      const submittedEmail = (body.email ?? "").trim().toLowerCase();
+      const ownerEmail = record.email.trim().toLowerCase();
+      if (!submittedEmail || submittedEmail !== ownerEmail) {
+        console.warn(
+          `[checkout] email mismatch for report ${body.reportId} -- refusing to unlock/redirect`
+        );
+        return NextResponse.json(
+          { error: "The email you entered doesn't match this report. Please use the email you originally submitted." },
+          { status: 403 }
+        );
+      }
+    }
 
     // Free-promo path: only applies to report unlocks (productType "premium")
     // that identify a specific UserReport via reportId. The UPDATE's WHERE
