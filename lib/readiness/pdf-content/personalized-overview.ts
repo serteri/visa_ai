@@ -92,11 +92,22 @@ export function getPersonalizedOverview(
           : isZh
             ? `您距离积分门槛还差${gap}分。但提高积分的明确途径是存在的。`
             : `You are ${gap} points below the threshold. However, clear pathways to improve your score exist.`)
-      : (isTr
-          ? `Puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
-          : isZh
-            ? `您已超过积分门槛！现在可以专注于申请流程。`
-            : `You have exceeded the threshold! You can now focus on the application process.`),
+      // Hard gate: a score at/above threshold is NOT a congratulatory result
+      // on its own -- without a positive Skills Assessment, DHA won't accept
+      // an EOI at any score, so "you can now focus on the application
+      // process" would be legally false. skillsAssessmentDone takes priority
+      // over the points comparison here.
+      : !skillsAssessmentDone
+        ? (isTr
+            ? `Potansiyel puanınız ${estimatedPoints}. Ancak EOI başvurusu yapmadan önce olumlu bir Beceri Değerlendirmesi yasal olarak zorunludur. Öncelikli adımınız, bu puanları geçerli kılmak için değerlendirmeyi almaktır.`
+            : isZh
+              ? `您的潜在积分为${estimatedPoints}。但是，在提交EOI之前，法律要求必须获得积极的技能评估结果。您当前的首要任务是获得该评估，以使这些积分生效。`
+              : `Your potential score is ${estimatedPoints}. However, a positive Skills Assessment is legally required before lodging an EOI. Your immediate priority is to obtain this assessment to validate these points.`)
+        : (isTr
+            ? `Puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+            : isZh
+              ? `您已超过积分门槛！现在可以专注于申请流程。`
+              : `You have exceeded the threshold! You can now focus on the application process.`),
   ];
 
   // ── Key Findings ──────────────────────────────────────────────────────
