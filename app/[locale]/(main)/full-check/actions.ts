@@ -531,6 +531,7 @@ async function sendReportReadyEmail(payload: {
   fullName: string;
   reportLink: string;
   locale: SupportedLocale;
+  preview: FullCheckQuickPreview;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return;
@@ -566,12 +567,22 @@ async function sendReportReadyEmail(payload: {
       ? "您的澳大利亚PR路径分析已完成。我们已从技术移民路径、积分资格和关键风险因素等方面评估了您的档案。"
       : "Your AI-generated Australian PR pathway analysis is complete. We've assessed your profile across skilled migration pathways, points eligibility, and key risk factors.";
 
-  const includesLabel = isTr ? "Raporunuz içeriyor" : isZh ? "您的报告包含" : "Your report includes";
-  const items = isTr
-    ? ["Puan tahmini ve senaryo analizi", "Sıralanmış vize yolu karşılaştırması", "Birincil sınırlayıcı faktör", "Anlık eylem planı"]
+  // Actual numbers from this submission's Quick Pathway Check, not generic
+  // bullet labels -- payload.preview is the same object persisted to
+  // UserReport.previewData and shown on the locked result page, so this
+  // email and that page never disagree about what was calculated.
+  const includesLabel = isTr ? "Hızlı Sonuçlarınız" : isZh ? "您的快速结果" : "Your Quick Results";
+  const pointsLine = isTr
+    ? `Tahmini puan: ${payload.preview.estimatedPoints ?? "-"}`
     : isZh
-      ? ["积分估算与情景分析", "签证路径排名比较", "主要限制因素", "即时行动计划"]
-      : ["Points estimation & scenario analysis", "Ranked visa pathway comparison", "Primary limiting factor", "Immediate action plan"];
+      ? `预估积分：${payload.preview.estimatedPoints ?? "-"}`
+      : `Estimated points: ${payload.preview.estimatedPoints ?? "-"}`;
+  const items = [
+    pointsLine,
+    ...payload.preview.pathways.slice(0, 3).map(
+      (p) => `${p.visaName} (${p.subclass})`
+    ),
+  ];
 
   const ctaLabel = isTr ? "Tam Raporumu Görüntüle →" : isZh ? "查看完整报告 →" : "View My Full Report →";
   const orCopy = isTr ? "Veya bu bağlantıyı kopyalayın:" : isZh ? "或复制此链接：" : "Or copy this link:";
@@ -1157,29 +1168,14 @@ export async function submitFullCheckWaitlist(
     }
   }
 
-  // ── Anti-Abuse: IP rate limit (1 per 24 hours) ────────────────────────────
+  // IP rate limiting removed: the system is now full-time Premium
+  // (paid) rather than a free-quota beta, so blocking a second submission
+  // from the same IP within 24 hours mainly punished legitimate paying
+  // customers (a household submitting for multiple family members, or
+  // retrying after a mistake) rather than free-tier abuse, which is no
+  // longer the threat model. ip_address is still recorded on the report
+  // below for analytics/support purposes.
   const clientIp = await getClientIp();
-  if (!isAdmin && clientIp !== "unknown") {
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const recentIpReports = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
-      `SELECT id FROM user_reports WHERE ip_address = $1 AND created_at > $2 LIMIT 2`,
-      clientIp,
-      twentyFourHoursAgo
-    );
-    if (recentIpReports.length >= 1) {
-      if (analysisProgressId) {
-        await failFullCheckProgress(analysisProgressId, "IP rate limited");
-      }
-      return {
-        status: "error",
-        message: isTr
-          ? "Bu IP adresinden son 24 saatte rapor oluşturulmuş. Lütfen daha sonra tekrar deneyin."
-          : isZh
-            ? "该IP地址在24小时内已生成报告，请稍后再试。"
-            : "A report has already been generated from this IP address in the last 24 hours. Please try again later.",
-      };
-    }
-  }
 
   const leadQuality = buildLeadQuality({
     locale: resolvedLocale,
@@ -1416,6 +1412,7 @@ export async function submitFullCheckWaitlist(
     // when a valid agent ?ref= cookie is present.
     agentId: referralAgent?.id,
     assignedViaRef: Boolean(referralAgent),
+    previewData: buildQuickPreview(generatedReport),
   });
 
   // Best-effort: the lead is already persisted and (if applicable) assigned
@@ -1517,6 +1514,7 @@ export async function submitFullCheckWaitlist(
       fullName,
       reportLink,
       locale: resolvedLocale,
+      preview: buildQuickPreview(generatedReport),
     }).catch((err) => console.error("Customer report email failed (non-blocking):", err)),
     internalLeadTier === "Cold"
       ? Promise.resolve()

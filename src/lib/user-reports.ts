@@ -18,6 +18,10 @@ export type CreateUserReportInput = {
    *  an agent's ?ref=<agentId> link (see full-check/actions.ts). */
   agentId?: string;
   assignedViaRef?: boolean;
+  /** Quick Pathway Check teaser (points + up to 3 pathways) -- shown on
+   *  result?reportId=... while the report is still locked, and in the
+   *  pre-payment summary email. See buildQuickPreview in actions.ts. */
+  previewData?: unknown;
 };
 
 export type UnlockMethod = "payment" | "lead_capture" | "beta_free";
@@ -48,9 +52,10 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
         input_json,
         ip_address,
         agent_id,
-        assigned_via_ref
+        assigned_via_ref,
+        preview_data
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending',$10::jsonb,$11::jsonb,$12,$13,$14)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending',$10::jsonb,$11::jsonb,$12,$13,$14,$15::jsonb)
       RETURNING id
     `,
     reportId,
@@ -66,7 +71,8 @@ export async function createUserReport(input: CreateUserReportInput): Promise<{ 
     JSON.stringify(input.input),
     input.ipAddress ?? null,
     input.agentId ?? null,
-    input.assignedViaRef ?? false
+    input.assignedViaRef ?? false,
+    input.previewData !== undefined ? JSON.stringify(input.previewData) : null
   );
 
   return { id: row[0].id };
@@ -88,6 +94,7 @@ export async function getUserReportById(reportId: string): Promise<{
   agentId: string | null;
   isUnlocked: boolean;
   fullName: string | null;
+  previewData: unknown;
 } | null> {
   const rows = await prisma.$queryRawUnsafe<
     Array<{
@@ -99,9 +106,10 @@ export async function getUserReportById(reportId: string): Promise<{
       agent_id: string | null;
       is_unlocked: boolean;
       full_name: string | null;
+      preview_data: unknown;
     }>
   >(
-    `SELECT id, email, locale, report_json, input_json, agent_id, is_unlocked, full_name FROM user_reports WHERE id::text = $1::text LIMIT 1`,
+    `SELECT id, email, locale, report_json, input_json, agent_id, is_unlocked, full_name, preview_data FROM user_reports WHERE id::text = $1::text LIMIT 1`,
     reportId
   );
 
@@ -117,6 +125,7 @@ export async function getUserReportById(reportId: string): Promise<{
     agentId: row.agent_id,
     isUnlocked: row.is_unlocked,
     fullName: row.full_name,
+    previewData: row.preview_data,
   };
 }
 

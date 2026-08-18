@@ -170,17 +170,17 @@ function getReportCards(locale: Locale, country: SupportedCountry): ReportCard[]
     ? {
         title: tx("Premium Feature: NOC / TEER Code Mapping & ECA Valuation", "Premium Feature: NOC / TEER Kod Eslestirme ve ECA Degerlendirmesi", "高级功能：NOC / TEER 代码映射与 ECA 评估"),
         description: tx(
-          "NOC/TEER role mapping is cross-checked against duties alignment and Educational Credential Assessment (ECA) valuation logic. This section is data analysis, not immigration advice.",
-          "NOC/TEER kodu, gorev tanimi uyumu ve Educational Credential Assessment (ECA) degerlendirme mantigi ile veri-temelli olarak eslestirilir. Bu bolum tavsiye degil, yapilandirilmis uyum analizi sunar.",
-          "NOC/TEER 职业代码与职责对齐及教育资历评估（ECA）估值逻辑进行交叉验证，本节为数据分析，非移民建议。"
+          "NOC/TEER role mapping is cross-checked against duties alignment and Educational Credential Assessment (ECA) valuation logic.",
+          "NOC/TEER kodu, gorev tanimi uyumu ve Educational Credential Assessment (ECA) degerlendirme mantigi ile veri-temelli olarak eslestirilir.",
+          "NOC/TEER 职业代码与职责对齐及教育资历评估（ECA）估值逻辑进行交叉验证。"
         ),
       }
     : {
         title: tx("Premium Feature: Skill Mapping & Authority", "Premium Feature: Skill Mapping & Authority", "高级功能：技能映射与评估机构"),
         description: tx(
-          "ANZSCO role mapping is cross-checked against authority-specific criteria and post-qualification experience logic. This section is data analysis, not migration advice.",
-          "ANZSCO kodu, degerlendirme otoritesi ve post-qualification deneyim kurallari veri-temelli olarak eslestirilir. Bu bolum tavsiye degil, yapilandirilmis uyum analizi sunar.",
-          "ANZSCO 职业代码与评估机构标准及资历后经验规则进行交叉验证，本节为数据分析，非移民建议。"
+          "ANZSCO role mapping is cross-checked against authority-specific criteria and post-qualification experience logic.",
+          "ANZSCO kodu, degerlendirme otoritesi ve post-qualification deneyim kurallari veri-temelli olarak eslestirilir.",
+          "ANZSCO 职业代码与评估机构标准及资历后经验规则进行交叉验证。"
         ),
       };
 

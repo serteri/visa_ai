@@ -10,7 +10,6 @@ import {
   type PremiumUnlockState,
   unlockPremiumReport,
 } from "@/app/[locale]/(main)/full-check/actions";
-import { getFreePromoStatusAction } from "@/app/[locale]/(main)/full-check/free-promo-actions";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,8 +35,6 @@ export function PremiumFeatureGate({
   preview,
   defaultEmail,
   defaultName,
-  isFreeActive = true,
-  remainingSpots = 0,
   onUnlocked,
 }: {
   locale: string;
@@ -45,41 +42,11 @@ export function PremiumFeatureGate({
   preview: FullCheckQuickPreview;
   defaultEmail?: string;
   defaultName?: string;
-  isFreeActive?: boolean;
-  remainingSpots?: number;
   onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string; isUnlocked?: boolean }) => void;
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const [showModal, setShowModal] = useState(false);
-  const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">(
-    isFreeActive ? "lead_capture" : "payment"
-  );
-
-  // Live free-promo status, re-checked on mount and again whenever the
-  // modal opens -- the initial isFreeActive/remainingSpots props are only
-  // accurate as of page-load time, and the promo slot count can change
-  // (another visitor claiming the last one) before this user actually
-  // submits the unlock form. Falls back to the initial props until the
-  // first live check resolves, and again on any check failure, rather than
-  // ever showing an intermediate "unknown" state.
-  const [liveStatus, setLiveStatus] = useState<{ isFreeActive: boolean; remaining: number } | null>(null);
-  const effectiveIsFreeActive = liveStatus?.isFreeActive ?? isFreeActive;
-  const effectiveRemainingSpots = liveStatus?.remaining ?? remainingSpots;
-
-  useEffect(() => {
-    let cancelled = false;
-    getFreePromoStatusAction()
-      .then((status) => {
-        if (!cancelled) setLiveStatus({ isFreeActive: status.isFreeActive, remaining: status.remaining });
-      })
-      .catch((err) => {
-        console.error("[premium-feature-gate] Failed to refresh free-promo status", err);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [showModal]);
 
   // Lock background scroll while the modal is open -- Radix's Dialog does
   // this automatically, but this modal is a hand-rolled overlay, not that
@@ -270,39 +237,12 @@ export function PremiumFeatureGate({
             </p>
 
             <div className="mt-4 rounded-xl border border-border/70 bg-background/70 p-3">
-              {effectiveIsFreeActive ? (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                      {isTr ? "Özel Erken Erişim" : isZh ? "独家抢先体验" : "Exclusive Early Access"}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm text-muted-foreground line-through">$49</p>
-                      <p className="text-lg font-bold text-emerald-600">
-                        {isTr ? "Ücretsiz" : isZh ? "免费" : "Free"}
-                      </p>
-                    </div>
-                  </div>
-                  {effectiveRemainingSpots > 0 && (
-                    <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
-                      <p className="text-xs font-semibold text-amber-800 text-center">
-                        {isTr
-                          ? `🔥 Yalnızca ${effectiveRemainingSpots} ücretsiz kontenjan kaldı!`
-                          : isZh
-                            ? `🔥 仅剩 ${effectiveRemainingSpots} 个免费名额！`
-                            : `🔥 Only ${effectiveRemainingSpots} free spots remaining!`}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-end justify-between gap-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    {isTr ? "Premium Rapor" : isZh ? "高级报告" : "Premium Report"}
-                  </p>
-                  <p className="text-lg font-bold text-primary">$49</p>
-                </div>
-              )}
+              <div className="flex items-end justify-between gap-3">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  {isTr ? "Premium Rapor" : isZh ? "高级报告" : "Premium Report"}
+                </p>
+                <p className="text-lg font-bold text-primary">$49</p>
+              </div>
             </div>
 
             <Button
@@ -321,7 +261,7 @@ export function PremiumFeatureGate({
               </div>
               <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
                 <Zap className="size-3.5 text-primary" />
-                <span>{isTr ? "Instant PDF Delivery" : isZh ? "Instant PDF Delivery" : "Instant PDF Delivery"}</span>
+                <span>{isTr ? "Anında Erişim" : isZh ? "即时访问" : "Instant Access"}</span>
               </div>
               <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
                 <Lock className="size-3.5 text-primary" />
@@ -349,10 +289,10 @@ export function PremiumFeatureGate({
               <CardTitle>{isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}</CardTitle>
               <p className="text-sm text-muted-foreground">
                 {isTr
-                  ? "Ödeme veya iletişim formu sonrası premium raporunuz açılır ve PDF e-posta ile gönderilir."
+                  ? "Ödeme sonrası premium raporunuz açılır ve size güvenli bir indirme bağlantısı e-posta ile gönderilir."
                   : isZh
-                    ? "完成支付或提交联系方式后，将解锁高级报告并自动通过邮箱发送 PDF。"
-                  : "After payment or lead form submission, your premium report is unlocked and the PDF is emailed automatically."}
+                    ? "支付完成后，您的高级报告将被解锁，并通过邮件向您发送安全下载链接。"
+                  : "After payment, your premium report is unlocked and a secure download link is emailed to you."}
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -392,25 +332,14 @@ export function PremiumFeatureGate({
 
                 <div className="space-y-2">
                   <Label htmlFor="unlock-method">{isTr ? "Açma yöntemi" : isZh ? "解锁方式" : "Unlock method"}</Label>
-                  {effectiveIsFreeActive ? (
-                    <select
-                      id="unlock-method"
-                      name="unlockMethod"
-                      value={unlockMethod}
-                      onChange={(event) => setUnlockMethod(event.target.value === "payment" ? "payment" : "lead_capture")}
-                      className="h-12 w-full rounded-xl border border-border bg-card px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
-                    >
-                      <option value="lead_capture">{isTr ? "Form ile aç (Ücretsiz)" : isZh ? "提交线索表单免费解锁" : "Unlock for FREE (lead capture form)"}</option>
-                      <option value="payment">{isTr ? "Ödeme ile aç ($49)" : isZh ? "支付解锁（$49）" : "Unlock with payment ($49)"}</option>
-                    </select>
-                  ) : (
-                    <>
-                      <input type="hidden" name="unlockMethod" value="payment" />
-                      <div className="h-12 flex items-center rounded-xl border border-primary/30 bg-primary/5 px-3 text-sm font-medium text-primary">
-                        {isTr ? "🔓 Ödeme ile aç ($49)" : isZh ? "🔓 支付解锁 ($49)" : "🔓 Unlock with Payment ($49)"}
-                      </div>
-                    </>
-                  )}
+                  {/* Free Beta has ended -- payment is now the only unlock
+                      method. Still sent as a real form field (rather than
+                      hardcoded server-side) so unlockPremiumReportInternal's
+                      existing unlockMethod handling doesn't need to change. */}
+                  <input type="hidden" name="unlockMethod" value="payment" />
+                  <div className="h-12 flex items-center rounded-xl border border-primary/30 bg-primary/5 px-3 text-sm font-medium text-primary">
+                    {isTr ? "🔓 Ödeme ile aç ($49)" : isZh ? "🔓 支付解锁 ($49)" : "🔓 Unlock with Payment ($49)"}
+                  </div>
                 </div>
 
                 {unlockState.status === "error" && unlockState.message && (
@@ -448,7 +377,7 @@ export function PremiumFeatureGate({
                   </div>
                   <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
                     <CheckCircle2 className="size-3.5 text-primary" />
-                    <span>Instant PDF Delivery</span>
+                    <span>Secure Download Link</span>
                   </div>
                   <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
                     <Lock className="size-3.5 text-primary" />

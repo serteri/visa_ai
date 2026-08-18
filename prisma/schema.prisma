@@ -85,6 +85,14 @@ model UserReport {
   // doubles as the concurrency guard -- never set it directly outside that
   // query.
   isFreePromo           Boolean   @default(false) @map("is_free_promo")
+  // Quick Pathway Check snapshot (estimated points + up to 3 candidate
+  // pathways) generated the moment the free form completes -- persisted so
+  // a returning visitor to result?reportId=... sees the same preview
+  // instead of a blank/redirected page while their report is still locked.
+  // Distinct from reportJson (the full premium report, populated at
+  // generation time regardless of unlock state) -- this is only the
+  // pre-payment teaser subset.
+  previewData           Json?     @map("preview_data")
   transactions          Transaction[]
 
   // agentId: FK filter for getAgentLeads/getUnassignedLeads (agentId: null),

@@ -468,8 +468,6 @@ export function FullCheckWaitlistForm({
         preview={state.preview}
         defaultEmail={state.userInput?.email}
         defaultName={state.userInput?.name}
-        isFreeActive={isFreeActive}
-        remainingSpots={remainingSpots}
         onUnlocked={({ report: unlocked, email, name }) => {
           setUnlockedReportState({ reportId: state.reportId, report: unlocked, name, email, isUnlocked: !!unlocked });
           setReport(unlocked);

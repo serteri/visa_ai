@@ -341,6 +341,19 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           </span>
         </div>
 
+        {/* Free Beta has ended -- the system is now full-time Premium (paid).
+            Separate badge from the intake badge above: that one signals
+            capacity/availability, this one signals pricing model. */}
+        <div className="mt-3 inline-flex items-center gap-2.5 rounded-full border border-amber-500/20 bg-amber-500/5 px-4 py-2">
+          <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
+            {isTr
+              ? "Ücretsiz Beta Sona Erdi — Premium Analiz Artık Kullanılabilir"
+              : isZh
+                ? "免费测试期已结束 — 高级分析现已开放"
+                : "Free Beta Ended — Premium Analysis Available Now"}
+          </span>
+        </div>
+
         {/* Country assessment buttons */}
         <div className="mt-4 flex items-center justify-center gap-4">
           <button

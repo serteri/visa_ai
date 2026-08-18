@@ -10,11 +10,23 @@ function isEmailDeliveryEnabled(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
 }
 
-async function sendFullCheckConfirmationEmail(payload: {
+function getBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_BASE_URL?.trim() || "https://logivisa.com";
+}
+
+/**
+ * Premium-unlocked confirmation email. Deliberately link-only, NEVER a PDF
+ * attachment: attaching a PDF to every unlock email is a real spam/deliverability
+ * risk at volume (attachments push messages into bulk-mail filtering more
+ * aggressively than a plain link), and the PDF is already available on demand,
+ * gated by the same is_unlocked check, via /api/reports/[reportId]/pdf --
+ * duplicating those bytes into an email is unnecessary exposure, not a feature.
+ */
+async function sendPremiumReportReadyEmail(payload: {
   email: string;
   fullName: string;
   locale: "en" | "tr" | "zh-Hans";
-  pdfAttachment?: Uint8Array;
+  reportLink: string;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error("RESEND_API_KEY is not configured.");
@@ -24,10 +36,7 @@ async function sendFullCheckConfirmationEmail(payload: {
   // sandbox address -- that sandbox sender can only deliver to the Resend
   // account owner's own inbox (serter@logivisa.com), and returns a normal
   // 200 while doing it, so every other recipient (i.e. every real customer)
-  // silently never received their report. lib/email/pdf-delivery.ts and
-  // sendFullCheckAdminEmail (full-check/actions.ts) already use this
-  // verified domain and deliver correctly -- this was the one holdout still
-  // defaulting to the sandbox address.
+  // silently never received their report.
   const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
   const isTr = payload.locale === "tr";
   const isZh = payload.locale === "zh-Hans";
@@ -39,44 +48,68 @@ async function sendFullCheckConfirmationEmail(payload: {
         ? "您好，"
         : "Hi,";
 
+  const subject = isTr
+    ? "Premium Raporunuz Hazır 🎉"
+    : isZh
+      ? "您的高级报告已就绪 🎉"
+      : "Your Premium Report is Ready 🎉";
+
+  const intro = isTr
+    ? "Ödemeniz onaylandı ve tam vize hazırlık raporunuz kilidi açıldı."
+    : isZh
+      ? "您的付款已确认，完整签证准备度报告已解锁。"
+      : "Your payment has been confirmed and your full visa readiness report is now unlocked.";
+
+  const ctaLabel = isTr
+    ? "Raporumu Görüntüle ve İndir →"
+    : isZh
+      ? "查看并下载我的报告 →"
+      : "View & Download My Report →";
+
+  const orCopy = isTr ? "Veya bu bağlantıyı kopyalayın:" : isZh ? "或复制此链接：" : "Or copy this link:";
+
+  const footerText = isTr
+    ? "Bu yalnızca genel bilgidir ve göç tavsiyesi değildir."
+    : isZh
+      ? "本内容仅为一般信息，不构成移民建议。"
+      : "This is general information only and not migration advice.";
+
+  const html = `<!DOCTYPE html>
+<html lang="${payload.locale}">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${subject}</title></head>
+<body style="margin:0;padding:0;background-color:#020617;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#020617;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background-color:#0f172a;border-radius:16px;overflow:hidden;border:1px solid #1e293b;">
+        <tr><td style="height:4px;background:linear-gradient(90deg,#16a34a,#059669);"></td></tr>
+        <tr><td style="padding:36px 40px 20px;">
+          <p style="margin:0;font-size:22px;font-weight:800;color:#16a34a;letter-spacing:-0.5px;">LogiVisa</p>
+        </td></tr>
+        <tr><td style="padding:0 40px 36px;">
+          <h1 style="margin:0 0 20px;font-size:26px;font-weight:800;color:#f1f5f9;">${subject}</h1>
+          <p style="margin:0 0 12px;font-size:16px;color:#94a3b8;">${greeting}</p>
+          <p style="margin:0;font-size:15px;color:#94a3b8;line-height:1.7;">${intro}</p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0 0;">
+            <tr><td align="center">
+              <a href="${payload.reportLink}" style="display:inline-block;background:linear-gradient(135deg,#16a34a,#059669);color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;padding:16px 44px;border-radius:12px;">${ctaLabel}</a>
+            </td></tr>
+          </table>
+          <p style="margin:20px 0 0;font-size:12px;color:#475569;text-align:center;">${orCopy}<br><a href="${payload.reportLink}" style="color:#16a34a;word-break:break-all;">${payload.reportLink}</a></p>
+        </td></tr>
+        <tr><td style="padding:24px 40px;background-color:#020617;border-top:1px solid #1e293b;">
+          <p style="margin:0;font-size:11px;color:#475569;line-height:1.7;text-align:center;">${footerText}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
   await resend.emails.send({
     from: fromEmail,
     to: [payload.email],
-    subject: isTr
-      ? "Tam vize hazirlik raporu talebiniz"
-      : isZh
-        ? "你的完整签证准备度报告"
-        : "Your full visa readiness report request",
-    text: isTr
-      ? [
-          greeting,
-          "",
-          "Tam vize hazirlik raporu talebiniz alindi.",
-          "Yapilandirilmis rapor ekranda olusturuldu. Bu genel bilgi niteligindedir ve goc tavsiyesi degildir.",
-        ].join("\n")
-      : isZh
-        ? [
-            greeting,
-            "",
-            "我们已收到你的完整签证准备度报告请求。",
-            "你的高级 PDF 报告已作为附件发送。",
-            "本内容仅供一般信息参考，不构成移民建议。",
-          ].join("\n")
-        : [
-            greeting,
-            "",
-            "Your full visa readiness report request has been received.",
-            "Your premium PDF report is attached.",
-            "This is general information only and not migration advice.",
-          ].join("\n"),
-    attachments: payload.pdfAttachment
-      ? [
-          {
-            filename: "visa-readiness-report.pdf",
-            content: Buffer.from(payload.pdfAttachment),
-          },
-        ]
-      : undefined,
+    subject,
+    html,
   });
 }
 
@@ -242,15 +275,17 @@ export async function getReportPdfForDownload(
 }
 
 /**
- * Generates the premium PDF and emails it to the report's owner, then marks
- * pdf_sent on the UserReport row. Shared by both unlock paths that grant
- * access to a report: app/api/checkout/route.ts's free-promo grant, and the
- * Stripe webhook's checkout.session.completed handler (see
- * app/api/stripe/webhook/route.ts) -- previously this only ran inline inside
- * the full-check Server Action, which the free-promo/Stripe redirect flow
- * never reaches.
+ * Sends the "your premium report is ready" email -- a secure link to
+ * result?reportId=... (gated by is_unlocked, see app/api/reports/
+ * [reportId]/pdf/route.ts and the result page), never a PDF attachment.
+ * Marks pdf_sent on the UserReport row (repurposed here to mean "the
+ * unlock confirmation email was sent", not literally that a PDF went out
+ * as an attachment -- kept the same column/name to avoid a migration).
+ * Shared by all three unlock paths: app/api/checkout/route.ts's
+ * free-promo grant, the Stripe webhook's checkout.session.completed
+ * handler, and unlockPremiumReportInternal's admin fast path.
  *
- * Never throws -- a PDF/email failure here must not take down the checkout
+ * Never throws -- an email failure here must not take down the checkout
  * response that already told the user (and, for Stripe, already charged
  * them) that their report is unlocked. Callers should still wrap their own
  * call in try/catch as defense in depth, but this function's contract is to
@@ -286,22 +321,15 @@ export async function generateAndSendReport(
     }
 
     const locale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
-
-    let pdfBytes: Uint8Array;
-    try {
-      pdfBytes = await buildReportPdf(record, fullName);
-    } catch (pdfErr) {
-      console.error(`[report-service] PDF generation failed for report ${reportId}:`, pdfErr);
-      return { pdfSent: false };
-    }
+    const reportLink = `${getBaseUrl()}/${locale}/full-check/result?reportId=${reportId}`;
 
     try {
       console.log(`[report-service] Müşteriye onay e-postası gönderiliyor -- report ${reportId} → ${recipientEmail}`);
-      await sendFullCheckConfirmationEmail({
+      await sendPremiumReportReadyEmail({
         email: recipientEmail,
-        fullName: fullName ?? "",
+        fullName: fullName ?? record.fullName ?? "",
         locale,
-        pdfAttachment: pdfBytes,
+        reportLink,
       });
     } catch (emailErr) {
       console.error(`[report-service] Müşteri e-postası GÖNDERİLEMEDİ -- report ${reportId} → ${recipientEmail}:`, emailErr);
