@@ -8,6 +8,19 @@ export function getStripeClient(): Stripe {
     throw new Error("STRIPE_SECRET_KEY is not configured.");
   }
 
+  // TEMPORARY diagnostic for the "live mode + test card declined" report --
+  // only ever logs an 8-char prefix (enough to tell sk_test_ from sk_live_),
+  // never the actual secret. Remove once we've confirmed which mode is
+  // actually active at runtime (every getStripeClient() caller -- checkout,
+  // webhook, stripeActions -- goes through this one function).
+  const keyPrefix = stripeSecretKey.slice(0, 8);
+  const mode = stripeSecretKey.startsWith("sk_test_")
+    ? "TEST"
+    : stripeSecretKey.startsWith("sk_live_")
+      ? "LIVE"
+      : "UNKNOWN";
+  console.log(`[stripe] Initializing client in ${mode} mode (key prefix: ${keyPrefix}...)`);
+
   return new Stripe(stripeSecretKey);
 }
 
