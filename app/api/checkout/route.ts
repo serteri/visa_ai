@@ -9,12 +9,9 @@ import {
 import { prisma } from "@/lib/prisma";
 import { generateAndSendReport } from "@/lib/services/report-service";
 import { getUserReportById } from "@/src/lib/user-reports";
+import { FREE_PROMO_LIMIT } from "@/lib/services/free-promo";
 
 export const dynamic = "force-dynamic";
-
-// First-N-users launch promo: the first FREE_PROMO_LIMIT "premium" report
-// unlocks are granted for free instead of going through Stripe.
-const FREE_PROMO_LIMIT = 14;
 
 type CheckoutPayload = {
   productType?: StripeProductType;

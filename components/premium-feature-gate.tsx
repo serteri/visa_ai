@@ -10,6 +10,7 @@ import {
   type PremiumUnlockState,
   unlockPremiumReport,
 } from "@/app/[locale]/(main)/full-check/actions";
+import { getFreePromoStatusAction } from "@/app/[locale]/(main)/full-check/free-promo-actions";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,31 @@ export function PremiumFeatureGate({
   const [unlockMethod, setUnlockMethod] = useState<"lead_capture" | "payment">(
     isFreeActive ? "lead_capture" : "payment"
   );
+
+  // Live free-promo status, re-checked on mount and again whenever the
+  // modal opens -- the initial isFreeActive/remainingSpots props are only
+  // accurate as of page-load time, and the promo slot count can change
+  // (another visitor claiming the last one) before this user actually
+  // submits the unlock form. Falls back to the initial props until the
+  // first live check resolves, and again on any check failure, rather than
+  // ever showing an intermediate "unknown" state.
+  const [liveStatus, setLiveStatus] = useState<{ isFreeActive: boolean; remaining: number } | null>(null);
+  const effectiveIsFreeActive = liveStatus?.isFreeActive ?? isFreeActive;
+  const effectiveRemainingSpots = liveStatus?.remaining ?? remainingSpots;
+
+  useEffect(() => {
+    let cancelled = false;
+    getFreePromoStatusAction()
+      .then((status) => {
+        if (!cancelled) setLiveStatus({ isFreeActive: status.isFreeActive, remaining: status.remaining });
+      })
+      .catch((err) => {
+        console.error("[premium-feature-gate] Failed to refresh free-promo status", err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showModal]);
 
   // Lock background scroll while the modal is open -- Radix's Dialog does
   // this automatically, but this modal is a hand-rolled overlay, not that
@@ -244,7 +270,7 @@ export function PremiumFeatureGate({
             </p>
 
             <div className="mt-4 rounded-xl border border-border/70 bg-background/70 p-3">
-              {isFreeActive ? (
+              {effectiveIsFreeActive ? (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -257,14 +283,14 @@ export function PremiumFeatureGate({
                       </p>
                     </div>
                   </div>
-                  {remainingSpots > 0 && (
+                  {effectiveRemainingSpots > 0 && (
                     <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
                       <p className="text-xs font-semibold text-amber-800 text-center">
                         {isTr
-                          ? `🔥 Yalnızca ${remainingSpots} ücretsiz kontenjan kaldı!`
+                          ? `🔥 Yalnızca ${effectiveRemainingSpots} ücretsiz kontenjan kaldı!`
                           : isZh
-                            ? `🔥 仅剩 ${remainingSpots} 个免费名额！`
-                            : `🔥 Only ${remainingSpots} free spots remaining!`}
+                            ? `🔥 仅剩 ${effectiveRemainingSpots} 个免费名额！`
+                            : `🔥 Only ${effectiveRemainingSpots} free spots remaining!`}
                       </p>
                     </div>
                   )}
@@ -366,7 +392,7 @@ export function PremiumFeatureGate({
 
                 <div className="space-y-2">
                   <Label htmlFor="unlock-method">{isTr ? "Açma yöntemi" : isZh ? "解锁方式" : "Unlock method"}</Label>
-                  {isFreeActive ? (
+                  {effectiveIsFreeActive ? (
                     <select
                       id="unlock-method"
                       name="unlockMethod"

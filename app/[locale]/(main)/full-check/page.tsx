@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FullCheckInteractiveSection } from "./full-check-interactive-section";
 import { ShareLogivisaCard } from "@/components/share-logivisa-card";
-import { getCachedFullCheckUsage } from "@/lib/cache/public-read-models";
-import { isSupportedCountry, calculateDisplayedSlots, DISPLAY_START_SLOTS } from "@/lib/countries";
+import { getFreePromoStatus } from "@/lib/services/free-promo";
+import { isSupportedCountry } from "@/lib/countries";
 
 const BASE_URL = "https://www.logivisa.com";
 
@@ -94,20 +94,23 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
     }),
   };
 
-  // ── Fetch remaining free spots from DB ─────────────────────────────────────
-  let maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "50", 10);
-  let remainingSpots = maxFree;
+  // ── Fetch REAL remaining free-promo spots, live from the DB ─────────────────
+  // Reads the exact same isFreePromo count app/api/checkout/route.ts enforces
+  // (see lib/services/free-promo.ts) -- previously this read a separate,
+  // 5-minute-cached counter (full_check_usage / MAX_FREE_REPORTS) that could
+  // (and did) disagree with what checkout actually had left, showing a
+  // "spots remaining" banner after the real quota was already exhausted. No
+  // artificial display floor either: when the real quota is 0, this is 0 and
+  // the banner/free-unlock UI hide entirely (see PremiumFeatureGate).
+  let remainingSpots = 14;
   let isFreeActive = true;
   try {
-    const usage = await getCachedFullCheckUsage();
-    maxFree = usage.maxFree;
-    remainingSpots = usage.remainingSpots;
-    isFreeActive = usage.isFreeActive;
+    const status = await getFreePromoStatus();
+    remainingSpots = status.remaining;
+    isFreeActive = status.isFreeActive;
   } catch {
     // Keep defaults when DB is temporarily unavailable
   }
-
-  const displayedRemainingSpots = calculateDisplayedSlots(maxFree, remainingSpots);
 
   return (
     <main className="flex-1 bg-slate-50 pb-12">
@@ -116,7 +119,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           locale={locale}
           initialValues={initialValues}
           isFreeActive={isFreeActive}
-          remainingSpots={displayedRemainingSpots}
+          remainingSpots={remainingSpots}
           formHeader={
             <>
               <div className="mb-6 space-y-3">
