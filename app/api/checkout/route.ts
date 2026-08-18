@@ -127,13 +127,16 @@ export async function POST(request: NextRequest) {
     const priceId = getPriceIdForProduct(productType);
 
     // Loyalty discount: an email that already owns a prior unlocked report
-    // is a returning customer, not a first-time visitor -- give them 30%
-    // off instead of the full $49 (never free; a discount is the only
+    // is a returning customer, not a first-time visitor -- give them a
+    // discount instead of the full $49 (never free; a discount is the only
     // loyalty mechanism, per product decision). Scoped to "premium" only --
     // pdf_book purchases are a different, lower-priced product this
-    // discount isn't meant for. A fresh Stripe Coupon is created per
-    // checkout (duration: "once", so it only ever discounts this single
-    // session) rather than requiring a pre-existing Dashboard coupon ID.
+    // discount isn't meant for. Uses a single, fixed coupon ID configured
+    // once in the Stripe Dashboard (STRIPE_LOYALTY_COUPON_ID) instead of
+    // creating a new Coupon object via the API on every checkout -- that
+    // previously left a fresh, one-off Coupon behind in the Dashboard for
+    // every returning-customer session, permanently. No promo-code field is
+    // shown to the user; this is applied automatically, server-side only.
     let discounts: { coupon: string }[] | undefined;
     if (productType === "premium" && body.email) {
       try {
@@ -147,18 +150,14 @@ export async function POST(request: NextRequest) {
         });
 
         if (priorReport) {
-          const coupon = await stripe.coupons.create({
-            percent_off: 30,
-            duration: "once",
-            name: "Returning customer -- 30% off",
-          });
-          discounts = [{ coupon: coupon.id }];
+          const loyaltyCouponId = process.env.STRIPE_LOYALTY_COUPON_ID || "LOYALTY30";
+          discounts = [{ coupon: loyaltyCouponId }];
           console.log(
-            `[checkout] Applying 30% returning-customer discount for ${body.email} (prior report ${priorReport.id})`
+            `[checkout] Applying loyalty coupon ${loyaltyCouponId} for ${body.email} (prior report ${priorReport.id})`
           );
         }
       } catch (discountErr) {
-        console.error("[checkout] Returning-customer discount lookup/coupon creation failed (non-fatal)", discountErr);
+        console.error("[checkout] Returning-customer discount lookup failed (non-fatal)", discountErr);
         // Fall through without a discount rather than failing checkout entirely.
       }
     }
