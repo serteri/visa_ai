@@ -1,4 +1,5 @@
 import stateNominationData from "@/src/data/state-nomination-status.json";
+import { getStateRule } from "@/lib/state-nomination/state-rules-config";
 import type {
   AssessmentState,
   Locale,
@@ -422,15 +423,25 @@ export function calculateStateNominationTracker(
     const englishGap = englishScore < requiredEnglishBand(row.minimumEnglish);
     const residenceGap = row.requiresStateResidence && offshore;
 
+    // Authoritative override (see lib/state-nomination/state-rules-config.ts)
+    // -- a small, hand-verified set of states whose current program status
+    // was confirmed directly from the primary source document. When present,
+    // this takes priority over the static JSON row's `status` for BOTH the
+    // score formula below and the displayed status further down, so a state
+    // whose source doc says the program is closed always scores and renders
+    // as closed, not the JSON's generic estimate.
+    const rule = getStateRule(row.code);
+    const effectiveStatus = rule?.status ?? row.status;
+
     let score = 55;
 
-    if (row.status === "Closed") {
-      score = 12;
-    } else if (row.status === "Onshore Only") {
+    if (effectiveStatus === "Closed") {
+      score = rule?.offshoreQuotaPressure === "closed" ? 6 : 12;
+    } else if (effectiveStatus === "Onshore Only") {
       score = offshore ? 18 : 74;
-    } else if (row.status === "Open for Offshore") {
+    } else if (effectiveStatus === "Open for Offshore") {
       score = offshore ? 82 : 72;
-    } else if (row.status === "High Demand") {
+    } else if (effectiveStatus === "High Demand") {
       score = occupationIsPriority ? 76 : 64;
     }
 
@@ -455,7 +466,7 @@ export function calculateStateNominationTracker(
     // static JSON row's status, so an in-progress or malformed scrape can't
     // silently corrupt the match-score algorithm.
     const intel = input.stateIntelligence?.[row.code];
-    const displayStatus = asKnownStatus(intel?.status) ?? row.status;
+    const displayStatus = asKnownStatus(intel?.status) ?? effectiveStatus;
 
     // ── Real-data hard rules (StateOccupationListEntry + points + onshore
     // status), applied AFTER the heuristic score above and able to override
@@ -505,9 +516,14 @@ export function calculateStateNominationTracker(
 
     const matchLevel: StateMatchLevel = score >= 70 ? "high" : score >= 45 ? "medium" : "low";
 
+    // buildSummary/buildRequirements read row.status for their copy -- pass
+    // the effective (rule-overridden) status through so the PDF's prose
+    // matches the score/badge above instead of the raw JSON estimate.
+    const effectiveRow: StateDatasetRow = { ...row, status: effectiveStatus };
+
     const requirements = buildRequirements({
       locale: input.locale,
-      row,
+      row: effectiveRow,
       offshore,
       occupationIsPriority,
       experienceYears,
@@ -525,7 +541,7 @@ export function calculateStateNominationTracker(
       score,
       summary: buildSummary({
         locale: input.locale,
-        row,
+        row: effectiveRow,
         matchLevel,
         offshore,
         occupationIsPriority,
@@ -535,10 +551,14 @@ export function calculateStateNominationTracker(
         englishGap,
         residenceGap,
       }),
-      // Rule-triggered note goes first so it's always within the PDF/UI's
-      // "first 2 requirements" note preview (see drawStateNominationTable
-      // in lib/readiness/generate-pdf.ts).
-      requirements: ruleOverrideNote ? [ruleOverrideNote, ...requirements] : requirements,
+      // Notes go first so they're always within the PDF/UI's "first 2
+      // requirements" note preview (see drawStateNominationTable in
+      // lib/readiness/generate-pdf.ts). Order: hand-verified state-rules-
+      // config note (most authoritative, e.g. "2025-26 allocation
+      // exhausted") first, then the occupation-list/onshore rule override.
+      requirements: [rule?.note, ruleOverrideNote, ...requirements].filter(
+        (item): item is string => Boolean(item)
+      ),
       officialNote: intel?.officialNote,
       sourceUrl: intel?.sourceUrl,
       lastVerifiedAt: intel?.lastVerifiedAt,

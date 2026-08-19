@@ -5,6 +5,7 @@ import {
   type GroundedAssistantResult,
 } from "@/lib/ai/generate-grounded-answer";
 import { retrieveVisaContext } from "@/lib/ai/retrieve-visa-context";
+import { retrieveStateContext } from "@/lib/ai/retrieve-state-context";
 import { runReadinessEngine } from "@/src/lib/readiness-engine";
 
 type RunAssistantInput = {
@@ -38,10 +39,12 @@ export async function runAssistantMessage(
   const message = input.message.trim();
 
   const context = await retrieveVisaContext({ message });
+  const stateContext = retrieveStateContext(message);
   const grounded = await generateGroundedAnswer({
     message,
     locale,
     context,
+    stateContext,
   });
 
   return {

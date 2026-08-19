@@ -54,6 +54,25 @@ const STATE_FOLDER_TO_CODE: Record<string, string> = {
   SA: "SA",
   Victoria: "VIC",
   "Western Australia": "WA",
+  ACT: "ACT",
+  NT: "NT",
+};
+
+/**
+ * States whose occupation list has no explicit "190"/"491" flag columns and
+ * is nonetheless implicitly scoped to a single subclass -- applied when
+ * parseSheet finds zero subclass columns for that row. Currently only NT:
+ * the Northern Territory Offshore Migration Occupations List (NTOMOL) is
+ * specifically the list for the NT Priority Occupation stream, which is
+ * offshore-491-only per the source PDF (data/knowledge/State Immigrations/
+ * NT/NT Government visa nomination.pdf: "Offshore applicants will generally
+ * only be considered for a subclass 491 nomination").
+ */
+const IMPLICIT_SUBCLASS_BY_STATE: Record<string, string[]> = {
+  NT: ["491"],
+  // ACT's occupation list applies to both subclasses by default; a row-level
+  // "(491 Only)" suffix (handled by extractSuffixSubclass) narrows it to 491.
+  ACT: ["190", "491"],
 };
 
 interface SourceFile {
@@ -87,6 +106,37 @@ function findColumnIndex(headers: string[], pattern: RegExp): number {
   return headers.findIndex((h) => pattern.test(h));
 }
 
+/**
+ * Finds the per-occupation title column, trying the most specific pattern
+ * first. Plain /occupation|unit group/i would match ACT's "ANZSCO Unit
+ * Group" (the category name, e.g. "Construction Managers") before reaching
+ * "NOMINATED OCCUPATION" (the actual per-row occupation, e.g. "construction
+ * project manager"), since Array.find takes the first match -- so an exact
+ * "nominated occupation" / "occupation" header is preferred over any header
+ * that merely contains "unit group".
+ */
+function findTitleColumnIndex(headers: string[]): number {
+  const exact = headers.findIndex((h) => /^(nominated )?occupation$/i.test(h.trim()));
+  if (exact !== -1) return exact;
+  const containsOccupation = headers.findIndex((h) => /occupation/i.test(h));
+  if (containsOccupation !== -1) return containsOccupation;
+  return findColumnIndex(headers, /unit group/i);
+}
+
+/**
+ * Strips a "(491 Only)" / "(190 Only)" suffix from an occupation title (used
+ * by ACT's occupation list to mark rows that only apply to one subclass) and
+ * returns the subclasses it implies, or null if no such suffix is present.
+ */
+function extractSuffixSubclass(title: string): { cleanTitle: string; subclasses: string[] } | null {
+  const match = title.match(/\s*\((491|190)\s*only\)\s*$/i);
+  if (!match) return null;
+  return {
+    cleanTitle: title.slice(0, match.index).trim(),
+    subclasses: [match[1]],
+  };
+}
+
 function isTruthyCell(value: unknown): boolean {
   const normalized = String(value ?? "").trim().toLowerCase();
   return normalized === "yes" || normalized === "y" || normalized === "true" || normalized === "1";
@@ -99,9 +149,9 @@ interface ParsedEntry {
   metadata: Record<string, unknown>;
 }
 
-function parseSheet(headers: string[], rows: unknown[][]): ParsedEntry[] {
+function parseSheet(headers: string[], rows: unknown[][], stateCode?: string): ParsedEntry[] {
   const anzscoIdx = findColumnIndex(headers, /anzsco/i);
-  const titleIdx = findColumnIndex(headers, /occupation|unit group/i);
+  const titleIdx = findTitleColumnIndex(headers);
   if (titleIdx === -1) return [];
 
   // Any header containing "190" or "491" is treated as a per-subclass
@@ -112,15 +162,26 @@ function parseSheet(headers: string[], rows: unknown[][]): ParsedEntry[] {
     .map((h, idx) => ({ idx, subclass: h.includes("190") ? "190" : h.includes("491") ? "491" : null }))
     .filter((c): c is { idx: number; subclass: string } => c.subclass !== null);
   const subclassIndexes = new Set(subclassColumns.map((c) => c.idx));
+  const implicitSubclasses = stateCode ? IMPLICIT_SUBCLASS_BY_STATE[stateCode] : undefined;
 
   return rows
     .map((row): ParsedEntry | null => {
-      const occupationTitle = String(row[titleIdx] ?? "").trim();
-      if (!occupationTitle) return null;
+      const rawTitle = String(row[titleIdx] ?? "").trim();
+      if (!rawTitle) return null;
 
-      const visaSubclasses = subclassColumns
+      // ACT-style "(491 Only)" / "(190 Only)" suffix on the title itself
+      // takes priority over flag columns and the implicit-subclass default,
+      // since it's a per-row override, not a per-file default.
+      const suffixMatch = extractSuffixSubclass(rawTitle);
+      const occupationTitle = suffixMatch?.cleanTitle ?? rawTitle;
+
+      const flagSubclasses = subclassColumns
         .filter((c) => isTruthyCell(row[c.idx]))
         .map((c) => c.subclass);
+
+      const visaSubclasses =
+        suffixMatch?.subclasses ??
+        (flagSubclasses.length > 0 ? flagSubclasses : (implicitSubclasses ?? []));
 
       const metadata: Record<string, unknown> = {};
       headers.forEach((header, idx) => {
@@ -153,7 +214,7 @@ async function syncFile(file: SourceFile): Promise<{ entries: number }> {
     const rows = XLSX.utils.sheet_to_json<unknown[]>(workbook.Sheets[sheetName], { header: 1, defval: "" });
     if (rows.length < 2) continue;
     const headers = (rows[0] as unknown[]).map((h) => String(h ?? "").trim());
-    allEntries.push(...parseSheet(headers, rows.slice(1)));
+    allEntries.push(...parseSheet(headers, rows.slice(1), stateCode));
   }
 
   if (allEntries.length === 0) return { entries: 0 };

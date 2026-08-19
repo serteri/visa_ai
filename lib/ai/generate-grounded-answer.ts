@@ -1,4 +1,5 @@
 import type { RetrievedVisaContext } from "@/lib/ai/retrieve-visa-context";
+import type { RetrievedStateContext } from "@/lib/ai/retrieve-state-context";
 import { CURRENT_CSIT } from "@/lib/readiness/constants";
 
 export type GroundedSourceItem = {
@@ -28,8 +29,9 @@ const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
 const SYSTEM_PROMPT = [
   "You are Logi AI, a strict Immigration Compliance Assistant enforcing Australian immigration rules anchored to 1 July 2026.",
   "You are not a migration agent and do not provide legal advice.",
-  "Answer only using the supplied database context plus these fixed July 2026 constants.",
+  "Answer only using the supplied database context, the supplied state nomination context, plus these fixed July 2026 constants.",
   "Do not use outside knowledge and do not guess.",
+  "When state nomination context is supplied for a state (e.g. ACT, NT), its `status` field is authoritative: if status is 'Closed', you must tell the user that state's nomination program is currently closed and must not suggest applying to it as if it were open.",
   "Strict scope rule: DO NOT evaluate, mention, or recommend any Family or Partner visas (including Subclasses 820, 801, 300, 309, 100). The current form does not collect sponsor citizenship data, so evaluating these pathways is strictly forbidden.",
   "Limit all pathway analysis and recommendations exclusively to General Skilled Migration (Subclasses 189, 190, 491) and Employer-Sponsored pathways (Subclasses 482, 186, 494).",
   "If no viable General Skilled Migration or Employer-Sponsored pathway is supported by the context, state a Low Confidence / No Match result for skilled pathways rather than substituting a Family or Partner visa to fill the answer.",
@@ -372,6 +374,42 @@ function deterministicAnswer(message: string, locale: string, context: Retrieved
   return lines.join(" ");
 }
 
+function localizedStateStatus(status: string, locale: string): string {
+  const map: Record<string, { en: string; tr: string; "zh-Hans": string }> = {
+    "Open for Offshore": { en: "open for offshore nomination", tr: "offshore aday gösterime açık", "zh-Hans": "对境外提名开放" },
+    "High Demand": { en: "open, but highly competitive (merit-ranked)", tr: "açık, ancak yüksek rekabetli (liyakat sıralamalı)", "zh-Hans": "开放，但竞争激烈（按择优排名）" },
+    Closed: { en: "closed", tr: "kapalı", "zh-Hans": "已关闭" },
+    "Onshore Only": { en: "open to onshore applicants only", tr: "yalnızca Avustralya içindeki başvuru sahiplerine açık", "zh-Hans": "仅对境内申请人开放" },
+  };
+  const entry = map[status];
+  if (!entry) return status;
+  if (locale === "zh-Hans") return entry["zh-Hans"];
+  if (locale === "tr") return entry.tr;
+  return entry.en;
+}
+
+/**
+ * Deterministic, fully-grounded answer built directly from
+ * lib/state-nomination/state-rules-config.ts -- used whenever state context
+ * was retrieved (see retrieve-state-context.ts), independent of whether the
+ * OpenAI call succeeds, so a state's real open/closed status is never left
+ * to model interpretation.
+ */
+function deterministicStateAnswer(locale: string, stateContext: RetrievedStateContext): string {
+  const lines = stateContext.map((rule) => {
+    const statusLabel = localizedStateStatus(rule.status, locale);
+    if (locale === "zh-Hans") {
+      return `${rule.name}（${rule.code}）目前${statusLabel}。${rule.note}`;
+    }
+    if (locale === "tr") {
+      return `${rule.name} (${rule.code}) su anda ${statusLabel}. ${rule.note}`;
+    }
+    return `${rule.name} (${rule.code}) is currently ${statusLabel}. ${rule.note}`;
+  });
+
+  return lines.join(" ");
+}
+
 function uniqueActions(actions: GroundedNextAction[]): GroundedNextAction[] {
   const seen = new Set<string>();
   const result: GroundedNextAction[] = [];
@@ -450,11 +488,13 @@ async function generateWithOpenAi(input: {
   message: string;
   locale: string;
   context: RetrievedVisaContext;
+  stateContext: RetrievedStateContext;
 }): Promise<string | null> {
   if (!process.env.OPENAI_API_KEY) return null;
 
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
   const payload = JSON.stringify(input.context, null, 2);
+  const statePayload = JSON.stringify(input.stateContext, null, 2);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12000);
 
@@ -478,6 +518,8 @@ async function generateWithOpenAi(input: {
               `User message: ${input.message}`,
               "Database context JSON:",
               payload,
+              "State nomination context JSON:",
+              statePayload,
               "Answer only from this context. If missing, state stored information does not contain enough detail.",
             ].join("\n\n"),
           },
@@ -505,8 +547,10 @@ export async function generateGroundedAnswer(input: {
   message: string;
   locale: string;
   context: RetrievedVisaContext;
+  stateContext?: RetrievedStateContext;
 }): Promise<GroundedAssistantResult> {
   const locale = input.locale === "tr" ? "tr" : input.locale === "zh-Hans" ? "zh-Hans" : "en";
+  const stateContext = input.stateContext ?? [];
   const sources = buildSources(locale, input.context);
   const nextActions = buildActions(locale, input.context);
   const july2026RuleNotice = buildJuly2026RuleNotice(input.message, locale);
@@ -518,6 +562,24 @@ export async function generateGroundedAnswer(input: {
         message: input.message,
         locale,
       }),
+      sources,
+      nextActions,
+    };
+  }
+
+  // State nomination status (ACT/NT/etc.) is answered deterministically from
+  // lib/state-nomination/state-rules-config.ts, ahead of the OpenAI call --
+  // a state's open/closed status must never depend on model interpretation.
+  // isPersonalizedIntentQuestion still takes priority below (e.g. "am I
+  // eligible for ACT nomination" stays a personalised-advice deflection).
+  if (stateContext.length > 0 && !isPersonalizedIntentQuestion(input.message)) {
+    const stateAnswer = applyAssistantSafetyFooter({
+      answer: neutralizeDeterministicLanguage(deterministicStateAnswer(locale, stateContext)),
+      message: input.message,
+      locale,
+    });
+    return {
+      answer: stateAnswer,
       sources,
       nextActions,
     };
@@ -558,7 +620,7 @@ export async function generateGroundedAnswer(input: {
     };
   }
 
-  let answer = await generateWithOpenAi(input);
+  let answer = await generateWithOpenAi({ ...input, stateContext });
   if (!answer) {
     answer = deterministicAnswer(input.message, locale, input.context);
   }

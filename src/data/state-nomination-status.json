@@ -93,20 +93,20 @@
     {
       "code": "NT",
       "name": "Northern Territory",
-      "status": "Open for Offshore",
-      "offshoreAvailability": "open",
-      "onshoreAvailability": "open",
-      "minimumPoints": 70,
+      "status": "Closed",
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "closed",
+      "minimumPoints": 65,
       "minimumEnglish": "competent",
       "minimumExperienceYears": 2,
       "regionalFocus": true,
       "preferredVisaTypes": ["491", "190"],
       "requiresStateResidence": false,
-      "requiresRecentEmployment": false,
-      "offshoreQuotaPressure": "medium",
-      "programWindow": "Commitment narrative matters more than volume alone",
-      "priorityKeywords": ["health", "teacher", "trade", "construction", "community", "hospitality"],
-      "specialConditions": ["Commitment to living in the territory is typically expected"]
+      "requiresRecentEmployment": true,
+      "offshoreQuotaPressure": "closed",
+      "programWindow": "2025-26 General Skilled Migration allocation fully exhausted; queued applications wait for the 2026-27 allocation",
+      "priorityKeywords": ["energy", "defence", "agriculture", "mining", "health", "aged care", "disability care", "education", "childcare", "hospitality", "tourism", "construction", "trade"],
+      "specialConditions": ["2025-26 nomination allocation exhausted -- no new places until 2026-27 allocation is confirmed", "Offshore applicants generally only considered for subclass 491", "3-year commitment to live and work in the NT required from visa grant"]
     },
     {
       "code": "TAS",
@@ -132,17 +132,17 @@
       "status": "High Demand",
       "offshoreAvailability": "limited",
       "onshoreAvailability": "open",
-      "minimumPoints": 85,
+      "minimumPoints": 65,
       "minimumEnglish": "proficient",
-      "minimumExperienceYears": 3,
-      "regionalFocus": false,
+      "minimumExperienceYears": 1,
+      "regionalFocus": true,
       "preferredVisaTypes": ["190", "491"],
-      "requiresStateResidence": true,
+      "requiresStateResidence": false,
       "requiresRecentEmployment": true,
       "offshoreQuotaPressure": "high",
-      "programWindow": "Matrix-style ranking strongly rewards Canberra ties",
-      "priorityKeywords": ["ict", "cyber", "engineer", "health", "teacher", "public sector"],
-      "specialConditions": ["Matrix-style ranking favours strong employment and Canberra ties"]
+      "programWindow": "2025-26 allocation: 800 places for subclass 190 and 800 for subclass 491, ranked via the merit-based Canberra Matrix; 2026-27 allocation not yet announced",
+      "priorityKeywords": ["ict", "cyber", "engineer", "nurse", "health", "teacher", "dental", "accountant", "electrician", "construction", "chef", "public sector"],
+      "specialConditions": ["Ranked by the Canberra Matrix (merit-based, not first-come-first-served) -- invitation is never guaranteed even if eligibility criteria are met", "Two-year commitment to live and work in Canberra after visa grant"]
     }
   ]
 }
