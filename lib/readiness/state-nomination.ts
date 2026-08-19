@@ -423,20 +423,30 @@ export function calculateStateNominationTracker(
     const englishGap = englishScore < requiredEnglishBand(row.minimumEnglish);
     const residenceGap = row.requiresStateResidence && offshore;
 
-    // Authoritative override (see lib/state-nomination/state-rules-config.ts)
-    // -- a small, hand-verified set of states whose current program status
-    // was confirmed directly from the primary source document. When present,
-    // this takes priority over the static JSON row's `status` for BOTH the
-    // score formula below and the displayed status further down, so a state
-    // whose source doc says the program is closed always scores and renders
-    // as closed, not the JSON's generic estimate.
+    // Status precedence (highest to lowest):
+    //   1. StateNominationConfig (admin panel, app/[locale]/(main)/admin/
+    //      states) -- the top "source of truth"; an admin toggling a state
+    //      to Closed must be reflected immediately, with no deploy.
+    //   2. state-rules-config.ts -- hand-verified from the primary source
+    //      document, but static (requires a code change to update).
+    //   3. src/data/state-nomination-status.json -- generic heuristic
+    //      estimate, the fallback when nothing more authoritative exists.
+    // Applied to BOTH the score formula below and the displayed status
+    // further down, so a state marked closed always scores and renders as
+    // closed, never just shows a "Closed" badge over an unchanged score.
+    const adminConfig = input.stateNominationConfig?.[row.code];
     const rule = getStateRule(row.code);
-    const effectiveStatus = rule?.status ?? row.status;
+    const effectiveStatus: StateNominationStatus =
+      asKnownStatus(adminConfig?.status) ?? rule?.status ?? row.status;
 
     let score = 55;
 
     if (effectiveStatus === "Closed") {
-      score = rule?.offshoreQuotaPressure === "closed" ? 6 : 12;
+      // Admin-confirmed closures and rule-config closures with a "closed"
+      // quota pressure both score at the harder floor; a JSON-only closed
+      // estimate (no admin/rule confirmation) scores slightly higher since
+      // it's a generic guess, not a confirmed program state.
+      score = adminConfig?.status === "Closed" || rule?.offshoreQuotaPressure === "closed" ? 6 : 12;
     } else if (effectiveStatus === "Onshore Only") {
       score = offshore ? 18 : 74;
     } else if (effectiveStatus === "Open for Offshore") {
@@ -462,11 +472,13 @@ export function calculateStateNominationTracker(
 
     // Live DB override (see lib/state-intelligence.ts) for this state, if
     // the caller fetched one. Only the *displayed* status/citation fields
-    // are overridden here -- the scoring math above always runs against the
-    // static JSON row's status, so an in-progress or malformed scrape can't
-    // silently corrupt the match-score algorithm.
+    // are overridden here -- the scoring math above already folded in
+    // adminConfig/rule via effectiveStatus, so an in-progress or malformed
+    // scrape can't silently corrupt the match-score algorithm. adminConfig
+    // still wins over a scrape (asKnownStatus(adminConfig?.status) is
+    // checked first), matching its top-priority position in effectiveStatus.
     const intel = input.stateIntelligence?.[row.code];
-    const displayStatus = asKnownStatus(intel?.status) ?? effectiveStatus;
+    const displayStatus = asKnownStatus(adminConfig?.status) ?? asKnownStatus(intel?.status) ?? effectiveStatus;
 
     // ── Real-data hard rules (StateOccupationListEntry + points + onshore
     // status), applied AFTER the heuristic score above and able to override
@@ -553,10 +565,11 @@ export function calculateStateNominationTracker(
       }),
       // Notes go first so they're always within the PDF/UI's "first 2
       // requirements" note preview (see drawStateNominationTable in
-      // lib/readiness/generate-pdf.ts). Order: hand-verified state-rules-
-      // config note (most authoritative, e.g. "2025-26 allocation
-      // exhausted") first, then the occupation-list/onshore rule override.
-      requirements: [rule?.note, ruleOverrideNote, ...requirements].filter(
+      // lib/readiness/generate-pdf.ts). Order: admin-set customAiNote (top
+      // priority, see StateNominationConfig), then the hand-verified
+      // state-rules-config note, then the occupation-list/onshore rule
+      // override.
+      requirements: [adminConfig?.customAiNote, rule?.note, ruleOverrideNote, ...requirements].filter(
         (item): item is string => Boolean(item)
       ),
       officialNote: intel?.officialNote,

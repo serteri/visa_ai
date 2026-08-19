@@ -38,8 +38,10 @@ export async function runAssistantMessage(
   const locale = input.locale === "tr" ? "tr" : input.locale === "zh-Hans" ? "zh-Hans" : "en";
   const message = input.message.trim();
 
-  const context = await retrieveVisaContext({ message });
-  const stateContext = retrieveStateContext(message);
+  const [context, stateContext] = await Promise.all([
+    retrieveVisaContext({ message }),
+    retrieveStateContext(message),
+  ]);
   const grounded = await generateGroundedAnswer({
     message,
     locale,

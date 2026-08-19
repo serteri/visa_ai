@@ -19,7 +19,11 @@ import {
   updateFullCheckProgress,
 } from "@/lib/full-check-progress";
 import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
-import { getStateIntelligenceMap, getStateOccupationMatches } from "@/lib/state-intelligence";
+import {
+  getStateIntelligenceMap,
+  getStateNominationConfigMap,
+  getStateOccupationMatches,
+} from "@/lib/state-intelligence";
 import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
@@ -1269,9 +1273,10 @@ export async function submitFullCheckWaitlist(
   // -- runReadinessEngine itself stays synchronous, so these DB reads have
   // to happen here, before calling it. Neither throws; both degrade to the
   // static-data fallback on failure.
-  const [stateIntelligence, stateOccupationMatches] = await Promise.all([
+  const [stateIntelligence, stateOccupationMatches, stateNominationConfig] = await Promise.all([
     getStateIntelligenceMap(),
     getStateOccupationMatches(occupation || undefined),
+    getStateNominationConfigMap(),
   ]);
 
   const generatedReport = ensureCountrySpecificReportSchema(
@@ -1285,6 +1290,7 @@ export async function submitFullCheckWaitlist(
       occupation: occupation || undefined,
       stateIntelligence,
       stateOccupationMatches,
+      stateNominationConfig,
       englishLevel: englishLevel || undefined,
       qualificationLevel,
       annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)

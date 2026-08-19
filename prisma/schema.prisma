@@ -444,6 +444,36 @@ model StateIntelligence {
   @@map("state_intelligence")
 }
 
+// Admin-managed "source of truth" for state nomination status -- distinct
+// from StateIntelligence above (which is written by the automated
+// scraper, app/api/cron/sync-states) and from
+// lib/state-nomination/state-rules-config.ts (hand-verified but static,
+// requires a code change + deploy to update). This table is what the
+// admin panel at app/[locale]/(main)/admin/states writes to, and takes
+// the HIGHEST priority of all three sources at read time (see
+// lib/state-intelligence.ts's getStateNominationConfigMap and
+// lib/readiness/state-nomination.ts) -- so toggling a state to "Closed"
+// here is reflected immediately in both the PDF State Nomination Matrix
+// and the AI Assistant, with no deploy required. Only status/supportedVisas
+// /feeAud/customAiNote are admin-editable here; the longer knowledge-base
+// prose (eligibility criteria, pathway descriptions) still comes from
+// state-rules-config.ts / data/knowledge, which this table does not
+// replace.
+model StateNominationConfig {
+  id             String   @id @default(cuid())
+  stateCode      String   @unique @map("state_code")
+  status         String
+  /** e.g. ["190", "491"] -- which visa subclasses this state currently sponsors. */
+  supportedVisas String[] @map("supported_visas")
+  feeAud         Float?   @map("fee_aud")
+  customAiNote   String?  @map("custom_ai_note") @db.Text
+  updatedBy      String?  @map("updated_by")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("state_nomination_configs")
+}
+
 // Structured, exact-value counterpart to the RAG pipeline: parsed directly
 // from state occupation-list spreadsheets/CSVs (see
 // scripts/sync-state-occupation-lists.ts, data/knowledge/State

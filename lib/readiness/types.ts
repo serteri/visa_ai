@@ -34,6 +34,21 @@ export type ReadinessInput = {
    * calculateStateNominationTracker relies on this distinction.
    */
   stateOccupationMatches?: Record<string, { onList: boolean; subclasses: string[] }>;
+  /**
+   * Admin-managed overrides (lib/state-intelligence.ts's
+   * getStateNominationConfigMap, backed by the StateNominationConfig Prisma
+   * model / app/[locale]/(main)/admin/states admin panel), keyed by state
+   * code. This is the highest-priority status source of the three
+   * (state-nomination-status.json < state-rules-config.ts <
+   * StateIntelligence < this) -- when a code is present here,
+   * calculateStateNominationTracker uses its status/customAiNote ahead of
+   * everything else, so an admin toggling a state to "Closed" is reflected
+   * immediately without a deploy.
+   */
+  stateNominationConfig?: Record<
+    string,
+    { status?: string; supportedVisas?: string[]; feeAud?: number | null; customAiNote?: string | null }
+  >;
   passportCountry?: string;
   age?: string;
   occupation?: string;

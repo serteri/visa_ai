@@ -13,6 +13,7 @@ const ADMIN_LINKS = [
   { href: "visas", label: "Visas" },
   { href: "full-check-waitlist", label: "Full Check Waitlist" },
   { href: "eoi-rounds", label: "EOI Rounds" },
+  { href: "states", label: "State Nomination" },
 ];
 
 export function AdminNav({ locale }: { locale: string }) {

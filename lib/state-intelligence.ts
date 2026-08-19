@@ -1,4 +1,48 @@
 import { prisma } from "@/lib/prisma";
+import { isMissingRelationError } from "@/lib/db/missing-relation";
+
+export interface StateNominationConfigEntry {
+  status: string;
+  supportedVisas: string[];
+  feeAud: number | null;
+  customAiNote: string | null;
+  updatedAt: string;
+}
+
+/**
+ * Reads all StateNominationConfig rows (see prisma/schema.prisma) -- the
+ * admin panel at app/[locale]/(main)/admin/states writes to this table, and
+ * it is the HIGHEST-priority state-status source in the app: above the
+ * automated-scraper StateIntelligence table above, and above the static
+ * lib/state-nomination/state-rules-config.ts. Both
+ * lib/readiness/state-nomination.ts (PDF matrix) and
+ * lib/ai/retrieve-state-context.ts (AI Assistant) read this map so an admin
+ * toggling a state to "Closed" is reflected immediately, with no deploy.
+ *
+ * Never throws: a DB hiccup or (before the first `prisma db push` for this
+ * new table) a genuinely missing table both degrade to "no admin overrides",
+ * not a failed report/answer.
+ */
+export async function getStateNominationConfigMap(): Promise<Record<string, StateNominationConfigEntry>> {
+  try {
+    const rows = await prisma.stateNominationConfig.findMany();
+    const map: Record<string, StateNominationConfigEntry> = {};
+    for (const row of rows) {
+      map[row.stateCode] = {
+        status: row.status,
+        supportedVisas: row.supportedVisas,
+        feeAud: row.feeAud,
+        customAiNote: row.customAiNote,
+        updatedAt: row.updatedAt.toISOString(),
+      };
+    }
+    return map;
+  } catch (err) {
+    if (isMissingRelationError(err, "state_nomination_configs")) return {};
+    console.error("[state-intelligence] failed to load StateNominationConfig rows:", err);
+    return {};
+  }
+}
 
 export interface StateIntelligenceEntry {
   status: string;
