@@ -1060,16 +1060,29 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
       doc.setLineWidth(0.25);
       doc.line(margin, pageHeight - 14, pageWidth - margin, pageHeight - 14);
+      // Page number (right) and brand credit (left) -- every page. The full
+      // legal disclaimer text used to repeat here too (on every single page,
+      // clutter more suited to a boilerplate contract than a premium
+      // report); it's now printed once, in bold, on the last page only --
+      // see below, after this loop.
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-      const footerLines = doc.splitTextToSize(footerText, footerWidth);
-      doc.text(footerLines.map((line: string) => safeText(line)), margin, pageHeight - 10);
-      // Page number (right) and brand credit (left) on same baseline
       doc.text(`${page}/${totalPages}`, pageWidth - margin, pageHeight - 4, { align: "right" });
       doc.setFontSize(6.5);
       doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
       doc.text(safeText(credit), margin, pageHeight - 4);
     }
+
+    // Single, bold disclaimer note -- last page only, positioned above the
+    // thin footer rule/page-number line every page already has.
+    doc.setPage(totalPages);
+    setBoldFont();
+    doc.setFontSize(FONTS.small);
+    doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+    const footerLines = doc.splitTextToSize(footerText, footerWidth);
+    const disclaimerY = pageHeight - 14 - 3 - footerLines.length * 3.6;
+    doc.text(footerLines.map((line: string) => safeText(line)), margin, disclaimerY);
+    setBaseFont();
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -4211,15 +4224,26 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       );
       addSmallText(cleanNum(report.pointsBoosterSimulator.note), 0);
       yPosition += 1;
+      // Skip scenarios where neither number is actually available -- a row
+      // with a blank/NaN Points Change AND a blank New Total isn't a
+      // scenario, it's missing data, and shouldn't render as an empty table
+      // row (undefined/NaN both stringify to something visibly broken:
+      // "undefined" or "NaN", not a clean placeholder).
+      const renderableScenarios = report.pointsBoosterSimulator.scenarios.filter(
+        (scenario) =>
+          Number.isFinite(scenario.estimatedChange) || Number.isFinite(scenario.resultingEstimate)
+      );
       drawTable(
         [text.scenarioTable, text.pointsChange, text.newTotal],
-        report.pointsBoosterSimulator.scenarios.map((scenario) => [
+        renderableScenarios.map((scenario) => [
           cleanNum(scenario.label) + (scenario.isCombined ? " ★" : ""),
-          scenario.estimatedChange >= 0 ? `+${scenario.estimatedChange}` : `${scenario.estimatedChange}`,
-          scenario.resultingEstimate !== undefined ? String(scenario.resultingEstimate) : "—",
+          Number.isFinite(scenario.estimatedChange)
+            ? (scenario.estimatedChange >= 0 ? `+${scenario.estimatedChange}` : `${scenario.estimatedChange}`)
+            : "—",
+          Number.isFinite(scenario.resultingEstimate) ? String(scenario.resultingEstimate) : "—",
         ]),
         [0.6, 0.2, 0.2],
-        (rowIndex) => (report.pointsBoosterSimulator!.scenarios[rowIndex]?.isCombined ? COLORS.accent : null)
+        (rowIndex) => (renderableScenarios[rowIndex]?.isCombined ? COLORS.accent : null)
       );
     }
     yPosition += 3;
