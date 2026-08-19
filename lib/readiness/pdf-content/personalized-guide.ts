@@ -23,6 +23,7 @@ export function getPersonalizedApplicationGuide(
   profile: UserProfile,
   skillsAssessmentDone: boolean,
   pointsEstimate?: number,
+  assessingAuthority?: string,
 ): {
   title: string;
   userName: string;
@@ -69,14 +70,26 @@ export function getPersonalizedApplicationGuide(
   const nextSteps: Array<{ priority: "high" | "medium" | "low"; title: string; detail: string }> = [];
 
   if (!skillsAssessmentDone) {
+    const occupationLabel = profile.occupation || (isTr ? "mesleğiniz" : isZh ? "您的职业" : "your occupation");
     nextSteps.push({
       priority: "high",
       title: isTr ? "Beceri Değerlendirmesi Yapın" : isZh ? "完成技能评估" : "Complete Skills Assessment",
-      detail: isTr
-        ? `${profile.occupation || 'Mesleğiniz'} için beceri değerlendirmesi henüz yapılmamış. Bu, vize başvurusunun zorunlu bir adımıdır. Değerlendirme kurumunu belirleyin ve hemen başvurun.`
-        : isZh
-          ? `您选择的职业（${profile.occupation || '未指定'}）尚未完成技能评估。这是签证申请的必要步骤。请立即确定评估机构并提交申请。`
-          : `Skills assessment for ${profile.occupation || 'your occupation'} has not been completed yet. This is a mandatory step for your visa application. Identify your assessing authority and apply immediately.`,
+      // Names the real authority when resolved (exact ANZSCO match or fuzzy
+      // title match -- see getAssessingAuthority in occupation-authority-
+      // map.ts) instead of the generic "identify your assessing authority"
+      // instruction, which reads as unhelpful boilerplate when the report
+      // already knows the answer.
+      detail: assessingAuthority
+        ? (isTr
+            ? `${name}, ${occupationLabel} için beceri değerlendirmesi henüz yapılmamış. Bu, vize başvurusunun zorunlu bir adımıdır. Değerlendirmeniz ${assessingAuthority} tarafından yürütülecektir -- hemen başvurun.`
+            : isZh
+              ? `${name}，您的职业（${occupationLabel}）尚未完成技能评估。这是签证申请的必要步骤。您的评估将由${assessingAuthority}进行——请立即申请。`
+              : `${name}, skills assessment for ${occupationLabel} has not been completed yet. This is a mandatory step for your visa application. Your assessment will be conducted by ${assessingAuthority} -- apply immediately.`)
+        : (isTr
+            ? `${name}, ${occupationLabel} için beceri değerlendirmesi henüz yapılmamış. Bu, vize başvurusunun zorunlu bir adımıdır. İlk adımınız, resmi mevzuat aracından size özel değerlendirme kurumunu belirlemektir.`
+            : isZh
+              ? `${name}，您的职业（${occupationLabel}）尚未完成技能评估。这是签证申请的必要步骤。您的首要步骤是通过官方立法文件确定您的具体评估机构。`
+              : `${name}, skills assessment for ${occupationLabel} has not been completed yet. This is a mandatory step for your visa application. Your first step is identifying your specific assessing authority from the official legislative instrument.`),
     });
   }
 

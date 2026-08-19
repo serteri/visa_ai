@@ -12,6 +12,7 @@ import {
   resolveLocalized,
   type LocalizedString,
 } from "@/lib/skills-assessment";
+import { getAssessingAuthority } from "@/lib/skills-assessment/occupation-authority-map";
 
 /** Core Skills Income Threshold — employer-sponsored visa minimum salary (1 July 2026). */
 const CSIT_THRESHOLD_AUD = CURRENT_CSIT.value;
@@ -683,6 +684,22 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   if (userInputSummary.occupation) {
     assessingAuthorityInfo = getSkillsAssessmentAuthority(userInputSummary.occupation);
   }
+  // Precise ANZSCO-code match covers only 83 of 1463 occupations -- when it
+  // misses (most commonly because the occupation string has no code
+  // attached at all, e.g. a bare "Software Engineer"), fall back to fuzzy
+  // keyword matching on the title itself before giving up and showing the
+  // generic "identify your authority" copy.
+  const fuzzyAuthorityMatch = !assessingAuthorityInfo
+    ? getAssessingAuthority(userInputSummary.occupation)
+    : null;
+  // Shared across this section and the Application Guide below, so both
+  // name the same authority instead of one saying "ACS" and the other
+  // falling back to a generic instruction for the same occupation.
+  const resolvedAuthorityName = assessingAuthorityInfo
+    ? `${assessingAuthorityInfo.authorityName} (${assessingAuthorityInfo.authorityId})`
+    : fuzzyAuthorityMatch
+      ? fuzzyAuthorityMatch.authorityName
+      : undefined;
 
   ctx.ensurePageSpace(25);
   const skillsStatus = getSkillsAssessmentStatus(
@@ -690,9 +707,8 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     country,
     userInputSummary.occupation,
     skillsAssessmentDone,
-    assessingAuthorityInfo
-      ? `${assessingAuthorityInfo.authorityName} (${assessingAuthorityInfo.authorityId})`
-      : undefined,
+    resolvedAuthorityName,
+    userInputSummary.name,
   );
 
   addSectionHeading("", skillsStatus.title);
@@ -720,6 +736,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     userInputSummary,
     skillsAssessmentDone,
     estimatedPoints,
+    resolvedAuthorityName,
   );
 
   addSectionHeading("📋", guide.title);

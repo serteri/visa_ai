@@ -12,6 +12,7 @@ export function getSkillsAssessmentStatus(
   occupation: string | undefined,
   assessmentDone: boolean,
   assessingAuthority?: string,
+  firstName?: string,
 ): {
   title: string;
   status: string;
@@ -73,7 +74,28 @@ export function getSkillsAssessmentStatus(
   }
 
   // Australia
-  const authority = assessingAuthority || (isTr ? "İlgili değerlendirme kurumu" : isZh ? "相关评估机构" : "Relevant assessing authority");
+  const name = firstName?.trim();
+  const namePrefix = name ? `${name}, ` : "";
+  const namePrefixTr = name ? `${name}, ` : "";
+  const namePrefixZh = name ? `${name}，` : "";
+
+  // Personalized, occupation-aware sentence -- deliberately not a generic
+  // "Assessing Authority: X" label. When the occupation resolves to a real
+  // authority (exact ANZSCO match or fuzzy title match, see
+  // getAssessingAuthority in occupation-authority-map.ts), name it directly;
+  // when it doesn't, say so honestly instead of printing a placeholder that
+  // looks like an answer but isn't one.
+  const authorityLine = assessingAuthority
+    ? (isTr
+        ? `${namePrefixTr}${occupation} rolünüz için zorunlu beceri değerlendirmeniz ${assessingAuthority} tarafından yürütülecektir.`
+        : isZh
+          ? `${namePrefixZh}作为${occupation}，您的强制性技能评估将由${assessingAuthority}进行。`
+          : `${namePrefix}for your role as a ${occupation}, your mandatory skills assessment will be conducted by ${assessingAuthority}.`)
+    : (isTr
+        ? `${namePrefixTr}${occupation} olarak, ilk kritik adımınız resmi mevzuat aracından size özel değerlendirme kurumunu belirlemektir.`
+        : isZh
+          ? `${namePrefixZh}作为${occupation}，您的首要关键步骤是通过官方立法文件确定您的具体评估机构。`
+          : `${namePrefix}as a ${occupation}, your first critical step is identifying your specific assessing authority from the official legislative instrument.`);
 
   return {
     title: isTr ? "Beceri Değerlendirmesi" : isZh ? "技能评估" : "Skills Assessment",
@@ -87,11 +109,7 @@ export function getSkillsAssessmentStatus(
         : isZh
           ? `职业：${occupation}`
           : `Occupation: ${occupation}`,
-      isTr
-        ? `Değerlendirme Kurumu: ${authority}`
-        : isZh
-          ? `评估机构：${authority}`
-          : `Assessing Authority: ${authority}`,
+      authorityLine,
       isTr
         ? "Avustralya skilled migration için beceri değerlendirmesi zorunludur."
         : isZh
@@ -105,10 +123,16 @@ export function getSkillsAssessmentStatus(
     ],
     nextAction: assessmentDone
       ? undefined
-      : (isTr
-          ? `${authority} web sitesinden beceri değerlendirmesi başvurusu yapın.`
-          : isZh
-            ? `请在${authority}网站上提交技能评估申请。`
-            : `Apply for skills assessment through the ${authority} website.`),
+      : (assessingAuthority
+          ? (isTr
+              ? `${assessingAuthority} web sitesinden beceri değerlendirmesi başvurusu yapın.`
+              : isZh
+                ? `请在${assessingAuthority}网站上提交技能评估申请。`
+                : `Apply for skills assessment through the ${assessingAuthority} website.`)
+          : (isTr
+              ? "Doğru değerlendirme kurumunu belirlemek için resmi mevzuat aracını (Legislative Instrument) kontrol edin."
+              : isZh
+                ? "请查阅官方立法文件（Legislative Instrument）以确定正确的评估机构。"
+                : "Check the official Legislative Instrument to identify the correct assessing authority.")),
   };
 }

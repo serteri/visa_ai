@@ -134,6 +134,101 @@ export function getAuthorityIdForOccupation(anzscoCode: string): string | null {
 }
 
 // ============================================================================
+// FUZZY TITLE MATCHING (fallback for occupations with no ANZSCO code, or a
+// code not covered by occupationAuthorityMap above -- covers just 83 of 1463
+// occupations by exact code). Keyword-based, not exhaustive: matches on
+// common role-family words rather than requiring an exact dictionary hit, so
+// "Software Engineer" (no code attached) still resolves instead of falling
+// through to a generic "contact the relevant authority" message.
+//
+// Two authorities here (ANMAC, AHPRA) have no full SkillsAssessmentAuthority
+// module under lib/skills-assessment/authorities/ (no pathways/fees data
+// modeled) -- they're display-name-only entries, sufficient for the
+// personalized "[Authority] will assess you" sentence but not for a detailed
+// fees/pathway breakdown the way ACS/EA/TRA/etc. get elsewhere.
+// ============================================================================
+
+export type AssessingAuthorityMatch = {
+  authorityId: string;
+  authorityName: string;
+};
+
+/**
+ * Ordered so more specific keywords are checked before broader ones that
+ * would otherwise shadow them -- e.g. "software engineer" must resolve to
+ * ACS, not EA, so "software"/"developer"/"programmer" are listed before the
+ * generic "engineer" keyword.
+ */
+const AUTHORITY_KEYWORDS: Array<{ keywords: string[]; match: AssessingAuthorityMatch }> = [
+  {
+    keywords: ["software", "developer", "programmer", "web design", "ict", "cyber security", "data scientist", "database", "network engineer", "systems analyst", "it support", "information technology"],
+    match: { authorityId: "ACS", authorityName: "Australian Computer Society (ACS)" },
+  },
+  {
+    keywords: ["chef", "cook", "mechanic", "electrician", "plumber", "carpenter", "hairdresser", "baker", "butcher", "welder", "bricklayer", "cabinetmaker", "boilermaker", "toolmaker", "fitter", "joiner"],
+    match: { authorityId: "TRA", authorityName: "Trades Recognition Australia (TRA)" },
+  },
+  {
+    keywords: ["nurse", "nursing", "midwife", "midwifery"],
+    match: { authorityId: "ANMAC", authorityName: "Australian Nursing and Midwifery Accreditation Council (ANMAC)" },
+  },
+  {
+    keywords: ["doctor", "physician", "surgeon", "medical practitioner", "general practitioner", "psychiatrist", "anaesthetist", "paediatrician", "dentist"],
+    match: { authorityId: "AHPRA", authorityName: "Australian Health Practitioner Regulation Agency (AHPRA)" },
+  },
+  {
+    keywords: ["account", "auditor", "bookkeeper", "tax agent"],
+    match: { authorityId: "CPA", authorityName: "CPA Australia" },
+  },
+  {
+    keywords: ["engineer", "engineering"],
+    match: { authorityId: "EA", authorityName: "Engineers Australia (EA)" },
+  },
+  {
+    keywords: ["architect"],
+    match: { authorityId: "AACA", authorityName: "Architects Accreditation Council of Australia (AACA)" },
+  },
+];
+
+/**
+ * Normalizes a free-text occupation title for keyword matching:
+ * lowercases, strips a leading/trailing ANZSCO code (e.g. "261313 - Software
+ * Engineer" or "Software Engineer 261313" -> "software engineer"), and
+ * trims whitespace/stray punctuation left behind by the strip.
+ */
+function normalizeOccupationTitle(occupationTitle: string): string {
+  return occupationTitle
+    .toLowerCase()
+    .replace(/^\s*\d{4,6}\s*[-–—]?\s*/, "") // leading code, optionally followed by a dash
+    .replace(/\s*\d{4,6}\s*$/, "") // trailing code
+    .replace(/[()]/g, " ")
+    .trim();
+}
+
+/**
+ * Resolves an assessing authority from a free-text occupation title via
+ * fuzzy keyword matching -- for occupations with no ANZSCO code attached (or
+ * a code outside occupationAuthorityMap's 83-entry exact-match coverage), so
+ * "Software Engineer" alone still resolves to ACS instead of falling back to
+ * a generic placeholder. Returns `null` when no keyword matches; callers
+ * should fall back to a personalized-but-honest "identify your authority"
+ * message rather than a hardcoded generic one (see
+ * lib/readiness/pdf-content/skills-assessment-status.ts).
+ */
+export function getAssessingAuthority(occupationTitle: string | undefined): AssessingAuthorityMatch | null {
+  if (!occupationTitle) return null;
+  const normalized = normalizeOccupationTitle(occupationTitle);
+  if (!normalized) return null;
+
+  for (const { keywords, match } of AUTHORITY_KEYWORDS) {
+    if (keywords.some((keyword) => normalized.includes(keyword))) {
+      return match;
+    }
+  }
+  return null;
+}
+
+// ============================================================================
 // AUDIT REPORT
 // ============================================================================
 //
