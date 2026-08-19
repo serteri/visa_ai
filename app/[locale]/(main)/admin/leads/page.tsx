@@ -10,10 +10,21 @@ import { Label } from "@/components/ui/label";
 import { db } from "@/db";
 import { leads } from "@/db/schema";
 import { getAdminPassword, isAdminAuthenticated } from "@/lib/admin-auth";
+import { isMissingRelationError } from "@/lib/db/missing-relation";
 import { redirect } from "next/navigation";
 
+// `leads` is declared in db/schema.ts but doesn't exist in the live
+// database yet (see CLAUDE.md) -- querying it unconditionally 500'd this
+// page for every visitor, including right after a successful admin login.
+// Degrade to an empty list instead, matching the pattern already used for
+// full_check_waitlist in admin/dashboard/page.tsx.
 async function getLeads() {
-  return db.select().from(leads).orderBy(desc(leads.system_score), desc(leads.created_at));
+  try {
+    return await db.select().from(leads).orderBy(desc(leads.system_score), desc(leads.created_at));
+  } catch (error) {
+    if (isMissingRelationError(error, "leads")) return [];
+    throw error;
+  }
 }
 
 function scoreBadgeClass(score: number | null) {

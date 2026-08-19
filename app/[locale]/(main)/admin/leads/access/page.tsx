@@ -9,19 +9,37 @@ import { getAdminPassword, isAdminAuthenticated } from "@/lib/admin-auth";
 
 type AdminLeadAccessPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ auth?: string }>;
+  searchParams: Promise<{ auth?: string; callbackUrl?: string }>;
 };
+
+// The default landing spot after admin login is /admin/states (State
+// Nomination Config) -- the previous default, /admin/leads, queries a
+// Drizzle table (`leads`) that doesn't exist in the live database yet (see
+// CLAUDE.md), so it 500'd every time someone logged in with no specific
+// destination in mind.
+const DEFAULT_ADMIN_DESTINATION = "admin/states";
+
+// Only accept a same-origin, locale-admin-scoped relative path from
+// callbackUrl (set by proxy.ts when it bounces an unauthenticated /admin/*
+// request here) -- never redirect to an arbitrary attacker-supplied URL.
+function resolveDestination(locale: string, callbackUrl: string | undefined): string {
+  if (callbackUrl && /^\/(?:en|tr|zh-Hans)?\/?admin\//.test(callbackUrl)) {
+    return callbackUrl;
+  }
+  return `/${locale}/${DEFAULT_ADMIN_DESTINATION}`;
+}
 
 export default async function AdminLeadAccessPage({ params, searchParams }: AdminLeadAccessPageProps) {
   const { locale } = await params;
   const query = await searchParams;
+  const destination = resolveDestination(locale, query.callbackUrl);
 
   if (!(await isAdminAuthenticated()) && !getAdminPassword()) {
     redirect(`/${locale}`);
   }
 
   if (await isAdminAuthenticated()) {
-    redirect(`/${locale}/admin/leads`);
+    redirect(destination);
   }
 
   return (
@@ -52,6 +70,7 @@ export default async function AdminLeadAccessPage({ params, searchParams }: Admi
             )}
             <form action={loginAdmin} className="space-y-3">
               <input type="hidden" name="locale" value={locale} />
+              <input type="hidden" name="destination" value={destination} />
               <div className="space-y-2">
                 <Label htmlFor="admin-password">Password</Label>
                 <Input id="admin-password" name="password" type="password" placeholder="Password" required />

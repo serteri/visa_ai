@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/db";
 import { leads } from "@/db/schema";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isMissingRelationError } from "@/lib/db/missing-relation";
 import { getUserReportById } from "@/src/lib/user-reports";
 
 type LeadDetailPageProps = {
@@ -24,7 +25,17 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
     redirect(`/${locale}/admin/leads/access?auth=invalid`);
   }
 
-  const record = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
+  // Same missing-table guard as admin/leads/page.tsx -- `leads` doesn't
+  // exist in the live database yet (see CLAUDE.md), so this must 404
+  // instead of 500 rather than assuming the table (and therefore the row)
+  // exists.
+  let record: (typeof leads.$inferSelect)[];
+  try {
+    record = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
+  } catch (error) {
+    if (isMissingRelationError(error, "leads")) notFound();
+    throw error;
+  }
   const lead = record[0];
   if (!lead) notFound();
 
