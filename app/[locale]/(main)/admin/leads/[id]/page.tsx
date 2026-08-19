@@ -1,4 +1,3 @@
-import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
@@ -8,15 +7,35 @@ import { AnzscoMatcherErrorBoundary } from "@/components/AnzscoMatcherErrorBound
 import { DocumentAnalyzer } from "@/components/DocumentAnalyzer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { db } from "@/db";
-import { leads } from "@/db/schema";
+import { prisma } from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { isMissingRelationError } from "@/lib/db/missing-relation";
-import { getUserReportById } from "@/src/lib/user-reports";
+import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 
 type LeadDetailPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
+
+// Same source as admin/leads/page.tsx -- Prisma's UserReport (user_reports),
+// not the phantom Drizzle `leads` table. The list page's row links already
+// point here using UserReport ids.
+async function getLead(id: string) {
+  return prisma.userReport.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      source: true,
+      preferredPath: true,
+      leadScore: true,
+      leadTier: true,
+      locale: true,
+      createdAt: true,
+      inputJson: true,
+      reportJson: true,
+    },
+  });
+}
 
 export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const { locale, id } = await params;
@@ -25,31 +44,21 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
     redirect(`/${locale}/admin/leads/access?auth=invalid`);
   }
 
-  // Same missing-table guard as admin/leads/page.tsx -- `leads` doesn't
-  // exist in the live database yet (see CLAUDE.md), so this must 404
-  // instead of 500 rather than assuming the table (and therefore the row)
-  // exists.
-  let record: (typeof leads.$inferSelect)[];
-  try {
-    record = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
-  } catch (error) {
-    if (isMissingRelationError(error, "leads")) notFound();
-    throw error;
-  }
-  const lead = record[0];
+  const lead = await getLead(id);
   if (!lead) notFound();
 
-  const leadData = {
-    fullName: lead.full_name ?? undefined,
-    email: lead.email,
-    occupation: lead.occupation ?? undefined,
-    englishLevel: lead.english_level ?? lead.english_test_taken ?? undefined,
-    age: lead.age ?? undefined,
-    currentCountry: lead.current_country ?? undefined,
-    targetVisa: lead.selected_visa ?? undefined,
-  };
+  const input = (lead.inputJson ?? {}) as ReadinessInput;
+  const report = lead.reportJson as ReadinessReport | null;
 
-  const report = lead.report_id ? await getUserReportById(lead.report_id) : null;
+  const leadData = {
+    fullName: lead.fullName ?? undefined,
+    email: lead.email,
+    occupation: input.occupation ?? undefined,
+    englishLevel: input.englishLevel ?? undefined,
+    age: input.age ?? undefined,
+    currentCountry: input.currentCountry ?? undefined,
+    targetVisa: lead.preferredPath ?? undefined,
+  };
 
   return (
     <main className="ambient-bg flex-1 py-10">
@@ -59,7 +68,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-2">
             <p className="text-sm font-semibold uppercase tracking-wide text-primary">Lead Detail</p>
-            <h1 className="text-3xl font-bold">{lead.full_name || lead.email}</h1>
+            <h1 className="text-3xl font-bold">{lead.fullName || lead.email}</h1>
             <p className="text-sm text-muted-foreground">{lead.email}</p>
           </div>
           <div className="flex gap-2">
@@ -78,16 +87,16 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               <CardTitle>Lead Snapshot</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3 text-sm sm:grid-cols-2">
-              <p><span className="font-semibold">Occupation:</span> {lead.occupation || "-"}</p>
-              <p><span className="font-semibold">Selected visa:</span> {lead.selected_visa || "-"}</p>
-              <p><span className="font-semibold">System score:</span> {lead.system_score ?? "-"}</p>
-              <p><span className="font-semibold">Lead tier:</span> {lead.lead_tier || "-"}</p>
-              <p><span className="font-semibold">Age:</span> {lead.age || "-"}</p>
-              <p><span className="font-semibold">Budget:</span> {lead.estimated_budget_range || "-"}</p>
-              <p><span className="font-semibold">Current country:</span> {lead.current_country || "-"}</p>
-              <p><span className="font-semibold">Timeline:</span> {lead.timeline || "-"}</p>
-              <p><span className="font-semibold">English:</span> {lead.english_level || "-"}</p>
-              <p><span className="font-semibold">Created:</span> {lead.created_at ? new Date(lead.created_at).toLocaleString() : "-"}</p>
+              <p><span className="font-semibold">Occupation:</span> {input.occupation || "-"}</p>
+              <p><span className="font-semibold">Selected visa:</span> {lead.preferredPath || lead.source || "-"}</p>
+              <p><span className="font-semibold">Lead score:</span> {lead.leadScore ?? "-"}</p>
+              <p><span className="font-semibold">Lead tier:</span> {lead.leadTier || "-"}</p>
+              <p><span className="font-semibold">Age:</span> {input.age || "-"}</p>
+              <p><span className="font-semibold">Budget:</span> {input.estimatedBudgetRange || "-"}</p>
+              <p><span className="font-semibold">Current country:</span> {input.currentCountry || "-"}</p>
+              <p><span className="font-semibold">Timeline:</span> {input.timeline || "-"}</p>
+              <p><span className="font-semibold">English:</span> {input.englishLevel || "-"}</p>
+              <p><span className="font-semibold">Created:</span> {lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "-"}</p>
             </CardContent>
           </Card>
 
@@ -98,11 +107,11 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <CardContent className="space-y-4 text-sm">
               <div>
                 <p className="font-semibold">Main goal</p>
-                <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{lead.main_goal || "-"}</p>
+                <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{input.mainGoal || "-"}</p>
               </div>
               <div>
                 <p className="font-semibold">Biggest concern</p>
-                <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{lead.biggest_concern || "-"}</p>
+                <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{input.biggestConcern || "-"}</p>
               </div>
             </CardContent>
           </Card>
@@ -117,7 +126,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </CardHeader>
           <CardContent>
             <AnzscoMatcherErrorBoundary>
-              <AnzscoMatcher targetOccupation={lead.occupation} />
+              <AnzscoMatcher targetOccupation={input.occupation} />
             </AnzscoMatcherErrorBoundary>
           </CardContent>
         </Card>
@@ -129,14 +138,14 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div className="grid gap-3 sm:grid-cols-3">
-                <p><span className="font-semibold">Locale:</span> {report.locale}</p>
-                <p><span className="font-semibold">Report ID:</span> {report.id}</p>
-                <p><span className="font-semibold">Email:</span> {report.email}</p>
+                <p><span className="font-semibold">Locale:</span> {lead.locale}</p>
+                <p><span className="font-semibold">Report ID:</span> {lead.id}</p>
+                <p><span className="font-semibold">Email:</span> {lead.email}</p>
               </div>
               <div>
                 <p className="font-semibold">Executive summary</p>
                 <ul className="mt-2 space-y-1 text-muted-foreground">
-                  {report.report.executiveSummary.slice(0, 5).map((item) => (
+                  {report.executiveSummary.slice(0, 5).map((item) => (
                     <li key={item}>- {item}</li>
                   ))}
                 </ul>
