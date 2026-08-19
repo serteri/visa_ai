@@ -684,22 +684,24 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   if (userInputSummary.occupation) {
     assessingAuthorityInfo = getSkillsAssessmentAuthority(userInputSummary.occupation);
   }
-  // Precise ANZSCO-code match covers only 83 of 1463 occupations -- when it
-  // misses (most commonly because the occupation string has no code
+  // Precise ANZSCO-code match covers only a fraction of occupations -- when
+  // it misses (most commonly because the occupation string has no code
   // attached at all, e.g. a bare "Software Engineer"), fall back to fuzzy
-  // keyword matching on the title itself before giving up and showing the
-  // generic "identify your authority" copy.
+  // keyword matching on the title itself. getAssessingAuthority() always
+  // resolves to something now (a specific authority via keyword, or
+  // generalAuthority / VETASSESS as the universal last resort), so there is
+  // no longer an "unresolved" case here -- isGeneralFallback distinguishes
+  // "we know exactly who" from "this will likely go to a general authority".
   const fuzzyAuthorityMatch = !assessingAuthorityInfo
     ? getAssessingAuthority(userInputSummary.occupation)
     : null;
   // Shared across this section and the Application Guide below, so both
   // name the same authority instead of one saying "ACS" and the other
-  // falling back to a generic instruction for the same occupation.
+  // falling back to generic text for the same occupation.
   const resolvedAuthorityName = assessingAuthorityInfo
     ? `${assessingAuthorityInfo.authorityName} (${assessingAuthorityInfo.authorityId})`
-    : fuzzyAuthorityMatch
-      ? fuzzyAuthorityMatch.authorityName
-      : undefined;
+    : fuzzyAuthorityMatch!.authorityName;
+  const isGeneralAuthorityFallback = !assessingAuthorityInfo && (fuzzyAuthorityMatch?.isGeneralFallback ?? false);
 
   ctx.ensurePageSpace(25);
   const skillsStatus = getSkillsAssessmentStatus(
@@ -709,6 +711,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     skillsAssessmentDone,
     resolvedAuthorityName,
     userInputSummary.name,
+    isGeneralAuthorityFallback,
   );
 
   addSectionHeading("", skillsStatus.title);
@@ -737,6 +740,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     skillsAssessmentDone,
     estimatedPoints,
     resolvedAuthorityName,
+    isGeneralAuthorityFallback,
   );
 
   addSectionHeading("📋", guide.title);

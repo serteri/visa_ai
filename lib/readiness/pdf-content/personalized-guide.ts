@@ -24,6 +24,7 @@ export function getPersonalizedApplicationGuide(
   skillsAssessmentDone: boolean,
   pointsEstimate?: number,
   assessingAuthority?: string,
+  isGeneralAuthorityFallback?: boolean,
 ): {
   title: string;
   userName: string;
@@ -80,11 +81,17 @@ export function getPersonalizedApplicationGuide(
       // instruction, which reads as unhelpful boilerplate when the report
       // already knows the answer.
       detail: assessingAuthority
-        ? (isTr
-            ? `${name}, ${occupationLabel} için beceri değerlendirmesi henüz yapılmamış. Bu, vize başvurusunun zorunlu bir adımıdır. Değerlendirmeniz ${assessingAuthority} tarafından yürütülecektir -- hemen başvurun.`
-            : isZh
-              ? `${name}，您的职业（${occupationLabel}）尚未完成技能评估。这是签证申请的必要步骤。您的评估将由${assessingAuthority}进行——请立即申请。`
-              : `${name}, skills assessment for ${occupationLabel} has not been completed yet. This is a mandatory step for your visa application. Your assessment will be conducted by ${assessingAuthority} -- apply immediately.`)
+        ? (isGeneralAuthorityFallback
+            ? (isTr
+                ? `${name}, ${occupationLabel} için beceri değerlendirmesi henüz yapılmamış. Bu, vize başvurusunun zorunlu bir adımıdır. Dosyanız ${assessingAuthority} gibi genel bir mesleki değerlendirme kurumu tarafından incelenecektir -- hemen başvurun.`
+                : isZh
+                  ? `${name}，您的职业（${occupationLabel}）尚未完成技能评估。这是签证申请的必要步骤。您的申请很可能将由${assessingAuthority}等一般性职业评估机构处理——请立即申请。`
+                  : `${name}, skills assessment for ${occupationLabel} has not been completed yet. This is a mandatory step for your visa application. Your assessment will likely be handled by a general authority (such as ${assessingAuthority}) -- apply immediately.`)
+            : (isTr
+                ? `${name}, ${occupationLabel} için beceri değerlendirmesi henüz yapılmamış. Bu, vize başvurusunun zorunlu bir adımıdır. Değerlendirmeniz ${assessingAuthority} tarafından yürütülecektir -- hemen başvurun.`
+                : isZh
+                  ? `${name}，您的职业（${occupationLabel}）尚未完成技能评估。这是签证申请的必要步骤。您的评估将由${assessingAuthority}进行——请立即申请。`
+                  : `${name}, skills assessment for ${occupationLabel} has not been completed yet. This is a mandatory step for your visa application. Your assessment will be conducted by ${assessingAuthority} -- apply immediately.`))
         : (isTr
             ? `${name}, ${occupationLabel} için beceri değerlendirmesi henüz yapılmamış. Bu, vize başvurusunun zorunlu bir adımıdır. İlk adımınız, resmi mevzuat aracından size özel değerlendirme kurumunu belirlemektir.`
             : isZh

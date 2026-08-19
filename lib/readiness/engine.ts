@@ -14,11 +14,13 @@ import { checkNocOccupation } from "@/lib/occupations/check-noc-occupation";
 import { isFSTPEligibleOccupation } from "@/lib/readiness/noc-fstp-groups";
 import {
   getSkillsAssessmentAuthority,
+  getAuthorityById,
   getDefaultPathway,
   resolveACSPathway,
   resolveLocalized,
   resolveLocalizedArray,
 } from "@/lib/skills-assessment";
+import { getAssessingAuthority } from "@/lib/skills-assessment/occupation-authority-map";
 import {
   type ProvinceCode,
   type ProvinceStream,
@@ -4877,9 +4879,21 @@ function buildFinancialRoadmap(
     // Look up an occupation-specific assessing authority. For occupations
     // covered by a registered authority (e.g. Architect → AACA, Software Engineer → ACS),
     // the line renders the specific pathway + fee + processing time + doc checklist
-    // instead of the generic ACS/EA/VETASSESS/CPA fallback.
+    // instead of generic multi-authority text.
     // For ACS, the pathway is resolved from intake data (education + experience).
-    const authority = getSkillsAssessmentAuthority(input.occupation);
+    //
+    // Precise ANZSCO-code match first; when it misses (most commonly an
+    // occupation string with no code attached), fall back to fuzzy keyword
+    // matching (getAssessingAuthority), which always resolves to something
+    // -- a specific authority via keyword, or generalAuthority (VETASSESS /
+    // General Professional Authority) as the universal last resort -- so
+    // this row is never the old generic "$530-900+, varies by authority"
+    // paragraph. getAuthorityById turns that match's authorityId back into
+    // the full authority object so the same fee/pathway rendering below
+    // works identically for both the precise and fuzzy-matched cases.
+    const authority =
+      getSkillsAssessmentAuthority(input.occupation) ??
+      getAuthorityById(getAssessingAuthority(input.occupation).authorityId);
     let primaryPathway = getDefaultPathway(authority);
 
     // ACS-specific: resolve pathway from intake data instead of default
@@ -4927,6 +4941,11 @@ function buildFinancialRoadmap(
           : `Assessing authority: ${authority.authorityName}. Default pathway: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
       });
     } else {
+      // Should not be reachable now that generalAuthority (VETASSESS /
+      // General Professional Authority) is always resolved as the last
+      // resort above -- kept as a defensive fallback only, in case
+      // getAuthorityById/getAssessingAuthority is ever refactored to allow
+      // a genuinely unresolvable case again.
       items.push({
         category: isTr ? "Beceri Değerlendirmesi (Assessing Authority'ye göre)" : "Skills Assessment (by Assessing Authority)",
         estimateType: "third_party_estimate",

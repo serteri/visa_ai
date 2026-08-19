@@ -13,6 +13,7 @@ export function getSkillsAssessmentStatus(
   assessmentDone: boolean,
   assessingAuthority?: string,
   firstName?: string,
+  isGeneralAuthorityFallback?: boolean,
 ): {
   title: string;
   status: string;
@@ -80,17 +81,29 @@ export function getSkillsAssessmentStatus(
   const namePrefixZh = name ? `${name}，` : "";
 
   // Personalized, occupation-aware sentence -- deliberately not a generic
-  // "Assessing Authority: X" label. When the occupation resolves to a real
-  // authority (exact ANZSCO match or fuzzy title match, see
-  // getAssessingAuthority in occupation-authority-map.ts), name it directly;
-  // when it doesn't, say so honestly instead of printing a placeholder that
-  // looks like an answer but isn't one.
+  // "Assessing Authority: X" label. Three cases, in priority order:
+  // 1. Specific authority resolved (exact ANZSCO match or fuzzy keyword
+  //    match, e.g. ACS/EA/TRA) -- name it directly and confidently.
+  // 2. Only the universal fallback resolved (isGeneralAuthorityFallback,
+  //    see generalAuthority in authorities/general-authority.ts) -- softer
+  //    "likely" phrasing, since VETASSESS/general is a reasonable default
+  //    but not a confirmed match for this specific occupation.
+  // 3. No authority info was passed at all (defensive only -- callers
+  //    always resolve one via getAssessingAuthority's universal fallback
+  //    now) -- honest "go find out" instruction, never a placeholder that
+  //    reads like an answer but isn't one.
   const authorityLine = assessingAuthority
-    ? (isTr
-        ? `${namePrefixTr}${occupation} rolünüz için zorunlu beceri değerlendirmeniz ${assessingAuthority} tarafından yürütülecektir.`
-        : isZh
-          ? `${namePrefixZh}作为${occupation}，您的强制性技能评估将由${assessingAuthority}进行。`
-          : `${namePrefix}for your role as a ${occupation}, your mandatory skills assessment will be conducted by ${assessingAuthority}.`)
+    ? (isGeneralAuthorityFallback
+        ? (isTr
+            ? `${namePrefixTr}${occupation} mesleğin gereği dosyan ${assessingAuthority} gibi genel bir mesleki değerlendirme kurumu tarafından incelenecektir.`
+            : isZh
+              ? `${namePrefixZh}作为${occupation}，您的申请很可能将由${assessingAuthority}等一般性职业评估机构处理。`
+              : `${namePrefix}for your role as a ${occupation}, your assessment will likely be handled by a general authority (such as ${assessingAuthority}).`)
+        : (isTr
+            ? `${namePrefixTr}${occupation} rolünüz için zorunlu beceri değerlendirmeniz ${assessingAuthority} tarafından yürütülecektir.`
+            : isZh
+              ? `${namePrefixZh}作为${occupation}，您的强制性技能评估将由${assessingAuthority}进行。`
+              : `${namePrefix}for your role as a ${occupation}, your mandatory skills assessment will be conducted by ${assessingAuthority}.`))
     : (isTr
         ? `${namePrefixTr}${occupation} olarak, ilk kritik adımınız resmi mevzuat aracından size özel değerlendirme kurumunu belirlemektir.`
         : isZh

@@ -13,6 +13,7 @@ import { casaAustraliaAuthority } from "./authorities/casa-australia";
 import { otcAustraliaAuthority } from "./authorities/otc-australia";
 import { anmacAuthority } from "./authorities/anmac";
 import { ahpraAuthority } from "./authorities/ahpra";
+import { generalAuthority } from "./authorities/general-authority";
 import { normalizeOccupationCode } from "./types";
 export { resolveLocalized, resolveLocalizedArray, loc } from "./i18n";
 export type { LocalizedString, Locale } from "./i18n";
@@ -37,7 +38,20 @@ const AUTHORITIES: SkillsAssessmentAuthority[] = [
   otcAustraliaAuthority,
   anmacAuthority,
   ahpraAuthority,
+  generalAuthority,
 ];
+
+/**
+ * Looks up a registered authority by its authorityId (e.g. "ACS", "GENERAL")
+ * -- used to resolve the fuzzy-matched result from getAssessingAuthority()
+ * (occupation-authority-map.ts) back into a full SkillsAssessmentAuthority
+ * object with real fees/pathways, so the Financial Roadmap table can render
+ * an identical row for a fuzzy match as it does for a precise ANZSCO-code
+ * match, instead of falling back to generic text.
+ */
+export function getAuthorityById(authorityId: string): SkillsAssessmentAuthority | null {
+  return AUTHORITIES.find((authority) => authority.authorityId === authorityId) ?? null;
+}
 
 /**
  * Looks up the assessing authority for a given occupation code.
