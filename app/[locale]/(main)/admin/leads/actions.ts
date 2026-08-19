@@ -1,13 +1,39 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 import {
   clearAdminSession,
   getAdminPassword,
+  isAdminAuthenticated,
   isValidAdminPassword,
   setAdminSession,
 } from "@/lib/admin-auth";
+import { prisma } from "@/lib/prisma";
+
+/**
+ * Assigns a lead (UserReport) to an agent -- writes the same
+ * UserReport.agentId column the CRM's assignLeadToAgent (app/[locale]/
+ * (portal)/admin/crm/actions.ts) already uses, so a lead assigned from
+ * either admin surface shows up consistently in the agent's CRM pool.
+ * Gated by the legacy cookie session (this page's own auth), not
+ * getCurrentUser()'s NextAuth role check, since that's the session an
+ * operator on this page actually has.
+ */
+export async function assignLeadToAgentLegacy(leadId: string, agentId: string): Promise<void> {
+  if (!(await isAdminAuthenticated())) throw new Error("Unauthorized");
+  if (!leadId || !agentId) throw new Error("Missing leadId or agentId");
+
+  const agent = await prisma.user.findFirst({
+    where: { id: agentId, role: "AGENT", approvalStatus: "APPROVED" },
+    select: { id: true },
+  });
+  if (!agent) throw new Error("Agent not found or not approved");
+
+  await prisma.userReport.update({ where: { id: leadId }, data: { agentId } });
+  revalidatePath("/", "layout");
+}
 
 // Only accept a same-origin, locale-admin-scoped relative path (set as a
 // hidden "destination" field by the access page, itself derived from

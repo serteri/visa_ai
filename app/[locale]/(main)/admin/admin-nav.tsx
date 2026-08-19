@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 const ADMIN_LINKS = [
   { href: "dashboard", label: "Dashboard" },
   { href: "leads", label: "Leads" },
+  { href: "agents", label: "Agents" },
   { href: "visas", label: "Visas" },
   { href: "full-check-waitlist", label: "Full Check Waitlist" },
   { href: "eoi-rounds", label: "EOI Rounds" },

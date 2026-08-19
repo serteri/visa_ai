@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
+import { AssignAgentSelect } from "./assign-agent-select";
 
 type LeadDetailPageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -33,7 +34,20 @@ async function getLead(id: string) {
       createdAt: true,
       inputJson: true,
       reportJson: true,
+      agentId: true,
+      agent: { select: { name: true, email: true } },
     },
+  });
+}
+
+/** Approved agents only -- matches the task's "dropdown should only list
+ *  Approved agents" requirement, and the same filter assignLeadToAgentLegacy
+ *  itself enforces server-side. */
+async function getApprovedAgents() {
+  return prisma.user.findMany({
+    where: { role: "AGENT", approvalStatus: "APPROVED" },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, email: true },
   });
 }
 
@@ -44,7 +58,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
     redirect(`/${locale}/admin/leads/access?auth=invalid`);
   }
 
-  const lead = await getLead(id);
+  const [lead, approvedAgents] = await Promise.all([getLead(id), getApprovedAgents()]);
   if (!lead) notFound();
 
   const input = (lead.inputJson ?? {}) as ReadinessInput;
@@ -116,6 +130,21 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Assign to Agent</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {lead.agent
+                ? `Currently assigned to ${lead.agent.name ?? lead.agent.email}.`
+                : "Not yet assigned to an agent."}{" "}
+              Only Approved agents are listed -- see the Agents page to approve pending applications.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <AssignAgentSelect leadId={lead.id} agents={approvedAgents} currentAgentId={lead.agentId} />
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
