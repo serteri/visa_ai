@@ -11,6 +11,8 @@ import { ipaAustraliaAuthority } from "./authorities/ipa-australia";
 import { traAustraliaAuthority } from "./authorities/tra-australia";
 import { casaAustraliaAuthority } from "./authorities/casa-australia";
 import { otcAustraliaAuthority } from "./authorities/otc-australia";
+import { anmacAuthority } from "./authorities/anmac";
+import { ahpraAuthority } from "./authorities/ahpra";
 import { normalizeOccupationCode } from "./types";
 export { resolveLocalized, resolveLocalizedArray, loc } from "./i18n";
 export type { LocalizedString, Locale } from "./i18n";
@@ -33,6 +35,8 @@ const AUTHORITIES: SkillsAssessmentAuthority[] = [
   traAustraliaAuthority,
   casaAustraliaAuthority,
   otcAustraliaAuthority,
+  anmacAuthority,
+  ahpraAuthority,
 ];
 
 /**
