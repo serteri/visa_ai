@@ -10,6 +10,9 @@
 //   - campaigns
 //   - contact_messages
 //   - pdf_downloads
+//   - visa_types
+//   - visa_structured_data
+//   - source_snapshots
 //
 // NEVER run `prisma db push --accept-data-loss` without reading the diff
 // first. If it proposes dropping any table, STOP — it means either a new
@@ -19,9 +22,12 @@
 // models over a full `db push` when in doubt.
 //
 // Drizzle also declares a few tables that don't exist in the live database
-// yet (full_check_usage, full_check_waitlist, leads, visa_types,
-// visa_structured_data, source_snapshots) — those are handled gracefully
-// as optional/missing by application code and are not Prisma's concern.
+// yet (full_check_usage, full_check_waitlist, leads) — those are handled
+// gracefully as optional/missing by application code and are not Prisma's
+// concern. visa_types/visa_structured_data/source_snapshots USED to be in
+// this "doesn't exist yet" bucket too, until they were created + seeded
+// (db/seed.ts) and promptly proposed for a DROP by an uninformed `db push`
+// — see the @@ignore models above for the fix.
 // ─────────────────────────────────────────────────────────────────────────
 
 generator client {
@@ -640,5 +646,61 @@ model pdf_downloads {
 
   @@index([email])
   @@index([ip_address], map: "pdf_downloads_ip_idx")
+  @@ignore
+}
+
+// Drizzle-owned (see db/schema.ts's visaTypes/visaStructuredData/
+// sourceSnapshots) — same @@ignore treatment as the three models above,
+// added after `prisma db push` proposed DROPping all three (they hold the
+// live visa content seeded via db/seed.ts: 10 visa_types rows plus their
+// structured data and PDF snapshot rows). Columns copied verbatim from
+// db/schema.ts, which remains the source of truth for these tables --
+// Drizzle keeps writing/migrating them; Prisma only needs to know they
+// exist so `db push` stops proposing to drop them.
+model visa_types {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subclass        String    @unique
+  visa_name       String
+  category        String
+  purpose         String?
+  stay_period     String?
+  cost            String?
+  work_rights     String?
+  source_url      String?
+  last_checked    DateTime? @db.Date
+  reviewed_status String?   @default("needs_review")
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  updated_at      DateTime? @default(now()) @db.Timestamp(6)
+
+  @@ignore
+}
+
+model visa_structured_data {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  visa_type_id           String   @db.Uuid
+  key_requirements       Json?
+  documents_required     Json?
+  application_steps      Json?
+  visa_conditions        Json?
+  risks                  Json?
+  english_requirements   Json?
+  financial_requirements Json?
+  raw_json               Json?
+  created_at             DateTime? @default(now()) @db.Timestamp(6)
+  updated_at             DateTime? @default(now()) @db.Timestamp(6)
+
+  @@ignore
+}
+
+model source_snapshots {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  visa_type_id     String    @db.Uuid
+  source_url       String
+  pdf_snapshot_url String?
+  raw_text         String?
+  captured_at      DateTime? @default(now()) @db.Timestamp(6)
+  content_hash     String?
+  notes            String?
+
   @@ignore
 }
