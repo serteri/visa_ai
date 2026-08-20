@@ -186,6 +186,7 @@ model User {
   savedReports      SavedReport[]
   sessions          Session[]
   visaTrackings     VisaTracking[]
+  visaJourneys      VisaJourney[]
   assignedLeads     UserReport[]       @relation("AgentAssignedLeads")
   transactions      Transaction[]      @relation("AgentTransactions")
 
@@ -306,6 +307,30 @@ model VisaTracking {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("visa_tracking")
+}
+
+// B2C Applicant Portal: stage-based process timeline, distinct from
+// VisaTracking above (which is a lightweight "which subclass + free-text
+// status am I watching" bookmark used by the existing consumer dashboard's
+// visa-tracker page). VisaJourney is the structured backbone for the new
+// Timeline UI (app/[locale]/(main)/dashboard's Journey card) -- one visa
+// pathway's progress through fixed stages with a percentage, not a status
+// string. A user could have both a VisaTracking bookmark and a VisaJourney
+// for the same visaType; they're not meant to be merged into one model,
+// since they serve different UI surfaces with different update cadences.
+model VisaJourney {
+  id                 String   @id @default(cuid())
+  userId             String   @map("user_id")
+  visaType           String   @map("visa_type")
+  /** PREPARATION | SKILLS_ASSESSMENT | EOI | INVITED | LODGED | GRANTED */
+  currentStage       String   @default("PREPARATION") @map("current_stage")
+  progressPercentage Int      @default(0) @map("progress_percentage")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("visa_journeys")
 }
 
 model PointsAlert {

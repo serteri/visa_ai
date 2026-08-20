@@ -6,6 +6,10 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { isMissingRelationError } from "@/lib/db/missing-relation";
+import { JourneyTimelineCard, type VisaJourneySummary } from "./JourneyTimelineCard";
+import { getTranslations, t } from "@/lib/i18n/get-translations";
+import { isValidLocale } from "@/lib/i18n/config";
 
 type PageProps = { params: Promise<{ locale: string }> };
 
@@ -22,8 +26,37 @@ export default async function DashboardPage({ params }: PageProps) {
 
   const userId = session.user.id;
   const firstName = session.user.name?.split(" ")[0] ?? "there";
+  const translations = await getTranslations(isValidLocale(locale) ? locale : "en");
+  const welcomeText = t(translations, "portal.welcomeWithName", "Welcome back, {{name}}").replace(
+    "{{name}}",
+    firstName
+  );
 
-  const [calcs, quizzes, reports, tracking] = await Promise.all([
+  // VisaJourney (see prisma/schema.prisma) is a brand-new model -- the table
+  // won't exist in the live database until `npx prisma db push` is run, so
+  // this degrades to an empty timeline (JourneyTimelineCard's own empty
+  // state) instead of 500ing, matching the pattern used everywhere else in
+  // this app for not-yet-migrated tables.
+  async function getVisaJourneys(): Promise<VisaJourneySummary[]> {
+    try {
+      const rows = await prisma.visaJourney.findMany({
+        where: { userId },
+        orderBy: { updatedAt: "desc" },
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        visaType: row.visaType,
+        currentStage: row.currentStage,
+        progressPercentage: row.progressPercentage,
+        updatedAt: row.updatedAt.toISOString(),
+      }));
+    } catch (error) {
+      if (isMissingRelationError(error, "visa_journeys")) return [];
+      throw error;
+    }
+  }
+
+  const [calcs, quizzes, reports, tracking, journeys] = await Promise.all([
     prisma.savedCalculation.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
@@ -42,6 +75,7 @@ export default async function DashboardPage({ params }: PageProps) {
       where: { userId },
       orderBy: { createdAt: "desc" },
     }),
+    getVisaJourneys(),
   ]);
 
   const latestCalc = calcs[0];
@@ -88,7 +122,7 @@ export default async function DashboardPage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Welcome back, {firstName} 👋</h1>
+        <h1 className="text-2xl font-bold text-slate-900">{welcomeText} 👋</h1>
         <p className="mt-1 text-sm text-slate-500">Here's a summary of your visa preparation progress.</p>
       </div>
 
@@ -121,6 +155,8 @@ export default async function DashboardPage({ params }: PageProps) {
           ))}
         </CardContent>
       </Card>
+
+      <JourneyTimelineCard journeys={journeys} locale={locale} />
 
       {(latestCalc || latestQuiz || tracking.length > 0) && (
         <Card>

@@ -749,5 +749,21 @@
   "chat.verifying": "Verifying...",
   "chat.unlockPremium": "Unlock Premium",
   "chat.unlockFailed": "Verification failed, please try again.",
-  "assistant.backToHome": "Back to Home"
+  "assistant.backToHome": "Back to Home",
+  "nav.myVisaJourney": "My Visa Journey",
+  "portal.welcome": "Welcome to your Visa Journey",
+  "portal.welcomeWithName": "Welcome back, {{name}}",
+  "portal.timeline": "Your Timeline",
+  "portal.timelineEmpty": "Your visa journey timeline will appear here once you start tracking a visa pathway.",
+  "portal.timelineEmptyCta": "Start tracking a visa",
+  "portal.stage.preparation": "Preparation",
+  "portal.stage.skillsAssessment": "Skills Assessment",
+  "portal.stage.eoi": "Expression of Interest",
+  "portal.stage.invited": "Invited",
+  "portal.stage.lodged": "Visa Lodged",
+  "portal.stage.granted": "Visa Granted",
+  "portal.progress": "Progress",
+  "auth.signIn": "Sign in",
+  "auth.signUp": "Sign up",
+  "auth.createAccount": "Create your account"
 }

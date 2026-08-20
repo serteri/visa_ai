@@ -127,6 +127,18 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
 
           {/* Right side */}
           <div className="flex items-center gap-2.5">
+            {/* Standalone B2C portal CTA -- deliberately outside the
+                dropdown menus and always visible (signed in or out), per
+                the Applicant Portal launch requirement. Links straight to
+                /dashboard either way: signed-out visitors are bounced to
+                /sign-in by dashboard/layout.tsx's own guard and land back
+                on /dashboard after signing in. */}
+            <Link
+              href={`/${locale}/dashboard`}
+              className="hidden whitespace-nowrap rounded-full border border-[var(--cf-accent)] px-3.5 py-1.5 text-sm font-semibold text-[var(--cf-accent)] transition-colors hover:bg-[var(--cf-accent-dim)] sm:inline-flex"
+            >
+              {tx("Vize Sürecim", "My Visa Journey", "我的签证进程")}
+            </Link>
             <ThemeToggle />
             <LanguageSelector currentLocale={locale} compact />
             <div className="hidden h-6 w-px bg-[var(--cf-line)] sm:block" />
@@ -163,6 +175,9 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <Link href={`/${locale}/tools/document-checklist-2026`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Belge Kontrol", "Document Checklist", "文件清单")}</Link>
               <Link href={`/${locale}/contact`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("İletişim", "Contact", "联系我们")}</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
+              <Link href={`/${locale}/dashboard`} onClick={() => setMobileOpen(false)} className="rounded-full border border-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--cf-accent)]">
+                {tx("Vize Sürecim", "My Visa Journey", "我的签证进程")}
+              </Link>
               <Link href={`/${locale}/full-check`} onClick={() => setMobileOpen(false)} className="mt-1 rounded-full bg-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--cf-bg-deep)]">
                 {tx("Değerlendirme Başlat", "Start Assessment", "开始评估")}
               </Link>

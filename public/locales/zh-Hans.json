@@ -749,5 +749,21 @@
   "chat.verifying": "验证中...",
   "chat.unlockPremium": "Unlock Premium",
   "chat.unlockFailed": "验证失败，请重试。",
-  "assistant.backToHome": "返回首页"
+  "assistant.backToHome": "返回首页",
+  "nav.myVisaJourney": "我的签证进程",
+  "portal.welcome": "欢迎来到您的签证进程",
+  "portal.welcomeWithName": "欢迎回来，{{name}}",
+  "portal.timeline": "您的时间线",
+  "portal.timelineEmpty": "开始跟踪签证路径后，您的时间线将显示在这里。",
+  "portal.timelineEmptyCta": "开始跟踪签证",
+  "portal.stage.preparation": "准备阶段",
+  "portal.stage.skillsAssessment": "技能评估",
+  "portal.stage.eoi": "意向书（EOI）",
+  "portal.stage.invited": "已获邀请",
+  "portal.stage.lodged": "已提交签证申请",
+  "portal.stage.granted": "签证已批准",
+  "portal.progress": "进度",
+  "auth.signIn": "登录",
+  "auth.signUp": "注册",
+  "auth.createAccount": "创建您的账户"
 }

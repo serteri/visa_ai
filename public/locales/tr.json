@@ -756,5 +756,21 @@
   "chat.verifying": "Doğrulanıyor...",
   "chat.unlockPremium": "Unlock Premium",
   "chat.unlockFailed": "Doğrulama başarısız oldu, lütfen tekrar deneyin.",
-  "assistant.backToHome": "Ana Sayfaya Dön"
+  "assistant.backToHome": "Ana Sayfaya Dön",
+  "nav.myVisaJourney": "Vize Sürecim",
+  "portal.welcome": "Vize Sürecinize Hoş Geldiniz",
+  "portal.welcomeWithName": "Tekrar hoş geldiniz, {{name}}",
+  "portal.timeline": "Zaman Çizelgeniz",
+  "portal.timelineEmpty": "Bir vize sürecini takip etmeye başladığınızda zaman çizelgeniz burada görünecek.",
+  "portal.timelineEmptyCta": "Bir vizeyi takip etmeye başla",
+  "portal.stage.preparation": "Hazırlık",
+  "portal.stage.skillsAssessment": "Beceri Değerlendirmesi",
+  "portal.stage.eoi": "Niyet Beyanı (EOI)",
+  "portal.stage.invited": "Davet Edildi",
+  "portal.stage.lodged": "Vize Başvurusu Yapıldı",
+  "portal.stage.granted": "Vize Onaylandı",
+  "portal.progress": "İlerleme",
+  "auth.signIn": "Giriş yap",
+  "auth.signUp": "Kayıt ol",
+  "auth.createAccount": "Hesabınızı oluşturun"
 }
