@@ -151,3 +151,57 @@ export async function deleteVisaTracking(id: string): Promise<void> {
   });
   revalidatePath("/dashboard/visa-tracker");
 }
+
+// ─── Visa journey (Timeline/Stepper) ───────────────────────────────────────────
+
+import { isVisaStage, nextVisaStage, progressForStage, VISA_STAGES } from "@/lib/constants/visa-stages";
+
+/** Creates a new journey for the signed-in user, starting at the first stage. */
+export async function startVisaJourney(visaType: string): Promise<{ id: string }> {
+  const userId = await requireUserId();
+  const trimmed = visaType.trim();
+  if (!trimmed) throw new Error("Visa type is required");
+
+  const firstStage = VISA_STAGES[0];
+  const row = await prisma.visaJourney.create({
+    data: {
+      userId,
+      visaType: trimmed,
+      currentStage: firstStage,
+      progressPercentage: progressForStage(firstStage),
+    },
+  });
+  revalidatePath("/dashboard");
+  return { id: row.id };
+}
+
+/**
+ * Advances a journey to the next stage (per lib/constants/visa-stages.ts's
+ * fixed 5-stage order) and recomputes progressPercentage to match. Scoped by
+ * userId in the `where` clause -- updateMany + a 0-row result (rather than
+ * update()'s throw-on-not-found) is how this stays silent-safe against a
+ * stale client trying to advance a journey it no longer owns, matching the
+ * ownership-check pattern already used by updateVisaTracking/
+ * deleteVisaTracking above.
+ */
+export async function updateJourneyStage(journeyId: string): Promise<void> {
+  const userId = await requireUserId();
+
+  const journey = await prisma.visaJourney.findFirst({
+    where: { id: journeyId, userId },
+    select: { currentStage: true },
+  });
+  if (!journey) throw new Error("Journey not found");
+  if (!isVisaStage(journey.currentStage)) {
+    throw new Error(`Unrecognized stage "${journey.currentStage}" -- cannot advance`);
+  }
+
+  const next = nextVisaStage(journey.currentStage);
+  if (!next) return; // already at the last stage -- nothing to advance to
+
+  await prisma.visaJourney.updateMany({
+    where: { id: journeyId, userId },
+    data: { currentStage: next, progressPercentage: progressForStage(next) },
+  });
+  revalidatePath("/dashboard");
+}

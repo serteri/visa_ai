@@ -156,7 +156,7 @@ export default async function DashboardPage({ params }: PageProps) {
         </CardContent>
       </Card>
 
-      <JourneyTimelineCard journeys={journeys} locale={locale} />
+      <JourneyTimelineCard journeys={journeys} />
 
       {(latestCalc || latestQuiz || tracking.length > 0) && (
         <Card>
