@@ -330,27 +330,20 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           ))}
         </div>
 
-        {/* Assessment intake badge */}
-        <div className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-2">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-          </span>
-          <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
-            {isTr ? "Değerlendirme Alımı: Açık (Sınırlı Kapasite)" : isZh ? "评估名额：开放（名额有限）" : "Assessment Intake: Open (Limited Capacity)"}
-          </span>
-        </div>
-
-        {/* Free Beta has ended -- the system is now full-time Premium (paid).
-            Separate badge from the intake badge above: that one signals
-            capacity/availability, this one signals pricing model. */}
-        <div className="mt-3 inline-flex items-center gap-2.5 rounded-full border border-amber-500/20 bg-amber-500/5 px-4 py-2">
+        {/* Upfront pricing badge -- the "Assessment Intake: Open (Limited
+            Capacity)" badge that used to sit above this one was removed: it
+            implied a free, capacity-gated intake, which contradicted this
+            badge's own "Premium" pricing message directly below it and read
+            as a bait-and-switch once a visitor reached the paid checkout.
+            One badge, one unambiguous message: the price, stated before the
+            visitor starts the assessment. */}
+        <div className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-amber-500/20 bg-amber-500/5 px-4 py-2">
           <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
             {isTr
-              ? "Ücretsiz Beta Sona Erdi — Premium Analiz Artık Kullanılabilir"
+              ? "Premium AI Hazırlık Analizi – 49$"
               : isZh
-                ? "免费测试期已结束 — 高级分析现已开放"
-                : "Free Beta Ended — Premium Analysis Available Now"}
+                ? "高级 AI 准备度分析 – $49"
+                : "Premium AI Readiness Analysis – $49"}
           </span>
         </div>
 
