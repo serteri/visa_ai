@@ -377,6 +377,34 @@ model VisaDocument {
   @@map("visa_documents")
 }
 
+// B2C EOI Queue page (app/[locale]/(main)/eoi-queue): per-occupation pool
+// snapshot -- how many EOIs are sitting in the 189/491 pool for that
+// occupation, the last observed 189 cutoff, and a rough wait-time/trend
+// signal. Another purely additive, Prisma-only table -- no Drizzle overlap,
+// so it needs no @@ignore treatment and doesn't touch the existing ignore
+// list above.
+model OccupationStat {
+  id            String   @id @default(cuid())
+  anzscoCode    String   @unique @map("anzsco_code")
+  title         String
+  /**
+   * Broad category for the EOI Queue page's pill filters, e.g. "Healthcare", "Education", "Engineering".
+   */
+  tier          String
+  pool189       Int      @default(0) @map("pool_189")
+  pool190       Int      @default(0) @map("pool_190")
+  cutoff189     Int?     @map("cutoff_189")
+  avgWaitMonths Int?     @map("avg_wait_months")
+  /**
+   * UP | DOWN | FROZEN | STABLE
+   */
+  trend         String   @default("STABLE")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([tier])
+  @@map("occupation_stats")
+}
+
 model PointsAlert {
   id            String    @id @default(uuid())
   email         String
