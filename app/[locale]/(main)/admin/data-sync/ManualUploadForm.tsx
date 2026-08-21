@@ -13,13 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MIGRATION_SOURCES } from "@/lib/constants/migration-sources";
-import { uploadMigrationData } from "@/app/actions/admin/upload-data";
+import { SOURCE_FORMATS } from "@/lib/constants/source-formats";
+import { importMigrationData } from "@/app/actions/admin/import-data";
 
 export function ManualUploadForm() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [sourceId, setSourceId] = useState<string>("");
+  const [sourceFormat, setSourceFormat] = useState<string>("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -27,21 +27,21 @@ export function ManualUploadForm() {
     e.preventDefault();
     const file = fileInputRef.current?.files?.[0];
 
-    if (!sourceId) {
-      toast.error("Select a source before uploading.");
+    if (!sourceFormat) {
+      toast.error("Select a source format before uploading.");
       return;
     }
     if (!file) {
-      toast.error("Choose a .csv, .xls, or .xlsx file to upload.");
+      toast.error("Choose a .csv or .xlsx file to upload.");
       return;
     }
 
     const formData = new FormData();
-    formData.set("sourceId", sourceId);
+    formData.set("sourceFormat", sourceFormat);
     formData.set("file", file);
 
     startTransition(async () => {
-      const result = await uploadMigrationData(formData);
+      const result = await importMigrationData(formData);
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -56,24 +56,24 @@ export function ManualUploadForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Manual Data Upload</CardTitle>
+        <CardTitle className="text-base">Upload Migration Data (Excel/CSV)</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Download the current invitation-round or quota data from the source&apos;s official page below, then
-          upload it here to sync the database. Re-uploading for the same source replaces its previous import.
+          Download the current invitation-round or quota data from a source&apos;s official page below, then upload
+          it here to sync the database. Re-uploading for the same format replaces its previous import.
         </p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-1.5">
-            <label className="text-xs font-medium text-slate-600">Source</label>
-            <Select value={sourceId} onValueChange={setSourceId} disabled={isPending}>
+            <label className="text-xs font-medium text-slate-600">Source Format</label>
+            <Select value={sourceFormat} onValueChange={setSourceFormat} disabled={isPending}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a source..." />
+                <SelectValue placeholder="Select a format..." />
               </SelectTrigger>
               <SelectContent>
-                {MIGRATION_SOURCES.map((source) => (
-                  <SelectItem key={source.id} value={source.id}>
-                    {source.name}
+                {SOURCE_FORMATS.map((format) => (
+                  <SelectItem key={format.id} value={format.id}>
+                    {format.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -81,11 +81,11 @@ export function ManualUploadForm() {
           </div>
 
           <div className="flex-1 space-y-1.5">
-            <label className="text-xs font-medium text-slate-600">File (.csv, .xls, .xlsx)</label>
+            <label className="text-xs font-medium text-slate-600">File (.xlsx, .csv)</label>
             <input
               ref={fileInputRef}
               type="file"
-              accept=".csv,.xls,.xlsx"
+              accept=".xlsx,.csv"
               disabled={isPending}
               onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
               className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
