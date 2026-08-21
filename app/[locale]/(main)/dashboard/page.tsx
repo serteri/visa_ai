@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { isMissingRelationError } from "@/lib/db/missing-relation";
 import { JourneyTimelineCard, type VisaJourneySummary } from "./JourneyTimelineCard";
+import { StageDocumentsCard, type VisaDocumentSummary } from "./StageDocumentsCard";
 import { getTranslations, t } from "@/lib/i18n/get-translations";
 import { isValidLocale } from "@/lib/i18n/config";
 
@@ -56,6 +57,30 @@ export default async function DashboardPage({ params }: PageProps) {
     }
   }
 
+  // VisaDocument (see prisma/schema.prisma) is also brand-new -- same
+  // missing-table fallback as getVisaJourneys above. Fetched by journeyId
+  // IN (...) rather than a join on the user, since VisaDocument has no
+  // direct userId column (it's scoped through VisaJourney).
+  async function getVisaDocuments(journeyIds: string[]): Promise<VisaDocumentSummary[]> {
+    if (journeyIds.length === 0) return [];
+    try {
+      const rows = await prisma.visaDocument.findMany({
+        where: { journeyId: { in: journeyIds } },
+        orderBy: { updatedAt: "desc" },
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        journeyId: row.journeyId,
+        stage: row.stage,
+        documentType: row.documentType,
+        status: row.status,
+      }));
+    } catch (error) {
+      if (isMissingRelationError(error, "visa_documents")) return [];
+      throw error;
+    }
+  }
+
   const [calcs, quizzes, reports, tracking, journeys] = await Promise.all([
     prisma.savedCalculation.findMany({
       where: { userId },
@@ -77,6 +102,8 @@ export default async function DashboardPage({ params }: PageProps) {
     }),
     getVisaJourneys(),
   ]);
+
+  const documents = await getVisaDocuments(journeys.map((journey) => journey.id));
 
   const latestCalc = calcs[0];
   const latestQuiz = quizzes[0];
@@ -157,6 +184,8 @@ export default async function DashboardPage({ params }: PageProps) {
       </Card>
 
       <JourneyTimelineCard journeys={journeys} />
+
+      <StageDocumentsCard journeys={journeys} documents={documents} />
 
       {(latestCalc || latestQuiz || tracking.length > 0) && (
         <Card>

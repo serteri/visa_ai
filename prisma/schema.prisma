@@ -42,55 +42,55 @@ datasource db {
 }
 
 model UserReport {
-  id                    String    @id @default(uuid())
-  fullName              String?   @map("full_name")
+  id                    String        @id @default(uuid())
+  fullName              String?       @map("full_name")
   email                 String
   phone                 String?
-  preferredPath         String?   @map("preferred_path")
-  source                String    @default("full_check")
-  locale                String    @default("en")
-  leadScore             Int?      @map("lead_score")
-  leadTier              String?   @map("lead_tier")
-  paymentStatus         String    @default("pending") @map("payment_status")
-  unlockMethod          String?   @map("unlock_method")
-  isUnlocked            Boolean   @default(false) @map("is_unlocked")
-  pdfSent               Boolean   @default(false) @map("pdf_sent")
-  reportJson            Json      @map("report_json")
-  inputJson             Json      @map("input_json")
+  preferredPath         String?       @map("preferred_path")
+  source                String        @default("full_check")
+  locale                String        @default("en")
+  leadScore             Int?          @map("lead_score")
+  leadTier              String?       @map("lead_tier")
+  paymentStatus         String        @default("pending") @map("payment_status")
+  unlockMethod          String?       @map("unlock_method")
+  isUnlocked            Boolean       @default(false) @map("is_unlocked")
+  pdfSent               Boolean       @default(false) @map("pdf_sent")
+  reportJson            Json          @map("report_json")
+  inputJson             Json          @map("input_json")
   // CRM: the AGENT (User) this lead is routed to. Nullable — unassigned leads
   // sit in the pool until an admin/agent claims them.
-  agentId               String?   @map("agent_id")
-  agent                 User?     @relation("AgentAssignedLeads", fields: [agentId], references: [id], onDelete: SetNull)
-  createdAt             DateTime  @default(now()) @map("created_at")
-  unlockedAt            DateTime? @map("unlocked_at")
-  ipAddress             String?   @map("ip_address")
+  agentId               String?       @map("agent_id")
+  agent                 User?         @relation("AgentAssignedLeads", fields: [agentId], references: [id], onDelete: SetNull)
+  createdAt             DateTime      @default(now()) @map("created_at")
+  unlockedAt            DateTime?     @map("unlocked_at")
+  ipAddress             String?       @map("ip_address")
   // Points-based internal lead tier (Hot/Warm/Cold, from estimatedPoints +
   // occupationEligibility) — distinct from leadScore/leadTier above, which
   // is a separate, unrelated form-completeness/intent scorer. Cold is never
   // persisted as a truthy email-sent flag since no email is sent for Cold.
-  pointsTier            String?   @map("points_tier")
-  internalLeadEmailSent Boolean?  @default(false) @map("internal_lead_email_sent")
+  pointsTier            String?       @map("points_tier")
+  internalLeadEmailSent Boolean?      @default(false) @map("internal_lead_email_sent")
   // Agent CRM workflow: document/skills-assessment review status and free-text
   // internal notes, both editable only by the agent this lead is assigned to
   // (see requireOwnedLead in lib/crm/leads.ts). market scopes which agents can
   // see/claim the lead from the shared pool -- "TR" for Turkish Guide leads
   // (Turkey-market agents only), null/"GLOBAL" for Global Guide + Occupation
   // List leads (any agent).
-  docStatus             String?   @default("New") @map("doc_status")
-  agentNotes            String?   @map("agent_notes")
-  market                String?   @default("GLOBAL")
+  docStatus             String?       @default("New") @map("doc_status")
+  agentNotes            String?       @map("agent_notes")
+  market                String?       @default("GLOBAL")
   // Affiliate/referral auto-assignment: true when this lead was routed
   // directly to `agentId` at creation time because the visitor arrived via
   // that agent's ?ref=<agentId> link (see the ref cookie flow in
   // full-check/actions.ts), instead of landing in the manual pool.
-  assignedViaRef        Boolean?  @default(false) @map("assigned_via_ref")
+  assignedViaRef        Boolean?      @default(false) @map("assigned_via_ref")
   // Free-launch-promo grant: true when this report's premium unlock was
   // given away as one of the first N free spots (see app/api/checkout/
   // route.ts) rather than paid for. Counted against the promo cap via an
   // atomic UPDATE ... WHERE (SELECT COUNT...) < N, so this column also
   // doubles as the concurrency guard -- never set it directly outside that
   // query.
-  isFreePromo           Boolean   @default(false) @map("is_free_promo")
+  isFreePromo           Boolean       @default(false) @map("is_free_promo")
   // Quick Pathway Check snapshot (estimated points + up to 3 candidate
   // pathways) generated the moment the free form completes -- persisted so
   // a returning visitor to result?reportId=... sees the same preview
@@ -98,7 +98,7 @@ model UserReport {
   // Distinct from reportJson (the full premium report, populated at
   // generation time regardless of unlock state) -- this is only the
   // pre-payment teaser subset.
-  previewData           Json?     @map("preview_data")
+  previewData           Json?         @map("preview_data")
   transactions          Transaction[]
 
   // agentId: FK filter for getAgentLeads/getUnassignedLeads (agentId: null),
@@ -325,18 +325,56 @@ model VisaTracking {
 // for the same visaType; they're not meant to be merged into one model,
 // since they serve different UI surfaces with different update cadences.
 model VisaJourney {
-  id                 String   @id @default(cuid())
-  userId             String   @map("user_id")
-  visaType           String   @map("visa_type")
-  /** PREPARATION | SKILLS_ASSESSMENT | EOI | INVITED | LODGED | GRANTED */
-  currentStage       String   @default("PREPARATION") @map("current_stage")
-  progressPercentage Int      @default(0) @map("progress_percentage")
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                 String         @id @default(cuid())
+  userId             String         @map("user_id")
+  visaType           String         @map("visa_type")
+  /**
+   * See lib/constants/visa-stages.ts VISA_STAGES -- PREPARATION | ENGLISH_TEST | SKILLS_ASSESSMENT | EOI_NOMINATION | VISA_LODGE.
+   */
+  currentStage       String         @default("PREPARATION") @map("current_stage")
+  progressPercentage Int            @default(0) @map("progress_percentage")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents          VisaDocument[]
 
   @@index([userId])
   @@map("visa_journeys")
+}
+
+// Document Vault: per-stage evidence uploads for a VisaJourney. UI-only
+// skeleton for now (see app/[locale]/(main)/dashboard/StageDocumentsCard.tsx)
+// -- no S3/OpenAI wiring yet, so fileUrl/aiFeedback are simply unpopulated
+// until that follow-up work lands. `stage` is denormalized onto the
+// document (not just derived from the journey's currentStage at query time)
+// because a document uploaded during ENGLISH_TEST should stay tagged
+// ENGLISH_TEST even after the journey advances past it.
+model VisaDocument {
+  id           String      @id @default(cuid())
+  journeyId    String      @map("journey_id")
+  /**
+   * See lib/constants/visa-stages.ts VISA_STAGES.
+   */
+  stage        String
+  /**
+   * See lib/constants/visa-documents.ts VisaDocumentType -- PASSPORT | ENGLISH_TEST_RESULT | SKILLS_ASSESSMENT | ...
+   */
+  documentType String      @map("document_type")
+  fileUrl      String?     @map("file_url")
+  /**
+   * PENDING | AI_VERIFIED | REJECTED | MANUAL_REVIEW
+   */
+  status       String      @default("PENDING")
+  /**
+   * Free-text notes from an automated (OpenAI) review pass -- not wired up yet.
+   */
+  aiFeedback   String?     @map("ai_feedback") @db.Text
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  journey      VisaJourney @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId])
+  @@map("visa_documents")
 }
 
 model PointsAlert {
@@ -399,14 +437,14 @@ model CaEoiRound {
 // ── DHA Invitation Rounds & Predictive Analytics ──────────────────────────────
 
 model InvitationRound {
-  id            String        @id @default(cuid())
-  date          DateTime
-  visaSubclass  String        // e.g. "189", "491"
-  totalInvited  Int
-  tieBreakDate  DateTime?     // Latest date of subclass scored at the minimum score
-  notes         String?
-  createdAt     DateTime      @default(now()) @map("created_at")
-  cutoffs       RoundCutoff[]
+  id           String        @id @default(cuid())
+  date         DateTime
+  visaSubclass String // e.g. "189", "491"
+  totalInvited Int
+  tieBreakDate DateTime? // Latest date of subclass scored at the minimum score
+  notes        String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  cutoffs      RoundCutoff[]
 
   @@unique([date, visaSubclass])
   @@index([visaSubclass, date])
@@ -414,25 +452,25 @@ model InvitationRound {
 }
 
 model Occupation {
-  id            String        @id @default(cuid())
-  anzscoCode    String        @unique @map("anzsco_code")
-  title         String
-  createdAt     DateTime      @default(now()) @map("created_at")
-  cutoffs       RoundCutoff[]
+  id         String        @id @default(cuid())
+  anzscoCode String        @unique @map("anzsco_code")
+  title      String
+  createdAt  DateTime      @default(now()) @map("created_at")
+  cutoffs    RoundCutoff[]
 
   @@index([title])
   @@map("occupations")
 }
 
 model RoundCutoff {
-  id            String          @id @default(cuid())
-  roundId       String          @map("round_id")
-  occupationId  String          @map("occupation_id")
-  minimumScore  Int             @map("minimum_score")
-  createdAt     DateTime        @default(now()) @map("created_at")
+  id           String   @id @default(cuid())
+  roundId      String   @map("round_id")
+  occupationId String   @map("occupation_id")
+  minimumScore Int      @map("minimum_score")
+  createdAt    DateTime @default(now()) @map("created_at")
 
-  round         InvitationRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-  occupation    Occupation      @relation(fields: [occupationId], references: [id], onDelete: Cascade)
+  round      InvitationRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  occupation Occupation      @relation(fields: [occupationId], references: [id], onDelete: Cascade)
 
   @@unique([roundId, occupationId])
   @@index([occupationId, roundId])
@@ -440,13 +478,13 @@ model RoundCutoff {
 }
 
 model StateAllocation {
-  id              String    @id @default(cuid())
-  programYear     String    @map("program_year")  // e.g. "2025-26"
-  state           String    // e.g. "NSW", "VIC"
-  visaSubclass    String    @map("visa_subclass") // "190" or "491"
-  allocation      Int       // Total allocation for the year
-  nominationsUsed Int?      @map("nominations_used") // EOIs already nominated
-  createdAt       DateTime  @default(now()) @map("created_at")
+  id              String   @id @default(cuid())
+  programYear     String   @map("program_year") // e.g. "2025-26"
+  state           String // e.g. "NSW", "VIC"
+  visaSubclass    String   @map("visa_subclass") // "190" or "491"
+  allocation      Int // Total allocation for the year
+  nominationsUsed Int?     @map("nominations_used") // EOIs already nominated
+  createdAt       DateTime @default(now()) @map("created_at")
 
   @@unique([programYear, state, visaSubclass])
   @@index([programYear, state])
@@ -494,7 +532,9 @@ model StateNominationConfig {
   id             String   @id @default(cuid())
   stateCode      String   @unique @map("state_code")
   status         String
-  /** e.g. ["190", "491"] -- which visa subclasses this state currently sponsors. */
+  /**
+   * e.g. ["190", "491"] -- which visa subclasses this state currently sponsors.
+   */
   supportedVisas String[] @map("supported_visas")
   feeAud         Float?   @map("fee_aud")
   customAiNote   String?  @map("custom_ai_note") @db.Text
@@ -520,9 +560,13 @@ model StateOccupationListEntry {
   stateCode       String   @map("state_code")
   anzscoCode      String?  @map("anzsco_code")
   occupationTitle String   @map("occupation_title")
-  /** e.g. ["190", "491"] -- which visa subclass list(s) this occupation appears on on this sheet/row. */
+  /**
+   * e.g. ["190", "491"] -- which visa subclass list(s) this occupation appears on on this sheet/row.
+   */
   visaSubclasses  String[] @map("visa_subclasses")
-  /** Raw extra columns from the source row (Status, Minimum Points, Stream, Priority Occupation, etc.) -- varies per state/file, so kept as JSON rather than one column per possible field. */
+  /**
+   * Raw extra columns from the source row (Status, Minimum Points, Stream, Priority Occupation, etc.) -- varies per state/file, so kept as JSON rather than one column per possible field.
+   */
   metadata        Json?
   sourceFile      String   @map("source_file")
   syncedAt        DateTime @default(now()) @map("synced_at")
@@ -535,23 +579,23 @@ model StateOccupationListEntry {
 // ── AI Chatbot: anonymous visitor tracking + chat history ──────────────────
 
 model ChatVisitor {
-  id            String        @id @default(uuid())
-  ipAddress     String?       @map("ip_address")
-  userAgent     String?       @map("user_agent")
+  id             String        @id @default(uuid())
+  ipAddress      String?       @map("ip_address")
+  userAgent      String?       @map("user_agent")
   // Optional client-side hash (e.g. canvas/audio fingerprint) for de-duping
   // visitors whose IP changes (mobile networks, VPNs) — not required for
   // the basic IP+UA lookup in getVisitorContext().
-  fingerprint   String?
-  messageCount  Int           @default(0) @map("message_count")
-  isPremium     Boolean       @default(false) @map("is_premium")
+  fingerprint    String?
+  messageCount   Int           @default(0) @map("message_count")
+  isPremium      Boolean       @default(false) @map("is_premium")
   // Pay-as-you-go credit balance from one-time Stripe purchases (see
   // app/[locale]/pricing). Decremented per premium message once the free
   // messageCount limit is hit; isPremium above stays reserved for a
   // separate unlimited/subscription grant.
-  premiumCredits Int          @default(0) @map("premium_credits")
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
-  sessions      ChatSession[]
+  premiumCredits Int           @default(0) @map("premium_credits")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  sessions       ChatSession[]
 
   // Looked up by ipAddress+userAgent on every anonymous chat request in
   // getVisitorContext(); fingerprint indexed separately for the optional
@@ -593,11 +637,11 @@ model ChatMessage {
 // native vector type -- reads/writes to that column go through $queryRaw /
 // $executeRaw (see lib/pdf-processor.ts).
 model DocumentChunk {
-  id        String                @id @default(cuid())
-  content   String                @db.Text
+  id        String                       @id @default(cuid())
+  content   String                       @db.Text
   metadata  Json // source PDF filename, page number, etc.
   embedding Unsupported("vector(1536)")? // text-embedding-3-small dimension
-  createdAt DateTime              @default(now()) @map("created_at")
+  createdAt DateTime                     @default(now()) @map("created_at")
 
   @@map("document_chunks")
 }
@@ -676,8 +720,8 @@ model visa_types {
 }
 
 model visa_structured_data {
-  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  visa_type_id           String   @db.Uuid
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  visa_type_id           String    @db.Uuid
   key_requirements       Json?
   documents_required     Json?
   application_steps      Json?
