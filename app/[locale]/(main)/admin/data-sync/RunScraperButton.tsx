@@ -40,7 +40,7 @@ export function RunScraperButton({ sourceId }: { sourceId: string }) {
       className="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
     >
       {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-      {isPending ? "Scraping..." : "Run Scraper"}
+      {isPending ? "Syncing..." : "Run Script & Sync"}
     </button>
   );
 }

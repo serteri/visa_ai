@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 
 import { prisma } from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getScraperSource } from "@/lib/constants/scraper-sources";
+import { getMigrationSource } from "@/lib/constants/migration-sources";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,9 +44,15 @@ export async function POST(request: NextRequest) {
   }
 
   const sourceId = (body as { sourceId?: unknown })?.sourceId;
-  const source = typeof sourceId === "string" ? getScraperSource(sourceId) : undefined;
+  const source = typeof sourceId === "string" ? getMigrationSource(sourceId) : undefined;
   if (!source) {
     return Response.json({ ok: false, error: "Unknown sourceId" }, { status: 400 });
+  }
+  if (!source.hasAutoScript) {
+    return Response.json(
+      { ok: false, error: "This source has no automated script -- use the official page link instead." },
+      { status: 400 }
+    );
   }
 
   // Draft fetch+cheerio pass -- best-effort only, not real data extraction
@@ -72,7 +78,7 @@ export async function POST(request: NextRequest) {
   await sleep(2000);
 
   const now = new Date();
-  const mockOccupation = `${source.label} (Mock Sample)`;
+  const mockOccupation = `${source.name} (Mock Sample)`;
   const mockPoints = 70 + Math.floor(Math.random() * 21); // 70-90, a plausible cutoff range
 
   try {
@@ -85,7 +91,7 @@ export async function POST(request: NextRequest) {
       data: {
         occupation: mockOccupation,
         subclass: "189",
-        state: source.label,
+        state: source.name,
         location: "Offshore",
         points: mockPoints,
         dateOfEffect: now,
