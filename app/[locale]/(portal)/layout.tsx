@@ -37,6 +37,26 @@ export default async function PortalLayout({
 
           {user ? (
             <div className="flex items-center gap-3">
+              {user.role === "ADMIN" && (
+                <nav aria-label="Admin areas" className="hidden items-center gap-1 md:flex">
+                  <Link
+                    href={`/${locale}/admin/crm/dashboard`}
+                    className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                  >
+                    CRM &amp; Agents
+                  </Link>
+                  {/* Bridges this NextAuth ADMIN session into the legacy
+                      password-cookie admin session (lib/admin-auth.ts) so
+                      this lands on Data Sync directly instead of a password
+                      prompt -- see app/api/admin/bridge-legacy-session/route.ts. */}
+                  <Link
+                    href={`/api/admin/bridge-legacy-session?locale=${locale}`}
+                    className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                  >
+                    Data Sync &amp; Sources
+                  </Link>
+                </nav>
+              )}
               <div className="hidden text-right sm:block">
                 <p className="text-sm font-medium leading-tight">{user.name ?? user.email}</p>
                 <p className="text-xs uppercase tracking-wide text-slate-500">{user.role}</p>

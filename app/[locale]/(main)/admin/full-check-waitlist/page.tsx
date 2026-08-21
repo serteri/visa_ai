@@ -1,16 +1,27 @@
 import { desc } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 import { db } from "@/db";
 import { fullCheckWaitlist } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isMissingRelationError } from "@/lib/db/missing-relation";
 
+// full_check_waitlist is declared in db/schema.ts but may not exist in the
+// live database yet (see CLAUDE.md) -- degrade to an empty list instead of
+// 500ing, same pattern used by the other legacy admin pages in this app.
 async function getWaitlistLeads() {
-  return db
-    .select()
-    .from(fullCheckWaitlist)
-    .orderBy(desc(fullCheckWaitlist.created_at));
+  try {
+    return await db
+      .select()
+      .from(fullCheckWaitlist)
+      .orderBy(desc(fullCheckWaitlist.created_at));
+  } catch (error) {
+    if (isMissingRelationError(error, "full_check_waitlist")) return [];
+    throw error;
+  }
 }
 
 const KNOWN_SOURCES = new Set(["homepage", "results", "readiness-preview", "full_check"]);
@@ -36,6 +47,14 @@ export default async function FullCheckWaitlistAdminPage({
   params,
 }: FullCheckWaitlistAdminPageProps) {
   const { locale } = await params;
+
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) {
+    redirect(
+      `/${locale}/admin/leads/access?callbackUrl=${encodeURIComponent(`/${locale}/admin/full-check-waitlist`)}`
+    );
+  }
+
   const records = await getWaitlistLeads();
 
   return (

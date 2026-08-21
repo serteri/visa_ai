@@ -18,6 +18,14 @@ const ADMIN_LINKS = [
   { href: "data-sync", label: "Data Sync" },
 ];
 
+// Role-based CRM portal (app/[locale]/(portal)/admin/crm/*) -- a separate
+// admin surface with its own NextAuth-role auth, not part of this
+// password-cookie-gated ADMIN_LINKS list above. Rendered as its own link
+// below so an admin can cross over without hunting for the URL; see
+// app/api/admin/bridge-legacy-session/route.ts for the matching link back
+// the other way (CRM dashboard -> here).
+const CRM_HREF = "admin/crm/dashboard";
+
 export function AdminNav({ locale }: { locale: string }) {
   const pathname = usePathname();
 
@@ -47,6 +55,15 @@ export function AdminNav({ locale }: { locale: string }) {
           </Link>
           );
         })}
+
+        <span className="mx-1 hidden w-px self-stretch bg-border sm:block" aria-hidden="true" />
+
+        <Link
+          href={`/${locale}/${CRM_HREF}`}
+          className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+        >
+          CRM &amp; Agents
+        </Link>
       </div>
 
       <form action={logoutAdminAction}>

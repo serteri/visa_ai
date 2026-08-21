@@ -1,6 +1,9 @@
+import { redirect } from "next/navigation";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 type VisaRow = {
   id: string;
@@ -150,6 +153,12 @@ type AdminVisasPageProps = {
 
 export default async function AdminVisasPage({ params }: AdminVisasPageProps) {
   const { locale } = await params;
+
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) {
+    redirect(`/${locale}/admin/leads/access?callbackUrl=${encodeURIComponent(`/${locale}/admin/visas`)}`);
+  }
+
   const visas = await getVisas();
 
   return (
