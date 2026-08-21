@@ -472,6 +472,28 @@ model InvitationFeedItem {
   @@map("invitation_feed_items")
 }
 
+// Admin Data Sync panel (app/[locale]/(main)/admin/data-sync): one row per
+// scraper source (see lib/constants/scraper-sources.ts's SCRAPER_SOURCES
+// ids), tracking when it last ran and whether it succeeded -- backs each
+// source card's "Last Sync" display. Written by app/api/admin/scrape/
+// route.ts after every run (success or failure), not by the scrapers
+// themselves (there are no real scrapers yet, per this task's explicit
+// scope -- just the admin-triggered mock flow).
+model ScraperSyncLog {
+  id        String   @id @default(cuid())
+  sourceId  String   @unique @map("source_id")
+  lastRunAt DateTime @map("last_run_at")
+  /**
+   * "success" | "failed"
+   */
+  status    String
+  message   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("scraper_sync_logs")
+}
+
 model ExpressEntryDraw {
   id                String    @id @default(uuid())
   drawDate          DateTime  @map("draw_date")
