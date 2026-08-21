@@ -68,43 +68,100 @@ type ParsedRow = {
 
 const ONSHORE_LOCATIONS = new Set(["onshore", "on-shore", "on shore", "wa", "western australia"]);
 
+const WA_VALID_SUBCLASSES = new Set(["190", "491"]);
+
+/** True for a blank/placeholder points cell ("-", "", "N/A", etc.) that marks an empty slot in a WA sub-table row, not a real score. */
+function isBlankCell(value: unknown): boolean {
+  const text = String(value ?? "").trim();
+  return text === "" || text === "-" || /^n\/?a$/i.test(text);
+}
+
 /**
- * "WA - Invitation Rounds" format: exact WA government export columns --
- * Occupation, State of residence, EOI Points Score, EOI Submission Date.
- * "State of residence" describes where the APPLICANT currently lives, not
- * the nominating state (that's always Western Australia for this format,
- * from SourceFormat.state) -- mapped onto InvitationFeedItem.location
- * instead: a resident of WA is "Onshore" for a WA nomination, anyone else
- * is "Offshore". There's no separate "date of effect" column in this
- * format, so EOI Submission Date fills both roundDate and dateOfEffect.
+ * "WA - Invitation Rounds" format: the real WA government export is NOT a
+ * flat table -- it's a sequence of sub-tables, each preceded by a section
+ * heading row (e.g. "Trade occupations in priority WA industry sectors
+ * ('Stream 1')...") that applies to every data row until the next heading.
+ * There is no fixed header row to key off of, so this reads the whole
+ * sheet as raw rows (sheet_to_json(ws, { header: 1 })) and walks it as a
+ * small state machine:
+ *   - A row whose first cell mentions "occupations in priority" or
+ *     "STREAM" is a section heading -- captured into currentOccupation and
+ *     applied to every subsequent data row (not itself a data row).
+ *   - A row is a data row once a subclass (190/491) is found in cell
+ *     index 1 or 2, AND a numeric EOI points score is found in index 3 or
+ *     4 -- both must be present, so heading rows and blank/"-" placeholder
+ *     rows are naturally skipped rather than needing a separate filter.
+ *   - "State of residence" and the submission date aren't at fixed
+ *     indices either (they trail the points column in the real sheet, but
+ *     shift depending on which of the two subclass/points slots was used),
+ *     so both are found by scanning the remaining cells in the row: the
+ *     first WA/"Western Australia" mention (or "-") for residence, the
+ *     first parseable date for the submission date.
  */
-function parseWaInvitationRounds(headers: string[], dataRows: unknown[][], format: SourceFormat): ParsedRow[] {
-  const occupationIdx = findColumnIndex(headers, /^occupation$/i);
-  const residenceIdx = findColumnIndex(headers, /state of residence/i);
-  const pointsIdx = findColumnIndex(headers, /eoi points score|points score/i);
-  const submissionDateIdx = findColumnIndex(headers, /eoi submission date|submission date/i);
-
-  if (occupationIdx === -1 || pointsIdx === -1) return [];
-
+function parseWaInvitationRounds(sheetRows: unknown[][], format: SourceFormat): ParsedRow[] {
   const rows: ParsedRow[] = [];
-  for (const row of dataRows) {
-    const occupation = String(row[occupationIdx] ?? "").trim();
-    const points = parsePoints(row[pointsIdx]);
-    if (!occupation || points === null) continue;
+  let currentOccupation = "General WA Occupations";
 
-    const submissionDate = (submissionDateIdx !== -1 ? parseDate(row[submissionDateIdx]) : null) ?? new Date();
-    const residence = residenceIdx !== -1 ? String(row[residenceIdx] ?? "").trim().toLowerCase() : "";
+  for (const row of sheetRows) {
+    const firstCell = String(row[0] ?? "").trim();
+
+    if (/occupations in priority|stream/i.test(firstCell)) {
+      currentOccupation = firstCell;
+      continue;
+    }
+
+    // Subclass: cell index 1 or 2, must be exactly 190 or 491.
+    let subclass: string | null = null;
+    for (const idx of [1, 2]) {
+      const candidate = String(row[idx] ?? "").trim();
+      if (WA_VALID_SUBCLASSES.has(candidate)) {
+        subclass = candidate;
+        break;
+      }
+    }
+    if (!subclass) continue;
+
+    // EOI points: cell index 3 or 4, must be a real number -- an empty
+    // slot in the sub-table ("-", blank) means this row has no data for
+    // this stream and is skipped, per this task's explicit instruction.
+    let points: number | null = null;
+    for (const idx of [3, 4]) {
+      if (isBlankCell(row[idx])) continue;
+      const parsed = parsePoints(row[idx]);
+      if (parsed !== null) {
+        points = parsed;
+        break;
+      }
+    }
+    if (points === null) continue;
+
+    // State of residence and submission date: scan the remaining cells
+    // (no fixed index -- see function doc comment above).
+    let residenceText = "";
+    let roundDate: Date | null = null;
+    for (const cell of row.slice(5)) {
+      const text = String(cell ?? "").trim();
+      if (!residenceText && (ONSHORE_LOCATIONS.has(text.toLowerCase()) || text === "-")) {
+        residenceText = text;
+      }
+      if (!roundDate) {
+        const parsed = parseDate(cell);
+        if (parsed) roundDate = parsed;
+      }
+    }
+    const effectiveRoundDate = roundDate ?? new Date();
 
     rows.push({
-      occupation,
-      subclass: format.defaultSubclass,
+      occupation: currentOccupation,
+      subclass,
       state: format.state,
-      location: ONSHORE_LOCATIONS.has(residence) ? "Onshore" : "Offshore",
+      location: ONSHORE_LOCATIONS.has(residenceText.toLowerCase()) ? "Onshore" : "Offshore",
       points,
-      dateOfEffect: submissionDate,
-      roundDate: submissionDate,
+      dateOfEffect: effectiveRoundDate,
+      roundDate: effectiveRoundDate,
     });
   }
+
   return rows;
 }
 
@@ -162,14 +219,18 @@ function parseRows(workbook: XLSX.WorkBook, format: SourceFormat): ParsedRow[] {
     });
     if (sheetRows.length < 2) continue;
 
+    if (format.id === "wa-invitation-rounds") {
+      // No fixed header row to key off of -- see parseWaInvitationRounds's
+      // doc comment. It walks every raw row itself, section headings
+      // included, rather than skipping a "first row" that doesn't exist
+      // as a real header in this format.
+      rows.push(...parseWaInvitationRounds(sheetRows as unknown[][], format));
+      continue;
+    }
+
     const headers = (sheetRows[0] as unknown[]).map((h) => String(h ?? "").trim());
     const dataRows = sheetRows.slice(1);
-
-    rows.push(
-      ...(format.id === "wa-invitation-rounds"
-        ? parseWaInvitationRounds(headers, dataRows, format)
-        : parseGenericFormat(headers, dataRows, format))
-    );
+    rows.push(...parseGenericFormat(headers, dataRows, format));
   }
 
   return rows;
