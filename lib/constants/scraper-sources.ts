@@ -1,9 +1,13 @@
 /**
- * Data sources for the Admin Data Sync panel (app/[locale]/(main)/admin/
- * data-sync). URLs match the ones already used by the fortnightly
- * state-migration sync skeleton (app/api/cron/sync-states/route.ts) where
- * that source overlaps, so this isn't a second, drifting list of the same
- * government pages.
+ * FEDERAL data sources for the Admin Data Sync panel (app/[locale]/(main)/
+ * admin/data-sync) -- the "Run Scraper" mock-flow cards at the top of the
+ * page. State/territory sources moved to lib/constants/state-migration-
+ * portals.ts's STATE_MIGRATION_PORTALS: those are plain "open the official
+ * site" links (no scrape/upsert flow), a different card style entirely, so
+ * they don't belong in this scraper-source list. This file previously also
+ * held 5 states with URLs that didn't match the official links now
+ * specified for all 8 -- consolidating on state-migration-portals.ts as the
+ * one source of truth avoids two drifting per-state URL lists.
  */
 export type ScraperSource = {
   id: string;
@@ -24,36 +28,6 @@ export const SCRAPER_SOURCES: ScraperSource[] = [
     label: "EOI Dashboard",
     description: "SkillSelect Expression of Interest overview.",
     url: "https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect",
-  },
-  {
-    id: "wa-rounds",
-    label: "WA Rounds",
-    description: "Western Australia skilled migration nomination updates.",
-    url: "https://www.migration.wa.gov.au/",
-  },
-  {
-    id: "nsw-rounds",
-    label: "NSW Rounds",
-    description: "New South Wales skilled visa nomination updates.",
-    url: "https://www.nsw.gov.au/migration/skilled-visa-nomination",
-  },
-  {
-    id: "vic-rounds",
-    label: "VIC Rounds",
-    description: "Victoria skilled and business visa nomination updates.",
-    url: "https://www.vic.gov.au/live-victoria-skilled-and-business-visas",
-  },
-  {
-    id: "sa-rounds",
-    label: "SA Rounds",
-    description: "South Australia skilled migration nomination updates.",
-    url: "https://migration.sa.gov.au/",
-  },
-  {
-    id: "qld-rounds",
-    label: "QLD Rounds",
-    description: "Queensland skilled migration nomination updates.",
-    url: "https://migration.qld.gov.au/",
   },
 ];
 

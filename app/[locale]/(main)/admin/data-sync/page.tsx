@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { ExternalLink, Clock } from "lucide-react";
+import { ExternalLink, Clock, MapPin } from "lucide-react";
 
 import { AdminNav } from "@/app/[locale]/(main)/admin/admin-nav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { isMissingRelationError } from "@/lib/db/missing-relation";
 import { SCRAPER_SOURCES } from "@/lib/constants/scraper-sources";
+import { STATE_MIGRATION_PORTALS } from "@/lib/constants/state-migration-portals";
 import { RunScraperButton } from "./RunScraperButton";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -112,6 +113,47 @@ export default async function DataSyncPage({ params }: PageProps) {
               </Card>
             );
           })}
+        </div>
+
+        <div className="space-y-3 pt-4">
+          <h2 className="text-lg font-semibold text-slate-900">State &amp; Territory Migration Portals</h2>
+          <p className="text-sm text-muted-foreground">
+            No scraper or database write behind these -- official state/territory sites for manual review.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {STATE_MIGRATION_PORTALS.map((portal) => (
+            <Card key={portal.code}>
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 shrink-0 text-slate-400" />
+                  <CardTitle className="text-sm">
+                    {portal.code} <span className="font-normal text-muted-foreground">— {portal.name}</span>
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <a
+                  href={portal.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 break-all text-xs text-indigo-600 hover:underline"
+                >
+                  <ExternalLink className="h-3 w-3 shrink-0" />
+                  {portal.url}
+                </a>
+                <a
+                  href={portal.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-indigo-300 hover:text-indigo-700"
+                >
+                  Check Manual Updates
+                </a>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
     </main>
