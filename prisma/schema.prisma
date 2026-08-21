@@ -434,6 +434,44 @@ model EoiRound {
   @@map("eoi_rounds")
 }
 
+// B2C "Invitation Rounds" feed (app/[locale]/(main)/rounds): individual
+// per-occupation invitation records. NAMED InvitationFeedItem, NOT
+// InvitationRound as originally requested, because a model named
+// InvitationRound (mapped to the same "invitation_rounds" table) already
+// exists below, under "DHA Invitation Rounds & Predictive Analytics" --
+// it's a real, currently-used feature (prisma.roundCutoff is queried live
+// by app/api/viability/route.ts and lib/services/report-service.ts via its
+// InvitationRound -> RoundCutoff -> Occupation relations), not a stub.
+// Reusing that name would have either collided (Prisma refuses two models
+// with the same name) or silently repurposed a live table -- both wrong.
+// This is a distinct, coarser-grained shape (one flat row per invited
+// occupation/state/points, no normalized Occupation join) for this new
+// feed UI specifically; it does not replace or relate to the existing
+// InvitationRound/RoundCutoff/Occupation trio.
+model InvitationFeedItem {
+  id           String   @id @default(cuid())
+  occupation   String
+  /**
+   * e.g. "189", "190", "491".
+   */
+  subclass     String
+  /**
+   * e.g. "Federal", "NSW", "VIC".
+   */
+  state        String
+  /**
+   * "Onshore" | "Offshore".
+   */
+  location     String
+  points       Int
+  dateOfEffect DateTime @map("date_of_effect")
+  roundDate    DateTime @map("round_date")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([roundDate])
+  @@map("invitation_feed_items")
+}
+
 model ExpressEntryDraw {
   id                String    @id @default(uuid())
   drawDate          DateTime  @map("draw_date")

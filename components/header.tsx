@@ -133,6 +133,12 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
                   <BetaPill />
                 </span>
               </DropdownLink>
+              <DropdownLink href={`/${locale}/rounds`}>
+                <span className="inline-flex items-center">
+                  {t("nav.invitationRounds", "Invitation Rounds")}
+                  <BetaPill />
+                </span>
+              </DropdownLink>
               <DropdownLink href={`/${locale}/ai-visa-match`}>AI Visa Match ⚡</DropdownLink>
               <DropdownLink href={`/${locale}/ai-assistant`}>AI Assistant ✨</DropdownLink>
             </DropdownMenu>
@@ -190,6 +196,10 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <Link href={`/${locale}/tools/skills-assessment`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</Link>
               <Link href={`/${locale}/eoi-queue`} onClick={() => setMobileOpen(false)} className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {t("nav.eoiQueue", "EOI Queue")}
+                <BetaPill />
+              </Link>
+              <Link href={`/${locale}/rounds`} onClick={() => setMobileOpen(false)} className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
+                {t("nav.invitationRounds", "Invitation Rounds")}
                 <BetaPill />
               </Link>
               <Link href={`/${locale}/ai-visa-match`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--cf-accent)]">AI Visa Match ⚡</Link>

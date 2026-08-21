@@ -822,5 +822,15 @@
   "eoiQueue.trend.down": "下降",
   "eoiQueue.trend.stable": "稳定",
   "eoiQueue.trend.frozen": "已冻结",
-  "eoiQueue.noResults": "该类别下未找到职业。"
+  "eoiQueue.noResults": "该类别下未找到职业。",
+  "eoiQueue.noDataYet": "暂无数据。",
+  "nav.invitationRounds": "邀请轮次",
+  "rounds.title": "邀请轮次",
+  "rounds.subtitle": "最新的技术移民邀请轮次，按最新到最旧排列。",
+  "rounds.empty": "未找到近期轮次。",
+  "rounds.pointsLabel": "分数",
+  "rounds.roundDateLabel": "轮次日期",
+  "rounds.dateOfEffectLabel": "生效日期",
+  "rounds.onshore": "境内",
+  "rounds.offshore": "境外"
 }

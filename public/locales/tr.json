@@ -829,5 +829,15 @@
   "eoiQueue.trend.down": "Düşüyor",
   "eoiQueue.trend.stable": "Sabit",
   "eoiQueue.trend.frozen": "Dondurulmuş",
-  "eoiQueue.noResults": "Bu kategoride meslek bulunamadı."
+  "eoiQueue.noResults": "Bu kategoride meslek bulunamadı.",
+  "eoiQueue.noDataYet": "Henüz veri girilmedi.",
+  "nav.invitationRounds": "Davet Turları",
+  "rounds.title": "Davet Turları",
+  "rounds.subtitle": "En güncel nitelikli göç davet turları, en yeniden en eskiye.",
+  "rounds.empty": "Yakın zamanda tur bulunamadı.",
+  "rounds.pointsLabel": "Puan",
+  "rounds.roundDateLabel": "Tur Tarihi",
+  "rounds.dateOfEffectLabel": "Yürürlük Tarihi",
+  "rounds.onshore": "Avustralya İçi",
+  "rounds.offshore": "Avustralya Dışı"
 }

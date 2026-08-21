@@ -822,5 +822,15 @@
   "eoiQueue.trend.down": "Falling",
   "eoiQueue.trend.stable": "Stable",
   "eoiQueue.trend.frozen": "Frozen",
-  "eoiQueue.noResults": "No occupations found in this category."
+  "eoiQueue.noResults": "No occupations found in this category.",
+  "eoiQueue.noDataYet": "No data available yet.",
+  "nav.invitationRounds": "Invitation Rounds",
+  "rounds.title": "Invitation Rounds",
+  "rounds.subtitle": "The latest skilled migration invitation rounds, most recent first.",
+  "rounds.empty": "No recent rounds found.",
+  "rounds.pointsLabel": "Points",
+  "rounds.roundDateLabel": "Round Date",
+  "rounds.dateOfEffectLabel": "Date of Effect",
+  "rounds.onshore": "Onshore",
+  "rounds.offshore": "Offshore"
 }
