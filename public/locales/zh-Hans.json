@@ -832,5 +832,12 @@
   "rounds.roundDateLabel": "轮次日期",
   "rounds.dateOfEffectLabel": "生效日期",
   "rounds.onshore": "境内",
-  "rounds.offshore": "境外"
+  "rounds.offshore": "境外",
+  "rounds.cutoffLabel": "分数线",
+  "rounds.volumeTitle": "州邀请数量（2025-26 项目年度）",
+  "rounds.volumeSubtitle": "按渠道和签证类别统计的每月发出邀请数。",
+  "rounds.table.stream": "渠道",
+  "rounds.table.subclass": "签证类别",
+  "rounds.table.month": "月份",
+  "rounds.table.invitationsIssued": "已发出邀请数"
 }

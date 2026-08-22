@@ -839,5 +839,12 @@
   "rounds.roundDateLabel": "Tur Tarihi",
   "rounds.dateOfEffectLabel": "Yürürlük Tarihi",
   "rounds.onshore": "Avustralya İçi",
-  "rounds.offshore": "Avustralya Dışı"
+  "rounds.offshore": "Avustralya Dışı",
+  "rounds.cutoffLabel": "Kesim Puanı",
+  "rounds.volumeTitle": "Eyalet Davet Hacimleri (2025-26 Program Yılı)",
+  "rounds.volumeSubtitle": "Akış (stream) ve vize alt sınıfına göre aylık verilen davetler.",
+  "rounds.table.stream": "Akış",
+  "rounds.table.subclass": "Vize Alt Sınıfı",
+  "rounds.table.month": "Ay",
+  "rounds.table.invitationsIssued": "Verilen Davetler"
 }

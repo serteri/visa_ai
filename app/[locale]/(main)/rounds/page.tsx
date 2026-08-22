@@ -15,7 +15,14 @@ type FeedRound = {
   location: string;
   points: number;
   dateOfEffect: string;
-  roundDate: string;
+};
+
+type VolumeRow = {
+  id: string;
+  stream: string;
+  subclass: string;
+  month: string;
+  count: number;
 };
 
 // InvitationFeedItem (see prisma/schema.prisma) has no admin-write path yet
@@ -33,10 +40,27 @@ async function getInvitationFeed(): Promise<FeedRound[]> {
       location: row.location,
       points: row.points,
       dateOfEffect: row.dateOfEffect.toISOString(),
-      roundDate: row.roundDate.toISOString(),
     }));
   } catch (error) {
     if (isMissingRelationError(error, "invitation_feed_items")) return [];
+    throw error;
+  }
+}
+
+// InvitationVolume (see prisma/schema.prisma) is newer still than
+// InvitationFeedItem -- same missing-table fallback.
+async function getInvitationVolumes(): Promise<VolumeRow[]> {
+  try {
+    const rows = await prisma.invitationVolume.findMany({ orderBy: [{ stream: "asc" }, { month: "asc" }] });
+    return rows.map((row) => ({
+      id: row.id,
+      stream: row.stream,
+      subclass: row.subclass,
+      month: row.month,
+      count: row.count,
+    }));
+  } catch (error) {
+    if (isMissingRelationError(error, "invitation_volumes")) return [];
     throw error;
   }
 }
@@ -47,14 +71,20 @@ function locationBadgeClass(location: string): string {
     : "border-sky-200 bg-sky-50 text-sky-700";
 }
 
+/** DD/MM/YYYY, per this task's explicit example format ("16/05/2026") -- not locale-dependent Intl formatting. */
+function formatDateOfEffect(iso: string): string {
+  const date = new Date(iso);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  return `${day}/${month}/${date.getUTCFullYear()}`;
+}
+
 type PageProps = { params: Promise<{ locale: string }> };
 
 export default async function InvitationRoundsPage({ params }: PageProps) {
   const { locale } = await params;
   const translations = await getTranslations(isValidLocale(locale) ? locale : "en");
-  const rounds = await getInvitationFeed();
-
-  const dateFormatter = new Intl.DateTimeFormat(locale, { year: "numeric", month: "short", day: "numeric" });
+  const [rounds, volumes] = await Promise.all([getInvitationFeed(), getInvitationVolumes()]);
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -91,8 +121,8 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold text-slate-900">{round.occupation}</p>
+                  <p className="text-lg font-bold leading-snug text-slate-900">{round.occupation}</p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
                     <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
                       {t(translations, `visas.subclass.${round.subclass}`, `Subclass ${round.subclass}`)}
                     </span>
@@ -102,31 +132,77 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
                         : t(translations, "rounds.offshore", "Offshore")}
                     </span>
                   </div>
-                  <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
+                  <p className="mt-2 flex items-center gap-1.5 text-sm text-slate-500">
                     <MapPin className="h-3.5 w-3.5 shrink-0" />
                     {round.state}
                   </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {t(translations, "rounds.roundDateLabel", "Round Date")}: {dateFormatter.format(new Date(round.roundDate))}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {t(translations, "rounds.dateOfEffectLabel", "Date of Effect")}: {dateFormatter.format(new Date(round.dateOfEffect))}
-                    </span>
-                  </div>
+                  <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {t(translations, "rounds.dateOfEffectLabel", "Latest Submission Date")}: {formatDateOfEffect(round.dateOfEffect)}
+                  </p>
                 </div>
 
                 <div className="shrink-0 text-right">
                   <p className="text-2xl font-bold text-slate-900">{round.points}</p>
                   <p className="text-xs font-medium text-slate-400">
-                    {t(translations, "rounds.pointsLabel", "Points")}
+                    {t(translations, "rounds.cutoffLabel", "Cut-off")}
                   </p>
                 </div>
               </li>
             ))}
           </ol>
+        )}
+
+        {volumes.length > 0 && (
+          <div className="space-y-3 pt-4">
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold text-slate-900">
+                {t(translations, "rounds.volumeTitle", "State Invitation Volumes (2025-26 Program Year)")}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {t(translations, "rounds.volumeSubtitle", "Monthly invitations issued by stream and visa subclass.")}
+              </p>
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[640px] text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-left">
+                      <th className="px-4 py-3 font-semibold text-slate-600">
+                        {t(translations, "rounds.table.stream", "Stream")}
+                      </th>
+                      <th className="px-4 py-3 font-semibold text-slate-600">
+                        {t(translations, "rounds.table.subclass", "Visa Subclass")}
+                      </th>
+                      <th className="px-4 py-3 font-semibold text-slate-600">
+                        {t(translations, "rounds.table.month", "Month")}
+                      </th>
+                      <th className="px-4 py-3 text-right font-semibold text-slate-600">
+                        {t(translations, "rounds.table.invitationsIssued", "Invitations Issued")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {volumes.map((volume) => (
+                      <tr key={volume.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60">
+                        <td className="px-4 py-3 text-slate-700">{volume.stream}</td>
+                        <td className="px-4 py-3">
+                          <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                            {t(translations, `visas.subclass.${volume.subclass}`, `Subclass ${volume.subclass}`)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-slate-700">{volume.month}</td>
+                        <td className="px-4 py-3 text-right tabular-nums font-semibold text-slate-900">
+                          {volume.count.toLocaleString(locale)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         )}
       </section>
     </main>
