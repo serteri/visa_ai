@@ -14,13 +14,15 @@ type FeedRound = {
   state: string;
   location: string;
   points: number;
-  dateOfEffect: string;
+  /** Null when the source file had no valid date cell for this row -- never a fabricated "today". */
+  dateOfEffect: string | null;
 };
 
 type VolumeRow = {
   id: string;
   stream: string;
   subclass: string;
+  year: string;
   month: string;
   count: number;
 };
@@ -39,7 +41,7 @@ async function getInvitationFeed(): Promise<FeedRound[]> {
       state: row.state,
       location: row.location,
       points: row.points,
-      dateOfEffect: row.dateOfEffect.toISOString(),
+      dateOfEffect: row.dateOfEffect ? row.dateOfEffect.toISOString() : null,
     }));
   } catch (error) {
     if (isMissingRelationError(error, "invitation_feed_items")) return [];
@@ -56,6 +58,7 @@ async function getInvitationVolumes(): Promise<VolumeRow[]> {
       id: row.id,
       stream: row.stream,
       subclass: row.subclass,
+      year: row.year,
       month: row.month,
       count: row.count,
     }));
@@ -63,6 +66,24 @@ async function getInvitationVolumes(): Promise<VolumeRow[]> {
     if (isMissingRelationError(error, "invitation_volumes")) return [];
     throw error;
   }
+}
+
+/** Groups volume rows by `year`, most recent program year first ("Unknown" always last since it isn't a real, sortable year). */
+function groupVolumesByYear(volumes: VolumeRow[]): Array<{ year: string; rows: VolumeRow[] }> {
+  const byYear = new Map<string, VolumeRow[]>();
+  for (const row of volumes) {
+    const existing = byYear.get(row.year) ?? [];
+    existing.push(row);
+    byYear.set(row.year, existing);
+  }
+
+  return Array.from(byYear.entries())
+    .map(([year, rows]) => ({ year, rows }))
+    .sort((a, b) => {
+      if (a.year === "Unknown") return 1;
+      if (b.year === "Unknown") return -1;
+      return b.year.localeCompare(a.year);
+    });
 }
 
 function locationBadgeClass(location: string): string {
@@ -85,6 +106,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
   const { locale } = await params;
   const translations = await getTranslations(isValidLocale(locale) ? locale : "en");
   const [rounds, volumes] = await Promise.all([getInvitationFeed(), getInvitationVolumes()]);
+  const volumesByYear = groupVolumesByYear(volumes);
 
   return (
     <main className="ambient-bg flex-1 py-12">
@@ -136,10 +158,12 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
                     <MapPin className="h-3.5 w-3.5 shrink-0" />
                     {round.state}
                   </p>
-                  <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                    <Calendar className="h-3.5 w-3.5" />
-                    {t(translations, "rounds.dateOfEffectLabel", "Latest Submission Date")}: {formatDateOfEffect(round.dateOfEffect)}
-                  </p>
+                  {round.dateOfEffect && (
+                    <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {t(translations, "rounds.dateOfEffectLabel", "Latest Submission Date")}: {formatDateOfEffect(round.dateOfEffect)}
+                    </p>
+                  )}
                 </div>
 
                 <div className="shrink-0 text-right">
@@ -153,55 +177,65 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
           </ol>
         )}
 
-        {volumes.length > 0 && (
-          <div className="space-y-3 pt-4">
+        {volumesByYear.length > 0 && (
+          <div className="space-y-6 pt-4">
             <div className="space-y-1">
               <h2 className="text-lg font-semibold text-slate-900">
-                {t(translations, "rounds.volumeTitle", "State Invitation Volumes (2025-26 Program Year)")}
+                {t(translations, "rounds.volumeTitle", "State Invitation Volumes")}
               </h2>
               <p className="text-sm text-muted-foreground">
                 {t(translations, "rounds.volumeSubtitle", "Monthly invitations issued by stream and visa subclass.")}
               </p>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[640px] text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200 bg-slate-50 text-left">
-                      <th className="px-4 py-3 font-semibold text-slate-600">
-                        {t(translations, "rounds.table.stream", "Stream")}
-                      </th>
-                      <th className="px-4 py-3 font-semibold text-slate-600">
-                        {t(translations, "rounds.table.subclass", "Visa Subclass")}
-                      </th>
-                      <th className="px-4 py-3 font-semibold text-slate-600">
-                        {t(translations, "rounds.table.month", "Month")}
-                      </th>
-                      <th className="px-4 py-3 text-right font-semibold text-slate-600">
-                        {t(translations, "rounds.table.invitationsIssued", "Invitations Issued")}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {volumes.map((volume) => (
-                      <tr key={volume.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60">
-                        <td className="px-4 py-3 text-slate-700">{volume.stream}</td>
-                        <td className="px-4 py-3">
-                          <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
-                            {t(translations, `visas.subclass.${volume.subclass}`, `Subclass ${volume.subclass}`)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-slate-700">{volume.month}</td>
-                        <td className="px-4 py-3 text-right tabular-nums font-semibold text-slate-900">
-                          {volume.count.toLocaleString(locale)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {volumesByYear.map(({ year, rows }) => (
+              <div key={year} className="space-y-3">
+                <h3 className="text-base font-semibold text-slate-800">
+                  {year === "Unknown"
+                    ? t(translations, "rounds.yearUnknown", "Program Year Unknown")
+                    : t(translations, "rounds.programYear", "{{year}} Program Year").replace("{{year}}", year)}
+                </h3>
+
+                <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[640px] text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-50 text-left">
+                          <th className="px-4 py-3 font-semibold text-slate-600">
+                            {t(translations, "rounds.table.stream", "Stream")}
+                          </th>
+                          <th className="px-4 py-3 font-semibold text-slate-600">
+                            {t(translations, "rounds.table.subclass", "Visa Subclass")}
+                          </th>
+                          <th className="px-4 py-3 font-semibold text-slate-600">
+                            {t(translations, "rounds.table.month", "Month")}
+                          </th>
+                          <th className="px-4 py-3 text-right font-semibold text-slate-600">
+                            {t(translations, "rounds.table.invitationsIssued", "Invitations Issued")}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.map((volume) => (
+                          <tr key={volume.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60">
+                            <td className="px-4 py-3 text-slate-700">{volume.stream}</td>
+                            <td className="px-4 py-3">
+                              <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                                {t(translations, `visas.subclass.${volume.subclass}`, `Subclass ${volume.subclass}`)}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-slate-700">{volume.month}</td>
+                            <td className="px-4 py-3 text-right tabular-nums font-semibold text-slate-900">
+                              {volume.count.toLocaleString(locale)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         )}
       </section>

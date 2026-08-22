@@ -62,14 +62,18 @@ type ParsedRow = {
   state: string;
   location: string;
   points: number;
-  dateOfEffect: Date;
-  roundDate: Date;
+  // Null when the source row had no valid date cell -- never backfilled
+  // with today's date (that silently mislabels missing data as "as of
+  // today", which is worse than an honest "we don't know").
+  dateOfEffect: Date | null;
+  roundDate: Date | null;
 };
 
 type VolumeRow = {
   state: string;
   stream: string;
   subclass: string;
+  year: string;
   month: string;
   count: number;
 };
@@ -135,6 +139,12 @@ const WA_VOLUME_MONTHS: Record<number, string> = {
  *      no value (blank/"-") means no invitations that month and is
  *      skipped, not recorded as a zero.
  */
+/** Pulls "2025-26" (or "2025–26" / "2025—26" with an en/em dash) out of a heading like "2025-26 program year — Invitations issued". "Unknown" if the heading has no such pattern. */
+function extractProgramYear(heading: string): string {
+  const match = heading.match(/(\d{4})\s*[-–—]\s*(\d{2,4})/);
+  return match ? `${match[1]}-${match[2]}` : "Unknown";
+}
+
 function parseWaInvitationRounds(
   sheetRows: unknown[][],
   format: SourceFormat
@@ -143,6 +153,7 @@ function parseWaInvitationRounds(
   const volumes: VolumeRow[] = [];
   let currentOccupation = "General WA Occupations";
   let currentVolumeStream = "General stream";
+  let currentVolumeYear = "Unknown";
   let mode: "points" | "volume" = "points";
 
   for (const row of sheetRows) {
@@ -150,6 +161,7 @@ function parseWaInvitationRounds(
 
     if (/program year|invitations issued/i.test(firstCell)) {
       mode = "volume";
+      currentVolumeYear = extractProgramYear(firstCell);
       continue;
     }
 
@@ -168,6 +180,7 @@ function parseWaInvitationRounds(
             state: format.state,
             stream: currentVolumeStream,
             subclass: firstCell,
+            year: currentVolumeYear,
             month: WA_VOLUME_MONTHS[monthIndex],
             count,
           });
@@ -207,7 +220,11 @@ function parseWaInvitationRounds(
     if (pointsScore === null) continue;
 
     // State of residence and submission date: scan the remaining cells
-    // (no fixed index -- see function doc comment above).
+    // (no fixed index -- see function doc comment above). No fallback to
+    // today's date when the file simply has no valid date cell (e.g. "-",
+    // blank, unparseable text) -- roundDate/dateOfEffect stay null rather
+    // than silently claiming a submission date that was never actually in
+    // the source file.
     let residenceText = "";
     let roundDate: Date | null = null;
     for (const cell of row.slice(5)) {
@@ -220,7 +237,6 @@ function parseWaInvitationRounds(
         if (parsed) roundDate = parsed;
       }
     }
-    const effectiveRoundDate = roundDate ?? new Date();
 
     points.push({
       occupation: currentOccupation,
@@ -228,8 +244,8 @@ function parseWaInvitationRounds(
       state: format.state,
       location: ONSHORE_LOCATIONS.has(residenceText.toLowerCase()) ? "Onshore" : "Offshore",
       points: pointsScore,
-      dateOfEffect: effectiveRoundDate,
-      roundDate: effectiveRoundDate,
+      dateOfEffect: roundDate,
+      roundDate,
     });
   }
 
@@ -259,10 +275,11 @@ function parseGenericFormat(headers: string[], dataRows: unknown[][], format: So
     const points = parsePoints(row[pointsIdx]);
     if (!occupation || points === null) continue;
 
+    // No fallback to today's date -- null when the file has no valid date
+    // cell, same reasoning as parseWaInvitationRounds.
     const roundDate =
       (roundDateIdx !== -1 ? parseDate(row[roundDateIdx]) : null) ??
-      (effectIdx !== -1 ? parseDate(row[effectIdx]) : null) ??
-      new Date();
+      (effectIdx !== -1 ? parseDate(row[effectIdx]) : null);
     const dateOfEffect = (effectIdx !== -1 ? parseDate(row[effectIdx]) : null) ?? roundDate;
     const rawLocation = locationIdx !== -1 ? String(row[locationIdx] ?? "").trim().toLowerCase() : "";
 

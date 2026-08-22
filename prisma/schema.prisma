@@ -449,7 +449,7 @@ model EoiRound {
 // feed UI specifically; it does not replace or relate to the existing
 // InvitationRound/RoundCutoff/Occupation trio.
 model InvitationFeedItem {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   occupation   String
   /**
    * e.g. "189", "190", "491".
@@ -464,9 +464,15 @@ model InvitationFeedItem {
    */
   location     String
   points       Int
-  dateOfEffect DateTime @map("date_of_effect")
-  roundDate    DateTime @map("round_date")
-  createdAt    DateTime @default(now()) @map("created_at")
+  /**
+   * Null when the source row had no valid date cell -- never backfilled with today's date (see import-data.ts's parseDate).
+   */
+  dateOfEffect DateTime? @map("date_of_effect")
+  /**
+   * Null when the source row had no valid date cell -- never backfilled with today's date (see import-data.ts's parseDate).
+   */
+  roundDate    DateTime? @map("round_date")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
   @@index([roundDate])
   @@map("invitation_feed_items")
@@ -508,11 +514,16 @@ model InvitationVolume {
   state     String
   stream    String
   subclass  String
+  /**
+   * e.g. "2025-26" -- parsed from the section heading ("2025-26 program year — Invitations issued"). "Unknown" if that heading's year couldn't be parsed.
+   */
+  year      String @default("Unknown")
   month     String
   count     Int
   createdAt DateTime @default(now()) @map("created_at")
 
   @@index([state])
+  @@index([year])
   @@map("invitation_volumes")
 }
 
