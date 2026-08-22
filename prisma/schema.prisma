@@ -494,6 +494,28 @@ model ScraperSyncLog {
   @@map("scraper_sync_logs")
 }
 
+// Monthly invitation-volume figures parsed from a state's "Invitations
+// issued" program-year table (app/actions/admin/import-data.ts's "Mode 2:
+// Volume Parsing" -- WA Excel exports have this as a second, separate
+// section below the per-occupation points table, hence a separate model
+// from InvitationFeedItem rather than overloading it with a differently-
+// shaped row). No unique constraint on (state, stream, subclass, month):
+// a re-upload deletes all of a state's prior volume rows before inserting
+// the new batch (see import-data.ts), so duplicates within one import
+// would indicate a parser bug, not a legitimate second data point.
+model InvitationVolume {
+  id        String   @id @default(cuid())
+  state     String
+  stream    String
+  subclass  String
+  month     String
+  count     Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([state])
+  @@map("invitation_volumes")
+}
+
 model ExpressEntryDraw {
   id                String    @id @default(uuid())
   drawDate          DateTime  @map("draw_date")

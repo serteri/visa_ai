@@ -66,6 +66,14 @@ type ParsedRow = {
   roundDate: Date;
 };
 
+type VolumeRow = {
+  state: string;
+  stream: string;
+  subclass: string;
+  month: string;
+  count: number;
+};
+
 const ONSHORE_LOCATIONS = new Set(["onshore", "on-shore", "on shore", "wa", "western australia"]);
 
 const WA_VALID_SUBCLASSES = new Set(["190", "491"]);
@@ -76,34 +84,97 @@ function isBlankCell(value: unknown): boolean {
   return text === "" || text === "-" || /^n\/?a$/i.test(text);
 }
 
+/** Cell index 1-12 -> program-year month name, per the WA "Invitations issued" volume table's fixed July-June column order. */
+const WA_VOLUME_MONTHS: Record<number, string> = {
+  1: "July",
+  2: "August",
+  3: "September",
+  4: "October",
+  5: "November",
+  6: "December",
+  7: "January",
+  8: "February",
+  9: "March",
+  10: "April",
+  11: "May",
+  12: "June",
+};
+
 /**
  * "WA - Invitation Rounds" format: the real WA government export is NOT a
- * flat table -- it's a sequence of sub-tables, each preceded by a section
- * heading row (e.g. "Trade occupations in priority WA industry sectors
- * ('Stream 1')...") that applies to every data row until the next heading.
- * There is no fixed header row to key off of, so this reads the whole
- * sheet as raw rows (sheet_to_json(ws, { header: 1 })) and walks it as a
- * small state machine:
- *   - A row whose first cell mentions "occupations in priority" or
- *     "STREAM" is a section heading -- captured into currentOccupation and
- *     applied to every subsequent data row (not itself a data row).
- *   - A row is a data row once a subclass (190/491) is found in cell
- *     index 1 or 2, AND a numeric EOI points score is found in index 3 or
- *     4 -- both must be present, so heading rows and blank/"-" placeholder
- *     rows are naturally skipped rather than needing a separate filter.
- *   - "State of residence" and the submission date aren't at fixed
- *     indices either (they trail the points column in the real sheet, but
- *     shift depending on which of the two subclass/points slots was used),
- *     so both are found by scanning the remaining cells in the row: the
- *     first WA/"Western Australia" mention (or "-") for residence, the
- *     first parseable date for the submission date.
+ * flat table. It has two sections stacked in the same sheet:
+ *
+ *  Mode 1 (points, top of the sheet): a sequence of sub-tables, each
+ *  preceded by a section heading row (e.g. "Trade occupations in priority
+ *  WA industry sectors ('Stream 1')...") that applies to every data row
+ *  until the next heading.
+ *    - A row whose first cell mentions "occupations in priority" or
+ *      "STREAM" is a section heading -- captured into currentOccupation
+ *      and applied to every subsequent data row (not itself a data row).
+ *    - A row is a data row once a subclass (190/491) is found in cell
+ *      index 1 or 2, AND a numeric EOI points score is found in index 3
+ *      or 4 -- both must be present, so heading rows and blank/"-"
+ *      placeholder rows are naturally skipped rather than needing a
+ *      separate filter.
+ *    - "State of residence" and the submission date aren't at fixed
+ *      indices either (they trail the points column, but shift depending
+ *      on which of the two subclass/points slots was used), so both are
+ *      found by scanning the remaining cells in the row.
+ *
+ *  Mode 2 (volume, further down the same sheet): a "2025-26 program
+ *  year -- Invitations issued" table with a fixed July-June monthly
+ *  column layout (index 1-12, see WA_VOLUME_MONTHS).
+ *    - A row whose first cell mentions "program year" or "invitations
+ *      issued" switches the reader into Mode 2 -- this never happens
+ *      again in reverse (a WA export doesn't go back to a points table
+ *      after the volume table starts).
+ *    - Within Mode 2, a row starting with "General stream" or "Graduate
+ *      stream" sets currentVolumeStream for subsequent rows.
+ *    - Within Mode 2, a row whose first cell is exactly "190" or "491" is
+ *      a volume data row: indices 1-12 are July-June counts. A cell with
+ *      no value (blank/"-") means no invitations that month and is
+ *      skipped, not recorded as a zero.
  */
-function parseWaInvitationRounds(sheetRows: unknown[][], format: SourceFormat): ParsedRow[] {
-  const rows: ParsedRow[] = [];
+function parseWaInvitationRounds(
+  sheetRows: unknown[][],
+  format: SourceFormat
+): { points: ParsedRow[]; volumes: VolumeRow[] } {
+  const points: ParsedRow[] = [];
+  const volumes: VolumeRow[] = [];
   let currentOccupation = "General WA Occupations";
+  let currentVolumeStream = "General stream";
+  let mode: "points" | "volume" = "points";
 
   for (const row of sheetRows) {
     const firstCell = String(row[0] ?? "").trim();
+
+    if (/program year|invitations issued/i.test(firstCell)) {
+      mode = "volume";
+      continue;
+    }
+
+    if (mode === "volume") {
+      if (/^(general stream|graduate stream)/i.test(firstCell)) {
+        currentVolumeStream = firstCell;
+        continue;
+      }
+      if (WA_VALID_SUBCLASSES.has(firstCell)) {
+        for (let monthIndex = 1; monthIndex <= 12; monthIndex++) {
+          const cell = row[monthIndex];
+          if (isBlankCell(cell)) continue;
+          const count = parsePoints(cell);
+          if (count === null) continue;
+          volumes.push({
+            state: format.state,
+            stream: currentVolumeStream,
+            subclass: firstCell,
+            month: WA_VOLUME_MONTHS[monthIndex],
+            count,
+          });
+        }
+      }
+      continue;
+    }
 
     if (/occupations in priority|stream/i.test(firstCell)) {
       currentOccupation = firstCell;
@@ -124,16 +195,16 @@ function parseWaInvitationRounds(sheetRows: unknown[][], format: SourceFormat): 
     // EOI points: cell index 3 or 4, must be a real number -- an empty
     // slot in the sub-table ("-", blank) means this row has no data for
     // this stream and is skipped, per this task's explicit instruction.
-    let points: number | null = null;
+    let pointsScore: number | null = null;
     for (const idx of [3, 4]) {
       if (isBlankCell(row[idx])) continue;
       const parsed = parsePoints(row[idx]);
       if (parsed !== null) {
-        points = parsed;
+        pointsScore = parsed;
         break;
       }
     }
-    if (points === null) continue;
+    if (pointsScore === null) continue;
 
     // State of residence and submission date: scan the remaining cells
     // (no fixed index -- see function doc comment above).
@@ -151,18 +222,18 @@ function parseWaInvitationRounds(sheetRows: unknown[][], format: SourceFormat): 
     }
     const effectiveRoundDate = roundDate ?? new Date();
 
-    rows.push({
+    points.push({
       occupation: currentOccupation,
       subclass,
       state: format.state,
       location: ONSHORE_LOCATIONS.has(residenceText.toLowerCase()) ? "Onshore" : "Offshore",
-      points,
+      points: pointsScore,
       dateOfEffect: effectiveRoundDate,
       roundDate: effectiveRoundDate,
     });
   }
 
-  return rows;
+  return { points, volumes };
 }
 
 /**
@@ -208,8 +279,9 @@ function parseGenericFormat(headers: string[], dataRows: unknown[][], format: So
   return rows;
 }
 
-function parseRows(workbook: XLSX.WorkBook, format: SourceFormat): ParsedRow[] {
-  const rows: ParsedRow[] = [];
+function parseRows(workbook: XLSX.WorkBook, format: SourceFormat): { points: ParsedRow[]; volumes: VolumeRow[] } {
+  const points: ParsedRow[] = [];
+  const volumes: VolumeRow[] = [];
 
   for (const sheetName of workbook.SheetNames) {
     const sheetRows = XLSX.utils.sheet_to_json<unknown[]>(workbook.Sheets[sheetName], {
@@ -224,16 +296,18 @@ function parseRows(workbook: XLSX.WorkBook, format: SourceFormat): ParsedRow[] {
       // doc comment. It walks every raw row itself, section headings
       // included, rather than skipping a "first row" that doesn't exist
       // as a real header in this format.
-      rows.push(...parseWaInvitationRounds(sheetRows as unknown[][], format));
+      const parsed = parseWaInvitationRounds(sheetRows as unknown[][], format);
+      points.push(...parsed.points);
+      volumes.push(...parsed.volumes);
       continue;
     }
 
     const headers = (sheetRows[0] as unknown[]).map((h) => String(h ?? "").trim());
     const dataRows = sheetRows.slice(1);
-    rows.push(...parseGenericFormat(headers, dataRows, format));
+    points.push(...parseGenericFormat(headers, dataRows, format));
   }
 
-  return rows;
+  return { points, volumes };
 }
 
 export async function importMigrationData(formData: FormData): Promise<ImportDataResult> {
@@ -270,14 +344,14 @@ export async function importMigrationData(formData: FormData): Promise<ImportDat
     };
   }
 
-  const rows = parseRows(workbook, format);
+  const { points: rows, volumes } = parseRows(workbook, format);
 
-  if (rows.length === 0) {
+  if (rows.length === 0 && volumes.length === 0) {
     return {
       success: false,
       error:
         format.id === "wa-invitation-rounds"
-          ? "No usable rows found. Expected Occupation and EOI Points Score columns in the file."
+          ? "No usable rows found. Expected Occupation/EOI Points Score rows and/or an Invitations Issued volume table in the file."
           : "No usable rows found. Expected at least an Occupation column and a Points/Score/Cutoff column in the file.",
     };
   }
@@ -288,19 +362,33 @@ export async function importMigrationData(formData: FormData): Promise<ImportDat
     // "Eskileri temizle, yenileri ekle" -- replace this format's previous
     // import entirely rather than merging, so a re-upload always reflects
     // exactly what's in the latest file (no stale rows from an earlier
-    // upload lingering alongside it).
-    await prisma.invitationFeedItem.deleteMany({ where: { state: format.state } });
-    await prisma.invitationFeedItem.createMany({
-      data: rows.map((row) => ({
-        occupation: row.occupation,
-        subclass: row.subclass,
-        state: row.state,
-        location: row.location,
-        points: row.points,
-        dateOfEffect: row.dateOfEffect,
-        roundDate: row.roundDate,
-      })),
-    });
+    // upload lingering alongside it). Both tables are scoped by
+    // format.state independently, since a file can contain points rows,
+    // volume rows, both, or neither.
+    if (rows.length > 0) {
+      await prisma.invitationFeedItem.deleteMany({ where: { state: format.state } });
+      await prisma.invitationFeedItem.createMany({
+        data: rows.map((row) => ({
+          occupation: row.occupation,
+          subclass: row.subclass,
+          state: row.state,
+          location: row.location,
+          points: row.points,
+          dateOfEffect: row.dateOfEffect,
+          roundDate: row.roundDate,
+        })),
+      });
+    }
+
+    if (volumes.length > 0) {
+      await prisma.invitationVolume.deleteMany({ where: { state: format.state } });
+      await prisma.invitationVolume.createMany({ data: volumes });
+    }
+
+    // "X points and Y volume records" -- always both numbers, even when
+    // one of them is 0, so the admin can tell "the file had no volume
+    // table" apart from "the volume table failed to parse".
+    const summary = `${rows.length} point${rows.length === 1 ? "" : "s"} and ${volumes.length} volume record${volumes.length === 1 ? "" : "s"}`;
 
     // Repurposes ScraperSyncLog (see prisma/schema.prisma) as an import
     // log now that there's no scraper -- same table, same "when did this
@@ -311,13 +399,13 @@ export async function importMigrationData(formData: FormData): Promise<ImportDat
       update: {
         lastRunAt: now,
         status: "success",
-        message: `Imported ${rows.length} row${rows.length === 1 ? "" : "s"} from ${file.name}`,
+        message: `Imported ${summary} from ${file.name}`,
       },
       create: {
         sourceId: format.id,
         lastRunAt: now,
         status: "success",
-        message: `Imported ${rows.length} row${rows.length === 1 ? "" : "s"} from ${file.name}`,
+        message: `Imported ${summary} from ${file.name}`,
       },
     });
 
@@ -326,8 +414,8 @@ export async function importMigrationData(formData: FormData): Promise<ImportDat
 
     return {
       success: true,
-      message: `Successfully imported ${rows.length} row${rows.length === 1 ? "" : "s"} for ${format.label}`,
-      rowsImported: rows.length,
+      message: `Successfully imported ${summary} for ${format.label}`,
+      rowsImported: rows.length + volumes.length,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
