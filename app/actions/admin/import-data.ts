@@ -291,7 +291,7 @@ function parseRows(workbook: XLSX.WorkBook, format: SourceFormat): { points: Par
     });
     if (sheetRows.length < 2) continue;
 
-    if (format.id === "wa-invitation-rounds") {
+    if (format.parser === "wa-nested") {
       // No fixed header row to key off of -- see parseWaInvitationRounds's
       // doc comment. It walks every raw row itself, section headings
       // included, rather than skipping a "first row" that doesn't exist
@@ -302,6 +302,8 @@ function parseRows(workbook: XLSX.WorkBook, format: SourceFormat): { points: Par
       continue;
     }
 
+    // format.parser === "generic-flat" -- "not-implemented" formats are
+    // rejected in importMigrationData before parseRows is ever called.
     const headers = (sheetRows[0] as unknown[]).map((h) => String(h ?? "").trim());
     const dataRows = sheetRows.slice(1);
     points.push(...parseGenericFormat(headers, dataRows, format));
@@ -324,6 +326,12 @@ export async function importMigrationData(formData: FormData): Promise<ImportDat
   const format = getSourceFormat(formatId);
   if (!format) {
     return { success: false, error: "Unknown source format." };
+  }
+  if (format.parser === "not-implemented") {
+    return {
+      success: false,
+      error: `This state's custom Excel structure is not implemented yet (${format.label}).`,
+    };
   }
 
   if (!(file instanceof File) || file.size === 0) {
@@ -350,7 +358,7 @@ export async function importMigrationData(formData: FormData): Promise<ImportDat
     return {
       success: false,
       error:
-        format.id === "wa-invitation-rounds"
+        format.parser === "wa-nested"
           ? "No usable rows found. Expected Occupation/EOI Points Score rows and/or an Invitations Issued volume table in the file."
           : "No usable rows found. Expected at least an Occupation column and a Points/Score/Cutoff column in the file.",
     };
