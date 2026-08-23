@@ -9,9 +9,8 @@ import { LanguageSelector } from "@/components/language-selector";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTranslation } from "@/contexts/language-context";
 
-// Small "Beta" pill shown next to nav links whose data isn't live yet, so
-// visitors aren't misled into treating the numbers as authoritative (see
-// eoi-queue's mock-data disclaimer for the fuller context).
+// Small "Beta" pill shown next to nav links whose data isn't fully live yet,
+// so visitors aren't misled into treating the numbers as authoritative.
 function BetaPill() {
   const { t } = useTranslation();
   return (
@@ -127,12 +126,6 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <DropdownLink href={`/${locale}/tools/anzsco-finder`}>{tx("Meslek Ara", "Occupation Search", "职业搜索")}</DropdownLink>
               <DropdownLink href={`/${locale}/tools/points-calculator`}>{tx("Puan Hesapla (AUS)", "Points Calculator", "积分计算器")}</DropdownLink>
               <DropdownLink href={`/${locale}/tools/skills-assessment`}>{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</DropdownLink>
-              <DropdownLink href={`/${locale}/eoi-queue`}>
-                <span className="inline-flex items-center">
-                  {t("nav.eoiQueue", "EOI Queue")}
-                  <BetaPill />
-                </span>
-              </DropdownLink>
               <DropdownLink href={`/${locale}/rounds`}>
                 <span className="inline-flex items-center">
                   {t("nav.invitationRounds", "Invitation Rounds")}
@@ -194,10 +187,6 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <Link href={`/${locale}/tools/anzsco-finder`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Meslek Ara", "Occupation Search", "职业搜索")}</Link>
               <Link href={`/${locale}/tools/points-calculator`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Puan Hesapla", "Points Calculator", "积分计算器")}</Link>
               <Link href={`/${locale}/tools/skills-assessment`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</Link>
-              <Link href={`/${locale}/eoi-queue`} onClick={() => setMobileOpen(false)} className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
-                {t("nav.eoiQueue", "EOI Queue")}
-                <BetaPill />
-              </Link>
               <Link href={`/${locale}/rounds`} onClick={() => setMobileOpen(false)} className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {t("nav.invitationRounds", "Invitation Rounds")}
                 <BetaPill />
