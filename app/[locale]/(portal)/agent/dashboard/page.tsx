@@ -7,6 +7,7 @@ import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
 import { getAgentLeads, splitName, type LeadSort } from "@/lib/crm/leads";
 import { getAgentCommissionTotal, getAgentTransactions } from "@/lib/crm/transactions";
 import { LEAD_TIERS, tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
+import { AgentNav } from "../agent-nav";
 import { PendingApprovalNotice } from "../pending-approval-notice";
 
 function formatUsd(amount: number): string {
@@ -95,9 +96,7 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
             Signed in as {user.name ?? user.email}. Showing only leads routed to you.
           </p>
         </div>
-        <Link href={`${prefix}/agent/pool`} className="text-sm font-medium text-indigo-600 hover:underline">
-          Lead pool →
-        </Link>
+        <AgentNav locale={locale} active="dashboard" />
       </div>
 
       <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4">

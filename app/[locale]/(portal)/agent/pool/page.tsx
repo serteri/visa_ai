@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
 import { getLeadPool } from "@/lib/crm/leads";
 import { claimLeadAction } from "./actions";
+import { AgentNav } from "../agent-nav";
 import { PendingApprovalNotice } from "../pending-approval-notice";
 import { ReferralLinkCard } from "../referral-link-card";
 
@@ -56,9 +56,7 @@ export default async function AgentLeadPoolPage({ params }: PageProps) {
               : "Global Guide and Occupation List leads awaiting an agent. Turkish Guide leads are reserved for Turkey-market agents."}
           </p>
         </div>
-        <Link href={`${prefix}/agent/dashboard`} className="text-sm font-medium text-indigo-600 hover:underline">
-          My assigned leads →
-        </Link>
+        <AgentNav locale={locale} active="pool" />
       </div>
 
       <ReferralLinkCard agentId={user.id} />
