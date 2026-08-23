@@ -11,10 +11,12 @@ import { getStripeClient } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
 
-// The single active Stripe webhook endpoint for this app -- consolidated
-// from a second, unused stub at app/api/webhooks/stripe/route.ts (deleted;
-// its pdf_book/pdf_book_global delivery-email logic was merged in below so
-// removing it didn't silently break paid PDF purchases). The lead-magnet
+// The single source of truth for Stripe webhook handling in this app.
+// app/api/webhooks/stripe/route.ts re-exports this file's POST handler --
+// Stripe's dashboard endpoint is registered at that plural/reordered path,
+// and it 404'd until that re-export was added, since Next.js routes are
+// path-literal. Keep all event handling here; that file must stay a
+// pass-through, not a second implementation. The lead-magnet
 // campaign paywall's checkout.session.completed handling (createCheckoutSession
 // in app/actions/stripeActions.ts) was added here too, for the same reason --
 // a second webhook route would either duplicate signature verification or
