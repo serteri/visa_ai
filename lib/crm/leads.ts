@@ -8,21 +8,40 @@ export type DocStatus = (typeof DOC_STATUSES)[number];
 // ── Lead lists / details (agent-scoped) ─────────────────────────────────────
 
 export type LeadSort = "newest" | "oldest";
+export type LeadSortField = "name" | "tier" | "status" | "createdAt";
+export type SortOrder = "asc" | "desc";
 
-/** Leads assigned to one agent, optionally filtered by tier and sorted by date.
- *  Always scoped by agentId so an agent can only ever see their own pool. */
+/** Leads assigned to one agent, optionally filtered by tier/status and sorted
+ *  by a chosen column. Always scoped by agentId so an agent can only ever see
+ *  their own pool. `sortField`/`order` (used by the admin agent-detail table)
+ *  take precedence over the older `sort` shorthand (used by the agent's own
+ *  dashboard) when both are present. */
 export async function getAgentLeads(
   agentId: string,
-  opts: { tier?: string; sort?: LeadSort } = {}
+  opts: { tier?: string; status?: string; sort?: LeadSort; sortField?: LeadSortField; order?: SortOrder } = {}
 ) {
-  const where: { agentId: string; pointsTier?: string } = { agentId };
+  const where: { agentId: string; pointsTier?: string; docStatus?: string } = { agentId };
   if (opts.tier === "Hot" || opts.tier === "Warm" || opts.tier === "Cold") {
     where.pointsTier = opts.tier;
   }
+  if (opts.status && (DOC_STATUSES as readonly string[]).includes(opts.status)) {
+    where.docStatus = opts.status;
+  }
+
+  const order: SortOrder = opts.order ?? (opts.sort === "oldest" ? "asc" : "desc");
+  const orderBy =
+    opts.sortField === "name"
+      ? { fullName: order }
+      : opts.sortField === "tier"
+        ? { pointsTier: order }
+        : opts.sortField === "status"
+          ? { docStatus: order }
+          : { createdAt: order };
+
   try {
     return await prisma.userReport.findMany({
       where,
-      orderBy: { createdAt: opts.sort === "oldest" ? "asc" : "desc" },
+      orderBy,
       select: {
         id: true,
         fullName: true,

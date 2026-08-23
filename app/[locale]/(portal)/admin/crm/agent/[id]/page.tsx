@@ -5,9 +5,17 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
-import { getAgentLeads, getAgentMetrics, getAgentUser, splitName } from "@/lib/crm/leads";
+import {
+  DOC_STATUSES,
+  getAgentLeads,
+  getAgentMetrics,
+  getAgentUser,
+  splitName,
+  type LeadSortField,
+  type SortOrder,
+} from "@/lib/crm/leads";
 import { getAgentTransactionsForAdmin } from "@/lib/crm/transactions";
-import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
+import { LEAD_TIERS, tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
 import { approveAgentAction, rejectAgentAction } from "../../actions";
 
 export const metadata: Metadata = {
@@ -19,7 +27,33 @@ function formatUsd(amount: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 }
 
-type PageProps = { params: Promise<{ locale: string; id: string }> };
+type PageProps = {
+  params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<{ sort?: string; order?: string; status?: string; tier?: string }>;
+};
+
+function FilterLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
+        active
+          ? "border-indigo-600 bg-indigo-600 text-white"
+          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+      }`}
+    >
+      {children}
+    </Link>
+  );
+}
 
 function StatCard({ label, value, tier }: { label: string; value: number; tier?: "Hot" | "Warm" | "Cold" }) {
   return (
@@ -36,16 +70,54 @@ function StatCard({ label, value, tier }: { label: string; value: number; tier?:
   );
 }
 
-export default async function AdminAgentDetailPage({ params }: PageProps) {
+export default async function AdminAgentDetailPage({ params, searchParams }: PageProps) {
   const { locale, id } = await params;
+  const sp = await searchParams;
   await requireRole("ADMIN", locale, `/${locale}/admin/crm/agent/${id}`);
 
   const agent = await getAgentUser(id);
   if (!agent) notFound();
 
+  const validSortFields: LeadSortField[] = ["name", "tier", "status", "createdAt"];
+  const activeSortField: LeadSortField = validSortFields.includes(sp.sort as LeadSortField)
+    ? (sp.sort as LeadSortField)
+    : "createdAt";
+  const activeOrder: SortOrder = sp.order === "asc" ? "asc" : "desc";
+  const activeTier = sp.tier === "Hot" || sp.tier === "Warm" || sp.tier === "Cold" ? sp.tier : undefined;
+  const activeStatus = sp.status && (DOC_STATUSES as readonly string[]).includes(sp.status) ? sp.status : undefined;
+
+  const basePath = `/${locale}/admin/crm/agent/${id}`;
+  const buildQuery = (next: { sort?: string; order?: string; tier?: string; status?: string }) => {
+    const params = new URLSearchParams();
+    const sort = next.sort ?? activeSortField;
+    const order = next.order ?? activeOrder;
+    const tier = next.tier !== undefined ? next.tier : (activeTier ?? "");
+    const status = next.status !== undefined ? next.status : (activeStatus ?? "");
+    if (sort && sort !== "createdAt") params.set("sort", sort);
+    if (order && order !== "desc") params.set("order", order);
+    if (tier) params.set("tier", tier);
+    if (status) params.set("status", status);
+    const qs = params.toString();
+    return qs ? `${basePath}?${qs}` : basePath;
+  };
+
+  const sortHeader = (field: LeadSortField, label: string) => {
+    const isActive = activeSortField === field;
+    const nextOrder: SortOrder = isActive && activeOrder === "asc" ? "desc" : "asc";
+    return (
+      <Link
+        href={buildQuery({ sort: field, order: nextOrder })}
+        className="inline-flex items-center gap-1 hover:text-slate-900"
+      >
+        {label}
+        {isActive ? <span className="text-indigo-600">{activeOrder === "asc" ? "↑" : "↓"}</span> : null}
+      </Link>
+    );
+  };
+
   const [metrics, assignedLeads, transactions] = await Promise.all([
     getAgentMetrics(id),
-    getAgentLeads(id),
+    getAgentLeads(id, { sortField: activeSortField, order: activeOrder, tier: activeTier, status: activeStatus }),
     getAgentTransactionsForAdmin(id),
   ]);
   const totalCommission = transactions.reduce((sum, tx) => sum + (tx.commissionAmount ?? 0), 0);
@@ -150,22 +222,49 @@ export default async function AdminAgentDetailPage({ params }: PageProps) {
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="gap-4">
           <CardTitle className="text-base">Assigned leads ({assignedLeads.length})</CardTitle>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tier</span>
+              <FilterLink href={buildQuery({ tier: "" })} active={!activeTier}>
+                All
+              </FilterLink>
+              {LEAD_TIERS.map((t) => (
+                <FilterLink key={t} href={buildQuery({ tier: t })} active={activeTier === t}>
+                  {tierEmoji(t)} {t}
+                </FilterLink>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Status</span>
+              <FilterLink href={buildQuery({ status: "" })} active={!activeStatus}>
+                All
+              </FilterLink>
+              {DOC_STATUSES.map((s) => (
+                <FilterLink key={s} href={buildQuery({ status: s })} active={activeStatus === s}>
+                  {s}
+                </FilterLink>
+              ))}
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {assignedLeads.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">No leads assigned yet.</p>
+            <p className="py-6 text-center text-sm text-slate-500">
+              No leads {activeTier ? `in the ${activeTier} tier ` : ""}
+              {activeStatus ? `with status ${activeStatus} ` : ""}assigned yet.
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-slate-500">
-                    <th className="py-2 pr-4 font-semibold">Name</th>
+                    <th className="py-2 pr-4 font-semibold">{sortHeader("name", "Name")}</th>
                     <th className="px-4 py-2 font-semibold">Email</th>
-                    <th className="px-4 py-2 font-semibold">Tier</th>
-                    <th className="px-4 py-2 font-semibold">Status</th>
-                    <th className="px-4 py-2 font-semibold">Received</th>
+                    <th className="px-4 py-2 font-semibold">{sortHeader("tier", "Tier")}</th>
+                    <th className="px-4 py-2 font-semibold">{sortHeader("status", "Status")}</th>
+                    <th className="px-4 py-2 font-semibold">{sortHeader("createdAt", "Received")}</th>
                     <th className="px-4 py-2 font-semibold sr-only">Action</th>
                   </tr>
                 </thead>
