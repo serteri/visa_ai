@@ -4,9 +4,12 @@ import type { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { requireRole } from "@/lib/auth/rbac";
 import { getLeadById, parseNotes, splitName } from "@/lib/crm/leads";
+import { getLeadNotes } from "@/lib/crm/notes";
 import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
+import { LeadNotes } from "@/components/crm/lead-notes";
 
 export const metadata: Metadata = {
   title: "Admin · Lead detail · LogiVisa Portal",
@@ -36,8 +39,9 @@ function formatNoteTimestamp(iso: string, locale: string): string {
 }
 
 // Admin has full, unscoped visibility into any lead's assessment details --
-// no "aggregate metrics only" restriction. Read-only: status/notes editing
-// stays the owning agent's job (see /agent/lead/[id]).
+// no "aggregate metrics only" restriction. Doc-status editing stays the
+// owning agent's job (see /agent/lead/[id]), but notes are shared: admin can
+// read and add notes here too (see addLeadNoteAction's ADMIN branch).
 export default async function AdminLeadDetailPage({ params }: PageProps) {
   const { locale, id } = await params;
 
@@ -46,7 +50,8 @@ export default async function AdminLeadDetailPage({ params }: PageProps) {
   if (!lead) notFound();
 
   const { firstName, lastName } = splitName(lead.fullName);
-  const notes = parseNotes(lead.agentNotes);
+  const legacyNotes = parseNotes(lead.agentNotes);
+  const notes = await getLeadNotes(id);
   const pdfUrl = `/api/agent/lead/${id}/pdf`;
 
   return (
@@ -90,27 +95,36 @@ export default async function AdminLeadDetailPage({ params }: PageProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Workflow (read-only)</CardTitle>
+          <CardTitle className="text-base">Workflow</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <DetailRow label="Document / skills-assessment status" value={lead.docStatus ?? "New"} />
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Activity</span>
-            {notes.length === 0 ? (
-              <p className="mt-1 text-sm text-slate-400">No notes yet.</p>
-            ) : (
-              <ul className="mt-2 space-y-2">
-                {notes.map((entry, i) => (
-                  <li key={i} className="rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2">
+        <CardContent>
+          <DetailRow label="Document / skills-assessment status (agent-only)" value={lead.docStatus ?? "New"} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Notes &amp; Activity</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <LeadNotes leadId={id} locale={locale} initialNotes={notes} />
+          {legacyNotes.length > 0 && (
+            <div className="space-y-2 border-t border-slate-100 pt-4">
+              <Label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Earlier notes
+              </Label>
+              <ul className="space-y-2">
+                {legacyNotes.map((entry, i) => (
+                  <li key={i} className="rounded-lg border border-slate-100 bg-slate-50/40 px-3 py-2">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                       {formatNoteTimestamp(entry.at, locale)}
                     </p>
-                    <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-900">{entry.text}</p>
+                    <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-700">{entry.text}</p>
                   </li>
                 ))}
               </ul>
-            )}
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

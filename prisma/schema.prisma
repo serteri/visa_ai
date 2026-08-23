@@ -70,13 +70,18 @@ model UserReport {
   // persisted as a truthy email-sent flag since no email is sent for Cold.
   pointsTier            String?       @map("points_tier")
   internalLeadEmailSent Boolean?      @default(false) @map("internal_lead_email_sent")
-  // Agent CRM workflow: document/skills-assessment review status and free-text
-  // internal notes, both editable only by the agent this lead is assigned to
-  // (see requireOwnedLead in lib/crm/leads.ts). market scopes which agents can
-  // see/claim the lead from the shared pool -- "TR" for Turkish Guide leads
-  // (Turkey-market agents only), null/"GLOBAL" for Global Guide + Occupation
-  // List leads (any agent).
+  // Agent CRM workflow: document/skills-assessment review status, editable
+  // only by the agent this lead is assigned to (see requireOwnedLead in
+  // lib/crm/leads.ts). market scopes which agents can see/claim the lead
+  // from the shared pool -- "TR" for Turkish Guide leads (Turkey-market
+  // agents only), null/"GLOBAL" for Global Guide + Occupation List leads
+  // (any agent).
   docStatus             String?       @default("New") @map("doc_status")
+  // Legacy free-text note log (JSON array of {text, at}), written only by
+  // the owning agent -- superseded by the LeadNote model below (shared,
+  // authored, readable/writable by both the owning agent and any admin).
+  // Kept read-only for notes written before that migration; no longer
+  // written to.
   agentNotes            String?       @map("agent_notes")
   market                String?       @default("GLOBAL")
   // Affiliate/referral auto-assignment: true when this lead was routed
@@ -100,6 +105,7 @@ model UserReport {
   // pre-payment teaser subset.
   previewData           Json?         @map("preview_data")
   transactions          Transaction[]
+  notes                 LeadNote[]
 
   // agentId: FK filter for getAgentLeads/getUnassignedLeads (agentId: null),
   // composite with pointsTier because getAllAgentMetrics groupBy's on both.
@@ -149,6 +155,28 @@ model Transaction {
   @@map("transactions")
 }
 
+// Centralized internal notes on a lead, shared between the owning AGENT and
+// any ADMIN -- distinct from UserReport.agentNotes (the older, single-column
+// JSON-blob note log written only by the owning agent, left in place and
+// still displayed read-only for continuity, but no longer written to once
+// this model is wired up). authorId carries whichever User wrote the note
+// (agent or admin) so the UI can label "who wrote this", which the old
+// JSON blob never could.
+model LeadNote {
+  id        String   @id @default(uuid())
+  content   String
+  authorId  String   @map("author_id")
+  leadId    String   @map("lead_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  author User       @relation("LeadNoteAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  lead   UserReport @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+  @@map("lead_notes")
+}
+
 model User {
   id                String             @id @default(uuid())
   name              String?
@@ -195,6 +223,7 @@ model User {
   visaJourneys      VisaJourney[]
   assignedLeads     UserReport[]       @relation("AgentAssignedLeads")
   transactions      Transaction[]      @relation("AgentTransactions")
+  leadNotes         LeadNote[]         @relation("LeadNoteAuthor")
 
   // role: only 3 values, but getAgents()/getAgentUser() filter on it directly
   // (not alongside a more selective column) on every agent-portal/admin page

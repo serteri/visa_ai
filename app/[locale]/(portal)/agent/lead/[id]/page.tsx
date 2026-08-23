@@ -4,9 +4,12 @@ import type { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { requireRole } from "@/lib/auth/rbac";
 import { getAgentLead, parseNotes, splitName } from "@/lib/crm/leads";
+import { getLeadNotes } from "@/lib/crm/notes";
 import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
+import { LeadNotes } from "@/components/crm/lead-notes";
 import { WorkflowForm } from "./workflow-form";
 
 export const metadata: Metadata = {
@@ -37,6 +40,8 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
 
   const { firstName, lastName } = splitName(lead.fullName);
   const pdfUrl = `/api/agent/lead/${id}/pdf`;
+  const notes = await getLeadNotes(id);
+  const legacyNotes = parseNotes(lead.agentNotes);
 
   return (
     <div className="space-y-6">
@@ -82,12 +87,33 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
           <CardTitle className="text-base">Workflow</CardTitle>
         </CardHeader>
         <CardContent>
-          <WorkflowForm
-            locale={locale}
-            leadId={id}
-            initialDocStatus={lead.docStatus ?? "New"}
-            initialNotes={parseNotes(lead.agentNotes)}
-          />
+          <WorkflowForm locale={locale} leadId={id} initialDocStatus={lead.docStatus ?? "New"} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Notes &amp; Activity</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <LeadNotes leadId={id} locale={locale} initialNotes={notes} />
+          {legacyNotes.length > 0 && (
+            <div className="space-y-2 border-t border-slate-100 pt-4">
+              <Label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Earlier notes
+              </Label>
+              <ul className="space-y-2">
+                {legacyNotes.map((entry, i) => (
+                  <li key={i} className="rounded-lg border border-slate-100 bg-slate-50/40 px-3 py-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      {entry.at ? new Date(entry.at).toLocaleString(locale) : "Earlier"}
+                    </p>
+                    <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-700">{entry.text}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </CardContent>
       </Card>
 

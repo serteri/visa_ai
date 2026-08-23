@@ -287,23 +287,11 @@ export function parseNotes(raw: string | null | undefined): NoteEntry[] {
   return [];
 }
 
-/** Appends a new timestamped note (newest first) -- scoped to the owning agent. */
-export async function appendLeadNote(agentId: string, leadId: string, text: string): Promise<boolean> {
-  const lead = await prisma.userReport.findFirst({
-    where: { id: leadId, agentId },
-    select: { agentNotes: true },
-  });
-  if (!lead) return false;
-
-  const notes = parseNotes(lead.agentNotes);
-  notes.unshift({ text, at: new Date().toISOString() });
-
-  const result = await prisma.userReport.updateMany({
-    where: { id: leadId, agentId },
-    data: { agentNotes: JSON.stringify(notes) },
-  });
-  return result.count > 0;
-}
+// appendLeadNote (wrote to UserReport.agentNotes) was removed once the
+// LeadNote model + addLeadNoteAction (lib/crm/notes-actions.ts) replaced it
+// as the write path for new notes -- parseNotes/NoteEntry stay here so
+// existing agentNotes JSON blobs can still be read and shown, read-only, for
+// continuity with notes written before this migration.
 
 export async function getUnassignedLeads() {
   try {
