@@ -144,7 +144,7 @@ export default async function AdminDashboardPage({ params }: PageProps) {
           <CardTitle className="text-base">Unassigned leads</CardTitle>
         </CardHeader>
         <CardContent>
-          <LeadAssigner unassignedLeads={unassignedLeads} agents={agents} />
+          <LeadAssigner unassignedLeads={unassignedLeads} agents={agents} locale={locale} />
         </CardContent>
       </Card>
     </div>

@@ -30,7 +30,7 @@ type Lead = {
 // context issue inside the table's overflow-x-auto wrapper). Select already
 // portals to document.body with a high z-index (see components/ui/select.tsx)
 // and is used the same way elsewhere in this app without that problem.
-function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
+function AgentSelect({ lead, agents, locale }: { lead: Lead; agents: Agent[]; locale: string }) {
   const [isPending, startTransition] = useTransition();
 
   function handleSelect(agentId: string) {
@@ -39,7 +39,7 @@ function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
 
     startTransition(async () => {
       try {
-        await assignLeadToAgent(lead.id, agentId);
+        await assignLeadToAgent(lead.id, agentId, locale);
         toast.success(`✅ Lead successfully assigned to ${agentLabel}`);
       } catch {
         toast.error(`❌ Failed to assign lead to ${agentLabel}`);
@@ -74,9 +74,11 @@ function AgentSelect({ lead, agents }: { lead: Lead; agents: Agent[] }) {
 export function LeadAssigner({
   unassignedLeads,
   agents,
+  locale,
 }: {
   unassignedLeads: Lead[];
   agents: Agent[];
+  locale: string;
 }) {
   if (unassignedLeads.length === 0) {
     return (
@@ -104,7 +106,7 @@ export function LeadAssigner({
               <td className="px-4 py-3 text-slate-600">{lead.email}</td>
               <td className="px-4 py-3 font-semibold">{lead.pointsTier || "—"}</td>
               <td className="px-4 py-3">
-                <AgentSelect lead={lead} agents={agents} />
+                <AgentSelect lead={lead} agents={agents} locale={locale} />
               </td>
             </tr>
           ))}

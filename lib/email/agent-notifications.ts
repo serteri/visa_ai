@@ -1,9 +1,10 @@
 import { Resend } from "resend";
 import { AgentAssignedEmail } from "@/emails/AgentAssigned";
 
-function resolveLoginUrl(): string {
+function resolveLeadUrl(leadId: string, locale: string): string {
   const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "https://logivisa.com").replace(/\/$/, "");
-  return `${baseUrl}/login`;
+  const prefix = locale === "en" ? "" : `/${locale}`;
+  return `${baseUrl}${prefix}/agent/lead/${leadId}`;
 }
 
 /**
@@ -18,6 +19,8 @@ export async function sendAgentAssignedEmail(params: {
   agentName?: string | null;
   leadName: string;
   status: string;
+  leadId: string;
+  locale?: string;
 }): Promise<void> {
   if (!params.agentEmail) return;
 
@@ -37,12 +40,12 @@ export async function sendAgentAssignedEmail(params: {
     await resend.emails.send({
       from: fromEmail,
       to: [params.agentEmail],
-      subject: `New lead assigned: ${params.leadName}`,
+      subject: `🎯 New Lead Assigned: ${params.leadName} - LogiVisa CRM`,
       react: AgentAssignedEmail({
         agentName: params.agentName,
         leadName: params.leadName,
         status: params.status,
-        loginUrl: resolveLoginUrl(),
+        leadUrl: resolveLeadUrl(params.leadId, params.locale || "en"),
       }),
     });
   } catch (error) {

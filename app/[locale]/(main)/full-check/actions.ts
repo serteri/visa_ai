@@ -1431,6 +1431,8 @@ export async function submitFullCheckWaitlist(
         agentName: referralAgent.name,
         leadName: fullName || email,
         status: "New",
+        leadId: reportRecord.id,
+        locale: resolvedLocale,
       });
     } catch (error) {
       console.error("[full-check] Referral assignment email failed (non-blocking):", error);

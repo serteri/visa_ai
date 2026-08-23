@@ -14,13 +14,13 @@ export interface AgentAssignedEmailProps {
   agentName?: string | null;
   leadName: string;
   status: string;
-  loginUrl: string;
+  leadUrl: string;
 }
 
-// Deliberately minimal: client name, status, and a login link -- nothing
-// else. Rendered server-side by lib/email/agent-notifications.ts and passed
-// to Resend's `react` field.
-export function AgentAssignedEmail({ agentName, leadName, status, loginUrl }: AgentAssignedEmailProps) {
+// Deliberately minimal: client name, status, and a direct link into the
+// assigned lead's detail page. Rendered server-side by
+// lib/email/agent-notifications.ts and passed to Resend's `react` field.
+export function AgentAssignedEmail({ agentName, leadName, status, leadUrl }: AgentAssignedEmailProps) {
   const greetingName = agentName?.trim() || "there";
 
   return (
@@ -40,8 +40,8 @@ export function AgentAssignedEmail({ agentName, leadName, status, loginUrl }: Ag
             <Text style={{ ...detailValue, marginBottom: 0 }}>{status}</Text>
           </Section>
 
-          <Button style={button} href={loginUrl}>
-            Open in Portal
+          <Button style={button} href={leadUrl}>
+            View Lead
           </Button>
 
           <Text style={footer}>LogiVisa Agent Portal</Text>

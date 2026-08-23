@@ -20,7 +20,7 @@ async function requireAdmin(): Promise<void> {
   }
 }
 
-export async function assignLeadToAgent(leadId: string, agentId: string) {
+export async function assignLeadToAgent(leadId: string, agentId: string, locale: string = "en") {
   await requireAdmin();
   if (!leadId || !agentId) {
     throw new Error("Missing leadId or agentId");
@@ -47,6 +47,8 @@ export async function assignLeadToAgent(leadId: string, agentId: string) {
         agentName: agent.name,
         leadName: lead.fullName || lead.email,
         status: lead.docStatus ?? "New",
+        leadId,
+        locale,
       });
     } catch (error) {
       console.error("[assignLeadToAgent] Notification email failed (non-blocking):", error);

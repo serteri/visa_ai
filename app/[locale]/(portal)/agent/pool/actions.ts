@@ -36,6 +36,8 @@ export async function claimLeadAction(locale: string, leadId: string): Promise<v
           agentName: user.name,
           leadName: lead.fullName || lead.email,
           status: lead.docStatus ?? "New",
+          leadId,
+          locale,
         });
       }
     } catch (error) {
