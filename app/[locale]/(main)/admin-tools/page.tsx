@@ -1,19 +1,24 @@
 import { redirect } from "next/navigation";
 
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { AdminToolsForm } from "./admin-tools-form";
 
 type AdminToolsPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ ADMIN_TOKEN?: string }>;
 };
 
-export default async function AdminToolsPage({ params, searchParams }: AdminToolsPageProps) {
+// Previously gated by a `?ADMIN_TOKEN=` query-string param -- a secret in
+// the URL leaks into browser history, server/proxy access logs, and any
+// outbound link's Referer header. Now uses the same signed, server-side-
+// verified session cookie (lib/admin-auth.ts) as the rest of the legacy
+// admin area, consistent with /admin/leads, /admin/agents, etc.
+export default async function AdminToolsPage({ params }: AdminToolsPageProps) {
   const { locale } = await params;
-  const { ADMIN_TOKEN } = await searchParams;
 
-  const configuredAdminToken = process.env.ADMIN_TOKEN?.trim();
-  if (configuredAdminToken && ADMIN_TOKEN?.trim() !== configuredAdminToken) {
-    redirect(locale === "en" ? "/" : `/${locale}`);
+  if (!(await isAdminAuthenticated())) {
+    const target = `/${locale}/admin-tools`;
+    const accessUrl = locale === "en" ? "/admin/leads/access" : `/${locale}/admin/leads/access`;
+    redirect(`${accessUrl}?callbackUrl=${encodeURIComponent(target)}`);
   }
 
   const isTr = locale === "tr";

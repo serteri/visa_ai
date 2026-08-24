@@ -5,10 +5,15 @@ import { NextRequest } from "next/server";
 import { db } from "@/db";
 import { fullCheckUsage } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
+import { safeEqual } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Header-only -- a `?secret=` query-string fallback used to be accepted
+// here too, but a secret in the URL leaks into server/proxy access logs,
+// browser history, and any Referer header a link on this response might
+// trigger. Headers only.
 function getAuthToken(request: NextRequest): string | null {
   const authHeader = request.headers.get("authorization");
   if (authHeader?.startsWith("Bearer ")) {
@@ -20,8 +25,7 @@ function getAuthToken(request: NextRequest): string | null {
     return fallbackHeader.trim();
   }
 
-  const fromQuery = request.nextUrl.searchParams.get("secret");
-  return fromQuery?.trim() || null;
+  return null;
 }
 
 function getConfiguredSecret(): string | null {
@@ -35,7 +39,7 @@ function isAuthorized(request: NextRequest): boolean {
   }
 
   const providedSecret = getAuthToken(request);
-  return Boolean(providedSecret && providedSecret === configuredSecret);
+  return Boolean(providedSecret && safeEqual(providedSecret, configuredSecret));
 }
 
 // Strips surrounding quote characters in addition to whitespace: if an env

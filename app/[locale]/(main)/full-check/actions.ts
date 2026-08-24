@@ -36,6 +36,7 @@ import {
 } from "@/src/lib/user-reports";
 import { getAgentUser } from "@/lib/crm/leads";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
+import { safeEqual } from "@/lib/admin-auth";
 
 const REF_COOKIE = "logivisa_ref";
 
@@ -1772,7 +1773,7 @@ export async function resetUserReportLimit(email: string, adminSecret: string): 
     };
   }
 
-  if (providedSecret !== expectedSecret) {
+  if (!safeEqual(providedSecret, expectedSecret)) {
     return {
       status: "error",
       message: "Invalid admin secret.",

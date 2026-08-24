@@ -13,11 +13,6 @@ import { cn } from "@/lib/utils";
 
 const FREE_LIMIT_ERROR_CODE = "limit_reached";
 const PREMIUM_UPGRADE_PATH = "/pricing";
-// Founder account -- matches VIP_BYPASS_EMAIL in
-// app/api/stripe/vip-unlock/route.ts. Only decides which path this
-// component takes (self-unlock vs. redirect to pricing); the actual grant
-// is enforced server-side, this check is not a security boundary.
-const VIP_BYPASS_EMAIL = "serteri@gmail.com";
 
 interface KnowledgeChatUIProps {
   className?: string;
@@ -39,7 +34,10 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
   const [visitorId, setVisitorId] = useState<string | null>(null);
   const [unlockEmail, setUnlockEmail] = useState("");
   const [unlockEmailError, setUnlockEmailError] = useState<string | null>(null);
-  const [isUnlocking, setIsUnlocking] = useState(false);
+  const [showVipCodeInput, setShowVipCodeInput] = useState(false);
+  const [vipCode, setVipCode] = useState("");
+  const [vipCodeError, setVipCodeError] = useState<string | null>(null);
+  const [isUnlockingVip, setIsUnlockingVip] = useState(false);
 
   useEffect(() => {
     fetch("/api/visitor")
@@ -81,7 +79,13 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
     scrollToBottom();
   }, [messages, status]);
 
-  const handleUpgradeClick = async () => {
+  // Always sends the visitor to /pricing -- there is no client-side "is this
+  // the founder" check anymore (that used to be a hardcoded email compared
+  // in the browser bundle, which is itself a leak: anyone reading the JS
+  // could see the bypass email). The actual VIP self-unlock path is the
+  // separate "Have a VIP access code?" flow below, gated by a server-only
+  // secret (VIP_UNLOCK_SECRET) that never ships to the client.
+  const handleUpgradeClick = () => {
     const trimmedEmail = unlockEmail.trim();
     setUnlockEmailError(null);
 
@@ -90,22 +94,28 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
       return;
     }
 
-    if (trimmedEmail !== VIP_BYPASS_EMAIL) {
-      window.location.assign(`${PREMIUM_UPGRADE_PATH}?email=${encodeURIComponent(trimmedEmail)}`);
+    window.location.assign(`${PREMIUM_UPGRADE_PATH}?email=${encodeURIComponent(trimmedEmail)}`);
+  };
+
+  const handleVipUnlock = async () => {
+    const trimmedCode = vipCode.trim();
+    setVipCodeError(null);
+
+    if (!trimmedCode) {
+      setVipCodeError(t("chat.vipCodeRequired", "Please enter your VIP access code."));
       return;
     }
-
     if (!visitorId) {
-      setUnlockEmailError(t("chat.unlockError", "Something went wrong, please refresh the page and try again."));
+      setVipCodeError(t("chat.unlockError", "Something went wrong, please refresh the page and try again."));
       return;
     }
 
-    setIsUnlocking(true);
+    setIsUnlockingVip(true);
     try {
       const res = await fetch("/api/stripe/vip-unlock", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmedEmail, visitorId }),
+        headers: { "Content-Type": "application/json", "x-vip-token": trimmedCode },
+        body: JSON.stringify({ visitorId }),
       });
       const data = (await res.json()) as { success?: boolean; error?: string };
 
@@ -116,9 +126,9 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
       setIsLimitReached(false);
     } catch (err) {
       console.error("[knowledge-chat] VIP unlock failed", err);
-      setUnlockEmailError(t("chat.unlockFailed", "Verification failed, please try again."));
+      setVipCodeError(t("chat.unlockFailed", "Verification failed, please try again."));
     } finally {
-      setIsUnlocking(false);
+      setIsUnlockingVip(false);
     }
   };
 
@@ -223,13 +233,45 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
                 setUnlockEmailError(null);
               }}
               placeholder={t("chat.emailPlaceholder", "Enter your email address")}
-              disabled={isUnlocking}
               className="text-center"
             />
             {unlockEmailError && <p className="text-xs text-red-600">{unlockEmailError}</p>}
-            <Button onClick={handleUpgradeClick} disabled={isUnlocking} className="w-full px-6">
-              {isUnlocking ? t("chat.verifying", "Verifying...") : t("chat.unlockPremium", "Unlock Premium")}
+            <Button onClick={handleUpgradeClick} className="w-full px-6">
+              {t("chat.unlockPremium", "Unlock Premium")}
             </Button>
+
+            <button
+              type="button"
+              onClick={() => setShowVipCodeInput((prev) => !prev)}
+              className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+            >
+              {t("chat.haveVipCode", "Have a VIP access code?")}
+            </button>
+
+            {showVipCodeInput && (
+              <div className="space-y-2 pt-1">
+                <Input
+                  type="password"
+                  value={vipCode}
+                  onChange={(e) => {
+                    setVipCode(e.target.value);
+                    setVipCodeError(null);
+                  }}
+                  placeholder={t("chat.vipCodePlaceholder", "Enter VIP access code")}
+                  disabled={isUnlockingVip}
+                  className="text-center"
+                />
+                {vipCodeError && <p className="text-xs text-red-600">{vipCodeError}</p>}
+                <Button
+                  variant="outline"
+                  onClick={handleVipUnlock}
+                  disabled={isUnlockingVip}
+                  className="w-full px-6"
+                >
+                  {isUnlockingVip ? t("chat.verifying", "Verifying...") : t("chat.vipUnlock", "Unlock with code")}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

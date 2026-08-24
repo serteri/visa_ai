@@ -45,17 +45,20 @@
 //   ACT: "https://www.canberrayourfuture.act.gov.au/",
 // };
 
+import { safeEqual } from "@/lib/admin-auth";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
   const authHeader = request.headers.get("authorization");
+  const providedToken = authHeader?.startsWith("Bearer ") ? authHeader.slice("Bearer ".length).trim() : null;
 
   if (!secret) {
     return Response.json({ error: "CRON_SECRET is not configured" }, { status: 500 });
   }
 
-  if (authHeader !== `Bearer ${secret}`) {
+  if (!providedToken || !safeEqual(providedToken, secret)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -1,4 +1,5 @@
 import { scrapeCaEoiRounds } from "@/lib/scrapers/ca-eoi-scraper";
+import { safeEqual } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
   const authHeader = request.headers.get("authorization");
+  const providedToken = authHeader?.startsWith("Bearer ") ? authHeader.slice("Bearer ".length).trim() : null;
 
   if (!secret) {
     return Response.json(
@@ -22,7 +24,7 @@ export async function GET(request: Request) {
     );
   }
 
-  if (authHeader !== `Bearer ${secret}`) {
+  if (!providedToken || !safeEqual(providedToken, secret)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

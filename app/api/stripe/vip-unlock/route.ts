@@ -1,35 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { safeEqual } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
-// Founder account -- the only email allowed to self-unlock via this route.
-// Not read from env since it's a single fixed identity, not per-environment
-// config.
-const VIP_BYPASS_EMAIL = "serteri@gmail.com";
-
 interface VipUnlockPayload {
-  email?: string;
   visitorId?: string;
+  vipToken?: string;
 }
 
 /**
- * Lets the founder's fixed email unlock unlimited chat access for their
- * current anonymous ChatVisitor without going through Stripe -- entered via
- * the email field on the paywall overlay (see KnowledgeChatUI). Any other
- * email is rejected here; the frontend sends those to /pricing instead of
- * calling this route.
+ * Lets someone who knows the server-only VIP_UNLOCK_SECRET unlock unlimited
+ * chat access for their current anonymous ChatVisitor without going through
+ * Stripe. Previously gated by a hardcoded founder email
+ * (VIP_BYPASS_EMAIL = "serteri@gmail.com") compared against a client-supplied
+ * email field -- that email was public (readable in the repo/bundle), so
+ * anyone could self-grant VIP by simply typing it in. Auth is now a real
+ * shared secret, accepted via the `x-vip-token` header or a `vipToken` body
+ * field, compared with a timing-safe equality check (see components/
+ * KnowledgeChatUI.tsx's "Have a VIP access code?" flow for the client side).
  */
 export async function POST(req: NextRequest) {
-  const body = (await req.json()) as VipUnlockPayload;
-  const { email, visitorId } = body;
-
-  if (!email || !visitorId) {
-    return NextResponse.json({ error: "email and visitorId are required." }, { status: 400 });
+  const configuredSecret = process.env.VIP_UNLOCK_SECRET?.trim();
+  if (!configuredSecret) {
+    return NextResponse.json({ error: "VIP unlock is not configured." }, { status: 500 });
   }
 
-  if (email !== VIP_BYPASS_EMAIL) {
+  const body = (await req.json()) as VipUnlockPayload;
+  const { visitorId } = body;
+  const providedToken = (req.headers.get("x-vip-token") ?? body.vipToken ?? "").trim();
+
+  if (!visitorId) {
+    return NextResponse.json({ error: "visitorId is required." }, { status: 400 });
+  }
+  if (!providedToken || !safeEqual(providedToken, configuredSecret)) {
     return NextResponse.json({ error: "Not authorized for VIP unlock." }, { status: 403 });
   }
 

@@ -18,7 +18,11 @@ const ADMIN_SESSION_COOKIE = "logivisa_admin_session";
 const IDLE_TIMEOUT_SECONDS = 30 * 60;
 const IDLE_TIMEOUT_MS = IDLE_TIMEOUT_SECONDS * 1000;
 
-function safeEqual(left: string, right: string): boolean {
+/** Timing-safe string comparison -- exported for reuse by every other
+ *  secret/token comparison in the app (VIP unlock, admin diagnostic routes,
+ *  the full-check admin-tools reset action), so none of them fall back to
+ *  a plain `===`/`!==` that leaks timing information about a match. */
+export function safeEqual(left: string, right: string): boolean {
   const leftBuffer = Buffer.from(left);
   const rightBuffer = Buffer.from(right);
   if (leftBuffer.length !== rightBuffer.length) return false;
