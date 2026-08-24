@@ -205,3 +205,79 @@ export async function updateJourneyStage(journeyId: string): Promise<void> {
   });
   revalidatePath("/dashboard");
 }
+
+// ─── Visa journey documents (Document Vault upload) ────────────────────────────
+
+import { put } from "@vercel/blob";
+import { isVisaDocumentType } from "@/lib/constants/visa-documents";
+
+const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024; // 10MB, matching /api/document-analyze's limit
+const ALLOWED_DOCUMENT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
+
+export type UploadVisaDocumentResult = { error?: string; document?: { id: string; fileUrl: string } };
+
+/**
+ * Uploads one document for a journey stage to Vercel Blob and upserts the
+ * matching VisaDocument row (one row per journey+stage+documentType -- a
+ * re-upload replaces the previous file's URL rather than creating a
+ * duplicate row, since StageDocumentsCard renders at most one row per
+ * expected document type). Ownership is enforced by re-checking the journey
+ * belongs to the signed-in user before touching Blob storage or the DB --
+ * never trust journeyId alone.
+ */
+export async function uploadVisaDocument(
+  journeyId: string,
+  stage: string,
+  documentType: string,
+  file: File
+): Promise<UploadVisaDocumentResult> {
+  const userId = await requireUserId();
+
+  if (!isVisaStage(stage) || !isVisaDocumentType(documentType)) {
+    return { error: "Invalid stage or document type." };
+  }
+
+  const journey = await prisma.visaJourney.findFirst({ where: { id: journeyId, userId }, select: { id: true } });
+  if (!journey) return { error: "Journey not found." };
+
+  if (!file || file.size === 0) return { error: "No file selected." };
+  if (file.size > MAX_DOCUMENT_BYTES) return { error: "File is too large (max 10MB)." };
+  if (!ALLOWED_DOCUMENT_TYPES.has(file.type)) {
+    return { error: "Unsupported file type. Upload a PDF, JPG, PNG, or WEBP." };
+  }
+
+  // Vercel Blob only offers public-access URLs on this plan (no authenticated/
+  // private buckets) -- the pathname includes a random suffix (Blob's
+  // default `addRandomSuffix`) so it's unguessable, but treat this as a
+  // known limitation for a future hardening pass (signed URLs / private
+  // bucket) given these can be passport/ID scans.
+  const extension = file.name.split(".").pop() || "bin";
+  const pathname = `visa-documents/${userId}/${journeyId}/${stage}-${documentType}.${extension}`;
+
+  let blob;
+  try {
+    blob = await put(pathname, file, { access: "public" });
+  } catch (error) {
+    console.error("[uploadVisaDocument] Blob upload failed:", error);
+    return { error: "Upload failed. Please try again." };
+  }
+
+  const existing = await prisma.visaDocument.findFirst({
+    where: { journeyId, stage, documentType },
+    select: { id: true },
+  });
+
+  const document = existing
+    ? await prisma.visaDocument.update({
+        where: { id: existing.id },
+        data: { fileUrl: blob.url, status: "PENDING", aiFeedback: null },
+        select: { id: true, fileUrl: true },
+      })
+    : await prisma.visaDocument.create({
+        data: { journeyId, stage, documentType, fileUrl: blob.url, status: "PENDING" },
+        select: { id: true, fileUrl: true },
+      });
+
+  revalidatePath("/dashboard");
+  return { document: { id: document.id, fileUrl: document.fileUrl ?? blob.url } };
+}

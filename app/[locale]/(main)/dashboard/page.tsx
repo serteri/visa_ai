@@ -74,6 +74,7 @@ export default async function DashboardPage({ params }: PageProps) {
         stage: row.stage,
         documentType: row.documentType,
         status: row.status,
+        fileUrl: row.fileUrl,
       }));
     } catch (error) {
       if (isMissingRelationError(error, "visa_documents")) return [];

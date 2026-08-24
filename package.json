@@ -33,6 +33,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.1.0",
+    "@vercel/blob": "^2.8.0",
     "ai": "^7.0.65",
     "bcryptjs": "^3.0.3",
     "cheerio": "^1.2.0",
