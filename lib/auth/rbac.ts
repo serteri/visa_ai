@@ -26,13 +26,22 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     email: session.user.email,
     role: (session.user.role as Role) ?? "USER",
     market: session.user.market ?? null,
-    approvalStatus: session.user.approvalStatus ?? "APPROVED",
+    // Fail-closed: an unexpected missing value here (a session issued
+    // before this field existed, a nullable-column migration, a future
+    // agent-creation path that forgets to set it) must never be silently
+    // treated as approved. User.approvalStatus is currently a non-nullable
+    // column with a default of "APPROVED" and every agent-creation path
+    // sets it explicitly, so this fallback shouldn't trigger in practice --
+    // it exists purely as a defense-in-depth backstop.
+    approvalStatus: session.user.approvalStatus ?? "PENDING",
   };
 }
 
-/** True once an admin has approved this AGENT account (irrelevant for other roles). */
+/** True once an admin has approved this AGENT account (irrelevant for other roles).
+ *  No `?? "APPROVED"` fallback here -- a missing/undefined approvalStatus must
+ *  compare unequal to "APPROVED" and fail closed, not default to approved. */
 export function isApprovedAgent(user: SessionUser): boolean {
-  return user.role === "AGENT" && (user.approvalStatus ?? "APPROVED") === "APPROVED";
+  return user.role === "AGENT" && user.approvalStatus === "APPROVED";
 }
 
 /**
