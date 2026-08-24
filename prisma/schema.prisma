@@ -358,7 +358,8 @@ model VisaJourney {
   userId             String         @map("user_id")
   visaType           String         @map("visa_type")
   /**
-   * See lib/constants/visa-stages.ts VISA_STAGES -- PREPARATION | ENGLISH_TEST | SKILLS_ASSESSMENT | EOI_NOMINATION | VISA_LODGE.
+   * See lib/constants/visa-stages.ts VISA_STAGES -- PREPARATION | ENGLISH_TEST |
+   * SKILLS_ASSESSMENT | EOI_LODGEMENT | STATE_SPONSORSHIP | VISA_APPLICATION | VISA_GRANTED.
    */
   currentStage       String         @default("PREPARATION") @map("current_stage")
   progressPercentage Int            @default(0) @map("progress_percentage")

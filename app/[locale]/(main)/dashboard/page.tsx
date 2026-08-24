@@ -7,8 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { isMissingRelationError } from "@/lib/db/missing-relation";
-import { JourneyTimelineCard, type VisaJourneySummary } from "./JourneyTimelineCard";
-import { StageDocumentsCard, type VisaDocumentSummary } from "./StageDocumentsCard";
+import { JourneyTimeline, type VisaDocumentSummary, type VisaJourneySummary } from "@/components/dashboard/journey-timeline";
 import { getTranslations, t } from "@/lib/i18n/get-translations";
 import { isValidLocale } from "@/lib/i18n/config";
 
@@ -35,7 +34,7 @@ export default async function DashboardPage({ params }: PageProps) {
 
   // VisaJourney (see prisma/schema.prisma) is a brand-new model -- the table
   // won't exist in the live database until `npx prisma db push` is run, so
-  // this degrades to an empty timeline (JourneyTimelineCard's own empty
+  // this degrades to an empty timeline (JourneyTimeline's own empty
   // state) instead of 500ing, matching the pattern used everywhere else in
   // this app for not-yet-migrated tables.
   async function getVisaJourneys(): Promise<VisaJourneySummary[]> {
@@ -187,9 +186,7 @@ export default async function DashboardPage({ params }: PageProps) {
         </CardContent>
       </Card>
 
-      <JourneyTimelineCard journeys={journeys} />
-
-      <StageDocumentsCard journeys={journeys} documents={documents} />
+      <JourneyTimeline journeys={journeys} documents={documents} />
 
       {(latestCalc || latestQuiz || tracking.length > 0) && (
         <Card>

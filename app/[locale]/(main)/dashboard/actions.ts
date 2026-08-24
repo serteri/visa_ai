@@ -177,7 +177,7 @@ export async function startVisaJourney(visaType: string): Promise<{ id: string }
 
 /**
  * Advances a journey to the next stage (per lib/constants/visa-stages.ts's
- * fixed 5-stage order) and recomputes progressPercentage to match. Scoped by
+ * fixed 7-stage order) and recomputes progressPercentage to match. Scoped by
  * userId in the `where` clause -- updateMany + a 0-row result (rather than
  * update()'s throw-on-not-found) is how this stays silent-safe against a
  * stale client trying to advance a journey it no longer owns, matching the
@@ -206,6 +206,15 @@ export async function updateJourneyStage(journeyId: string): Promise<void> {
   revalidatePath("/dashboard");
 }
 
+/** Alias for updateJourneyStage -- there's no separate per-stage status
+ *  column to update (see stageStatus() in lib/constants/visa-stages.ts:
+ *  status is derived from position relative to currentStage, not stored),
+ *  so "advance the stage" and "mark the current stage's status as
+ *  COMPLETED and move on" are the same operation. Exported under both names
+ *  since journey-timeline.tsx's "Mark as Completed" button is conceptually
+ *  a status change even though it's implemented as an advance. */
+export const updateJourneyStageStatus = updateJourneyStage;
+
 // ─── Visa journey documents (Document Vault upload) ────────────────────────────
 
 import { randomUUID } from "crypto";
@@ -224,7 +233,7 @@ export type UploadVisaDocumentResult = { error?: string; document?: { id: string
  * Uploads one document for a journey stage to a private S3 bucket and
  * upserts the matching VisaDocument row (one row per journey+stage+
  * documentType -- a re-upload replaces the previous object rather than
- * creating a duplicate row, since StageDocumentsCard renders at most one row
+ * creating a duplicate row, since JourneyTimeline renders at most one row
  * per expected document type). Ownership is enforced by re-checking the
  * journey belongs to the signed-in user before touching S3 or the DB --
  * never trust journeyId alone. Never returns a browsable URL: the bucket is
