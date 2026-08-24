@@ -371,10 +371,12 @@ model VisaJourney {
   @@map("visa_journeys")
 }
 
-// Document Vault: per-stage evidence uploads for a VisaJourney. UI-only
-// skeleton for now (see app/[locale]/(main)/dashboard/StageDocumentsCard.tsx)
-// -- no S3/OpenAI wiring yet, so fileUrl/aiFeedback are simply unpopulated
-// until that follow-up work lands. `stage` is denormalized onto the
+// Document Vault: per-stage evidence uploads for a VisaJourney. Stored in a
+// private S3 bucket (lib/aws/s3.ts) -- fileKey is the S3 object key, NEVER a
+// public URL. Every read goes through a short-lived pre-signed GetObject URL
+// (getSecureDocumentUrlAction in app/[locale]/(main)/dashboard/actions.ts),
+// re-checked against ownership on every call, since these are
+// passport/ID-grade PII documents. `stage` is denormalized onto the
 // document (not just derived from the journey's currentStage at query time)
 // because a document uploaded during ENGLISH_TEST should stay tagged
 // ENGLISH_TEST even after the journey advances past it.
@@ -389,7 +391,12 @@ model VisaDocument {
    * See lib/constants/visa-documents.ts VisaDocumentType -- PASSPORT | ENGLISH_TEST_RESULT | SKILLS_ASSESSMENT | ...
    */
   documentType String      @map("document_type")
-  fileUrl      String?     @map("file_url")
+  /**
+   * S3 object key (e.g. "journeys/<journeyId>/<stage>/<uuid>-<filename>"),
+   * not a URL -- the bucket is private. Resolve to a viewable link only via
+   * getSecureDocumentUrlAction's pre-signed URL, never stored/cached here.
+   */
+  fileKey      String?     @map("file_key")
   /**
    * PENDING | AI_VERIFIED | REJECTED | MANUAL_REVIEW
    */

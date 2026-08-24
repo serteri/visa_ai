@@ -12,7 +12,7 @@ import {
   type VisaDocumentStatus,
 } from "@/lib/constants/visa-documents";
 import { isVisaStage, VISA_STAGE_I18N, type VisaStage } from "@/lib/constants/visa-stages";
-import { uploadVisaDocument } from "./actions";
+import { getSecureDocumentUrlAction, uploadVisaDocument } from "./actions";
 import type { VisaJourneySummary } from "./JourneyTimelineCard";
 
 export type VisaDocumentSummary = {
@@ -21,7 +21,7 @@ export type VisaDocumentSummary = {
   stage: string;
   documentType: string;
   status: string;
-  fileUrl: string | null;
+  hasFile: boolean;
 };
 
 function statusBadgeClass(status: VisaDocumentStatus): string {
@@ -84,18 +84,56 @@ function UploadButton({
   );
 }
 
+function ViewDocumentLink({ documentId }: { documentId: string }) {
+  const { t } = useTranslation();
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  function handleView() {
+    setError(null);
+    startTransition(async () => {
+      const result = await getSecureDocumentUrlAction(documentId);
+      if (result.error || !result.url) {
+        setError(result.error ?? "Could not open this file.");
+        return;
+      }
+      // Opens the short-lived (15 min) pre-signed URL directly -- never
+      // stored/rendered as a persistent href, since the S3 bucket is private
+      // and this link expires.
+      window.open(result.url, "_blank", "noopener,noreferrer");
+    });
+  }
+
+  return (
+    <div className="flex flex-col">
+      <button
+        type="button"
+        onClick={handleView}
+        disabled={isPending}
+        className="flex items-center gap-1 text-left text-xs text-indigo-600 hover:underline disabled:opacity-60"
+      >
+        {isPending && <Loader2 className="h-3 w-3 animate-spin" />}
+        {t("portal.documents.view", "View uploaded file")}
+      </button>
+      {error && <p className="text-[11px] text-rose-600">{error}</p>}
+    </div>
+  );
+}
+
 function StageDocumentRow({
+  documentId,
   journeyId,
   stage,
   documentType,
   status,
-  fileUrl,
+  hasFile,
 }: {
+  documentId: string | null;
   journeyId: string;
   stage: string;
   documentType: string;
   status: VisaDocumentStatus | null;
-  fileUrl: string | null;
+  hasFile: boolean;
 }) {
   const { t } = useTranslation();
   const labelKey = VISA_DOCUMENT_TYPE_LABEL_KEY[documentType as keyof typeof VISA_DOCUMENT_TYPE_LABEL_KEY];
@@ -106,16 +144,7 @@ function StageDocumentRow({
         <FileText className="h-4 w-4 shrink-0 text-slate-300" />
         <div className="flex flex-col">
           <span className="text-sm font-medium text-slate-700">{t(labelKey ?? documentType, documentType)}</span>
-          {fileUrl && (
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-indigo-600 hover:underline"
-            >
-              {t("portal.documents.view", "View uploaded file")}
-            </a>
-          )}
+          {hasFile && documentId && <ViewDocumentLink documentId={documentId} />}
         </div>
       </div>
       <div className="flex items-center gap-3">
@@ -124,7 +153,7 @@ function StageDocumentRow({
             {t(VISA_DOCUMENT_STATUS_LABEL_KEY[status], status)}
           </span>
         )}
-        <UploadButton journeyId={journeyId} stage={stage} documentType={documentType} hasFile={Boolean(fileUrl)} />
+        <UploadButton journeyId={journeyId} stage={stage} documentType={documentType} hasFile={hasFile} />
       </div>
     </div>
   );
@@ -155,16 +184,20 @@ function JourneyDocuments({
         </span>
       </div>
       <div className="space-y-2">
-        {expectedTypes.map((documentType) => (
-          <StageDocumentRow
-            key={documentType}
-            journeyId={journey.id}
-            stage={stage}
-            documentType={documentType}
-            status={(documentsByType.get(documentType)?.status as VisaDocumentStatus) ?? null}
-            fileUrl={documentsByType.get(documentType)?.fileUrl ?? null}
-          />
-        ))}
+        {expectedTypes.map((documentType) => {
+          const existing = documentsByType.get(documentType);
+          return (
+            <StageDocumentRow
+              key={documentType}
+              documentId={existing?.id ?? null}
+              journeyId={journey.id}
+              stage={stage}
+              documentType={documentType}
+              status={(existing?.status as VisaDocumentStatus) ?? null}
+              hasFile={existing?.hasFile ?? false}
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -68,13 +68,16 @@ export default async function DashboardPage({ params }: PageProps) {
         where: { journeyId: { in: journeyIds } },
         orderBy: { updatedAt: "desc" },
       });
+      // Never send the raw S3 object key to the client -- fileKey is only
+      // ever resolved server-side, inside getSecureDocumentUrlAction's
+      // ownership-checked pre-signed URL flow.
       return rows.map((row) => ({
         id: row.id,
         journeyId: row.journeyId,
         stage: row.stage,
         documentType: row.documentType,
         status: row.status,
-        fileUrl: row.fileUrl,
+        hasFile: Boolean(row.fileKey),
       }));
     } catch (error) {
       if (isMissingRelationError(error, "visa_documents")) return [];

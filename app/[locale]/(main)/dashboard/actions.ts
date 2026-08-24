@@ -208,22 +208,27 @@ export async function updateJourneyStage(journeyId: string): Promise<void> {
 
 // ─── Visa journey documents (Document Vault upload) ────────────────────────────
 
-import { put } from "@vercel/blob";
+import { randomUUID } from "crypto";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { getS3BucketName, getS3Client } from "@/lib/aws/s3";
 import { isVisaDocumentType } from "@/lib/constants/visa-documents";
 
 const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024; // 10MB, matching /api/document-analyze's limit
 const ALLOWED_DOCUMENT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
+const PRESIGNED_URL_TTL_SECONDS = 15 * 60; // 15 minutes
 
-export type UploadVisaDocumentResult = { error?: string; document?: { id: string; fileUrl: string } };
+export type UploadVisaDocumentResult = { error?: string; document?: { id: string; status: string } };
 
 /**
- * Uploads one document for a journey stage to Vercel Blob and upserts the
- * matching VisaDocument row (one row per journey+stage+documentType -- a
- * re-upload replaces the previous file's URL rather than creating a
- * duplicate row, since StageDocumentsCard renders at most one row per
- * expected document type). Ownership is enforced by re-checking the journey
- * belongs to the signed-in user before touching Blob storage or the DB --
- * never trust journeyId alone.
+ * Uploads one document for a journey stage to a private S3 bucket and
+ * upserts the matching VisaDocument row (one row per journey+stage+
+ * documentType -- a re-upload replaces the previous object rather than
+ * creating a duplicate row, since StageDocumentsCard renders at most one row
+ * per expected document type). Ownership is enforced by re-checking the
+ * journey belongs to the signed-in user before touching S3 or the DB --
+ * never trust journeyId alone. Never returns a browsable URL: the bucket is
+ * private, so viewing goes through getSecureDocumentUrlAction below.
  */
 export async function uploadVisaDocument(
   journeyId: string,
@@ -246,38 +251,80 @@ export async function uploadVisaDocument(
     return { error: "Unsupported file type. Upload a PDF, JPG, PNG, or WEBP." };
   }
 
-  // Vercel Blob only offers public-access URLs on this plan (no authenticated/
-  // private buckets) -- the pathname includes a random suffix (Blob's
-  // default `addRandomSuffix`) so it's unguessable, but treat this as a
-  // known limitation for a future hardening pass (signed URLs / private
-  // bucket) given these can be passport/ID scans.
   const extension = file.name.split(".").pop() || "bin";
-  const pathname = `visa-documents/${userId}/${journeyId}/${stage}-${documentType}.${extension}`;
+  const objectKey = `journeys/${journeyId}/${stage}/${randomUUID()}-${documentType}.${extension}`;
 
-  let blob;
+  let bucket: string;
   try {
-    blob = await put(pathname, file, { access: "public" });
+    bucket = getS3BucketName();
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await getS3Client().send(
+      new PutObjectCommand({ Bucket: bucket, Key: objectKey, Body: buffer, ContentType: file.type })
+    );
   } catch (error) {
-    console.error("[uploadVisaDocument] Blob upload failed:", error);
+    console.error("[uploadVisaDocument] S3 upload failed:", error);
     return { error: "Upload failed. Please try again." };
   }
 
   const existing = await prisma.visaDocument.findFirst({
     where: { journeyId, stage, documentType },
-    select: { id: true },
+    select: { id: true, fileKey: true },
   });
 
   const document = existing
     ? await prisma.visaDocument.update({
         where: { id: existing.id },
-        data: { fileUrl: blob.url, status: "PENDING", aiFeedback: null },
-        select: { id: true, fileUrl: true },
+        data: { fileKey: objectKey, status: "PENDING", aiFeedback: null },
+        select: { id: true, status: true },
       })
     : await prisma.visaDocument.create({
-        data: { journeyId, stage, documentType, fileUrl: blob.url, status: "PENDING" },
-        select: { id: true, fileUrl: true },
+        data: { journeyId, stage, documentType, fileKey: objectKey, status: "PENDING" },
+        select: { id: true, status: true },
       });
 
+  // Best-effort cleanup of the replaced object -- never fails the upload
+  // that already succeeded above (the new DB row/status is what matters).
+  if (existing?.fileKey && existing.fileKey !== objectKey) {
+    try {
+      await getS3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: existing.fileKey }));
+    } catch (error) {
+      console.error("[uploadVisaDocument] Failed to delete replaced S3 object (non-blocking):", error);
+    }
+  }
+
   revalidatePath("/dashboard");
-  return { document: { id: document.id, fileUrl: document.fileUrl ?? blob.url } };
+  return { document };
+}
+
+export type SecureDocumentUrlResult = { error?: string; url?: string };
+
+/**
+ * Resolves a VisaDocument to a short-lived (15 minute) pre-signed GetObject
+ * URL -- the only way to view a Document Vault file, since the S3 bucket is
+ * private. Authorization: currently only the journey's own owner (the
+ * signed-in consumer) can view their documents -- VisaJourney has no
+ * agent/report linkage yet, so there is no legitimate AGENT/ADMIN access
+ * path to check against today. If/when a journey is linked to a CRM lead
+ * (UserReport) or an assigned agent, extend the `where` clause below rather
+ * than trusting a role claim alone -- re-verify ownership/assignment against
+ * the DB on every call, exactly as done here.
+ */
+export async function getSecureDocumentUrlAction(documentId: string): Promise<SecureDocumentUrlResult> {
+  const userId = await requireUserId();
+
+  const document = await prisma.visaDocument.findFirst({
+    where: { id: documentId, journey: { userId } },
+    select: { fileKey: true },
+  });
+  if (!document) return { error: "Document not found." };
+  if (!document.fileKey) return { error: "No file has been uploaded for this document yet." };
+
+  try {
+    const command = new GetObjectCommand({ Bucket: getS3BucketName(), Key: document.fileKey });
+    const url = await getSignedUrl(getS3Client(), command, { expiresIn: PRESIGNED_URL_TTL_SECONDS });
+    return { url };
+  } catch (error) {
+    console.error("[getSecureDocumentUrlAction] Failed to generate pre-signed URL:", error);
+    return { error: "Could not generate a secure link. Please try again." };
+  }
 }
