@@ -12,9 +12,12 @@ import { useTranslation } from "@/contexts/language-context";
  *
  * Big serif headline, a single wide search bar over the full ANZSCO
  * occupation index (lazily imported so it never bloats the initial bundle),
- * quick-occupation pills, and the trust/scarcity strip underneath. Searching
- * flows into the existing ANZSCO Finder (`/tools/anzsco-finder?q=...`), which
- * already renders code, skill level, duties and the full-check CTA.
+ * quick-occupation pills, and the trust/scarcity strip underneath. Every
+ * search/select/toggle action routes straight into `/full-check` (the
+ * readiness-report intake form), not the ANZSCO Finder tool -- prefilling
+ * its `occupation` and `country` query params (see
+ * app/[locale]/(main)/full-check/page.tsx's searchParams shape; note the
+ * param is `occupation`, not `q`).
  */
 interface HeroProps {
   locale: string;
@@ -88,9 +91,11 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
 
     const trimmed = query.trim();
     const params = new URLSearchParams({ country: code });
-    if (trimmed) params.set("q", trimmed);
+    // "occupation", not "q" -- that's the param full-check/page.tsx's
+    // searchParams actually reads to prefill the intake form.
+    if (trimmed) params.set("occupation", trimmed);
     startCountryNavigation(() => {
-      router.push(`/${locale}/tools/anzsco-finder?${params.toString()}`);
+      router.push(`/${locale}/full-check?${params.toString()}`);
     });
   }
 
@@ -177,7 +182,9 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   }, []);
 
   const goToOccupation = (code: string) => {
-    router.push(`/${locale}/tools/anzsco-finder?q=${encodeURIComponent(code)}&country=${targetCountry}`);
+    // "occupation", not "q" -- full-check/page.tsx's searchParams reads
+    // `occupation` to prefill the intake form; `q` would be silently ignored.
+    router.push(`/${locale}/full-check?occupation=${encodeURIComponent(code)}&country=${targetCountry}`);
   };
 
   /**
