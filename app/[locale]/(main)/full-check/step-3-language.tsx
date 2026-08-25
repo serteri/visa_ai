@@ -90,6 +90,13 @@ export function Step3Language(props: Step3Props) {
               <RequiredMark />
             </Label>
             <select id="waitlist-qualification-awarded-in-australia" name="qualificationAwardedInAustralia" value={qualificationAwardedInAustralia} onChange={(e) => { const v = e.target.value; setQualificationAwardedInAustralia(v); if (v !== "yes") { setQualificationRegionalAustralia(""); setSpecialistEducationStemResponse(""); } }} className={selectClassName}>
+              {/* Explicit empty option matching the "" initial state -- without
+                  it, a native <select> silently falls back to displaying its
+                  FIRST option ("Yes") whenever `value` doesn't match any
+                  <option>, even though React's own state is still "" (nothing
+                  chosen). That made the field look pre-answered "Yes" before
+                  the user ever touched it. */}
+              <option value="" disabled hidden>{txt("Seçin", "Select", "请选择")}</option>
               <option value="yes">{txt("Evet", "Yes", "是")}</option>
               <option value="no">{txt("Hayır", "No", "否")}</option>
             </select>
@@ -111,6 +118,7 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label>{txt("Yabancı diploma tanındı mı?", "Overseas qualification recognized?", "海外学历已获认可？")}<RequiredMark /></Label>
               <select name="isQualificationRecognized" value={isQualificationRecognized} onChange={(e) => setIsQualificationRecognized(e.target.value)} className={selectClassName}>
+                <option value="" disabled hidden>{txt("Seçin", "Select", "请选择")}</option>
                 <option value="yes">{txt("Evet", "Yes", "是")}</option>
                 <option value="no">{txt("Hayır", "No", "否")}</option>
               </select>
