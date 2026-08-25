@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type MouseEvent } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { activeCountries, countryComplianceBadge } from "@/lib/countries";
 import { useTranslation } from "@/contexts/language-context";
@@ -48,6 +48,12 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   const searchRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<Occupation[] | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  // useTransition's isPending, not a manually-tracked boolean: router.push
+  // doesn't return a promise that resolves on navigation completion, but
+  // wrapping it in startTransition gives an accurate "still navigating"
+  // signal from React itself, including staying true through the target
+  // route's server render.
+  const [isNavigatingCountry, startCountryNavigation] = useTransition();
 
   // Headline/subheadline fade-slide crossfade on country change: drop
   // opacity immediately, then fade back in on the next frame. Triggered
@@ -57,6 +63,15 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   // since this is already the moment user intent is known.
   const [textVisible, setTextVisible] = useState(true);
 
+  /**
+   * Clicking AU/CA used to only flip local UI state (toggle color, headline/
+   * placeholder copy) with no actual navigation -- it felt like a dead
+   * button because nothing on the page ever *happened*. Now it immediately
+   * routes into the ANZSCO Finder scoped to the chosen country, carrying
+   * whatever's currently typed in the search box (or nothing, which
+   * AnzscoSearchTool already handles by falling back to a default
+   * occupation rather than a blank page).
+   */
   function selectTargetCountry(code: "au" | "ca") {
     setTargetCountry(code);
     setTextVisible(false);
@@ -70,6 +85,13 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
     // obvious -- the user just told us which country, searching is the
     // natural next step.
     searchInputRef.current?.focus();
+
+    const trimmed = query.trim();
+    const params = new URLSearchParams({ country: code });
+    if (trimmed) params.set("q", trimmed);
+    startCountryNavigation(() => {
+      router.push(`/${locale}/tools/anzsco-finder?${params.toString()}`);
+    });
   }
 
   const isTr = locale === "tr";
@@ -277,7 +299,11 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
         {/* Wide search bar — Google-style, results flow into ANZSCO Finder */}
         <div ref={searchRef} className="relative mt-10 w-full max-w-2xl">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--cf-accent)]" />
+            {isNavigatingCountry ? (
+              <Loader2 className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 animate-spin text-[var(--cf-accent)]" />
+            ) : (
+              <Search className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--cf-accent)]" />
+            )}
             <input
               ref={searchInputRef}
               type="search"
@@ -418,14 +444,19 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
                 key={code}
                 type="button"
                 onClick={() => selectTargetCountry(code)}
+                disabled={isNavigatingCountry}
                 aria-pressed={targetCountry === code}
-                className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2 text-sm transition-all duration-200 ${
+                className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2 text-sm transition-all duration-200 disabled:cursor-wait ${
                   targetCountry === code
                     ? "scale-105 transform bg-[#d8a65c] font-bold text-[#0f1e33] shadow-md"
                     : "bg-transparent font-semibold text-[var(--cf-muted)] opacity-50 hover:opacity-100"
                 }`}
               >
-                <span className="text-base">{code === "au" ? "🇦🇺" : "🇨🇦"}</span>
+                {isNavigatingCountry && targetCountry === code ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <span className="text-base">{code === "au" ? "🇦🇺" : "🇨🇦"}</span>
+                )}
                 {code === "au"
                   ? isTr
                     ? "Avustralya"
