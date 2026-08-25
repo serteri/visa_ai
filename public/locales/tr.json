@@ -841,5 +841,13 @@
   "home.reportShowcase.features.occupationInsights.title": "Mesleki Kota ve Eyalet Verileri",
   "home.reportShowcase.features.occupationInsights.description": "Meslek kotası verileri, davet trendleri ve hangi eyaletlerin sizin mesleğinizi aktif olarak aday gösterdiği.",
   "home.reportShowcase.features.documentChecklist.title": "Belge Kontrol Listesi",
-  "home.reportShowcase.features.documentChecklist.description": "Değerlendirme kurumlarının ve İçişleri Bakanlığı'nın isteyeceği tam belge listesi."
+  "home.reportShowcase.features.documentChecklist.description": "Değerlendirme kurumlarının ve İçişleri Bakanlığı'nın isteyeceği tam belge listesi.",
+  "home.hero.headline.au": "Avustralya Göçmenlik Sürecinizi Saniyeler İçinde Keşfedin",
+  "home.hero.headline.ca": "Kanada Göçmenlik Sürecinizi Saniyeler İçinde Keşfedin",
+  "home.hero.subheadline.au": "Mesleğinizi aratın, vize uyumluluğunuzu ve özel değerlendirme kurumunuzu anında öğrenin.",
+  "home.hero.subheadline.ca": "Mesleğinizi aratın, NOC uygunluğunuzu ve Express Entry patikanızı anında öğrenin.",
+  "home.hero.placeholder.au": "Örn: Software Engineer, Chef, Mechanic...",
+  "home.hero.placeholder.ca": "Örn: Software Engineer, Chef, NOC 21231...",
+  "home.hero.searchNoteDefault.au": "1.400'den fazla ANZSCO mesleği içinde arama yapın",
+  "home.hero.searchNoteDefault.ca": "Kanada NOC meslekleri içinde arama yapın"
 }

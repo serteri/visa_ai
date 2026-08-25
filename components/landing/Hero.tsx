@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
 import { toast } from "sonner";
 import { activeCountries, countryComplianceBadge } from "@/lib/countries";
+import { useTranslation } from "@/contexts/language-context";
 
 /**
  * Hero — search-first, Google-like landing hero (redesign).
@@ -39,12 +40,37 @@ const QUICK_PILLS = [
 
 export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Occupation[]>([]);
   const [open, setOpen] = useState(false);
   const [targetCountry, setTargetCountry] = useState<"au" | "ca">("au");
   const searchRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<Occupation[] | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Headline/subheadline fade-slide crossfade on country change: drop
+  // opacity immediately, then fade back in on the next frame. Triggered
+  // directly from the click handler (not a useEffect watching
+  // targetCountry) so the setState calls happen in an event handler, not
+  // an effect body -- avoids a cascading-render footgun for no benefit,
+  // since this is already the moment user intent is known.
+  const [textVisible, setTextVisible] = useState(true);
+
+  function selectTargetCountry(code: "au" | "ca") {
+    setTargetCountry(code);
+    setTextVisible(false);
+    // setTimeout, not requestAnimationFrame: rAF only fires on an actual
+    // paint, which a backgrounded/non-visible tab can suspend indefinitely
+    // (confirmed while testing this in a headless browser context) --
+    // setTimeout still fires regardless of tab visibility, so the fade-in
+    // reliably completes instead of getting stuck at opacity-0.
+    setTimeout(() => setTextVisible(true), 20);
+    // Auto-focus the search input so the next action (searching) is
+    // obvious -- the user just told us which country, searching is the
+    // natural next step.
+    searchInputRef.current?.focus();
+  }
 
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -155,23 +181,27 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
     goToOccupation(occ.code);
   };
 
-  const headline = isTr
-    ? "Avustralya Göçmenlik Sürecinizi Saniyeler İçinde Keşfedin"
-    : isZh
-      ? "几秒内发现您的澳大利亚移民路径"
-      : "Discover Your Australia Migration Path in Seconds";
+  // Country-dependent copy -- sourced from public/locales/{locale}.json
+  // (home.hero.*), not hardcoded, so it's translated per-locale AND swaps
+  // per-country from the same key namespace.
+  const headline = t(
+    `home.hero.headline.${targetCountry}`,
+    targetCountry === "ca"
+      ? "Discover Your Canada Migration Path in Seconds"
+      : "Discover Your Australia Migration Path in Seconds"
+  );
 
-  const subheadline = isTr
-    ? "Mesleğinizi aratın, vize uyumluluğunuzu ve özel değerlendirme kurumunuzu anında öğrenin."
-    : isZh
-      ? "搜索您的职业，立即了解您的签证资格与对应的官方评估机构。"
-      : "Search your occupation and instantly learn your visa eligibility and dedicated assessing authority.";
+  const subheadline = t(
+    `home.hero.subheadline.${targetCountry}`,
+    targetCountry === "ca"
+      ? "Search your occupation and instantly learn your NOC eligibility and Express Entry pathway."
+      : "Search your occupation and instantly learn your visa eligibility and dedicated assessing authority."
+  );
 
-  const placeholder = isTr
-    ? "Örn: Software Engineer, Chef, Mechanic..."
-    : isZh
-      ? "例如：软件工程师、厨师、机械师…"
-      : "e.g. Software Engineer, Chef, Mechanic...";
+  const placeholder = t(
+    `home.hero.placeholder.${targetCountry}`,
+    targetCountry === "ca" ? "e.g. Software Engineer, Chef, NOC 21231..." : "e.g. Software Engineer, Chef, Mechanic..."
+  );
 
   const searchNote = useMemo(() => {
     const q = query.trim();
@@ -182,12 +212,11 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           ? `找到 ${results.length} 个匹配职业`
           : `${results.length} matching occupations`;
     }
-    return isTr
-      ? "1.400'den fazla ANZSCO mesleği içinde arama yapın"
-      : isZh
-        ? "搜索 1,400+ 个 ANZSCO 职业"
-        : "Search across 1,400+ ANZSCO occupations";
-  }, [open, query, results.length, isTr, isZh]);
+    return t(
+      `home.hero.searchNoteDefault.${targetCountry}`,
+      targetCountry === "ca" ? "Search across Canadian NOC occupations" : "Search across 1,400+ ANZSCO occupations"
+    );
+  }, [open, query, results.length, isTr, isZh, targetCountry, t]);
 
   return (
     <section className="case-file relative overflow-hidden bg-[var(--cf-bg)] pb-20 pt-16 sm:pb-24 sm:pt-20">
@@ -229,11 +258,19 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           </a>
         ) : null}
 
-        <h1 className="cf-serif max-w-[18ch] text-4xl font-medium leading-[1.08] tracking-tight text-[var(--cf-fg)] sm:text-5xl lg:text-6xl">
+        <h1
+          className={`cf-serif max-w-[18ch] text-4xl font-medium leading-[1.08] tracking-tight text-[var(--cf-fg)] transition-all duration-300 ease-out sm:text-5xl lg:text-6xl ${
+            textVisible ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
+          }`}
+        >
           {headline}
         </h1>
 
-        <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-[var(--cf-muted)] sm:text-xl">
+        <p
+          className={`mt-6 max-w-[52ch] text-lg leading-relaxed text-[var(--cf-muted)] transition-all duration-300 ease-out sm:text-xl ${
+            textVisible ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
+          }`}
+        >
           {subheadline}
         </p>
 
@@ -242,6 +279,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           <div className="relative">
             <Search className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--cf-accent)]" />
             <input
+              ref={searchInputRef}
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -379,7 +417,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
               <button
                 key={code}
                 type="button"
-                onClick={() => setTargetCountry(code)}
+                onClick={() => selectTargetCountry(code)}
                 aria-pressed={targetCountry === code}
                 className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2 text-sm transition-all duration-200 ${
                   targetCountry === code

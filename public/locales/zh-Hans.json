@@ -834,5 +834,13 @@
   "home.reportShowcase.features.occupationInsights.title": "职业配额与州数据",
   "home.reportShowcase.features.occupationInsights.description": "职业配额数据、邀请趋势，以及哪些州正在积极担保您的职业。",
   "home.reportShowcase.features.documentChecklist.title": "文件清单",
-  "home.reportShowcase.features.documentChecklist.description": "评估机构与内政部将要求提供的确切文件清单。"
+  "home.reportShowcase.features.documentChecklist.description": "评估机构与内政部将要求提供的确切文件清单。",
+  "home.hero.headline.au": "几秒内发现您的澳大利亚移民路径",
+  "home.hero.headline.ca": "几秒内发现您的加拿大移民路径",
+  "home.hero.subheadline.au": "搜索您的职业，立即了解您的签证资格与对应的官方评估机构。",
+  "home.hero.subheadline.ca": "搜索您的职业，立即了解您的 NOC 资格与快速通道（Express Entry）路径。",
+  "home.hero.placeholder.au": "例如：软件工程师、厨师、机械师…",
+  "home.hero.placeholder.ca": "例如：软件工程师、厨师、NOC 21231…",
+  "home.hero.searchNoteDefault.au": "搜索 1,400+ 个 ANZSCO 职业",
+  "home.hero.searchNoteDefault.ca": "搜索加拿大 NOC 职业"
 }

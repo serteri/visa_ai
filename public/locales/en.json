@@ -834,5 +834,13 @@
   "home.reportShowcase.features.occupationInsights.title": "Occupation Insights",
   "home.reportShowcase.features.occupationInsights.description": "Occupation ceiling data, invitation trends, and which states are actively nominating your role.",
   "home.reportShowcase.features.documentChecklist.title": "Document Checklist",
-  "home.reportShowcase.features.documentChecklist.description": "The exact documents assessing authorities and the Department of Home Affairs will ask for."
+  "home.reportShowcase.features.documentChecklist.description": "The exact documents assessing authorities and the Department of Home Affairs will ask for.",
+  "home.hero.headline.au": "Discover Your Australia Migration Path in Seconds",
+  "home.hero.headline.ca": "Discover Your Canada Migration Path in Seconds",
+  "home.hero.subheadline.au": "Search your occupation and instantly learn your visa eligibility and dedicated assessing authority.",
+  "home.hero.subheadline.ca": "Search your occupation and instantly learn your NOC eligibility and Express Entry pathway.",
+  "home.hero.placeholder.au": "e.g. Software Engineer, Chef, Mechanic...",
+  "home.hero.placeholder.ca": "e.g. Software Engineer, Chef, NOC 21231...",
+  "home.hero.searchNoteDefault.au": "Search across 1,400+ ANZSCO occupations",
+  "home.hero.searchNoteDefault.ca": "Search across Canadian NOC occupations"
 }
