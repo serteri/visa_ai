@@ -1152,26 +1152,18 @@ export async function submitFullCheckWaitlist(
     };
   }
 
-  // ── Anti-Abuse: Email duplicate check ──────────────────────────────────────
-  if (!isAdmin) {
-    const existingReport = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
-      `SELECT id FROM user_reports WHERE email = $1 LIMIT 1`,
-      email
-    );
-    if (existingReport.length > 0) {
-      if (analysisProgressId) {
-        await failFullCheckProgress(analysisProgressId, "Duplicate email");
-      }
-      return {
-        status: "error",
-        message: isTr
-          ? "Bu e-posta ile daha önce rapor oluşturulmuş. E-postanızı kontrol edin."
-          : isZh
-            ? "该邮箱已生成过报告，请检查您的邮箱。"
-            : "You have already generated a report. Check your email.",
-      };
-    }
-  }
+  // The one-report-per-email anti-abuse check that used to live here was
+  // removed for the same reason as the IP rate limit below: the system is
+  // now full-time Premium (paid, $49/report via Stripe), so blocking a
+  // repeat submission from the same email mainly punished legitimate paying
+  // customers (a household submitting for multiple family members, or
+  // wanting a fresh report after a life change) rather than free-tier abuse,
+  // which is no longer the threat model. UserReport.email has no DB-level
+  // unique constraint (confirmed in prisma/schema.prisma), and
+  // createUserReport always INSERTs a fresh row with a new
+  // crypto.randomUUID() id -- never an upsert keyed by email -- so every
+  // submission, repeat email or not, gets its own reportId and its own
+  // Stripe Checkout session further down this flow.
 
   // IP rate limiting removed: the system is now full-time Premium
   // (paid) rather than a free-quota beta, so blocking a second submission
