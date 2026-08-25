@@ -323,8 +323,12 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             <button
               key={pill}
               type="button"
-              onClick={() => setQuery(pill)}
-              className="rounded-full border border-[var(--cf-line)] px-3.5 py-1.5 text-xs font-medium text-[var(--cf-muted)] transition-colors hover:border-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
+              // Navigates immediately (carrying the currently-selected
+              // targetCountry) rather than only pre-filling the search box --
+              // a quick pill is a shortcut past typing, not a second step
+              // that still requires pressing Enter.
+              onClick={() => goToOccupation(pill)}
+              className="cursor-pointer rounded-full border border-[var(--cf-line)] px-3.5 py-1.5 text-xs font-medium text-[var(--cf-muted)] transition-all duration-200 hover:border-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
             >
               {pill}
             </button>
@@ -353,15 +357,23 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             action and confused visitors about which one to press. This is
             a single, unambiguous choice that scopes whichever search the
             visitor is about to run (or has just run), not a second entry
-            point into the funnel. */}
-        <div className="mt-4 flex flex-col items-center gap-2">
+            point into the funnel.
+
+            `relative z-20` on the wrapper is defensive: nothing in this
+            section currently overlaps it (verified -- the noise-texture
+            background at the top of this component is `pointer-events-none`
+            and the search-suggestions dropdown is a sibling earlier in the
+            DOM, not a positioned ancestor), but a toggle a user reported as
+            "dead" is cheap insurance against any future absolutely-positioned
+            decoration landing on top of it. */}
+        <div className="relative z-20 mt-4 flex flex-col items-center gap-2">
           <span className="text-xs font-medium uppercase tracking-wide text-[var(--cf-muted)]">
             {isTr ? "Hedef Ülke" : isZh ? "目标国家" : "Target Country"}
           </span>
           <div
             role="group"
             aria-label={isTr ? "Hedef ülke" : isZh ? "目标国家" : "Target country"}
-            className="inline-flex items-center rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] p-1"
+            className="pointer-events-auto inline-flex items-center gap-1 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] p-1"
           >
             {(["au", "ca"] as const).map((code) => (
               <button
@@ -369,10 +381,10 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
                 type="button"
                 onClick={() => setTargetCountry(code)}
                 aria-pressed={targetCountry === code}
-                className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition-all ${
+                className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2 text-sm transition-all duration-200 ${
                   targetCountry === code
-                    ? "bg-[var(--cf-accent)] text-[var(--cf-bg)] shadow-sm"
-                    : "text-[var(--cf-muted)] hover:text-white"
+                    ? "scale-105 transform bg-[#d8a65c] font-bold text-[#0f1e33] shadow-md"
+                    : "bg-transparent font-semibold text-[var(--cf-muted)] opacity-50 hover:opacity-100"
                 }`}
               >
                 <span className="text-base">{code === "au" ? "🇦🇺" : "🇨🇦"}</span>
