@@ -3,17 +3,43 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Mail, MailCheck } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
+
+import { TrustBanner } from "@/components/trust-banner";
 
 export default function SignInPage() {
   const params = useParams();
   const locale = (params.locale as string) ?? "en";
   const router = useRouter();
 
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  const [magicLinkEmail, setMagicLinkEmail] = useState("");
+  const [magicLinkError, setMagicLinkError] = useState("");
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [isSendingMagicLink, startMagicLinkTransition] = useTransition();
+
+  function handleMagicLink(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setMagicLinkError("");
+    const email = magicLinkEmail.trim();
+    if (!email) return;
+
+    startMagicLinkTransition(async () => {
+      const result = await signIn("email", { email, redirect: false });
+      if (result?.error) {
+        setMagicLinkError("Could not send the sign-in link. Please try again.");
+        return;
+      }
+      setMagicLinkSent(true);
+      toast.success("Check your email -- we've sent you a secure sign-in link.");
+    });
+  }
 
   async function handleCredentials(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -50,7 +76,7 @@ export default function SignInPage() {
               Logi<span className="text-violet-600">Visa</span>
             </p>
             <h1 className="mt-2 text-lg font-bold text-slate-900">Welcome back</h1>
-            <p className="mt-1 text-sm text-slate-500">Sign in to your account</p>
+            <p className="mt-1 text-sm text-slate-500">Sign in to your Visa Vault</p>
           </div>
 
           {/* Google */}
@@ -76,71 +102,144 @@ export default function SignInPage() {
             <div className="h-px flex-1 bg-slate-200" />
           </div>
 
-          {/* Credentials form */}
-          <form onSubmit={handleCredentials} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="mb-1.5 block text-xs font-medium text-slate-700">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="you@example.com"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="mb-1.5 block text-xs font-medium text-slate-700">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-11 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <p className="rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-xs text-rose-600">
-                {error}
+          {/* Magic link -- the primary, passwordless sign-in path */}
+          {magicLinkSent ? (
+            <div className="flex flex-col items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-6 text-center">
+              <MailCheck className="h-8 w-8 text-emerald-600" />
+              <p className="text-sm font-semibold text-emerald-900">Check your email</p>
+              <p className="text-xs text-emerald-700">
+                We&apos;ve sent a secure sign-in link to <span className="font-medium">{magicLinkEmail}</span>. It
+                expires in 10 minutes.
               </p>
-            )}
+              <button
+                type="button"
+                onClick={() => setMagicLinkSent(false)}
+                className="mt-1 text-xs font-medium text-emerald-700 underline-offset-2 hover:underline"
+              >
+                Use a different email
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleMagicLink} className="space-y-3">
+              <div>
+                <label htmlFor="magic-link-email" className="mb-1.5 block text-xs font-medium text-slate-700">
+                  Email
+                </label>
+                <input
+                  id="magic-link-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={magicLinkEmail}
+                  onChange={(e) => setMagicLinkEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
-            >
-              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              Sign In
-            </button>
-          </form>
+              {magicLinkError && (
+                <p className="rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-xs text-rose-600">
+                  {magicLinkError}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSendingMagicLink || !magicLinkEmail.trim()}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+              >
+                {isSendingMagicLink ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Mail className="h-4 w-4" />
+                )}
+                Send Magic Link
+              </button>
+            </form>
+          )}
+
+          {/* Password fallback -- kept for existing password-based accounts,
+              collapsed by default since magic link is now the primary path. */}
+          {!magicLinkSent && (
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => setShowPasswordForm((v) => !v)}
+                className="text-xs text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
+              >
+                {showPasswordForm ? "Hide password sign-in" : "Have a password? Sign in with it instead"}
+              </button>
+
+              {showPasswordForm && (
+                <form onSubmit={handleCredentials} className="mt-3 space-y-4">
+                  <div>
+                    <label htmlFor="email" className="mb-1.5 block text-xs font-medium text-slate-700">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="password" className="mb-1.5 block text-xs font-medium text-slate-700">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        autoComplete="current-password"
+                        placeholder="••••••••"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-11 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {error && (
+                    <p className="rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-xs text-rose-600">
+                      {error}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-800 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-900 disabled:opacity-60"
+                  >
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    Sign In
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
 
           <p className="mt-5 text-center text-xs text-slate-500">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href={`/${locale}/register`} className="font-medium text-indigo-600 hover:underline">
               Sign up
             </Link>
           </p>
         </div>
+
+        <TrustBanner className="mt-4" />
       </div>
     </main>
   );

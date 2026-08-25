@@ -1,9 +1,11 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import Email from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { sendVerificationRequest } from "@/lib/email/magic-link";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -25,6 +27,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+    }),
+    // Passwordless "magic link" sign-in for the consumer Visa Vault
+    // (app/[locale]/(main)/sign-in). Uses the id "email" (this provider's
+    // default), so the client calls signIn("email", { email }). Delivery is
+    // via Resend, not SMTP -- sendVerificationRequest below fully replaces
+    // the provider's default nodemailer-based send path (see
+    // lib/email/magic-link.ts), so `server` is never actually connected to.
+    // It still has to be set to *something* though: the underlying
+    // Nodemailer() provider factory throws at construction time (which
+    // happens on every request, including in proxy.ts's Edge middleware)
+    // if `server` is missing, regardless of whether sendVerificationRequest
+    // is overridden. Token storage/verification is handled by PrismaAdapter
+    // against the VerificationToken model already in prisma/schema.prisma.
+    Email({
+      server: { host: "smtp.resend.com", port: 465, auth: { user: "resend", pass: "unused" } },
+      from: "LogiVisa <noreply@logivisa.com>",
+      maxAge: 10 * 60, // 10 minutes -- link is single-use and short-lived
+      sendVerificationRequest: ({ identifier, url }) => sendVerificationRequest({ identifier, url }),
     }),
     Credentials({
       async authorize(credentials) {

@@ -6,6 +6,7 @@ import { Check, ChevronDown, FileText, Loader2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { TrustBanner } from "@/components/trust-banner";
 import { useTranslation } from "@/contexts/language-context";
 import {
   DOCUMENTS_BY_STAGE,
@@ -404,6 +405,7 @@ export function JourneyTimeline({
                 documents={documents.filter((d) => d.journeyId === journey.id)}
               />
             ))}
+            <TrustBanner className="border-t border-slate-100 pt-4" />
           </div>
         )}
       </CardContent>
