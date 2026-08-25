@@ -7,9 +7,7 @@ import {
   type StripeProductType,
 } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
-import { generateAndSendReport } from "@/lib/services/report-service";
 import { getUserReportById } from "@/src/lib/user-reports";
-import { FREE_PROMO_LIMIT } from "@/lib/services/free-promo";
 
 export const dynamic = "force-dynamic";
 
@@ -54,14 +52,13 @@ export async function POST(request: NextRequest) {
 
     // Ownership check: reportId is a UUID, not a secret -- if it ever leaks
     // (referrer header, browser history, a shared screenshot), anyone who
-    // has it could otherwise grant themselves a free-promo slot on someone
-    // else's report and have that report's PDF emailed to their own inbox
-    // (generateAndSendReport uses whatever email is passed in). Requiring
-    // the submitted email to match the report's own stored email closes
-    // that off -- the "credential" for an anonymous report is its UUID
-    // *and* the email it was created under, not the UUID alone. Applies to
-    // both the free-promo grant and the Stripe path below, since both
-    // ultimately deliver the PDF using body.email.
+    // has it could otherwise start a Stripe checkout for someone else's
+    // report and have that report's PDF emailed to their own inbox once
+    // paid (the webhook's generateAndSendReport call uses whatever email
+    // is on the Stripe session). Requiring the submitted email to match
+    // the report's own stored email closes that off -- the "credential"
+    // for an anonymous report is its UUID *and* the email it was created
+    // under, not the UUID alone.
     if (productType === "premium" && body.reportId) {
       const record = await getUserReportById(body.reportId);
       if (!record) {
@@ -80,47 +77,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Free-promo path: only applies to report unlocks (productType "premium")
-    // that identify a specific UserReport via reportId. The UPDATE's WHERE
-    // clause re-checks the live count inside the same statement, so it's
-    // atomic under concurrent requests -- no separate count-then-update race,
-    // no locking/retry logic needed.
-    if (productType === "premium" && body.reportId) {
-      try {
-        const granted = await prisma.$queryRaw<{ id: string }[]>`
-          UPDATE user_reports
-          SET is_free_promo = true,
-              is_unlocked = true,
-              payment_status = 'paid',
-              unlock_method = 'free_promo',
-              unlocked_at = now()
-          WHERE id = ${body.reportId}
-            AND is_free_promo = false
-            AND (SELECT COUNT(*) FROM user_reports WHERE is_free_promo = true) < ${FREE_PROMO_LIMIT}
-          RETURNING id
-        `;
-
-        if (granted.length > 0) {
-          // Best-effort: generateAndSendReport already swallows its own
-          // PDF/email errors and never throws, but this call is wrapped
-          // anyway so a bug in that contract can never take down a checkout
-          // response that already told the client the report is unlocked.
-          try {
-            await generateAndSendReport(body.reportId, body.email ?? "");
-          } catch (reportError) {
-            console.error("[checkout] free-promo PDF/email generation failed (non-fatal)", reportError);
-          }
-
-          return NextResponse.json({
-            url: `${baseUrl}/${locale}/checkout/success?product=${productType}&free=true&reportId=${body.reportId}`,
-          });
-        }
-        // No row updated: either the promo quota is full, or this report was
-        // already granted/unlocked previously. Fall through to Stripe below.
-      } catch (promoError) {
-        console.error("[checkout] free-promo grant failed, falling back to Stripe", promoError);
-        // Fall through to Stripe rather than failing the request outright.
-      }
+    // Free-promo ("first 14 users free") was permanently cancelled as a
+    // product decision -- every non-admin unlock now goes through Stripe,
+    // no exceptions. The isFreePromo-gated bypass that used to live here
+    // (an atomic UPDATE ... WHERE is_free_promo=false AND count < limit,
+    // returning success_url directly without a real Stripe session) is
+    // gone; UserReport.isFreePromo stays in the schema as historical data
+    // for reports already granted under the old promo, just never written
+    // to again.
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json(
+        { error: "Stripe keys are missing from environment variables." },
+        { status: 500 }
+      );
     }
 
     const stripe = getStripeClient();
