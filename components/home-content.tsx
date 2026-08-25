@@ -9,6 +9,7 @@ import { InstitutionsMarquee } from "@/components/landing/institutions-marquee";
 import { StatsBar } from "@/components/landing/StatsBar";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { CaseLog } from "@/components/landing/CaseLog";
+import { PremiumReportShowcase } from "@/components/sections/PremiumReportShowcase";
 import { PdfGuides } from "@/components/landing/PdfGuides";
 import { FeaturesBento } from "@/components/landing/FeaturesBento";
 import { Faq } from "@/components/landing/Faq";
@@ -76,6 +77,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
       <StatsBar locale={locale} />
       <HowItWorks locale={locale} />
       <CaseLog locale={locale} />
+      <PremiumReportShowcase />
       <PdfGuides
         locale={locale}
         hasFreeSlots={hasFreeSlots}

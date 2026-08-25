@@ -42,6 +42,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Occupation[]>([]);
   const [open, setOpen] = useState(false);
+  const [targetCountry, setTargetCountry] = useState<"au" | "ca">("au");
   const searchRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<Occupation[] | null>(null);
 
@@ -128,7 +129,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   }, []);
 
   const goToOccupation = (code: string) => {
-    router.push(`/${locale}/tools/anzsco-finder?q=${encodeURIComponent(code)}`);
+    router.push(`/${locale}/tools/anzsco-finder?q=${encodeURIComponent(code)}&country=${targetCountry}`);
   };
 
   /**
@@ -347,24 +348,48 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           </span>
         </div>
 
-        {/* Country assessment buttons */}
-        <div className="mt-4 flex items-center justify-center gap-4">
-          <button
-            type="button"
-            onClick={() => router.push(`/${locale}/full-check?country=au`)}
-            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
+        {/* Target country toggle -- replaces the previous "AU Assessment" /
+            "CA Assessment" buttons, which read as two competing calls to
+            action and confused visitors about which one to press. This is
+            a single, unambiguous choice that scopes whichever search the
+            visitor is about to run (or has just run), not a second entry
+            point into the funnel. */}
+        <div className="mt-4 flex flex-col items-center gap-2">
+          <span className="text-xs font-medium uppercase tracking-wide text-[var(--cf-muted)]">
+            {isTr ? "Hedef Ülke" : isZh ? "目标国家" : "Target Country"}
+          </span>
+          <div
+            role="group"
+            aria-label={isTr ? "Hedef ülke" : isZh ? "目标国家" : "Target country"}
+            className="inline-flex items-center rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] p-1"
           >
-            <span className="text-base">🇦🇺</span>
-            {isTr ? "AU Değerlendirmesi" : isZh ? "澳大利亚评估" : "AU Assessment"}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push(`/${locale}/full-check?country=ca`)}
-            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:border-[var(--cf-accent-dim)] hover:bg-[var(--cf-bg-deep)] hover:shadow-md"
-          >
-            <span className="text-base">🇨🇦</span>
-            {isTr ? "CA Değerlendirmesi" : isZh ? "加拿大评估" : "CA Assessment"}
-          </button>
+            {(["au", "ca"] as const).map((code) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => setTargetCountry(code)}
+                aria-pressed={targetCountry === code}
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition-all ${
+                  targetCountry === code
+                    ? "bg-[var(--cf-accent)] text-[var(--cf-bg)] shadow-sm"
+                    : "text-[var(--cf-muted)] hover:text-white"
+                }`}
+              >
+                <span className="text-base">{code === "au" ? "🇦🇺" : "🇨🇦"}</span>
+                {code === "au"
+                  ? isTr
+                    ? "Avustralya"
+                    : isZh
+                      ? "澳大利亚"
+                      : "Australia"
+                  : isTr
+                    ? "Kanada"
+                    : isZh
+                      ? "加拿大"
+                      : "Canada"}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Trust strip */}

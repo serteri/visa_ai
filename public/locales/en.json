@@ -822,5 +822,17 @@
   "rounds.table.stream": "Stream",
   "rounds.table.subclass": "Visa Subclass",
   "rounds.table.month": "Month",
-  "rounds.table.invitationsIssued": "Invitations Issued"
+  "rounds.table.invitationsIssued": "Invitations Issued",
+  "home.reportShowcase.title": "What's Inside the Premium Report?",
+  "home.reportShowcase.subtitle": "A $49 report built to replace hours of guesswork -- here's exactly what you get.",
+  "home.reportShowcase.features.eligibility.title": "Visa Eligibility Score",
+  "home.reportShowcase.features.eligibility.description": "Your exact points score, subclass eligibility, and the specific requirements you still need to meet.",
+  "home.reportShowcase.features.roadmap.title": "Step-by-Step Roadmap",
+  "home.reportShowcase.features.roadmap.description": "A personalized, ordered action plan from where you are today to visa lodgement.",
+  "home.reportShowcase.features.costTimeline.title": "Cost & Timeline Breakdown",
+  "home.reportShowcase.features.costTimeline.description": "Realistic budget and timeframe estimates for every stage of your pathway.",
+  "home.reportShowcase.features.occupationInsights.title": "Occupation Insights",
+  "home.reportShowcase.features.occupationInsights.description": "Occupation ceiling data, invitation trends, and which states are actively nominating your role.",
+  "home.reportShowcase.features.documentChecklist.title": "Document Checklist",
+  "home.reportShowcase.features.documentChecklist.description": "The exact documents assessing authorities and the Department of Home Affairs will ask for."
 }

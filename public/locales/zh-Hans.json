@@ -822,5 +822,17 @@
   "rounds.table.stream": "渠道",
   "rounds.table.subclass": "签证类别",
   "rounds.table.month": "月份",
-  "rounds.table.invitationsIssued": "已发出邀请数"
+  "rounds.table.invitationsIssued": "已发出邀请数",
+  "home.reportShowcase.title": "高级报告包含哪些内容？",
+  "home.reportShowcase.subtitle": "一份 49 美元的报告，省去您数小时的摸索 -- 以下是您将获得的全部内容。",
+  "home.reportShowcase.features.eligibility.title": "签证资格评分",
+  "home.reportShowcase.features.eligibility.description": "您的确切分数、签证类别资格，以及您仍需满足的具体条件。",
+  "home.reportShowcase.features.roadmap.title": "分步路线图",
+  "home.reportShowcase.features.roadmap.description": "从现在到提交签证申请的个性化、按顺序排列的行动计划。",
+  "home.reportShowcase.features.costTimeline.title": "费用与时间分析",
+  "home.reportShowcase.features.costTimeline.description": "您的路径每个阶段的真实预算与时间估算。",
+  "home.reportShowcase.features.occupationInsights.title": "职业配额与州数据",
+  "home.reportShowcase.features.occupationInsights.description": "职业配额数据、邀请趋势，以及哪些州正在积极担保您的职业。",
+  "home.reportShowcase.features.documentChecklist.title": "文件清单",
+  "home.reportShowcase.features.documentChecklist.description": "评估机构与内政部将要求提供的确切文件清单。"
 }

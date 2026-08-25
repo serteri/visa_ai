@@ -829,5 +829,17 @@
   "rounds.table.stream": "Akış",
   "rounds.table.subclass": "Vize Alt Sınıfı",
   "rounds.table.month": "Ay",
-  "rounds.table.invitationsIssued": "Verilen Davetler"
+  "rounds.table.invitationsIssued": "Verilen Davetler",
+  "home.reportShowcase.title": "Premium Raporun İçinde Ne Var?",
+  "home.reportShowcase.subtitle": "Saatlerce süren araştırmayı ortadan kaldıran 49$'lık bir rapor -- işte tam olarak ne alıyorsunuz.",
+  "home.reportShowcase.features.eligibility.title": "Vize Uygunluk Puanı",
+  "home.reportShowcase.features.eligibility.description": "Tam puanınız, alt sınıf uygunluğunuz ve hâlâ karşılamanız gereken spesifik şartlar.",
+  "home.reportShowcase.features.roadmap.title": "Adım Adım Yol Haritası",
+  "home.reportShowcase.features.roadmap.description": "Bugünden vize başvurusuna kadar kişiselleştirilmiş, sıralı bir eylem planı.",
+  "home.reportShowcase.features.costTimeline.title": "Maliyet ve Süre Analizi",
+  "home.reportShowcase.features.costTimeline.description": "Patikanızın her aşaması için gerçekçi bütçe ve süre tahminleri.",
+  "home.reportShowcase.features.occupationInsights.title": "Mesleki Kota ve Eyalet Verileri",
+  "home.reportShowcase.features.occupationInsights.description": "Meslek kotası verileri, davet trendleri ve hangi eyaletlerin sizin mesleğinizi aktif olarak aday gösterdiği.",
+  "home.reportShowcase.features.documentChecklist.title": "Belge Kontrol Listesi",
+  "home.reportShowcase.features.documentChecklist.description": "Değerlendirme kurumlarının ve İçişleri Bakanlığı'nın isteyeceği tam belge listesi."
 }
