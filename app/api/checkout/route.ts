@@ -142,7 +142,14 @@ export async function POST(request: NextRequest) {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
-      ...(discounts ? { discounts } : {}),
+      // Stripe rejects a session that sets both `discounts` and
+      // `allow_promotion_codes` ("You may only specify one of these
+      // parameters"). The loyalty coupon above is applied automatically,
+      // server-side, with no code entry -- when it's active there's no
+      // promo-code box to show anyway, so only enable manual promo-code
+      // entry (e.g. the admin "AdminFree" 100%-off test coupon) when no
+      // automatic discount is already set.
+      ...(discounts ? { discounts } : { allow_promotion_codes: true }),
       customer_email: body.email || undefined,
       client_reference_id: body.userId || body.email || undefined,
       success_url: successUrl,
