@@ -686,7 +686,21 @@ function detectSubclasses(input: ReadinessInput): string[] {
   }
 
   // Sponsor/employer → 482
-  if (hasKw(combined, ["482", "employer", "sponsor", "sponsored", "job offer", "işveren", "sponsorlu"])) {
+  // hasSponsorContext() correctly treats negated phrasing ("No employer
+  // sponsor, open to regional nomination") as having NO sponsor context.
+  // A plain hasKw(combined, [...]) substring match on "sponsor"/"employer"
+  // used to fire even on that exact negation -- combined includes
+  // input.sponsorOrFamily verbatim, so "No employer sponsor" still
+  // contains "employer" and "sponsor" as substrings -- incorrectly
+  // surfacing the 482 Skills in Demand Visa for skilled-only applicants
+  // who explicitly said they have no sponsor. Gate the sponsorOrFamily
+  // field through hasSponsorContext() and only keyword-match the other,
+  // narrower fields (which describe visa intent, not sponsor status).
+  const otherFieldsMentionSponsor = hasKw(
+    [input.mainGoal ?? "", input.preferredPathway ?? "", input.biggestConcern ?? ""].join(" "),
+    ["482", "employer", "sponsor", "sponsored", "job offer", "işveren", "sponsorlu"]
+  );
+  if (hasSponsorContext(input.sponsorOrFamily) || otherFieldsMentionSponsor) {
     found.add("482");
   }
 

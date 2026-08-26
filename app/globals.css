@@ -1,55 +1,56 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* Site-wide tokens now use the "case file" palette (navy/paper/brass) --
-   see the .dark/.light class blocks further down for the full rationale.
-   :root here IS the light theme's values (same convention as before the
-   migration: bare :root = light, overridden for dark via media query and
-   the .dark class). */
+/* ─────────────────────────────────────────────────────────────────────────
+   "Dala" rebrand -- dark-void, typography-driven, no borders/shadows.
+   The site no longer offers a light theme: :root, the prefers-color-scheme
+   fallback, and the .dark/.light class overrides (still written by
+   next-themes -- left wired rather than ripped out, since that's a much
+   larger change) all resolve to the SAME void palette below, so toggling
+   old theme state has no visible effect and every surface is forced black.
+   ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #f7f3e8;
-  --foreground: #241c10;
-  --card: #efe8d8;
-  --card-foreground: #241c10;
-  --muted: #e4dbc5;
-  --muted-foreground: #6b6250;
-  --primary: #8c6530;
-  --primary-foreground: #f7f3e8;
-  --secondary: #e4dbc5;
-  --secondary-foreground: #241c10;
-  --accent: #e4dbc5;
-  --accent-foreground: #241c10;
-  --border: rgba(36, 28, 16, 0.12);
-  --ring: #8c6530;
-  --radius: 0.75rem;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #000000;
+  --card-foreground: #ffffff;
+  --muted: #000000;
+  --muted-foreground: #9a9a9a;
+  --primary: #8052ff;
+  --primary-foreground: #ffffff;
+  --secondary: #000000;
+  --secondary-foreground: #ffffff;
+  --accent: #ffb829;
+  --accent-foreground: #000000;
+  --border: rgba(255, 255, 255, 0.12);
+  --ring: #8052ff;
+  --radius: 1.5rem;
+
+  /* Dala token names, for components that want to reach for the palette
+     directly instead of through the semantic --background/--primary set. */
+  --color-void: #000000;
+  --color-bone-white: #ffffff;
+  --color-electric-iris: #8052ff;
+  --color-saffron-spark: #ffb829;
+  --color-ash-gray: #9a9a9a;
 }
 
-/* Dark mode: next-themes (app/layout.tsx's ThemeProviderWrapper) puts a
-   "dark"/"light" class on <html> once it hydrates and reads the user's
-   saved preference (or OS default) from localStorage. The media query
-   below is a PRE-HYDRATION FALLBACK ONLY -- on first paint, before React
-   runs, the browser has nothing but prefers-color-scheme to go on, so this
-   prevents a flash of the wrong theme. Once hydrated, the .dark/.light
-   class rules further down (same specificity, later in source order) win
-   and reflect the user's actual toggle choice, not just their OS setting.
-   Do not delete this media block — remove it and users get a light flash
-   on every load before next-themes' class kicks in. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f1e33;
-    --foreground: #e8e4d9;
-    --card: #16233a;
-    --card-foreground: #e8e4d9;
-    --muted: #16233a;
-    --muted-foreground: #a9b2c0;
-    --primary: #d8a65c;
-    --primary-foreground: #091422;
-    --secondary: #16233a;
-    --secondary-foreground: #e8e4d9;
-    --accent: #16233a;
-    --accent-foreground: #e8e4d9;
-    --border: rgba(232, 228, 217, 0.14);
-    --ring: #d8a65c;
+    --background: #000000;
+    --foreground: #ffffff;
+    --card: #000000;
+    --card-foreground: #ffffff;
+    --muted: #000000;
+    --muted-foreground: #9a9a9a;
+    --primary: #8052ff;
+    --primary-foreground: #ffffff;
+    --secondary: #000000;
+    --secondary-foreground: #ffffff;
+    --accent: #ffb829;
+    --accent-foreground: #000000;
+    --border: rgba(255, 255, 255, 0.12);
+    --ring: #8052ff;
   }
 }
 
@@ -68,31 +69,46 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --color-void: var(--color-void);
+  --color-bone-white: var(--color-bone-white);
+  --color-electric-iris: var(--color-electric-iris);
+  --color-saffron-spark: var(--color-saffron-spark);
+  --color-ash-gray: var(--color-ash-gray);
+  --radius-sm: calc(var(--radius) - 12px);
+  --radius-md: calc(var(--radius) - 8px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-manrope);
+  --radius-xl: calc(var(--radius) + 8px);
+  --font-sans: var(--font-inter);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-manrope), "Segoe UI", sans-serif;
+  font-family: var(--font-inter), "Inter", "Segoe UI", sans-serif;
+  font-weight: 200;
   min-height: 100vh;
 }
 
+h1, h2, h3 {
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+/* Dala has no elevation -- flatten every shadow utility site-wide instead
+   of hunting down each "shadow" / "drop-shadow" class across ~24 files. */
+*, *::before, *::after {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
 .ambient-bg {
-  background:
-    radial-gradient(circle at 15% 15%, rgba(11, 74, 111, 0.12), transparent 40%),
-    radial-gradient(circle at 85% 10%, rgba(41, 121, 180, 0.1), transparent 35%),
-    linear-gradient(180deg, #f8fbff 0%, #f2f5fa 100%);
+  background: #000000;
 }
 
 .grid-veil {
   background-image:
-    linear-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.16) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
   background-size: 26px 26px;
 }
 
@@ -101,165 +117,134 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   "Case file" theme — landing page only. All tokens are cf-* prefixed so
-   they never collide with the app-wide --background/--foreground tokens
-   above, even though they now live in the same :root (see below for why).
-   Dark is the default (matches the rest of the site's OS-preference-driven
-   dark mode — no ThemeProvider is wired up anywhere, so this follows the
-   same media-query strategy rather than introducing a second, inconsistent
-   theming mechanism for one page).
-
-   NOTE: these were originally scoped under a `.case-file { ... }` class
-   selector (applied to the landing page's wrapper div) for tighter
-   isolation, but Tailwind v4's build pipeline here silently drops
-   custom-property declarations on non-:root/non-@theme selectors — verified
-   by inspecting the compiled chunk: .section-shell/.grid-veil (plain
-   classes with no custom properties) came through fine, but a `.case-file`
-   class holding only `--cf-*` declarations vanished entirely, even though
-   the generated `.text-[var(--cf-muted)]` utilities that *consume* it were
-   present. Moving the declarations to :root (same pattern as
-   --background/--foreground above) fixes it; the .case-file class in the
-   markup is now purely a marker for scoping the .cf-serif/.cf-mono/.cf-sans
-   helper classes below.
-
-   Two independent surface tokens matter here:
-   - --cf-bg / --cf-fg: the page backdrop. Flips fully (navy <-> paper).
-   - --cf-cover-bg / --cf-cover-fg: the hero "cover-card" mockup. Also flips,
-     but in the OPPOSITE direction of --cf-bg (paper in dark, navy in light)
-     — this is what gives the cover-card its "high-contrast document"
-     presence in both themes instead of blending into the page.
-   - --cf-case-bg / --cf-case-fg: case-log entry cards. Deliberately NOT
-     theme-dependent — always navy — per design spec, so case-entry cards
-     never flatten into a plain "white bg + navy text" layout in light mode.
+   "Case file" theme -- landing page only. Rebranded onto the same Dala void
+   palette as the rest of the site (was navy/paper/brass) so the landing
+   page no longer diverges from the global rebrand. The cover/case-card
+   inversion structure is preserved (cover card still flips to the opposite
+   surface for contrast) but both ends of the flip now resolve to Dala
+   tokens (void/bone-white/electric-iris/saffron-spark) instead of
+   navy/gold. Dark is still the only mode -- .light below matches .dark.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --cf-bg: #0f1e33;
-  --cf-bg-deep: #091422;
-  --cf-fg: #e8e4d9;
-  --cf-muted: #a9b2c0;
-  --cf-line: rgba(232, 228, 217, 0.14);
+  --cf-bg: #000000;
+  --cf-bg-deep: #000000;
+  --cf-fg: #ffffff;
+  --cf-muted: #9a9a9a;
+  --cf-line: rgba(255, 255, 255, 0.12);
   --cf-shadow: rgba(0, 0, 0, 0.5);
 
-  --cf-cover-bg: #efe8d8;
-  --cf-cover-bg-dim: #e4dbc5;
-  --cf-cover-fg: #0f1e33;
-  --cf-cover-muted: rgba(15, 30, 51, 0.6);
-  --cf-cover-line: rgba(15, 30, 51, 0.15);
+  --cf-cover-bg: #ffffff;
+  --cf-cover-bg-dim: #f2f2f2;
+  --cf-cover-fg: #000000;
+  --cf-cover-muted: rgba(0, 0, 0, 0.6);
+  --cf-cover-line: rgba(0, 0, 0, 0.15);
 
-  --cf-case-bg: #0f1e33;
-  --cf-case-fg: #e8e4d9;
-  --cf-case-muted: #a9b2c0;
+  --cf-case-bg: #000000;
+  --cf-case-fg: #ffffff;
+  --cf-case-muted: #9a9a9a;
 
   /* Accent used directly on --cf-bg (eyebrows, ledger numerals, links). */
-  --cf-accent: #d8a65c;
-  --cf-accent-dim: rgba(185, 138, 74, 0.4);
+  --cf-accent: #ffb829;
+  --cf-accent-dim: rgba(255, 184, 41, 0.4);
 
-  /* Flag-badge palette — always rendered on --cf-case-bg (fixed navy), so
-     these three pairs only ever need checking against one background. All
-     three clear 4.5:1 against #0f1e33 at the badge's ~13px/600-weight size. */
-  --cf-flag-brass-bg: rgba(185, 138, 74, 0.18);
-  --cf-flag-brass-fg: #e0ac6c;
-  --cf-flag-rust-bg: rgba(177, 80, 46, 0.2);
-  --cf-flag-rust-fg: #e8916f;
-  --cf-flag-sage-bg: rgba(120, 160, 140, 0.16);
-  --cf-flag-sage-fg: #9cc7af;
+  /* Flag-badge palette -- always rendered on --cf-case-bg (fixed void), so
+     these three pairs only ever need checking against one background. */
+  --cf-flag-brass-bg: rgba(128, 82, 255, 0.18);
+  --cf-flag-brass-fg: #a688ff;
+  --cf-flag-rust-bg: rgba(255, 184, 41, 0.18);
+  --cf-flag-rust-fg: #ffcc66;
+  --cf-flag-sage-bg: rgba(154, 154, 154, 0.16);
+  --cf-flag-sage-fg: #c7c7c7;
 }
 
+/* No light mode: both the media-query fallback and the next-themes .light
+   class resolve to the same Dala void values as :root/.dark above. */
 @media (prefers-color-scheme: light) {
   :root {
-    --cf-bg: #f7f3e8;
-    --cf-bg-deep: #efe8d8;
-    --cf-fg: #241c10;
-    --cf-muted: #6b6250;
-    --cf-line: rgba(36, 28, 16, 0.12);
-    --cf-shadow: rgba(36, 28, 16, 0.18);
+    --cf-bg: #000000;
+    --cf-bg-deep: #000000;
+    --cf-fg: #ffffff;
+    --cf-muted: #9a9a9a;
+    --cf-line: rgba(255, 255, 255, 0.12);
+    --cf-shadow: rgba(0, 0, 0, 0.5);
 
-    --cf-cover-bg: #0f1e33;
-    --cf-cover-bg-dim: #16233a;
-    --cf-cover-fg: #efe8d8;
-    --cf-cover-muted: rgba(239, 232, 216, 0.65);
-    --cf-cover-line: rgba(239, 232, 216, 0.18);
+    --cf-cover-bg: #ffffff;
+    --cf-cover-bg-dim: #f2f2f2;
+    --cf-cover-fg: #000000;
+    --cf-cover-muted: rgba(0, 0, 0, 0.65);
+    --cf-cover-line: rgba(0, 0, 0, 0.18);
 
-    /* --cf-case-* intentionally omitted -- stays navy/paper-ink in both modes. */
-
-    /* Darkened for AA against the light paper page background (#F7F3E8);
-       the bright variant above only worked against navy. */
-    --cf-accent: #8c6530;
-    --cf-accent-dim: rgba(140, 101, 48, 0.35);
+    --cf-accent: #ffb829;
+    --cf-accent-dim: rgba(255, 184, 41, 0.35);
   }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Class-based theme overrides — next-themes writes "dark" or "light" onto
-   <html> (attribute="class" in ThemeProviderWrapper) once hydrated. These
-   two blocks are physically AFTER both @media blocks above, so at equal
-   selector specificity (:root vs .dark/.light are both single-class-level)
-   they win the cascade once the class is present — the media queries above
-   only apply pre-hydration or if next-themes' class is somehow absent.
-
-   --cf-case-bg/--cf-case-fg/--cf-case-muted are intentionally NOT redeclared
-   in either block -- they stay pinned to the values in the base :root above
-   in every theme, so case-entry cards never flip to a light surface. */
+   Class-based theme overrides -- next-themes writes "dark" or "light" onto
+   <html> (attribute="class" in ThemeProviderWrapper) once hydrated. Kept
+   wired for infra compatibility, but both blocks now hold identical Dala
+   values, so toggling old theme state is visually a no-op.
+   ───────────────────────────────────────────────────────────────────────── */
 .dark {
-  --background: #0f1e33;
-  --foreground: #e8e4d9;
-  --card: #16233a;
-  --card-foreground: #e8e4d9;
-  --muted: #16233a;
-  --muted-foreground: #a9b2c0;
-  --primary: #d8a65c;
-  --primary-foreground: #091422;
-  --secondary: #16233a;
-  --secondary-foreground: #e8e4d9;
-  --accent: #16233a;
-  --accent-foreground: #e8e4d9;
-  --border: rgba(232, 228, 217, 0.14);
-  --ring: #d8a65c;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #000000;
+  --card-foreground: #ffffff;
+  --muted: #000000;
+  --muted-foreground: #9a9a9a;
+  --primary: #8052ff;
+  --primary-foreground: #ffffff;
+  --secondary: #000000;
+  --secondary-foreground: #ffffff;
+  --accent: #ffb829;
+  --accent-foreground: #000000;
+  --border: rgba(255, 255, 255, 0.12);
+  --ring: #8052ff;
 
-  --cf-bg: #0f1e33;
-  --cf-bg-deep: #091422;
-  --cf-fg: #e8e4d9;
-  --cf-muted: #a9b2c0;
-  --cf-line: rgba(232, 228, 217, 0.14);
+  --cf-bg: #000000;
+  --cf-bg-deep: #000000;
+  --cf-fg: #ffffff;
+  --cf-muted: #9a9a9a;
+  --cf-line: rgba(255, 255, 255, 0.12);
   --cf-shadow: rgba(0, 0, 0, 0.5);
-  --cf-cover-bg: #efe8d8;
-  --cf-cover-bg-dim: #e4dbc5;
-  --cf-cover-fg: #0f1e33;
-  --cf-cover-muted: rgba(15, 30, 51, 0.6);
-  --cf-cover-line: rgba(15, 30, 51, 0.15);
-  --cf-accent: #d8a65c;
-  --cf-accent-dim: rgba(185, 138, 74, 0.4);
+  --cf-cover-bg: #ffffff;
+  --cf-cover-bg-dim: #f2f2f2;
+  --cf-cover-fg: #000000;
+  --cf-cover-muted: rgba(0, 0, 0, 0.6);
+  --cf-cover-line: rgba(0, 0, 0, 0.15);
+  --cf-accent: #ffb829;
+  --cf-accent-dim: rgba(255, 184, 41, 0.4);
 }
 
 .light {
-  --background: #f7f3e8;
-  --foreground: #241c10;
-  --card: #efe8d8;
-  --card-foreground: #241c10;
-  --muted: #e4dbc5;
-  --muted-foreground: #6b6250;
-  --primary: #8c6530;
-  --primary-foreground: #f7f3e8;
-  --secondary: #e4dbc5;
-  --secondary-foreground: #241c10;
-  --accent: #e4dbc5;
-  --accent-foreground: #241c10;
-  --border: rgba(36, 28, 16, 0.12);
-  --ring: #8c6530;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #000000;
+  --card-foreground: #ffffff;
+  --muted: #000000;
+  --muted-foreground: #9a9a9a;
+  --primary: #8052ff;
+  --primary-foreground: #ffffff;
+  --secondary: #000000;
+  --secondary-foreground: #ffffff;
+  --accent: #ffb829;
+  --accent-foreground: #000000;
+  --border: rgba(255, 255, 255, 0.12);
+  --ring: #8052ff;
 
-  --cf-bg: #f7f3e8;
-  --cf-bg-deep: #efe8d8;
-  --cf-fg: #241c10;
-  --cf-muted: #6b6250;
-  --cf-line: rgba(36, 28, 16, 0.12);
-  --cf-shadow: rgba(36, 28, 16, 0.18);
-  --cf-cover-bg: #0f1e33;
-  --cf-cover-bg-dim: #16233a;
-  --cf-cover-fg: #efe8d8;
-  --cf-cover-muted: rgba(239, 232, 216, 0.65);
-  --cf-cover-line: rgba(239, 232, 216, 0.18);
-  --cf-accent: #8c6530;
-  --cf-accent-dim: rgba(140, 101, 48, 0.35);
+  --cf-bg: #000000;
+  --cf-bg-deep: #000000;
+  --cf-fg: #ffffff;
+  --cf-muted: #9a9a9a;
+  --cf-line: rgba(255, 255, 255, 0.12);
+  --cf-shadow: rgba(0, 0, 0, 0.5);
+  --cf-cover-bg: #ffffff;
+  --cf-cover-bg-dim: #f2f2f2;
+  --cf-cover-fg: #000000;
+  --cf-cover-muted: rgba(0, 0, 0, 0.6);
+  --cf-cover-line: rgba(0, 0, 0, 0.15);
+  --cf-accent: #ffb829;
+  --cf-accent-dim: rgba(255, 184, 41, 0.4);
 }
 
 .cf-serif {

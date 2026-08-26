@@ -319,13 +319,61 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     addSmallText(pointsData.summary, 0);
     ctx.yPosition += 3;
 
-    // ── 4-Column Table: Category | Potential Points | Claimable Points | Action/Status ──
-    const colHeaders: Record<string, string[]> = {
-      en: ["Category", "Potential Points", "Claimable Points", "Action / Status"],
-      tr: ["Kategori", "Potansiyel Puan", "Talep Edilen Puan", "Durum"],
-      zh: ["类别", "潜在积分", "可主张积分", "状态"],
+    // ctx.yPosition is a delta-tracked copy reconciled against the real
+    // cursor only once, after renderPersonalizedContent() returns (see
+    // generate-pdf.ts's `yPosition = yPosition + (ctx.yPosition - entryY)`).
+    // Any code here that draws at an absolute Y via ctx.getCurrentY() must
+    // advance the REAL cursor itself -- addSmallText("", 0) is the only
+    // mechanism exposed for that, moving it by exactly `lineHeight` (5mm)
+    // per call, so custom-height blocks below round up to the nearest
+    // multiple of it.
+    const advanceCursor = (mm: number) => {
+      const steps = Math.max(1, Math.ceil(mm / lineHeight));
+      for (let i = 0; i < steps; i++) addSmallText("", 0);
     };
-    const headers = colHeaders[t];
+
+    // ── Total score gauge: claimable points vs. the 65-point EOI minimum ──
+    // Presentation-only visual on top of the existing estimatedPoints/65
+    // values -- no scoring logic changes.
+    {
+      const gaugeY = ctx.getCurrentY();
+      const gaugeHeight = 9;
+      const scaleMax = Math.max(100, estimatedPoints + 20, 65 + 20);
+      const meetsThreshold = estimatedPoints >= 65;
+      const fillColor = meetsThreshold ? COLORS.riskLow : COLORS.accent;
+
+      setBoldFont();
+      doc.setFontSize(FONTS.subheading);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.text(safeText(`${t === "tr" ? "Toplam" : t === "zh" ? "总分" : "Total"}: ${estimatedPoints} pts`), margin, gaugeY);
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      doc.text(safeText(`65 ${t === "tr" ? "minimum" : t === "zh" ? "最低要求" : "minimum"}`), margin + contentWidth, gaugeY, { align: "right" });
+
+      const barY = gaugeY + 3;
+      doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
+      doc.roundedRect(margin, barY, contentWidth, gaugeHeight, gaugeHeight / 2, gaugeHeight / 2, "F");
+      const fillRatio = Math.min(1, Math.max(0, estimatedPoints / scaleMax));
+      const fillWidth = Math.max(gaugeHeight, contentWidth * fillRatio);
+      doc.setFillColor(fillColor.r, fillColor.g, fillColor.b);
+      doc.roundedRect(margin, barY, fillWidth, gaugeHeight, gaugeHeight / 2, gaugeHeight / 2, "F");
+      const thresholdX = margin + contentWidth * Math.min(1, 65 / scaleMax);
+      doc.setDrawColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.setLineWidth(0.6);
+      doc.line(thresholdX, barY - 1.5, thresholdX, barY + gaugeHeight + 1.5);
+
+      advanceCursor(barY + gaugeHeight + 8 - gaugeY);
+    }
+
+    // ── Category cards, each with a Potential-vs-Claimable mini bar ──
+    // Replaces the previous plain 4-column table with the same underlying
+    // data (Category | Potential Points | Claimable Points | Action/Status).
+    const actionBadgeColor = (status: string): { r: number; g: number; b: number } => {
+      if (status.startsWith("✅")) return COLORS.riskLow;
+      if (status.startsWith("❌")) return COLORS.riskHigh;
+      return COLORS.riskMedium;
+    };
 
     // Build rows with Potential vs Claimable distinction
     const rows = breakdown.map((item) => {
@@ -406,13 +454,6 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       ];
     });
 
-    // Color the Claimable Points column (col 2)
-    const pointsColors = breakdown.map((item) => {
-      if (item.points > 0) return { r: 22, g: 101, b: 52 }; // green
-      if ((item.max ?? 0) > 0) return { r: 180, g: 38, b: 38 }; // red = blocked
-      return { r: 120, g: 130, b: 145 }; // gray
-    });
-
     // ── Explanation sub-rows: why a scored category shows 0 claimable points ──
     // Spans all columns under its category row, light-gray, smaller font.
     const subRows: Record<number, string> = {};
@@ -429,19 +470,87 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       subRows[idx] = `${item.label}: ${reason}`;
     });
 
-    if (ctx.drawTable) {
-      (ctx.drawTable as Function)(headers, rows, [0.30, 0.13, 0.13, 0.44],
-        (rowIndex: number, colIndex: number) => {
-          if (colIndex === 2 && pointsColors[rowIndex]) {
-            return pointsColors[rowIndex];
-          }
-          return null;
-        },
-        subRows
-      );
-    }
-    // Sync ctx.yPosition after drawTable (which advances closure yPosition).
-    // No sync needed — all rendering uses closure helpers, so cursors stay in sync.
+    breakdown.forEach((item, idx) => {
+      const row = rows[idx];
+      const actionStatus = row[3];
+      const potentialPts = Number(row[1]);
+      const claimedPts = Number(row[2]);
+      const hasMax = potentialPts > 0;
+      const subRowText = subRows[idx];
+      const badgeColor = actionBadgeColor(actionStatus);
+
+      setBoldFont();
+      const badgeLabel = actionStatus.replace(/^[✅❌]\s*/, "").toUpperCase();
+      // Action-status phrases (e.g. "Requires Overseas Qualification
+      // Recognition") can be long -- shrink the badge font rather than
+      // measuring the pre-uppercase string (narrower, causing clipping) or
+      // letting the badge overflow past the card's right edge.
+      const maxBadgeWidth = contentWidth * 0.55;
+      let badgeFontSize = 7;
+      doc.setFontSize(badgeFontSize);
+      while (doc.getTextWidth(badgeLabel) + 5 > maxBadgeWidth && badgeFontSize > 4.5) {
+        badgeFontSize -= 0.5;
+        doc.setFontSize(badgeFontSize);
+      }
+      const badgeWidth = Math.min(maxBadgeWidth, doc.getTextWidth(badgeLabel) + 5);
+
+      const subRowLines = subRowText
+        ? (doc.splitTextToSize(safeText(subRowText), contentWidth - 8) as string[])
+        : [];
+      const rowHeight = 12 + (hasMax ? 3 : 0) + subRowLines.length * 3.8;
+      ctx.ensurePageSpace(rowHeight + 2);
+      const rowY = ctx.getCurrentY();
+
+      doc.setFillColor(COLORS.zebra.r, COLORS.zebra.g, COLORS.zebra.b);
+      doc.roundedRect(margin, rowY, contentWidth, rowHeight, 1.5, 1.5, "F");
+      doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.rect(margin, rowY, 1.4, rowHeight, "F");
+
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(safeText(item.label), margin + 5, rowY + 6);
+
+      // Status badge, top-right
+      const badgeX = margin + contentWidth - 4 - badgeWidth;
+      doc.setFillColor(badgeColor.r, badgeColor.g, badgeColor.b);
+      doc.roundedRect(badgeX, rowY + 2, badgeWidth, 5, 2.5, 2.5, "F");
+      doc.setTextColor(255, 255, 255);
+      setBoldFont();
+      doc.setFontSize(badgeFontSize);
+      doc.text(badgeLabel, badgeX + badgeWidth / 2, rowY + 5.3, { align: "center" });
+
+      // Claimable / Potential score
+      setBoldFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      const scoreText = hasMax ? `${claimedPts} / ${potentialPts} pts` : `${claimedPts} pts`;
+      doc.text(safeText(scoreText), margin + 5, rowY + 11);
+
+      // Mini progress bar: claimable vs potential
+      if (hasMax) {
+        const miniBarY = rowY + 13;
+        const miniBarHeight = 2.4;
+        const miniBarWidth = contentWidth - 8;
+        doc.setFillColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+        doc.roundedRect(margin + 5, miniBarY, miniBarWidth, miniBarHeight, 1.2, 1.2, "F");
+        const ratio = Math.min(1, Math.max(0, claimedPts / potentialPts));
+        if (ratio > 0) {
+          doc.setFillColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+          doc.roundedRect(margin + 5, miniBarY, Math.max(miniBarHeight, miniBarWidth * ratio), miniBarHeight, 1.2, 1.2, "F");
+        }
+      }
+
+      if (subRowLines.length > 0) {
+        setBaseFont();
+        doc.setFontSize(FONTS.small);
+        doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+        doc.text(subRowLines, margin + 5, rowY + (hasMax ? 20 : 15));
+      }
+
+      advanceCursor(rowHeight + 2.5);
+      setBaseFont();
+    });
 
     // ── Gold total line + Gap analysis + Tips + Strategies ─────────────
     // ALL rendering uses closure-based helpers (addSmallText, addBody, etc.)

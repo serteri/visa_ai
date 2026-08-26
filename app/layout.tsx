@@ -125,7 +125,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${manrope.variable} ${notoSans.variable} ${fraunces.variable} ${ibmPlexMono.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-black text-white">
         <ThemeProviderWrapper>
           <SessionProviderWrapper>
             {children}
