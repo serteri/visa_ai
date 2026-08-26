@@ -16,8 +16,8 @@ const notoSans = Noto_Sans({
 });
 
 // Landing-page-only fonts ("case file" redesign, see components/landing/*).
-// Site-wide default typography stays Manrope/Noto Sans -- these three are
-// opt-in via the .case-file/.cf-serif/.cf-mono/.cf-sans utility classes in
+// Site-wide default typography stays Manrope/Noto Sans -- these are
+// opt-in via the .case-file/.cf-serif/.cf-mono utility classes in
 // globals.css, not applied to <body> directly.
 const fraunces = Fraunces({
   variable: "--font-fraunces",

@@ -134,13 +134,6 @@ option {
   background: #000000;
 }
 
-.grid-veil {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 26px 26px;
-}
-
 .section-shell {
   @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
 }
@@ -286,9 +279,6 @@ option {
 .cf-mono {
   font-family: var(--font-ibm-plex-mono), "IBM Plex Mono", monospace;
   letter-spacing: 0.04em;
-}
-.cf-sans {
-  font-family: var(--font-inter), Inter, sans-serif;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
