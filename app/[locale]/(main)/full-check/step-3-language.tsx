@@ -149,12 +149,12 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label htmlFor="waitlist-offshore-experience-years">{selectedCountryIsCA ? txt("Kanada dışı deneyim (yıl)", "Experience outside Canada (years)", "加拿大境外经验") : txt("Avustralya dışı deneyim (yıl)", "Experience outside Australia (years)", "澳大利亚境外经验")}</Label>
               <Input id="waitlist-offshore-experience-years" name="offshoreExperienceYears" type="number" min={0} step="0.5" inputMode="decimal" {...noAutofill("offshoreExperienceYears")} className={fieldClassName} placeholder="E.g., 5" />
-              <p className="text-xs text-muted-foreground">{experienceHelpText}</p>
+              <p className="text-xs text-gray-400">{experienceHelpText}</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="waitlist-onshore-experience-years">{selectedCountryIsCA ? txt("Kanada içi deneyim (yıl)", "Experience in Canada (years)", "加拿大境内经验") : txt("Avustralya içi deneyim (yıl)", "Experience in Australia (years)", "澳大利亚境内经验")}</Label>
               <Input id="waitlist-onshore-experience-years" name="onshoreExperienceYears" type="number" min={0} step="0.5" inputMode="decimal" {...noAutofill("onshoreExperienceYears")} className={fieldClassName} placeholder="E.g., 2" />
-              <p className="text-xs text-muted-foreground">{experienceHelpText}</p>
+              <p className="text-xs text-gray-400">{experienceHelpText}</p>
             </div>
           </div>
 

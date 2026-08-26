@@ -138,7 +138,7 @@ export function Step1Personal({
                   </div>
                   <div>
                     <p className={`text-sm font-semibold ${sel ? "text-primary" : "text-foreground"}`}>{goal.label[locale as "en" | "tr" | "zh-Hans"] ?? goal.label.en}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">{goal.description[locale as "en" | "tr" | "zh-Hans"] ?? goal.description.en}</p>
+                    <p className="mt-1 text-xs text-gray-400">{goal.description[locale as "en" | "tr" | "zh-Hans"] ?? goal.description.en}</p>
                   </div>
                 </div>
               </button>
@@ -182,7 +182,7 @@ export function Step1Personal({
               <option value="trt">Temporary Residence Transition (TRT)</option>
               <option value="labour_agreement">Labour Agreement</option>
             </select>
-            <p className="text-xs text-muted-foreground">{txt("Direct Entry: yeni başvurular için. TRT: 457/482 ile 2+ yıl. LA: işveren anlaşmalı.", "Direct Entry: new applicants. TRT: 2+ years on 457/482. LA: employer has labour agreement.", "Direct Entry：新申请人。TRT：持457/482超2年。LA：雇主有劳工协议。")}</p>
+            <p className="text-xs text-gray-400">{txt("Direct Entry: yeni başvurular için. TRT: 457/482 ile 2+ yıl. LA: işveren anlaşmalı.", "Direct Entry: new applicants. TRT: 2+ years on 457/482. LA: employer has labour agreement.", "Direct Entry：新申请人。TRT：持457/482超2年。LA：雇主有劳工协议。")}</p>
           </div>
           <div className="flex items-center gap-3 rounded-lg border border-[var(--cf-line)] px-4 py-3">
             <input type="checkbox" id="waitlist-labour-agreement-employer" name="isLabourAgreementEmployer" className="h-4 w-4 rounded border-[var(--cf-line)] accent-[var(--cf-accent)]" />

@@ -94,6 +94,21 @@ h1, h2, h3 {
   letter-spacing: -0.04em;
 }
 
+/* Native <select>/<option> dropdowns (used throughout full-check's form
+   steps) render their popup via browser UA chrome, which ignores most
+   Tailwind classes on the <select> itself -- color-scheme is the reliable
+   cross-browser way to force that popup dark; the explicit option colors
+   are a Chromium/Firefox-supported fallback on top of it. Without this,
+   the closed <select> shows white-on-black correctly but the open dropdown
+   list still renders white-on-white and is unreadable. */
+select {
+  color-scheme: dark;
+}
+option {
+  background-color: #111827;
+  color: #ffffff;
+}
+
 /* Dala has no elevation -- flatten every shadow utility site-wide instead
    of hunting down each "shadow" / "drop-shadow" class across ~24 files. */
 *, *::before, *::after {
