@@ -3878,8 +3878,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSmallText(text.lodgementReadyChecklistIntro, 0);
 
     checklist.forEach((item) => {
+      // item.title was previously drawn as a single unwrapped line -- a
+      // long title (e.g. a state-specific checklist entry) could overflow
+      // past the box's right edge instead of wrapping, unlike item.detail
+      // just below it. Wrap both and size the box off their combined
+      // line count, matching the pattern used everywhere else in this file.
+      const titleLines = doc.splitTextToSize(safeText(item.title), contentWidth - 34);
       const detailLines = doc.splitTextToSize(safeText(item.detail), contentWidth - 34);
-      const boxHeight = Math.max(16, 10 + detailLines.length * 4.4);
+      const titleBlockHeight = titleLines.length * 4.6;
+      const boxHeight = Math.max(16, 6 + titleBlockHeight + detailLines.length * 4.4);
       ensurePageSpace(boxHeight + 4);
       const topY = yPosition;
 
@@ -3921,12 +3928,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       setBoldFont();
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.text(safeText(item.title), margin + 30, topY + 6.5);
+      doc.text(titleLines, margin + 30, topY + 6.5, { maxWidth: contentWidth - 34, lineHeightFactor: 1.15 });
 
       setBaseFont();
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-      doc.text(detailLines, margin + 30, topY + 11.2);
+      doc.text(detailLines, margin + 30, topY + 5.9 + titleBlockHeight, { maxWidth: contentWidth - 34, lineHeightFactor: 1.15 });
 
       yPosition += boxHeight + 3;
     });
