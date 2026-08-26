@@ -6,7 +6,6 @@ import {
   getStripeBaseUrl,
   type StripeProductType,
 } from "@/lib/stripe";
-import { prisma } from "@/lib/prisma";
 import { getUserReportById } from "@/src/lib/user-reports";
 
 export const dynamic = "force-dynamic";
@@ -95,42 +94,6 @@ export async function POST(request: NextRequest) {
     const stripe = getStripeClient();
     const priceId = getPriceIdForProduct(productType);
 
-    // Loyalty discount: an email that already owns a prior unlocked report
-    // is a returning customer, not a first-time visitor -- give them a
-    // discount instead of the full $49 (never free; a discount is the only
-    // loyalty mechanism, per product decision). Scoped to "premium" only --
-    // pdf_book purchases are a different, lower-priced product this
-    // discount isn't meant for. Uses a single, fixed coupon ID configured
-    // once in the Stripe Dashboard (STRIPE_LOYALTY_COUPON_ID) instead of
-    // creating a new Coupon object via the API on every checkout -- that
-    // previously left a fresh, one-off Coupon behind in the Dashboard for
-    // every returning-customer session, permanently. No promo-code field is
-    // shown to the user; this is applied automatically, server-side only.
-    let discounts: { coupon: string }[] | undefined;
-    if (productType === "premium" && body.email) {
-      try {
-        const priorReport = await prisma.userReport.findFirst({
-          where: {
-            email: { equals: body.email, mode: "insensitive" },
-            isUnlocked: true,
-            ...(body.reportId ? { id: { not: body.reportId } } : {}),
-          },
-          select: { id: true },
-        });
-
-        if (priorReport) {
-          const loyaltyCouponId = process.env.STRIPE_LOYALTY_COUPON_ID || "LOYALTY30";
-          discounts = [{ coupon: loyaltyCouponId }];
-          console.log(
-            `[checkout] Applying loyalty coupon ${loyaltyCouponId} for ${body.email} (prior report ${priorReport.id})`
-          );
-        }
-      } catch (discountErr) {
-        console.error("[checkout] Returning-customer discount lookup failed (non-fatal)", discountErr);
-        // Fall through without a discount rather than failing checkout entirely.
-      }
-    }
-
     // reportId is only meaningful for the "premium" product (pdf_book/
     // pdf_book_global purchases aren't tied to a UserReport) -- appended
     // when present so the success page can offer a "Download Report" button
@@ -144,12 +107,11 @@ export async function POST(request: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       // Stripe rejects a session that sets both `discounts` and
       // `allow_promotion_codes` ("You may only specify one of these
-      // parameters"). The loyalty coupon above is applied automatically,
-      // server-side, with no code entry -- when it's active there's no
-      // promo-code box to show anyway, so only enable manual promo-code
-      // entry (e.g. the admin "AdminFree" 100%-off test coupon) when no
-      // automatic discount is already set.
-      ...(discounts ? { discounts } : { allow_promotion_codes: true }),
+      // parameters"). No automatic discount is applied server-side anymore
+      // (loyalty discounts are now distributed as emailed coupon codes
+      // instead), so promo-code entry is always available -- including the
+      // admin "AdminFree" 100%-off test coupon.
+      allow_promotion_codes: true,
       customer_email: body.email || undefined,
       client_reference_id: body.userId || body.email || undefined,
       success_url: successUrl,
@@ -165,7 +127,6 @@ export async function POST(request: NextRequest) {
         // from reportId since not every checkout here is report-related.
         leadId: body.reportId || "",
         agentId: body.agentId || "",
-        returningCustomerDiscount: discounts ? "true" : "false",
       },
     });
 

@@ -34,7 +34,7 @@ export function TermsGate({
       <label
         className={[
           "flex cursor-pointer items-start gap-2 text-sm transition-colors",
-          termsError ? "text-rose-600" : "text-slate-700",
+          termsError ? "text-rose-400" : "text-gray-300",
         ].join(" ")}
       >
         <input
@@ -42,14 +42,14 @@ export function TermsGate({
           checked={isTermsAccepted}
           onChange={(event) => onToggle(event.target.checked)}
           className={[
-            "mt-0.5 h-4 w-4 shrink-0 rounded accent-indigo-600",
+            "mt-0.5 h-4 w-4 shrink-0 rounded accent-[#8052ff]",
             termsError ? "outline outline-2 outline-offset-1 outline-rose-400" : "",
           ].join(" ")}
         />
         <span>{label}</span>
       </label>
 
-      {termsError && <p className="text-xs font-medium text-rose-600">{errorText}</p>}
+      {termsError && <p className="text-xs font-medium text-rose-400">{errorText}</p>}
     </div>
   );
 }
@@ -62,7 +62,7 @@ export function TermsGateLink({ children }: { children: React.ReactNode }) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={(event) => event.stopPropagation()}
-      className="font-semibold underline underline-offset-2 hover:text-indigo-600"
+      className="font-semibold text-[#8052ff] underline underline-offset-2 hover:text-purple-400"
     >
       {children}
     </Link>
