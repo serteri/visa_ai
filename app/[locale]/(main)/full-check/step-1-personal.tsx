@@ -154,7 +154,7 @@ export function Step1Personal({
         <div className="space-y-2">
           <Label htmlFor="waitlist-visa-interest">{txt("veya belirli bir vize yolunu seçin", "or select a specific visa pathway", "或选择具体签证路径")}</Label>
           <select id="waitlist-visa-interest" name="visaInterest" value={visaInterest} onChange={(e) => setVisaInterest(e.target.value)} className={selectClassName}>
-            <option value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
+            <option className="bg-gray-900 text-white" value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
             {renderVisaPathwayOptions(countryVisaPathways[selectedCountry], isTr, isZh)}
           </select>
         </div>
@@ -165,8 +165,8 @@ export function Step1Personal({
         <div className="space-y-2">
           <Label htmlFor="waitlist-preferred-state">{txt("Tercih ettiğiniz eyalet?", "Preferred state?", "您偏好哪个州？")}</Label>
           <select id="waitlist-preferred-state" name="preferredState" value={preferredState} onChange={(e) => setPreferredState(e.target.value)} className={selectClassName}>
-            <option value="">{txt("Seçin", "Select", "请选择")}</option>
-            {[["NSW","New South Wales"],["VIC","Victoria"],["QLD","Queensland"],["SA","South Australia"],["WA","Western Australia"],["TAS","Tasmania"],["NT","Northern Territory"],["ACT","Australian Capital Territory"]].map(([c,n]) => <option key={c} value={c}>{c} — {n}</option>)}
+            <option className="bg-gray-900 text-white" value="">{txt("Seçin", "Select", "请选择")}</option>
+            {[["NSW","New South Wales"],["VIC","Victoria"],["QLD","Queensland"],["SA","South Australia"],["WA","Western Australia"],["TAS","Tasmania"],["NT","Northern Territory"],["ACT","Australian Capital Territory"]].map(([c,n]) => <option className="bg-gray-900 text-white" key={c} value={c}>{c} — {n}</option>)}
           </select>
           <ErrorText message={state.errors?.preferredState} />
         </div>
@@ -177,10 +177,10 @@ export function Step1Personal({
           <div className="space-y-2">
             <Label htmlFor="waitlist-nomination-stream">{txt("186 için hangi akışı hedefliyorsunuz?", "Which subclass 186 stream?", "您计划申请186签证的哪个通道？")}</Label>
             <select id="waitlist-nomination-stream" name="nominationStream" value={nominationStream} onChange={(e) => setNominationStream(e.target.value)} className={selectClassName}>
-              <option value="">{txt("Emin değilim", "Not sure", "不确定")}</option>
-              <option value="direct_entry">Direct Entry</option>
-              <option value="trt">Temporary Residence Transition (TRT)</option>
-              <option value="labour_agreement">Labour Agreement</option>
+              <option className="bg-gray-900 text-white" value="">{txt("Emin değilim", "Not sure", "不确定")}</option>
+              <option className="bg-gray-900 text-white" value="direct_entry">Direct Entry</option>
+              <option className="bg-gray-900 text-white" value="trt">Temporary Residence Transition (TRT)</option>
+              <option className="bg-gray-900 text-white" value="labour_agreement">Labour Agreement</option>
             </select>
             <p className="text-xs text-gray-400">{txt("Direct Entry: yeni başvurular için. TRT: 457/482 ile 2+ yıl. LA: işveren anlaşmalı.", "Direct Entry: new applicants. TRT: 2+ years on 457/482. LA: employer has labour agreement.", "Direct Entry：新申请人。TRT：持457/482超2年。LA：雇主有劳工协议。")}</p>
           </div>
@@ -208,9 +208,9 @@ export function Step1Personal({
           <div className="space-y-2">
             <Label htmlFor="waitlist-course-completion-status">{txt("Kurs durumu", "Course status", "课程状态")}</Label>
             <select id="waitlist-course-completion-status" name="courseCompletionStatus" value={courseCompletionStatus} onChange={(e) => setCourseCompletionStatus(e.target.value)} className={selectClassName}>
-              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-              <option value="studying">{txt("Hâlâ okuyorum", "Still studying", "仍在就读")}</option>
-              <option value="completed">{txt("Tamamladım", "Completed", "已完成")}</option>
+              <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+              <option className="bg-gray-900 text-white" value="studying">{txt("Hâlâ okuyorum", "Still studying", "仍在就读")}</option>
+              <option className="bg-gray-900 text-white" value="completed">{txt("Tamamladım", "Completed", "已完成")}</option>
             </select>
           </div>
           <div className="space-y-2">

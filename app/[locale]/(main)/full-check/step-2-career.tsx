@@ -138,19 +138,19 @@ export function Step2Career(props: Step2Props) {
             <div className="space-y-2">
               <Label>{txt("İlişki Türü", "Relationship Type", "关系类型")}<RequiredMark /></Label>
               <select name="relationshipType" value={relationshipType} onChange={(e) => setRelationshipType(e.target.value)} className={selectClassName} required>
-                <option value="">Seçin</option>
-                <option value="married">Evli / Married</option>
-                <option value="de_facto">De facto</option>
-                {selectedCountryIsAU && <option value="engaged">Nişanlı</option>}
+                <option className="bg-gray-900 text-white" value="">Seçin</option>
+                <option className="bg-gray-900 text-white" value="married">Evli / Married</option>
+                <option className="bg-gray-900 text-white" value="de_facto">De facto</option>
+                {selectedCountryIsAU && <option className="bg-gray-900 text-white" value="engaged">Nişanlı</option>}
               </select>
             </div>
             <div className="space-y-2">
               <Label>{txt("Birlikte Yaşama Süresi", "Cohabitation Duration", "共同居住时间")}<RequiredMark /></Label>
               <select name="cohabitationDuration" value={cohabitationDuration} onChange={(e) => setCohabitationDuration(e.target.value)} className={selectClassName} required>
-                <option value="">Seçin</option>
-                <option value="less_than_12_months">12 aydan az</option>
-                <option value="12_to_24_months">12 - 24 ay</option>
-                <option value="more_than_2_years">2 yıldan fazla</option>
+                <option className="bg-gray-900 text-white" value="">Seçin</option>
+                <option className="bg-gray-900 text-white" value="less_than_12_months">12 aydan az</option>
+                <option className="bg-gray-900 text-white" value="12_to_24_months">12 - 24 ay</option>
+                <option className="bg-gray-900 text-white" value="more_than_2_years">2 yıldan fazla</option>
               </select>
             </div>
           </div>
@@ -158,19 +158,19 @@ export function Step2Career(props: Step2Props) {
             <div className="space-y-2">
               <Label>{txt("Sponsorun Statüsü", "Sponsor Status", "担保人身份")}<RequiredMark /></Label>
               <select name="sponsorStatus" value={sponsorStatus} onChange={(e) => setSponsorStatus(e.target.value)} className={selectClassName} required>
-                <option value="">Seçin</option>
-                <option value="citizen">Vatandaş</option>
-                <option value="permanent_resident">Kalıcı Oturum (PR)</option>
-                {selectedCountryIsAU && <option value="eligible_nz_citizen">Uygun NZ Vatandaşı</option>}
+                <option className="bg-gray-900 text-white" value="">Seçin</option>
+                <option className="bg-gray-900 text-white" value="citizen">Vatandaş</option>
+                <option className="bg-gray-900 text-white" value="permanent_resident">Kalıcı Oturum (PR)</option>
+                {selectedCountryIsAU && <option className="bg-gray-900 text-white" value="eligible_nz_citizen">Uygun NZ Vatandaşı</option>}
               </select>
             </div>
             <div className="space-y-2">
               <Label>{txt("Önceki Sponsorluk", "Previous Sponsorship", "既往担保历史")}<RequiredMark /></Label>
               <select name="previousSponsorship" value={previousSponsorship} onChange={(e) => setPreviousSponsorship(e.target.value)} className={selectClassName} required>
-                <option value="">Seçin</option>
-                <option value="no">Hayır</option>
-                <option value="yes_within_5_years">Evet (Son 5 yıl)</option>
-                <option value="yes_longer">Evet (5+ yıl önce)</option>
+                <option className="bg-gray-900 text-white" value="">Seçin</option>
+                <option className="bg-gray-900 text-white" value="no">Hayır</option>
+                <option className="bg-gray-900 text-white" value="yes_within_5_years">Evet (Son 5 yıl)</option>
+                <option className="bg-gray-900 text-white" value="yes_longer">Evet (5+ yıl önce)</option>
               </select>
             </div>
           </div>
@@ -178,9 +178,9 @@ export function Step2Career(props: Step2Props) {
             <div className="space-y-2">
               <Label>{txt("Başvuru Konumu", "Application Location", "申请地点")}<RequiredMark /></Label>
               <select name="applicationLocationPreference" value={applicationLocationPreference} onChange={(e) => setApplicationLocationPreference(e.target.value)} className={selectClassName} required>
-                <option value="">Seçin</option>
-                <option value="inland">Inland</option>
-                <option value="outland">Outland</option>
+                <option className="bg-gray-900 text-white" value="">Seçin</option>
+                <option className="bg-gray-900 text-white" value="inland">Inland</option>
+                <option className="bg-gray-900 text-white" value="outland">Outland</option>
               </select>
             </div>
           )}

@@ -171,7 +171,7 @@ export { renderVisaPathwayOptions };
 
 function renderVisaPathwayOptions(options: VisaPathwayOption[], isTr: boolean, isZh: boolean) {
   return options.map((opt) => (
-    <option key={opt.value} value={opt.value}>{opt.label[isTr ? "tr" : isZh ? "zh-Hans" : "en"] ?? opt.label.en}</option>
+    <option className="bg-gray-900 text-white" key={opt.value} value={opt.value}>{opt.label[isTr ? "tr" : isZh ? "zh-Hans" : "en"] ?? opt.label.en}</option>
   ));
 }
 

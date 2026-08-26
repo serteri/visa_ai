@@ -96,9 +96,9 @@ export function Step3Language(props: Step3Props) {
                   <option>, even though React's own state is still "" (nothing
                   chosen). That made the field look pre-answered "Yes" before
                   the user ever touched it. */}
-              <option value="" disabled hidden>{txt("Seçin", "Select", "请选择")}</option>
-              <option value="yes">{txt("Evet", "Yes", "是")}</option>
-              <option value="no">{txt("Hayır", "No", "否")}</option>
+              <option className="bg-gray-900 text-white" value="" disabled hidden>{txt("Seçin", "Select", "请选择")}</option>
+              <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+              <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
             </select>
             <ErrorText message={state.errors?.qualificationAwardedInAustralia} />
           </div>
@@ -107,9 +107,9 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label>{txt("Bölgesel kampüs mü?", "Regional campus?", "偏远地区校区？")}</Label>
               <select name="qualificationRegionalAustralia" value={qualificationRegionalAustralia} onChange={(e) => setQualificationRegionalAustralia(e.target.value)} className={selectClassName}>
-                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-                <option value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option value="no">{txt("Hayır", "No", "否")}</option>
+                <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
               </select>
             </div>
           )}
@@ -118,9 +118,9 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label>{txt("Yabancı diploma tanındı mı?", "Overseas qualification recognized?", "海外学历已获认可？")}<RequiredMark /></Label>
               <select name="isQualificationRecognized" value={isQualificationRecognized} onChange={(e) => setIsQualificationRecognized(e.target.value)} className={selectClassName}>
-                <option value="" disabled hidden>{txt("Seçin", "Select", "请选择")}</option>
-                <option value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option value="no">{txt("Hayır", "No", "否")}</option>
+                <option className="bg-gray-900 text-white" value="" disabled hidden>{txt("Seçin", "Select", "请选择")}</option>
+                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
               </select>
             </div>
           )}
@@ -129,10 +129,10 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label>{txt("STEM alanında mı?", "In a STEM field?", "STEM领域？")}</Label>
               <select name="specialistEducationStemResponse" value={specialistEducationStemResponse} onChange={(e) => setSpecialistEducationStemResponse(e.target.value)} className={selectClassName}>
-                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-                <option value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option value="no">{txt("Hayır", "No", "否")}</option>
-                <option value="not_sure">{txt("Emin değilim", "Not sure", "不确定")}</option>
+                <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
+                <option className="bg-gray-900 text-white" value="not_sure">{txt("Emin değilim", "Not sure", "不确定")}</option>
               </select>
             </div>
           )}
@@ -182,26 +182,26 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label htmlFor="waitlist-english-test-taken">{txt("İngilizce testi alındı mı?", "English test taken?", "英语考试？")}</Label>
               <select id="waitlist-english-test-taken" name="englishTestTaken" defaultValue="" className={selectClassName}>
-                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-                <option value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option value="no">{txt("Hayır", "No", "否")}</option>
+                <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
               </select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="waitlist-occupation-confirmed">{txt("Meslek net mi?", "Occupation confirmed?", "职业已确认？")}</Label>
               <select id="waitlist-occupation-confirmed" name="occupationConfirmed" defaultValue="" className={selectClassName}>
-                <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-                <option value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option value="no">{txt("Hayır", "No", "否")}</option>
+                <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
               </select>
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="waitlist-graduate-visa-intent">{txt("Mezun vizesi hedefliyor musunuz?", "Graduate visa intent?", "毕业生签证意向？")}</Label>
             <select id="waitlist-graduate-visa-intent" name="hasGraduateVisaPathwayIntent" defaultValue="" className={selectClassName}>
-              <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-              <option value="yes">{txt("Evet", "Yes", "是")}</option>
-              <option value="no">{txt("Hayır", "No", "否")}</option>
+              <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+              <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+              <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
             </select>
           </div>
         </>
@@ -215,10 +215,10 @@ export function Step3Language(props: Step3Props) {
         <div className="space-y-2">
           <Label htmlFor="waitlist-timeline">{txt("Zamanlama", "Timeline", "时间规划")}</Label>
           <select id="waitlist-timeline" name="timeline" defaultValue="" className={selectClassName}>
-            <option value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-            <option value="0-6">{txt("0-6 ay", "0-6 months", "0-6 个月")}</option>
-            <option value="6-12">{txt("6-12 ay", "6-12 months", "6-12 个月")}</option>
-            <option value="12+">{txt("12+ ay", "12+ months", "12 个月以上")}</option>
+            <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+            <option className="bg-gray-900 text-white" value="0-6">{txt("0-6 ay", "0-6 months", "0-6 个月")}</option>
+            <option className="bg-gray-900 text-white" value="6-12">{txt("6-12 ay", "6-12 months", "6-12 个月")}</option>
+            <option className="bg-gray-900 text-white" value="12+">{txt("12+ ay", "12+ months", "12 个月以上")}</option>
           </select>
         </div>
       </div>

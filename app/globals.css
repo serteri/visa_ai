@@ -25,6 +25,12 @@
   --border: rgba(255, 255, 255, 0.12);
   --ring: #8052ff;
   --radius: 1.5rem;
+  /* Popover/dropdown surfaces (Radix Popover, Command, Select content) --
+     was never defined here, so bg-popover/text-popover-foreground had no
+     backing color and those components fell back to the browser's default
+     white panel on a dark page. */
+  --popover: #030712;
+  --popover-foreground: #ffffff;
 
   /* Dala token names, for components that want to reach for the palette
      directly instead of through the semantic --background/--primary set. */
@@ -51,6 +57,8 @@
     --accent-foreground: #000000;
     --border: rgba(255, 255, 255, 0.12);
     --ring: #8052ff;
+    --popover: #030712;
+    --popover-foreground: #ffffff;
   }
 }
 
@@ -69,6 +77,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-void: var(--color-void);
   --color-bone-white: var(--color-bone-white);
   --color-electric-iris: var(--color-electric-iris);
@@ -215,6 +225,8 @@ option {
   --accent-foreground: #000000;
   --border: rgba(255, 255, 255, 0.12);
   --ring: #8052ff;
+  --popover: #030712;
+  --popover-foreground: #ffffff;
 
   --cf-bg: #000000;
   --cf-bg-deep: #000000;
@@ -246,6 +258,8 @@ option {
   --accent-foreground: #000000;
   --border: rgba(255, 255, 255, 0.12);
   --ring: #8052ff;
+  --popover: #030712;
+  --popover-foreground: #ffffff;
 
   --cf-bg: #000000;
   --cf-bg-deep: #000000;
