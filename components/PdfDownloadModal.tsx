@@ -342,7 +342,7 @@ export function PdfDownloadModal({
           // browser -- the guide was emailed to the address the user gave us.
           <div className="space-y-4 text-center py-6">
             <div className="text-5xl">📬</div>
-            <p className="font-semibold text-slate-900 dark:text-white">
+            <p className="font-semibold text-white">
               {tx(
                 <>Başarılı! PR Rehberi <strong>{form.email}</strong> adresine gönderildi.</>,
                 <>Success! The PR Guide has been sent to <strong>{form.email}</strong>.</>,

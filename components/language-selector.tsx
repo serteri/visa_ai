@@ -54,7 +54,7 @@ export function LanguageSelector({ currentLocale, compact = false }: LanguageSel
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-[9999] mt-2 w-56 rounded-lg border border-border bg-white shadow-xl">
+        <div className="absolute right-0 top-full z-[9999] mt-2 w-56 rounded-lg border border-border bg-black">
           <div className="p-2">
             {languages.map((lang) => (
               <button
