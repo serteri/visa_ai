@@ -13,14 +13,20 @@ import {
 
 import { useTranslation } from "@/contexts/language-context";
 
-type FeatureKey = "eligibility" | "roadmap" | "costTimeline" | "occupationInsights" | "documentChecklist";
+type FeatureKey = "viabilityRanking" | "pointsBreakdown" | "pointsBooster" | "financialRoadmap" | "historicalTrends";
 
+// Real product screenshots (replaced the old generic mockups). The task's
+// requested filenames had a "_2" suffix that doesn't exist on disk -- these
+// are the actual files in public/images/report-previews/, matched by their
+// shared timestamps. Renamed to remove spaces (kebab-case, lowercase) --
+// spaces in web asset filenames get percent-encoded to %20 and are prone to
+// breaking on some CDN/server configs.
 const FEATURES: Array<{ key: FeatureKey; icon: LucideIcon; image: string }> = [
-  { key: "eligibility", icon: ShieldCheck, image: "/images/report-previews/report-preview-1.png" },
-  { key: "roadmap", icon: MapPinned, image: "/images/report-previews/report-preview-2.png" },
-  { key: "costTimeline", icon: DollarSign, image: "/images/report-previews/report-preview-3.png" },
-  { key: "occupationInsights", icon: ListChecks, image: "/images/report-previews/report-preview-4.png" },
-  { key: "documentChecklist", icon: ClipboardCheck, image: "/images/report-previews/report-preview-5.png" },
+  { key: "viabilityRanking", icon: ShieldCheck, image: "/images/report-previews/screenshot-2026-08-26-204059.png" },
+  { key: "pointsBreakdown", icon: ListChecks, image: "/images/report-previews/screenshot-2026-08-26-204437.png" },
+  { key: "pointsBooster", icon: MapPinned, image: "/images/report-previews/screenshot-2026-08-26-204504.png" },
+  { key: "financialRoadmap", icon: DollarSign, image: "/images/report-previews/screenshot-2026-08-26-204514.png" },
+  { key: "historicalTrends", icon: ClipboardCheck, image: "/images/report-previews/screenshot-2026-08-26-204527.png" },
 ];
 
 /**
@@ -61,7 +67,7 @@ export function PremiumReportShowcase() {
           <p className="mt-3 text-base text-gray-400">
             {t(
               "home.reportShowcase.subtitle",
-              "A $49 report built to replace hours of guesswork -- here's exactly what you get."
+              "Stop guessing. Get the exact AI-powered blueprint used by migration experts, detailing your precise points, hidden risks, and a clear roadmap to Permanent Residency. All for $49."
             )}
           </p>
         </div>
@@ -117,12 +123,25 @@ export function PremiumReportShowcase() {
             <p className="mb-3 text-sm leading-relaxed text-gray-400 lg:hidden">
               {t(`home.reportShowcase.features.${active.key}.description`, "")}
             </p>
-            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-gray-800 bg-black">
+            {/* No border, no box-shadow -- the image floats in the void
+                per Dala's flat/borderless rule. A soft iris glow sits
+                behind it instead of a hard edge, so a screenshot with its
+                own dark corners doesn't visually fuse into the black
+                section background. */}
+            <div className="relative aspect-[3/4] w-full">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-[-6%] rounded-3xl opacity-40 blur-3xl"
+                style={{
+                  background:
+                    "radial-gradient(closest-side, rgba(128,82,255,0.35), transparent 75%)",
+                }}
+              />
               <Image
                 src={active.image}
                 alt={t(`home.reportShowcase.features.${active.key}.title`, active.key)}
                 fill
-                className="object-contain"
+                className="relative object-contain"
                 sizes="(min-width: 1024px) 50vw, 100vw"
               />
             </div>

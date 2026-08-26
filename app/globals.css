@@ -120,10 +120,14 @@ option {
 }
 
 /* Dala has no elevation -- flatten every shadow utility site-wide instead
-   of hunting down each "shadow" / "drop-shadow" class across ~24 files. */
+   of hunting down each "shadow" / "drop-shadow" class across ~24 files.
+   filter is intentionally NOT reset here: no component uses drop-shadow
+   (grepped, zero hits), and decorative blur() glows (see the hero/report
+   showcase radial-gradient accents) are a different concept from "shadow
+   elevation" -- nuking filter site-wide was silently breaking those blurs
+   too, since blur() is also a filter. */
 *, *::before, *::after {
   box-shadow: none !important;
-  filter: none !important;
 }
 
 .ambient-bg {
