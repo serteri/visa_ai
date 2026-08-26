@@ -1371,6 +1371,7 @@ export async function submitFullCheckWaitlist(
     qualificationAwardedInAustralia,
     qualificationRegionalAustralia,
     specialistEducationStemResponse,
+    isQualificationRecognized,
     offshoreExperienceYears,
     onshoreExperienceYears,
     yearsInSponsoredPosition,

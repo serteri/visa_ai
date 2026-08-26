@@ -3730,12 +3730,25 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
     });
   }
   if (isResearchOrDoctorateQualification(input.qualificationLevel)) {
+    // DHA rule: the +10 specialist education (STEM) points require BOTH a
+    // PhD/Master's (Research) AND that it was completed at an Australian
+    // institution (see hasSpecialistEducationClaim / isAustralianQualification
+    // above, which already gate the actual point award correctly). An
+    // overseas doctorate is not a recognition problem -- no amount of
+    // "qualification recognition" can satisfy this criterion, so the note
+    // must not say "requires recognition" here; it never qualifies for this
+    // specific bonus regardless.
     breakdown.push({
       label: isTr ? "Uzmanlık eğitimi (STEM)" : isZh ? "专业型学位 (STEM)" : "Specialist education (STEM)",
       points: result.breakdown.bonus.specialistEducation,
       max: 10,
-      note:
-        input.specialistEducationStemResponse === "yes"
+      note: !isAustralianQualification(input)
+        ? isTr
+          ? "Uzmanlık eğitimi puanları kesinlikle Avustralya'da bir kurumda tamamlanmış en az 2 akademik yıl gerektirir."
+          : isZh
+            ? "专业型学位加分必须在澳大利亚教育机构完成至少2个学年的学习。"
+            : "Specialist education points strictly require at least 2 academic years of study at an Australian institution."
+        : input.specialistEducationStemResponse === "yes"
           ? isTr ? "STEM alanı onaylandı" : isZh ? "已确认 STEM 学位" : "STEM field confirmed"
           : input.specialistEducationStemResponse === "not_sure"
             ? isTr ? "Emin değilim → uygulanmadı" : isZh ? "不确定 → 未计分" : "Not sure -> not awarded"

@@ -383,9 +383,14 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
 
       // Determine action/status label
       let actionStatus: string;
-      const isEducation = item.label.toLowerCase().includes("education") ||
+      // Excludes the "Specialist education (STEM)" row -- it has its own
+      // Australian-institution-specific messaging (see engine.ts's
+      // breakdown note for that row), which the qualification-recognition
+      // branches below would otherwise incorrectly override.
+      const isEducation = (item.label.toLowerCase().includes("education") ||
         item.label.toLowerCase().includes("eğitim") ||
-        item.label.toLowerCase().includes("教育");
+        item.label.toLowerCase().includes("教育")) &&
+        !item.label.toLowerCase().includes("stem");
       const isEmployment = item.label.toLowerCase().includes("employment") ||
         item.label.toLowerCase().includes("istihdam") ||
         item.label.toLowerCase().includes("工作");
@@ -411,12 +416,19 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
         actionStatus = t === "tr" ? "✅ Tamamlandı"
           : t === "zh" ? "✅ 已完成"
           : "✅ Complete";
+      } else if (isEducation && isQualRecognized === true) {
+        // A user-declared "Yes, recognized" must never be overridden by a
+        // hardcoded "requires recognition" status -- if claimedPts is still
+        // 0 here (e.g. the qualification level itself carries 0 points on
+        // the DHA table), that's a separate fact from recognition, so this
+        // reads as confirmed rather than falling into the branch below.
+        actionStatus = t === "tr" ? "✅ Onaylandı / Tanındı"
+          : t === "zh" ? "✅ 已确认 / 已认可"
+          : "✅ Confirmed / Recognized";
       } else if (isEducation && !isAusQual && !isQualRecognized) {
         // Overseas education points are gated on recognition only -- NOT on
         // skillsAssessmentDone (that only gates the employment rows below).
-        // A recognized overseas qualification already has claimedPts > 0
-        // and hits the branch above; this only fires when recognition is
-        // actually missing/false.
+        // A recognized overseas qualification hits the branch above instead.
         actionStatus = t === "tr" ? "Yabancı tanıma gerekli"
           : t === "zh" ? "需要海外资格认可"
           : "Requires Overseas Qualification Recognition";
