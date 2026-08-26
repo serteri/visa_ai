@@ -2973,10 +2973,10 @@ function getDataCompletenessLabel(score: number, locale: Locale): string {
 }
 
 function buildDocumentReadinessIndicator(input: ReadinessInput): IndicatorLevel {
-  const englishTestTaken = (input.englishTestTaken ?? "").trim().toLowerCase() === "yes";
+  const englishEvidence = hasRealEnglishEvidence(input);
   const skillsSignal = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
 
-  const readinessSignals = [englishTestTaken, skillsSignal].filter(Boolean).length;
+  const readinessSignals = [englishEvidence, skillsSignal].filter(Boolean).length;
 
   if (readinessSignals === 2) return "high";
   if (readinessSignals === 1) return "medium";
@@ -6835,7 +6835,6 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
     fieldsPresent: {
       age: true,
       englishLevel: false,
-      englishTestEvidence: false,
       occupation: false,
       skillsAssessment: false,
       workExperienceYears: false,

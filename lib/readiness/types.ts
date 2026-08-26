@@ -53,7 +53,6 @@ export type ReadinessInput = {
   age?: string;
   occupation?: string;
   englishLevel?: string;
-  englishTestTaken?: string;
   occupationConfirmed?: string;
   estimatedBudgetRange?: string;
   timeline?: string;
@@ -394,7 +393,6 @@ export type AssessmentState = {
   fieldsPresent: {
     age: boolean;
     englishLevel: boolean;
-    englishTestEvidence: boolean;
     occupation: boolean;
     skillsAssessment: boolean;
     workExperienceYears: boolean;

@@ -10,7 +10,6 @@ const input: ReadinessInput = {
   age: "30",
   occupation: "Software Engineer 21232",
   englishLevel: "CLB 9",
-  englishTestTaken: "yes",
   occupationConfirmed: "yes",
   estimatedBudgetRange: "15000-25000",
   timeline: "0-6 months",

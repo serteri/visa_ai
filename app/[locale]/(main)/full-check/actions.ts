@@ -412,7 +412,6 @@ async function sendFullCheckAdminEmail(payload: {
   age: string;
   occupation: string;
   englishLevel: string;
-  englishTestTaken: string;
   occupationConfirmed: string;
   estimatedBudgetRange: string;
   timeline: string;
@@ -449,7 +448,6 @@ async function sendFullCheckAdminEmail(payload: {
     `age: ${payload.age}`,
     `occupation: ${payload.occupation || "-"}`,
     `english level: ${payload.englishLevel || "-"}`,
-    `english test taken: ${payload.englishTestTaken || "-"}`,
     `occupation confirmed: ${payload.occupationConfirmed || "-"}`,
     `estimated budget range: ${payload.estimatedBudgetRange || "-"}`,
     `timeline: ${payload.timeline || "-"}`,
@@ -487,7 +485,6 @@ async function sendInternalLeadTierEmail(payload: {
   preferredPathway: string;
   estimatedPoints?: number;
   englishLevel: string;
-  englishTestTaken: string;
   reportLink: string;
 }): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
@@ -498,8 +495,12 @@ async function sendInternalLeadTierEmail(payload: {
   const resend = new Resend(apiKey);
   const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
 
-  const englishTestConfirmed = payload.englishTestTaken.trim().toLowerCase() === "yes";
-  const englishWarningLine = !englishTestConfirmed
+  // hasRealEnglishEvidence() takes a full ReadinessInput, which this
+  // notification payload isn't -- inline the same englishLevel-only
+  // predicate rather than fabricating a fake ReadinessInput.
+  const englishLevelNormalized = payload.englishLevel.trim().toLowerCase();
+  const englishEvidenceProvided = englishLevelNormalized !== "" && englishLevelNormalized !== "none";
+  const englishWarningLine = !englishEvidenceProvided
     ? `⚠️ No English test evidence on file — self-reported "${payload.englishLevel || "unspecified"}" band is unverified; a lower actual result could drop this profile below threshold.`
     : null;
 
@@ -515,7 +516,6 @@ async function sendInternalLeadTierEmail(payload: {
     `Country / pathway: ${payload.country} — ${payload.preferredPathway || "-"}`,
     `Self-reported points estimate: ${payload.estimatedPoints ?? "-"}`,
     `English level (self-reported): ${payload.englishLevel || "-"}`,
-    `English test taken: ${payload.englishTestTaken || "not answered"}`,
     "",
     ...(englishWarningLine ? [englishWarningLine, ""] : []),
     `Full report: ${payload.reportLink}`,
@@ -990,7 +990,6 @@ export async function submitFullCheckWaitlist(
     formData.get("courseCompletionStatus")
   );
   const courseCompletionStatus = courseCompletionStatusResult.success ? courseCompletionStatusResult.data : undefined;
-  const englishTestTaken = String(formData.get("englishTestTaken") ?? "").trim();
   const occupationConfirmed = occupationConfirmedRaw || String(formData.get("occupationConfirmed") ?? "").trim();
   const hasGraduateVisaPathwayIntentRaw = String(formData.get("hasGraduateVisaPathwayIntent") ?? "").trim();
   const hasGraduateVisaPathwayIntent =
@@ -1182,7 +1181,6 @@ export async function submitFullCheckWaitlist(
     age,
     occupation: occupation || undefined,
     englishLevel: englishLevel || undefined,
-    englishTestTaken: englishTestTaken || undefined,
     occupationConfirmed: occupationConfirmed || undefined,
     estimatedBudgetRange: estimatedBudgetRange || undefined,
     timeline: timeline || undefined,
@@ -1304,7 +1302,6 @@ export async function submitFullCheckWaitlist(
       courseCricosCode,
       courseCompletionStatus,
       courseCompletionDate,
-      englishTestTaken: englishTestTaken || undefined,
       occupationConfirmed: occupationConfirmed || undefined,
       hasGraduateVisaPathwayIntent,
       estimatedBudgetRange: estimatedBudgetRange || undefined,
@@ -1333,7 +1330,6 @@ export async function submitFullCheckWaitlist(
       age,
       occupation: occupation || null,
       english_level: englishLevel || null,
-      english_test_taken: englishTestTaken || null,
       occupation_confirmed: occupationConfirmed || null,
       estimated_budget_range: estimatedBudgetRange || null,
       timeline: timeline || null,
@@ -1383,7 +1379,6 @@ export async function submitFullCheckWaitlist(
     courseCricosCode,
     courseCompletionStatus,
     courseCompletionDate,
-    englishTestTaken: englishTestTaken || undefined,
     occupationConfirmed: occupationConfirmed || undefined,
     estimatedBudgetRange: estimatedBudgetRange || undefined,
     timeline: timeline || undefined,
@@ -1443,7 +1438,6 @@ export async function submitFullCheckWaitlist(
       age,
       occupation: occupation || null,
       english_level: englishLevel || null,
-      english_test_taken: englishTestTaken || null,
       occupation_confirmed: occupationConfirmed || null,
       estimated_budget_range: estimatedBudgetRange || null,
       timeline: timeline || null,
@@ -1496,7 +1490,6 @@ export async function submitFullCheckWaitlist(
           age,
           occupation,
           englishLevel,
-          englishTestTaken,
           occupationConfirmed,
           estimatedBudgetRange,
           timeline,
@@ -1529,7 +1522,6 @@ export async function submitFullCheckWaitlist(
           preferredPathway: visaInterest,
           estimatedPoints: generatedReport.assessmentState.estimatedPoints,
           englishLevel,
-          englishTestTaken,
           reportLink,
         })
           .then((sent) => (sent ? markInternalLeadEmailSent(reportRecord.id) : undefined))

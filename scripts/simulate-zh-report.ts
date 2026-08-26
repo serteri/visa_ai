@@ -12,7 +12,6 @@ async function run() {
     age: "31",
     occupation: "软件工程师（261313）",
     englishLevel: "高级英语",
-    englishTestTaken: "yes",
     occupationConfirmed: "yes",
     estimatedBudgetRange: "15000-25000 澳元",
     timeline: "0-6",

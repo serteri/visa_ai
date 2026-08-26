@@ -18,7 +18,6 @@ const goldLeadInput: ReadinessInput = {
   qualificationLevel: "Bachelor",
   offshoreExperienceYears: 6,
   onshoreExperienceYears: 0,
-  englishTestTaken: "yes",
   occupationConfirmed: "yes",
   estimatedBudgetRange: "20k-30k AUD",
   timeline: "6-12 months",

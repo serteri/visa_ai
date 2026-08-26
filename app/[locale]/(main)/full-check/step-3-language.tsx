@@ -178,23 +178,13 @@ export function Step3Language(props: Step3Props) {
 
       {!isPartner && (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="waitlist-english-test-taken">{txt("İngilizce testi alındı mı?", "English test taken?", "英语考试？")}</Label>
-              <select id="waitlist-english-test-taken" name="englishTestTaken" defaultValue="" className={selectClassName}>
-                <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="waitlist-occupation-confirmed">{txt("Meslek net mi?", "Occupation confirmed?", "职业已确认？")}</Label>
-              <select id="waitlist-occupation-confirmed" name="occupationConfirmed" defaultValue="" className={selectClassName}>
-                <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
-              </select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="waitlist-occupation-confirmed">{txt("Meslek net mi?", "Occupation confirmed?", "职业已确认？")}</Label>
+            <select id="waitlist-occupation-confirmed" name="occupationConfirmed" defaultValue="" className={selectClassName}>
+              <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+              <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+              <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
+            </select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="waitlist-graduate-visa-intent">{txt("Mezun vizesi hedefliyor musunuz?", "Graduate visa intent?", "毕业生签证意向？")}</Label>

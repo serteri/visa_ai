@@ -37,7 +37,6 @@ const testInput: ReadinessInput = {
   occupation: "Software Engineer 261313",
   occupationConfirmed: "yes",
   englishLevel: "proficient",
-  englishTestTaken: "yes",
   preferredPathway: "190",
   migrationGoals: ["direct_pr"],
 };

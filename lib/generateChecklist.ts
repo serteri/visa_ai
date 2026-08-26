@@ -119,10 +119,9 @@ export function generateChecklist(args: {
   const { input, pathwayComparison, assessmentState, stateNominationTracker } = args;
   const items: ChecklistItem[] = [];
   const gsmBlockReason = getGsmBlockReason(pathwayComparison, assessmentState, input.locale);
-  const englishTaken = normalize(input.englishTestTaken);
   const englishBand = parseEnglishBand(input.englishLevel);
 
-  if (englishTaken === "no" || englishTaken === "" || englishBand < 1) {
+  if (englishBand < 1) {
     items.push({
       id: "english-exam",
       priority: "urgent",

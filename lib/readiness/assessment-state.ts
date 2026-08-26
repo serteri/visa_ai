@@ -68,7 +68,6 @@ function fieldLabel(key: keyof AssessmentState["fieldsPresent"], locale: Locale)
   const labels: Record<keyof AssessmentState["fieldsPresent"], [string, string, string]> = {
     age: ["Age", "Yaş", "年龄"],
     englishLevel: ["English level", "İngilizce seviyesi", "英语水平"],
-    englishTestEvidence: ["English test evidence", "İngilizce sınav kanıtı", "英语考试证明"],
     occupation: ["Occupation", "Meslek", "职业"],
     skillsAssessment: ["Skills assessment outcome", "Beceri değerlendirme sonucu", "职业评估结果"],
     workExperienceYears: ["Work experience years", "İş deneyimi (yıl)", "工作经验年限"],
@@ -105,7 +104,6 @@ export function buildAssessmentState(
   const fieldsPresent: AssessmentState["fieldsPresent"] = {
     age: Boolean(input.age),
     englishLevel: hasRealEnglishEvidence(input),
-    englishTestEvidence: (input.englishTestTaken ?? "").trim().toLowerCase() === "yes",
     occupation: Boolean(input.occupation),
     skillsAssessment: (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes",
     workExperienceYears: employmentSignals.workExperienceYearsConfirmed,

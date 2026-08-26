@@ -14,7 +14,6 @@ async function run() {
   submitForm.set("age", "32");
   submitForm.set("occupation", "Software Engineer (261313)");
   submitForm.set("englishLevel", "Superior");
-  submitForm.set("englishTestTaken", "yes");
   submitForm.set("occupationConfirmed", "yes");
   submitForm.set("estimatedBudgetRange", "15k-25k AUD");
   submitForm.set("timeline", "0-6");

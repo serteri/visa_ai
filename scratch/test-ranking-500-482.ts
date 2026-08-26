@@ -29,7 +29,6 @@ run("Skilled + 500 both detected, full profile", {
   occupation: "Software Engineer",
   englishLevel: "Superior",
   qualificationLevel: "Bachelor's Degree",
-  englishTestTaken: "yes",
   occupationConfirmed: "yes",
 });
 
@@ -57,7 +56,6 @@ run("Pure skilled 189/190/491, no 500/482 signal (regression)", {
   occupation: "Software Engineer",
   englishLevel: "Superior",
   qualificationLevel: "Bachelor's Degree",
-  englishTestTaken: "yes",
   occupationConfirmed: "yes",
 });
 
