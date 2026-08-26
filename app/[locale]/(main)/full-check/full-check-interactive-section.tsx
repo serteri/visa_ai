@@ -312,7 +312,7 @@ export function FullCheckInteractiveSection({
     <>
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-12 items-start">
         {/* Form Container */}
-        <div className="lg:col-span-7 bg-white/60 backdrop-blur-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl p-6 sm:p-8">
+        <div className="lg:col-span-7 bg-black border border-gray-800 rounded-2xl p-6 sm:p-8">
           {formHeader}
           <FullCheckWaitlistForm
             locale={locale}
@@ -325,22 +325,22 @@ export function FullCheckInteractiveSection({
 
         {/* Sidebar: What you'll get */}
         <div className="space-y-6 lg:col-span-5 lg:sticky lg:top-24">
-          <div className="rounded-3xl border border-white/60 bg-white/60 p-6 shadow-xl backdrop-blur-md">
-            <h3 className="text-lg font-bold text-foreground">
+          <div className="rounded-3xl border border-gray-800 bg-black p-6">
+            <h3 className="text-lg font-bold text-white">
               {tx("What you'll get", "Ne alacaksınız?", "你将获得")}
             </h3>
             <ul className="mt-5 space-y-4">
-              <li className="flex items-center gap-3 rounded-lg bg-white/50 p-3 shadow-sm ring-1 ring-black/5">
+              <li className="flex items-center gap-3 rounded-lg border border-gray-800 bg-black p-3">
                 <span className="text-xl">✨</span>
-                <span className="text-sm font-medium text-foreground">{tx("Points Calculation", "Puan Hesaplaması", "积分计算")}</span>
+                <span className="text-sm font-medium text-white">{tx("Points Calculation", "Puan Hesaplaması", "积分计算")}</span>
               </li>
-              <li className="flex items-center gap-3 rounded-lg bg-white/50 p-3 shadow-sm ring-1 ring-black/5">
+              <li className="flex items-center gap-3 rounded-lg border border-gray-800 bg-black p-3">
                 <span className="text-xl">🗺️</span>
-                <span className="text-sm font-medium text-foreground">{tx("Actionable Roadmap", "Eylem Planı ve Yol Haritası", "可执行的路线图")}</span>
+                <span className="text-sm font-medium text-white">{tx("Actionable Roadmap", "Eylem Planı ve Yol Haritası", "可执行的路线图")}</span>
               </li>
-              <li className="flex items-center gap-3 rounded-lg bg-white/50 p-3 shadow-sm ring-1 ring-black/5">
+              <li className="flex items-center gap-3 rounded-lg border border-gray-800 bg-black p-3">
                 <span className="text-xl">🔍</span>
-                <span className="text-sm font-medium text-foreground">{tx("Hidden Risk Analysis", "Gizli Risk Analizi", "潜在风险分析")}</span>
+                <span className="text-sm font-medium text-white">{tx("Hidden Risk Analysis", "Gizli Risk Analizi", "潜在风险分析")}</span>
               </li>
             </ul>
           </div>

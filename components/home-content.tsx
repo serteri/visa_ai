@@ -73,11 +73,11 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
         locale={locale}
         onScrollToPdfSection={handleScrollToPdfSection}
       />
+      <PremiumReportShowcase />
       <InstitutionsMarquee locale={locale} />
       <StatsBar locale={locale} />
       <HowItWorks locale={locale} />
       <CaseLog locale={locale} />
-      <PremiumReportShowcase />
       <PdfGuides
         locale={locale}
         hasFreeSlots={hasFreeSlots}

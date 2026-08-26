@@ -151,17 +151,17 @@ export function ContactPageClient({ locale }: { locale: string }) {
   }
 
   const fieldClassName =
-    "h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
+    "h-11 rounded-none border-0 border-b border-gray-800 bg-transparent px-1 text-sm text-white placeholder:text-gray-500 transition-colors outline-none focus-visible:border-[#8052ff]";
 
   return (
-    <div className="bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className="bg-black">
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed right-4 top-24 z-[100] max-w-sm rounded-xl border px-4 py-3 text-sm font-medium shadow-lg transition-all sm:right-6 ${
+          className={`fixed right-4 top-24 z-[100] max-w-sm rounded-xl border px-4 py-3 text-sm font-medium transition-all sm:right-6 ${
             toast.type === "success"
-              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-              : "border-red-200 bg-red-50 text-red-700"
+              ? "border-emerald-800 bg-black text-emerald-400"
+              : "border-red-800 bg-black text-red-400"
           }`}
           role="status"
           aria-live="polite"
@@ -171,10 +171,10 @@ export function ContactPageClient({ locale }: { locale: string }) {
       )}
 
       <section className="section-shell pb-6 text-center">
-        <h1 className="mx-auto max-w-2xl text-4xl font-black leading-tight tracking-tight text-slate-900 sm:text-5xl">
+        <h1 className="mx-auto max-w-2xl text-4xl font-normal leading-tight tracking-tight text-white sm:text-5xl">
           {tx("Bize Ulaşın", "Get in Touch", "联系我们")}
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">
+        <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-gray-400">
           {tx(
             "Sorularınız mı var? Ekibimiz size yardımcı olmak için burada.",
             "Have a question? Our team is here to help.",
@@ -186,7 +186,7 @@ export function ContactPageClient({ locale }: { locale: string }) {
       <section className="mx-auto max-w-5xl px-4 pb-24 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
           {/* Left column: form */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.45)] sm:p-8">
+          <div className="rounded-2xl border border-gray-800 bg-black p-6 sm:p-8">
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
@@ -266,7 +266,7 @@ export function ContactPageClient({ locale }: { locale: string }) {
                   value={form.message}
                   onChange={handleChange}
                   rows={6}
-                  className="rounded-lg border-gray-200 shadow-sm focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+                  className="rounded-none border-0 border-b border-gray-800 bg-transparent px-1 text-white placeholder:text-gray-500 shadow-none transition-colors focus-visible:border-[#8052ff] focus-visible:ring-0"
                   placeholder={tx(
                     "Nasıl yardımcı olabiliriz?",
                     "How can we help?",
@@ -297,7 +297,7 @@ export function ContactPageClient({ locale }: { locale: string }) {
 
           {/* Right column: info */}
           <div className="space-y-6">
-            <div className="rounded-2xl border border-slate-200 bg-slate-950 p-6 text-white shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)] sm:p-8">
+            <div className="rounded-2xl border border-gray-800 bg-black p-6 text-white sm:p-8">
               <h2 className="text-2xl font-bold tracking-tight">
                 Logi<span className="text-violet-400">Visa</span>
               </h2>

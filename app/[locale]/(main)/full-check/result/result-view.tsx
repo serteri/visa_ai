@@ -64,7 +64,7 @@ export function ResultView({
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-md border bg-white px-4 py-3">
+            <div className="rounded-md border border-gray-800 bg-black px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {isTr ? "Tahmini puan" : isZh ? "预估积分" : "Estimated points"}
               </p>
@@ -77,7 +77,7 @@ export function ResultView({
               </p>
               <div className="grid gap-2">
                 {pathways.map((item) => (
-                  <div key={`${item.subclass}-${item.visaName}`} className="rounded-md border bg-white px-3 py-2">
+                  <div key={`${item.subclass}-${item.visaName}`} className="rounded-md border border-gray-800 bg-black px-3 py-2">
                     <p className="text-sm font-medium">{item.visaName} ({item.subclass})</p>
                     <p className="text-xs text-muted-foreground">{item.reason}</p>
                   </div>

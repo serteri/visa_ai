@@ -337,8 +337,8 @@ export function FullCheckWaitlistForm({
     { value: "Partner / Dependants WITHOUT Functional English", label: txt("Eş/Bağımlı — Yetkin İngilizce Yok", "Partner / Dependants — No Functional English", "配偶/受养人—无胜任英语") },
   ];
 
-  const fieldClassName = "h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
-  const selectClassName = "h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-sm transition-all outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20";
+  const fieldClassName = "h-11 w-full rounded-none border-0 border-b border-gray-800 bg-transparent px-1 text-sm text-white placeholder:text-gray-500 transition-colors outline-none focus-visible:border-[#8052ff]";
+  const selectClassName = "h-11 w-full rounded-none border-0 border-b border-gray-800 bg-transparent px-1 text-sm text-white transition-colors outline-none focus-visible:border-[#8052ff]";
 
   const aiAnalysisSteps = selectedCountry === "CA"
     ? [txt("516 NOC kodu taranıyor...", "Scanning 516 NOC codes...", "扫描516 NOC代码..."), txt("CRS çizimi analiz ediliyor...", "Analysing CRS draw trends...", "分析CRS趋势..."), txt("PNP akışları işleniyor...", "Processing PNP streams...", "处理PNP通道..."), txt("Sonuçlar derleniyor...", "Compiling results...", "编译结果...")]
@@ -486,7 +486,7 @@ export function FullCheckWaitlistForm({
   // ── Full Report section (unlocked) ──
   const fullReportSection = unlockedReportState?.report && (
     <div id="full-report-section" style={{ marginTop: "2rem" }}>
-      <div className="rounded-xl border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] p-6">
+      <div className="rounded-xl border border-gray-800 bg-black p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">
             {isTr ? "Tam Rapor" : isZh ? "完整报告" : "Full Report"}
@@ -542,13 +542,13 @@ export function FullCheckWaitlistForm({
 
           {/* Step validation error */}
           {stepErrors && Object.keys(stepErrors).length > 0 && (
-            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">
+            <div className="rounded-md border border-red-800 bg-black px-4 py-2.5 text-sm font-medium text-red-400">
               {Object.values(stepErrors).join(" · ")}
             </div>
           )}
 
           {/* Progress bar — clickable for backward navigation */}
-          <div className="flex items-center gap-3 rounded-xl border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] px-4 py-3">
+          <div className="flex items-center gap-3 rounded-xl border border-gray-800 bg-black px-4 py-3">
             {[1, 2, 3].map((step) => (
               <button
                 key={step}
@@ -566,7 +566,7 @@ export function FullCheckWaitlistForm({
             ))}
           </div>
 
-          <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+          <p className="rounded-md border border-gray-800 bg-black px-3 py-2 text-sm font-medium text-gray-400">
             {txt("* ile işaretli alanların doldurulması zorunludur.", "* fields are mandatory.", "* 标记为必填。")}
           </p>
 

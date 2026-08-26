@@ -99,7 +99,7 @@ export function Step2Career(props: Step2Props) {
                       <li key={entry.code} onMouseDown={(e) => { e.preventDefault(); setAnzscoSearch(getLocalizedAnzscoTitle(entry, locale)); setAnzscoCode(entry.code); setAnzscoOpen(false); setAnzscoResults([]); }} className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className={`${nameStyle} truncate`}>{getLocalizedAnzscoTitle(entry, locale)}</span>
-                          {entry.isOnSkilledList === false && <Badge variant="outline" className="shrink-0 scale-90 border-slate-200 bg-slate-50 text-slate-500 font-normal">{txt("Nitelikli Listede Değil", "Not on Skilled List", "不在主要职业清单上")}</Badge>}
+                          {entry.isOnSkilledList === false && <Badge variant="outline" className="shrink-0 scale-90 border-gray-800 bg-black text-gray-500 font-normal">{txt("Nitelikli Listede Değil", "Not on Skilled List", "不在主要职业清单上")}</Badge>}
                         </div>
                         <span className="shrink-0 text-xs text-muted-foreground">{entry.code}</span>
                       </li>
