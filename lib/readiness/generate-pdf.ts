@@ -2396,6 +2396,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   function drawGanttTimeline() {
     if (!report.premiumSections?.strategicGanttChart?.steps?.length) return;
 
+    // Orphan/widow control: the heading, intro, band label, and the
+    // horizontal timeline strip read as one visual unit -- reserve space
+    // for all of it up front so a page break can never land between the
+    // heading and the chart it introduces (addSectionHeading/addSmallText
+    // only know how to protect themselves individually, not what follows).
+    ensurePageSpace(9 + 6 + 11 + 24 + 6);
+
     addSectionHeading("", text.strategicGanttChart);
     addSmallText(text.strategicGanttChartIntro, 0);
 
@@ -2416,12 +2423,18 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // range), so phases are drawn as equal-width blocks in step order --
     // a proportional Gantt bar-chart would need structured date fields
     // upstream, which this presentation-only pass isn't allowed to add.
-    const bandTop = yPosition;
     const bandHeight = 24;
     const segmentWidth = contentWidth / steps.length;
-    const axisY = bandTop + bandHeight - 6;
 
+    // Must run BEFORE capturing bandTop/axisY -- ensurePageSpace() can
+    // reset the outer yPosition to the top of a new page, and computing
+    // these first would freeze them at the pre-page-break position,
+    // drawing the whole timeline strip at the wrong Y on the new page
+    // (the "content split across two pages with a blank one between"
+    // symptom this whole task is about).
     ensurePageSpace(bandHeight + 6);
+    const bandTop = yPosition;
+    const axisY = bandTop + bandHeight - 6;
 
     steps.forEach((step, idx) => {
       const segX = margin + idx * segmentWidth;
