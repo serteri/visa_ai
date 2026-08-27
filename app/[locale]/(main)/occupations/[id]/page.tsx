@@ -8,13 +8,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MiniCvTeaser } from "@/components/MiniCvTeaser";
 import { StateDemandRadar } from "@/components/StateDemandRadar";
-import { isValidLocale } from "@/lib/i18n/config";
-import { deriveSubclasses, findOccupationById, parseOccupationCodeFromId } from "@/lib/occupations/seo";
+import { activeLocales, isValidLocale } from "@/lib/i18n/config";
+import {
+  buildOccupationSlug,
+  deriveSubclasses,
+  findAnzscoListEntry,
+  findOccupationById,
+  getUniqueOccupations,
+  localizedDuties,
+  localizedTitle,
+  parseOccupationCodeFromId,
+} from "@/lib/occupations/seo";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
 
 const tx = (locale: string, zh: string, tr: string, en: string) =>
   locale === "tr" ? tr : locale === "zh-Hans" ? zh : en;
+
+// SSG: pre-renders every {locale} x {eligible occupation} combination at
+// build time instead of rendering on-demand per request. Uses
+// getUniqueOccupations() (not the raw 1464-row occupations.json array)
+// specifically so this generates the exact same set of pages that
+// findOccupationById() will actually resolve at request time -- that
+// function excludes isEligibleForMigration:false rows and dedupes by
+// anzsco_code, so generating params for the raw array would build pages
+// for slugs that immediately 404 on visit.
+export function generateStaticParams() {
+  const occupations = getUniqueOccupations();
+
+  return activeLocales.flatMap((locale) =>
+    occupations.map((occupation) => ({
+      locale,
+      id: buildOccupationSlug(occupation),
+    }))
+  );
+}
 
 type PageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -85,6 +113,15 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
   const occupation = findOccupationById(id);
   const fallbackCode = parseOccupationCodeFromId(id);
 
+  // Trilingual title/duties come from a separate dataset (anzsco-list.json)
+  // than occupation_name/authority/visa_lists (occupations.json) -- the two
+  // aren't 1:1, so this can be null even when `occupation` is found. All
+  // vise-list/points/stat logic below still reads only from `occupation`,
+  // unchanged.
+  const anzscoEntry = findAnzscoListEntry(id);
+  const displayTitle = anzscoEntry ? localizedTitle(anzscoEntry, locale) : occupation?.occupation_name;
+  const duties = anzscoEntry ? localizedDuties(anzscoEntry, locale) : [];
+
   if (!occupation) {
     const fallbackHref = fallbackCode
       ? `/en/full-check?occupation=${encodeURIComponent(fallbackCode)}`
@@ -145,7 +182,12 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
           </div>
 
           <h1 className="mx-auto mt-6 max-w-4xl text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            Visa Options for {occupation.occupation_name} ({occupation.anzsco_code}) in Australia
+            {tx(
+              locale,
+              `${displayTitle}（${occupation.anzsco_code}）在澳大利亚的签证选择`,
+              `${displayTitle} (${occupation.anzsco_code}) icin Avustralya'da Vize Secenekleri`,
+              `Visa Options for ${displayTitle} (${occupation.anzsco_code}) in Australia`
+            )}
           </h1>
 
           <p className="mx-auto mt-5 max-w-4xl text-center text-base text-slate-600 sm:text-lg">
@@ -181,6 +223,23 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
             </span>
           </div>
         </header>
+
+        {duties.length > 0 && (
+          <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
+            <CardHeader>
+              <CardTitle>
+                {tx(locale, "职责说明", "Gorev Tanimlari", "Duties")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+                {duties.map((duty) => (
+                  <li key={duty}>{duty}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="border-cyan-300/90 bg-gradient-to-br from-white via-cyan-50/70 to-emerald-50/70 shadow-2xl shadow-cyan-900/10">
           <CardHeader>
