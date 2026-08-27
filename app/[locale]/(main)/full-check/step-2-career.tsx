@@ -138,19 +138,19 @@ export function Step2Career(props: Step2Props) {
             <div className="space-y-2">
               <Label>{txt("İlişki Türü", "Relationship Type", "关系类型")}<RequiredMark /></Label>
               <select name="relationshipType" value={relationshipType} onChange={(e) => setRelationshipType(e.target.value)} className={selectClassName} required>
-                <option className="bg-gray-900 text-white" value="">Seçin</option>
-                <option className="bg-gray-900 text-white" value="married">Evli / Married</option>
-                <option className="bg-gray-900 text-white" value="de_facto">De facto</option>
-                {selectedCountryIsAU && <option className="bg-gray-900 text-white" value="engaged">Nişanlı</option>}
+                <option className="bg-gray-900 text-white" value="">{txt("Seçin", "Select", "请选择")}</option>
+                <option className="bg-gray-900 text-white" value="married">{txt("Evli", "Married", "已婚")}</option>
+                <option className="bg-gray-900 text-white" value="de_facto">{txt("De facto (fiili birliktelik)", "De facto", "事实婚姻")}</option>
+                {selectedCountryIsAU && <option className="bg-gray-900 text-white" value="engaged">{txt("Nişanlı", "Engaged", "订婚")}</option>}
               </select>
             </div>
             <div className="space-y-2">
               <Label>{txt("Birlikte Yaşama Süresi", "Cohabitation Duration", "共同居住时间")}<RequiredMark /></Label>
               <select name="cohabitationDuration" value={cohabitationDuration} onChange={(e) => setCohabitationDuration(e.target.value)} className={selectClassName} required>
-                <option className="bg-gray-900 text-white" value="">Seçin</option>
-                <option className="bg-gray-900 text-white" value="less_than_12_months">12 aydan az</option>
-                <option className="bg-gray-900 text-white" value="12_to_24_months">12 - 24 ay</option>
-                <option className="bg-gray-900 text-white" value="more_than_2_years">2 yıldan fazla</option>
+                <option className="bg-gray-900 text-white" value="">{txt("Seçin", "Select", "请选择")}</option>
+                <option className="bg-gray-900 text-white" value="less_than_12_months">{txt("12 aydan az", "Less than 12 months", "不足12个月")}</option>
+                <option className="bg-gray-900 text-white" value="12_to_24_months">{txt("12 - 24 ay", "12 - 24 months", "12-24个月")}</option>
+                <option className="bg-gray-900 text-white" value="more_than_2_years">{txt("2 yıldan fazla", "More than 2 years", "超过2年")}</option>
               </select>
             </div>
           </div>
@@ -158,19 +158,19 @@ export function Step2Career(props: Step2Props) {
             <div className="space-y-2">
               <Label>{txt("Sponsorun Statüsü", "Sponsor Status", "担保人身份")}<RequiredMark /></Label>
               <select name="sponsorStatus" value={sponsorStatus} onChange={(e) => setSponsorStatus(e.target.value)} className={selectClassName} required>
-                <option className="bg-gray-900 text-white" value="">Seçin</option>
-                <option className="bg-gray-900 text-white" value="citizen">Vatandaş</option>
-                <option className="bg-gray-900 text-white" value="permanent_resident">Kalıcı Oturum (PR)</option>
-                {selectedCountryIsAU && <option className="bg-gray-900 text-white" value="eligible_nz_citizen">Uygun NZ Vatandaşı</option>}
+                <option className="bg-gray-900 text-white" value="">{txt("Seçin", "Select", "请选择")}</option>
+                <option className="bg-gray-900 text-white" value="citizen">{txt("Vatandaş", "Citizen", "公民")}</option>
+                <option className="bg-gray-900 text-white" value="permanent_resident">{txt("Kalıcı Oturum (PR)", "Permanent Resident (PR)", "永久居民（PR）")}</option>
+                {selectedCountryIsAU && <option className="bg-gray-900 text-white" value="eligible_nz_citizen">{txt("Uygun NZ Vatandaşı", "Eligible NZ Citizen", "符合条件的新西兰公民")}</option>}
               </select>
             </div>
             <div className="space-y-2">
               <Label>{txt("Önceki Sponsorluk", "Previous Sponsorship", "既往担保历史")}<RequiredMark /></Label>
               <select name="previousSponsorship" value={previousSponsorship} onChange={(e) => setPreviousSponsorship(e.target.value)} className={selectClassName} required>
-                <option className="bg-gray-900 text-white" value="">Seçin</option>
-                <option className="bg-gray-900 text-white" value="no">Hayır</option>
-                <option className="bg-gray-900 text-white" value="yes_within_5_years">Evet (Son 5 yıl)</option>
-                <option className="bg-gray-900 text-white" value="yes_longer">Evet (5+ yıl önce)</option>
+                <option className="bg-gray-900 text-white" value="">{txt("Seçin", "Select", "请选择")}</option>
+                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
+                <option className="bg-gray-900 text-white" value="yes_within_5_years">{txt("Evet (Son 5 yıl)", "Yes (within 5 years)", "是（5年内）")}</option>
+                <option className="bg-gray-900 text-white" value="yes_longer">{txt("Evet (5+ yıl önce)", "Yes (5+ years ago)", "是（5年以上）")}</option>
               </select>
             </div>
           </div>
@@ -178,9 +178,9 @@ export function Step2Career(props: Step2Props) {
             <div className="space-y-2">
               <Label>{txt("Başvuru Konumu", "Application Location", "申请地点")}<RequiredMark /></Label>
               <select name="applicationLocationPreference" value={applicationLocationPreference} onChange={(e) => setApplicationLocationPreference(e.target.value)} className={selectClassName} required>
-                <option className="bg-gray-900 text-white" value="">Seçin</option>
-                <option className="bg-gray-900 text-white" value="inland">Inland</option>
-                <option className="bg-gray-900 text-white" value="outland">Outland</option>
+                <option className="bg-gray-900 text-white" value="">{txt("Seçin", "Select", "请选择")}</option>
+                <option className="bg-gray-900 text-white" value="inland">{txt("Kanada içi (Inland)", "Inland", "境内（Inland）")}</option>
+                <option className="bg-gray-900 text-white" value="outland">{txt("Kanada dışı (Outland)", "Outland", "境外（Outland）")}</option>
               </select>
             </div>
           )}

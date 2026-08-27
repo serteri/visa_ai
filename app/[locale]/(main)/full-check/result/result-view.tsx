@@ -42,12 +42,18 @@ export function ResultView({
     return (
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-10">
         {isAdminBypass && !isUnlocked && (
-          <div className="flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <div className="flex items-center gap-2 rounded-lg border border-amber-900 bg-black px-4 py-3 text-sm text-amber-400">
             <ShieldAlert className="size-4 shrink-0" />
             <p>
-              Admin preview -- this report has <strong>not</strong> been paid/unlocked. Data is
-              shown for inspection only; PDF download is not available until it&rsquo;s actually
-              unlocked.
+              {isTr ? (
+                <>Admin önizlemesi -- bu rapor henüz ödenmedi/açılmadı. Veriler yalnızca inceleme amaçlıdır; rapor gerçekten açılana kadar PDF indirme kullanılamaz.</>
+              ) : isZh ? (
+                <>管理员预览 -- 此报告尚未付款/解锁。数据仅供查看；在报告真正解锁之前无法下载 PDF。</>
+              ) : (
+                <>Admin preview -- this report has <strong>not</strong> been paid/unlocked. Data is
+                shown for inspection only; PDF download is not available until it&rsquo;s actually
+                unlocked.</>
+              )}
             </p>
           </div>
         )}

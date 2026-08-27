@@ -88,7 +88,9 @@ export function PdfGuides({ locale, hasFreeSlots, freeDownloadsLeft, setActivePd
                 {locale === "tr" ? "Türkçe Baskı · 2026" : locale === "zh-Hans" ? "土耳其语版 · 2026" : "Turkish Edition · 2026"}
               </span>
             </div>
-            <h3 className="cf-serif text-2xl font-semibold text-[var(--cf-case-fg)]">Avustralya PR Başvuru Rehberi</h3>
+            <h3 className="cf-serif text-2xl font-semibold text-[var(--cf-case-fg)]">
+              {locale === "tr" ? "Avustralya PR Başvuru Rehberi" : locale === "zh-Hans" ? "澳大利亚PR申请指南" : "Australia PR Application Guide"}
+            </h3>
             <p className="text-sm leading-relaxed text-[var(--cf-case-muted)]">
               {locale === "tr" ? (
                 <>
@@ -162,7 +164,7 @@ export function PdfGuides({ locale, hasFreeSlots, freeDownloadsLeft, setActivePd
               </span>
             </div>
             <h3 className="cf-serif text-2xl font-semibold text-[var(--cf-case-fg)]">
-              The Ultimate Australia Migration &amp; Living Blueprint
+              {locale === "tr" ? "Nihai Avustralya Göç ve Yaşam Rehberi" : locale === "zh-Hans" ? "终极澳大利亚移民与生活蓝图" : "The Ultimate Australia Migration & Living Blueprint"}
             </h3>
             <p className="text-sm leading-relaxed text-[var(--cf-case-muted)]">
               {locale === "tr" ? (

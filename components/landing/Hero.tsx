@@ -34,11 +34,16 @@ type Occupation = {
   isEligibleForMigration?: boolean;
 };
 
-const QUICK_PILLS = [
-  "Software Engineer",
-  "Chef",
-  "Motor Mechanic",
-  "Registered Nurse",
+// `code` stays the English occupation title -- it's passed straight through
+// to goToOccupation() as the `occupation` query param that prefills the
+// intake form's free-text search, so it must match the canonical English
+// term the ANZSCO lookup expects. `label` is what's actually displayed and
+// is localized.
+const QUICK_PILLS: Array<{ code: string; label: { en: string; tr: string; "zh-Hans": string } }> = [
+  { code: "Software Engineer", label: { en: "Software Engineer", tr: "Yazılım Mühendisi", "zh-Hans": "软件工程师" } },
+  { code: "Chef", label: { en: "Chef", tr: "Şef", "zh-Hans": "厨师" } },
+  { code: "Motor Mechanic", label: { en: "Motor Mechanic", tr: "Oto Tamircisi", "zh-Hans": "汽车维修技工" } },
+  { code: "Registered Nurse", label: { en: "Registered Nurse", tr: "Hemşire", "zh-Hans": "注册护士" } },
 ];
 
 export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
@@ -392,16 +397,16 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           </span>
           {QUICK_PILLS.map((pill) => (
             <button
-              key={pill}
+              key={pill.code}
               type="button"
               // Navigates immediately (carrying the currently-selected
               // targetCountry) rather than only pre-filling the search box --
               // a quick pill is a shortcut past typing, not a second step
               // that still requires pressing Enter.
-              onClick={() => goToOccupation(pill)}
+              onClick={() => goToOccupation(pill.code)}
               className="cursor-pointer rounded-full border border-[var(--cf-line)] px-3.5 py-1.5 text-xs font-medium text-[var(--cf-muted)] transition-all duration-200 hover:border-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]"
             >
-              {pill}
+              {pill.label[locale as "en" | "tr" | "zh-Hans"] ?? pill.label.en}
             </button>
           ))}
         </div>

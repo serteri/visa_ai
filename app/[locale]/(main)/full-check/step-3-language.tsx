@@ -140,7 +140,7 @@ export function Step3Language(props: Step3Props) {
           {selectedCountryIsAU && (
             <div className="space-y-2">
               <Label htmlFor="waitlist-salary-aud">{txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}<RequiredMark /></Label>
-              <Input id="waitlist-salary-aud" name="annualSalaryAud" type="number" min={0} step={1} inputMode="numeric" value={annualSalaryAud} onChange={(e) => setAnnualSalaryAud(e.target.value)} {...noAutofill("annualSalaryAud")} className={fieldClassName} placeholder="E.g., 85000" autoComplete="off" />
+              <Input id="waitlist-salary-aud" name="annualSalaryAud" type="number" min={0} step={1} inputMode="numeric" value={annualSalaryAud} onChange={(e) => setAnnualSalaryAud(e.target.value)} {...noAutofill("annualSalaryAud")} className={fieldClassName} placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")} autoComplete="off" />
               <ErrorText message={state.errors?.annualSalaryAud} />
             </div>
           )}
@@ -148,12 +148,12 @@ export function Step3Language(props: Step3Props) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="waitlist-offshore-experience-years">{selectedCountryIsCA ? txt("Kanada dışı deneyim (yıl)", "Experience outside Canada (years)", "加拿大境外经验") : txt("Avustralya dışı deneyim (yıl)", "Experience outside Australia (years)", "澳大利亚境外经验")}</Label>
-              <Input id="waitlist-offshore-experience-years" name="offshoreExperienceYears" type="number" min={0} step="0.5" inputMode="decimal" {...noAutofill("offshoreExperienceYears")} className={fieldClassName} placeholder="E.g., 5" />
+              <Input id="waitlist-offshore-experience-years" name="offshoreExperienceYears" type="number" min={0} step="0.5" inputMode="decimal" {...noAutofill("offshoreExperienceYears")} className={fieldClassName} placeholder={txt("Örn: 5", "E.g., 5", "例如：5")} />
               <p className="text-xs text-gray-400">{experienceHelpText}</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="waitlist-onshore-experience-years">{selectedCountryIsCA ? txt("Kanada içi deneyim (yıl)", "Experience in Canada (years)", "加拿大境内经验") : txt("Avustralya içi deneyim (yıl)", "Experience in Australia (years)", "澳大利亚境内经验")}</Label>
-              <Input id="waitlist-onshore-experience-years" name="onshoreExperienceYears" type="number" min={0} step="0.5" inputMode="decimal" {...noAutofill("onshoreExperienceYears")} className={fieldClassName} placeholder="E.g., 2" />
+              <Input id="waitlist-onshore-experience-years" name="onshoreExperienceYears" type="number" min={0} step="0.5" inputMode="decimal" {...noAutofill("onshoreExperienceYears")} className={fieldClassName} placeholder={txt("Örn: 2", "E.g., 2", "例如：2")} />
               <p className="text-xs text-gray-400">{experienceHelpText}</p>
             </div>
           </div>
@@ -200,7 +200,7 @@ export function Step3Language(props: Step3Props) {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="waitlist-budget-range">{txt("Bütçe aralığı", "Budget range", "预算范围")}</Label>
-          <Input id="waitlist-budget-range" name="estimatedBudgetRange" {...noAutofill("estimatedBudgetRange")} className={fieldClassName} placeholder={`E.g., 10k-20k ${budgetCurrency}`} />
+          <Input id="waitlist-budget-range" name="estimatedBudgetRange" {...noAutofill("estimatedBudgetRange")} className={fieldClassName} placeholder={txt(`Örn: 10k-20k ${budgetCurrency}`, `E.g., 10k-20k ${budgetCurrency}`, `例如：10k-20k ${budgetCurrency}`)} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="waitlist-timeline">{txt("Zamanlama", "Timeline", "时间规划")}</Label>

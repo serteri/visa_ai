@@ -513,7 +513,7 @@ export function FullCheckWaitlistForm({
       {isPending && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
           <div className="w-full max-w-xl rounded-2xl border border-border/70 bg-card/95 p-6 shadow-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">AI Analysis</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">{txt("Yapay Zeka Analizi", "AI Analysis", "AI 分析")}</p>
             <h3 className="text-xl font-semibold text-foreground">{txt("Profiliniz işleniyor", "Processing your profile", "正在处理你的档案")}</h3>
             <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-muted">
               <div className="h-full rounded-full bg-primary transition-all duration-700 ease-out" style={{ width: `${((analysisStepIndex + 1) / aiAnalysisSteps.length) * 100}%` }} />
@@ -615,8 +615,8 @@ export function FullCheckWaitlistForm({
         <Dialog open={occupationModalOpen} onOpenChange={(v) => !v && setOccupationModalOpen(false)}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold">📋 2026 Official Occupation List</DialogTitle>
-              <DialogDescription className="text-slate-600">Enter your details and we&apos;ll send the full PDF straight to your inbox.</DialogDescription>
+              <DialogTitle className="text-lg font-bold">📋 {txt("2026 Resmi Meslek Listesi", "2026 Official Occupation List", "2026年官方职业清单")}</DialogTitle>
+              <DialogDescription className="text-gray-400">{txt("Bilgilerinizi girin, PDF'in tamamını e-posta adresinize gönderelim.", "Enter your details and we'll send the full PDF straight to your inbox.", "填写您的信息，我们会将完整 PDF 发送到您的邮箱。")}</DialogDescription>
             </DialogHeader>
             <LeadMagnetForm locale={locale} documentId="csol-2026" documentName="2026 Official Occupation List" onSuccess={() => setOccupationModalOpen(false)} />
           </DialogContent>
