@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -9,9 +9,14 @@ import {
   FileCheck2,
   GraduationCap,
   Landmark,
+  Loader2,
   Lock,
+  Paperclip,
   Send,
   Sparkles,
+  Trash2,
+  UploadCloud,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -36,10 +41,13 @@ import {
 
 type TaskStatus = "not-started" | "in-progress" | "completed";
 
+type UploadedFile = { name: string; url: string };
+
 type TaskState = {
   status: TaskStatus;
   targetDate: string;
   notes: string;
+  uploadedFiles: UploadedFile[];
 };
 
 type JourneyState = Record<string, TaskState>;
@@ -62,7 +70,7 @@ const tx = (locale: string, en: string, tr: string, zh: string) =>
 
 const STORAGE_KEY = "logivisa-journey-v1";
 
-const DEFAULT_TASK_STATE: TaskState = { status: "not-started", targetDate: "", notes: "" };
+const DEFAULT_TASK_STATE: TaskState = { status: "not-started", targetDate: "", notes: "", uploadedFiles: [] };
 
 const INITIAL_COMPLETED_IDS = ["pte", "passport", "naati"];
 
@@ -78,6 +86,23 @@ function buildInitialState(itemIds: string[]): JourneyState {
     state[id] = INITIAL_COMPLETED_IDS.includes(id)
       ? { ...DEFAULT_TASK_STATE, status: "completed" }
       : { ...DEFAULT_TASK_STATE };
+  }
+  return state;
+}
+
+// Guards against older localStorage payloads (pre-uploadedFiles, or a stale
+// shape from a previous iteration of this page) so a leftover record never
+// crashes render -- every field is re-defaulted rather than trusted as-is.
+function normalizeState(raw: Partial<JourneyState> | null | undefined, itemIds: string[]): JourneyState {
+  const state: JourneyState = {};
+  for (const id of itemIds) {
+    const existing = raw?.[id];
+    state[id] = {
+      status: existing?.status ?? DEFAULT_TASK_STATE.status,
+      targetDate: existing?.targetDate ?? DEFAULT_TASK_STATE.targetDate,
+      notes: existing?.notes ?? DEFAULT_TASK_STATE.notes,
+      uploadedFiles: Array.isArray(existing?.uploadedFiles) ? existing.uploadedFiles : [],
+    };
   }
   return state;
 }
@@ -227,6 +252,8 @@ export function JourneyDashboard({ locale }: { locale: string }) {
 
   const [mounted, setMounted] = useState(false);
   const [taskState, setTaskState] = useState<JourneyState>(() => buildInitialState(allItemIds));
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
 
   // Load any saved progress from Local Storage once mounted -- keeping the
   // first client render identical to the server-rendered default above is
@@ -235,13 +262,14 @@ export function JourneyDashboard({ locale }: { locale: string }) {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        const saved = JSON.parse(raw) as JourneyState;
-        setTaskState((prev) => ({ ...prev, ...saved }));
+        const saved = JSON.parse(raw) as Partial<JourneyState>;
+        setTaskState((prev) => normalizeState({ ...prev, ...saved }, allItemIds));
       }
     } catch {
       // ignore malformed local storage payloads
     }
     setMounted(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -254,6 +282,62 @@ export function JourneyDashboard({ locale }: { locale: string }) {
       ...prev,
       [id]: { ...(prev[id] ?? DEFAULT_TASK_STATE), ...patch },
     }));
+  };
+
+  const handleResetProgress = () => {
+    const confirmed = window.confirm(
+      tx(
+        locale,
+        "Reset all progress? This clears every status, date, note, and uploaded file on this device.",
+        "Tüm ilerleme sıfırlansın mı? Bu cihazdaki tüm durum, tarih, not ve yüklenen dosyalar silinecek.",
+        "确定要重置所有进度吗？这将清除此设备上的所有状态、日期、笔记和已上传的文件。"
+      )
+    );
+    if (!confirmed) return;
+    window.localStorage.removeItem(STORAGE_KEY);
+    setTaskState(buildInitialState(allItemIds));
+    setUploadErrors({});
+  };
+
+  const handleFileUpload = async (itemId: string, file: File) => {
+    setUploadErrors((prev) => ({ ...prev, [itemId]: "" }));
+    setUploadingId(itemId);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/journey-upload", { method: "POST", body: formData });
+      const data = (await res.json()) as { name?: string; url?: string; error?: string };
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || "Upload failed. Please try again.");
+      }
+      setTaskState((prev) => {
+        const current = prev[itemId] ?? DEFAULT_TASK_STATE;
+        return {
+          ...prev,
+          [itemId]: {
+            ...current,
+            uploadedFiles: [...current.uploadedFiles, { name: data.name || file.name, url: data.url! }],
+          },
+        };
+      });
+    } catch (error) {
+      setUploadErrors((prev) => ({
+        ...prev,
+        [itemId]: error instanceof Error ? error.message : "Upload failed. Please try again.",
+      }));
+    } finally {
+      setUploadingId(null);
+    }
+  };
+
+  const handleRemoveFile = (itemId: string, index: number) => {
+    setTaskState((prev) => {
+      const current = prev[itemId] ?? DEFAULT_TASK_STATE;
+      return {
+        ...prev,
+        [itemId]: { ...current, uploadedFiles: current.uploadedFiles.filter((_, i) => i !== index) },
+      };
+    });
   };
 
   const totalWeight = allItemIds.reduce((sum, id) => sum + STATUS_WEIGHT[(taskState[id] ?? DEFAULT_TASK_STATE).status], 0);
@@ -404,6 +488,43 @@ export function JourneyDashboard({ locale }: { locale: string }) {
                                     )}
                                     className="mt-1.5 border-white/15 text-white"
                                   />
+
+                                  <FileDropzone
+                                    itemId={item.id}
+                                    locale={locale}
+                                    uploading={uploadingId === item.id}
+                                    error={uploadErrors[item.id]}
+                                    onFile={(file) => handleFileUpload(item.id, file)}
+                                  />
+
+                                  {state.uploadedFiles.length > 0 && (
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                                      {state.uploadedFiles.map((file, index) => (
+                                        <span
+                                          key={`${file.url}-${index}`}
+                                          className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 py-1 pl-3 pr-1.5 text-xs font-medium text-gray-200"
+                                        >
+                                          <Paperclip className="h-3 w-3 shrink-0 text-[var(--color-ash-gray)]" />
+                                          <a
+                                            href={file.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="max-w-[160px] truncate hover:text-[var(--color-electric-iris)]"
+                                          >
+                                            {file.name}
+                                          </a>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleRemoveFile(item.id, index)}
+                                            aria-label={tx(locale, "Remove file", "Dosyayı kaldır", "移除文件")}
+                                            className="rounded-full p-0.5 text-[var(--color-ash-gray)] hover:bg-white/10 hover:text-white"
+                                          >
+                                            <X className="h-3 w-3" />
+                                          </button>
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
 
                                 <div className="sm:col-span-2">
@@ -439,8 +560,88 @@ export function JourneyDashboard({ locale }: { locale: string }) {
             );
           })}
         </div>
+
+        <div className="mt-10 flex justify-center border-t border-white/10 pt-8">
+          <button
+            type="button"
+            onClick={handleResetProgress}
+            className="inline-flex items-center gap-2 rounded-full border border-red-500/30 px-4 py-2 text-xs font-bold uppercase tracking-wide text-red-400 transition-colors hover:bg-red-500/10"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            {tx(locale, "Reset Progress", "İlerlemeyi Sıfırla", "重置进度")}
+          </button>
+        </div>
       </div>
     </main>
+  );
+}
+
+function FileDropzone({
+  itemId,
+  locale,
+  uploading,
+  error,
+  onFile,
+}: {
+  itemId: string;
+  locale: string;
+  uploading: boolean;
+  error?: string;
+  onFile: (file: File) => void;
+}) {
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const inputId = `journey-upload-${itemId}`;
+
+  return (
+    <div className="mt-3">
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOver(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file) onFile(file);
+        }}
+        className={`flex items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-4 text-center text-xs transition-colors ${
+          dragOver ? "border-[var(--color-electric-iris)] bg-[var(--color-electric-iris)]/10" : "border-white/20"
+        }`}
+      >
+        <input
+          ref={inputRef}
+          id={inputId}
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png,.webp"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onFile(file);
+            e.target.value = "";
+          }}
+        />
+        {uploading ? (
+          <span className="flex items-center gap-2 text-gray-300">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {tx(locale, "Uploading...", "Yükleniyor...", "上传中...")}
+          </span>
+        ) : (
+          <label htmlFor={inputId} className="flex cursor-pointer items-center gap-2 text-gray-300 hover:text-white">
+            <UploadCloud className="h-4 w-4 text-[var(--color-ash-gray)]" />
+            {tx(
+              locale,
+              "Click to upload or drag & drop a document",
+              "Yüklemek için tıklayın veya belgeyi sürükleyip bırakın",
+              "点击上传或拖放文件到此处"
+            )}
+          </label>
+        )}
+      </div>
+      {error && <p className="mt-1.5 text-xs text-red-400">{error}</p>}
+    </div>
   );
 }
 
