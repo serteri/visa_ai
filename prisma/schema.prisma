@@ -363,6 +363,16 @@ model VisaJourney {
    */
   currentStage       String         @default("PREPARATION") @map("current_stage")
   progressPercentage Int            @default(0) @map("progress_percentage")
+  /**
+   * Map of stage name -> ISO completion timestamp (e.g. {"PREPARATION":
+   * "2026-08-29T03:12:00.000Z"}), written by updateJourneyStage each time a
+   * stage is marked complete. Stages have no row of their own (see
+   * lib/constants/visa-stages.ts's comment on why status is derived
+   * positionally, not stored) -- this is the one piece of per-stage data
+   * that genuinely can't be derived, so it's kept as a loose JSON map rather
+   * than a new child table.
+   */
+  stageTimestamps    Json           @default("{}") @map("stage_timestamps")
   createdAt          DateTime       @default(now()) @map("created_at")
   updatedAt          DateTime       @updatedAt @map("updated_at")
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { isMissingRelationError } from "@/lib/db/missing-relation";
+import { isMissingColumnError, isMissingRelationError } from "@/lib/db/missing-relation";
 import { JourneyTimeline, type VisaDocumentSummary, type VisaJourneySummary } from "@/components/dashboard/journey-timeline";
 import { getTranslations, t } from "@/lib/i18n/get-translations";
 import { isValidLocale } from "@/lib/i18n/config";
@@ -37,21 +37,48 @@ export default async function DashboardPage({ params }: PageProps) {
   // this degrades to an empty timeline (JourneyTimeline's own empty
   // state) instead of 500ing, matching the pattern used everywhere else in
   // this app for not-yet-migrated tables.
+  function toSummary(row: {
+    id: string;
+    visaType: string;
+    currentStage: string;
+    progressPercentage: number;
+    updatedAt: Date;
+    stageTimestamps?: unknown;
+  }): VisaJourneySummary {
+    const stageTimestamps =
+      row.stageTimestamps && typeof row.stageTimestamps === "object" && !Array.isArray(row.stageTimestamps)
+        ? (row.stageTimestamps as Record<string, string>)
+        : {};
+    return {
+      id: row.id,
+      visaType: row.visaType,
+      currentStage: row.currentStage,
+      progressPercentage: row.progressPercentage,
+      updatedAt: row.updatedAt.toISOString(),
+      stageTimestamps,
+    };
+  }
+
   async function getVisaJourneys(): Promise<VisaJourneySummary[]> {
     try {
       const rows = await prisma.visaJourney.findMany({
         where: { userId },
         orderBy: { updatedAt: "desc" },
       });
-      return rows.map((row) => ({
-        id: row.id,
-        visaType: row.visaType,
-        currentStage: row.currentStage,
-        progressPercentage: row.progressPercentage,
-        updatedAt: row.updatedAt.toISOString(),
-      }));
+      return rows.map(toSummary);
     } catch (error) {
       if (isMissingRelationError(error, "visa_journeys")) return [];
+      if (isMissingColumnError(error, "stage_timestamps")) {
+        // Live DB hasn't been migrated for the new stageTimestamps column
+        // yet -- fall back to an explicit column list that excludes it
+        // instead of 500ing the whole dashboard.
+        const rows = await prisma.visaJourney.findMany({
+          where: { userId },
+          orderBy: { updatedAt: "desc" },
+          select: { id: true, visaType: true, currentStage: true, progressPercentage: true, updatedAt: true },
+        });
+        return rows.map(toSummary);
+      }
       throw error;
     }
   }
@@ -162,10 +189,10 @@ export default async function DashboardPage({ params }: PageProps) {
             <Card className="transition-shadow hover:shadow-md cursor-pointer">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-slate-500">{card.label}</p>
+                  <p className="text-xs font-medium text-slate-300">{card.label}</p>
                   {card.icon}
                 </div>
-                <p className="mt-2 text-2xl font-bold text-slate-900">{card.value}</p>
+                <p className="mt-2 text-2xl font-bold text-white">{card.value}</p>
                 <p className="mt-0.5 text-xs text-slate-400">{card.sub}</p>
               </CardContent>
             </Card>
@@ -186,7 +213,7 @@ export default async function DashboardPage({ params }: PageProps) {
         </CardContent>
       </Card>
 
-      <JourneyTimeline journeys={journeys} documents={documents} />
+      <JourneyTimeline journeys={journeys} documents={documents} locale={locale} />
 
       {(latestCalc || latestQuiz || tracking.length > 0) && (
         <Card>

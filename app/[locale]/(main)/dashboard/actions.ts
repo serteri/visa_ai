@@ -154,21 +154,29 @@ export async function deleteVisaTracking(id: string): Promise<void> {
 
 // ─── Visa journey (Timeline/Stepper) ───────────────────────────────────────────
 
-import { isVisaStage, nextVisaStage, progressForStage, VISA_STAGES } from "@/lib/constants/visa-stages";
+import { getVisaStages, isVisaStage, isVisaType, nextVisaStage, progressForStage } from "@/lib/constants/visa-stages";
+import { isMissingColumnError } from "@/lib/db/missing-relation";
 
-/** Creates a new journey for the signed-in user, starting at the first stage. */
+/** Creates a new journey for the signed-in user, starting at the first stage
+ *  of whichever stage sequence applies to this visaType (see
+ *  getVisaStages). visaType must be one of VALID_VISA_TYPES -- the
+ *  StartJourneyForm dropdown (components/dashboard/journey-timeline.tsx) is
+ *  the only caller, and free-text visa types are no longer accepted so that
+ *  the per-subclass stage list (e.g. 189 skipping STATE_SPONSORSHIP) can be
+ *  resolved reliably from this value alone. */
 export async function startVisaJourney(visaType: string): Promise<{ id: string }> {
   const userId = await requireUserId();
   const trimmed = visaType.trim();
-  if (!trimmed) throw new Error("Visa type is required");
+  if (!isVisaType(trimmed)) throw new Error("Select a valid visa type.");
 
-  const firstStage = VISA_STAGES[0];
+  const stages = getVisaStages(trimmed);
+  const firstStage = stages[0];
   const row = await prisma.visaJourney.create({
     data: {
       userId,
       visaType: trimmed,
       currentStage: firstStage,
-      progressPercentage: progressForStage(firstStage),
+      progressPercentage: progressForStage(firstStage, stages),
     },
   });
   revalidatePath("/dashboard");
@@ -176,33 +184,65 @@ export async function startVisaJourney(visaType: string): Promise<{ id: string }
 }
 
 /**
- * Advances a journey to the next stage (per lib/constants/visa-stages.ts's
- * fixed 7-stage order) and recomputes progressPercentage to match. Scoped by
- * userId in the `where` clause -- updateMany + a 0-row result (rather than
- * update()'s throw-on-not-found) is how this stays silent-safe against a
- * stale client trying to advance a journey it no longer owns, matching the
- * ownership-check pattern already used by updateVisaTracking/
- * deleteVisaTracking above.
+ * Advances a journey to the next stage (per that journey's own visaType --
+ * see getVisaStages in lib/constants/visa-stages.ts) and recomputes
+ * progressPercentage to match. Also stamps stageTimestamps[currentStage]
+ * with the moment it was marked complete, since stageStatus() only derives
+ * PENDING/IN_PROGRESS/COMPLETED from position and has nowhere else to keep
+ * a "completed on" date. Scoped by userId in the `where` clause --
+ * updateMany + a 0-row result (rather than update()'s throw-on-not-found)
+ * is how this stays silent-safe against a stale client trying to advance a
+ * journey it no longer owns, matching the ownership-check pattern already
+ * used by updateVisaTracking/deleteVisaTracking above.
  */
 export async function updateJourneyStage(journeyId: string): Promise<void> {
   const userId = await requireUserId();
 
   const journey = await prisma.visaJourney.findFirst({
     where: { id: journeyId, userId },
-    select: { currentStage: true },
+    select: { currentStage: true, visaType: true },
   });
   if (!journey) throw new Error("Journey not found");
   if (!isVisaStage(journey.currentStage)) {
     throw new Error(`Unrecognized stage "${journey.currentStage}" -- cannot advance`);
   }
 
-  const next = nextVisaStage(journey.currentStage);
-  if (!next) return; // already at the last stage -- nothing to advance to
+  const stages = getVisaStages(journey.visaType);
+  const next = nextVisaStage(journey.currentStage, stages);
+  const baseData = next
+    ? { currentStage: next, progressPercentage: progressForStage(next, stages) }
+    : {}; // already at the last stage -- nothing to advance to, but still stamp its completion below
 
-  await prisma.visaJourney.updateMany({
-    where: { id: journeyId, userId },
-    data: { currentStage: next, progressPercentage: progressForStage(next) },
-  });
+  // Best-effort stage-completion timestamp -- degrades to advancing the
+  // stage without one if the live DB hasn't been migrated for the
+  // stageTimestamps column yet (see CLAUDE.md: `prisma db push` is never run
+  // against production without reviewing its output first).
+  try {
+    const current = await prisma.visaJourney.findFirst({
+      where: { id: journeyId, userId },
+      select: { stageTimestamps: true },
+    });
+    const existing =
+      current?.stageTimestamps &&
+      typeof current.stageTimestamps === "object" &&
+      !Array.isArray(current.stageTimestamps)
+        ? (current.stageTimestamps as Record<string, string>)
+        : {};
+    const stageTimestamps = { ...existing, [journey.currentStage]: new Date().toISOString() };
+
+    await prisma.visaJourney.updateMany({
+      where: { id: journeyId, userId },
+      data: { ...baseData, stageTimestamps },
+    });
+  } catch (error) {
+    if (!isMissingColumnError(error, "stage_timestamps")) throw error;
+    console.warn("[updateJourneyStage] stage_timestamps column missing; advancing stage without a timestamp.");
+    await prisma.visaJourney.updateMany({
+      where: { id: journeyId, userId },
+      data: baseData,
+    });
+  }
+
   revalidatePath("/dashboard");
 }
 
@@ -214,6 +254,18 @@ export async function updateJourneyStage(journeyId: string): Promise<void> {
  *  since journey-timeline.tsx's "Mark as Completed" button is conceptually
  *  a status change even though it's implemented as an advance. */
 export const updateJourneyStageStatus = updateJourneyStage;
+
+/** Deletes a visa journey and all of its documents (VisaDocument.journeyId
+ *  has onDelete: Cascade -- see prisma/schema.prisma), after confirmation in
+ *  the UI (journey-timeline.tsx's delete AlertDialog). Ownership-scoped the
+ *  same way as updateJourneyStage above -- deleteMany + a 0-row result
+ *  rather than delete()'s throw-on-not-found, so a stale client can't probe
+ *  for another user's journey id via the error response. */
+export async function deleteVisaJourney(journeyId: string): Promise<void> {
+  const userId = await requireUserId();
+  await prisma.visaJourney.deleteMany({ where: { id: journeyId, userId } });
+  revalidatePath("/dashboard");
+}
 
 // ─── Visa journey documents (Document Vault upload) ────────────────────────────
 
