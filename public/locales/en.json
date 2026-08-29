@@ -54,6 +54,8 @@
   "aiVisaMatch.description": "Upload your CV and our AI instantly analyzes it against all 707 official ANZSCO occupation codes — no forms, no guesswork, just your matching Skilled Migration pathway.",
   "hero.scarcityText": "🔥 Shared across both countries — only {{remaining}} free assessment slots left! (Normally $49 — reverts to this price once free slots run out)",
   "hero.trustBadge": "Logivisa",
+  "hero.pricingBadgePrefix": "Premium AI Readiness Analysis —",
+  "hero.pricingBadgePrice": "Only $49",
   "trustIndicators.gov": "Based on official Australian government sources",
   "trustIndicators.info": "General information only",
   "trustIndicators.languages": "Multilingual support",

@@ -54,6 +54,8 @@
   "aiVisaMatch.description": "Özgeçmişinizi (CV) yükleyin; yapay zekamız form doldurma veya tahmin yürütme gerekmeden profilinizi 707 resmi ANZSCO meslek kodunun tamamına karşı anında analiz etsin. Sadece size uygun olan Kalifiye Göçmenlik yolunu görün.",
   "hero.scarcityText": "🔥 İki ülke için ortak — bugün sadece {{remaining}} ücretsiz analiz hakkı kaldı! (Normalde $49 — ücretsiz haklar bittiğinde bu fiyata dönecektir)",
   "hero.trustBadge": "Logivisa",
+  "hero.pricingBadgePrefix": "Premium AI Hazırlık Analizi —",
+  "hero.pricingBadgePrice": "Sadece 49$",
   "trustIndicators.gov": "Avustralya resmi hükümet kaynaklarına dayalı",
   "trustIndicators.info": "Yalnızca genel bilgiler",
   "trustIndicators.languages": "Çoklu dil desteği",

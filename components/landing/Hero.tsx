@@ -418,13 +418,19 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             as a bait-and-switch once a visitor reached the paid checkout.
             One badge, one unambiguous message: the price, stated before the
             visitor starts the assessment. */}
-        <div className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-amber-500/20 bg-amber-500/5 px-4 py-2">
-          <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
-            {isTr
-              ? "Premium AI Hazırlık Analizi – 49$"
-              : isZh
-                ? "高级 AI 准备度分析 – $49"
-                : "Premium AI Readiness Analysis – $49"}
+        <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-sm font-medium text-amber-200 shadow-[0_0_20px_-4px_rgba(245,158,11,0.5)]">
+          <span>
+            {t(
+              "hero.pricingBadgePrefix",
+              isTr
+                ? "Premium AI Hazırlık Analizi —"
+                : isZh
+                  ? "高级 AI 准备度分析 —"
+                  : "Premium AI Readiness Analysis —"
+            )}
+          </span>
+          <span className="font-bold text-white">
+            {t("hero.pricingBadgePrice", isTr ? "Sadece 49$" : isZh ? "仅需 $49" : "Only $49")}
           </span>
         </div>
 
