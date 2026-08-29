@@ -467,7 +467,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
           <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--cf-fg)]">
             <Info className="h-4 w-4 shrink-0" /> {qt.title}
           </h3>
-          <p className="mb-3 text-xs text-[var(--cf-cover-muted)]">{qt.subtitle}</p>
+          <p className="mb-3 text-xs text-white/70">{qt.subtitle}</p>
 
           <div className="space-y-3">
             <div>
@@ -476,14 +476,14 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                 <button
                   type="button"
                   onClick={() => setQuestionnaire((prev) => ({ ...prev, partner: true }))}
-                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.partner ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-[var(--cf-cover-line)] text-[var(--cf-fg)]'}`}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.partner ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-white/30 text-[var(--cf-fg)]'}`}
                 >
                   {qt.yes}
                 </button>
                 <button
                   type="button"
                   onClick={() => setQuestionnaire((prev) => ({ ...prev, partner: false }))}
-                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.partner ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-[var(--cf-cover-line)] text-[var(--cf-fg)]'}`}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.partner ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-white/30 text-[var(--cf-fg)]'}`}
                 >
                   {qt.no}
                 </button>
@@ -493,7 +493,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
             <div>
               <p className="mb-1.5 text-sm text-[var(--cf-fg)]">{qt.dependantsQ}</p>
               <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-2 text-xs text-[var(--cf-cover-muted)]">
+                <label className="flex items-center gap-2 text-xs text-white/70">
                   {qt.under18Label}
                   <input
                     type="number"
@@ -503,7 +503,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                     className="w-16 rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
                   />
                 </label>
-                <label className="flex items-center gap-2 text-xs text-[var(--cf-cover-muted)]">
+                <label className="flex items-center gap-2 text-xs text-white/70">
                   {qt.over18Label}
                   <input
                     type="number"
@@ -522,14 +522,14 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                 <button
                   type="button"
                   onClick={() => setQuestionnaire((prev) => ({ ...prev, overseasResidence: true }))}
-                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.overseasResidence ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-[var(--cf-cover-line)] text-[var(--cf-fg)]'}`}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.overseasResidence ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-white/30 text-[var(--cf-fg)]'}`}
                 >
                   {qt.yes}
                 </button>
                 <button
                   type="button"
                   onClick={() => setQuestionnaire((prev) => ({ ...prev, overseasResidence: false }))}
-                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.overseasResidence ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-[var(--cf-cover-line)] text-[var(--cf-fg)]'}`}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.overseasResidence ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-white/30 text-[var(--cf-fg)]'}`}
                 >
                   {qt.no}
                 </button>

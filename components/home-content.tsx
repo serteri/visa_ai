@@ -16,7 +16,6 @@ import { Faq } from "@/components/landing/Faq";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { LandingFooter } from "@/components/landing/footer";
 
-const FREE_DOWNLOADS_FALLBACK = 18;
 const ASSESSMENT_SLOTS_FALLBACK = 14;
 
 interface HomeContentProps {
@@ -58,12 +57,9 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  // Shared free-download counter — drives the CTA copy on BOTH product cards below.
-  const [freeDownloadsLeft] = useState(initialFreeDownloadsLeft ?? FREE_DOWNLOADS_FALLBACK);
   const [assessmentSlotsLeft] = useState(initialAssessmentSlotsLeft ?? ASSESSMENT_SLOTS_FALLBACK);
   const [activePdfModal, setActivePdfModal] = useState<PdfProduct | null>(null);
 
-  const hasFreeSlots = freeDownloadsLeft > 0;
   const hasFreeAssessmentSlots = assessmentSlotsLeft > 0;
 
   return (
@@ -78,12 +74,7 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
       <StatsBar locale={locale} />
       <HowItWorks locale={locale} />
       <CaseLog locale={locale} />
-      <PdfGuides
-        locale={locale}
-        hasFreeSlots={hasFreeSlots}
-        freeDownloadsLeft={freeDownloadsLeft}
-        setActivePdfModal={setActivePdfModal}
-      />
+      <PdfGuides locale={locale} />
       <PdfDownloadModal
         locale={locale}
         product={activePdfModal ?? "turkish"}

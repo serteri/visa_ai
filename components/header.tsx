@@ -44,7 +44,10 @@ function DropdownMenu({ label, children }: { label: string; children: React.Reac
         <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 min-w-[220px] rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg">
+        <div
+          onClick={() => setOpen(false)}
+          className="absolute left-0 top-full z-50 mt-2 min-w-[220px] rounded-xl border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)]/95 p-2 shadow-xl backdrop-blur-lg"
+        >
           {children}
         </div>
       )}

@@ -1,84 +1,15 @@
-import type { Dispatch, SetStateAction } from "react";
-import { Button } from "@/components/ui/button";
 import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
-import type { PdfProduct } from "@/components/PdfDownloadModal";
 
 interface PdfGuidesProps {
   locale: string;
-  hasFreeSlots: boolean;
-  freeDownloadsLeft: number;
-  setActivePdfModal: Dispatch<SetStateAction<PdfProduct | null>>;
 }
 
-/** Dual PDF product grid (Turkish edition / Global English edition). Copy,
- *  Stripe checkout wiring, and free-slot logic are unchanged — only the
- *  card chrome is restyled to the case-file surfaces. */
-export function PdfGuides({ locale, hasFreeSlots, freeDownloadsLeft, setActivePdfModal }: PdfGuidesProps) {
-  const priceNote = hasFreeSlots ? (
-    locale === "tr" ? (
-      <>
-        Normal fiyatı <strong className="text-[var(--cf-case-fg)]">$9.99</strong> — ücretsiz kota bitince bu
-        fiyata geçer
-      </>
-    ) : locale === "zh-Hans" ? (
-      <>
-        原价 <strong className="text-[var(--cf-case-fg)]">$9.99</strong> — 免费名额用完后恢复该价格
-      </>
-    ) : (
-      <>
-        Normally <strong className="text-[var(--cf-case-fg)]">$9.99</strong> — reverts to this price once free
-        slots run out
-      </>
-    )
-  ) : locale === "tr" ? (
-    "Ücretsiz kota doldu — anında indirme bağlantısı e-postanıza gönderilir"
-  ) : locale === "zh-Hans" ? (
-    "免费名额已满 — 下载链接将立即发送到您的邮箱"
-  ) : (
-    "Free quota reached — instant download link sent to your email"
-  );
-
+/** Dual PDF product grid (Turkish edition / Global English edition). Both
+ *  guides are a flat $9.99 — no free-slot logic. */
+export function PdfGuides({ locale }: PdfGuidesProps) {
   return (
     <section id="pdf-download-section" className="case-file scroll-mt-24 bg-[var(--cf-bg)] py-20">
       <div className="section-shell">
-        <div
-          className={`cf-mono mb-8 rounded-sm border px-4 py-3 text-center text-sm ${
-            hasFreeSlots
-              ? "border-[var(--cf-accent-dim)] text-[var(--cf-accent)]"
-              : "border-[var(--cf-flag-rust-fg)]/40 text-[var(--cf-flag-rust-fg)]"
-          }`}
-        >
-          {hasFreeSlots ? (
-            <span>
-              📚{" "}
-              {locale === "tr" ? (
-                <>
-                  Her iki PDF rehber için geçerli — sadece <strong>{freeDownloadsLeft}</strong> ücretsiz indirme
-                  hakkı kaldı!
-                </>
-              ) : locale === "zh-Hans" ? (
-                <>
-                  两本 PDF 指南通用 — 仅剩 <strong>{freeDownloadsLeft}</strong> 个免费下载名额！
-                </>
-              ) : (
-                <>
-                  Shared across both PDF guides — only <strong>{freeDownloadsLeft}</strong> free download slots
-                  left!
-                </>
-              )}
-            </span>
-          ) : (
-            <span>
-              💳{" "}
-              {locale === "tr"
-                ? "Ücretsiz kota doldu — her iki rehber de artık $9.99."
-                : locale === "zh-Hans"
-                  ? "免费名额已满 — 两本指南现价 $9.99。"
-                  : "Free quota is full — both guides are now $9.99."}
-            </span>
-          )}
-        </div>
-
         <div className="grid grid-cols-1 gap-px border border-[var(--cf-line)] bg-[var(--cf-line)] md:grid-cols-2">
           {/* Turkish Edition */}
           <div className="flex flex-col gap-4 bg-[var(--cf-case-bg)] p-6 sm:p-8">
@@ -92,23 +23,11 @@ export function PdfGuides({ locale, hasFreeSlots, freeDownloadsLeft, setActivePd
               {locale === "tr" ? "Avustralya PR Başvuru Rehberi" : locale === "zh-Hans" ? "澳大利亚PR申请指南" : "Australia PR Application Guide"}
             </h3>
             <p className="text-sm leading-relaxed text-[var(--cf-case-muted)]">
-              {locale === "tr" ? (
-                <>
-                  Türk profesyoneller için hazırlanmış, yetenekli göç (skilled migration) süreçlerini adım adım
-                  anlatan <strong className="text-[var(--cf-case-fg)]">80+ sayfalık</strong> kapsamlı Türkçe rehber.
-                </>
-              ) : locale === "zh-Hans" ? (
-                <>
-                  专为土耳其专业人士打造，逐步讲解技术移民流程的
-                  <strong className="text-[var(--cf-case-fg)]">80+ 页</strong>土耳其语综合指南。
-                </>
-              ) : (
-                <>
-                  A comprehensive <strong className="text-[var(--cf-case-fg)]">80+ page</strong> Turkish-language
-                  guide walking skilled migration candidates through the entire pathway, built specifically for
-                  Turkish professionals.
-                </>
-              )}
+              {locale === "tr"
+                ? "Avustralya nitelikli göçmenlik sürecini Türk profesyoneller için A'dan Z'ye anlatan 80+ sayfalık başucu rehberi. İçinde neler var: Subclass 189/190/491 vizeleri için adım adım stratejiler, 2026 güncel puan hesaplama taktikleri, Türk vatandaşlarına özel evrak hazırlık listeleri, mesleki denklik (Skills Assessment) kurumlarının inceleme süreçleri ve NAATI/PTE tüyoları."
+                : locale === "zh-Hans"
+                  ? "一本80多页的权威指南，专为土耳其专业人士从头到尾讲解澳大利亚技术移民流程。内容包括：189/190/491类别签证的分步策略、2026年最新积分计算技巧、专为土耳其公民定制的材料准备清单、职业评估（Skills Assessment）机构的审核流程，以及NAATI/PTE应试技巧。"
+                  : "An 80+ page A-to-Z handbook covering Australia's Skilled Migration process for Turkish professionals. Inside: step-by-step strategies for the Subclass 189/190/491 visas, up-to-date 2026 points calculation tactics, document preparation checklists tailored to Turkish citizens, how Skills Assessment authorities review applications, and NAATI/PTE tips."}
             </p>
             <ul className="space-y-2 text-sm text-[var(--cf-case-muted)]">
               {[
@@ -135,23 +54,12 @@ export function PdfGuides({ locale, hasFreeSlots, freeDownloadsLeft, setActivePd
               ))}
             </ul>
             <div className="mt-auto pt-2">
-              {hasFreeSlots ? (
-                <Button
-                  size="lg"
-                  onClick={() => setActivePdfModal("turkish")}
-                  className="w-full bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
-                >
-                  {locale === "tr" ? "📥 Ücretsiz İndir" : locale === "zh-Hans" ? "📥 免费下载" : "📥 Free Download"}
-                </Button>
-              ) : (
-                <StripeCheckoutButton
-                  productType="pdf_book"
-                  locale={locale}
-                  className="w-full bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
-                  label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
-                />
-              )}
-              <p className="mt-2 text-center text-xs text-[var(--cf-case-muted)]">{priceNote}</p>
+              <StripeCheckoutButton
+                productType="pdf_book"
+                locale={locale}
+                className="w-full bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
+                label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
+              />
             </div>
           </div>
 
@@ -167,24 +75,11 @@ export function PdfGuides({ locale, hasFreeSlots, freeDownloadsLeft, setActivePd
               {locale === "tr" ? "Nihai Avustralya Göç ve Yaşam Rehberi" : locale === "zh-Hans" ? "终极澳大利亚移民与生活蓝图" : "The Ultimate Australia Migration & Living Blueprint"}
             </h3>
             <p className="text-sm leading-relaxed text-[var(--cf-case-muted)]">
-              {locale === "tr" ? (
-                <>
-                  Uluslararası profesyoneller için: Skilled Migration yol haritası, Öğrenci Vizesi (Subclass 500)
-                  köprüsü ve <strong className="text-[var(--cf-case-fg)]">2026 yaşam maliyeti</strong> verileri tek
-                  rehberde.
-                </>
-              ) : locale === "zh-Hans" ? (
-                <>
-                  面向国际专业人士：技术移民路径、学生签证（500 类别）过渡方案，以及
-                  <strong className="text-[var(--cf-case-fg)]">2026 年生活成本</strong>数据，全部收录于一册。
-                </>
-              ) : (
-                <>
-                  Built for an international audience: the full Skilled Migration pathway, the Student Visa
-                  (Subclass 500) bridge to PR, and{" "}
-                  <strong className="text-[var(--cf-case-fg)]">2026 cost of living</strong> data in one guide.
-                </>
-              )}
+              {locale === "tr"
+                ? "Tüm Skilled Migration yolunu kapsayan kapsamlı bir yol haritası. Rehberin içinde: Subclass 189/190/491 için adım adım stratejiler, eyalet sponsorluğunun gizli şartları, Öğrenci Vizesinden (Subclass 500) PR'a geçiş stratejisi, büyük şehirler için 2026 güncel yaşam maliyeti dökümleri ve puanınızı etkili şekilde nasıl maksimize edeceğiniz."
+                : locale === "zh-Hans"
+                  ? "一份涵盖整个技术移民路径的全面蓝图。指南内容包括：189/190/491类别签证的分步策略、州担保的隐藏要求、学生签证（500类别）过渡到PR的策略、主要城市2026年最新生活成本明细，以及如何有效地最大化您的积分。"
+                  : "A comprehensive blueprint covering the entire Skilled Migration pathway. Inside the guide: Step-by-step strategies for Subclass 189/190/491, state sponsorship hidden requirements, the Student Visa (Subclass 500) to PR transition strategy, actual 2026 cost of living breakdowns for major cities, and how to maximize your points effectively."}
             </p>
             <ul className="space-y-2 text-sm text-[var(--cf-case-muted)]">
               {[
@@ -211,23 +106,12 @@ export function PdfGuides({ locale, hasFreeSlots, freeDownloadsLeft, setActivePd
               ))}
             </ul>
             <div className="mt-auto pt-2">
-              {hasFreeSlots ? (
-                <Button
-                  size="lg"
-                  onClick={() => setActivePdfModal("global")}
-                  className="w-full bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
-                >
-                  {locale === "tr" ? "📥 Ücretsiz İndir" : locale === "zh-Hans" ? "📥 免费下载" : "📥 Free Download"}
-                </Button>
-              ) : (
-                <StripeCheckoutButton
-                  productType="pdf_book_global"
-                  locale={locale}
-                  className="w-full bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
-                  label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
-                />
-              )}
-              <p className="mt-2 text-center text-xs text-[var(--cf-case-muted)]">{priceNote}</p>
+              <StripeCheckoutButton
+                productType="pdf_book_global"
+                locale={locale}
+                className="w-full bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
+                label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
+              />
             </div>
           </div>
         </div>

@@ -490,15 +490,15 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
 
         {/* Bottom CTA */}
         <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
-          <h3 className="text-base font-bold text-slate-900">{t("sa.bottomCtaTitle", "Need help with your application?")}</h3>
+          <h3 className="text-base font-bold text-slate-900">{t("sa.bottomCtaTitle", "Need a clear visa strategy?")}</h3>
           <p className="mt-1 text-sm text-slate-500">
-            {t("sa.bottomCtaText", "Our free full-check report covers your visa pathway, skills assessment requirements, points score and next steps — tailored to your profile.")}
+            {t("sa.bottomCtaText", "Stop guessing. Get your personalized 20-page AI-powered PR report covering your exact points, state demand, and next steps.")}
           </p>
           <Link
             href={`/${locale}/full-check`}
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
           >
-            {t("sa.bottomCtaButton", "Get a free consultation")} <ArrowRight className="h-4 w-4" />
+            {t("sa.bottomCtaButton", "Get your Premium Report ➔")}
           </Link>
         </div>
       </div>
