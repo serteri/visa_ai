@@ -69,7 +69,7 @@ export function AccordionTrigger({
         id={`accordion-trigger-${value}`}
         onClick={() => ctx.setOpenItem(isOpen ? null : value)}
         className={cn(
-          "flex w-full items-center justify-between gap-4 py-4 text-left text-base font-semibold text-slate-900 transition-colors hover:text-indigo-600 dark:text-white dark:hover:text-indigo-400",
+          "flex w-full items-center justify-between gap-4 py-4 text-left text-base font-semibold text-white transition-colors hover:text-indigo-400",
           className
         )}
       >

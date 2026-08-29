@@ -6,34 +6,48 @@
    The site no longer offers a light theme: :root, the prefers-color-scheme
    fallback, and the .dark/.light class overrides (still written by
    next-themes -- left wired rather than ripped out, since that's a much
-   larger change) all resolve to the SAME void palette below, so toggling
-   old theme state has no visible effect and every surface is forced black.
+   larger change) all resolve to the SAME palette below, so toggling old
+   theme state has no visible effect.
+
+   Layered slate depth, not pure black: --background/--card/--popover used
+   to all be the identical #000000, which is why a Card (bg-card) rendered
+   with literally no visible boundary against the page (bg-background) --
+   every "this table/card is unreadable" bug filed across many admin panels
+   traced back to this single collision. --background is now slate-950,
+   every raised surface (card/popover/muted/secondary/input) is slate-900,
+   and --border/--input are a soft slate-800, so a surface is always
+   visibly distinct from the page behind it without introducing a light
+   theme or touching --foreground (still white -- text contrast was never
+   the problem, layer collision was).
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #000000;
+  --background: #020617; /* slate-950 */
   --foreground: #ffffff;
-  --card: #000000;
+  --card: #0f172a; /* slate-900 */
   --card-foreground: #ffffff;
-  --muted: #000000;
-  --muted-foreground: #9a9a9a;
+  --muted: #0f172a; /* slate-900 */
+  --muted-foreground: #94a3b8; /* slate-400 */
   --primary: #8052ff;
   --primary-foreground: #ffffff;
-  --secondary: #000000;
+  --secondary: #0f172a; /* slate-900 */
   --secondary-foreground: #ffffff;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(255, 255, 255, 0.12);
+  --border: rgba(30, 41, 59, 0.7); /* slate-800/70 */
+  --input: #1e293b; /* slate-800 -- was undefined, so border-input silently fell back to currentColor */
   --ring: #8052ff;
   --radius: 1.5rem;
   /* Popover/dropdown surfaces (Radix Popover, Command, Select content) --
-     was never defined here, so bg-popover/text-popover-foreground had no
-     backing color and those components fell back to the browser's default
-     white panel on a dark page. */
-  --popover: #030712;
+     slate-900 to match --card, so a dropdown panel reads as the same
+     "raised surface" layer as a Card rather than its own one-off shade. */
+  --popover: #0f172a; /* slate-900 */
   --popover-foreground: #ffffff;
 
   /* Dala token names, for components that want to reach for the palette
-     directly instead of through the semantic --background/--primary set. */
+     directly instead of through the semantic --background/--primary set.
+     --color-void is kept as a true-black swatch for landing-page brand
+     decoration (app/globals.css's .ambient-bg/.cf-* "case file" theme, both
+     out of scope here) -- NOT used by any shadcn/ui component. */
   --color-void: #000000;
   --color-bone-white: #ffffff;
   --color-electric-iris: #8052ff;
@@ -43,21 +57,22 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #000000;
+    --background: #020617;
     --foreground: #ffffff;
-    --card: #000000;
+    --card: #0f172a;
     --card-foreground: #ffffff;
-    --muted: #000000;
-    --muted-foreground: #9a9a9a;
+    --muted: #0f172a;
+    --muted-foreground: #94a3b8;
     --primary: #8052ff;
     --primary-foreground: #ffffff;
-    --secondary: #000000;
+    --secondary: #0f172a;
     --secondary-foreground: #ffffff;
     --accent: #ffb829;
     --accent-foreground: #000000;
-    --border: rgba(255, 255, 255, 0.12);
+    --border: rgba(30, 41, 59, 0.7);
+    --input: #1e293b;
     --ring: #8052ff;
-    --popover: #030712;
+    --popover: #0f172a;
     --popover-foreground: #ffffff;
   }
 }
@@ -76,6 +91,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
+  --color-input: var(--input);
   --color-ring: var(--ring);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
@@ -208,21 +224,22 @@ option {
    values, so toggling old theme state is visually a no-op.
    ───────────────────────────────────────────────────────────────────────── */
 .dark {
-  --background: #000000;
+  --background: #020617;
   --foreground: #ffffff;
-  --card: #000000;
+  --card: #0f172a;
   --card-foreground: #ffffff;
-  --muted: #000000;
-  --muted-foreground: #9a9a9a;
+  --muted: #0f172a;
+  --muted-foreground: #94a3b8;
   --primary: #8052ff;
   --primary-foreground: #ffffff;
-  --secondary: #000000;
+  --secondary: #0f172a;
   --secondary-foreground: #ffffff;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(255, 255, 255, 0.12);
+  --border: rgba(30, 41, 59, 0.7);
+  --input: #1e293b;
   --ring: #8052ff;
-  --popover: #030712;
+  --popover: #0f172a;
   --popover-foreground: #ffffff;
 
   --cf-bg: #000000;
@@ -241,21 +258,22 @@ option {
 }
 
 .light {
-  --background: #000000;
+  --background: #020617;
   --foreground: #ffffff;
-  --card: #000000;
+  --card: #0f172a;
   --card-foreground: #ffffff;
-  --muted: #000000;
-  --muted-foreground: #9a9a9a;
+  --muted: #0f172a;
+  --muted-foreground: #94a3b8;
   --primary: #8052ff;
   --primary-foreground: #ffffff;
-  --secondary: #000000;
+  --secondary: #0f172a;
   --secondary-foreground: #ffffff;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(255, 255, 255, 0.12);
+  --border: rgba(30, 41, 59, 0.7);
+  --input: #1e293b;
   --ring: #8052ff;
-  --popover: #030712;
+  --popover: #0f172a;
   --popover-foreground: #ffffff;
 
   --cf-bg: #000000;
