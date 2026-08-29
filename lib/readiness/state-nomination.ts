@@ -62,10 +62,17 @@ type StateDatasetRow = {
 const STATE_ROWS = (stateNominationData as { states: StateDatasetRow[] }).states;
 
 const KNOWN_STATE_NOMINATION_STATUSES: readonly StateNominationStatus[] = [
+  // Legacy values -- still present in static baseline data (see the doc
+  // comment on StateNominationStatus in ./types.ts).
   "Open for Offshore",
   "High Demand",
   "Closed",
   "Onshore Only",
+  // Current admin-panel vocabulary.
+  "Open (Onshore & Offshore)",
+  "Open (Onshore Only)",
+  "Open (Offshore Only)",
+  "Suspended / Closed",
 ];
 
 /**
@@ -78,6 +85,23 @@ const KNOWN_STATE_NOMINATION_STATUSES: readonly StateNominationStatus[] = [
  */
 function asKnownStatus(value: string | undefined): StateNominationStatus | undefined {
   return KNOWN_STATE_NOMINATION_STATUSES.find((known) => known === value);
+}
+
+// Old/new vocabulary both map to the same scoring behavior for these two --
+// see the doc comment on StateNominationStatus in ./types.ts for why both
+// exist. "Open for Offshore"/"High Demand" (legacy) and "Open (Onshore &
+// Offshore)" (current) are each scored on their own below, not merged, since
+// the two legacy values had different formulas.
+function isClosedStatus(status: string | undefined): boolean {
+  return status === "Closed" || status === "Suspended / Closed";
+}
+
+function isOnshoreOnlyStatus(status: string | undefined): boolean {
+  return status === "Onshore Only" || status === "Open (Onshore Only)";
+}
+
+function isOffshoreOnlyStatus(status: string | undefined): boolean {
+  return status === "Open (Offshore Only)";
 }
 
 function normalize(value?: string): string {
@@ -169,7 +193,7 @@ function buildSummary(args: {
     residenceGap,
   } = args;
 
-  if (row.status === "Closed") {
+  if (isClosedStatus(row.status)) {
     return t(
       locale,
       `${row.name} is currently treated as closed for nomination, so it is a low-priority state right now.`,
@@ -178,7 +202,7 @@ function buildSummary(args: {
     );
   }
 
-  if (row.status === "Onshore Only" && offshore) {
+  if (isOnshoreOnlyStatus(row.status) && offshore) {
     return t(
       locale,
       `${row.name} mainly favours onshore applicants, so your offshore position weakens this option.`,
@@ -243,9 +267,20 @@ function buildRequirements(args: {
   } = args;
   const requirements: string[] = [];
 
-  if (row.status === "Onshore Only") {
+  if (isOnshoreOnlyStatus(row.status)) {
     requirements.push(
       t(locale, "Usually requires an onshore profile.", "Genellikle onshore profil ister.", "通常要求境内身份。")
+    );
+  }
+
+  if (isOffshoreOnlyStatus(row.status)) {
+    requirements.push(
+      t(
+        locale,
+        "Only accepting offshore applicants right now.",
+        "Şu anda yalnızca offshore başvuru sahiplerini kabul ediyor.",
+        "目前仅接受境外申请人。"
+      )
     );
   }
 
@@ -441,18 +476,22 @@ export function calculateStateNominationTracker(
 
     let score = 55;
 
-    if (effectiveStatus === "Closed") {
+    if (isClosedStatus(effectiveStatus)) {
       // Admin-confirmed closures and rule-config closures with a "closed"
       // quota pressure both score at the harder floor; a JSON-only closed
       // estimate (no admin/rule confirmation) scores slightly higher since
       // it's a generic guess, not a confirmed program state.
-      score = adminConfig?.status === "Closed" || rule?.offshoreQuotaPressure === "closed" ? 6 : 12;
-    } else if (effectiveStatus === "Onshore Only") {
+      score = isClosedStatus(adminConfig?.status) || rule?.offshoreQuotaPressure === "closed" ? 6 : 12;
+    } else if (isOnshoreOnlyStatus(effectiveStatus)) {
       score = offshore ? 18 : 74;
+    } else if (isOffshoreOnlyStatus(effectiveStatus)) {
+      score = offshore ? 82 : 60;
     } else if (effectiveStatus === "Open for Offshore") {
       score = offshore ? 82 : 72;
     } else if (effectiveStatus === "High Demand") {
       score = occupationIsPriority ? 76 : 64;
+    } else if (effectiveStatus === "Open (Onshore & Offshore)") {
+      score = 80;
     }
 
     if (row.offshoreAvailability === "limited" && offshore) score -= 12;
@@ -516,13 +555,25 @@ export function calculateStateNominationTracker(
 
     // Rule 3: onshore-only state and the applicant isn't currently in
     // Australia -- hard block, takes priority over rules 1/2's note.
-    if (displayStatus === "Onshore Only" && offshore) {
+    if (isOnshoreOnlyStatus(displayStatus) && offshore) {
       score = 0;
       ruleOverrideNote = t(
         input.locale,
         "Requires an onshore profile.",
         "Avustralya icinde bulunma sarti gerektirir.",
         "需要在境内（澳大利亚）申请资料。"
+      );
+    }
+
+    // Rule 3b: symmetric hard block for an offshore-only state when the
+    // applicant is currently onshore -- same precedence as rule 3 above.
+    if (isOffshoreOnlyStatus(displayStatus) && !offshore) {
+      score = 0;
+      ruleOverrideNote = t(
+        input.locale,
+        "Requires an offshore profile.",
+        "Avustralya disinda bulunma sarti gerektirir.",
+        "需要在境外申请资料。"
       );
     }
 

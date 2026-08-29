@@ -11,8 +11,9 @@
 //      or an AI-extraction call if the page structure is too unstable for
 //      a hand-written selector) and pull out:
 //        - current nomination status (map the site's wording onto one of
-//          "Open for Offshore" | "High Demand" | "Closed" | "Onshore Only"
-//          -- see StateNominationStatus in lib/readiness/types.ts -- an
+//          "Open (Onshore & Offshore)" | "Open (Onshore Only)" |
+//          "Open (Offshore Only)" | "Suspended / Closed" -- see
+//          StateNominationStatus in lib/readiness/types.ts -- an
 //          unrecognized value is safely ignored by the reader, see
 //          asKnownStatus() in lib/readiness/state-nomination.ts, so it's
 //          fine to store the raw site wording in `status` even when it

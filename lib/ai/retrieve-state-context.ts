@@ -3,7 +3,16 @@ import { getStateNominationConfigMap } from "@/lib/state-intelligence";
 
 export type RetrievedStateContext = StateRuleConfig[];
 
-const KNOWN_STATUSES: readonly StateRuleStatus[] = ["Open for Offshore", "High Demand", "Closed", "Onshore Only"];
+const KNOWN_STATUSES: readonly StateRuleStatus[] = [
+  "Open for Offshore",
+  "High Demand",
+  "Closed",
+  "Onshore Only",
+  "Open (Onshore & Offshore)",
+  "Open (Onshore Only)",
+  "Open (Offshore Only)",
+  "Suspended / Closed",
+];
 
 function asKnownStatus(value: string | undefined): StateRuleStatus | undefined {
   return KNOWN_STATUSES.find((known) => known === value);
@@ -33,7 +42,8 @@ function applyAdminOverride(
     name: base?.name ?? code,
     status,
     note: admin.customAiNote?.trim() || base?.note || `${code} status was manually set by an admin.`,
-    offshoreQuotaPressure: status === "Closed" ? "closed" : (base?.offshoreQuotaPressure ?? "medium"),
+    offshoreQuotaPressure:
+      status === "Closed" || status === "Suspended / Closed" ? "closed" : (base?.offshoreQuotaPressure ?? "medium"),
     aiSummary: base?.aiSummary ?? `${code} nomination status: ${status} (admin-set).`,
     keyFacts: base?.keyFacts ?? [],
     lastVerified: base?.lastVerified ?? new Date().toISOString().slice(0, 10),

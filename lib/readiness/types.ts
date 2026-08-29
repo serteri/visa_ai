@@ -415,11 +415,27 @@ export type AssessmentState = {
   canShowNumericRanking: boolean;
 };
 
+/**
+ * "Open for Offshore" | "High Demand" | "Closed" | "Onshore Only" are the
+ * legacy values, still present in static baseline data (src/data/
+ * state-nomination-status.json, lib/state-nomination/state-rules-config.ts)
+ * that predates the admin panel's status vocabulary revision -- kept here so
+ * that older/unmigrated data keeps rendering and scoring correctly (see
+ * asKnownStatus in lib/readiness/state-nomination.ts, which recognizes both
+ * vocabularies). The admin panel (app/[locale]/(main)/admin/states) only
+ * ever writes one of the newer four ("Open (Onshore & Offshore)" etc.) now
+ * -- "High Demand" in particular was an occupation-dependent, vague signal
+ * that doesn't belong in a program-level status and is no longer offered.
+ */
 export type StateNominationStatus =
   | "Open for Offshore"
   | "High Demand"
   | "Closed"
-  | "Onshore Only";
+  | "Onshore Only"
+  | "Open (Onshore & Offshore)"
+  | "Open (Onshore Only)"
+  | "Open (Offshore Only)"
+  | "Suspended / Closed";
 
 export type StateMatchLevel = "high" | "medium" | "low";
 

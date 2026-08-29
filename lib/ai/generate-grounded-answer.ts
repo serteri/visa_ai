@@ -380,6 +380,22 @@ function localizedStateStatus(status: string, locale: string): string {
     "High Demand": { en: "open, but highly competitive (merit-ranked)", tr: "açık, ancak yüksek rekabetli (liyakat sıralamalı)", "zh-Hans": "开放，但竞争激烈（按择优排名）" },
     Closed: { en: "closed", tr: "kapalı", "zh-Hans": "已关闭" },
     "Onshore Only": { en: "open to onshore applicants only", tr: "yalnızca Avustralya içindeki başvuru sahiplerine açık", "zh-Hans": "仅对境内申请人开放" },
+    "Open (Onshore & Offshore)": {
+      en: "open to both onshore and offshore applicants",
+      tr: "hem Avustralya içindeki hem de dışındaki başvuru sahiplerine açık",
+      "zh-Hans": "对境内和境外申请人均开放",
+    },
+    "Open (Onshore Only)": {
+      en: "open to onshore applicants only",
+      tr: "yalnızca Avustralya içindeki başvuru sahiplerine açık",
+      "zh-Hans": "仅对境内申请人开放",
+    },
+    "Open (Offshore Only)": {
+      en: "open to offshore applicants only",
+      tr: "yalnızca Avustralya dışındaki başvuru sahiplerine açık",
+      "zh-Hans": "仅对境外申请人开放",
+    },
+    "Suspended / Closed": { en: "suspended / closed", tr: "askıya alındı / kapalı", "zh-Hans": "已暂停 / 已关闭" },
   };
   const entry = map[status];
   if (!entry) return status;

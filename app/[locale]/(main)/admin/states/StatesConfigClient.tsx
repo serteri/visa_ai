@@ -1,13 +1,29 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-export type StateStatus = "Open for Offshore" | "High Demand" | "Closed" | "Onshore Only" | "Not configured";
+// "High Demand" was an occupation-dependent, vague signal that doesn't
+// belong in a program-level status -- kept here only so a legacy row
+// fetched before this revision (or a state-rules-config.ts/JSON fallback
+// value, see lib/readiness/state-nomination.ts's asKnownStatus) still
+// renders instead of falling through to "Not configured". The dropdown
+// below (STATUS_OPTIONS) never offers it -- new saves always use one of
+// the four current values.
+export type StateStatus =
+  | "Open for Offshore"
+  | "High Demand"
+  | "Closed"
+  | "Onshore Only"
+  | "Open (Onshore & Offshore)"
+  | "Open (Onshore Only)"
+  | "Open (Offshore Only)"
+  | "Suspended / Closed"
+  | "Not configured";
 
 export type StateRow = {
   code: string;
@@ -20,23 +36,38 @@ export type StateRow = {
   isConfigured: boolean;
 };
 
-const STATUS_OPTIONS: Exclude<StateStatus, "Not configured">[] = [
-  "Open for Offshore",
-  "High Demand",
-  "Onshore Only",
-  "Closed",
-];
+const STATUS_OPTIONS: Exclude<
+  StateStatus,
+  "Not configured" | "Open for Offshore" | "High Demand" | "Closed" | "Onshore Only"
+>[] = ["Open (Onshore & Offshore)", "Open (Onshore Only)", "Open (Offshore Only)", "Suspended / Closed"];
+
+/** Official state/territory skilled-migration program pages -- linked next
+ *  to each state's name via the ExternalLink icon so an admin can verify
+ *  the live program status before setting it here. */
+const STATE_OFFICIAL_URL: Record<string, string> = {
+  NSW: "https://www.nsw.gov.au/migrating-to-nsw/skilled-visa-nomination",
+  VIC: "https://www.liveinmelbourne.vic.gov.au/migrate/skilled-and-business-visas",
+  WA: "https://migration.wa.gov.au/",
+  SA: "https://migration.sa.gov.au/",
+  QLD: "https://migration.qld.gov.au/",
+  NT: "https://theterritory.com.au/migrate",
+  TAS: "https://www.migration.tas.gov.au/",
+  ACT: "https://www.canberramigration.com.au/",
+};
 
 function statusBadgeClass(status: StateStatus): string {
-  if (status === "Closed") return "border-red-200 bg-red-50 text-red-700";
-  if (status === "Open for Offshore") return "border-emerald-200 bg-emerald-50 text-emerald-700";
-  if (status === "High Demand") return "border-amber-200 bg-amber-50 text-amber-800";
-  if (status === "Onshore Only") return "border-sky-200 bg-sky-50 text-sky-700";
-  return "border-slate-200 bg-slate-50 text-slate-500";
+  if (status === "Closed" || status === "Suspended / Closed") return "border-red-500/30 bg-red-500/10 text-red-300";
+  if (status === "Open for Offshore" || status === "Open (Offshore Only)")
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+  if (status === "Open (Onshore & Offshore)") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+  if (status === "High Demand") return "border-amber-500/30 bg-amber-500/10 text-amber-300";
+  if (status === "Onshore Only" || status === "Open (Onshore Only)")
+    return "border-sky-500/30 bg-sky-500/10 text-sky-300";
+  return "border-slate-600 bg-slate-800 text-slate-300";
 }
 
 type RowFormState = {
-  status: Exclude<StateStatus, "Not configured">;
+  status: (typeof STATUS_OPTIONS)[number];
   visa190: boolean;
   visa491: boolean;
   feeAud: string;
@@ -44,8 +75,18 @@ type RowFormState = {
 };
 
 function toFormState(row: StateRow): RowFormState {
+  const legacyToCurrent: Partial<Record<StateStatus, (typeof STATUS_OPTIONS)[number]>> = {
+    "Open for Offshore": "Open (Offshore Only)",
+    "High Demand": "Open (Onshore & Offshore)",
+    "Onshore Only": "Open (Onshore Only)",
+    Closed: "Suspended / Closed",
+  };
+
   return {
-    status: row.status === "Not configured" ? "Open for Offshore" : row.status,
+    status:
+      (STATUS_OPTIONS as StateStatus[]).includes(row.status)
+        ? (row.status as (typeof STATUS_OPTIONS)[number])
+        : (legacyToCurrent[row.status] ?? "Open (Onshore & Offshore)"),
     visa190: row.supportedVisas.includes("190"),
     visa491: row.supportedVisas.includes("491"),
     feeAud: row.feeAud !== null ? String(row.feeAud) : "",
@@ -149,18 +190,32 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                 const form = forms[row.code];
                 const message = messages[row.code];
                 const saving = savingCode === row.code;
+                const officialUrl = STATE_OFFICIAL_URL[row.code];
                 return (
                   <tr key={row.code} className="border-b border-border/50 align-top hover:bg-muted/30">
                     <td className="px-3 py-3 font-medium">
-                      {row.code}
-                      <div className="text-xs font-normal text-muted-foreground">{row.name}</div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-white">{row.code}</span>
+                        {officialUrl && (
+                          <a
+                            href={officialUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={`${row.name} official Skilled Migration page`}
+                            className="text-slate-400 transition-colors hover:text-indigo-400"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </a>
+                        )}
+                      </div>
+                      <div className="text-xs font-normal text-slate-300">{row.name}</div>
                     </td>
                     <td className="px-3 py-3">
                       <Badge className={statusBadgeClass(row.status)} variant="outline">
                         {row.status}
                       </Badge>
                       {row.updatedAt && (
-                        <div className="mt-1 text-xs text-muted-foreground">
+                        <div className="mt-1 text-xs text-slate-400">
                           {new Date(row.updatedAt).toLocaleString("en-AU")}
                         </div>
                       )}
@@ -172,10 +227,10 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                         onChange={(e) =>
                           updateForm(row.code, { status: e.target.value as RowFormState["status"] })
                         }
-                        className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm disabled:opacity-50"
+                        className="w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white disabled:opacity-50"
                       >
                         {STATUS_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
+                          <option key={option} value={option} className="bg-slate-900 text-white">
                             {option}
                           </option>
                         ))}
@@ -235,7 +290,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                       {message && (
                         <div
                           className={`mt-1.5 flex items-center justify-end gap-1 text-xs ${
-                            message.type === "success" ? "text-emerald-700" : "text-red-600"
+                            message.type === "success" ? "text-emerald-400" : "text-red-400"
                           }`}
                         >
                           {message.type === "success" ? (

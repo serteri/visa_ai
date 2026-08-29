@@ -21,7 +21,18 @@
  * states not listed here fall back entirely to the JSON dataset.
  */
 
-export type StateRuleStatus = "Open for Offshore" | "High Demand" | "Closed" | "Onshore Only";
+// Legacy values ("Open for Offshore" | "High Demand" | "Closed" | "Onshore
+// Only") kept alongside the current admin-panel vocabulary -- see the doc
+// comment on StateNominationStatus in lib/readiness/types.ts.
+export type StateRuleStatus =
+  | "Open for Offshore"
+  | "High Demand"
+  | "Closed"
+  | "Onshore Only"
+  | "Open (Onshore & Offshore)"
+  | "Open (Onshore Only)"
+  | "Open (Offshore Only)"
+  | "Suspended / Closed";
 
 export interface StateRuleConfig {
   code: string;

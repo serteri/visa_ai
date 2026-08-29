@@ -8,7 +8,19 @@ import stateNominationData from "@/src/data/state-nomination-status.json";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const KNOWN_STATUSES = ["Open for Offshore", "High Demand", "Closed", "Onshore Only"] as const;
+// Legacy values kept accepted (not offered by the UI dropdown anymore) so a
+// stale client bundle mid-deploy can't get a hard 400 -- see the doc comment
+// on StateNominationStatus in lib/readiness/types.ts.
+const KNOWN_STATUSES = [
+  "Open for Offshore",
+  "High Demand",
+  "Closed",
+  "Onshore Only",
+  "Open (Onshore & Offshore)",
+  "Open (Onshore Only)",
+  "Open (Offshore Only)",
+  "Suspended / Closed",
+] as const;
 type KnownStatus = (typeof KNOWN_STATUSES)[number];
 
 const KNOWN_STATE_CODES = new Set(
