@@ -293,6 +293,10 @@ export function parseNotes(raw: string | null | undefined): NoteEntry[] {
 // existing agentNotes JSON blobs can still be read and shown, read-only, for
 // continuity with notes written before this migration.
 
+/** Also fetches inputJson/reportJson/source so the CRM dashboard's
+ *  LeadDetailSheet (app/[locale]/(portal)/admin/crm/dashboard/lead-assigner.tsx)
+ *  can show a lead's full full-check profile without a second round-trip or
+ *  navigating away from the pool. */
 export async function getUnassignedLeads() {
   try {
     return await prisma.userReport.findMany({
@@ -305,6 +309,10 @@ export async function getUnassignedLeads() {
         phone: true,
         pointsTier: true,
         createdAt: true,
+        source: true,
+        locale: true,
+        inputJson: true,
+        reportJson: true,
       },
       take: 50,
     });
