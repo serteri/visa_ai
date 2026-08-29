@@ -89,19 +89,19 @@ export function CaseLog({ locale }: CaseLogProps) {
   ];
 
   return (
-    <section className="case-file bg-[var(--cf-bg)] py-20">
+    <section className="case-file bg-[var(--cf-bg)] py-24 sm:py-32">
       <div className="section-shell">
-        <p className="cf-mono mb-3 text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
+        <p className="cf-mono mb-4 text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
           {locale === "tr" ? "Vaka Kaydı" : locale === "zh-Hans" ? "案例记录" : "Case Log"}
         </p>
-        <h2 className="cf-serif max-w-[20ch] text-3xl font-medium text-[var(--cf-fg)] sm:text-4xl">
+        <h2 className="cf-serif max-w-[20ch] text-4xl font-extrabold tracking-tight text-[var(--cf-fg)] sm:text-5xl">
           {locale === "tr"
             ? "Son Derinlemesine Değerlendirmeler"
             : locale === "zh-Hans"
               ? "近期深度评估案例"
               : "Recent Deep-Dive Assessments"}
         </h2>
-        <p className="mt-3 max-w-[52ch] text-[var(--cf-muted)]">
+        <p className="mt-4 max-w-[52ch] text-lg font-medium leading-relaxed text-[var(--cf-muted)]">
           {locale === "tr"
             ? "Yapay zeka motorumuzun bu hafta çözdüğü gerçek senaryolar."
             : locale === "zh-Hans"
@@ -109,9 +109,9 @@ export function CaseLog({ locale }: CaseLogProps) {
               : "Real scenarios our AI engine has resolved this week."}
         </p>
 
-        <div className="mt-10 grid grid-cols-1 gap-px border border-[var(--cf-line)] bg-[var(--cf-line)] sm:grid-cols-2">
+        <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2">
           {cases.map((item) => (
-            <div key={item.name} className="bg-[var(--cf-case-bg)] p-6 sm:p-7">
+            <div key={item.name} className="rounded-2xl bg-[var(--cf-case-bg)] p-8 sm:p-10">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <span className="cf-mono text-[0.7rem] text-[var(--cf-case-muted)]">
                   {item.flag} {item.caseId}

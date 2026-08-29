@@ -77,8 +77,8 @@ export function LandingFooter({ locale }: LandingFooterProps) {
 
   return (
     <footer className="case-file border-t border-[var(--cf-line)] bg-[var(--cf-bg-deep)] text-[var(--cf-muted)]">
-      <div className="section-shell py-14">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="section-shell py-20">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <p className="text-lg font-extrabold tracking-tight text-[var(--cf-fg)]">
               Logi<span className="text-[var(--cf-accent)]">Visa</span>
@@ -117,7 +117,7 @@ export function LandingFooter({ locale }: LandingFooterProps) {
           ))}
         </div>
 
-        <div className="mt-12 border-t border-[var(--cf-line)] pt-8">
+        <div className="mt-16 border-t border-[var(--cf-line)] pt-10">
           <p className="max-w-3xl text-xs leading-relaxed text-[var(--cf-muted)]/80">{disclaimer}</p>
 
           <div className="mt-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">

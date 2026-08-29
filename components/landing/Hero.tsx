@@ -253,7 +253,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   }, [open, query, results.length, isTr, isZh, targetCountry, t]);
 
   return (
-    <section className="case-file relative overflow-hidden bg-[var(--cf-bg)] pb-20 pt-16 sm:pb-24 sm:pt-20">
+    <section className="case-file relative overflow-hidden bg-[var(--cf-bg)] pb-24 pt-20 sm:pb-32 sm:pt-28">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
@@ -309,7 +309,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
         </p>
 
         {/* Wide search bar — Google-style, results flow into ANZSCO Finder */}
-        <div ref={searchRef} className="relative mt-10 w-full max-w-2xl">
+        <div ref={searchRef} className="relative mt-12 w-full max-w-2xl">
           <div className="relative">
             {isNavigatingCountry ? (
               <Loader2 className="pointer-events-none absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 animate-spin text-[var(--cf-accent)]" />
@@ -391,7 +391,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
         </div>
 
         {/* Quick-occupation pills */}
-        <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <span className="text-xs font-medium uppercase tracking-wide text-[var(--cf-muted)]">
             {isTr ? "Popüler:" : isZh ? "热门：" : "Popular:"}
           </span>
@@ -418,7 +418,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             as a bait-and-switch once a visitor reached the paid checkout.
             One badge, one unambiguous message: the price, stated before the
             visitor starts the assessment. */}
-        <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-sm font-medium text-amber-200 shadow-[0_0_20px_-4px_rgba(245,158,11,0.5)]">
+        <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-5 py-2 text-sm font-medium text-amber-200 shadow-[0_0_20px_-4px_rgba(245,158,11,0.5)]">
           <span>
             {t(
               "hero.pricingBadgePrefix",
@@ -448,7 +448,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             DOM, not a positioned ancestor), but a toggle a user reported as
             "dead" is cheap insurance against any future absolutely-positioned
             decoration landing on top of it. */}
-        <div className="relative z-20 mt-4 flex flex-col items-center gap-2">
+        <div className="relative z-20 mt-6 flex flex-col items-center gap-3">
           <span className="text-xs font-medium uppercase tracking-wide text-[var(--cf-muted)]">
             {isTr ? "Hedef Ülke" : isZh ? "目标国家" : "Target Country"}
           </span>
@@ -464,7 +464,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
                 onClick={() => selectTargetCountry(code)}
                 disabled={isNavigatingCountry}
                 aria-pressed={targetCountry === code}
-                className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2 text-sm transition-all duration-200 disabled:cursor-wait ${
+                className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-6 py-2.5 text-sm transition-all duration-200 disabled:cursor-wait ${
                   targetCountry === code
                     ? "scale-105 transform bg-[#d8a65c] font-bold text-[#0f1e33] shadow-md"
                     : "bg-transparent font-semibold text-[var(--cf-muted)] opacity-50 hover:opacity-100"
@@ -492,7 +492,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
         </div>
 
         {/* Trust strip */}
-        <div className="cf-mono mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-xs text-[var(--cf-muted)]">
+        <div className="cf-mono mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-xs text-[var(--cf-muted)]">
           <span className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />
             {isTr ? "5.000+ Değerlendirme" : isZh ? "5,000+ 次评估" : "5,000+ Assessments"}

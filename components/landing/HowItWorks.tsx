@@ -57,16 +57,16 @@ export function HowItWorks({ locale }: HowItWorksProps) {
   ];
 
   return (
-    <section className="case-file bg-[var(--cf-bg)] py-20 sm:py-24">
+    <section className="case-file bg-[var(--cf-bg)] py-24 sm:py-32">
       <div className="section-shell">
         <div className="max-w-2xl">
-          <p className="cf-mono mb-3 text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
+          <p className="cf-mono mb-4 text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
             {isTr ? "Nasıl Çalışır" : isZh ? "使用流程" : "How It Works"}
           </p>
-          <h2 className="cf-serif text-3xl font-medium tracking-tight text-[var(--cf-fg)] sm:text-4xl">
+          <h2 className="cf-serif text-4xl font-extrabold tracking-tight text-[var(--cf-fg)] sm:text-5xl">
             {isTr ? "Üç adımda yolunuzu bulun." : isZh ? "三步找到您的路径。" : "Find your path in three steps."}
           </h2>
-          <p className="mt-3 text-[var(--cf-muted)]">
+          <p className="mt-4 text-lg font-medium leading-relaxed text-[var(--cf-muted)]">
             {isTr
               ? "Başvurunuz için binlerce dolar harcamadan önce, gerçek verilere dayalı net bir yol haritası edinin."
               : isZh
@@ -75,11 +75,11 @@ export function HowItWorks({ locale }: HowItWorksProps) {
           </p>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-[var(--cf-line)] bg-[var(--cf-line)] sm:grid-cols-3">
+        <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-3">
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="group flex flex-col bg-[var(--cf-bg)] p-8 transition-colors hover:bg-[var(--cf-cover-bg)] sm:p-10"
+              className="group flex flex-col rounded-2xl bg-[var(--cf-cover-bg)]/[0.04] p-8 transition-colors hover:bg-[var(--cf-cover-bg)]/[0.08] sm:p-10"
             >
               <div className="flex items-baseline justify-between">
                 <span className="cf-serif text-5xl font-medium text-[var(--cf-fg)]/20 transition-colors group-hover:text-[var(--cf-accent)]">
@@ -108,7 +108,7 @@ export function HowItWorks({ locale }: HowItWorksProps) {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-[var(--cf-muted)]">
+        <div className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-[var(--cf-muted)]">
           <span className="flex items-center gap-2">
             <EyeOff className="h-4 w-4" />
             {isTr ? "Anonim Değerlendirme" : isZh ? "匿名评估" : "Anonymous Assessment"}

@@ -40,15 +40,15 @@ export function FeaturesBento({ locale }: FeaturesBentoProps) {
   ];
 
   return (
-    <section className="case-file bg-[var(--cf-bg)] py-20">
+    <section className="case-file bg-[var(--cf-bg)] py-24 sm:py-32">
       <div className="section-shell">
-        <p className="cf-mono mb-3 text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
+        <p className="cf-mono mb-4 text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
           {locale === "tr" ? "İçerik" : locale === "zh-Hans" ? "内容" : "Contents"}
         </p>
-        <h2 className="cf-serif max-w-[20ch] text-3xl font-medium text-[var(--cf-fg)] sm:text-4xl">
+        <h2 className="cf-serif max-w-[20ch] text-4xl font-extrabold tracking-tight text-[var(--cf-fg)] sm:text-5xl">
           {locale === "tr" ? "Raporda Neler Var?" : locale === "zh-Hans" ? "报告内容" : "What's in the Report?"}
         </h2>
-        <p className="mt-3 max-w-[52ch] text-[var(--cf-muted)]">
+        <p className="mt-4 max-w-[52ch] text-lg font-medium leading-relaxed text-[var(--cf-muted)]">
           {locale === "tr"
             ? "Gerçek verilere dayalı, yapay zeka destekli detaylı analiz."
             : locale === "zh-Hans"
@@ -56,9 +56,9 @@ export function FeaturesBento({ locale }: FeaturesBentoProps) {
               : "Detailed analysis driven by AI and real data."}
         </p>
 
-        <div className="mt-10 grid grid-cols-1 gap-px border border-[var(--cf-line)] bg-[var(--cf-line)] md:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
           {cards.map((card) => (
-            <div key={card.title} className="flex flex-col gap-3 bg-[var(--cf-case-bg)] p-6 sm:p-8">
+            <div key={card.title} className="flex flex-col gap-4 rounded-2xl bg-[var(--cf-case-bg)] p-8 sm:p-10">
               <span className="text-2xl">{card.emoji}</span>
               <h3 className="cf-serif text-lg text-[var(--cf-case-fg)]">{card.title}</h3>
               <p className="text-sm leading-relaxed text-[var(--cf-case-muted)]">{card.description}</p>

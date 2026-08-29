@@ -74,12 +74,12 @@ export function Faq({ locale }: FaqProps) {
   ];
 
   return (
-    <section className="case-file bg-[var(--cf-bg)] py-20">
+    <section className="case-file bg-[var(--cf-bg)] py-24 sm:py-32">
       <div className="section-shell">
-        <p className="cf-mono mb-3 text-center text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
+        <p className="cf-mono mb-4 text-center text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
           {locale === "tr" ? "SSS" : locale === "zh-Hans" ? "常见问题" : "FAQ"}
         </p>
-        <h2 className="cf-serif mx-auto max-w-[24ch] text-center text-3xl font-medium text-[var(--cf-fg)] sm:text-4xl">
+        <h2 className="cf-serif mx-auto max-w-[24ch] text-center text-4xl font-extrabold tracking-tight text-[var(--cf-fg)] sm:text-5xl">
           {locale === "tr"
             ? "Vize Yolları Hakkında Sıkça Sorulan Sorular"
             : locale === "zh-Hans"
@@ -87,13 +87,13 @@ export function Faq({ locale }: FaqProps) {
               : "Frequently Asked Questions About Visa Pathways"}
         </h2>
 
-        <div className="mx-auto mt-10 max-w-3xl rounded-sm border border-[var(--cf-line)] bg-[var(--cf-case-bg)] px-6 sm:px-8">
+        <div className="mx-auto mt-14 max-w-3xl rounded-2xl bg-[var(--cf-case-bg)] px-8 sm:px-10">
           <Accordion className="divide-y divide-[var(--cf-line)]">
             {faqs.map((faq) => (
               <AccordionItem key={faq.value} value={faq.value}>
                 <AccordionTrigger className="text-[var(--cf-case-fg)]">{faq.question}</AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm leading-relaxed text-[var(--cf-case-muted)]">{faq.answer}</p>
+                  <p className="text-base leading-relaxed text-[var(--cf-case-muted)]">{faq.answer}</p>
                 </AccordionContent>
               </AccordionItem>
             ))}

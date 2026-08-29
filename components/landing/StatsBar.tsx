@@ -23,11 +23,11 @@ export function StatsBar({ locale }: StatsBarProps) {
   ];
 
   return (
-    <section className="case-file border-y border-[var(--cf-line)] bg-[var(--cf-bg)] py-10">
+    <section className="case-file border-y border-[var(--cf-line)] bg-[var(--cf-bg)] py-16">
       <div className="section-shell">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-[var(--cf-line)]">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
           {stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col items-center gap-1 px-2 text-center">
+            <div key={stat.label} className="flex flex-col items-center gap-2 px-2 text-center">
               <p className="cf-serif text-2xl font-semibold text-[var(--cf-fg)] sm:text-3xl">{stat.value}</p>
               <p className="cf-mono text-[0.65rem] uppercase tracking-wide text-[var(--cf-muted)] sm:text-xs">
                 {stat.label}
@@ -36,7 +36,7 @@ export function StatsBar({ locale }: StatsBarProps) {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-4 border-t border-[var(--cf-line)] pt-8 text-center">
+        <div className="mt-12 flex flex-col items-center gap-5 border-t border-[var(--cf-line)] pt-10 text-center">
           <p className="cf-mono text-xs uppercase tracking-wider text-[var(--cf-muted)]">
             {locale === "tr"
               ? "Resmi Göç Verileriyle Desteklenmektedir:"

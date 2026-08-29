@@ -41,18 +41,18 @@ export function Testimonials({ locale }: TestimonialsProps) {
   ];
 
   return (
-    <section className="case-file bg-[var(--cf-bg)] py-20">
+    <section className="case-file bg-[var(--cf-bg)] py-24 sm:py-32">
       <div className="section-shell">
-        <p className="cf-mono mb-3 text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
+        <p className="cf-mono mb-4 text-xs uppercase tracking-[0.14em] text-[var(--cf-accent)]">
           {locale === "tr" ? "Görüşler" : locale === "zh-Hans" ? "评价" : "On the Record"}
         </p>
-        <h2 className="cf-serif max-w-[24ch] text-3xl font-medium text-[var(--cf-fg)] sm:text-4xl">
+        <h2 className="cf-serif max-w-[24ch] text-4xl font-extrabold tracking-tight text-[var(--cf-fg)] sm:text-5xl">
           {locale === "tr" ? "Kullanıcılarımız Ne Diyor?" : locale === "zh-Hans" ? "用户评价" : "What Our Users Are Saying"}
         </h2>
 
-        <div className="mt-10 grid grid-cols-1 gap-px border border-[var(--cf-line)] bg-[var(--cf-line)] md:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
           {reviews.map((review) => (
-            <div key={review.name} className="flex flex-col gap-4 bg-[var(--cf-case-bg)] p-6 sm:p-7">
+            <div key={review.name} className="flex flex-col gap-5 rounded-2xl bg-[var(--cf-case-bg)] p-8 sm:p-10">
               <div aria-hidden className="text-[#D8A65C]">
                 ★★★★★
               </div>

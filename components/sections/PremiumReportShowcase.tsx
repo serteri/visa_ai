@@ -42,7 +42,7 @@ export function PremiumReportShowcase() {
   const active = FEATURES.find((f) => f.key === activeKey) ?? FEATURES[0];
 
   return (
-    <section className="relative overflow-hidden bg-black py-16 sm:py-20">
+    <section className="relative overflow-hidden bg-black py-24 sm:py-32">
       {/* Dala neon glow accents -- iris + saffron radial blooms behind the
           heading, giving the section a "worth $49" moment instead of
           burying it in a flat black box. */}
@@ -61,10 +61,10 @@ export function PremiumReportShowcase() {
             <span className="h-1.5 w-1.5 rounded-full bg-[#ffb829]" />
             {t("home.reportShowcase.eyebrow", "$49 Premium Report")}
           </span>
-          <h2 className="mt-4 text-3xl font-normal tracking-tight text-white sm:text-4xl">
+          <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
             {t("home.reportShowcase.title", "What's Inside the Premium Report?")}
           </h2>
-          <p className="mt-3 text-base text-gray-400">
+          <p className="mt-4 text-lg font-medium leading-relaxed text-slate-400">
             {t(
               "home.reportShowcase.subtitle",
               "Stop guessing. Get the exact AI-powered blueprint used by migration experts, detailing your precise points, hidden risks, and a clear roadmap to Permanent Residency. All for $49."
@@ -72,7 +72,7 @@ export function PremiumReportShowcase() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-12">
+        <div className="mt-16 grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-12">
           {/* Feature list -- suspended in the void, no boxed card fills;
               just a thin left rule that glows iris when active. */}
           <div className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:gap-1 lg:pb-0">
@@ -85,7 +85,7 @@ export function PremiumReportShowcase() {
                   type="button"
                   onClick={() => setActiveKey(feature.key)}
                   aria-pressed={isActive}
-                  className={`flex shrink-0 items-start gap-3 border-l-2 px-4 py-3.5 text-left transition-colors lg:shrink lg:w-full ${
+                  className={`flex shrink-0 items-start gap-3 border-l-2 px-5 py-4 text-left transition-colors lg:shrink lg:w-full ${
                     isActive
                       ? "border-[#8052ff] bg-[#8052ff]/5"
                       : "border-gray-800 hover:border-gray-600"

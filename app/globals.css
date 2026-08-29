@@ -115,8 +115,13 @@ body {
   min-height: 100vh;
 }
 
+/* letter-spacing only -- font-weight used to be hardcoded here too, but
+   that's a plain (un-layered) rule and Tailwind's utilities are emitted
+   inside @layer utilities, so per CSS cascade-layer rules this always won
+   regardless of specificity: every font-medium/font-bold/font-extrabold
+   class on any h1/h2/h3 site-wide was being silently ignored, always
+   rendering at 400 no matter what was requested. */
 h1, h2, h3 {
-  font-weight: 400;
   letter-spacing: -0.04em;
 }
 

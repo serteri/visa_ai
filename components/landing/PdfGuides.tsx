@@ -8,11 +8,11 @@ interface PdfGuidesProps {
  *  guides are a flat $9.99 — no free-slot logic. */
 export function PdfGuides({ locale }: PdfGuidesProps) {
   return (
-    <section id="pdf-download-section" className="case-file scroll-mt-24 bg-[var(--cf-bg)] py-20">
+    <section id="pdf-download-section" className="case-file scroll-mt-24 bg-[var(--cf-bg)] py-24 sm:py-32">
       <div className="section-shell">
-        <div className="grid grid-cols-1 gap-px border border-[var(--cf-line)] bg-[var(--cf-line)] md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Turkish Edition */}
-          <div className="flex flex-col gap-4 bg-[var(--cf-case-bg)] p-6 sm:p-8">
+          <div className="flex flex-col gap-5 rounded-2xl bg-[var(--cf-case-bg)] p-8 sm:p-10">
             <div className="flex items-center gap-2">
               <span className="text-2xl">🇹🇷</span>
               <span className="cf-mono rounded-sm bg-[var(--cf-flag-brass-bg)] px-2.5 py-1 text-[0.65rem] uppercase tracking-wide text-[var(--cf-flag-brass-fg)]">
@@ -29,7 +29,7 @@ export function PdfGuides({ locale }: PdfGuidesProps) {
                   ? "一本80多页的权威指南，专为土耳其专业人士从头到尾讲解澳大利亚技术移民流程。内容包括：189/190/491类别签证的分步策略、2026年最新积分计算技巧、专为土耳其公民定制的材料准备清单、职业评估（Skills Assessment）机构的审核流程，以及NAATI/PTE应试技巧。"
                   : "An 80+ page A-to-Z handbook covering Australia's Skilled Migration process for Turkish professionals. Inside: step-by-step strategies for the Subclass 189/190/491 visas, up-to-date 2026 points calculation tactics, document preparation checklists tailored to Turkish citizens, how Skills Assessment authorities review applications, and NAATI/PTE tips."}
             </p>
-            <ul className="space-y-2 text-sm text-[var(--cf-case-muted)]">
+            <ul className="space-y-3 text-sm leading-relaxed text-[var(--cf-case-muted)]">
               {[
                 locale === "tr"
                   ? "80+ sayfa, 13 bölüm, 2026 güncel verileri"
@@ -57,14 +57,14 @@ export function PdfGuides({ locale }: PdfGuidesProps) {
               <StripeCheckoutButton
                 productType="pdf_book"
                 locale={locale}
-                className="w-full bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
+                className="h-14 w-full px-8 py-4 text-base bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
                 label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
               />
             </div>
           </div>
 
           {/* Global English Edition */}
-          <div className="flex flex-col gap-4 bg-[var(--cf-case-bg)] p-6 sm:p-8">
+          <div className="flex flex-col gap-5 rounded-2xl bg-[var(--cf-case-bg)] p-8 sm:p-10">
             <div className="flex items-center gap-2">
               <span className="text-2xl">🌏</span>
               <span className="cf-mono rounded-sm bg-[var(--cf-flag-sage-bg)] px-2.5 py-1 text-[0.65rem] uppercase tracking-wide text-[var(--cf-flag-sage-fg)]">
@@ -81,7 +81,7 @@ export function PdfGuides({ locale }: PdfGuidesProps) {
                   ? "一份涵盖整个技术移民路径的全面蓝图。指南内容包括：189/190/491类别签证的分步策略、州担保的隐藏要求、学生签证（500类别）过渡到PR的策略、主要城市2026年最新生活成本明细，以及如何有效地最大化您的积分。"
                   : "A comprehensive blueprint covering the entire Skilled Migration pathway. Inside the guide: Step-by-step strategies for Subclass 189/190/491, state sponsorship hidden requirements, the Student Visa (Subclass 500) to PR transition strategy, actual 2026 cost of living breakdowns for major cities, and how to maximize your points effectively."}
             </p>
-            <ul className="space-y-2 text-sm text-[var(--cf-case-muted)]">
+            <ul className="space-y-3 text-sm leading-relaxed text-[var(--cf-case-muted)]">
               {[
                 locale === "tr"
                   ? "Skilled Migration (189/190/491) — puan testi ve strateji"
@@ -109,7 +109,7 @@ export function PdfGuides({ locale }: PdfGuidesProps) {
               <StripeCheckoutButton
                 productType="pdf_book_global"
                 locale={locale}
-                className="w-full bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
+                className="h-14 w-full px-8 py-4 text-base bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
                 label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
               />
             </div>
