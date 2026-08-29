@@ -122,6 +122,13 @@ export async function POST(request: NextRequest) {
         userId: body.userId || "",
         email: body.email || "",
         reportId: body.reportId || "",
+        // assessmentId mirrors reportId -- the Stripe webhook's
+        // handleReportUnlock (app/api/stripe/webhook/route.ts) reads this to
+        // send the "PAID Assessment Completed" admin email, kept as an
+        // explicit alias rather than reusing the reportId name so that
+        // handler reads self-documented metadata instead of a name that only
+        // makes sense in this route's own context.
+        assessmentId: body.reportId || "",
         // leadId mirrors reportId -- recordCommissionTransaction() (lib/
         // stripe/commission.ts) reads leadId specifically, kept distinct
         // from reportId since not every checkout here is report-related.

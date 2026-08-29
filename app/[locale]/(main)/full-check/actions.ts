@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, gte, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { Resend } from "resend";
@@ -375,100 +375,15 @@ function isEmailDeliveryEnabled(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
 }
 
-async function hasRecentSubmission(email: string, source: string): Promise<boolean> {
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-  try {
-    const rows = await db
-      .select({ id: fullCheckWaitlist.id })
-      .from(fullCheckWaitlist)
-      .where(
-        and(
-          eq(fullCheckWaitlist.email, email),
-          eq(fullCheckWaitlist.source, source),
-          gte(fullCheckWaitlist.created_at, fiveMinutesAgo)
-        )
-      )
-      .limit(1);
-
-    return rows.length > 0;
-  } catch (error) {
-    if (isMissingRelationError(error, "full_check_waitlist")) {
-      console.warn("full_check_waitlist table missing; skipping recent-submission dedupe check.");
-      return false;
-    }
-    throw error;
-  }
-}
-
 // ─── Email senders ────────────────────────────────────────────────────────────
-
-async function sendFullCheckAdminEmail(payload: {
-  fullName: string;
-  email: string;
-  visaInterest: string;
-  preferredLanguage: string;
-  currentCountry: string;
-  passportCountry: string;
-  age: string;
-  occupation: string;
-  englishLevel: string;
-  occupationConfirmed: string;
-  estimatedBudgetRange: string;
-  timeline: string;
-  qualificationAwardedInAustralia?: boolean;
-  qualificationRegionalAustralia?: boolean;
-  specialistEducationStemResponse?: "yes" | "no" | "not_sure";
-  offshoreExperienceYears?: number;
-  onshoreExperienceYears?: number;
-  sponsorOrFamily: string;
-  biggestConcern: string;
-  mainGoal: string;
-  source: string;
-}) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const notificationEmail =
-    process.env.FULL_CHECK_NOTIFICATION_EMAIL ||
-    process.env.REFERRAL_NOTIFICATION_EMAIL ||
-    "serter@logivisa.com";
-
-  if (!apiKey) return;
-
-  const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
-  const bodyLines = [
-    "A new full readiness assessment has been completed.",
-    "",
-    `full name: ${payload.fullName || "-"}`,
-    `email: ${payload.email}`,
-    `phone: -`,
-    `visa interest: ${payload.visaInterest || "-"}`,
-    `preferred language: ${payload.preferredLanguage || "-"}`,
-    `current country: ${payload.currentCountry || "-"}`,
-    `passport country: ${payload.passportCountry}`,
-    `age: ${payload.age}`,
-    `occupation: ${payload.occupation || "-"}`,
-    `english level: ${payload.englishLevel || "-"}`,
-    `occupation confirmed: ${payload.occupationConfirmed || "-"}`,
-    `estimated budget range: ${payload.estimatedBudgetRange || "-"}`,
-    `timeline: ${payload.timeline || "-"}`,
-    `qualification completed at Australian institution: ${payload.qualificationAwardedInAustralia ?? "-"}`,
-    `qualification completed at regional Australian campus: ${payload.qualificationRegionalAustralia ?? "-"}`,
-    `specialist education STEM response: ${payload.specialistEducationStemResponse ?? "-"}`,
-    `offshore skilled employment years: ${payload.offshoreExperienceYears ?? "-"}`,
-    `onshore skilled employment years: ${payload.onshoreExperienceYears ?? "-"}`,
-    `sponsor/family: ${payload.sponsorOrFamily || "-"}`,
-    `biggest concern: ${payload.biggestConcern || "-"}`,
-    `main goal: ${payload.mainGoal}`,
-    `source: ${payload.source}`,
-  ];
-
-  await resend.emails.send({
-    from: fromEmail,
-    to: [notificationEmail],
-    subject: `🔥 New Assessment Completed: ${payload.fullName || "Unknown"}`,
-    text: bodyLines.join("\n"),
-  });
-}
+//
+// The admin "assessment completed" notification used to be sent from here on
+// every free quick-check submission, regardless of whether the visitor ever
+// paid. It's now sent only from the Stripe webhook after a successful
+// checkout.session.completed (see sendFullCheckAdminEmail in
+// lib/email/full-check-admin.ts and handleReportUnlock in
+// app/api/stripe/webhook/route.ts), so the admin inbox only hears about paying
+// customers.
 
 // Internal-only lead-scoring notification (Hot/Warm tiers, never Cold — see
 // computeInternalLeadTier). Distinct from sendFullCheckAdminEmail above:
@@ -1253,8 +1168,6 @@ export async function submitFullCheckWaitlist(
     };
   }
 
-  const suppressNotifications = await hasRecentSubmission(email, source);
-
   if (analysisProgressId) {
     await updateFullCheckProgress(analysisProgressId, "scanning_occupations");
   }
@@ -1479,31 +1392,6 @@ export async function submitFullCheckWaitlist(
   const reportLink = `${baseUrl}/${resolvedLocale}/full-check/result?reportId=${reportRecord.id}`;
 
   Promise.all([
-    suppressNotifications
-      ? Promise.resolve()
-      : sendFullCheckAdminEmail({
-          fullName,
-          email,
-          visaInterest,
-          preferredLanguage,
-          currentCountry,
-          passportCountry,
-          age,
-          occupation,
-          englishLevel,
-          occupationConfirmed,
-          estimatedBudgetRange,
-          timeline,
-          qualificationAwardedInAustralia,
-          qualificationRegionalAustralia,
-          specialistEducationStemResponse,
-          offshoreExperienceYears,
-          onshoreExperienceYears,
-          sponsorOrFamily,
-          biggestConcern,
-          mainGoal,
-          source,
-        }).catch((err) => console.error("Admin email failed (non-blocking):", err)),
     sendReportReadyEmail({
       email,
       fullName,

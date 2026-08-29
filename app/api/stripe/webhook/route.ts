@@ -8,6 +8,7 @@ import type { ReadinessInput } from "@/lib/readiness/types";
 import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
 import { recordCommissionTransaction, recordCommissionTransactionForLead, hasRecordedTransaction } from "@/lib/stripe/commission";
 import { getStripeClient } from "@/lib/stripe";
+import { sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,9 @@ export const dynamic = "force-dynamic";
 // require registering two endpoint URLs in the Stripe dashboard for one event.
 type CheckoutSessionMeta = {
   productType?: "premium" | "pdf_book" | "pdf_book_global";
+  /** Set by app/api/checkout/route.ts, mirrors reportId -- the UserReport id
+   * to unlock and to send the "PAID Assessment Completed" admin email for. */
+  assessmentId?: string;
   /** Set by app/actions/stripeActions.ts's createCheckoutSession for the
    * lead-magnet slot-counter paywall (campaigns.name, e.g.
    * "australia-guide-2026"). Fixed contract -- do not rename here without
@@ -133,7 +137,10 @@ async function handlePdfBookPurchase(session: Stripe.Checkout.Session, slug: str
 }
 
 async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Response> {
-  const reportId = session.metadata?.reportId;
+  // assessmentId is the explicit metadata key set by app/api/checkout/route.ts
+  // for this purpose; reportId is kept as a fallback for older sessions
+  // created before that key existed.
+  const reportId = session.metadata?.assessmentId || session.metadata?.reportId;
   const email = session.metadata?.email ?? session.customer_email ?? "";
 
   if (!reportId) {
@@ -148,11 +155,13 @@ async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Res
         email: string;
         locale: string;
         full_name: string | null;
+        source: string;
+        preferred_path: string | null;
         report_json: ReadinessReport;
         input_json: ReadinessInput;
       }>
     >(
-      `SELECT id, email, locale, full_name, report_json, input_json FROM user_reports WHERE id::text = $1::text LIMIT 1`,
+      `SELECT id, email, locale, full_name, source, preferred_path, report_json, input_json FROM user_reports WHERE id::text = $1::text LIMIT 1`,
       reportId
     );
 
@@ -186,6 +195,41 @@ async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Res
       await recordCommissionTransaction(session);
     } catch (commissionErr) {
       console.error("Webhook: Commission transaction recording failed (non-blocking):", commissionErr);
+    }
+
+    // Admin "assessment completed" notification -- moved here from the free
+    // quick-check form submission (see lib/email/full-check-admin.ts) so it
+    // only fires once payment has actually succeeded. Best-effort: payment
+    // and the DB unlock above already succeeded, so a Resend failure here
+    // must never fail this webhook and trigger a Stripe retry of a charge
+    // that already went through.
+    try {
+      const input = (record.input_json ?? {}) as Partial<ReadinessInput>;
+      await sendFullCheckAdminEmail({
+        fullName: record.full_name ?? "",
+        email,
+        visaInterest: record.preferred_path ?? input.preferredPathway ?? "",
+        preferredLanguage: record.locale,
+        currentCountry: input.currentCountry ?? "",
+        passportCountry: input.passportCountry ?? "",
+        age: input.age ?? "",
+        occupation: input.occupation ?? "",
+        englishLevel: input.englishLevel ?? "",
+        occupationConfirmed: input.occupationConfirmed ?? "",
+        estimatedBudgetRange: input.estimatedBudgetRange ?? "",
+        timeline: input.timeline ?? "",
+        qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
+        qualificationRegionalAustralia: input.qualificationRegionalAustralia,
+        specialistEducationStemResponse: input.specialistEducationStemResponse,
+        offshoreExperienceYears: input.offshoreExperienceYears,
+        onshoreExperienceYears: input.onshoreExperienceYears,
+        sponsorOrFamily: input.sponsorOrFamily ?? "",
+        biggestConcern: input.biggestConcern ?? "",
+        mainGoal: input.mainGoal ?? "",
+        source: record.source,
+      });
+    } catch (adminEmailErr) {
+      console.error("Webhook: PAID admin notification email failed (non-blocking):", adminEmailErr);
     }
 
     // Generate PDF and send email -- shared with the free-promo grant in
