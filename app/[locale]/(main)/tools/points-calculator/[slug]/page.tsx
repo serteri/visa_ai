@@ -52,18 +52,18 @@ export default async function OccupationPointsCalculatorPage({ params }: PagePro
   }
 
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <div className="bg-background min-h-screen">
       <div className="px-4 sm:px-6 lg:px-8 text-center mx-auto w-full max-w-6xl">
-        <span className="inline-block rounded-full border border-blue-200 bg-blue-50 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-600">
+        <span className="inline-block rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-300">
           Occupation Specific Calculator
         </span>
-        <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+        <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
           Australia Visa Points Calculator for{" "}
           <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             {occupation.title}
           </span>
         </h1>
-        <p className="mx-auto mt-3 max-w-xl text-base text-slate-500">
+        <p className="mx-auto mt-3 max-w-xl text-base text-slate-300">
           Check your PR readiness as a <strong>{occupation.title} ({occupation.anzsco})</strong> using the latest 2026 DHA rules.
         </p>
       </div>

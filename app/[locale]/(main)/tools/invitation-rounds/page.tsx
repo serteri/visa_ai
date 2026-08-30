@@ -98,17 +98,17 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
         {/* Header */}
         <div className="mb-8">
           <div className="mb-2 flex items-center gap-2">
-            <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
+            <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-300">
               SkillSelect Data
             </span>
             <span className="text-xs text-slate-400">Last scraped {lastScrapedLabel}</span>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900">Invitation Round Tracker</h1>
-          <p className="mt-2 max-w-2xl text-base text-slate-500">
+          <h1 className="text-3xl font-bold text-white">Invitation Round Tracker</h1>
+          <p className="mt-2 max-w-2xl text-base text-slate-300">
             Historical points cutoffs and invitation volumes for Australian skilled migration
             (subclasses 189 and 491 Family Sponsored).
           </p>
-          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
             Data sourced from official DoHA SkillSelect invitation rounds page. Last verified: November 2025.
           </p>
         </div>

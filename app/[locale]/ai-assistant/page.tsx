@@ -36,21 +36,21 @@ export default async function AiAssistantPage({ params }: PageProps) {
 
   return (
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-4xl px-4 pt-6">
           <Link
             href={`/${locale}`}
-            className="group inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-200/60 hover:text-slate-900"
+            className="group inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
             {t(translations, "assistant.backToHome", "Back to Home")}
           </Link>
         </div>
         <header className="mx-auto max-w-4xl px-4 pt-4 pb-6 text-center sm:pt-8">
-          <h1 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-semibold text-white sm:text-3xl">
             {t(translations, "assistant.title", "LogiVisa AI Consultant")}
           </h1>
-          <p className="mt-2 text-sm text-slate-600 sm:text-base">
+          <p className="mt-2 text-sm text-slate-300 sm:text-base">
             {t(
               translations,
               "assistant.subtitle",

@@ -25,8 +25,8 @@ type State = (typeof statesData.states)[0];
 type Occupation = (typeof anzscoData)[0];
 
 const VISA_BADGES = {
-  "190": { label: "190", color: "bg-blue-100 text-blue-800" },
-  "491": { label: "491", color: "bg-green-100 text-green-800" },
+  "190": { label: "190", color: "bg-blue-500/10 text-blue-300" },
+  "491": { label: "491", color: "bg-green-500/10 text-green-300" },
 };
 
 const STATE_COLORS: Record<string, string> = {
@@ -44,15 +44,15 @@ function getCompetitionColor(level: string): string {
   switch (level) {
     case "low":
     case "low-medium":
-      return "text-green-600 bg-green-50";
+      return "text-green-300 bg-green-500/10";
     case "medium":
     case "medium-low":
-      return "text-yellow-600 bg-yellow-50";
+      return "text-yellow-300 bg-yellow-500/10";
     case "high":
     case "very-high":
-      return "text-red-600 bg-red-50";
+      return "text-red-300 bg-red-500/10";
     default:
-      return "text-gray-600 bg-gray-50";
+      return "text-slate-300 bg-slate-500/10";
   }
 }
 
@@ -303,7 +303,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
                           return (
                             <Badge
                               key={visa.code}
-                              className={VISA_BADGES[visaCode]?.color || "bg-gray-100 text-gray-800"}
+                              className={VISA_BADGES[visaCode]?.color || "bg-slate-500/10 text-slate-300"}
                             >
                               {visa.code} {visa.status !== "Open" && `(${visa.status})`}
                             </Badge>

@@ -88,8 +88,8 @@ function groupVolumesByYear(volumes: VolumeRow[]): Array<{ year: string; rows: V
 
 function locationBadgeClass(location: string): string {
   return location === "Onshore"
-    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-    : "border-sky-200 bg-sky-50 text-sky-700";
+    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+    : "border-sky-500/30 bg-sky-500/10 text-sky-300";
 }
 
 /** DD/MM/YYYY, per this task's explicit example format ("16/05/2026") -- not locale-dependent Intl formatting. */
@@ -115,7 +115,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">
             {t(translations, "nav.invitationRounds", "Invitation Rounds")}
           </p>
-          <h1 className="text-3xl font-bold text-slate-900">{t(translations, "rounds.title", "Invitation Rounds")}</h1>
+          <h1 className="text-3xl font-bold text-white">{t(translations, "rounds.title", "Invitation Rounds")}</h1>
           <p className="max-w-2xl text-sm text-muted-foreground">
             {t(
               translations,
@@ -126,8 +126,8 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
         </div>
 
         {rounds.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-            <p className="text-sm font-medium text-slate-500">
+          <div className="rounded-xl border border-slate-800/60 bg-card px-6 py-16 text-center shadow-sm">
+            <p className="text-sm font-medium text-slate-300">
               {t(translations, "rounds.empty", "No recent rounds found.")}
             </p>
           </div>
@@ -136,16 +136,16 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
             {rounds.map((round) => (
               <li
                 key={round.id}
-                className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                className="flex items-start gap-4 rounded-xl border border-slate-800/60 bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400">
                   <Send className="h-5 w-5" />
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-lg font-bold leading-snug text-slate-900">{round.occupation}</p>
+                  <p className="text-lg font-bold leading-snug text-white">{round.occupation}</p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                    <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-xs font-medium text-indigo-300">
                       {t(translations, `visas.subclass.${round.subclass}`, `Subclass ${round.subclass}`)}
                     </span>
                     <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${locationBadgeClass(round.location)}`}>
@@ -154,7 +154,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
                         : t(translations, "rounds.offshore", "Offshore")}
                     </span>
                   </div>
-                  <p className="mt-2 flex items-center gap-1.5 text-sm text-slate-500">
+                  <p className="mt-2 flex items-center gap-1.5 text-sm text-slate-300">
                     <MapPin className="h-3.5 w-3.5 shrink-0" />
                     {round.state}
                   </p>
@@ -167,7 +167,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
                 </div>
 
                 <div className="shrink-0 text-right">
-                  <p className="text-2xl font-bold text-slate-900">{round.points}</p>
+                  <p className="text-2xl font-bold text-white">{round.points}</p>
                   <p className="text-xs font-medium text-slate-400">
                     {t(translations, "rounds.cutoffLabel", "Cut-off")}
                   </p>
@@ -180,7 +180,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
         {volumesByYear.length > 0 && (
           <div className="space-y-6 pt-4">
             <div className="space-y-1">
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-white">
                 {t(translations, "rounds.volumeTitle", "State Invitation Volumes")}
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -190,42 +190,42 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
 
             {volumesByYear.map(({ year, rows }) => (
               <div key={year} className="space-y-3">
-                <h3 className="text-base font-semibold text-slate-800">
+                <h3 className="text-base font-semibold text-white">
                   {year === "Unknown"
                     ? t(translations, "rounds.yearUnknown", "Program Year Unknown")
                     : t(translations, "rounds.programYear", "{{year}} Program Year").replace("{{year}}", year)}
                 </h3>
 
-                <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div className="overflow-hidden rounded-xl border border-slate-800/60 bg-card shadow-sm">
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[640px] text-sm">
                       <thead>
-                        <tr className="border-b border-slate-200 bg-slate-50 text-left">
-                          <th className="px-4 py-3 font-semibold text-slate-600">
+                        <tr className="border-b border-slate-800/60 bg-slate-900/60 text-left">
+                          <th className="px-4 py-3 font-semibold text-slate-300">
                             {t(translations, "rounds.table.stream", "Stream")}
                           </th>
-                          <th className="px-4 py-3 font-semibold text-slate-600">
+                          <th className="px-4 py-3 font-semibold text-slate-300">
                             {t(translations, "rounds.table.subclass", "Visa Subclass")}
                           </th>
-                          <th className="px-4 py-3 font-semibold text-slate-600">
+                          <th className="px-4 py-3 font-semibold text-slate-300">
                             {t(translations, "rounds.table.month", "Month")}
                           </th>
-                          <th className="px-4 py-3 text-right font-semibold text-slate-600">
+                          <th className="px-4 py-3 text-right font-semibold text-slate-300">
                             {t(translations, "rounds.table.invitationsIssued", "Invitations Issued")}
                           </th>
                         </tr>
                       </thead>
                       <tbody>
                         {rows.map((volume) => (
-                          <tr key={volume.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60">
-                            <td className="px-4 py-3 text-slate-700">{volume.stream}</td>
+                          <tr key={volume.id} className="border-b border-slate-800/40 last:border-0 hover:bg-slate-900/40">
+                            <td className="px-4 py-3 text-slate-300">{volume.stream}</td>
                             <td className="px-4 py-3">
-                              <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                              <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-xs font-medium text-indigo-300">
                                 {t(translations, `visas.subclass.${volume.subclass}`, `Subclass ${volume.subclass}`)}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-slate-700">{volume.month}</td>
-                            <td className="px-4 py-3 text-right tabular-nums font-semibold text-slate-900">
+                            <td className="px-4 py-3 text-slate-300">{volume.month}</td>
+                            <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
                               {volume.count.toLocaleString(locale)}
                             </td>
                           </tr>

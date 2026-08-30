@@ -41,9 +41,9 @@ const SUBCLASS_COLOR: Record<string, string> = {
 };
 
 const SUBCLASS_BG: Record<string, string> = {
-  "189": "bg-indigo-100 text-indigo-700",
-  "190": "bg-emerald-100 text-emerald-700",
-  "491": "bg-amber-100 text-amber-700",
+  "189": "bg-indigo-500/10 text-indigo-300",
+  "190": "bg-emerald-500/10 text-emerald-300",
+  "491": "bg-amber-500/10 text-amber-300",
 };
 
 const PAGE_SIZE = 20;
@@ -98,7 +98,7 @@ function SummaryCard({
       : 0;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-slate-800/60 bg-card p-5 shadow-sm">
       <div className="flex items-start justify-between">
         <div>
           <span
@@ -106,15 +106,15 @@ function SummaryCard({
           >
             {t("ir.subclassLabel")} {subclass}
           </span>
-          <p className="mt-1.5 text-xs text-slate-500">{visaName}</p>
+          <p className="mt-1.5 text-xs text-slate-400">{visaName}</p>
         </div>
         <TrendIcon trend={trend} />
       </div>
       {latest ? (
         <>
-          <p className="mt-3 text-3xl font-bold text-slate-900">
+          <p className="mt-3 text-3xl font-bold text-white">
             {typeof latest.lowestPoints === "number" ? latest.lowestPoints : t("ir.varied", "Varied")}
-            <span className="ml-1 text-base font-normal text-slate-500">{t("ir.pts")}</span>
+            <span className="ml-1 text-base font-normal text-slate-400">{t("ir.pts")}</span>
           </p>
           <p className="mt-0.5 text-xs text-slate-400">{formatDate(latest.date)}</p>
           {delta !== 0 && (
@@ -144,8 +144,8 @@ type TooltipProps = {
 function CustomTooltip({ active, payload, label }: TooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-lg text-xs">
-      <p className="mb-1.5 font-semibold text-slate-700">
+    <div className="rounded-xl border border-slate-800/60 bg-card p-3 shadow-lg text-xs">
+      <p className="mb-1.5 font-semibold text-slate-300">
         {label ? formatDate(label) : ""}
       </p>
       {payload.map((entry) => (
@@ -154,7 +154,7 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
             className="inline-block h-2 w-2 rounded-full"
             style={{ background: entry.color }}
           />
-          <span className="text-slate-600">
+          <span className="text-slate-300">
             {entry.name}: <strong>{entry.value} pts</strong>
           </span>
         </div>
@@ -257,7 +257,7 @@ export function InvitationRoundsClient({
 
   return (
     <div className="space-y-8 pt-20">
-      <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+      <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm text-sky-300">
         {t("ir.infoBanner", "ℹ️ Subclass 190 and 491 (State Nominated) are NOT included in these rounds — states nominate independently throughout the month.")}
       </div>
 
@@ -270,7 +270,7 @@ export function InvitationRoundsClient({
 
       {/* Filter bar */}
       <div className="flex flex-wrap gap-3">
-        <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+        <div className="flex items-center gap-1 rounded-xl border border-slate-800/60 bg-card p-1 shadow-sm">
           {(["all", "189", "190", "491"] as const).map((sc) => (
             <button
               key={sc}
@@ -279,14 +279,14 @@ export function InvitationRoundsClient({
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                 subclassFilter === sc
                   ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-50"
+                  : "text-slate-300 hover:bg-slate-800/60"
               }`}
             >
               {sc === "all" ? t("ir.allSubclasses", "All Subclasses") : `${t("ir.subclass", "Subclass")} ${sc}`}
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+        <div className="flex items-center gap-1 rounded-xl border border-slate-800/60 bg-card p-1 shadow-sm">
           {(["all", "2023", "2024", "2025"] as const).map((yr) => (
             <button
               key={yr}
@@ -295,7 +295,7 @@ export function InvitationRoundsClient({
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                 yearFilter === yr
                   ? "bg-slate-800 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-50"
+                  : "text-slate-300 hover:bg-slate-800/60"
               }`}
             >
               {yr === "all" ? t("ir.allYears", "All Years") : yr}
@@ -305,8 +305,8 @@ export function InvitationRoundsClient({
       </div>
 
       {/* Chart */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-sm font-semibold text-slate-800">{t("ir.pointsCutoffTrend", "Points Cutoff Trend")}</h2>
+      <div className="rounded-2xl border border-slate-800/60 bg-card p-5 shadow-sm">
+        <h2 className="mb-4 text-sm font-semibold text-white">{t("ir.pointsCutoffTrend", "Points Cutoff Trend")}</h2>
         {chartData.length === 0 ? (
           <div className="flex h-48 items-center justify-center text-sm text-slate-400">
             {t("ir.noDataSelectedFilters", "No data for the selected filters")}
@@ -333,7 +333,7 @@ export function InvitationRoundsClient({
                   <Tooltip content={<CustomTooltip />} />
                   <Legend
                     formatter={(value) => (
-                      <span className="text-xs text-slate-600">Subclass {value}</span>
+                      <span className="text-xs text-slate-300">Subclass {value}</span>
                     )}
                   />
                   {activeSubclasses.map((sc) => (
@@ -357,9 +357,9 @@ export function InvitationRoundsClient({
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="border-b border-slate-100 px-5 py-4">
-          <h2 className="text-sm font-semibold text-slate-800">{t("ir.invitationRounds", "Invitation Rounds")}</h2>
+      <div className="rounded-2xl border border-slate-800/60 bg-card shadow-sm overflow-hidden">
+        <div className="border-b border-slate-800/60 px-5 py-4">
+          <h2 className="text-sm font-semibold text-white">{t("ir.invitationRounds", "Invitation Rounds")}</h2>
           <p className="mt-0.5 text-xs text-slate-400">
             {sortedFiltered.length} {t("ir.rounds", "rounds")} — {t("ir.showing", "showing")} {shown.length}
           </p>
@@ -373,7 +373,7 @@ export function InvitationRoundsClient({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase text-slate-400">
+                  <tr className="border-b border-slate-800/60 bg-slate-900/60 text-xs font-semibold uppercase text-slate-400">
                     <th className="px-4 py-3 text-left">{t("ir.date", "Date")}</th>
                     <th className="px-4 py-3 text-left">{t("ir.visa", "Visa")}</th>
                     <th className="px-4 py-3 text-right">{t("ir.lowestPoints", "Lowest Points")}</th>
@@ -386,11 +386,11 @@ export function InvitationRoundsClient({
                   {shown.map((r, i) => (
                     <tr
                       key={r.id}
-                      className={`border-b border-slate-50 transition hover:bg-slate-50 ${
-                        i % 2 === 1 ? "bg-white" : "bg-slate-50/30"
+                      className={`border-b border-slate-800/40 transition hover:bg-slate-800/40 ${
+                        i % 2 === 1 ? "bg-card" : "bg-slate-900/30"
                       }`}
                     >
-                      <td className="whitespace-nowrap px-4 py-3 text-slate-700">
+                      <td className="whitespace-nowrap px-4 py-3 text-slate-300">
                         {formatDate(r.date)}
                       </td>
                       <td className="px-4 py-3">
@@ -400,13 +400,13 @@ export function InvitationRoundsClient({
                           {r.visaSubclass}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right font-semibold text-slate-800">
+                      <td className="px-4 py-3 text-right font-semibold text-white">
                         {typeof r.lowestPoints === "number" ? r.lowestPoints : t("ir.varies", "Varies")}
                       </td>
-                      <td className="px-4 py-3 text-right text-slate-600">
+                      <td className="px-4 py-3 text-right text-slate-300">
                         {r.invitations.toLocaleString()}
                       </td>
-                      <td className="px-4 py-3 text-right text-slate-500">
+                      <td className="px-4 py-3 text-right text-slate-400">
                         {typeof r.poolSize === "number" ? r.poolSize.toLocaleString() : "-"}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-400">
@@ -418,11 +418,11 @@ export function InvitationRoundsClient({
               </table>
             </div>
             {hasMore && (
-              <div className="border-t border-slate-100 px-5 py-4 text-center">
+              <div className="border-t border-slate-800/60 px-5 py-4 text-center">
                 <button
                   type="button"
                   onClick={() => setPage((p) => p + 1)}
-                  className="rounded-lg border border-slate-200 bg-white px-5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                  className="rounded-lg border border-slate-800/60 bg-card px-5 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800/40"
                 >
                   {t("ir.loadMore", "Load more")}
                 </button>
@@ -433,9 +433,9 @@ export function InvitationRoundsClient({
       </div>
 
       {/* Occupation cutoff table */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="border-b border-slate-100 px-5 py-4">
-          <h2 className="text-sm font-semibold text-slate-800">{t("ir.pointsByOccupation", "Points by Occupation")}</h2>
+      <div className="rounded-2xl border border-slate-800/60 bg-card shadow-sm overflow-hidden">
+        <div className="border-b border-slate-800/60 px-5 py-4">
+          <h2 className="text-sm font-semibold text-white">{t("ir.pointsByOccupation", "Points by Occupation")}</h2>
           <p className="mt-0.5 text-xs text-slate-400">
             {t("ir.sourceDohaRound", "Source: DoHA — Round of 13 November 2025")}
           </p>
@@ -445,7 +445,7 @@ export function InvitationRoundsClient({
               value={occupationSearch}
               onChange={(e) => setOccupationSearch(e.target.value)}
               placeholder={t("ir.searchOccupationName", "Search occupation name")}
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+              className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
             />
           </div>
         </div>
@@ -453,7 +453,7 @@ export function InvitationRoundsClient({
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase text-slate-400">
+              <tr className="border-b border-slate-800/60 bg-slate-900/60 text-xs font-semibold uppercase text-slate-400">
                 <th className="px-4 py-3 text-left">{t("ir.occupation", "Occupation")}</th>
                 <th className="px-4 py-3 text-right">{t("ir.subclass189MinPoints", "Subclass 189 Min Points")}</th>
                 <th className="px-4 py-3 text-right">{t("ir.subclass491MinPoints", "Subclass 491 Min Points")}</th>
@@ -463,13 +463,13 @@ export function InvitationRoundsClient({
               {filteredOccupationPoints.map((row, i) => (
                 <tr
                   key={row.occupation}
-                  className={`border-b border-slate-50 ${i % 2 === 1 ? "bg-white" : "bg-slate-50/30"}`}
+                  className={`border-b border-slate-800/40 ${i % 2 === 1 ? "bg-card" : "bg-slate-900/30"}`}
                 >
-                  <td className="px-4 py-3 text-slate-700">{row.occupation}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-slate-800">
+                  <td className="px-4 py-3 text-slate-300">{row.occupation}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-white">
                     {row.subclass189 ?? "—"}
                   </td>
-                  <td className="px-4 py-3 text-right font-semibold text-slate-800">
+                  <td className="px-4 py-3 text-right font-semibold text-white">
                     {row.subclass491 ?? "—"}
                   </td>
                 </tr>
@@ -480,39 +480,39 @@ export function InvitationRoundsClient({
       </div>
 
       {/* Alert section */}
-      <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-6 shadow-sm">
+      <div className="rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950/30 to-violet-950/30 p-6 shadow-sm">
         <div className="flex items-start gap-3">
-          <div className="rounded-xl bg-indigo-100 p-2.5">
-            <Bell className="h-5 w-5 text-indigo-600" />
+          <div className="rounded-xl bg-indigo-500/10 p-2.5">
+            <Bell className="h-5 w-5 text-indigo-400" />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-semibold text-slate-900">{t("ir.notifyTitle", "Get notified when points drop")}</h2>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <h2 className="text-base font-semibold text-white">{t("ir.notifyTitle", "Get notified when points drop")}</h2>
+            <p className="mt-0.5 text-sm text-slate-400">
               {t("ir.notifySubtitle", "We'll email you as soon as the cutoff falls to your target or below.")}
             </p>
           </div>
         </div>
 
         {alertMsg ? (
-          <div className="mt-5 flex items-start gap-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3">
-            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-            <p className="text-sm text-emerald-700">{alertMsg}</p>
+          <div className="mt-5 flex items-start gap-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-4 py-3">
+            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+            <p className="text-sm text-emerald-300">{alertMsg}</p>
           </div>
         ) : (
           <form onSubmit={handleAlert} className="mt-5 grid gap-3 sm:grid-cols-4">
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-slate-600">{t("ir.email", "Email")}</label>
+              <label className="mb-1 block text-xs font-medium text-slate-300">{t("ir.email", "Email")}</label>
               <input
                 type="email"
                 required
                 value={alertEmail}
                 onChange={(e) => setAlertEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">{t("ir.targetPoints", "Target Points")}</label>
+              <label className="mb-1 block text-xs font-medium text-slate-300">{t("ir.targetPoints", "Target Points")}</label>
               <input
                 type="number"
                 required
@@ -521,15 +521,15 @@ export function InvitationRoundsClient({
                 value={alertPoints}
                 onChange={(e) => setAlertPoints(e.target.value)}
                 placeholder="e.g. 75"
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">{t("ir.visaSubclass", "Visa Subclass")}</label>
+              <label className="mb-1 block text-xs font-medium text-slate-300">{t("ir.visaSubclass", "Visa Subclass")}</label>
               <select
                 value={alertSubclass}
                 onChange={(e) => setAlertSubclass(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
               >
                 <option value="189">{t("ir.subclass", "Subclass")} 189</option>
                 <option value="190">{t("ir.subclass", "Subclass")} 190</option>
@@ -538,7 +538,7 @@ export function InvitationRoundsClient({
             </div>
             {alertError && (
               <div className="sm:col-span-4">
-                <p className="rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-xs text-rose-600">
+                <p className="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-2 text-xs text-rose-300">
                   {alertError}
                 </p>
               </div>
