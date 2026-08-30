@@ -29,7 +29,7 @@ export default async function VisaTrackerPage({ params }: PageProps) {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Visa Tracker</h1>
-        <p className="mt-1 text-sm text-slate-300">
+        <p className="mt-1 text-sm text-indigo-100">
           Track the status of each visa application you're working toward.
         </p>
       </div>

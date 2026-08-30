@@ -32,7 +32,7 @@ export default async function PointsDashboardPage({ params }: PageProps) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Points Calculations</h1>
-          <p className="mt-1 text-sm text-slate-300">Your saved DHA points test results.</p>
+          <p className="mt-1 text-sm text-indigo-100">Your saved DHA points test results.</p>
         </div>
         <Button asChild>
           <Link href={`/${locale}/tools/points-calculator`} className="flex items-center gap-2">
@@ -44,10 +44,10 @@ export default async function PointsDashboardPage({ params }: PageProps) {
       {calcs.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
-            <Calculator className="h-10 w-10 text-slate-300" />
+            <Calculator className="h-10 w-10 text-indigo-100" />
             <div>
               <p className="font-semibold text-white">No saved calculations yet</p>
-              <p className="mt-1 text-sm text-slate-400">Run the points calculator and save your result to track it here.</p>
+              <p className="mt-1 text-sm text-indigo-200">Run the points calculator and save your result to track it here.</p>
             </div>
             <Button asChild variant="outline">
               <Link href={`/${locale}/tools/points-calculator`}>Calculate Now</Link>
@@ -71,20 +71,20 @@ export default async function PointsDashboardPage({ params }: PageProps) {
                         {calc.visaSubclass && (
                           <Badge variant="outline" className="mt-1 text-xs">Subclass {calc.visaSubclass}</Badge>
                         )}
-                        <p className="mt-1 text-xs text-slate-400">
+                        <p className="mt-1 text-xs text-indigo-200">
                           {calc.createdAt.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
                         </p>
                       </div>
                     </div>
 
                     {breakdown && (
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-300">
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-indigo-100">
                         {Object.entries(breakdown)
                           .filter(([, v]) => typeof v === "number" && v > 0)
                           .slice(0, 6)
                           .map(([k, v]) => (
                             <span key={k} className="whitespace-nowrap">
-                              <span className="font-medium capitalize text-slate-200">{k.replace(/([A-Z])/g, " $1").trim()}</span>
+                              <span className="font-medium capitalize text-white">{k.replace(/([A-Z])/g, " $1").trim()}</span>
                               {" "}+{String(v)}
                             </span>
                           ))}
@@ -92,7 +92,7 @@ export default async function PointsDashboardPage({ params }: PageProps) {
                     )}
 
                     <form action={async () => { "use server"; await deleteCalculation(calc.id); }}>
-                      <button type="submit" className="rounded-lg border border-slate-700 p-2 text-slate-400 transition-colors hover:border-rose-500/40 hover:text-rose-400" aria-label="Delete">
+                      <button type="submit" className="rounded-lg border border-indigo-700 p-2 text-indigo-200 transition-colors hover:border-rose-500/40 hover:text-rose-400" aria-label="Delete">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </form>

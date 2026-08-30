@@ -47,7 +47,7 @@ function FilterLink({
       className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
         active
           ? "border-indigo-600 bg-indigo-600 text-white"
-          : "border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800"
+          : "border-indigo-700 bg-[#3C3262] text-indigo-100 hover:bg-indigo-800"
       }`}
     >
       {children}
@@ -59,7 +59,7 @@ function StatCard({ label, value, tier }: { label: string; value: number; tier?:
   return (
     <div
       className={`rounded-xl border px-4 py-5 ${
-        tier ? tierBadgeClass(tier) : "border-slate-800/60 bg-slate-900 text-white"
+        tier ? tierBadgeClass(tier) : "border-indigo-800/50 bg-[#3C3262] text-white"
       }`}
     >
       <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
@@ -133,7 +133,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
             ← Back to agents
           </Link>
           <h1 className="mt-1 text-2xl font-bold">{agent.name ?? agent.email}</h1>
-          <p className="text-sm text-slate-300">Agent profile &amp; historical performance.</p>
+          <p className="text-sm text-indigo-100">Agent profile &amp; historical performance.</p>
         </div>
         {agent.approvalStatus === "PENDING" ? (
           <div className="flex items-center gap-3">
@@ -175,32 +175,32 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Name</span>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Name</span>
               <span className="text-sm font-medium text-white">{agent.name ?? "—"}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Email</span>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Email</span>
               <span className="text-sm font-medium text-white">{agent.email}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Agent ID</span>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Agent ID</span>
               <span className="text-sm font-medium break-all text-white">{agent.id}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Joined</span>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Joined</span>
               <span className="text-sm font-medium text-white">{agent.createdAt.toLocaleDateString(locale)}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Phone</span>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Phone</span>
               <span className="text-sm font-medium text-white">{agent.phone ?? "—"}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Company</span>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Company</span>
               <span className="text-sm font-medium text-white">{agent.companyName ?? "—"}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3 sm:col-span-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Address</span>
+            <div className="flex flex-col gap-0.5 rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3 sm:col-span-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Address</span>
               <span className="text-sm font-medium text-white">{agent.address ?? "—"}</span>
             </div>
           </div>
@@ -226,7 +226,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
           <CardTitle className="text-base">Assigned leads ({assignedLeads.length})</CardTitle>
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tier</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Tier</span>
               <FilterLink href={buildQuery({ tier: "" })} active={!activeTier}>
                 All
               </FilterLink>
@@ -237,7 +237,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
               ))}
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Status</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-200">Status</span>
               <FilterLink href={buildQuery({ status: "" })} active={!activeStatus}>
                 All
               </FilterLink>
@@ -251,7 +251,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
         </CardHeader>
         <CardContent>
           {assignedLeads.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-300">
+            <p className="py-6 text-center text-sm text-indigo-100">
               No leads {activeTier ? `in the ${activeTier} tier ` : ""}
               {activeStatus ? `with status ${activeStatus} ` : ""}assigned yet.
             </p>
@@ -259,7 +259,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800/60 text-left text-slate-400">
+                  <tr className="border-b border-indigo-800/50 text-left text-indigo-200">
                     <th className="py-2 pr-4 font-semibold">{sortHeader("name", "Name")}</th>
                     <th className="px-4 py-2 font-semibold">Email</th>
                     <th className="px-4 py-2 font-semibold">{sortHeader("tier", "Tier")}</th>
@@ -272,11 +272,11 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
                   {assignedLeads.map((lead) => {
                     const { firstName, lastName } = splitName(lead.fullName);
                     return (
-                      <tr key={lead.id} className="border-b border-slate-800/60 hover:bg-slate-800/40">
+                      <tr key={lead.id} className="border-b border-indigo-800/50 hover:bg-indigo-800/40">
                         <td className="py-2 pr-4 font-medium text-white">
                           {firstName || lastName ? `${firstName} ${lastName}`.trim() : "—"}
                         </td>
-                        <td className="px-4 py-2 text-slate-300">{lead.email}</td>
+                        <td className="px-4 py-2 text-indigo-100">{lead.email}</td>
                         <td className="px-4 py-2">
                           <span
                             className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold ${tierBadgeClass(
@@ -286,8 +286,8 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
                             {tierEmoji(lead.pointsTier)} {lead.pointsTier ?? "—"}
                           </span>
                         </td>
-                        <td className="px-4 py-2 text-slate-300">{lead.docStatus ?? "New"}</td>
-                        <td className="px-4 py-2 text-slate-300">{lead.createdAt.toLocaleDateString(locale)}</td>
+                        <td className="px-4 py-2 text-indigo-100">{lead.docStatus ?? "New"}</td>
+                        <td className="px-4 py-2 text-indigo-100">{lead.createdAt.toLocaleDateString(locale)}</td>
                         <td className="px-4 py-2 text-right">
                           <Link
                             href={`/${locale}/admin/crm/lead/${lead.id}`}
@@ -314,12 +314,12 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-300">No transactions yet.</p>
+            <p className="py-6 text-center text-sm text-indigo-100">No transactions yet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800/60 text-left text-slate-400">
+                  <tr className="border-b border-indigo-800/50 text-left text-indigo-200">
                     <th className="py-2 pr-4 font-semibold">Lead</th>
                     <th className="px-4 py-2 font-semibold">Total price</th>
                     <th className="px-4 py-2 font-semibold">Rate</th>
@@ -330,16 +330,16 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
                 </thead>
                 <tbody>
                   {transactions.map((tx) => (
-                    <tr key={tx.id} className="border-b border-slate-800/60 hover:bg-slate-800/40">
+                    <tr key={tx.id} className="border-b border-indigo-800/50 hover:bg-indigo-800/40">
                       <td className="py-2 pr-4 font-medium text-white">{tx.leadName}</td>
-                      <td className="px-4 py-2 text-slate-300">{formatUsd(tx.totalAmount)}</td>
-                      <td className="px-4 py-2 text-slate-300">
+                      <td className="px-4 py-2 text-indigo-100">{formatUsd(tx.totalAmount)}</td>
+                      <td className="px-4 py-2 text-indigo-100">
                         {tx.commissionRate !== null ? `${(tx.commissionRate * 100).toFixed(0)}%` : "—"}
                       </td>
                       <td className="px-4 py-2 font-semibold text-emerald-300">
                         {tx.commissionAmount !== null ? formatUsd(tx.commissionAmount) : "—"}
                       </td>
-                      <td className="px-4 py-2 text-slate-300">{tx.createdAt.toLocaleDateString(locale)}</td>
+                      <td className="px-4 py-2 text-indigo-100">{tx.createdAt.toLocaleDateString(locale)}</td>
                       <td className="px-4 py-2 text-right">
                         <Link
                           href={`/${locale}/admin/crm/lead/${tx.leadId}`}

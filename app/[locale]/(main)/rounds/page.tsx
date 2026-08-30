@@ -126,8 +126,8 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
         </div>
 
         {rounds.length === 0 ? (
-          <div className="rounded-xl border border-slate-800/60 bg-card px-6 py-16 text-center shadow-sm">
-            <p className="text-sm font-medium text-slate-300">
+          <div className="rounded-xl border border-indigo-800/50 bg-card px-6 py-16 text-center shadow-sm">
+            <p className="text-sm font-medium text-indigo-100">
               {t(translations, "rounds.empty", "No recent rounds found.")}
             </p>
           </div>
@@ -136,7 +136,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
             {rounds.map((round) => (
               <li
                 key={round.id}
-                className="flex items-start gap-4 rounded-xl border border-slate-800/60 bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                className="flex items-start gap-4 rounded-xl border border-indigo-800/50 bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400">
                   <Send className="h-5 w-5" />
@@ -154,12 +154,12 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
                         : t(translations, "rounds.offshore", "Offshore")}
                     </span>
                   </div>
-                  <p className="mt-2 flex items-center gap-1.5 text-sm text-slate-300">
+                  <p className="mt-2 flex items-center gap-1.5 text-sm text-indigo-100">
                     <MapPin className="h-3.5 w-3.5 shrink-0" />
                     {round.state}
                   </p>
                   {round.dateOfEffect && (
-                    <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                    <p className="mt-1 flex items-center gap-1.5 text-xs text-indigo-200">
                       <Calendar className="h-3.5 w-3.5" />
                       {t(translations, "rounds.dateOfEffectLabel", "Latest Submission Date")}: {formatDateOfEffect(round.dateOfEffect)}
                     </p>
@@ -168,7 +168,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
 
                 <div className="shrink-0 text-right">
                   <p className="text-2xl font-bold text-white">{round.points}</p>
-                  <p className="text-xs font-medium text-slate-400">
+                  <p className="text-xs font-medium text-indigo-200">
                     {t(translations, "rounds.cutoffLabel", "Cut-off")}
                   </p>
                 </div>
@@ -196,35 +196,35 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
                     : t(translations, "rounds.programYear", "{{year}} Program Year").replace("{{year}}", year)}
                 </h3>
 
-                <div className="overflow-hidden rounded-xl border border-slate-800/60 bg-card shadow-sm">
+                <div className="overflow-hidden rounded-xl border border-indigo-800/50 bg-card shadow-sm">
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[640px] text-sm">
                       <thead>
-                        <tr className="border-b border-slate-800/60 bg-slate-900/60 text-left">
-                          <th className="px-4 py-3 font-semibold text-slate-300">
+                        <tr className="border-b border-indigo-800/50 bg-[#3C3262]/60 text-left">
+                          <th className="px-4 py-3 font-semibold text-indigo-100">
                             {t(translations, "rounds.table.stream", "Stream")}
                           </th>
-                          <th className="px-4 py-3 font-semibold text-slate-300">
+                          <th className="px-4 py-3 font-semibold text-indigo-100">
                             {t(translations, "rounds.table.subclass", "Visa Subclass")}
                           </th>
-                          <th className="px-4 py-3 font-semibold text-slate-300">
+                          <th className="px-4 py-3 font-semibold text-indigo-100">
                             {t(translations, "rounds.table.month", "Month")}
                           </th>
-                          <th className="px-4 py-3 text-right font-semibold text-slate-300">
+                          <th className="px-4 py-3 text-right font-semibold text-indigo-100">
                             {t(translations, "rounds.table.invitationsIssued", "Invitations Issued")}
                           </th>
                         </tr>
                       </thead>
                       <tbody>
                         {rows.map((volume) => (
-                          <tr key={volume.id} className="border-b border-slate-800/40 last:border-0 hover:bg-slate-900/40">
-                            <td className="px-4 py-3 text-slate-300">{volume.stream}</td>
+                          <tr key={volume.id} className="border-b border-indigo-800/40 last:border-0 hover:bg-[#3C3262]/40">
+                            <td className="px-4 py-3 text-indigo-100">{volume.stream}</td>
                             <td className="px-4 py-3">
                               <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-xs font-medium text-indigo-300">
                                 {t(translations, `visas.subclass.${volume.subclass}`, `Subclass ${volume.subclass}`)}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-slate-300">{volume.month}</td>
+                            <td className="px-4 py-3 text-indigo-100">{volume.month}</td>
                             <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
                               {volume.count.toLocaleString(locale)}
                             </td>

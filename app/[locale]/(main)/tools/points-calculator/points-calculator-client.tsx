@@ -144,7 +144,7 @@ function scoreGradient(n: number): string {
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
-      className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${
+      className={`h-4 w-4 shrink-0 text-indigo-200 transition-transform duration-200 ${
         open ? "rotate-180" : ""
       }`}
       fill="none"
@@ -194,11 +194,11 @@ function SelectField({
       <div className="flex items-start gap-2">
         <label
           htmlFor={id}
-          className="flex-1 text-sm font-semibold leading-snug text-slate-300"
+          className="flex-1 text-sm font-semibold leading-snug text-indigo-100"
         >
           {label}
           {hint && (
-            <span className="ml-1.5 text-xs font-normal text-slate-400">{hint}</span>
+            <span className="ml-1.5 text-xs font-normal text-indigo-200">{hint}</span>
           )}
         </label>
         {tooltip && (
@@ -211,7 +211,7 @@ function SelectField({
             className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors ${
               tipOpen
                 ? "bg-blue-500 text-white"
-                : "bg-slate-800 text-slate-400 hover:bg-blue-500/20 hover:text-blue-300"
+                : "bg-indigo-800 text-indigo-200 hover:bg-blue-500/20 hover:text-blue-300"
             }`}
           >
             <Info className="h-2.5 w-2.5" />
@@ -226,7 +226,7 @@ function SelectField({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 pr-10 text-sm text-white shadow-sm transition focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full appearance-none rounded-xl border border-indigo-700 bg-[#3C3262] px-4 py-3 pr-10 text-sm text-white shadow-sm transition focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         >
           <option value="" disabled>
             {selectPlaceholder}
@@ -267,10 +267,10 @@ function YesNoField({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-start gap-2">
-        <span className="flex-1 text-sm font-semibold leading-snug text-slate-300">
+        <span className="flex-1 text-sm font-semibold leading-snug text-indigo-100">
           {label}
           {hint && (
-            <span className="ml-1.5 text-xs font-normal text-slate-400">{hint}</span>
+            <span className="ml-1.5 text-xs font-normal text-indigo-200">{hint}</span>
           )}
         </span>
         {tooltip && (
@@ -283,7 +283,7 @@ function YesNoField({
             className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors ${
               tipOpen
                 ? "bg-blue-500 text-white"
-                : "bg-slate-800 text-slate-400 hover:bg-blue-500/20 hover:text-blue-300"
+                : "bg-indigo-800 text-indigo-200 hover:bg-blue-500/20 hover:text-blue-300"
             }`}
           >
             <Info className="h-2.5 w-2.5" />
@@ -302,7 +302,7 @@ function YesNoField({
             className={`flex-1 rounded-xl border py-2.5 text-sm font-semibold transition ${
               value === v
                 ? "border-blue-500 bg-blue-500 text-white shadow-sm"
-                : "border-slate-700 bg-slate-900 text-slate-300 hover:border-blue-400 hover:bg-blue-500/10"
+                : "border-indigo-700 bg-[#3C3262] text-indigo-100 hover:border-blue-400 hover:bg-blue-500/10"
             }`}
           >
             {v ? yesLabel : noLabel}
@@ -324,11 +324,11 @@ function Section({
 }) {
   const [open, setOpen] = useState(true);
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-800/60 bg-card shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-indigo-800/50 bg-card shadow-sm">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-slate-800/40"
+        className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-indigo-800/40"
       >
         <div className="flex items-center gap-3">
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
@@ -339,7 +339,7 @@ function Section({
         <ChevronIcon open={open} />
       </button>
       {open && (
-        <div className="border-t border-slate-800/60 px-5 pb-6 pt-5">
+        <div className="border-t border-indigo-800/50 px-5 pb-6 pt-5">
           <div className="flex flex-col gap-5">{children}</div>
         </div>
       )}
@@ -359,7 +359,7 @@ function ScoreRow({
   return (
     <div className="flex items-start justify-between gap-2 text-xs">
       <div>
-        <span className="text-slate-400">{label}</span>
+        <span className="text-indigo-200">{label}</span>
         {note && (
           <span className="block text-[10px] font-semibold text-amber-400">{note}</span>
         )}
@@ -367,10 +367,10 @@ function ScoreRow({
       <span
         className={`shrink-0 font-bold tabular-nums ${
           pts === null
-            ? "text-slate-600"
+            ? "text-indigo-300"
             : pts > 0
               ? "text-blue-400"
-              : "text-slate-500"
+              : "text-indigo-300"
         }`}
       >
         {pts === null ? "–" : `+${pts}`}
@@ -480,7 +480,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                   : t("pc.header.title")}
               </span>
             </h1>
-            <p className="mx-auto mt-3 max-w-xl text-base text-slate-300">
+            <p className="mx-auto mt-3 max-w-xl text-base text-indigo-100">
               {t("pc.header.subtitle")}
             </p>
           </div>
@@ -507,7 +507,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                     className={`flex-1 whitespace-normal rounded-xl border px-3 py-3 text-center text-sm font-semibold leading-snug transition ${
                       form.subclass === value
                         ? "border-blue-500 bg-blue-500 text-white shadow-sm"
-                        : "border-slate-700 bg-slate-900 text-slate-300 hover:border-blue-400 hover:bg-blue-500/10"
+                        : "border-indigo-700 bg-[#3C3262] text-indigo-100 hover:border-blue-400 hover:bg-blue-500/10"
                     }`}
                   >
                     <span className="font-extrabold">{value}</span>
@@ -691,28 +691,28 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
           <div className="flex flex-col gap-5 lg:col-span-2 lg:sticky lg:top-28 lg:self-start">
 
             {/* Score card */}
-            <div className="rounded-xl border border-slate-800/60 bg-card p-6 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            <div className="rounded-xl border border-indigo-800/50 bg-card p-6 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-200">
                 {t("pc.summary.title")}
               </p>
 
               <div
                 className={`mt-1 bg-gradient-to-br ${
-                  hasAny ? scoreGradient(calc.total) : "from-slate-600 to-slate-500"
+                  hasAny ? scoreGradient(calc.total) : "from-indigo-700 to-indigo-500"
                 } inline-block bg-clip-text text-[5rem] font-black leading-none text-transparent`}
               >
                 {hasAny ? calc.total : "–"}
               </div>
 
               {!hasAny && (
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 text-xs text-indigo-200">
                   {t("pc.summary.hint")}
                 </p>
               )}
 
               {/* Breakdown */}
-              <div className="mt-4 rounded-lg bg-slate-900/60 px-4 py-4">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <div className="mt-4 rounded-lg bg-[#3C3262]/60 px-4 py-4">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-indigo-200">
                   {t("pc.summary.breakdown")}
                 </p>
                 <div className="flex flex-col gap-2.5">
@@ -765,8 +765,8 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                     />
                   )}
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-slate-800/60 pt-3">
-                  <span className="text-xs font-bold text-slate-300">{t("pc.summary.total")}</span>
+                <div className="mt-3 flex items-center justify-between border-t border-indigo-800/50 pt-3">
+                  <span className="text-xs font-bold text-indigo-100">{t("pc.summary.total")}</span>
                   <span className="text-sm font-black text-white">
                     {hasAny ? `${calc.total} ${t("pc.summary.pts")}` : "–"}
                   </span>
@@ -840,8 +840,8 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
             )}
 
             {/* Premium Marketing Hook */}
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-[1px] shadow-lg">
-              <div className="relative rounded-[11px] bg-slate-900 p-6 text-center">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#3C3262] via-indigo-950 to-[#3C3262] p-[1px] shadow-lg">
+              <div className="relative rounded-[11px] bg-[#3C3262] p-6 text-center">
                 <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-indigo-500/20 blur-[40px]" />
                 <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-blue-500/20 blur-[40px]" />
 
@@ -863,7 +863,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
             </div>
 
             {/* Trust row */}
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-indigo-200">
               {([t("pc.trust.dha"), t("pc.trust.free"), t("pc.trust.instant")] as string[]).map((label) => (
                 <span key={label} className="flex items-center gap-1">
                   <svg className="h-3.5 w-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">

@@ -21,7 +21,7 @@ export function AgentNav({ locale, active }: { locale: string; active: (typeof L
           className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
             active === link.href
               ? "bg-indigo-500/10 text-indigo-300"
-              : "text-slate-300 hover:bg-slate-800 hover:text-white"
+              : "text-indigo-100 hover:bg-indigo-800 hover:text-white"
           }`}
         >
           {link.label}

@@ -23,7 +23,7 @@ export function tierBadgeClass(value?: string | null): string {
     case "Cold":
       return "border-sky-500/30 bg-sky-500/10 text-sky-300";
     default:
-      return "border-slate-700 bg-slate-800/60 text-slate-300";
+      return "border-indigo-700 bg-indigo-800/60 text-indigo-100";
   }
 }
 

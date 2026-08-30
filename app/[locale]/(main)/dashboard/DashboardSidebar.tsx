@@ -72,7 +72,7 @@ export function DashboardSidebar({ locale }: { locale: string }) {
               active
                 ? "bg-indigo-500/10 text-indigo-300"
                 : dark
-                  ? "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  ? "text-indigo-100 hover:bg-indigo-800 hover:text-white"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
@@ -89,15 +89,15 @@ export function DashboardSidebar({ locale }: { locale: string }) {
       {/* Desktop sidebar */}
       <aside className="hidden w-56 shrink-0 md:block">
         <div className="sticky top-28 flex flex-col gap-6 pr-4">
-          <p className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <p className="px-3 text-xs font-semibold uppercase tracking-wider text-indigo-200">
             My Dashboard
           </p>
           <NavLinks dark />
-          <div className="mt-auto px-3 pt-4 border-t border-slate-800/60">
+          <div className="mt-auto px-3 pt-4 border-t border-indigo-800/50">
             <button
               type="button"
               onClick={() => signOut({ callbackUrl: `/${locale}` })}
-              className="flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-rose-500 transition-colors"
+              className="flex items-center gap-2 text-xs font-medium text-indigo-200 hover:text-rose-500 transition-colors"
             >
               <LogOut className="h-3.5 w-3.5" />
               Sign out

@@ -34,7 +34,7 @@ export default async function PricingPage({ params }: PageProps) {
           <h1 className="text-3xl font-semibold text-white sm:text-4xl">
             {t(translations, "pricing.title", "Premium Credit Packages")}
           </h1>
-          <p className="mt-3 text-sm text-slate-300 sm:text-base">
+          <p className="mt-3 text-sm text-indigo-100 sm:text-base">
             {t(translations, "pricing.subtitle", "Keep using the LogiVisa AI Assistant with a credit package.")}
           </p>
         </header>

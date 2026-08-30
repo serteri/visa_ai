@@ -63,7 +63,7 @@ export default async function OccupationPointsCalculatorPage({ params }: PagePro
             {occupation.title}
           </span>
         </h1>
-        <p className="mx-auto mt-3 max-w-xl text-base text-slate-300">
+        <p className="mx-auto mt-3 max-w-xl text-base text-indigo-100">
           Check your PR readiness as a <strong>{occupation.title} ({occupation.anzsco})</strong> using the latest 2026 DHA rules.
         </p>
       </div>

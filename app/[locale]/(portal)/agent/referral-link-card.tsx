@@ -40,7 +40,7 @@ export function ReferralLinkCard({ agentId }: { agentId: string }) {
           Leads who fill out the assessment via this link are assigned to you automatically.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <code className="flex-1 min-w-0 truncate rounded-md border border-indigo-500/30 bg-slate-900 px-3 py-2 text-sm text-slate-300">
+          <code className="flex-1 min-w-0 truncate rounded-md border border-indigo-500/30 bg-[#3C3262] px-3 py-2 text-sm text-indigo-100">
             {link || "…"}
           </code>
           <Button type="button" size="sm" onClick={handleCopy} disabled={!link} className="gap-1.5">

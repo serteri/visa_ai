@@ -295,16 +295,16 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
   return (
     <main className="min-h-screen bg-background pb-16">
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="rounded-2xl border border-slate-800/60 bg-card p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-indigo-800/50 bg-card p-6 shadow-sm sm:p-8">
           <span className="inline-flex rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-300">
             {copy.badge}
           </span>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">{copy.title}</h1>
-          <p className="mt-3 text-base text-slate-300">{copy.subtitle}</p>
+          <p className="mt-3 text-base text-indigo-100">{copy.subtitle}</p>
 
-          <div className="mt-6 overflow-x-auto rounded-xl border border-slate-800/60">
+          <div className="mt-6 overflow-x-auto rounded-xl border border-indigo-800/50">
             <table className="min-w-full text-sm">
-              <thead className="bg-slate-900/60 text-slate-300">
+              <thead className="bg-[#3C3262]/60 text-indigo-100">
                 <tr>
                   <th className="px-4 py-3 text-left font-semibold">{copy.feature}</th>
                   <th className="px-4 py-3 text-left font-semibold">189</th>
@@ -314,11 +314,11 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
               </thead>
               <tbody>
                 {rows.map((row) => (
-                  <tr key={row.label} className="border-t border-slate-800/60">
+                  <tr key={row.label} className="border-t border-indigo-800/50">
                     <td className="px-4 py-3 font-medium text-white">{row.label}</td>
-                    <td className="px-4 py-3 text-slate-300">{row.values[0]}</td>
-                    <td className="px-4 py-3 text-slate-300">{row.values[1]}</td>
-                    <td className="px-4 py-3 text-slate-300">{row.values[2]}</td>
+                    <td className="px-4 py-3 text-indigo-100">{row.values[0]}</td>
+                    <td className="px-4 py-3 text-indigo-100">{row.values[1]}</td>
+                    <td className="px-4 py-3 text-indigo-100">{row.values[2]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -328,9 +328,9 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
       </section>
 
       <section className="mx-auto mt-8 max-w-6xl px-4 sm:px-6">
-        <div className="rounded-2xl border border-slate-800/60 bg-card p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-indigo-800/50 bg-card p-6 shadow-sm sm:p-8">
           <h2 className="text-2xl font-bold text-white">{copy.quizTitle}</h2>
-          <p className="mt-2 text-sm text-slate-300">{copy.quizSubtitle}</p>
+          <p className="mt-2 text-sm text-indigo-100">{copy.quizSubtitle}</p>
 
           <div className="mt-6 space-y-6">
             {questions.map((q, qIdx) => (
@@ -353,7 +353,7 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
                         className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
                           selected
                             ? "border-indigo-500 bg-indigo-500/10 text-indigo-300"
-                            : "border-slate-800/60 bg-card text-slate-300 hover:border-indigo-500/40"
+                            : "border-indigo-800/50 bg-card text-indigo-100 hover:border-indigo-500/40"
                         }`}
                       >
                         {opt.label}
@@ -375,15 +375,15 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
 
           <div className="mt-8 rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-4">
             <h3 className="text-base font-bold text-white">{copy.ctaTitle}</h3>
-            <p className="mt-1 text-sm text-slate-300">{copy.ctaText}</p>
+            <p className="mt-1 text-sm text-indigo-100">{copy.ctaText}</p>
             <Button asChild className="mt-4 bg-indigo-600 hover:bg-indigo-700">
               <Link href={`/${locale}/tools/points-calculator`}>{copy.ctaButton}</Link>
             </Button>
           </div>
 
-          <div className="mt-4 rounded-xl border border-slate-800/60 bg-slate-900/60 p-4">
+          <div className="mt-4 rounded-xl border border-indigo-800/50 bg-[#3C3262]/60 p-4">
             <h3 className="text-base font-bold text-white">{copy.toolCtaTitle}</h3>
-            <p className="mt-1 text-sm text-slate-300">{copy.toolCtaText}</p>
+            <p className="mt-1 text-sm text-indigo-100">{copy.toolCtaText}</p>
             <Button asChild variant="outline" className="mt-4">
               <Link href={`/${locale}/full-check`}>{copy.toolCtaButton}</Link>
             </Button>

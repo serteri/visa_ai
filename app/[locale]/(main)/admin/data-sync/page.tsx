@@ -43,7 +43,7 @@ async function getImportLogMap(): Promise<Record<string, ImportLogEntry>> {
 function statusBadgeClass(status: string | undefined): string {
   if (status === "success") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
   if (status === "failed") return "border-rose-500/30 bg-rose-500/10 text-rose-300";
-  return "border-slate-700 bg-slate-800 text-slate-300";
+  return "border-indigo-700 bg-indigo-800 text-indigo-100";
 }
 
 export default async function DataSyncPage({ params }: PageProps) {
@@ -83,14 +83,14 @@ export default async function DataSyncPage({ params }: PageProps) {
               {SOURCE_FORMATS.map((format) => {
                 const log = importLog[format.id];
                 return (
-                  <div key={format.id} className="rounded-lg border border-slate-800/60 bg-slate-900/60 p-3">
+                  <div key={format.id} className="rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 p-3">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-medium text-white">{format.label}</p>
                       <Badge className={statusBadgeClass(log?.status)} variant="outline">
                         {log?.status ?? "Never imported"}
                       </Badge>
                     </div>
-                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-300">
+                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-indigo-100">
                       <Clock className="h-3 w-3 shrink-0" />
                       {log?.lastRunAt
                         ? log.lastRunAt.toLocaleString(locale, {
@@ -102,7 +102,7 @@ export default async function DataSyncPage({ params }: PageProps) {
                           })
                         : "Never"}
                     </div>
-                    {log?.message && <p className="mt-1 truncate text-xs text-slate-400">{log.message}</p>}
+                    {log?.message && <p className="mt-1 truncate text-xs text-indigo-200">{log.message}</p>}
                   </div>
                 );
               })}
@@ -132,7 +132,7 @@ export default async function DataSyncPage({ params }: PageProps) {
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-full border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition hover:border-indigo-500/50 hover:text-indigo-300"
+                    className="flex items-center justify-center gap-1.5 rounded-full border border-indigo-700 bg-[#3C3262] px-3 py-1.5 text-xs font-semibold text-indigo-100 shadow-sm transition hover:border-indigo-500/50 hover:text-indigo-300"
                   >
                     Open Official Page &amp; Check
                   </a>
@@ -164,7 +164,7 @@ export default async function DataSyncPage({ params }: PageProps) {
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-full border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition hover:border-indigo-500/50 hover:text-indigo-300"
+                    className="flex items-center justify-center gap-1.5 rounded-full border border-indigo-700 bg-[#3C3262] px-3 py-1.5 text-xs font-semibold text-indigo-100 shadow-sm transition hover:border-indigo-500/50 hover:text-indigo-300"
                   >
                     Open Official Page &amp; Check
                   </a>

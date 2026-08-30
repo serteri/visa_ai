@@ -54,7 +54,7 @@ const COLOR_MAP: Record<string, string> = {
   green: "bg-green-500/10 text-green-300 border-green-500/30",
   amber: "bg-amber-500/10 text-amber-300 border-amber-500/30",
   sky: "bg-sky-500/10 text-sky-300 border-sky-500/30",
-  slate: "bg-slate-500/10 text-slate-300 border-slate-500/30",
+  slate: "bg-indigo-500/10 text-indigo-100 border-indigo-500/30",
   yellow: "bg-yellow-500/10 text-yellow-300 border-yellow-500/30",
   purple: "bg-purple-500/10 text-purple-300 border-purple-500/30",
   rose: "bg-rose-500/10 text-rose-300 border-rose-500/30",
@@ -66,7 +66,7 @@ const DOT_MAP: Record<string, string> = {
   violet: "bg-violet-500", orange: "bg-orange-500", emerald: "bg-emerald-500",
   teal: "bg-teal-500", cyan: "bg-cyan-500", red: "bg-red-500",
   green: "bg-green-500", amber: "bg-amber-500", sky: "bg-sky-500",
-  slate: "bg-slate-500", yellow: "bg-yellow-500", purple: "bg-purple-500",
+  slate: "bg-indigo-500", yellow: "bg-yellow-500", purple: "bg-purple-500",
   rose: "bg-rose-500", lime: "bg-lime-500",
 };
 
@@ -81,7 +81,7 @@ const FAQ_ITEMS = [
 function FaqItem({ q, a, t }: { q: string; a: string; t: (key: string) => string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-slate-800/60 last:border-0">
+    <div className="border-b border-indigo-800/50 last:border-0">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -89,12 +89,12 @@ function FaqItem({ q, a, t }: { q: string; a: string; t: (key: string) => string
       >
         <span className="text-sm font-semibold text-white">{t(q)}</span>
         {open ? (
-          <ChevronUp className="h-4 w-4 shrink-0 text-slate-400" />
+          <ChevronUp className="h-4 w-4 shrink-0 text-indigo-200" />
         ) : (
-          <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-indigo-200" />
         )}
       </button>
-      {open && <p className="pb-4 text-sm leading-relaxed text-slate-300">{t(a)}</p>}
+      {open && <p className="pb-4 text-sm leading-relaxed text-indigo-100">{t(a)}</p>}
     </div>
   );
 }
@@ -173,7 +173,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-slate-800/60 bg-slate-950">
+      <section className="relative overflow-hidden border-b border-indigo-800/50 bg-[#1e1b4b]">
         <div className="absolute inset-x-0 top-0 h-1 bg-indigo-500" />
         <div className="mx-auto flex min-h-[340px] max-w-5xl flex-col justify-center px-4 pb-16 sm:px-6">
           <div className="max-w-2xl">
@@ -183,7 +183,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
               {t("sa.title", "Which assessing body do you need?")}
             </h1>
-            <p className="mt-4 text-lg text-slate-300">
+            <p className="mt-4 text-lg text-indigo-100">
               {t("sa.subtitle", "Enter your occupation or ANZSCO code to instantly find the right assessing authority for your Australian skilled migration application.")}
             </p>
           </div>
@@ -193,7 +193,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
       {/* Search */}
       <div className="-mt-10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <div className="rounded-2xl border border-slate-800/60 bg-card p-4 shadow-[0_24px_70px_-40px_rgba(0,0,0,0.6)] sm:p-6">
+          <div className="rounded-2xl border border-indigo-800/50 bg-card p-4 shadow-[0_24px_70px_-40px_rgba(0,0,0,0.6)] sm:p-6">
             <div className="relative">
               <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-indigo-400" />
               <input
@@ -207,13 +207,13 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                 }}
                 onFocus={() => query && setDropdownOpen(true)}
                 placeholder={t("sa.searchPlaceholder", "Enter occupation title or ANZSCO code…")}
-                className="h-16 w-full rounded-xl border border-slate-700 bg-slate-900 pl-14 pr-5 text-lg text-white outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
+                className="h-16 w-full rounded-xl border border-indigo-700 bg-[#3C3262] pl-14 pr-5 text-lg text-white outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
               />
               {/* Dropdown */}
               {dropdownOpen && suggestions.length > 0 && (
                 <div
                   ref={dropdownRef}
-                  className="absolute left-0 top-full z-50 mt-2 w-full rounded-xl border border-slate-800/60 bg-card shadow-xl"
+                  className="absolute left-0 top-full z-50 mt-2 w-full rounded-xl border border-indigo-800/50 bg-card shadow-xl"
                 >
                   {suggestions.map((occ) => {
                     const bodyKey = occupationMapping[occ.code];
@@ -256,11 +256,11 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
           <div className="space-y-4">
             {selectedBody ? (
               <>
-                <div className="rounded-2xl border border-slate-800/60 bg-card p-6 shadow-sm">
+                <div className="rounded-2xl border border-indigo-800/50 bg-card p-6 shadow-sm">
                   {/* Occupation header */}
                   <div className="flex flex-wrap items-start gap-3">
                     <div className="flex-1">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">
                         ANZSCO {selected.code}
                       </p>
                       <h2 className="mt-1 text-2xl font-bold text-white">{getLocalizedTitle(selected, locale)}</h2>
@@ -275,13 +275,13 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                   </div>
 
                   {selected.duties && selected.duties.length > 0 && (
-                    <div className="mt-4 rounded-xl border border-slate-800/60 bg-slate-900/60 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    <div className="mt-4 rounded-xl border border-indigo-800/50 bg-[#3C3262]/60 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">
                         {t("sa.duties", "Key Duties")}
                       </p>
                       <ul className="mt-2 space-y-2">
                         {selected.duties.map((duty, idx) => (
-                          <li key={idx} className="flex gap-2.5 text-sm leading-relaxed text-slate-300">
+                          <li key={idx} className="flex gap-2.5 text-sm leading-relaxed text-indigo-100">
                             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
                             <span>{duty}</span>
                           </li>
@@ -290,36 +290,36 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                     </div>
                   )}
 
-                  <div className="my-5 h-px bg-slate-800/60" />
+                  <div className="my-5 h-px bg-indigo-800/60" />
 
                   {/* Assessing body */}
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">
                         {t("sa.assessingBody", "Assessing Body")}
                       </p>
                       <p className="mt-1 text-2xl font-bold text-white">
                         {selectedBody.name}
                       </p>
-                      <p className="mt-1 text-sm text-slate-300">{selectedBody.description}</p>
+                      <p className="mt-1 text-sm text-indigo-100">{selectedBody.description}</p>
                     </div>
                   </div>
 
                   {/* Fee + time */}
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <div className="flex items-center gap-3 rounded-xl border border-slate-800/60 bg-slate-900/60 px-4 py-3">
+                    <div className="flex items-center gap-3 rounded-xl border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3">
                       <DollarSign className="h-5 w-5 shrink-0 text-emerald-400" />
                       <div>
-                        <p className="text-xs font-medium text-slate-400">{t("sa.assessmentFee", "Assessment Fee")}</p>
+                        <p className="text-xs font-medium text-indigo-200">{t("sa.assessmentFee", "Assessment Fee")}</p>
                         <p className="mt-0.5 text-base font-bold text-white">
                           {selectedBody.fee}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 rounded-xl border border-slate-800/60 bg-slate-900/60 px-4 py-3">
+                    <div className="flex items-center gap-3 rounded-xl border border-indigo-800/50 bg-[#3C3262]/60 px-4 py-3">
                       <Clock className="h-5 w-5 shrink-0 text-indigo-400" />
                       <div>
-                        <p className="text-xs font-medium text-slate-400">{t("sa.processingTime", "Processing Time")}</p>
+                        <p className="text-xs font-medium text-indigo-200">{t("sa.processingTime", "Processing Time")}</p>
                         <p className="mt-0.5 text-base font-bold text-white">
                           {selectedBody.processingTime}
                         </p>
@@ -348,7 +348,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                     </a>
                     <Link
                       href={`/${locale}/full-check`}
-                      className="flex items-center gap-2 rounded-xl border border-slate-700 bg-card px-5 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-slate-800/40"
+                      className="flex items-center gap-2 rounded-xl border border-indigo-700 bg-card px-5 py-2.5 text-sm font-semibold text-indigo-100 transition hover:bg-indigo-800/40"
                     >
                       {t("sa.getFreeConsultation", "Get free consultation")}
                       <ArrowRight className="h-3.5 w-3.5" />
@@ -357,11 +357,11 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                 </div>
 
                 {/* ANZSCO finder nudge */}
-                <div className="rounded-xl border border-slate-800/60 bg-card px-5 py-4 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-300">
+                <div className="rounded-xl border border-indigo-800/50 bg-card px-5 py-4 shadow-sm">
+                  <p className="text-sm font-semibold text-indigo-100">
                     {t("sa.anzscoNudgeTitle", "Not sure about your ANZSCO code?")}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-400">
+                  <p className="mt-0.5 text-xs text-indigo-200">
                     {t("sa.anzscoNudgeText", "Use our ANZSCO Finder tool to identify your correct occupation code.")}
                   </p>
                   <Link
@@ -420,22 +420,22 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                   className={`rounded-xl border p-4 text-left transition ${
                     isActive
                       ? "border-indigo-500/40 bg-indigo-500/10 shadow-md"
-                      : "border-slate-800/60 bg-card hover:border-indigo-500/30 hover:bg-slate-800/40"
+                      : "border-indigo-800/50 bg-card hover:border-indigo-500/30 hover:bg-indigo-800/40"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <span
                       className={`mt-0.5 h-3 w-3 shrink-0 rounded-full ${
-                        DOT_MAP[body.color] ?? "bg-slate-400"
+                        DOT_MAP[body.color] ?? "bg-indigo-400"
                       }`}
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-bold text-white">{body.shortName}</p>
-                      <p className="mt-0.5 truncate text-xs text-slate-400">{body.name}</p>
+                      <p className="mt-0.5 truncate text-xs text-indigo-200">{body.name}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-2">
-                    <span className="text-xs text-slate-400">{count} {t("sa.occupations", "occupations")}</span>
+                    <span className="text-xs text-indigo-200">{count} {t("sa.occupations", "occupations")}</span>
                     <a
                       href={body.website}
                       target="_blank"
@@ -453,8 +453,8 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
 
           {/* Filtered occupations */}
           {bodyFilter && filteredOccupations.length > 0 && (
-            <div className="mt-4 rounded-xl border border-slate-800/60 bg-card p-4">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <div className="mt-4 rounded-xl border border-indigo-800/50 bg-card p-4">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-indigo-200">
                 {t("sa.occupationsAssessedBy", "Occupations assessed by")} {assessingBodies[bodyFilter]?.shortName}
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -466,10 +466,10 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                       selectOccupation(occ);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
-                    className="flex items-center gap-3 rounded-lg border border-slate-800/60 px-3 py-2 text-left transition hover:border-indigo-500/30 hover:bg-indigo-500/10"
+                    className="flex items-center gap-3 rounded-lg border border-indigo-800/50 px-3 py-2 text-left transition hover:border-indigo-500/30 hover:bg-indigo-500/10"
                   >
                     <span className="text-xs font-bold text-indigo-400">{occ.code}</span>
-                    <span className="text-sm text-slate-300">{occ.title}</span>
+                    <span className="text-sm text-indigo-100">{occ.title}</span>
                   </button>
                 ))}
               </div>
@@ -478,7 +478,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
         </div>
 
         {/* FAQ */}
-        <div className="rounded-2xl border border-slate-800/60 bg-card p-6 shadow-sm">
+        <div className="rounded-2xl border border-indigo-800/50 bg-card p-6 shadow-sm">
           <div className="mb-4 flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-indigo-400" />
             <h2 className="text-lg font-bold text-white">{t("sa.faqTitle", "Frequently Asked Questions")}</h2>
@@ -491,7 +491,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
         {/* Bottom CTA */}
         <div className="rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950/30 to-violet-950/30 p-6">
           <h3 className="text-base font-bold text-white">{t("sa.bottomCtaTitle", "Need a clear visa strategy?")}</h3>
-          <p className="mt-1 text-sm text-slate-300">
+          <p className="mt-1 text-sm text-indigo-100">
             {t("sa.bottomCtaText", "Stop guessing. Get your personalized 20-page AI-powered PR report covering your exact points, state demand, and next steps.")}
           </p>
           <Link
