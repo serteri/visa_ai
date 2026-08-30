@@ -268,14 +268,14 @@ export function AssistantClient({
                 <div key={`${message.role}-${idx}`} className={`flex w-full ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                   
                   {message.role === "assistant" && (
-                    <div className="mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md">
+                    <div className="mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#53917E] text-white shadow-md">
                       <Bot className="size-5" />
                     </div>
                   )}
 
                   <div className={`group relative max-w-[85%] sm:max-w-[75%] rounded-xl px-4 py-3 shadow-sm border border-slate-100 transition-all ${
-                    message.role === "user" 
-                      ? "bg-indigo-600 text-white rounded-br-sm" 
+                    message.role === "user"
+                      ? "bg-[#53917E] text-white rounded-br-sm"
                       : "bg-white border border-slate-100 dark:bg-zinc-900 dark:border-zinc-800 text-slate-800 dark:text-slate-200 rounded-bl-sm"
                   }`}>
                     <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{message.text}</p>
@@ -330,7 +330,7 @@ export function AssistantClient({
                               });
 
                               return (
-                                <Button key={action.href + action.label} asChild size="sm" variant="secondary" className="rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50">
+                                <Button key={action.href + action.label} asChild size="sm" variant="secondary" className="rounded-full bg-[#53917E]/10 text-[#53917E] hover:bg-[#53917E]/20 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50">
                                   <Link href={href}>{action.label}</Link>
                                 </Button>
                               );
@@ -371,7 +371,7 @@ export function AssistantClient({
                       type="button"
                       disabled={sending}
                       onClick={() => void submitMessage(prompt)}
-                      className="rounded-full border border-gray-200 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm backdrop-blur-md transition-all hover:border-indigo-300 hover:bg-white hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-slate-300"
+                      className="rounded-full border border-gray-200 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm backdrop-blur-md transition-all hover:border-[#53917E]/40 hover:bg-white hover:text-[#53917E] dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-slate-300"
                     >
                       {prompt}
                     </button>
@@ -522,7 +522,7 @@ export function AssistantClient({
                     </div>
                   </div>
 
-                  <Button type="submit" size="lg" disabled={previewSending} className="w-full rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">
+                  <Button type="submit" size="lg" disabled={previewSending} className="w-full rounded-xl bg-[#53917E] text-white hover:opacity-90 shadow-lg shadow-[#53917E]/30">
                     {previewSending
                       ? tx("生成中...", "Oluşturuluyor...", "Generating...")
                       : tx("生成预览", "Ön inceleme oluştur", "Generate preview review")}
@@ -555,7 +555,7 @@ export function AssistantClient({
                   <p className="mb-6 text-indigo-700 dark:text-indigo-400 max-w-2xl mx-auto">
                     {tx("生成完整准备度报告以获得结构化分析。", "Yapısal analiz için tam hazırlık raporu oluşturun.", "Generate a full readiness report for a structured analysis.")}
                   </p>
-                  <Button asChild size="lg" className="rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700">
+                  <Button asChild size="lg" className="rounded-xl bg-[#53917E] text-white shadow-lg shadow-[#53917E]/30 hover:opacity-90">
                     <Link href={fullCheckHref}>
                       {tx("前往完整报告", "Tam rapora devam et", "Continue to full report")}
                     </Link>

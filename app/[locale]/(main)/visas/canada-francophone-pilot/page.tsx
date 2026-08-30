@@ -247,7 +247,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
           >
             {ui.back}
           </Link>
-          <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-100">FCIP</Badge>
+          <Badge className="bg-[#53917E]/10 text-[#53917E] dark:bg-indigo-500/15 dark:text-indigo-100">FCIP</Badge>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
@@ -256,7 +256,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100">Canada</Badge>
-                  <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-100">{ui.pilotBadge}</Badge>
+                  <Badge className="bg-[#53917E]/10 text-[#53917E] dark:bg-indigo-500/15 dark:text-indigo-100">{ui.pilotBadge}</Badge>
                 </div>
                 <div className="space-y-3">
                   <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
@@ -294,7 +294,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
 
               <div className="flex flex-wrap gap-3">
                 <Link href={`/${locale}/full-check`}>
-                  <Button className="bg-indigo-600 text-white hover:bg-indigo-700">
+                  <Button className="bg-[#53917E] text-white hover:bg-[#53917E]/90">
                     <span>{ui.check}</span>
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -316,19 +316,19 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.pathwayGroup}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">{ui.pathwayGroup}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{pathwayGroupText}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.lastVerified}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">{ui.lastVerified}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{data.lastVerified}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.languageRequirement}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">{ui.languageRequirement}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{localizedField(fcip as unknown as Record<string, unknown>, "languageRequirement")}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.optionalWorkPermit}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">{ui.optionalWorkPermit}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{fcip?.optionalWorkPermit ? ui.yes : ui.no}</p>
               </div>
             </CardContent>
@@ -350,7 +350,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <ListChecks className="h-5 w-5 text-indigo-600" />
+                <ListChecks className="h-5 w-5 text-[#53917E]" />
                 {ui.eligibilityAndProcess}
               </CardTitle>
             </CardHeader>
@@ -360,7 +360,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                   {eligibilityItems.map((item) => (
                     <li key={item} className="flex gap-2">
-                      <span className="text-indigo-600">•</span>
+                      <span className="text-[#53917E]">•</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -371,7 +371,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
                 <ol className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                   {processSteps.map((step) => (
                     <li key={step.step} className="flex gap-2">
-                      <span className="font-semibold text-indigo-700">{step.step}.</span>
+                      <span className="font-semibold text-[#53917E]">{step.step}.</span>
                       <span>
                         <span className="font-medium">{step.name}</span>
                         {step.description ? ` - ${step.description}` : ""}
@@ -386,7 +386,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <MapPinned className="h-5 w-5 text-indigo-600" />
+                <MapPinned className="h-5 w-5 text-[#53917E]" />
                 {ui.communitiesOverlap}
               </CardTitle>
             </CardHeader>
@@ -417,7 +417,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <WalletCards className="h-5 w-5 text-indigo-600" />
+                <WalletCards className="h-5 w-5 text-[#53917E]" />
                 {ui.feesAndForms}
               </CardTitle>
             </CardHeader>
@@ -447,7 +447,7 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <Languages className="h-5 w-5 text-indigo-600" />
+                <Languages className="h-5 w-5 text-[#53917E]" />
                 {ui.supportingDocs}
               </CardTitle>
             </CardHeader>

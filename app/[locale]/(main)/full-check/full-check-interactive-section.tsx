@@ -312,7 +312,7 @@ export function FullCheckInteractiveSection({
     <>
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-12 items-start">
         {/* Form Container */}
-        <div className="lg:col-span-7 bg-black border border-gray-800 rounded-2xl p-6 sm:p-8">
+        <div className="lg:col-span-7 bg-white border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8">
           {formHeader}
           <FullCheckWaitlistForm
             locale={locale}
@@ -325,22 +325,22 @@ export function FullCheckInteractiveSection({
 
         {/* Sidebar: What you'll get */}
         <div className="space-y-6 lg:col-span-5 lg:sticky lg:top-24">
-          <div className="rounded-3xl border border-gray-800 bg-black p-6">
-            <h3 className="text-lg font-bold text-white">
+          <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+            <h3 className="text-lg font-bold text-slate-900">
               {tx("What you'll get", "Ne alacaksınız?", "你将获得")}
             </h3>
             <ul className="mt-5 space-y-4">
-              <li className="flex items-center gap-3 rounded-lg border border-gray-800 bg-black p-3">
+              <li className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
                 <span className="text-xl">✨</span>
-                <span className="text-sm font-medium text-white">{tx("Points Calculation", "Puan Hesaplaması", "积分计算")}</span>
+                <span className="text-sm font-medium text-slate-900">{tx("Points Calculation", "Puan Hesaplaması", "积分计算")}</span>
               </li>
-              <li className="flex items-center gap-3 rounded-lg border border-gray-800 bg-black p-3">
+              <li className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
                 <span className="text-xl">🗺️</span>
-                <span className="text-sm font-medium text-white">{tx("Actionable Roadmap", "Eylem Planı ve Yol Haritası", "可执行的路线图")}</span>
+                <span className="text-sm font-medium text-slate-900">{tx("Actionable Roadmap", "Eylem Planı ve Yol Haritası", "可执行的路线图")}</span>
               </li>
-              <li className="flex items-center gap-3 rounded-lg border border-gray-800 bg-black p-3">
+              <li className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
                 <span className="text-xl">🔍</span>
-                <span className="text-sm font-medium text-white">{tx("Hidden Risk Analysis", "Gizli Risk Analizi", "潜在风险分析")}</span>
+                <span className="text-sm font-medium text-slate-900">{tx("Hidden Risk Analysis", "Gizli Risk Analizi", "潜在风险分析")}</span>
               </li>
             </ul>
           </div>
@@ -352,7 +352,7 @@ export function FullCheckInteractiveSection({
             <ul className="space-y-2 text-xs text-muted-foreground">
               {detailedCoverageItems.map((item) => (
                 <li key={item} className="flex gap-2 leading-relaxed">
-                  <span className="shrink-0 text-violet-500">•</span>
+                  <span className="shrink-0 text-[#53917E]">•</span>
                   <span>{item}</span>
                 </li>
               ))}

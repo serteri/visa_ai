@@ -25,8 +25,8 @@ type State = (typeof statesData.states)[0];
 type Occupation = (typeof anzscoData)[0];
 
 const VISA_BADGES = {
-  "190": { label: "190", color: "bg-blue-500/10 text-blue-300" },
-  "491": { label: "491", color: "bg-green-500/10 text-green-300" },
+  "190": { label: "190", color: "bg-[#53917E]/10 text-[#53917E]" },
+  "491": { label: "491", color: "bg-green-500/10 text-green-700" },
 };
 
 const STATE_COLORS: Record<string, string> = {
@@ -44,15 +44,15 @@ function getCompetitionColor(level: string): string {
   switch (level) {
     case "low":
     case "low-medium":
-      return "text-green-300 bg-green-500/10";
+      return "text-green-700 bg-green-500/10";
     case "medium":
     case "medium-low":
-      return "text-yellow-300 bg-yellow-500/10";
+      return "text-yellow-700 bg-yellow-500/10";
     case "high":
     case "very-high":
-      return "text-red-300 bg-red-500/10";
+      return "text-red-700 bg-red-500/10";
     default:
-      return "text-slate-300 bg-slate-500/10";
+      return "text-slate-600 bg-slate-500/10";
   }
 }
 
@@ -496,7 +496,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
         </div>
 
         {/* CTA Section */}
-        <Card className="border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 dark:border-indigo-800 dark:from-indigo-900/20 dark:to-purple-900/20">
+        <Card className="border-2 border-[#53917E]/30 bg-[#53917E]/10 dark:border-[#53917E]/40 dark:bg-[#53917E]/10">
           <CardContent className="space-y-4 pt-6 text-center">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">
               {t("sn.ctaTitle", "Want a complete assessment of your nomination chances?")}
@@ -505,7 +505,7 @@ export function StateNominationClient({ locale }: { locale: string }) {
               {t("sn.ctaText", "Get a detailed visa readiness report analyzing your points, state options, and next steps.")}
             </p>
             <Link href={`/${locale}/full-check`}>
-              <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+              <Button className="bg-[#53917E] hover:bg-[#53917E]/90 dark:bg-[#53917E] dark:hover:bg-[#53917E]/90">
                 {t("sn.ctaButton", "Get Full Readiness Report")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

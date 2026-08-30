@@ -63,7 +63,7 @@ function statusBadgeClass(status: StateStatus): string {
   if (status === "High Demand") return "border-amber-500/30 bg-amber-500/10 text-amber-300";
   if (status === "Onshore Only" || status === "Open (Onshore Only)")
     return "border-sky-500/30 bg-sky-500/10 text-sky-300";
-  return "border-slate-600 bg-slate-800 text-slate-300";
+  return "border-slate-300 bg-slate-100 text-slate-600";
 }
 
 type RowFormState = {
@@ -195,27 +195,27 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                   <tr key={row.code} className="border-b border-border/50 align-top hover:bg-muted/30">
                     <td className="px-3 py-3 font-medium">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-white">{row.code}</span>
+                        <span className="font-bold text-slate-900">{row.code}</span>
                         {officialUrl && (
                           <a
                             href={officialUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             title={`${row.name} official Skilled Migration page`}
-                            className="text-slate-400 transition-colors hover:text-indigo-400"
+                            className="text-slate-600 transition-colors hover:text-[#53917E]"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
                           </a>
                         )}
                       </div>
-                      <div className="text-xs font-normal text-slate-300">{row.name}</div>
+                      <div className="text-xs font-normal text-slate-600">{row.name}</div>
                     </td>
                     <td className="px-3 py-3">
                       <Badge className={statusBadgeClass(row.status)} variant="outline">
                         {row.status}
                       </Badge>
                       {row.updatedAt && (
-                        <div className="mt-1 text-xs text-slate-400">
+                        <div className="mt-1 text-xs text-slate-600">
                           {new Date(row.updatedAt).toLocaleString("en-AU")}
                         </div>
                       )}
@@ -227,10 +227,10 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                         onChange={(e) =>
                           updateForm(row.code, { status: e.target.value as RowFormState["status"] })
                         }
-                        className="w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white disabled:opacity-50"
+                        className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 disabled:opacity-50"
                       >
                         {STATUS_OPTIONS.map((option) => (
-                          <option key={option} value={option} className="bg-slate-900 text-white">
+                          <option key={option} value={option} className="bg-white text-slate-900">
                             {option}
                           </option>
                         ))}

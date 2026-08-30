@@ -147,7 +147,7 @@ export function PremiumFeatureGate({
 
   return (
     <section className="space-y-5">
-      <Card className="border-emerald-900 bg-black">
+      <Card className="border-emerald-200 bg-white shadow-sm">
         <CardHeader>
           <div className="flex flex-wrap items-center gap-2">
             <CardTitle className="text-base">
@@ -157,11 +157,11 @@ export function PremiumFeatureGate({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-md border border-emerald-900 bg-black px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
+          <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
               {isTr ? "Temel puan" : isZh ? "基础分" : "Base points"}
             </p>
-            <p className="mt-1 text-2xl font-bold text-emerald-300">
+            <p className="mt-1 text-2xl font-bold text-emerald-800">
               {preview.estimatedPoints ?? "-"}
             </p>
           </div>
@@ -172,7 +172,7 @@ export function PremiumFeatureGate({
             </p>
             <div className="grid gap-2">
               {preview.pathways.map((item) => (
-                <div key={`${item.subclass}-${item.visaName}`} className="rounded-md border border-gray-800 bg-black px-3 py-2">
+                <div key={`${item.subclass}-${item.visaName}`} className="rounded-md border border-slate-200 bg-white shadow-sm px-3 py-2">
                   <p className="text-sm font-medium">{item.visaName} ({item.subclass})</p>
                   <p className="text-xs text-muted-foreground">{item.reason}</p>
                 </div>

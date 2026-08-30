@@ -42,7 +42,7 @@ export function ResultView({
     return (
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-10">
         {isAdminBypass && !isUnlocked && (
-          <div className="flex items-center gap-2 rounded-lg border border-amber-900 bg-black px-4 py-3 text-sm text-amber-400">
+          <div className="flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
             <ShieldAlert className="size-4 shrink-0" />
             <p>
               {isTr ? (
@@ -70,7 +70,7 @@ export function ResultView({
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-md border border-gray-800 bg-black px-4 py-3">
+            <div className="rounded-md border border-slate-200 bg-white shadow-sm px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {isTr ? "Tahmini puan" : isZh ? "预估积分" : "Estimated points"}
               </p>
@@ -83,7 +83,7 @@ export function ResultView({
               </p>
               <div className="grid gap-2">
                 {pathways.map((item) => (
-                  <div key={`${item.subclass}-${item.visaName}`} className="rounded-md border border-gray-800 bg-black px-3 py-2">
+                  <div key={`${item.subclass}-${item.visaName}`} className="rounded-md border border-slate-200 bg-white shadow-sm px-3 py-2">
                     <p className="text-sm font-medium">{item.visaName} ({item.subclass})</p>
                     <p className="text-xs text-muted-foreground">{item.reason}</p>
                   </div>
@@ -96,7 +96,7 @@ export function ResultView({
                 href={`/api/reports/${reportId}/pdf`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:from-indigo-600 hover:to-purple-700"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#53917E] px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:opacity-90"
               >
                 <Download className="size-4" />
                 {isTr ? "Raporu İndir" : isZh ? "下载报告" : "Download Report"}

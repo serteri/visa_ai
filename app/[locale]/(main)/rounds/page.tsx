@@ -89,7 +89,7 @@ function groupVolumesByYear(volumes: VolumeRow[]): Array<{ year: string; rows: V
 function locationBadgeClass(location: string): string {
   return location === "Onshore"
     ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
-    : "border-sky-500/30 bg-sky-500/10 text-sky-700";
+    : "border-[#53917E]/30 bg-[#53917E]/10 text-[#53917E]";
 }
 
 /** DD/MM/YYYY, per this task's explicit example format ("16/05/2026") -- not locale-dependent Intl formatting. */

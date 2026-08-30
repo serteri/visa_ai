@@ -35,7 +35,7 @@ type OccupationCutoff = {
 };
 
 const SUBCLASS_COLOR: Record<string, string> = {
-  "189": "#6366f1",
+  "189": "#53917E",
   "190": "#10b981",
   "491": "#f59e0b",
 };
@@ -257,7 +257,7 @@ export function InvitationRoundsClient({
 
   return (
     <div className="space-y-8 pt-20">
-      <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm text-sky-300">
+      <div className="rounded-2xl border border-[#53917E]/30 bg-[#53917E]/10 px-4 py-3 text-sm text-slate-700">
         {t("ir.infoBanner", "ℹ️ Subclass 190 and 491 (State Nominated) are NOT included in these rounds — states nominate independently throughout the month.")}
       </div>
 
@@ -278,7 +278,7 @@ export function InvitationRoundsClient({
               onClick={() => { setSubclassFilter(sc); setPage(1); }}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                 subclassFilter === sc
-                  ? "bg-indigo-600 text-white shadow-sm"
+                  ? "bg-[#53917E] text-white shadow-sm"
                   : "text-slate-600 hover:bg-[#53917E]/10"
               }`}
             >
@@ -480,7 +480,7 @@ export function InvitationRoundsClient({
       </div>
 
       {/* Alert section */}
-      <div className="rounded-2xl border border-[#53917E]/20 bg-gradient-to-br from-[#53917E]/10 to-violet-500/10 p-6 shadow-sm">
+      <div className="rounded-2xl border border-[#53917E]/20 bg-[#53917E]/10 p-6 shadow-sm">
         <div className="flex items-start gap-3">
           <div className="rounded-xl bg-[#53917E]/10 p-2.5">
             <Bell className="h-5 w-5 text-slate-500" />
@@ -547,7 +547,7 @@ export function InvitationRoundsClient({
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+                className="flex items-center gap-2 rounded-xl bg-[#53917E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#53917E]/90 disabled:opacity-60"
               >
                 {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("ir.setAlert", "Set Alert")}

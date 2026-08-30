@@ -47,7 +47,7 @@ export default async function VisasOverviewPage({ params }: PageProps) {
         ? "探索澳大利亚的学习、工作和永久居留签证。"
         : "Explore Australia visas for study, work, and permanent residency.",
       href: `/${locale}/visas/australia`,
-      accent: "border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-300 hover:bg-blue-100 dark:text-blue-300",
+      accent: "border-[#53917E]/30 bg-[#53917E]/10 text-[#53917E] hover:border-[#53917E]/50 hover:bg-[#53917E]/20 dark:text-blue-300",
     },
     {
       label: isTr ? "Kanada" : isZh ? "加拿大" : "Canada",

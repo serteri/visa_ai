@@ -337,8 +337,8 @@ export function FullCheckWaitlistForm({
     { value: "Partner / Dependants WITHOUT Functional English", label: txt("Eş/Bağımlı — Yetkin İngilizce Yok", "Partner / Dependants — No Functional English", "配偶/受养人—无胜任英语") },
   ];
 
-  const fieldClassName = "h-11 w-full rounded-none border-0 border-b border-gray-800 bg-transparent px-1 text-sm text-white placeholder:text-gray-500 transition-colors outline-none focus-visible:border-[#8052ff]";
-  const selectClassName = "h-11 w-full rounded-none border-0 border-b border-gray-800 bg-transparent px-1 text-sm text-white transition-colors outline-none focus-visible:border-[#8052ff]";
+  const fieldClassName = "h-11 w-full rounded-none border-0 border-b border-slate-300 bg-transparent px-1 text-sm text-slate-900 placeholder:text-gray-500 transition-colors outline-none focus-visible:border-[#53917E]";
+  const selectClassName = "h-11 w-full rounded-none border-0 border-b border-slate-300 bg-transparent px-1 text-sm text-slate-900 transition-colors outline-none focus-visible:border-[#53917E]";
 
   const aiAnalysisSteps = selectedCountry === "CA"
     ? [txt("516 NOC kodu taranıyor...", "Scanning 516 NOC codes...", "扫描516 NOC代码..."), txt("CRS çizimi analiz ediliyor...", "Analysing CRS draw trends...", "分析CRS趋势..."), txt("PNP akışları işleniyor...", "Processing PNP streams...", "处理PNP通道..."), txt("Sonuçlar derleniyor...", "Compiling results...", "编译结果...")]
@@ -486,9 +486,9 @@ export function FullCheckWaitlistForm({
   // ── Full Report section (unlocked) ──
   const fullReportSection = unlockedReportState?.report && (
     <div id="full-report-section" style={{ marginTop: "2rem" }}>
-      <div className="rounded-xl border border-gray-800 bg-black p-6">
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">
+          <h2 className="text-xl font-bold text-slate-900">
             {isTr ? "Tam Rapor" : isZh ? "完整报告" : "Full Report"}
           </h2>
           <Button
@@ -542,13 +542,13 @@ export function FullCheckWaitlistForm({
 
           {/* Step validation error */}
           {stepErrors && Object.keys(stepErrors).length > 0 && (
-            <div className="rounded-md border border-red-800 bg-black px-4 py-2.5 text-sm font-medium text-red-400">
+            <div className="rounded-md border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">
               {Object.values(stepErrors).join(" · ")}
             </div>
           )}
 
           {/* Progress bar — clickable for backward navigation */}
-          <div className="flex items-center gap-3 rounded-xl border border-gray-800 bg-black px-4 py-3">
+          <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white shadow-sm px-4 py-3">
             {[1, 2, 3].map((step) => (
               <button
                 key={step}
@@ -566,7 +566,7 @@ export function FullCheckWaitlistForm({
             ))}
           </div>
 
-          <p className="rounded-md border border-gray-800 bg-black px-3 py-2 text-sm font-medium text-gray-400">
+          <p className="rounded-md border border-slate-200 bg-white shadow-sm px-3 py-2 text-sm font-medium text-slate-600">
             {txt("* ile işaretli alanların doldurulması zorunludur.", "* fields are mandatory.", "* 标记为必填。")}
           </p>
 
@@ -616,7 +616,7 @@ export function FullCheckWaitlistForm({
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="text-lg font-bold">📋 {txt("2026 Resmi Meslek Listesi", "2026 Official Occupation List", "2026年官方职业清单")}</DialogTitle>
-              <DialogDescription className="text-gray-400">{txt("Bilgilerinizi girin, PDF'in tamamını e-posta adresinize gönderelim.", "Enter your details and we'll send the full PDF straight to your inbox.", "填写您的信息，我们会将完整 PDF 发送到您的邮箱。")}</DialogDescription>
+              <DialogDescription className="text-slate-600">{txt("Bilgilerinizi girin, PDF'in tamamını e-posta adresinize gönderelim.", "Enter your details and we'll send the full PDF straight to your inbox.", "填写您的信息，我们会将完整 PDF 发送到您的邮箱。")}</DialogDescription>
             </DialogHeader>
             <LeadMagnetForm locale={locale} documentId="csol-2026" documentName="2026 Official Occupation List" onSuccess={() => setOccupationModalOpen(false)} />
           </DialogContent>

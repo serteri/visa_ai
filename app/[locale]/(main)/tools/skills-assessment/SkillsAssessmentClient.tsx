@@ -374,18 +374,18 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
               </>
             ) : (
               <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6">
-                <p className="font-semibold text-amber-300">
+                <p className="font-semibold text-amber-700">
                   {t("sa.noMappingPrefix", "No assessing body mapped for")} {" "}
                   <span className="font-bold">{getLocalizedTitle(selected, locale)}</span> ({selected.code})
                 </p>
-                <p className="mt-1 text-sm text-amber-300/80">
+                <p className="mt-1 text-sm text-amber-700/80">
                   {t("sa.noMappingText", "This occupation may be assessed by VETASSESS or may not require a skills assessment for all visa types. Check with the Department of Home Affairs or a registered migration agent.")}
                 </p>
                 <a
                   href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/eligible-skilled-occupations"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-300 hover:underline"
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-700 hover:underline"
                 >
                   {t("sa.viewDhaList", "View DHA occupation list")} <ExternalLink className="h-3.5 w-3.5" />
                 </a>
@@ -489,7 +489,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
         </div>
 
         {/* Bottom CTA */}
-        <div className="rounded-2xl border border-[#53917E]/20 bg-gradient-to-br from-[#53917E]/10 to-violet-500/10 p-6">
+        <div className="rounded-2xl border border-[#53917E]/20 bg-[#53917E]/10 p-6">
           <h3 className="text-base font-bold text-slate-900">{t("sa.bottomCtaTitle", "Need a clear visa strategy?")}</h3>
           <p className="mt-1 text-sm text-slate-600">
             {t("sa.bottomCtaText", "Stop guessing. Get your personalized 20-page AI-powered PR report covering your exact points, state demand, and next steps.")}

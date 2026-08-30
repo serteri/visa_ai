@@ -112,7 +112,7 @@ function StatusBadge({ status, locale }: { status: TaskStatus; locale: string })
     "not-started": {
       icon: Circle,
       label: tx(locale, "Not Started", "Başlamadı", "未开始"),
-      className: "border-white/15 bg-white/5 text-[var(--color-ash-gray)]",
+      className: "border-slate-200 bg-slate-100 text-[var(--color-ash-gray)]",
     },
     "in-progress": {
       icon: Clock,
@@ -355,15 +355,13 @@ export function JourneyDashboard({ locale }: { locale: string }) {
 
   return (
     <main className="ambient-bg relative min-h-screen py-12 sm:py-16">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(128,82,255,0.16),transparent_55%)]" />
-
       <div className="section-shell relative max-w-4xl">
         <header className="mb-10">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-electric-iris)]/30 bg-[var(--color-electric-iris)]/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[var(--color-electric-iris)]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#53917E]/30 bg-[#53917E]/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#53917E]">
             <FileCheck2 className="h-3.5 w-3.5" />
             {tx(locale, "My Visa Journey", "Vize Yolculuğum", "我的签证旅程")}
           </span>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
             {tx(
               locale,
               "Track your Australian PR progress",
@@ -371,7 +369,7 @@ export function JourneyDashboard({ locale }: { locale: string }) {
               "追踪您的澳大利亚PR进度"
             )}
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-gray-300">
+          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
             {tx(
               locale,
               "A free planner to manage every stage of your PR journey — set a status, a target date, and keep your notes and document links in one place.",
@@ -381,19 +379,19 @@ export function JourneyDashboard({ locale }: { locale: string }) {
           </p>
         </header>
 
-        <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
+        <Card className="border border-slate-200 bg-white shadow-sm">
           <CardContent className="p-6 sm:p-8">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <span className="text-3xl font-bold text-white">{progress}%</span>
+              <span className="text-3xl font-bold text-slate-900">{progress}%</span>
               <span className="text-sm font-medium text-[var(--color-ash-gray)]">
                 {tx(locale, "Completed", "Tamamlandı", "已完成")}
               </span>
             </div>
             <Progress
               value={progress}
-              className="mt-4 h-3 bg-white/10 [&>div]:bg-[var(--color-electric-iris)]"
+              className="mt-4 h-3 bg-slate-200 [&>div]:bg-[#53917E]"
             />
-            <p className="mt-4 text-sm font-semibold text-gray-300">
+            <p className="mt-4 text-sm font-semibold text-slate-600">
               {tx(
                 locale,
                 `You're in the ${currentPhase.title} stage.`,
@@ -413,33 +411,33 @@ export function JourneyDashboard({ locale }: { locale: string }) {
 
             return (
               <div key={phase.id}>
-                <Card className="border-white/10 bg-white/5">
+                <Card className="border border-slate-200 bg-white shadow-sm">
                   <CardContent className="p-6 sm:p-8">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-electric-iris)]/15 text-[var(--color-electric-iris)]">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#53917E]/10 text-[#53917E]">
                           <Icon className="h-5 w-5" />
                         </span>
-                        <h2 className="text-xl font-bold text-white">{phase.title}</h2>
+                        <h2 className="text-xl font-bold text-slate-900">{phase.title}</h2>
                       </div>
                       <span className="text-sm font-semibold text-[var(--color-ash-gray)]">
                         {completedInPhase}/{phase.items.length}
                       </span>
                     </div>
 
-                    <Accordion className="mt-4 divide-y divide-white/10">
+                    <Accordion className="mt-4 divide-y divide-slate-200">
                       {phase.items.map((item) => {
                         const state = taskState[item.id] ?? DEFAULT_TASK_STATE;
                         return (
                           <AccordionItem key={item.id} value={item.id}>
-                            <AccordionTrigger className="text-white hover:text-[var(--color-electric-iris)]">
+                            <AccordionTrigger className="text-slate-900 hover:text-[#53917E]">
                               <span className="flex flex-wrap items-center gap-3">
-                                <span className="text-base font-semibold text-white">{item.label}</span>
+                                <span className="text-base font-semibold text-slate-900">{item.label}</span>
                                 <StatusBadge status={state.status} locale={locale} />
                               </span>
                             </AccordionTrigger>
                             <AccordionContent>
-                              <div className="grid gap-5 rounded-xl border border-white/10 bg-black/30 p-4 sm:grid-cols-2 sm:p-5">
+                              <div className="grid gap-5 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2 sm:p-5">
                                 <div>
                                   <Label className="text-xs font-bold uppercase tracking-wide text-[var(--color-ash-gray)]">
                                     {tx(locale, "Status", "Durum", "状态")}
@@ -448,7 +446,7 @@ export function JourneyDashboard({ locale }: { locale: string }) {
                                     value={state.status}
                                     onValueChange={(value) => updateTask(item.id, { status: value as TaskStatus })}
                                   >
-                                    <SelectTrigger className="mt-1.5 border border-white/15 text-white">
+                                    <SelectTrigger className="mt-1.5 border border-slate-300 text-slate-900">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -469,7 +467,7 @@ export function JourneyDashboard({ locale }: { locale: string }) {
                                     type="date"
                                     value={state.targetDate}
                                     onChange={(e) => updateTask(item.id, { targetDate: e.target.value })}
-                                    className="mt-1.5 h-10 border-white/15 text-white"
+                                    className="mt-1.5 h-10 border-slate-300 text-slate-900"
                                   />
                                 </div>
 
@@ -486,7 +484,7 @@ export function JourneyDashboard({ locale }: { locale: string }) {
                                       "Google Drive linkinizi yapıştırın veya notlarınızı buraya ekleyin...",
                                       "粘贴Google Drive链接或在此添加笔记..."
                                     )}
-                                    className="mt-1.5 border-white/15 text-white"
+                                    className="mt-1.5 border-slate-300 text-slate-900"
                                   />
 
                                   <FileDropzone
@@ -502,14 +500,14 @@ export function JourneyDashboard({ locale }: { locale: string }) {
                                       {state.uploadedFiles.map((file, index) => (
                                         <span
                                           key={`${file.url}-${index}`}
-                                          className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 py-1 pl-3 pr-1.5 text-xs font-medium text-gray-200"
+                                          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 py-1 pl-3 pr-1.5 text-xs font-medium text-slate-700"
                                         >
                                           <Paperclip className="h-3 w-3 shrink-0 text-[var(--color-ash-gray)]" />
                                           <a
                                             href={file.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="max-w-[160px] truncate hover:text-[var(--color-electric-iris)]"
+                                            className="max-w-[160px] truncate hover:text-[#53917E]"
                                           >
                                             {file.name}
                                           </a>
@@ -517,7 +515,7 @@ export function JourneyDashboard({ locale }: { locale: string }) {
                                             type="button"
                                             onClick={() => handleRemoveFile(item.id, index)}
                                             aria-label={tx(locale, "Remove file", "Dosyayı kaldır", "移除文件")}
-                                            className="rounded-full p-0.5 text-[var(--color-ash-gray)] hover:bg-white/10 hover:text-white"
+                                            className="rounded-full p-0.5 text-[var(--color-ash-gray)] hover:bg-slate-200 hover:text-slate-900"
                                           >
                                             <X className="h-3 w-3" />
                                           </button>
@@ -533,8 +531,8 @@ export function JourneyDashboard({ locale }: { locale: string }) {
                                   </Label>
                                   <ol className="mt-2 space-y-1.5">
                                     {item.substeps.map((step, i) => (
-                                      <li key={step} className="flex gap-2 text-sm leading-6 text-gray-300">
-                                        <span className="shrink-0 font-semibold text-[var(--color-electric-iris)]">
+                                      <li key={step} className="flex gap-2 text-sm leading-6 text-slate-600">
+                                        <span className="shrink-0 font-semibold text-[#53917E]">
                                           {i + 1}.
                                         </span>
                                         <span>{step}</span>
@@ -561,7 +559,7 @@ export function JourneyDashboard({ locale }: { locale: string }) {
           })}
         </div>
 
-        <div className="mt-10 flex justify-center border-t border-white/10 pt-8">
+        <div className="mt-10 flex justify-center border-t border-slate-200 pt-8">
           <button
             type="button"
             onClick={handleResetProgress}
@@ -608,7 +606,7 @@ function FileDropzone({
           if (file) onFile(file);
         }}
         className={`flex items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-4 text-center text-xs transition-colors ${
-          dragOver ? "border-[var(--color-electric-iris)] bg-[var(--color-electric-iris)]/10" : "border-white/20"
+          dragOver ? "border-[#53917E] bg-[#53917E]/10" : "border-slate-300"
         }`}
       >
         <input
@@ -624,12 +622,12 @@ function FileDropzone({
           }}
         />
         {uploading ? (
-          <span className="flex items-center gap-2 text-gray-300">
+          <span className="flex items-center gap-2 text-slate-600">
             <Loader2 className="h-4 w-4 animate-spin" />
             {tx(locale, "Uploading...", "Yükleniyor...", "上传中...")}
           </span>
         ) : (
-          <label htmlFor={inputId} className="flex cursor-pointer items-center gap-2 text-gray-300 hover:text-white">
+          <label htmlFor={inputId} className="flex cursor-pointer items-center gap-2 text-slate-600 hover:text-slate-900">
             <UploadCloud className="h-4 w-4 text-[var(--color-ash-gray)]" />
             {tx(
               locale,
@@ -647,18 +645,18 @@ function FileDropzone({
 
 function PremiumUpsellCard({ locale }: { locale: string }) {
   return (
-    <Card className="overflow-hidden border-[var(--color-saffron-spark)]/30 bg-gradient-to-br from-[var(--color-electric-iris)]/20 via-black to-black">
+    <Card className="overflow-hidden border-slate-200 bg-white shadow-sm">
       <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div className="flex items-start gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--color-saffron-spark)]/40 bg-[var(--color-saffron-spark)]/10 text-[var(--color-saffron-spark)]">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#53917E]/30 bg-[#53917E]/10 text-[#53917E]">
             <Lock className="h-6 w-6" />
           </span>
           <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[var(--color-saffron-spark)]">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#53917E]">
               <Sparkles className="h-3.5 w-3.5" />
               {tx(locale, "Premium AI Strategy Report", "Premium AI Strateji Raporu", "Premium AI 策略报告")}
             </span>
-            <p className="mt-2 max-w-md text-sm leading-6 text-gray-300">
+            <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
               {tx(
                 locale,
                 "Generate your Premium Report to find out which state is actively seeking your occupation and your exact points score.",
@@ -671,7 +669,7 @@ function PremiumUpsellCard({ locale }: { locale: string }) {
         <Button
           asChild
           size="lg"
-          className="w-full shrink-0 bg-[var(--color-saffron-spark)] text-black hover:opacity-90 sm:w-auto"
+          className="w-full shrink-0 bg-[#53917E] text-white hover:opacity-90 sm:w-auto"
         >
           <Link href={`/${locale}/full-check`}>
             {tx(locale, "Unlock My Report", "Raporumu Aç", "解锁我的报告")}

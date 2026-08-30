@@ -134,7 +134,7 @@ function calculate(form: FormState) {
 
 function scoreGradient(n: number): string {
   if (n >= 90) return "from-emerald-400 to-teal-500";
-  if (n >= 75) return "from-blue-500 to-indigo-600";
+  if (n >= 75) return "from-[#53917E] to-[#53917E]/70";
   if (n >= 65) return "from-amber-400 to-orange-500";
   return "from-rose-400 to-pink-600";
 }
@@ -159,8 +159,8 @@ function ChevronIcon({ open }: { open: boolean }) {
 
 function InfoCallout({ text }: { text: string }) {
   return (
-    <div className="flex gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2.5 text-xs leading-relaxed text-blue-700">
-      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue-400" />
+    <div className="flex gap-2 rounded-lg border border-[#53917E]/30 bg-[#53917E]/10 px-3 py-2.5 text-xs leading-relaxed text-[#53917E]">
+      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#53917E]" />
       <span>{text}</span>
     </div>
   );
@@ -210,8 +210,8 @@ function SelectField({
             aria-label="More information"
             className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors ${
               tipOpen
-                ? "bg-blue-500 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-blue-500/20 hover:text-blue-700"
+                ? "bg-[#53917E] text-white"
+                : "bg-slate-100 text-slate-600 hover:bg-[#53917E]/20 hover:text-[#53917E]"
             }`}
           >
             <Info className="h-2.5 w-2.5" />
@@ -226,7 +226,7 @@ function SelectField({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-slate-900 shadow-sm transition focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-slate-900 shadow-sm transition focus:border-[#53917E] focus:outline-none focus:ring-2 focus:ring-[#53917E]/20"
         >
           <option value="" disabled>
             {selectPlaceholder}
@@ -282,8 +282,8 @@ function YesNoField({
             aria-label="More information"
             className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors ${
               tipOpen
-                ? "bg-blue-500 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-blue-500/20 hover:text-blue-700"
+                ? "bg-[#53917E] text-white"
+                : "bg-slate-100 text-slate-600 hover:bg-[#53917E]/20 hover:text-[#53917E]"
             }`}
           >
             <Info className="h-2.5 w-2.5" />
@@ -301,8 +301,8 @@ function YesNoField({
             onClick={() => onChange(v)}
             className={`flex-1 rounded-xl border py-2.5 text-sm font-semibold transition ${
               value === v
-                ? "border-blue-500 bg-blue-500 text-white shadow-sm"
-                : "border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:bg-blue-500/10"
+                ? "border-[#53917E] bg-[#53917E] text-white shadow-sm"
+                : "border-slate-200 bg-white text-slate-600 hover:border-[#53917E]/60 hover:bg-[#53917E]/10"
             }`}
           >
             {v ? yesLabel : noLabel}
@@ -331,7 +331,7 @@ function Section({
         className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-[#53917E]/10"
       >
         <div className="flex items-center gap-3">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#53917E] text-xs font-bold text-white">
             {step}
           </span>
           <h2 className="text-sm font-bold text-slate-900">{title}</h2>
@@ -369,7 +369,7 @@ function ScoreRow({
           pts === null
             ? "text-slate-500"
             : pts > 0
-              ? "text-blue-400"
+              ? "text-[#53917E]"
               : "text-slate-500"
         }`}
       >
@@ -460,7 +460,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
     <main className={`min-h-screen bg-background ${hideHeader ? "pt-8" : ""} pb-20`}>
       {/* Ambient blobs */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-blue-900/20 blur-[120px]" />
+        <div className="absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-[#53917E]/10 blur-[120px]" />
         <div className="absolute top-1/2 right-1/4 h-[400px] w-[400px] rounded-full bg-[#53917E]/10 blur-[100px]" />
       </div>
 
@@ -468,12 +468,12 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
         {/* Page header */}
         {!hideHeader && (
           <div className="mb-10 text-center">
-            <span className="inline-block rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-700">
+            <span className="inline-block rounded-full border border-[#53917E]/30 bg-[#53917E]/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-[#53917E]">
               {t("pc.header.badge")}
             </span>
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
               {t("pc.header.title").split("Points Test")[0]}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="text-[#53917E]">
                 {/* render the "Points Test Calculator" part with gradient for EN; for other locales render all as gradient */}
                 {locale === "en"
                   ? "Points Test Calculator"
@@ -506,8 +506,8 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                     onClick={() => dispatch({ kind: "str", field: "subclass", value })}
                     className={`flex-1 whitespace-normal rounded-xl border px-3 py-3 text-center text-sm font-semibold leading-snug transition ${
                       form.subclass === value
-                        ? "border-blue-500 bg-blue-500 text-white shadow-sm"
-                        : "border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:bg-blue-500/10"
+                        ? "border-[#53917E] bg-[#53917E] text-white shadow-sm"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-[#53917E]/60 hover:bg-[#53917E]/10"
                     }`}
                   >
                     <span className="font-extrabold">{value}</span>
@@ -791,7 +791,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                   className={`mt-3 flex w-full items-center justify-center gap-2 rounded-lg border py-2 text-xs font-semibold transition ${
                     isSaved
                       ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
-                      : "border-blue-500/30 bg-blue-500/10 text-blue-700 hover:bg-blue-500/20"
+                      : "border-[#53917E]/30 bg-[#53917E]/10 text-[#53917E] hover:bg-[#53917E]/20"
                   }`}
                 >
                   {isSaved ? (
@@ -822,7 +822,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
 
                     let colorClass = "text-red-700 border-red-500/20 bg-white";
                     if (isAge) colorClass = "text-amber-700 border-amber-500/30 bg-white";
-                    else if (isState) colorClass = "text-blue-700 border-blue-500/30 bg-white";
+                    else if (isState) colorClass = "text-[#53917E] border-[#53917E]/30 bg-white";
 
                     return (
                       <div key={idx} className={`rounded-lg border p-3 text-sm ${colorClass}`}>
@@ -843,14 +843,14 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
             <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white via-[#EEF5DB] to-white p-[1px] shadow-lg">
               <div className="relative rounded-[11px] bg-white p-6 text-center">
                 <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-[#53917E]/20 blur-[40px]" />
-                <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-blue-500/20 blur-[40px]" />
+                <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-[#53917E]/10 blur-[40px]" />
 
                 <p className="relative z-10 mb-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
                   {t("pc.insights.hookSubtitle")}
                 </p>
                 <Link
                   href={`/${locale}/full-check`}
-                  className="group relative z-10 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 text-sm font-bold text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all hover:from-blue-500 hover:to-indigo-500 hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-[0.98]"
+                  className="group relative z-10 flex w-full items-center justify-center gap-2 rounded-lg bg-[#53917E] px-5 py-4 text-sm font-bold text-white shadow-[0_0_20px_rgba(83,145,126,0.3)] transition-all hover:bg-[#53917E]/90 hover:shadow-[0_0_30px_rgba(83,145,126,0.5)] active:scale-[0.98]"
                 >
                   <span className="relative flex h-3 w-3">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />

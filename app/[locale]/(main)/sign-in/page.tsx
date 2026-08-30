@@ -146,7 +146,7 @@ export default function SignInPage() {
               <button
                 type="submit"
                 disabled={isSendingMagicLink || !magicLinkEmail.trim()}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#53917E] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#53917E]/90 disabled:opacity-60"
               >
                 {isSendingMagicLink ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -233,7 +233,7 @@ export default function SignInPage() {
 
           <p className="mt-5 text-center text-xs text-slate-500">
             Don&apos;t have an account?{" "}
-            <Link href={`/${locale}/register`} className="font-medium text-indigo-600 hover:underline">
+            <Link href={`/${locale}/register`} className="font-medium text-[#53917E] hover:underline">
               Sign up
             </Link>
           </p>

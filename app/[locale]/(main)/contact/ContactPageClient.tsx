@@ -151,17 +151,17 @@ export function ContactPageClient({ locale }: { locale: string }) {
   }
 
   const fieldClassName =
-    "h-11 rounded-none border-0 border-b border-gray-800 bg-transparent px-1 text-sm text-white placeholder:text-gray-500 transition-colors outline-none focus-visible:border-[#8052ff]";
+    "h-11 rounded-none border-0 border-b border-slate-300 bg-transparent px-1 text-sm text-slate-900 placeholder:text-gray-500 transition-colors outline-none focus-visible:border-[#53917E]";
 
   return (
-    <div className="bg-black">
+    <div>
       {/* Toast */}
       {toast && (
         <div
           className={`fixed right-4 top-24 z-[100] max-w-sm rounded-xl border px-4 py-3 text-sm font-medium transition-all sm:right-6 ${
             toast.type === "success"
-              ? "border-emerald-800 bg-black text-emerald-400"
-              : "border-red-800 bg-black text-red-400"
+              ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+              : "border-red-300 bg-red-50 text-red-700"
           }`}
           role="status"
           aria-live="polite"
@@ -171,10 +171,10 @@ export function ContactPageClient({ locale }: { locale: string }) {
       )}
 
       <section className="section-shell pb-6 text-center">
-        <h1 className="mx-auto max-w-2xl text-4xl font-normal leading-tight tracking-tight text-white sm:text-5xl">
+        <h1 className="mx-auto max-w-2xl text-4xl font-normal leading-tight tracking-tight text-slate-900 sm:text-5xl">
           {tx("Bize Ulaşın", "Get in Touch", "联系我们")}
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-gray-400">
+        <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">
           {tx(
             "Sorularınız mı var? Ekibimiz size yardımcı olmak için burada.",
             "Have a question? Our team is here to help.",
@@ -186,7 +186,7 @@ export function ContactPageClient({ locale }: { locale: string }) {
       <section className="mx-auto max-w-5xl px-4 pb-24 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
           {/* Left column: form */}
-          <div className="rounded-2xl border border-gray-800 bg-black p-6 sm:p-8">
+          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 sm:p-8">
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
@@ -266,7 +266,7 @@ export function ContactPageClient({ locale }: { locale: string }) {
                   value={form.message}
                   onChange={handleChange}
                   rows={6}
-                  className="rounded-none border-0 border-b border-gray-800 bg-transparent px-1 text-white placeholder:text-gray-500 shadow-none transition-colors focus-visible:border-[#8052ff] focus-visible:ring-0"
+                  className="rounded-none border-0 border-b border-slate-300 bg-transparent px-1 text-slate-900 placeholder:text-gray-500 shadow-none transition-colors focus-visible:border-[#53917E] focus-visible:ring-0"
                   placeholder={tx(
                     "Nasıl yardımcı olabiliriz?",
                     "How can we help?",
@@ -297,11 +297,11 @@ export function ContactPageClient({ locale }: { locale: string }) {
 
           {/* Right column: info */}
           <div className="space-y-6">
-            <div className="rounded-2xl border border-gray-800 bg-black p-6 text-white sm:p-8">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 text-slate-900 sm:p-8">
               <h2 className="text-2xl font-bold tracking-tight">
                 Logi<span className="text-violet-400">Visa</span>
               </h2>
-              <p className="mt-3 text-sm leading-6 text-slate-300">
+              <p className="mt-3 text-sm leading-6 text-slate-600">
                 {tx(
                   "Avustralya PR yolculuğunuzda size yardımcı olmak için buradayız.",
                   "We're here to help with your Australia PR journey.",
@@ -310,30 +310,30 @@ export function ContactPageClient({ locale }: { locale: string }) {
               </p>
 
               <div className="mt-6 space-y-4">
-                <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
-                  <Mail className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" />
+                <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <Mail className="mt-0.5 h-5 w-5 shrink-0 text-cyan-600" />
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                       {tx("Genel Sorular", "General Inquiries", "一般咨询")}
                     </p>
                     <a
                       href="mailto:hello@logivisa.com"
-                      className="mt-1 block text-sm font-medium text-white hover:text-cyan-300"
+                      className="mt-1 block text-sm font-medium text-slate-900 hover:text-[#53917E]"
                     >
                       hello@logivisa.com
                     </a>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
-                  <MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" />
+                <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-cyan-600" />
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                       {tx("Teknik Destek", "Technical Support", "技术支持")}
                     </p>
                     <a
                       href="mailto:support@logivisa.com"
-                      className="mt-1 block text-sm font-medium text-white hover:text-cyan-300"
+                      className="mt-1 block text-sm font-medium text-slate-900 hover:text-[#53917E]"
                     >
                       support@logivisa.com
                     </a>
@@ -341,7 +341,7 @@ export function ContactPageClient({ locale }: { locale: string }) {
                 </div>
               </div>
 
-              <p className="mt-6 text-xs leading-5 text-slate-400">
+              <p className="mt-6 text-xs leading-5 text-slate-600">
                 {tx(
                   "Genellikle 1-2 iş günü içinde yanıt veriyoruz.",
                   "We typically respond within 1-2 business days.",

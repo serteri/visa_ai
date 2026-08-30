@@ -286,7 +286,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
           >
             {ui.back}
           </Link>
-          <Badge className="bg-violet-100 text-violet-900 dark:bg-violet-500/15 dark:text-violet-100">{ui.badge}</Badge>
+          <Badge className="bg-[#53917E]/10 text-[#53917E] dark:bg-violet-500/15 dark:text-violet-100">{ui.badge}</Badge>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
@@ -306,18 +306,18 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
                 <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">{ui.twoStageProcess}</p>
                 <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                   <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.stage1}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">{ui.stage1}</p>
                     <p className="mt-1 font-semibold text-slate-900 dark:text-white">{localizedTwoStage?.stage1_quebec?.authority}</p>
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{ui.outcome}: {localizedTwoStage?.stage1_quebec?.outcome}</p>
-                    <p className="mt-1 text-xs text-slate-400">{l(localizedTwoStage?.stage1_quebec?.note ?? "Unlike the previous skilled-worker file, this file includes Quebec-side selection criteria in detail; see the subStreams section below.")}</p>
+                    <p className="mt-1 text-xs text-slate-600">{l(localizedTwoStage?.stage1_quebec?.note ?? "Unlike the previous skilled-worker file, this file includes Quebec-side selection criteria in detail; see the subStreams section below.")}</p>
                   </div>
-                  <div className="flex justify-center text-slate-400">
+                  <div className="flex justify-center text-slate-600">
                     <ArrowRight className="h-5 w-5" />
                   </div>
-                  <div className="rounded-xl border border-violet-200 bg-violet-50 p-3 dark:border-violet-600/30 dark:bg-violet-950/20">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-200">{ui.stage2}</p>
-                    <p className="mt-1 font-semibold text-violet-900 dark:text-violet-100">{localizedTwoStage?.stage2_federal?.authority}</p>
-                    <p className="mt-1 text-sm text-violet-800 dark:text-violet-200">{ui.prerequisite}: {localizedTwoStage?.stage2_federal?.prerequisite}</p>
+                  <div className="rounded-xl border border-[#53917E]/20 bg-[#53917E]/5 p-3 dark:border-violet-600/30 dark:bg-violet-950/20">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#53917E] dark:text-violet-200">{ui.stage2}</p>
+                    <p className="mt-1 font-semibold text-slate-900 dark:text-violet-100">{localizedTwoStage?.stage2_federal?.authority}</p>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-violet-200">{ui.prerequisite}: {localizedTwoStage?.stage2_federal?.prerequisite}</p>
                   </div>
                 </div>
               </div>
@@ -339,7 +339,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
 
               <div className="flex flex-wrap gap-3">
                 <Link href={`/${locale}/full-check`}>
-                  <Button className="bg-violet-600 text-white hover:bg-violet-700">
+                  <Button className="bg-[#53917E] text-white hover:bg-[#53917E]/90">
                     <span>{ui.check}</span>
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -375,7 +375,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <Building2 className="h-5 w-5 text-violet-600" />
+                <Building2 className="h-5 w-5 text-[#53917E]" />
                 {ui.investor}
               </CardTitle>
             </CardHeader>
@@ -413,7 +413,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <UserRoundSearch className="h-5 w-5 text-violet-600" />
+                <UserRoundSearch className="h-5 w-5 text-[#53917E]" />
                 {ui.selfEmployed}
               </CardTitle>
             </CardHeader>
@@ -439,7 +439,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <ListChecks className="h-5 w-5 text-violet-600" />
+                <ListChecks className="h-5 w-5 text-[#53917E]" />
                 {ui.federalApplicationStageForms}
               </CardTitle>
             </CardHeader>
@@ -468,7 +468,7 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
           <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <BriefcaseBusiness className="h-5 w-5 text-violet-600" />
+                <BriefcaseBusiness className="h-5 w-5 text-[#53917E]" />
                 {ui.supportingDocsAfterApply}
               </CardTitle>
             </CardHeader>

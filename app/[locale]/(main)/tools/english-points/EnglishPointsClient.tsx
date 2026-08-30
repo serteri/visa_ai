@@ -236,11 +236,11 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
 
   const levelColor =
     currentLevel === "superior"
-      ? "from-purple-600 to-purple-400"
+      ? "from-[#53917E] to-[#53917E]/70"
       : currentLevel === "proficient"
         ? "from-green-600 to-green-400"
         : currentLevel === "competent"
-          ? "from-blue-600 to-blue-400"
+          ? "from-[#53917E]/80 to-[#53917E]/50"
           : "from-red-600 to-red-400";
 
   const levelLabel =
@@ -275,8 +275,8 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
                   onClick={() => setTestType(type)}
                   className={`rounded-lg px-6 py-2.5 font-semibold transition-all ${
                     testType === type
-                      ? "bg-indigo-600 text-white shadow-lg"
-                      : "border-2 border-slate-200 text-slate-700 hover:border-indigo-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500"
+                      ? "bg-[#53917E] text-white shadow-lg"
+                      : "border-2 border-slate-200 text-slate-700 hover:border-[#53917E] dark:border-slate-700 dark:text-slate-300 dark:hover:border-[#53917E]"
                   }`}
                 >
                   {type === "ielts"
@@ -544,7 +544,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
             <ul className="space-y-3">
               {TIPS.map((tip, index) => (
                 <li key={index} className="flex gap-3">
-                  <span className="shrink-0 rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-bold text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
+                  <span className="shrink-0 rounded-full bg-[#53917E]/10 px-2.5 py-1 text-xs font-bold text-[#53917E] dark:bg-[#53917E]/20 dark:text-[#53917E]">
                     {index + 1}
                   </span>
                   <span className="text-slate-700 dark:text-slate-300">{tip}</span>
@@ -555,7 +555,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
         </Card>
 
         {/* CTA */}
-        <Card className="border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 dark:border-indigo-800 dark:from-indigo-900/20 dark:to-purple-900/20">
+        <Card className="border-2 border-[#53917E]/30 bg-[#53917E]/10 dark:border-[#53917E]/40 dark:bg-[#53917E]/10">
           <CardContent className="space-y-4 pt-6 text-center">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">
               {t("ep.ctaTitle", "See how English affects your total points score")}
@@ -564,7 +564,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
               {t("ep.ctaText", "Factor in your age, education, and work experience to get your complete visa points score.")}
             </p>
             <Link href={`/${locale}/tools/points-calculator`}>
-              <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+              <Button className="bg-[#53917E] hover:bg-[#53917E]/90 dark:bg-[#53917E] dark:hover:bg-[#53917E]/90">
                 {t("ep.ctaButton", "Go to Full Points Calculator")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
