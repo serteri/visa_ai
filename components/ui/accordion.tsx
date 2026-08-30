@@ -76,7 +76,7 @@ export function AccordionTrigger({
         <span>{children}</span>
         <ChevronDown
           className={cn(
-            "h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200",
+            "h-5 w-5 shrink-0 text-indigo-200 transition-transform duration-200",
             isOpen && "rotate-180 text-indigo-600 dark:text-indigo-400"
           )}
         />

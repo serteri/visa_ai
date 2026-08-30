@@ -9,70 +9,73 @@
    larger change) all resolve to the SAME palette below, so toggling old
    theme state has no visible effect.
 
-   Layered slate depth, not pure black: --background/--card/--popover used
-   to all be the identical #000000, which is why a Card (bg-card) rendered
-   with literally no visible boundary against the page (bg-background) --
-   every "this table/card is unreadable" bug filed across many admin panels
-   traced back to this single collision. --background is now slate-950,
-   every raised surface (card/popover/muted/secondary/input) is slate-900,
-   and --border/--input are a soft slate-800, so a surface is always
-   visibly distinct from the page behind it without introducing a light
-   theme or touching --foreground (still white -- text contrast was never
-   the problem, layer collision was).
+   Deep Indigo palette (superseding the earlier slate-950/900 pass): flat
+   slate read as cold/boring, so --background moves to indigo-950 and every
+   raised surface (card/popover/muted/secondary/input) moves to a custom
+   deep violet (#3C3262) -- still a distinct, visibly-lighter layer than the
+   page behind it (same "no collision" principle as the slate version this
+   replaces), just warmer/more on-brand with --primary's existing purple.
+   --border/--input move to indigo-800 to match. --foreground stays white;
+   --muted-foreground moves from slate-400 to indigo-200, since a cool gray
+   reads muddy against a purple surface -- text needs to lean into the same
+   hue family, not fight it.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #020617; /* slate-950 */
+  --background: #1e1b4b; /* indigo-950 */
   --foreground: #ffffff;
-  --card: #0f172a; /* slate-900 */
+  --card: #3c3262; /* custom deep violet */
   --card-foreground: #ffffff;
-  --muted: #0f172a; /* slate-900 */
-  --muted-foreground: #94a3b8; /* slate-400 */
+  --muted: #3c3262;
+  --muted-foreground: #c7d2fe; /* indigo-200 */
   --primary: #8052ff;
   --primary-foreground: #ffffff;
-  --secondary: #0f172a; /* slate-900 */
+  --secondary: #3c3262;
   --secondary-foreground: #ffffff;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(30, 41, 59, 0.7); /* slate-800/70 */
-  --input: #1e293b; /* slate-800 -- was undefined, so border-input silently fell back to currentColor */
+  --border: rgba(55, 48, 163, 0.5); /* indigo-800/50 */
+  --input: #3730a3; /* indigo-800 */
   --ring: #8052ff;
   --radius: 1.5rem;
   /* Popover/dropdown surfaces (Radix Popover, Command, Select content) --
-     slate-900 to match --card, so a dropdown panel reads as the same
-     "raised surface" layer as a Card rather than its own one-off shade. */
-  --popover: #0f172a; /* slate-900 */
+     matches --card so a dropdown panel reads as the same "raised surface"
+     layer as a Card rather than its own one-off shade. */
+  --popover: #3c3262;
   --popover-foreground: #ffffff;
 
   /* Dala token names, for components that want to reach for the palette
      directly instead of through the semantic --background/--primary set.
      --color-void is kept as a true-black swatch for landing-page brand
      decoration (app/globals.css's .ambient-bg/.cf-* "case file" theme, both
-     out of scope here) -- NOT used by any shadcn/ui component. */
+     out of scope here) -- NOT used by any shadcn/ui component.
+     --color-ash-gray moves to indigo-200 alongside --muted-foreground since
+     it's used the same way (secondary/caption text) by several components
+     that reach for the Dala token directly instead of text-muted-foreground. */
   --color-void: #000000;
   --color-bone-white: #ffffff;
   --color-electric-iris: #8052ff;
   --color-saffron-spark: #ffb829;
-  --color-ash-gray: #9a9a9a;
+  --color-ash-gray: #c7d2fe;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #020617;
+    --background: #1e1b4b;
     --foreground: #ffffff;
-    --card: #0f172a;
+    --card: #3c3262;
     --card-foreground: #ffffff;
-    --muted: #0f172a;
-    --muted-foreground: #94a3b8;
+    --muted: #3c3262;
+    --muted-foreground: #c7d2fe;
     --primary: #8052ff;
     --primary-foreground: #ffffff;
-    --secondary: #0f172a;
+    --secondary: #3c3262;
     --secondary-foreground: #ffffff;
     --accent: #ffb829;
     --accent-foreground: #000000;
-    --border: rgba(30, 41, 59, 0.7);
-    --input: #1e293b;
+    --border: rgba(55, 48, 163, 0.5);
+    --input: #3730a3;
     --ring: #8052ff;
-    --popover: #0f172a;
+    --popover: #3c3262;
     --popover-foreground: #ffffff;
   }
 }
@@ -229,22 +232,22 @@ option {
    values, so toggling old theme state is visually a no-op.
    ───────────────────────────────────────────────────────────────────────── */
 .dark {
-  --background: #020617;
+  --background: #1e1b4b;
   --foreground: #ffffff;
-  --card: #0f172a;
+  --card: #3c3262;
   --card-foreground: #ffffff;
-  --muted: #0f172a;
-  --muted-foreground: #94a3b8;
+  --muted: #3c3262;
+  --muted-foreground: #c7d2fe;
   --primary: #8052ff;
   --primary-foreground: #ffffff;
-  --secondary: #0f172a;
+  --secondary: #3c3262;
   --secondary-foreground: #ffffff;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(30, 41, 59, 0.7);
-  --input: #1e293b;
+  --border: rgba(55, 48, 163, 0.5);
+  --input: #3730a3;
   --ring: #8052ff;
-  --popover: #0f172a;
+  --popover: #3c3262;
   --popover-foreground: #ffffff;
 
   --cf-bg: #000000;
@@ -263,22 +266,22 @@ option {
 }
 
 .light {
-  --background: #020617;
+  --background: #1e1b4b;
   --foreground: #ffffff;
-  --card: #0f172a;
+  --card: #3c3262;
   --card-foreground: #ffffff;
-  --muted: #0f172a;
-  --muted-foreground: #94a3b8;
+  --muted: #3c3262;
+  --muted-foreground: #c7d2fe;
   --primary: #8052ff;
   --primary-foreground: #ffffff;
-  --secondary: #0f172a;
+  --secondary: #3c3262;
   --secondary-foreground: #ffffff;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(30, 41, 59, 0.7);
-  --input: #1e293b;
+  --border: rgba(55, 48, 163, 0.5);
+  --input: #3730a3;
   --ring: #8052ff;
-  --popover: #0f172a;
+  --popover: #3c3262;
   --popover-foreground: #ffffff;
 
   --cf-bg: #000000;
