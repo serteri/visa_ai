@@ -17,9 +17,9 @@ function formatUsd(amount: number): string {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-indigo-800/50 bg-[#3C3262] px-4 py-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">{label}</p>
-      <p className="mt-1 text-3xl font-extrabold text-white">{value}</p>
+    <div className="rounded-xl border border-slate-200 bg-white px-4 py-5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">{label}</p>
+      <p className="mt-1 text-3xl font-extrabold text-slate-900">{value}</p>
     </div>
   );
 }
@@ -55,7 +55,7 @@ export default async function AgentEarningsPage({ params }: PageProps) {
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Agent</p>
           <h1 className="text-2xl font-bold">Earnings</h1>
-          <p className="text-sm text-indigo-100">Your referral performance and commission history.</p>
+          <p className="text-sm text-slate-600">Your referral performance and commission history.</p>
         </div>
         <AgentNav locale={locale} active="earnings" />
       </div>
@@ -72,12 +72,12 @@ export default async function AgentEarningsPage({ params }: PageProps) {
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <p className="py-8 text-center text-sm text-indigo-100">No commission earned yet.</p>
+            <p className="py-8 text-center text-sm text-slate-600">No commission earned yet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-sm">
                 <thead>
-                  <tr className="border-b border-indigo-800/50 text-left text-indigo-200">
+                  <tr className="border-b border-slate-200 text-left text-slate-600">
                     <th className="py-2 pr-4 font-semibold">Customer</th>
                     <th className="px-4 py-2 font-semibold">Total paid</th>
                     <th className="px-4 py-2 font-semibold">Your commission</th>
@@ -86,13 +86,13 @@ export default async function AgentEarningsPage({ params }: PageProps) {
                 </thead>
                 <tbody>
                   {transactions.map((tx) => (
-                    <tr key={tx.id} className="border-b border-indigo-800/50 hover:bg-indigo-800/40">
-                      <td className="py-2 pr-4 font-medium text-white">{tx.leadName}</td>
-                      <td className="px-4 py-2 text-indigo-100">{formatUsd(tx.totalAmount)}</td>
-                      <td className="px-4 py-2 font-semibold text-emerald-300">
+                    <tr key={tx.id} className="border-b border-slate-200 hover:bg-[#53917E]/10">
+                      <td className="py-2 pr-4 font-medium text-slate-900">{tx.leadName}</td>
+                      <td className="px-4 py-2 text-slate-600">{formatUsd(tx.totalAmount)}</td>
+                      <td className="px-4 py-2 font-semibold text-emerald-700">
                         {formatUsd(tx.commissionAmount)}
                       </td>
-                      <td className="px-4 py-2 text-indigo-100">{tx.createdAt.toLocaleDateString(locale)}</td>
+                      <td className="px-4 py-2 text-slate-600">{tx.createdAt.toLocaleDateString(locale)}</td>
                     </tr>
                   ))}
                 </tbody>

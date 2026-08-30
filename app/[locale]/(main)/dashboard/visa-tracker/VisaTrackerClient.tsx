@@ -19,12 +19,12 @@ type TrackingItem = {
 };
 
 const STATUS_META: Record<VisaTrackingStatus, { label: string; color: string; bg: string }> = {
-  planning:  { label: "Planning",  color: "text-indigo-100",  bg: "bg-indigo-800"  },
-  preparing: { label: "Preparing", color: "text-blue-300",   bg: "bg-blue-500/10"   },
-  submitted: { label: "Submitted", color: "text-violet-300", bg: "bg-violet-500/10" },
-  waiting:   { label: "Waiting",   color: "text-amber-300",  bg: "bg-amber-500/10"  },
-  approved:  { label: "Approved",  color: "text-emerald-300",bg: "bg-emerald-500/10"},
-  rejected:  { label: "Rejected",  color: "text-rose-300",   bg: "bg-rose-500/10"   },
+  planning:  { label: "Planning",  color: "text-slate-600",  bg: "bg-[#53917E]/10"  },
+  preparing: { label: "Preparing", color: "text-blue-700",   bg: "bg-blue-500/10"   },
+  submitted: { label: "Submitted", color: "text-violet-700", bg: "bg-violet-500/10" },
+  waiting:   { label: "Waiting",   color: "text-amber-700",  bg: "bg-amber-500/10"  },
+  approved:  { label: "Approved",  color: "text-emerald-700",bg: "bg-emerald-500/10"},
+  rejected:  { label: "Rejected",  color: "text-rose-700",   bg: "bg-rose-500/10"   },
 };
 
 const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820/801", "186", "187"];
@@ -72,26 +72,26 @@ export function VisaTrackerClient({ items }: { items: TrackingItem[] }) {
   return (
     <div className="space-y-6">
       {showForm ? (
-        <Card className="border-indigo-500/30">
+        <Card className="border-[#53917E]/30">
           <CardHeader><CardTitle className="text-sm">Add a Visa to Track</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-indigo-100">Visa Subclass *</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-600">Visa Subclass *</label>
               <select
                 value={subclass}
                 onChange={(e) => setSubclass(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#53917E]/20 focus:outline-none focus:ring-2 focus:ring-[#53917E]/10"
               >
                 <option value="">Select subclass…</option>
                 {VISA_SUBCLASSES.map((v) => <option key={v} value={v}>Subclass {v}</option>)}
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-indigo-100">Target Date (optional)</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-600">Target Date (optional)</label>
               <Input type="date" value={targetDate} onChange={(e) => setTargetDate(e.target.value)} className="text-sm" />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-indigo-100">Notes (optional)</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-600">Notes (optional)</label>
               <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. Submitted ACS assessment in March" className="text-sm" />
             </div>
             <div className="flex gap-2">
@@ -109,8 +109,8 @@ export function VisaTrackerClient({ items }: { items: TrackingItem[] }) {
       {items.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="font-semibold text-white">No visas tracked yet</p>
-            <p className="mt-1 text-sm text-indigo-200">Add a visa above to track your progress.</p>
+            <p className="font-semibold text-slate-900">No visas tracked yet</p>
+            <p className="mt-1 text-sm text-slate-600">Add a visa above to track your progress.</p>
           </CardContent>
         </Card>
       ) : (
@@ -133,21 +133,21 @@ export function VisaTrackerClient({ items }: { items: TrackingItem[] }) {
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className="font-semibold text-white text-sm">Subclass {item.visaSubclass}</p>
+                              <p className="font-semibold text-slate-900 text-sm">Subclass {item.visaSubclass}</p>
                               {item.targetDate && (
-                                <p className="text-xs text-indigo-200 mt-0.5">
+                                <p className="text-xs text-slate-600 mt-0.5">
                                   Target: {new Date(item.targetDate).toLocaleDateString("en-AU")}
                                 </p>
                               )}
                               {item.notes && (
-                                <p className="mt-1.5 text-xs text-indigo-100 leading-relaxed">{item.notes}</p>
+                                <p className="mt-1.5 text-xs text-slate-600 leading-relaxed">{item.notes}</p>
                               )}
                             </div>
                             <button
                               type="button"
                               onClick={() => handleDelete(item.id)}
                               disabled={pending}
-                              className="shrink-0 rounded p-1 text-indigo-100 transition hover:text-rose-400"
+                              className="shrink-0 rounded p-1 text-slate-600 transition hover:text-rose-400"
                               aria-label="Delete"
                             >
                               <Trash2 className="h-3.5 w-3.5" />

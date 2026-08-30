@@ -8,7 +8,7 @@ export function TermsEn() {
   return (
     <>
       <h1>Terms of Service &amp; Refund Policy</h1>
-      <p className="text-sm text-indigo-200">Last updated: 3 July 2026</p>
+      <p className="text-sm text-slate-600">Last updated: 3 July 2026</p>
 
       <h2>1. Introduction and Acceptance of Terms</h2>
       <p>
@@ -207,7 +207,7 @@ export function TermsTr() {
   return (
     <>
       <h1>Kullanım Koşulları &amp; İade Politikası</h1>
-      <p className="text-sm text-indigo-200">Son güncelleme: 3 Temmuz 2026</p>
+      <p className="text-sm text-slate-600">Son güncelleme: 3 Temmuz 2026</p>
 
       <h2>1. Giriş ve Koşulların Kabulü</h2>
       <p>
@@ -411,7 +411,7 @@ export function TermsZh() {
   return (
     <>
       <h1>服务条款与退款政策</h1>
-      <p className="text-sm text-indigo-200">最后更新日期：2026年7月3日</p>
+      <p className="text-sm text-slate-600">最后更新日期：2026年7月3日</p>
 
       <h2>1. 引言与条款接受</h2>
       <p>

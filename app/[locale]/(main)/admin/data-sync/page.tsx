@@ -43,7 +43,7 @@ async function getImportLogMap(): Promise<Record<string, ImportLogEntry>> {
 function statusBadgeClass(status: string | undefined): string {
   if (status === "success") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
   if (status === "failed") return "border-rose-500/30 bg-rose-500/10 text-rose-300";
-  return "border-indigo-700 bg-indigo-800 text-indigo-100";
+  return "border-slate-200 bg-[#53917E]/10 text-slate-600";
 }
 
 export default async function DataSyncPage({ params }: PageProps) {
@@ -83,14 +83,14 @@ export default async function DataSyncPage({ params }: PageProps) {
               {SOURCE_FORMATS.map((format) => {
                 const log = importLog[format.id];
                 return (
-                  <div key={format.id} className="rounded-lg border border-indigo-800/50 bg-[#3C3262]/60 p-3">
+                  <div key={format.id} className="rounded-lg border border-slate-200 bg-white p-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium text-white">{format.label}</p>
+                      <p className="text-sm font-medium text-slate-900">{format.label}</p>
                       <Badge className={statusBadgeClass(log?.status)} variant="outline">
                         {log?.status ?? "Never imported"}
                       </Badge>
                     </div>
-                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-indigo-100">
+                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-600">
                       <Clock className="h-3 w-3 shrink-0" />
                       {log?.lastRunAt
                         ? log.lastRunAt.toLocaleString(locale, {
@@ -102,7 +102,7 @@ export default async function DataSyncPage({ params }: PageProps) {
                           })
                         : "Never"}
                     </div>
-                    {log?.message && <p className="mt-1 truncate text-xs text-indigo-200">{log.message}</p>}
+                    {log?.message && <p className="mt-1 truncate text-xs text-slate-600">{log.message}</p>}
                   </div>
                 );
               })}
@@ -111,7 +111,7 @@ export default async function DataSyncPage({ params }: PageProps) {
         </Card>
 
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-white">Federal Sources</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Federal Sources</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {federalSources.map((source) => (
               <Card key={source.id}>
@@ -132,7 +132,7 @@ export default async function DataSyncPage({ params }: PageProps) {
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-full border border-indigo-700 bg-[#3C3262] px-3 py-1.5 text-xs font-semibold text-indigo-100 shadow-sm transition hover:border-indigo-500/50 hover:text-indigo-300"
+                    className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-[#53917E]/50 hover:text-[#53917E]"
                   >
                     Open Official Page &amp; Check
                   </a>
@@ -143,7 +143,7 @@ export default async function DataSyncPage({ params }: PageProps) {
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-white">State &amp; Territory Portals</h2>
+          <h2 className="text-lg font-semibold text-slate-900">State &amp; Territory Portals</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {stateSources.map((source) => (
               <Card key={source.id}>
@@ -164,7 +164,7 @@ export default async function DataSyncPage({ params }: PageProps) {
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-full border border-indigo-700 bg-[#3C3262] px-3 py-1.5 text-xs font-semibold text-indigo-100 shadow-sm transition hover:border-indigo-500/50 hover:text-indigo-300"
+                    className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-[#53917E]/50 hover:text-[#53917E]"
                   >
                     Open Official Page &amp; Check
                   </a>

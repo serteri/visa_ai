@@ -98,13 +98,13 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
         {/* Header */}
         <div className="mb-8">
           <div className="mb-2 flex items-center gap-2">
-            <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-300">
+            <span className="rounded-full bg-[#53917E]/10 px-3 py-1 text-xs font-semibold text-[#53917E]">
               SkillSelect Data
             </span>
-            <span className="text-xs text-indigo-200">Last scraped {lastScrapedLabel}</span>
+            <span className="text-xs text-slate-600">Last scraped {lastScrapedLabel}</span>
           </div>
-          <h1 className="text-3xl font-bold text-white">Invitation Round Tracker</h1>
-          <p className="mt-2 max-w-2xl text-base text-indigo-100">
+          <h1 className="text-3xl font-bold text-slate-900">Invitation Round Tracker</h1>
+          <p className="mt-2 max-w-2xl text-base text-slate-600">
             Historical points cutoffs and invitation volumes for Australian skilled migration
             (subclasses 189 and 491 Family Sponsored).
           </p>

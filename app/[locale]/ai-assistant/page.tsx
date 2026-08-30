@@ -40,17 +40,17 @@ export default async function AiAssistantPage({ params }: PageProps) {
         <div className="mx-auto max-w-4xl px-4 pt-6">
           <Link
             href={`/${locale}`}
-            className="group inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-indigo-200 transition-colors hover:bg-indigo-800/40 hover:text-white"
+            className="group inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-slate-600 transition-colors hover:bg-[#53917E]/10 hover:text-slate-900"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
             {t(translations, "assistant.backToHome", "Back to Home")}
           </Link>
         </div>
         <header className="mx-auto max-w-4xl px-4 pt-4 pb-6 text-center sm:pt-8">
-          <h1 className="text-2xl font-semibold text-white sm:text-3xl">
+          <h1 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
             {t(translations, "assistant.title", "LogiVisa AI Consultant")}
           </h1>
-          <p className="mt-2 text-sm text-indigo-100 sm:text-base">
+          <p className="mt-2 text-sm text-slate-600 sm:text-base">
             {t(
               translations,
               "assistant.subtitle",

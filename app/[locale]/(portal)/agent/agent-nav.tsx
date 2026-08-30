@@ -20,8 +20,8 @@ export function AgentNav({ locale, active }: { locale: string; active: (typeof L
           href={`${prefix}/agent/${link.href}`}
           className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
             active === link.href
-              ? "bg-indigo-500/10 text-indigo-300"
-              : "text-indigo-100 hover:bg-indigo-800 hover:text-white"
+              ? "bg-[#53917E]/10 text-slate-500"
+              : "text-slate-600 hover:bg-[#53917E]/10 hover:text-slate-900"
           }`}
         >
           {link.label}

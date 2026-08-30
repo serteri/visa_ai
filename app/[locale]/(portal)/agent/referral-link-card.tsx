@@ -29,18 +29,18 @@ export function ReferralLinkCard({ agentId }: { agentId: string }) {
   }
 
   return (
-    <Card className="border-indigo-500/30 bg-indigo-500/10">
+    <Card className="border-[#53917E]/30 bg-[#53917E]/10">
       <CardHeader>
-        <CardTitle className="flex items-center gap-1.5 text-base text-indigo-300">
+        <CardTitle className="flex items-center gap-1.5 text-base text-slate-500">
           <Link2 className="h-4 w-4" /> Your referral link
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-indigo-200">
+        <p className="text-sm text-slate-600">
           Leads who fill out the assessment via this link are assigned to you automatically.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <code className="flex-1 min-w-0 truncate rounded-md border border-indigo-500/30 bg-[#3C3262] px-3 py-2 text-sm text-indigo-100">
+          <code className="flex-1 min-w-0 truncate rounded-md border border-[#53917E]/30 bg-white px-3 py-2 text-sm text-slate-600">
             {link || "…"}
           </code>
           <Button type="button" size="sm" onClick={handleCopy} disabled={!link} className="gap-1.5">

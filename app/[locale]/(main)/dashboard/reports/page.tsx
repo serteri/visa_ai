@@ -29,8 +29,8 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Readiness Reports</h1>
-          <p className="mt-1 text-sm text-indigo-100">Your Full Check PDF reports.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Readiness Reports</h1>
+          <p className="mt-1 text-sm text-slate-600">Your Full Check PDF reports.</p>
         </div>
         <Button asChild>
           <Link href={`/${locale}/full-check`} className="flex items-center gap-2">
@@ -42,10 +42,10 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
       {reports.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
-            <FileText className="h-10 w-10 text-indigo-100" />
+            <FileText className="h-10 w-10 text-slate-600" />
             <div>
-              <p className="font-semibold text-white">No reports yet</p>
-              <p className="mt-1 text-sm text-indigo-200">Complete a Full Check and your PDF report will appear here.</p>
+              <p className="font-semibold text-slate-900">No reports yet</p>
+              <p className="mt-1 text-sm text-slate-600">Complete a Full Check and your PDF report will appear here.</p>
             </div>
             <Button asChild><Link href={`/${locale}/full-check`}>Start Full Check</Link></Button>
           </CardContent>
@@ -60,14 +60,14 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
                     <FileText className="h-5 w-5 text-cyan-400" />
                   </div>
                   <div>
-                    <p className="font-semibold text-white capitalize">
+                    <p className="font-semibold text-slate-900 capitalize">
                       {report.reportType.replace(/_/g, " ")} Report
                     </p>
                     <div className="mt-1 flex items-center gap-2">
                       <Badge variant="outline" className="text-xs">
                         {LANG_LABELS[report.language] ?? report.language}
                       </Badge>
-                      <span className="text-xs text-indigo-200">
+                      <span className="text-xs text-slate-600">
                         {report.createdAt.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
                       </span>
                     </div>

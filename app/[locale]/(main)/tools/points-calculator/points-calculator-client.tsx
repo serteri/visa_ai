@@ -144,7 +144,7 @@ function scoreGradient(n: number): string {
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
-      className={`h-4 w-4 shrink-0 text-indigo-200 transition-transform duration-200 ${
+      className={`h-4 w-4 shrink-0 text-slate-600 transition-transform duration-200 ${
         open ? "rotate-180" : ""
       }`}
       fill="none"
@@ -159,7 +159,7 @@ function ChevronIcon({ open }: { open: boolean }) {
 
 function InfoCallout({ text }: { text: string }) {
   return (
-    <div className="flex gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2.5 text-xs leading-relaxed text-blue-300">
+    <div className="flex gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2.5 text-xs leading-relaxed text-blue-700">
       <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue-400" />
       <span>{text}</span>
     </div>
@@ -194,11 +194,11 @@ function SelectField({
       <div className="flex items-start gap-2">
         <label
           htmlFor={id}
-          className="flex-1 text-sm font-semibold leading-snug text-indigo-100"
+          className="flex-1 text-sm font-semibold leading-snug text-slate-600"
         >
           {label}
           {hint && (
-            <span className="ml-1.5 text-xs font-normal text-indigo-200">{hint}</span>
+            <span className="ml-1.5 text-xs font-normal text-slate-600">{hint}</span>
           )}
         </label>
         {tooltip && (
@@ -211,7 +211,7 @@ function SelectField({
             className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors ${
               tipOpen
                 ? "bg-blue-500 text-white"
-                : "bg-indigo-800 text-indigo-200 hover:bg-blue-500/20 hover:text-blue-300"
+                : "bg-slate-100 text-slate-600 hover:bg-blue-500/20 hover:text-blue-700"
             }`}
           >
             <Info className="h-2.5 w-2.5" />
@@ -226,7 +226,7 @@ function SelectField({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none rounded-xl border border-indigo-700 bg-[#3C3262] px-4 py-3 pr-10 text-sm text-white shadow-sm transition focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-slate-900 shadow-sm transition focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         >
           <option value="" disabled>
             {selectPlaceholder}
@@ -267,10 +267,10 @@ function YesNoField({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-start gap-2">
-        <span className="flex-1 text-sm font-semibold leading-snug text-indigo-100">
+        <span className="flex-1 text-sm font-semibold leading-snug text-slate-600">
           {label}
           {hint && (
-            <span className="ml-1.5 text-xs font-normal text-indigo-200">{hint}</span>
+            <span className="ml-1.5 text-xs font-normal text-slate-600">{hint}</span>
           )}
         </span>
         {tooltip && (
@@ -283,7 +283,7 @@ function YesNoField({
             className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors ${
               tipOpen
                 ? "bg-blue-500 text-white"
-                : "bg-indigo-800 text-indigo-200 hover:bg-blue-500/20 hover:text-blue-300"
+                : "bg-slate-100 text-slate-600 hover:bg-blue-500/20 hover:text-blue-700"
             }`}
           >
             <Info className="h-2.5 w-2.5" />
@@ -302,7 +302,7 @@ function YesNoField({
             className={`flex-1 rounded-xl border py-2.5 text-sm font-semibold transition ${
               value === v
                 ? "border-blue-500 bg-blue-500 text-white shadow-sm"
-                : "border-indigo-700 bg-[#3C3262] text-indigo-100 hover:border-blue-400 hover:bg-blue-500/10"
+                : "border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:bg-blue-500/10"
             }`}
           >
             {v ? yesLabel : noLabel}
@@ -324,22 +324,22 @@ function Section({
 }) {
   const [open, setOpen] = useState(true);
   return (
-    <div className="overflow-hidden rounded-xl border border-indigo-800/50 bg-card shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-card shadow-sm">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-indigo-800/40"
+        className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-[#53917E]/10"
       >
         <div className="flex items-center gap-3">
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
             {step}
           </span>
-          <h2 className="text-sm font-bold text-white">{title}</h2>
+          <h2 className="text-sm font-bold text-slate-900">{title}</h2>
         </div>
         <ChevronIcon open={open} />
       </button>
       {open && (
-        <div className="border-t border-indigo-800/50 px-5 pb-6 pt-5">
+        <div className="border-t border-slate-200 px-5 pb-6 pt-5">
           <div className="flex flex-col gap-5">{children}</div>
         </div>
       )}
@@ -359,7 +359,7 @@ function ScoreRow({
   return (
     <div className="flex items-start justify-between gap-2 text-xs">
       <div>
-        <span className="text-indigo-200">{label}</span>
+        <span className="text-slate-600">{label}</span>
         {note && (
           <span className="block text-[10px] font-semibold text-amber-400">{note}</span>
         )}
@@ -367,10 +367,10 @@ function ScoreRow({
       <span
         className={`shrink-0 font-bold tabular-nums ${
           pts === null
-            ? "text-indigo-300"
+            ? "text-slate-500"
             : pts > 0
               ? "text-blue-400"
-              : "text-indigo-300"
+              : "text-slate-500"
         }`}
       >
         {pts === null ? "–" : `+${pts}`}
@@ -461,17 +461,17 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
       {/* Ambient blobs */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-blue-900/20 blur-[120px]" />
-        <div className="absolute top-1/2 right-1/4 h-[400px] w-[400px] rounded-full bg-indigo-900/15 blur-[100px]" />
+        <div className="absolute top-1/2 right-1/4 h-[400px] w-[400px] rounded-full bg-[#53917E]/10 blur-[100px]" />
       </div>
 
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Page header */}
         {!hideHeader && (
           <div className="mb-10 text-center">
-            <span className="inline-block rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-300">
+            <span className="inline-block rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-700">
               {t("pc.header.badge")}
             </span>
-            <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+            <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
               {t("pc.header.title").split("Points Test")[0]}
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 {/* render the "Points Test Calculator" part with gradient for EN; for other locales render all as gradient */}
@@ -480,7 +480,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                   : t("pc.header.title")}
               </span>
             </h1>
-            <p className="mx-auto mt-3 max-w-xl text-base text-indigo-100">
+            <p className="mx-auto mt-3 max-w-xl text-base text-slate-600">
               {t("pc.header.subtitle")}
             </p>
           </div>
@@ -507,7 +507,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                     className={`flex-1 whitespace-normal rounded-xl border px-3 py-3 text-center text-sm font-semibold leading-snug transition ${
                       form.subclass === value
                         ? "border-blue-500 bg-blue-500 text-white shadow-sm"
-                        : "border-indigo-700 bg-[#3C3262] text-indigo-100 hover:border-blue-400 hover:bg-blue-500/10"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:bg-blue-500/10"
                     }`}
                   >
                     <span className="font-extrabold">{value}</span>
@@ -566,7 +566,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                 onChange={str("ausExp")}
               />
               {calc.isCapped && (
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-300">
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-700">
                   {t("pc.dhaCap").replace("{raw}", String(calc.rawOverseas + calc.rawAus))}
                 </div>
               )}
@@ -691,28 +691,28 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
           <div className="flex flex-col gap-5 lg:col-span-2 lg:sticky lg:top-28 lg:self-start">
 
             {/* Score card */}
-            <div className="rounded-xl border border-indigo-800/50 bg-card p-6 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-200">
+            <div className="rounded-xl border border-slate-200 bg-card p-6 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-600">
                 {t("pc.summary.title")}
               </p>
 
               <div
                 className={`mt-1 bg-gradient-to-br ${
-                  hasAny ? scoreGradient(calc.total) : "from-indigo-700 to-indigo-500"
+                  hasAny ? scoreGradient(calc.total) : "from-[#53917E] to-[#53917E]/70"
                 } inline-block bg-clip-text text-[5rem] font-black leading-none text-transparent`}
               >
                 {hasAny ? calc.total : "–"}
               </div>
 
               {!hasAny && (
-                <p className="mt-1 text-xs text-indigo-200">
+                <p className="mt-1 text-xs text-slate-600">
                   {t("pc.summary.hint")}
                 </p>
               )}
 
               {/* Breakdown */}
-              <div className="mt-4 rounded-lg bg-[#3C3262]/60 px-4 py-4">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-indigo-200">
+              <div className="mt-4 rounded-lg bg-[#EEF5DB] px-4 py-4">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-slate-600">
                   {t("pc.summary.breakdown")}
                 </p>
                 <div className="flex flex-col gap-2.5">
@@ -765,9 +765,9 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                     />
                   )}
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-indigo-800/50 pt-3">
-                  <span className="text-xs font-bold text-indigo-100">{t("pc.summary.total")}</span>
-                  <span className="text-sm font-black text-white">
+                <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
+                  <span className="text-xs font-bold text-slate-600">{t("pc.summary.total")}</span>
+                  <span className="text-sm font-black text-slate-900">
                     {hasAny ? `${calc.total} ${t("pc.summary.pts")}` : "–"}
                   </span>
                 </div>
@@ -790,8 +790,8 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                   }}
                   className={`mt-3 flex w-full items-center justify-center gap-2 rounded-lg border py-2 text-xs font-semibold transition ${
                     isSaved
-                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                      : "border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20"
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
+                      : "border-blue-500/30 bg-blue-500/10 text-blue-700 hover:bg-blue-500/20"
                   }`}
                 >
                   {isSaved ? (
@@ -806,7 +806,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
             {/* Insights & Risks */}
             {activeRisks.length > 0 && (
               <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 shadow-sm">
-                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-red-300">
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-red-700">
                   <svg className="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
@@ -820,9 +820,9 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                     const isAge = label.includes("Age") || label.includes("Yaş") || label.includes("年龄");
                     const isState = label.includes("State") || label.includes("Eyalet") || label.includes("州");
 
-                    let colorClass = "text-red-300 border-red-500/20 bg-black/20";
-                    if (isAge) colorClass = "text-amber-300 border-amber-500/30 bg-black/20";
-                    else if (isState) colorClass = "text-blue-300 border-blue-500/30 bg-black/20";
+                    let colorClass = "text-red-700 border-red-500/20 bg-white";
+                    if (isAge) colorClass = "text-amber-700 border-amber-500/30 bg-white";
+                    else if (isState) colorClass = "text-blue-700 border-blue-500/30 bg-white";
 
                     return (
                       <div key={idx} className={`rounded-lg border p-3 text-sm ${colorClass}`}>
@@ -832,7 +832,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                   })}
                 </div>
                 <div className="mt-4 border-t border-red-500/20 pt-4">
-                  <p className="text-xs italic leading-relaxed text-red-300/60">
+                  <p className="text-xs italic leading-relaxed text-red-700/60">
                     {t("pc.insights.maraDisclaimer")}
                   </p>
                 </div>
@@ -840,12 +840,12 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
             )}
 
             {/* Premium Marketing Hook */}
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#3C3262] via-indigo-950 to-[#3C3262] p-[1px] shadow-lg">
-              <div className="relative rounded-[11px] bg-[#3C3262] p-6 text-center">
-                <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-indigo-500/20 blur-[40px]" />
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white via-[#EEF5DB] to-white p-[1px] shadow-lg">
+              <div className="relative rounded-[11px] bg-white p-6 text-center">
+                <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-[#53917E]/20 blur-[40px]" />
                 <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-blue-500/20 blur-[40px]" />
 
-                <p className="relative z-10 mb-4 text-xs font-semibold uppercase tracking-wider text-indigo-300">
+                <p className="relative z-10 mb-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
                   {t("pc.insights.hookSubtitle")}
                 </p>
                 <Link
@@ -863,7 +863,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
             </div>
 
             {/* Trust row */}
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-indigo-200">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-slate-600">
               {([t("pc.trust.dha"), t("pc.trust.free"), t("pc.trust.instant")] as string[]).map((label) => (
                 <span key={label} className="flex items-center gap-1">
                   <svg className="h-3.5 w-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">

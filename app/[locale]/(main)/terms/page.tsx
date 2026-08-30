@@ -39,7 +39,7 @@ export default async function TermsPage({ params }: TermsPageProps) {
   const { locale } = await params;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 text-indigo-100 prose prose-invert">
+    <div className="mx-auto max-w-4xl px-4 py-12 text-slate-600 prose">
       {locale === "tr" ? <TermsTr /> : locale === "zh-Hans" ? <TermsZh /> : <TermsEn />}
     </div>
   );

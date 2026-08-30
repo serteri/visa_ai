@@ -58,7 +58,7 @@ export function LeadNotes({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Call notes, document status, next follow-up..."
-          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-white shadow-sm outline-none placeholder:text-indigo-300 focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-slate-900 shadow-sm outline-none placeholder:text-slate-500 focus-visible:border-[#53917E] focus-visible:ring-2 focus-visible:ring-[#53917E]/20"
         />
         {error && <p className="text-xs text-red-400">{error}</p>}
         <Button type="button" size="sm" onClick={handleSubmit} disabled={isPending || !text.trim()}>
@@ -69,16 +69,16 @@ export function LeadNotes({
       <div className="space-y-2">
         <Label>Activity</Label>
         {notes.length === 0 ? (
-          <p className="text-sm text-indigo-200">No notes yet.</p>
+          <p className="text-sm text-slate-600">No notes yet.</p>
         ) : (
           <ul className="space-y-2">
             {notes.map((note) => (
-              <li key={note.id} className="rounded-lg border border-indigo-800/50 bg-[#3C3262]/40 px-3 py-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">
+              <li key={note.id} className="rounded-lg border border-slate-200 bg-white px-3 py-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                   {roleLabel(note.author.role)} · {note.author.name ?? note.author.email} ·{" "}
                   {formatTimestamp(note.createdAt, locale)}
                 </p>
-                <p className="mt-0.5 whitespace-pre-wrap text-sm text-white">{note.content}</p>
+                <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-900">{note.content}</p>
               </li>
             ))}
           </ul>
