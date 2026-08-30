@@ -88,25 +88,21 @@ export function PremiumReportShowcase() {
                   className={`flex shrink-0 items-start gap-3 border-l-2 px-5 py-4 text-left transition-colors lg:shrink lg:w-full ${
                     isActive
                       ? "border-[#8052ff] bg-[#8052ff]/5"
-                      : "border-gray-800 hover:border-gray-600"
+                      : "border-slate-800/60 hover:border-slate-600"
                   }`}
                 >
                   <span
                     className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                      isActive ? "bg-[#8052ff] text-white" : "bg-transparent text-gray-500 border border-gray-800"
+                      isActive ? "bg-[#8052ff] text-white" : "bg-transparent text-slate-400 border border-slate-800/60"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
                   </span>
                   <span className="min-w-0">
-                    <span
-                      className={`block whitespace-nowrap text-sm font-semibold lg:whitespace-normal ${
-                        isActive ? "text-white" : "text-gray-400"
-                      }`}
-                    >
+                    <span className="block whitespace-nowrap text-sm font-semibold text-white lg:whitespace-normal">
                       {t(`home.reportShowcase.features.${feature.key}.title`, feature.key)}
                     </span>
-                    <span className="mt-0.5 hidden text-xs leading-relaxed text-gray-500 lg:block">
+                    <span className="mt-0.5 hidden text-xs leading-relaxed text-slate-400 lg:block">
                       {t(`home.reportShowcase.features.${feature.key}.description`, "")}
                     </span>
                   </span>
@@ -120,7 +116,7 @@ export function PremiumReportShowcase() {
               from lg: up the grid goes two-column and they sit side by
               side instead. */}
           <div>
-            <p className="mb-3 text-sm leading-relaxed text-gray-400 lg:hidden">
+            <p className="mb-3 text-sm leading-relaxed text-slate-400 lg:hidden">
               {t(`home.reportShowcase.features.${active.key}.description`, "")}
             </p>
             {/* No border, no box-shadow -- the image floats in the void
