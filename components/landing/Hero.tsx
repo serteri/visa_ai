@@ -268,23 +268,23 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
           <a
             href="#pdf-download-section"
             onClick={onScrollToPdfSection}
-            className="mb-8 inline-flex max-w-full items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/5 px-4 py-2 text-sm font-medium text-[var(--cf-fg)] transition-all hover:border-amber-500/60 hover:bg-amber-500/10"
+            className="mb-8 inline-flex max-w-full items-center gap-2 rounded-full border border-[#53917E]/30 bg-[#53917E]/5 px-4 py-2 text-sm font-medium text-[var(--cf-fg)] transition-all hover:border-[#53917E]/60 hover:bg-[#53917E]/10"
           >
             {isTr ? (
               <>
-                <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">YENİ</span>
+                <span className="rounded bg-[#53917E] px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">YENİ</span>
                 Ücretsiz 80 Sayfalık Avustralya &amp; Kanada PR Kılavuzu 2026
                 <span aria-hidden>→</span>
               </>
             ) : isZh ? (
               <>
-                <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">2026</span>
+                <span className="rounded bg-[#53917E] px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">2026</span>
                 免费 80 页澳大利亚 &amp; 加拿大 PR 指南 2026
                 <span aria-hidden>→</span>
               </>
             ) : (
               <>
-                <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">2026</span>
+                <span className="rounded bg-[#53917E] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">2026</span>
                 Free 80-Page Australia &amp; Canada PR Guide 2026
                 <span aria-hidden>→</span>
               </>
@@ -329,7 +329,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
               }}
               placeholder={placeholder}
               aria-label={placeholder}
-              className="h-16 w-full rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] pl-14 pr-14 text-base text-white shadow-[0_18px_50px_-30px_var(--cf-shadow)] outline-none transition-all placeholder:text-slate-400 focus:border-[var(--cf-accent-dim)] focus:ring-2 focus:ring-[var(--cf-accent-dim)] sm:text-lg"
+              className="h-16 w-full rounded-full border border-[var(--cf-line)] bg-[var(--cf-cover-bg)] pl-14 pr-14 text-base text-slate-900 shadow-[0_18px_50px_-30px_var(--cf-shadow)] outline-none transition-all placeholder:text-slate-500 focus:border-[var(--cf-accent-dim)] focus:ring-2 focus:ring-[var(--cf-accent-dim)] sm:text-lg"
             />
             <kbd className="cf-mono pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 rounded border border-[var(--cf-line)] px-2 py-0.5 text-[0.65rem] text-[var(--cf-muted)] sm:block">
               ↵
@@ -418,7 +418,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             as a bait-and-switch once a visitor reached the paid checkout.
             One badge, one unambiguous message: the price, stated before the
             visitor starts the assessment. */}
-        <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-amber-500/50 bg-amber-500/10 px-5 py-2 text-sm font-medium text-amber-200 shadow-[0_0_20px_-4px_rgba(245,158,11,0.5)]">
+        <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-[#53917E]/40 bg-[#53917E]/10 px-5 py-2 text-sm font-medium text-[#53917E] shadow-[0_0_20px_-4px_rgba(83,145,126,0.5)]">
           <span>
             {t(
               "hero.pricingBadgePrefix",
@@ -429,7 +429,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
                   : "Premium AI Readiness Analysis —"
             )}
           </span>
-          <span className="font-bold text-white">
+          <span className="font-bold text-slate-900">
             {t("hero.pricingBadgePrice", isTr ? "Sadece 49$" : isZh ? "仅需 $49" : "Only $49")}
           </span>
         </div>

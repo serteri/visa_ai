@@ -57,7 +57,7 @@ export function PdfGuides({ locale }: PdfGuidesProps) {
               <StripeCheckoutButton
                 productType="pdf_book"
                 locale={locale}
-                className="h-14 w-full px-8 py-4 text-base bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
+                className="h-14 w-full px-8 py-4 text-base bg-[var(--cf-accent)] font-semibold text-white hover:opacity-90"
                 label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
               />
             </div>
@@ -109,7 +109,7 @@ export function PdfGuides({ locale }: PdfGuidesProps) {
               <StripeCheckoutButton
                 productType="pdf_book_global"
                 locale={locale}
-                className="h-14 w-full px-8 py-4 text-base bg-[var(--cf-accent)] font-semibold text-[var(--cf-bg-deep)] hover:opacity-90"
+                className="h-14 w-full px-8 py-4 text-base bg-[var(--cf-accent)] font-semibold text-white hover:opacity-90"
                 label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
               />
             </div>

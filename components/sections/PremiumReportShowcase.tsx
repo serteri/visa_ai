@@ -42,29 +42,28 @@ export function PremiumReportShowcase() {
   const active = FEATURES.find((f) => f.key === activeKey) ?? FEATURES[0];
 
   return (
-    <section className="relative overflow-hidden bg-black py-24 sm:py-32">
-      {/* Dala neon glow accents -- iris + saffron radial blooms behind the
-          heading, giving the section a "worth $49" moment instead of
-          burying it in a flat black box. */}
+    <section className="relative overflow-hidden border-t border-slate-200 py-24 sm:py-32">
+      {/* Soft accent glow behind the heading -- kept subtle on the light
+          background (was a much brighter blur meant to pop off black). */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[720px] -translate-x-1/2 rounded-full opacity-30 blur-[110px]"
+        className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[720px] -translate-x-1/2 rounded-full opacity-10 blur-[110px]"
         style={{
           background:
-            "radial-gradient(circle at 30% 30%, #8052ff, transparent 60%), radial-gradient(circle at 70% 60%, #ffb829, transparent 55%)",
+            "radial-gradient(circle at 30% 30%, #8052ff, transparent 60%), radial-gradient(circle at 70% 60%, #53917E, transparent 55%)",
         }}
       />
 
       <div className="relative mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#8052ff]/40 bg-[#8052ff]/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#c4b0ff]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#ffb829]" />
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#8052ff]/30 bg-[#8052ff]/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#6d28d9]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#53917E]" />
             {t("home.reportShowcase.eyebrow", "$49 Premium Report")}
           </span>
-          <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+          <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
             {t("home.reportShowcase.title", "What's Inside the Premium Report?")}
           </h2>
-          <p className="mt-4 text-lg font-medium leading-relaxed text-slate-400">
+          <p className="mt-4 text-lg font-medium leading-relaxed text-slate-700">
             {t(
               "home.reportShowcase.subtitle",
               "Stop guessing. Get the exact AI-powered blueprint used by migration experts, detailing your precise points, hidden risks, and a clear roadmap to Permanent Residency. All for $49."
@@ -88,21 +87,21 @@ export function PremiumReportShowcase() {
                   className={`flex shrink-0 items-start gap-3 border-l-2 px-5 py-4 text-left transition-colors lg:shrink lg:w-full ${
                     isActive
                       ? "border-[#8052ff] bg-[#8052ff]/5"
-                      : "border-slate-800/60 hover:border-slate-600"
+                      : "border-slate-200 hover:border-slate-400"
                   }`}
                 >
                   <span
                     className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                      isActive ? "bg-[#8052ff] text-white" : "bg-transparent text-slate-400 border border-slate-800/60"
+                      isActive ? "bg-[#8052ff] text-white" : "bg-transparent text-slate-500 border border-slate-200"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block whitespace-nowrap text-sm font-semibold text-white lg:whitespace-normal">
+                    <span className="block whitespace-nowrap text-sm font-semibold text-slate-900 lg:whitespace-normal">
                       {t(`home.reportShowcase.features.${feature.key}.title`, feature.key)}
                     </span>
-                    <span className="mt-0.5 hidden text-xs leading-relaxed text-slate-400 lg:block">
+                    <span className="mt-0.5 hidden text-xs leading-relaxed text-slate-700 lg:block">
                       {t(`home.reportShowcase.features.${feature.key}.description`, "")}
                     </span>
                   </span>
@@ -116,14 +115,12 @@ export function PremiumReportShowcase() {
               from lg: up the grid goes two-column and they sit side by
               side instead. */}
           <div>
-            <p className="mb-3 text-sm leading-relaxed text-slate-400 lg:hidden">
+            <p className="mb-3 text-sm leading-relaxed text-slate-700 lg:hidden">
               {t(`home.reportShowcase.features.${active.key}.description`, "")}
             </p>
-            {/* No border, no box-shadow -- the image floats in the void
-                per Dala's flat/borderless rule. A soft iris glow sits
-                behind it instead of a hard edge, so a screenshot with its
-                own dark corners doesn't visually fuse into the black
-                section background. */}
+            {/* No border, no box-shadow -- flat/borderless per the site's
+                elevation rule. A soft iris glow sits behind the image
+                instead of a hard edge. */}
             <div className="relative aspect-[3/4] w-full">
               <div
                 aria-hidden

@@ -168,7 +168,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
             {isSignedIn ? (
               <UserMenu locale={locale} />
             ) : (
-              <Link href={`/${locale}/full-check`} className="hidden whitespace-nowrap rounded-full bg-[var(--cf-accent)] px-4 py-2 text-sm font-semibold text-[var(--cf-bg-deep)] shadow-sm transition-all hover:opacity-90 hover:shadow-md sm:inline-flex">
+              <Link href={`/${locale}/full-check`} className="hidden whitespace-nowrap rounded-full bg-[var(--cf-accent)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 hover:shadow-md sm:inline-flex">
                 {tx("Değerlendirme Başlat", "Start Assessment", "开始评估")}
               </Link>
             )}
@@ -204,7 +204,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <Link href={`/${locale}/dashboard`} onClick={() => setMobileOpen(false)} className="rounded-full border border-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--cf-accent)]">
                 {tx("Vize Sürecim", "My Visa Journey", "我的签证进程")}
               </Link>
-              <Link href={`/${locale}/full-check`} onClick={() => setMobileOpen(false)} className="mt-1 rounded-full bg-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--cf-bg-deep)]">
+              <Link href={`/${locale}/full-check`} onClick={() => setMobileOpen(false)} className="mt-1 rounded-full bg-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-white">
                 {tx("Değerlendirme Başlat", "Start Assessment", "开始评估")}
               </Link>
             </div>

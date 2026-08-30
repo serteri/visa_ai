@@ -66,7 +66,7 @@ export function HowItWorks({ locale }: HowItWorksProps) {
           <h2 className="cf-serif text-4xl font-extrabold tracking-tight text-[var(--cf-fg)] sm:text-5xl">
             {isTr ? "Üç adımda yolunuzu bulun." : isZh ? "三步找到您的路径。" : "Find your path in three steps."}
           </h2>
-          <p className="mt-4 text-lg font-medium leading-relaxed text-slate-400">
+          <p className="mt-4 text-lg font-medium leading-relaxed text-slate-700">
             {isTr
               ? "Başvurunuz için binlerce dolar harcamadan önce, gerçek verilere dayalı net bir yol haritası edinin."
               : isZh
@@ -79,19 +79,19 @@ export function HowItWorks({ locale }: HowItWorksProps) {
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="group flex flex-col rounded-2xl border border-slate-800/60 bg-[var(--cf-cover-bg)]/[0.04] p-8 transition-colors hover:bg-[var(--cf-cover-bg)]/[0.08] sm:p-10"
+              className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-8 transition-colors hover:bg-slate-50 sm:p-10"
             >
               <div className="flex items-baseline justify-between">
-                <span className="cf-serif text-5xl font-medium text-[var(--cf-fg)]/20 transition-colors group-hover:text-[var(--cf-accent)]">
+                <span className="cf-serif text-5xl font-medium text-[var(--cf-fg)]/15 transition-colors group-hover:text-[var(--cf-accent)]">
                   0{index + 1}
                 </span>
-                <span className="cf-mono text-[0.65rem] uppercase tracking-[0.14em] text-slate-400">
+                <span className="cf-mono text-[0.65rem] uppercase tracking-[0.14em] text-slate-700">
                   {isTr ? "Adım" : isZh ? "步骤" : "Step"}
                 </span>
               </div>
 
-              <h3 className="cf-serif mt-6 text-xl font-medium text-white">{step.title}</h3>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-300">
+              <h3 className="cf-serif mt-6 text-xl font-medium text-slate-900">{step.title}</h3>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-700">
                 {step.description}
               </p>
 
@@ -108,7 +108,7 @@ export function HowItWorks({ locale }: HowItWorksProps) {
           ))}
         </div>
 
-        <div className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-slate-400">
+        <div className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-slate-700">
           <span className="flex items-center gap-2">
             <EyeOff className="h-4 w-4" />
             {isTr ? "Anonim Değerlendirme" : isZh ? "匿名评估" : "Anonymous Assessment"}
