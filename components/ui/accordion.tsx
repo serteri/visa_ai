@@ -69,15 +69,15 @@ export function AccordionTrigger({
         id={`accordion-trigger-${value}`}
         onClick={() => ctx.setOpenItem(isOpen ? null : value)}
         className={cn(
-          "flex w-full items-center justify-between gap-4 py-4 text-left text-base font-semibold text-white transition-colors hover:text-indigo-400",
+          "flex w-full items-center justify-between gap-4 py-4 text-left text-base font-semibold text-slate-900 transition-colors hover:text-[#53917E]",
           className
         )}
       >
         <span>{children}</span>
         <ChevronDown
           className={cn(
-            "h-5 w-5 shrink-0 text-indigo-200 transition-transform duration-200",
-            isOpen && "rotate-180 text-indigo-600 dark:text-indigo-400"
+            "h-5 w-5 shrink-0 text-slate-600 transition-transform duration-200",
+            isOpen && "rotate-180 text-[#53917E]"
           )}
         />
       </button>

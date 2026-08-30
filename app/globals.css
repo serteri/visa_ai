@@ -2,81 +2,87 @@
 @plugin "@tailwindcss/typography";
 
 /* ─────────────────────────────────────────────────────────────────────────
-   "Dala" rebrand -- dark-void, typography-driven, no borders/shadows.
-   The site no longer offers a light theme: :root, the prefers-color-scheme
-   fallback, and the .dark/.light class overrides (still written by
-   next-themes -- left wired rather than ripped out, since that's a much
-   larger change) all resolve to the SAME palette below, so toggling old
-   theme state has no visible effect.
+   "Modern Sage" rebrand -- light, airy, corporate. Supersedes both earlier
+   dark passes (slate-950/900, then Deep Indigo) per explicit design
+   direction: this app UI (dashboard/CRM/tools -- the "core components"
+   this covers, NOT the landing page's separate cf-* "Dala" brand system,
+   which stays untouched) is a light theme now, full stop. :root, the
+   prefers-color-scheme fallback, and the .dark/.light class overrides
+   (next-themes still writes one of these onto <html>, kept wired for infra
+   compatibility) all resolve to the SAME palette below -- consistent with
+   this file's established "one palette everywhere" approach, so toggling
+   old theme state stays a no-op. All three were updated together this time
+   (a previous pass here only touched :root + the media query and missed
+   .dark/.light, which next-themes actually applies at runtime -- caught
+   live in-browser and fixed after the fact; not repeating that mistake).
 
-   Deep Indigo palette (superseding the earlier slate-950/900 pass): flat
-   slate read as cold/boring, so --background moves to indigo-950 and every
-   raised surface (card/popover/muted/secondary/input) moves to a custom
-   deep violet (#3C3262) -- still a distinct, visibly-lighter layer than the
-   page behind it (same "no collision" principle as the slate version this
-   replaces), just warmer/more on-brand with --primary's existing purple.
-   --border/--input move to indigo-800 to match. --foreground stays white;
-   --muted-foreground moves from slate-400 to indigo-200, since a cool gray
-   reads muddy against a purple surface -- text needs to lean into the same
-   hue family, not fight it.
+   --background: #EEF5DB, a pale cream-sage. --card/--popover/--muted/
+   --secondary/--input: pure white, so a raised surface is unambiguously
+   lighter than the page behind it. --primary: #53917E (the new brand
+   sage-green), used by every default-variant Button/Badge background.
+   --foreground/--card-foreground: slate-900 (headings must read as pure
+   dark ink on white now, not white-on-dark). --muted-foreground: slate-600
+   for body/secondary text. --border: --primary at 20% opacity, a soft sage
+   line instead of a hard gray one. --ring follows --primary for focus-state
+   consistency now that --primary itself changed.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #1e1b4b; /* indigo-950 */
-  --foreground: #ffffff;
-  --card: #3c3262; /* custom deep violet */
-  --card-foreground: #ffffff;
-  --muted: #3c3262;
-  --muted-foreground: #c7d2fe; /* indigo-200 */
-  --primary: #8052ff;
+  --background: #eef5db;
+  --foreground: #0f172a; /* slate-900 */
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --muted: #ffffff;
+  --muted-foreground: #475569; /* slate-600 */
+  --primary: #53917e;
   --primary-foreground: #ffffff;
-  --secondary: #3c3262;
-  --secondary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #0f172a;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(55, 48, 163, 0.5); /* indigo-800/50 */
-  --input: #3730a3; /* indigo-800 */
-  --ring: #8052ff;
+  --border: rgba(83, 145, 126, 0.2); /* #53917E/20 */
+  --input: rgba(83, 145, 126, 0.35);
+  --ring: #53917e;
   --radius: 1.5rem;
   /* Popover/dropdown surfaces (Radix Popover, Command, Select content) --
      matches --card so a dropdown panel reads as the same "raised surface"
      layer as a Card rather than its own one-off shade. */
-  --popover: #3c3262;
-  --popover-foreground: #ffffff;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
 
   /* Dala token names, for components that want to reach for the palette
      directly instead of through the semantic --background/--primary set.
-     --color-void is kept as a true-black swatch for landing-page brand
-     decoration (app/globals.css's .ambient-bg/.cf-* "case file" theme, both
-     out of scope here) -- NOT used by any shadcn/ui component.
-     --color-ash-gray moves to indigo-200 alongside --muted-foreground since
-     it's used the same way (secondary/caption text) by several components
-     that reach for the Dala token directly instead of text-muted-foreground. */
+     --color-void/--color-electric-iris/--color-saffron-spark are kept as-is
+     for landing-page brand decoration (app/globals.css's .ambient-bg/.cf-*
+     "case file" theme) -- NOT used by any shadcn/ui component, out of scope
+     for this app-UI palette change. --color-ash-gray DOES move to
+     slate-600 alongside --muted-foreground, since several app-level
+     components (not landing) read it directly for secondary/caption text. */
   --color-void: #000000;
   --color-bone-white: #ffffff;
   --color-electric-iris: #8052ff;
   --color-saffron-spark: #ffb829;
-  --color-ash-gray: #c7d2fe;
+  --color-ash-gray: #475569;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1e1b4b;
-    --foreground: #ffffff;
-    --card: #3c3262;
-    --card-foreground: #ffffff;
-    --muted: #3c3262;
-    --muted-foreground: #c7d2fe;
-    --primary: #8052ff;
+    --background: #eef5db;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --muted: #ffffff;
+    --muted-foreground: #475569;
+    --primary: #53917e;
     --primary-foreground: #ffffff;
-    --secondary: #3c3262;
-    --secondary-foreground: #ffffff;
+    --secondary: #ffffff;
+    --secondary-foreground: #0f172a;
     --accent: #ffb829;
     --accent-foreground: #000000;
-    --border: rgba(55, 48, 163, 0.5);
-    --input: #3730a3;
-    --ring: #8052ff;
-    --popover: #3c3262;
-    --popover-foreground: #ffffff;
+    --border: rgba(83, 145, 126, 0.2);
+    --input: rgba(83, 145, 126, 0.35);
+    --ring: #53917e;
+    --popover: #ffffff;
+    --popover-foreground: #0f172a;
   }
 }
 
@@ -155,7 +161,7 @@ option {
 }
 
 .ambient-bg {
-  background: #000000;
+  background: #eef5db;
 }
 
 .section-shell {
@@ -232,23 +238,23 @@ option {
    values, so toggling old theme state is visually a no-op.
    ───────────────────────────────────────────────────────────────────────── */
 .dark {
-  --background: #1e1b4b;
-  --foreground: #ffffff;
-  --card: #3c3262;
-  --card-foreground: #ffffff;
-  --muted: #3c3262;
-  --muted-foreground: #c7d2fe;
-  --primary: #8052ff;
+  --background: #eef5db;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --muted: #ffffff;
+  --muted-foreground: #475569;
+  --primary: #53917e;
   --primary-foreground: #ffffff;
-  --secondary: #3c3262;
-  --secondary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #0f172a;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(55, 48, 163, 0.5);
-  --input: #3730a3;
-  --ring: #8052ff;
-  --popover: #3c3262;
-  --popover-foreground: #ffffff;
+  --border: rgba(83, 145, 126, 0.2);
+  --input: rgba(83, 145, 126, 0.35);
+  --ring: #53917e;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
 
   --cf-bg: #000000;
   --cf-bg-deep: #000000;
@@ -266,23 +272,23 @@ option {
 }
 
 .light {
-  --background: #1e1b4b;
-  --foreground: #ffffff;
-  --card: #3c3262;
-  --card-foreground: #ffffff;
-  --muted: #3c3262;
-  --muted-foreground: #c7d2fe;
-  --primary: #8052ff;
+  --background: #eef5db;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --muted: #ffffff;
+  --muted-foreground: #475569;
+  --primary: #53917e;
   --primary-foreground: #ffffff;
-  --secondary: #3c3262;
-  --secondary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #0f172a;
   --accent: #ffb829;
   --accent-foreground: #000000;
-  --border: rgba(55, 48, 163, 0.5);
-  --input: #3730a3;
-  --ring: #8052ff;
-  --popover: #3c3262;
-  --popover-foreground: #ffffff;
+  --border: rgba(83, 145, 126, 0.2);
+  --input: rgba(83, 145, 126, 0.35);
+  --ring: #53917e;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
 
   --cf-bg: #000000;
   --cf-bg-deep: #000000;
