@@ -29,8 +29,8 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Readiness Reports</h1>
-          <p className="mt-1 text-sm text-slate-500">Your Full Check PDF reports.</p>
+          <h1 className="text-2xl font-bold text-white">Readiness Reports</h1>
+          <p className="mt-1 text-sm text-slate-300">Your Full Check PDF reports.</p>
         </div>
         <Button asChild>
           <Link href={`/${locale}/full-check`} className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
           <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
             <FileText className="h-10 w-10 text-slate-300" />
             <div>
-              <p className="font-semibold text-slate-700">No reports yet</p>
+              <p className="font-semibold text-white">No reports yet</p>
               <p className="mt-1 text-sm text-slate-400">Complete a Full Check and your PDF report will appear here.</p>
             </div>
             <Button asChild><Link href={`/${locale}/full-check`}>Start Full Check</Link></Button>
@@ -56,11 +56,11 @@ export default async function ReportsDashboardPage({ params }: PageProps) {
             <Card key={report.id}>
               <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-100 bg-cyan-50">
-                    <FileText className="h-5 w-5 text-cyan-600" />
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-500/30 bg-cyan-500/10">
+                    <FileText className="h-5 w-5 text-cyan-400" />
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-900 capitalize">
+                    <p className="font-semibold text-white capitalize">
                       {report.reportType.replace(/_/g, " ")} Report
                     </p>
                     <div className="mt-1 flex items-center gap-2">

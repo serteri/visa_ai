@@ -56,7 +56,7 @@ export function DashboardSidebar({ locale }: { locale: string }) {
   const [open, setOpen] = useState(false);
   const nav = buildNav(locale);
 
-  const NavLinks = () => (
+  const NavLinks = ({ dark = false }: { dark?: boolean }) => (
     <nav className="flex flex-col gap-1">
       {nav.map((item) => {
         const active =
@@ -70,8 +70,10 @@ export function DashboardSidebar({ locale }: { locale: string }) {
             onClick={() => setOpen(false)}
             className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
               active
-                ? "bg-indigo-50 text-indigo-700"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-indigo-500/10 text-indigo-300"
+                : dark
+                  ? "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             {item.icon}
@@ -90,8 +92,8 @@ export function DashboardSidebar({ locale }: { locale: string }) {
           <p className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
             My Dashboard
           </p>
-          <NavLinks />
-          <div className="mt-auto px-3 pt-4 border-t border-slate-100">
+          <NavLinks dark />
+          <div className="mt-auto px-3 pt-4 border-t border-slate-800/60">
             <button
               type="button"
               onClick={() => signOut({ callbackUrl: `/${locale}` })}

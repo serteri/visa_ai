@@ -47,7 +47,7 @@ function FilterLink({
       className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
         active
           ? "border-indigo-600 bg-indigo-600 text-white"
-          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+          : "border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800"
       }`}
     >
       {children}
@@ -59,7 +59,7 @@ function StatCard({ label, value, tier }: { label: string; value: number; tier?:
   return (
     <div
       className={`rounded-xl border px-4 py-5 ${
-        tier ? tierBadgeClass(tier) : "border-slate-200 bg-white text-slate-900"
+        tier ? tierBadgeClass(tier) : "border-slate-800/60 bg-slate-900 text-white"
       }`}
     >
       <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
@@ -107,7 +107,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
     return (
       <Link
         href={buildQuery({ sort: field, order: nextOrder })}
-        className="inline-flex items-center gap-1 hover:text-slate-900"
+        className="inline-flex items-center gap-1 hover:text-white"
       >
         {label}
         {isActive ? <span className="text-indigo-600">{activeOrder === "asc" ? "↑" : "↓"}</span> : null}
@@ -133,11 +133,11 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
             ← Back to agents
           </Link>
           <h1 className="mt-1 text-2xl font-bold">{agent.name ?? agent.email}</h1>
-          <p className="text-sm text-slate-500">Agent profile &amp; historical performance.</p>
+          <p className="text-sm text-slate-300">Agent profile &amp; historical performance.</p>
         </div>
         {agent.approvalStatus === "PENDING" ? (
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-800">
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-sm font-semibold text-amber-300">
               ⏳ Pending approval
             </span>
             <form action={rejectAgentAction.bind(null, agent.id)}>
@@ -153,7 +153,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
           </div>
         ) : agent.approvalStatus === "REJECTED" ? (
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-sm font-semibold text-rose-700">
+            <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1 text-sm font-semibold text-rose-300">
               ✕ Rejected
             </span>
             <form action={approveAgentAction.bind(null, agent.id)}>
@@ -163,7 +163,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
             </form>
           </div>
         ) : (
-          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700">
+          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-sm font-semibold text-emerald-300">
             ✅ Approved
           </span>
         )}
@@ -175,33 +175,33 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Name</span>
-              <span className="text-sm font-medium">{agent.name ?? "—"}</span>
+              <span className="text-sm font-medium text-white">{agent.name ?? "—"}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Email</span>
-              <span className="text-sm font-medium">{agent.email}</span>
+              <span className="text-sm font-medium text-white">{agent.email}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Agent ID</span>
-              <span className="text-sm font-medium break-all">{agent.id}</span>
+              <span className="text-sm font-medium break-all text-white">{agent.id}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Joined</span>
-              <span className="text-sm font-medium">{agent.createdAt.toLocaleDateString(locale)}</span>
+              <span className="text-sm font-medium text-white">{agent.createdAt.toLocaleDateString(locale)}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Phone</span>
-              <span className="text-sm font-medium">{agent.phone ?? "—"}</span>
+              <span className="text-sm font-medium text-white">{agent.phone ?? "—"}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Company</span>
-              <span className="text-sm font-medium">{agent.companyName ?? "—"}</span>
+              <span className="text-sm font-medium text-white">{agent.companyName ?? "—"}</span>
             </div>
-            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3 sm:col-span-2">
+            <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3 sm:col-span-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Address</span>
-              <span className="text-sm font-medium">{agent.address ?? "—"}</span>
+              <span className="text-sm font-medium text-white">{agent.address ?? "—"}</span>
             </div>
           </div>
         </CardContent>
@@ -251,7 +251,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
         </CardHeader>
         <CardContent>
           {assignedLeads.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">
+            <p className="py-6 text-center text-sm text-slate-300">
               No leads {activeTier ? `in the ${activeTier} tier ` : ""}
               {activeStatus ? `with status ${activeStatus} ` : ""}assigned yet.
             </p>
@@ -259,7 +259,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 text-left text-slate-500">
+                  <tr className="border-b border-slate-800/60 text-left text-slate-400">
                     <th className="py-2 pr-4 font-semibold">{sortHeader("name", "Name")}</th>
                     <th className="px-4 py-2 font-semibold">Email</th>
                     <th className="px-4 py-2 font-semibold">{sortHeader("tier", "Tier")}</th>
@@ -272,11 +272,11 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
                   {assignedLeads.map((lead) => {
                     const { firstName, lastName } = splitName(lead.fullName);
                     return (
-                      <tr key={lead.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-2 pr-4 font-medium">
+                      <tr key={lead.id} className="border-b border-slate-800/60 hover:bg-slate-800/40">
+                        <td className="py-2 pr-4 font-medium text-white">
                           {firstName || lastName ? `${firstName} ${lastName}`.trim() : "—"}
                         </td>
-                        <td className="px-4 py-2 text-slate-600">{lead.email}</td>
+                        <td className="px-4 py-2 text-slate-300">{lead.email}</td>
                         <td className="px-4 py-2">
                           <span
                             className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold ${tierBadgeClass(
@@ -286,8 +286,8 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
                             {tierEmoji(lead.pointsTier)} {lead.pointsTier ?? "—"}
                           </span>
                         </td>
-                        <td className="px-4 py-2 text-slate-600">{lead.docStatus ?? "New"}</td>
-                        <td className="px-4 py-2 text-slate-500">{lead.createdAt.toLocaleDateString(locale)}</td>
+                        <td className="px-4 py-2 text-slate-300">{lead.docStatus ?? "New"}</td>
+                        <td className="px-4 py-2 text-slate-300">{lead.createdAt.toLocaleDateString(locale)}</td>
                         <td className="px-4 py-2 text-right">
                           <Link
                             href={`/${locale}/admin/crm/lead/${lead.id}`}
@@ -314,12 +314,12 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">No transactions yet.</p>
+            <p className="py-6 text-center text-sm text-slate-300">No transactions yet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 text-left text-slate-500">
+                  <tr className="border-b border-slate-800/60 text-left text-slate-400">
                     <th className="py-2 pr-4 font-semibold">Lead</th>
                     <th className="px-4 py-2 font-semibold">Total price</th>
                     <th className="px-4 py-2 font-semibold">Rate</th>
@@ -330,16 +330,16 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
                 </thead>
                 <tbody>
                   {transactions.map((tx) => (
-                    <tr key={tx.id} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="py-2 pr-4 font-medium">{tx.leadName}</td>
-                      <td className="px-4 py-2 text-slate-600">{formatUsd(tx.totalAmount)}</td>
-                      <td className="px-4 py-2 text-slate-600">
+                    <tr key={tx.id} className="border-b border-slate-800/60 hover:bg-slate-800/40">
+                      <td className="py-2 pr-4 font-medium text-white">{tx.leadName}</td>
+                      <td className="px-4 py-2 text-slate-300">{formatUsd(tx.totalAmount)}</td>
+                      <td className="px-4 py-2 text-slate-300">
                         {tx.commissionRate !== null ? `${(tx.commissionRate * 100).toFixed(0)}%` : "—"}
                       </td>
-                      <td className="px-4 py-2 font-semibold text-emerald-700">
+                      <td className="px-4 py-2 font-semibold text-emerald-300">
                         {tx.commissionAmount !== null ? formatUsd(tx.commissionAmount) : "—"}
                       </td>
-                      <td className="px-4 py-2 text-slate-500">{tx.createdAt.toLocaleDateString(locale)}</td>
+                      <td className="px-4 py-2 text-slate-300">{tx.createdAt.toLocaleDateString(locale)}</td>
                       <td className="px-4 py-2 text-right">
                         <Link
                           href={`/${locale}/admin/crm/lead/${tx.leadId}`}

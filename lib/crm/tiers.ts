@@ -17,13 +17,13 @@ export function normalizeTier(value?: string | null): LeadTier | "Unassigned" {
 export function tierBadgeClass(value?: string | null): string {
   switch (normalizeTier(value)) {
     case "Hot":
-      return "border-red-200 bg-red-50 text-red-700";
+      return "border-red-500/30 bg-red-500/10 text-red-300";
     case "Warm":
-      return "border-amber-200 bg-amber-50 text-amber-700";
+      return "border-amber-500/30 bg-amber-500/10 text-amber-300";
     case "Cold":
-      return "border-sky-200 bg-sky-50 text-sky-700";
+      return "border-sky-500/30 bg-sky-500/10 text-sky-300";
     default:
-      return "border-slate-200 bg-slate-50 text-slate-600";
+      return "border-slate-700 bg-slate-800/60 text-slate-300";
   }
 }
 

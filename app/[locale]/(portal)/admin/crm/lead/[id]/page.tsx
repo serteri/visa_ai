@@ -22,9 +22,9 @@ type PageProps = {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+    <div className="flex flex-col gap-0.5 rounded-lg border border-slate-800/60 bg-slate-900/60 px-4 py-3">
       <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</span>
-      <span className="text-sm font-medium text-slate-900">{value || "—"}</span>
+      <span className="text-sm font-medium text-white">{value || "—"}</span>
     </div>
   );
 }
@@ -109,17 +109,17 @@ export default async function AdminLeadDetailPage({ params }: PageProps) {
         <CardContent className="space-y-4">
           <LeadNotes leadId={id} locale={locale} initialNotes={notes} />
           {legacyNotes.length > 0 && (
-            <div className="space-y-2 border-t border-slate-100 pt-4">
+            <div className="space-y-2 border-t border-slate-800/60 pt-4">
               <Label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                 Earlier notes
               </Label>
               <ul className="space-y-2">
                 {legacyNotes.map((entry, i) => (
-                  <li key={i} className="rounded-lg border border-slate-100 bg-slate-50/40 px-3 py-2">
+                  <li key={i} className="rounded-lg border border-slate-800/60 bg-slate-900/40 px-3 py-2">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                       {formatNoteTimestamp(entry.at, locale)}
                     </p>
-                    <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-700">{entry.text}</p>
+                    <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-300">{entry.text}</p>
                   </li>
                 ))}
               </ul>
@@ -139,11 +139,11 @@ export default async function AdminLeadDetailPage({ params }: PageProps) {
         </CardHeader>
         <CardContent>
           {lead.reportJson ? (
-            <div className="overflow-hidden rounded-lg border border-slate-200">
+            <div className="overflow-hidden rounded-lg border border-slate-800/60">
               <iframe src={pdfUrl} title="Assessment report" className="h-[720px] w-full" />
             </div>
           ) : (
-            <p className="text-sm text-slate-500">No generated report is stored for this lead yet.</p>
+            <p className="text-sm text-slate-300">No generated report is stored for this lead yet.</p>
           )}
         </CardContent>
       </Card>

@@ -25,12 +25,12 @@ export default async function PortalLayout({
         : `${prefix}/`;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white">
+    <div className="min-h-screen bg-background text-white">
+      <header className="border-b border-slate-800/60 bg-slate-900">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
           <Link href={homeHref} className="flex items-center gap-2">
-            <span className="text-lg font-extrabold tracking-tight">LogiVisa</span>
-            <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
+            <span className="text-lg font-extrabold tracking-tight text-white">LogiVisa</span>
+            <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs font-semibold text-indigo-300">
               Portal
             </span>
           </Link>
@@ -41,7 +41,7 @@ export default async function PortalLayout({
                 <nav aria-label="Admin areas" className="hidden items-center gap-1 md:flex">
                   <Link
                     href={`/${locale}/admin/crm/dashboard`}
-                    className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                    className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white"
                   >
                     CRM &amp; Agents
                   </Link>
@@ -51,15 +51,15 @@ export default async function PortalLayout({
                       prompt -- see app/api/admin/bridge-legacy-session/route.ts. */}
                   <Link
                     href={`/api/admin/bridge-legacy-session?locale=${locale}`}
-                    className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                    className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white"
                   >
                     Data Sync &amp; Sources
                   </Link>
                 </nav>
               )}
               <div className="hidden text-right sm:block">
-                <p className="text-sm font-medium leading-tight">{user.name ?? user.email}</p>
-                <p className="text-xs uppercase tracking-wide text-slate-500">{user.role}</p>
+                <p className="text-sm font-medium leading-tight text-white">{user.name ?? user.email}</p>
+                <p className="text-xs uppercase tracking-wide text-slate-300">{user.role}</p>
               </div>
               <form action={signOutAction}>
                 <Button type="submit" variant="outline" size="sm">

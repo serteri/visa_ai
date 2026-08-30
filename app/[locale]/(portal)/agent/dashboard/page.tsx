@@ -39,7 +39,7 @@ function FilterLink({
       className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
         active
           ? "border-indigo-600 bg-indigo-600 text-white"
-          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+          : "border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800"
       }`}
     >
       {children}
@@ -92,18 +92,18 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Agent</p>
           <h1 className="text-2xl font-bold">My assigned leads</h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-300">
             Signed in as {user.name ?? user.email}. Showing only leads routed to you.
           </p>
         </div>
         <AgentNav locale={locale} active="dashboard" />
       </div>
 
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
           Total confirmed commission
         </p>
-        <p className="mt-1 text-3xl font-extrabold text-emerald-900">{formatUsd(commissionTotal)}</p>
+        <p className="mt-1 text-3xl font-extrabold text-emerald-200">{formatUsd(commissionTotal)}</p>
       </div>
 
       <Card>
@@ -112,12 +112,12 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">No confirmed sales yet.</p>
+            <p className="py-6 text-center text-sm text-slate-300">No confirmed sales yet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 text-left text-slate-500">
+                  <tr className="border-b border-slate-800/60 text-left text-slate-400">
                     <th className="py-2 pr-4 font-semibold">Customer</th>
                     <th className="px-4 py-2 font-semibold">Total paid</th>
                     <th className="px-4 py-2 font-semibold">Your commission</th>
@@ -126,13 +126,13 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
                 </thead>
                 <tbody>
                   {transactions.map((tx) => (
-                    <tr key={tx.id} className="border-b border-slate-100">
-                      <td className="py-2 pr-4 font-medium">{tx.leadName}</td>
-                      <td className="px-4 py-2 text-slate-600">{formatUsd(tx.totalAmount)}</td>
-                      <td className="px-4 py-2 font-semibold text-emerald-700">
+                    <tr key={tx.id} className="border-b border-slate-800/60">
+                      <td className="py-2 pr-4 font-medium text-white">{tx.leadName}</td>
+                      <td className="px-4 py-2 text-slate-300">{formatUsd(tx.totalAmount)}</td>
+                      <td className="px-4 py-2 font-semibold text-emerald-300">
                         {formatUsd(tx.commissionAmount)}
                       </td>
-                      <td className="px-4 py-2 text-slate-500">{tx.createdAt.toLocaleDateString(locale)}</td>
+                      <td className="px-4 py-2 text-slate-300">{tx.createdAt.toLocaleDateString(locale)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -170,14 +170,14 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
         </CardHeader>
         <CardContent>
           {leads.length === 0 ? (
-            <p className="py-8 text-center text-sm text-slate-500">
+            <p className="py-8 text-center text-sm text-slate-300">
               No leads {activeTier ? `in the ${activeTier} tier ` : ""}assigned to you yet.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 text-left text-slate-500">
+                  <tr className="border-b border-slate-800/60 text-left text-slate-400">
                     <th className="py-3 pr-4 font-semibold">Name</th>
                     <th className="px-4 py-3 font-semibold">Email</th>
                     <th className="px-4 py-3 font-semibold">Phone</th>
@@ -191,12 +191,12 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
                   {leads.map((lead) => {
                     const { firstName, lastName } = splitName(lead.fullName);
                     return (
-                      <tr key={lead.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 pr-4 font-medium">
+                      <tr key={lead.id} className="border-b border-slate-800/60 hover:bg-slate-800/40">
+                        <td className="py-3 pr-4 font-medium text-white">
                           {firstName || lastName ? `${firstName} ${lastName}`.trim() : "—"}
                         </td>
-                        <td className="px-4 py-3 text-slate-600">{lead.email}</td>
-                        <td className="px-4 py-3 text-slate-600">{lead.phone ?? "—"}</td>
+                        <td className="px-4 py-3 text-slate-300">{lead.email}</td>
+                        <td className="px-4 py-3 text-slate-300">{lead.phone ?? "—"}</td>
                         <td className="px-4 py-3">
                           <span
                             className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold ${tierBadgeClass(
@@ -206,8 +206,8 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
                             {tierEmoji(lead.pointsTier)} {lead.pointsTier ?? "Unassigned"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-slate-600">{lead.docStatus ?? "New"}</td>
-                        <td className="px-4 py-3 text-slate-500">
+                        <td className="px-4 py-3 text-slate-300">{lead.docStatus ?? "New"}</td>
+                        <td className="px-4 py-3 text-slate-300">
                           {lead.createdAt.toLocaleDateString(locale)}
                         </td>
                         <td className="px-4 py-3 text-right">

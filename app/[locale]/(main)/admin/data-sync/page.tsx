@@ -41,9 +41,9 @@ async function getImportLogMap(): Promise<Record<string, ImportLogEntry>> {
 }
 
 function statusBadgeClass(status: string | undefined): string {
-  if (status === "success") return "border-emerald-200 bg-emerald-50 text-emerald-700";
-  if (status === "failed") return "border-rose-200 bg-rose-50 text-rose-700";
-  return "border-slate-200 bg-slate-50 text-slate-500";
+  if (status === "success") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+  if (status === "failed") return "border-rose-500/30 bg-rose-500/10 text-rose-300";
+  return "border-slate-700 bg-slate-800 text-slate-300";
 }
 
 export default async function DataSyncPage({ params }: PageProps) {
@@ -83,14 +83,14 @@ export default async function DataSyncPage({ params }: PageProps) {
               {SOURCE_FORMATS.map((format) => {
                 const log = importLog[format.id];
                 return (
-                  <div key={format.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                  <div key={format.id} className="rounded-lg border border-slate-800/60 bg-slate-900/60 p-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium text-slate-800">{format.label}</p>
+                      <p className="text-sm font-medium text-white">{format.label}</p>
                       <Badge className={statusBadgeClass(log?.status)} variant="outline">
                         {log?.status ?? "Never imported"}
                       </Badge>
                     </div>
-                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500">
+                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-300">
                       <Clock className="h-3 w-3 shrink-0" />
                       {log?.lastRunAt
                         ? log.lastRunAt.toLocaleString(locale, {
@@ -111,7 +111,7 @@ export default async function DataSyncPage({ params }: PageProps) {
         </Card>
 
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-slate-900">Federal Sources</h2>
+          <h2 className="text-lg font-semibold text-white">Federal Sources</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {federalSources.map((source) => (
               <Card key={source.id}>
@@ -132,7 +132,7 @@ export default async function DataSyncPage({ params }: PageProps) {
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-indigo-300 hover:text-indigo-700"
+                    className="flex items-center justify-center gap-1.5 rounded-full border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition hover:border-indigo-500/50 hover:text-indigo-300"
                   >
                     Open Official Page &amp; Check
                   </a>
@@ -143,7 +143,7 @@ export default async function DataSyncPage({ params }: PageProps) {
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-slate-900">State &amp; Territory Portals</h2>
+          <h2 className="text-lg font-semibold text-white">State &amp; Territory Portals</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {stateSources.map((source) => (
               <Card key={source.id}>
@@ -164,7 +164,7 @@ export default async function DataSyncPage({ params }: PageProps) {
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-indigo-300 hover:text-indigo-700"
+                    className="flex items-center justify-center gap-1.5 rounded-full border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 shadow-sm transition hover:border-indigo-500/50 hover:text-indigo-300"
                   >
                     Open Official Page &amp; Check
                   </a>

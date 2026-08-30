@@ -58,9 +58,9 @@ export function LeadNotes({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Call notes, document status, next follow-up..."
-          className="w-full rounded-lg border border-input bg-white px-3 py-2 text-sm shadow-sm outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-white shadow-sm outline-none placeholder:text-slate-500 focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20"
         />
-        {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && <p className="text-xs text-red-400">{error}</p>}
         <Button type="button" size="sm" onClick={handleSubmit} disabled={isPending || !text.trim()}>
           {isPending ? "Saving..." : "Add Note"}
         </Button>
@@ -73,12 +73,12 @@ export function LeadNotes({
         ) : (
           <ul className="space-y-2">
             {notes.map((note) => (
-              <li key={note.id} className="rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2">
+              <li key={note.id} className="rounded-lg border border-slate-800/60 bg-slate-900/40 px-3 py-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {roleLabel(note.author.role)} · {note.author.name ?? note.author.email} ·{" "}
                   {formatTimestamp(note.createdAt, locale)}
                 </p>
-                <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-900">{note.content}</p>
+                <p className="mt-0.5 whitespace-pre-wrap text-sm text-white">{note.content}</p>
               </li>
             ))}
           </ul>
