@@ -27,7 +27,7 @@
    consistency now that --primary itself changed.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #eef5db;
+  --background: #f8fafc; /* slate-50 */
   --foreground: #0f172a; /* slate-900 */
   --card: #ffffff;
   --card-foreground: #0f172a;
@@ -39,8 +39,8 @@
   --secondary-foreground: #0f172a;
   --accent: #53917e;
   --accent-foreground: #ffffff;
-  --border: rgba(83, 145, 126, 0.2); /* #53917E/20 */
-  --input: rgba(83, 145, 126, 0.35);
+  --border: #e2e8f0; /* slate-200 */
+  --input: #cbd5e1; /* slate-300 */
   --ring: #53917e;
   --radius: 1.5rem;
   /* Popover/dropdown surfaces (Radix Popover, Command, Select content) --
@@ -66,7 +66,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #eef5db;
+    --background: #f8fafc; /* slate-50 */
     --foreground: #0f172a;
     --card: #ffffff;
     --card-foreground: #0f172a;
@@ -78,8 +78,8 @@
     --secondary-foreground: #0f172a;
     --accent: #53917e;
     --accent-foreground: #ffffff;
-    --border: rgba(83, 145, 126, 0.2);
-    --input: rgba(83, 145, 126, 0.35);
+    --border: #e2e8f0;
+    --input: #cbd5e1;
     --ring: #53917e;
     --popover: #ffffff;
     --popover-foreground: #0f172a;
@@ -161,7 +161,7 @@ option {
 }
 
 .ambient-bg {
-  background: #eef5db;
+  background: #f8fafc;
 }
 
 .section-shell {
@@ -242,7 +242,7 @@ option {
    values, so toggling old theme state is visually a no-op.
    ───────────────────────────────────────────────────────────────────────── */
 .dark {
-  --background: #eef5db;
+  --background: #f8fafc; /* slate-50 */
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
@@ -254,8 +254,8 @@ option {
   --secondary-foreground: #0f172a;
   --accent: #53917e;
   --accent-foreground: #ffffff;
-  --border: rgba(83, 145, 126, 0.2);
-  --input: rgba(83, 145, 126, 0.35);
+  --border: #e2e8f0;
+  --input: #cbd5e1;
   --ring: #53917e;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
@@ -276,7 +276,7 @@ option {
 }
 
 .light {
-  --background: #eef5db;
+  --background: #f8fafc; /* slate-50 */
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
@@ -288,8 +288,8 @@ option {
   --secondary-foreground: #0f172a;
   --accent: #53917e;
   --accent-foreground: #ffffff;
-  --border: rgba(83, 145, 126, 0.2);
-  --input: rgba(83, 145, 126, 0.35);
+  --border: #e2e8f0;
+  --input: #cbd5e1;
   --ring: #53917e;
   --popover: #ffffff;
   --popover-foreground: #0f172a;

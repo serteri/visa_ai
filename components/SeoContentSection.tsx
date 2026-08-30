@@ -82,7 +82,7 @@ export function SeoContentSection({
           className="flex w-full items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm transition hover:bg-slate-50"
         >
           <div className="text-left">
-            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">{toolLabel}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#53917E]">{toolLabel}</p>
             <p className="mt-0.5 text-base font-bold text-slate-900">{aboutTitle}</p>
           </div>
           {open ? (

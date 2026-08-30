@@ -199,7 +199,7 @@ function ChecklistCard({
   const expiryStatus = doc.expiryTracking && state.expiryDate ? getExpiryStatus(state.expiryDate, doc.warningMonths) : null
 
   return (
-    <div className={`bg-[var(--cf-cover-bg)] px-4 py-4 transition-opacity duration-150 ${checked ? 'opacity-55' : ''}`}>
+    <div className={`bg-[#ffffff] px-4 py-4 transition-opacity duration-150 ${checked ? 'opacity-55' : ''}`}>
       <div className="flex gap-3">
         <div className="shrink-0 pt-0.5">
           <input
@@ -207,52 +207,52 @@ function ChecklistCard({
             id={`chk-${doc.id}`}
             checked={checked}
             onChange={(e) => onToggle(e.target.checked)}
-            className="h-5 w-5 cursor-pointer rounded border-[var(--cf-cover-line)] accent-[var(--cf-accent)]"
+            className="h-5 w-5 cursor-pointer rounded border-[#e2e8f0] accent-[#53917E]"
           />
         </div>
 
         <div className="min-w-0 flex-1">
           <label htmlFor={`chk-${doc.id}`} className="cursor-pointer">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className={`break-words text-sm font-semibold ${checked ? 'text-[var(--cf-cover-muted)] line-through' : 'text-[var(--cf-cover-fg)]'}`}>
+              <span className={`break-words text-sm font-semibold ${checked ? 'text-[#475569] line-through' : 'text-[#0f172a]'}`}>
                 {doc.name}
               </span>
-              {!doc.required && <span className="text-xs italic text-[var(--cf-cover-muted)]">({categoryLabel})</span>}
+              {!doc.required && <span className="text-xs italic text-[#475569]">({categoryLabel})</span>}
               {doc.apostilleRequired && (
-                <span className="inline-flex items-center gap-0.5 rounded bg-[var(--cf-flag-rust-bg)] px-1.5 py-0.5 text-xs font-medium text-[var(--cf-flag-rust-fg)]">
+                <span className="inline-flex items-center gap-0.5 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700">
                   <Stamp className="h-3 w-3" /> Apostille
                 </span>
               )}
               {doc.naatiRequired && (
-                <span className="inline-flex items-center gap-0.5 rounded bg-[var(--cf-flag-brass-bg)] px-1.5 py-0.5 text-xs font-medium text-[var(--cf-flag-brass-fg)]">
+                <span className="inline-flex items-center gap-0.5 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">
                   <Languages className="h-3 w-3" /> NAATI
                 </span>
               )}
             </div>
-            <p className="mt-0.5 break-words text-xs whitespace-normal text-[var(--cf-cover-muted)]">{doc.description}</p>
+            <p className="mt-0.5 break-words text-xs whitespace-normal text-[#475569]">{doc.description}</p>
           </label>
 
           {doc.expiryTracking && (
             <div className="mt-2.5 flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1 text-xs text-[var(--cf-cover-muted)]">
+              <span className="flex items-center gap-1 text-xs text-[#475569]">
                 <Calendar className="h-3.5 w-3.5" /> Expiry:
               </span>
               <input
                 type="date"
                 value={state.expiryDate}
                 onChange={(e) => onExpiryChange(e.target.value)}
-                className="rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                className="rounded border border-[#e2e8f0] bg-[#f8fafc] px-2 py-1 text-xs text-[#0f172a] focus:outline-none focus:ring-1 focus:ring-[#53917E1a]"
               />
               {expiryStatus && (
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                     expiryStatus.status === 'expired'
-                      ? 'bg-[var(--cf-flag-rust-bg)] text-[var(--cf-flag-rust-fg)]'
+                      ? 'bg-amber-100 text-amber-700'
                       : expiryStatus.status === 'danger'
-                        ? 'bg-[var(--cf-flag-rust-bg)] text-[var(--cf-flag-rust-fg)]'
+                        ? 'bg-amber-100 text-amber-700'
                         : expiryStatus.status === 'warning'
-                          ? 'bg-[var(--cf-flag-brass-bg)] text-[var(--cf-flag-brass-fg)]'
-                          : 'bg-[var(--cf-flag-sage-bg)] text-[var(--cf-flag-sage-fg)]'
+                          ? 'bg-slate-100 text-slate-700'
+                          : 'bg-[#53917E]/10 text-[#53917E]'
                   }`}
                 >
                   {expiryStatus.status === 'expired'
@@ -271,7 +271,7 @@ function ChecklistCard({
             <button
               type="button"
               onClick={onToggleTip}
-              className="flex items-center gap-1 text-xs text-[var(--cf-accent)] transition-colors hover:opacity-80"
+              className="flex items-center gap-1 text-xs text-[#53917E] transition-colors hover:opacity-80"
             >
               <Info className="h-3.5 w-3.5" />
               {tipOpen ? 'Hide tip' : 'Show tip'}
@@ -280,14 +280,14 @@ function ChecklistCard({
             <button
               type="button"
               onClick={onToggleNote}
-              className="flex items-center gap-1 text-xs text-[var(--cf-cover-muted)] transition-colors hover:text-[var(--cf-cover-fg)]"
+              className="flex items-center gap-1 text-xs text-[#475569] transition-colors hover:text-[#0f172a]"
             >
               📝 {noteOpen ? 'Hide note' : state.notes ? 'Edit note' : 'Add note'}
               {noteOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
             </button>
           </div>
 
-          {tipOpen && <div className="mt-2 rounded-lg border border-[var(--cf-accent-dim)] bg-[var(--cf-accent-dim)] px-3 py-2 text-xs leading-relaxed text-[var(--cf-cover-fg)]">{doc.tips}</div>}
+          {tipOpen && <div className="mt-2 rounded-lg border border-[#53917E1a] bg-[#53917E1a] px-3 py-2 text-xs leading-relaxed text-[#0f172a]">{doc.tips}</div>}
 
           {noteOpen && (
             <textarea
@@ -295,11 +295,11 @@ function ChecklistCard({
               onChange={() => onToggleNote()}
               placeholder="Reference number, submission date, translation note..."
               rows={2}
-              className="mt-2 w-full resize-none rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1.5 text-xs text-[var(--cf-cover-fg)] placeholder:text-[var(--cf-cover-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+              className="mt-2 w-full resize-none rounded border border-[#e2e8f0] bg-[#f8fafc] px-2 py-1.5 text-xs text-[#0f172a] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#53917E1a]"
             />
           )}
 
-          {!noteOpen && state.notes && <p className="mt-1.5 truncate text-xs italic text-[var(--cf-cover-muted)]">📝 {state.notes}</p>}
+          {!noteOpen && state.notes && <p className="mt-1.5 truncate text-xs italic text-[#475569]">📝 {state.notes}</p>}
         </div>
       </div>
     </div>
@@ -379,27 +379,27 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
 
   if (!selectedVisa) {
     return (
-      <div className="min-h-screen bg-[var(--cf-bg)]">
+      <div className="min-h-screen bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 md:py-16">
           <div className="mb-8 text-center md:mb-10">
-            <h1 className="cf-serif mb-3 text-2xl font-medium text-[var(--cf-fg)] md:text-3xl">{pack.pageTitle}</h1>
-            <p className="mx-auto max-w-2xl text-base text-[var(--cf-muted)] md:text-lg">{pack.pageSubtitle}</p>
+            <h1 className="cf-serif mb-3 text-2xl font-medium text-[#0f172a] md:text-3xl">{pack.pageTitle}</h1>
+            <p className="mx-auto max-w-2xl text-base text-[#475569] md:text-lg">{pack.pageSubtitle}</p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {VISA_ORDER.map((visa) => (
               <Link
                 key={visa}
                 href={`/${locale}/tools/document-checklist-2026/${visa}`}
-                className="group rounded-sm border-2 border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg)] p-6 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm"
+                className="group rounded-sm border-2 border-[#e2e8f0] bg-[#ffffff] p-6 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm"
               >
                 <div className="mb-3 text-3xl">📄</div>
-                <div className="text-lg font-bold text-[var(--cf-cover-fg)]">{pack.visaTitle[visa].title}</div>
-                <div className="mt-1 text-sm text-[var(--cf-cover-muted)]">{pack.visaTitle[visa].description}</div>
-                <div className="mt-3 text-xs text-[var(--cf-cover-muted)] transition-colors group-hover:text-[var(--cf-cover-fg)]">{pack.viewChecklist}</div>
+                <div className="text-lg font-bold text-[#0f172a]">{pack.visaTitle[visa].title}</div>
+                <div className="mt-1 text-sm text-[#475569]">{pack.visaTitle[visa].description}</div>
+                <div className="mt-3 text-xs text-[#475569] transition-colors group-hover:text-[#0f172a]">{pack.viewChecklist}</div>
               </Link>
             ))}
           </div>
-          <p className="mt-8 text-center text-xs text-[var(--cf-muted)]">{pack.autoSaveNotice}</p>
+          <p className="mt-8 text-center text-xs text-[#475569]">{pack.autoSaveNotice}</p>
         </div>
       </div>
     )
@@ -409,26 +409,26 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
   const pct = progress.total > 0 ? (progress.checked / progress.total) * 100 : 0
 
   return (
-    <div className="min-h-screen bg-[var(--cf-bg)] print:bg-white">
-      <div className="sticky top-0 z-40 border-b border-[var(--cf-line)] bg-[var(--cf-bg)] shadow-sm print:hidden">
+    <div className="min-h-screen bg-slate-50 print:bg-white">
+      <div className="sticky top-0 z-40 border-b border-[#e2e8f0] bg-slate-50 shadow-sm print:hidden">
         <div className="mx-auto max-w-3xl px-4 py-3">
           <div className="mb-2 flex items-center justify-between gap-2">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <Link href={backHref} className="flex shrink-0 items-center gap-1 text-sm text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-fg)]">
+              <Link href={backHref} className="flex shrink-0 items-center gap-1 text-sm text-[#475569] transition-colors hover:text-[#0f172a]">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">{pack.backButton}</span>
               </Link>
-              <span className="hidden text-[var(--cf-line)] sm:inline">|</span>
-              <span className="truncate text-sm font-semibold text-[var(--cf-fg)]">{visaCopy.title} — {visaCopy.description}</span>
+              <span className="hidden text-[#e2e8f0] sm:inline">|</span>
+              <span className="truncate text-sm font-semibold text-[#0f172a]">{visaCopy.title} — {visaCopy.description}</span>
             </div>
             <div className="flex shrink-0 items-center gap-2">
               {progress.expiryAlerts.length > 0 && (
-                <span className="hidden items-center gap-1 text-xs font-medium text-[var(--cf-accent)] sm:flex">
+                <span className="hidden items-center gap-1 text-xs font-medium text-[#53917E] sm:flex">
                   <AlertCircle className="h-3.5 w-3.5" />
                   {progress.expiryAlerts.length} warnings
                 </span>
               )}
-              <button onClick={() => window.print()} className="flex items-center gap-1 rounded border border-[var(--cf-line)] px-2 py-1 text-xs text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-fg)]">
+              <button onClick={() => window.print()} className="flex items-center gap-1 rounded border border-[#e2e8f0] px-2 py-1 text-xs text-[#475569] transition-colors hover:text-[#0f172a]">
                 <Printer className="h-3.5 w-3.5" />
                 <span className="ml-1 hidden sm:inline">{pack.printButton}</span>
               </button>
@@ -436,13 +436,13 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
           </div>
           <div className="flex items-center gap-3">
             <Progress value={pct} className="h-2.5 flex-1" />
-            <span className="whitespace-nowrap text-sm font-semibold tabular-nums text-[var(--cf-fg)]">
+            <span className="whitespace-nowrap text-sm font-semibold tabular-nums text-[#0f172a]">
               {progress.checked} / {progress.total} {pack.savedSuffix}
             </span>
           </div>
           <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5">
             {progress.byCategory.map(({ cat, total, checked }) => (
-              <span key={cat} className="text-xs text-[var(--cf-muted)]">
+              <span key={cat} className="text-xs text-[#475569]">
                 {checked === total ? '✅' : checked === 0 ? '❌' : '⚠️'} {pack.categories[cat] ?? cat}: {checked}/{total}
               </span>
             ))}
@@ -452,38 +452,38 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
 
       <div className="mx-auto max-w-3xl space-y-5 px-4 pb-12">
         {!session && (
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-[var(--cf-accent-dim)] bg-[var(--cf-accent-dim)] px-4 py-3 print:hidden">
-            <div className="flex items-center gap-2 text-sm text-[var(--cf-fg)]">
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-[#53917E1a] bg-[#53917E1a] px-4 py-3 print:hidden">
+            <div className="flex items-center gap-2 text-sm text-[#0f172a]">
               <Info className="h-4 w-4 shrink-0" />
               <span className="break-words whitespace-normal">{pack.loginNotice}</span>
             </div>
-            <a href={`/${locale}/sign-in`} className="flex shrink-0 items-center gap-1 rounded border border-[var(--cf-accent)] px-2 py-1 text-xs font-medium whitespace-nowrap text-[var(--cf-accent)] transition-colors hover:bg-[var(--cf-accent-dim)]">
+            <a href={`/${locale}/sign-in`} className="flex shrink-0 items-center gap-1 rounded border border-[#53917E] px-2 py-1 text-xs font-medium whitespace-nowrap text-[#53917E] transition-colors hover:bg-[#53917E1a]">
               <LogIn className="h-3.5 w-3.5" /> {pack.loginButton}
             </a>
           </div>
         )}
 
-        <div className="rounded-lg border border-[var(--cf-accent-dim)] bg-[var(--cf-accent-dim)] p-4 print:hidden">
-          <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--cf-fg)]">
+        <div className="rounded-lg border border-[#53917E1a] bg-[#53917E1a] p-4 print:hidden">
+          <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-[#0f172a]">
             <Info className="h-4 w-4 shrink-0" /> {qt.title}
           </h3>
-          <p className="mb-3 text-xs text-white/70">{qt.subtitle}</p>
+          <p className="mb-3 text-xs text-slate-600">{qt.subtitle}</p>
 
           <div className="space-y-3">
             <div>
-              <p className="mb-1.5 text-sm text-[var(--cf-fg)]">{qt.partnerQ}</p>
+              <p className="mb-1.5 text-sm text-[#0f172a]">{qt.partnerQ}</p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setQuestionnaire((prev) => ({ ...prev, partner: true }))}
-                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.partner ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-white/30 text-[var(--cf-fg)]'}`}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.partner ? 'border-[#53917E] bg-[#53917E] text-[#ffffff]' : 'border-slate-300 text-[#0f172a]'}`}
                 >
                   {qt.yes}
                 </button>
                 <button
                   type="button"
                   onClick={() => setQuestionnaire((prev) => ({ ...prev, partner: false }))}
-                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.partner ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-white/30 text-[var(--cf-fg)]'}`}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.partner ? 'border-[#53917E] bg-[#53917E] text-[#ffffff]' : 'border-slate-300 text-[#0f172a]'}`}
                 >
                   {qt.no}
                 </button>
@@ -491,45 +491,45 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
             </div>
 
             <div>
-              <p className="mb-1.5 text-sm text-[var(--cf-fg)]">{qt.dependantsQ}</p>
+              <p className="mb-1.5 text-sm text-[#0f172a]">{qt.dependantsQ}</p>
               <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-2 text-xs text-white/70">
+                <label className="flex items-center gap-2 text-xs text-slate-600">
                   {qt.under18Label}
                   <input
                     type="number"
                     min={0}
                     value={questionnaire.dependantsUnder18}
                     onChange={(e) => setQuestionnaire((prev) => ({ ...prev, dependantsUnder18: Math.max(0, Number(e.target.value) || 0) }))}
-                    className="w-16 rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                    className="w-16 rounded border border-[#e2e8f0] bg-[#f8fafc] px-2 py-1 text-xs text-[#0f172a] focus:outline-none focus:ring-1 focus:ring-[#53917E1a]"
                   />
                 </label>
-                <label className="flex items-center gap-2 text-xs text-white/70">
+                <label className="flex items-center gap-2 text-xs text-slate-600">
                   {qt.over18Label}
                   <input
                     type="number"
                     min={0}
                     value={questionnaire.dependantsOver18}
                     onChange={(e) => setQuestionnaire((prev) => ({ ...prev, dependantsOver18: Math.max(0, Number(e.target.value) || 0) }))}
-                    className="w-16 rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                    className="w-16 rounded border border-[#e2e8f0] bg-[#f8fafc] px-2 py-1 text-xs text-[#0f172a] focus:outline-none focus:ring-1 focus:ring-[#53917E1a]"
                   />
                 </label>
               </div>
             </div>
 
             <div>
-              <p className="mb-1.5 text-sm text-[var(--cf-fg)]">{qt.overseasQ}</p>
+              <p className="mb-1.5 text-sm text-[#0f172a]">{qt.overseasQ}</p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setQuestionnaire((prev) => ({ ...prev, overseasResidence: true }))}
-                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.overseasResidence ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-white/30 text-[var(--cf-fg)]'}`}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${questionnaire.overseasResidence ? 'border-[#53917E] bg-[#53917E] text-[#ffffff]' : 'border-slate-300 text-[#0f172a]'}`}
                 >
                   {qt.yes}
                 </button>
                 <button
                   type="button"
                   onClick={() => setQuestionnaire((prev) => ({ ...prev, overseasResidence: false }))}
-                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.overseasResidence ? 'border-[var(--cf-accent)] bg-[var(--cf-accent)] text-[var(--cf-bg-deep)]' : 'border-white/30 text-[var(--cf-fg)]'}`}
+                  className={`rounded border px-3 py-1 text-xs font-medium transition-colors ${!questionnaire.overseasResidence ? 'border-[#53917E] bg-[#53917E] text-[#ffffff]' : 'border-slate-300 text-[#0f172a]'}`}
                 >
                   {qt.no}
                 </button>
@@ -539,16 +539,16 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
         </div>
 
         {progress.expiryAlerts.length > 0 && (
-          <div className="rounded-lg border border-[var(--cf-flag-brass-bg)] bg-[var(--cf-flag-brass-bg)] p-4 print:hidden">
-            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--cf-flag-brass-fg)]">
+          <div className="rounded-lg border border-slate-200 bg-slate-100 p-4 print:hidden">
+            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
               <AlertCircle className="h-4 w-4" /> {pack.expiryTitle}
             </h3>
             <div className="space-y-1.5">
               {progress.expiryAlerts.map(({ doc, status }) => (
                 <div key={doc.id} className="flex items-baseline gap-2 text-sm">
                   <span>{status.status === 'expired' || status.status === 'danger' ? '🔴' : '🟠'}</span>
-                  <span className="break-words font-medium text-[var(--cf-fg)]">{doc.name}</span>
-                  <span className="text-xs text-[var(--cf-muted)]">
+                  <span className="break-words font-medium text-[#0f172a]">{doc.name}</span>
+                  <span className="text-xs text-[#475569]">
                     {status.diffDays < 0 ? `${Math.abs(status.diffDays)} days ago` : `${status.diffDays} days left`}
                   </span>
                 </div>
@@ -563,12 +563,12 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
 
           return (
             <div key={cat} className={`overflow-hidden rounded-sm border ${colors.border} shadow-sm`}>
-              <div className={`${colors.header} flex items-center justify-between px-4 py-3 text-[var(--cf-case-fg)]`}>
+              <div className={`${colors.header} flex items-center justify-between px-4 py-3 text-[#ffffff]`}>
                 <h2 className="text-sm font-bold uppercase tracking-wide">{pack.categories[cat] ?? cat}</h2>
                 <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold">{catChecked}/{docs.length}</span>
               </div>
 
-              <div className={`${colors.light} divide-y divide-[var(--cf-cover-line)]`}>
+              <div className={`${colors.light} divide-y divide-[#e2e8f0]`}>
                 {docs.map((doc) => {
                   const state = docStates[doc.id] ?? EMPTY
                   const tipOpen = expandedTips.has(doc.id)
@@ -576,7 +576,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                   const irrelevanceNote = getIrrelevanceNote(doc, questionnaire, locale)
 
                   return (
-                    <div key={doc.id} className={`bg-[var(--cf-cover-bg)] px-4 py-4 transition-opacity duration-150 ${state.checked || irrelevanceNote ? 'opacity-55' : ''}`}>
+                    <div key={doc.id} className={`bg-[#ffffff] px-4 py-4 transition-opacity duration-150 ${state.checked || irrelevanceNote ? 'opacity-55' : ''}`}>
                       <div className="flex gap-3">
                         <div className="shrink-0 pt-0.5">
                           <input
@@ -584,56 +584,56 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                             id={`chk-${doc.id}`}
                             checked={state.checked}
                             onChange={(e) => updateDoc(doc.id, { checked: e.target.checked })}
-                            className="h-5 w-5 cursor-pointer rounded border-[var(--cf-cover-line)] accent-[var(--cf-accent)]"
+                            className="h-5 w-5 cursor-pointer rounded border-[#e2e8f0] accent-[#53917E]"
                           />
                         </div>
 
                         <div className="min-w-0 flex-1">
                           <label htmlFor={`chk-${doc.id}`} className="cursor-pointer">
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <span className={`break-words text-sm font-semibold whitespace-normal ${state.checked ? 'line-through text-[var(--cf-cover-muted)]' : 'text-[var(--cf-cover-fg)]'}`}>
+                              <span className={`break-words text-sm font-semibold whitespace-normal ${state.checked ? 'line-through text-[#475569]' : 'text-[#0f172a]'}`}>
                                 {doc.name}
                               </span>
-                              {!doc.required && <span className="text-xs italic text-[var(--cf-cover-muted)]">(optional)</span>}
+                              {!doc.required && <span className="text-xs italic text-[#475569]">(optional)</span>}
                               {doc.apostilleRequired && (
-                                <span className="inline-flex items-center gap-0.5 rounded bg-[var(--cf-flag-rust-bg)] px-1.5 py-0.5 text-xs font-medium text-[var(--cf-flag-rust-fg)]">
+                                <span className="inline-flex items-center gap-0.5 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700">
                                   <Stamp className="h-3 w-3" /> Apostille
                                 </span>
                               )}
                               {doc.naatiRequired && (
-                                <span className="inline-flex items-center gap-0.5 rounded bg-[var(--cf-flag-brass-bg)] px-1.5 py-0.5 text-xs font-medium text-[var(--cf-flag-brass-fg)]">
+                                <span className="inline-flex items-center gap-0.5 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">
                                   <Languages className="h-3 w-3" /> NAATI
                                 </span>
                               )}
                             </div>
-                            <p className="mt-0.5 break-words whitespace-normal text-xs text-[var(--cf-cover-muted)]">{doc.description}</p>
+                            <p className="mt-0.5 break-words whitespace-normal text-xs text-[#475569]">{doc.description}</p>
                             {irrelevanceNote && (
-                              <p className="mt-0.5 break-words whitespace-normal text-xs italic text-[var(--cf-accent)]">{irrelevanceNote}</p>
+                              <p className="mt-0.5 break-words whitespace-normal text-xs italic text-[#53917E]">{irrelevanceNote}</p>
                             )}
                           </label>
 
                           {doc.expiryTracking && (
                             <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                              <span className="flex items-center gap-1 text-xs text-[var(--cf-cover-muted)]">
+                              <span className="flex items-center gap-1 text-xs text-[#475569]">
                                 <Calendar className="h-3.5 w-3.5" /> Expiry:
                               </span>
                               <input
                                 type="date"
                                 value={state.expiryDate}
                                 onChange={(e) => updateDoc(doc.id, { expiryDate: e.target.value })}
-                                className="rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1 text-xs text-[var(--cf-cover-fg)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                                className="rounded border border-[#e2e8f0] bg-[#f8fafc] px-2 py-1 text-xs text-[#0f172a] focus:outline-none focus:ring-1 focus:ring-[#53917E1a]"
                               />
                               {getExpiryStatus(state.expiryDate, doc.warningMonths) && (() => {
                                 const expiryStatus = getExpiryStatus(state.expiryDate, doc.warningMonths)!
                                 return (
                                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                                     expiryStatus.status === 'expired'
-                                      ? 'bg-[var(--cf-flag-rust-bg)] text-[var(--cf-flag-rust-fg)]'
+                                      ? 'bg-amber-100 text-amber-700'
                                       : expiryStatus.status === 'danger'
-                                        ? 'bg-[var(--cf-flag-rust-bg)] text-[var(--cf-flag-rust-fg)]'
+                                        ? 'bg-amber-100 text-amber-700'
                                         : expiryStatus.status === 'warning'
-                                          ? 'bg-[var(--cf-flag-brass-bg)] text-[var(--cf-flag-brass-fg)]'
-                                          : 'bg-[var(--cf-flag-sage-bg)] text-[var(--cf-flag-sage-fg)]'
+                                          ? 'bg-slate-100 text-slate-700'
+                                          : 'bg-[#53917E]/10 text-[#53917E]'
                                   }`}>
                                     {expiryStatus.status === 'expired'
                                       ? `Expired (${Math.abs(expiryStatus.diffDays)} days ago)`
@@ -649,18 +649,18 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                           )}
 
                           <div className="mt-2.5 flex flex-wrap gap-3">
-                            <button type="button" onClick={() => toggleTip(doc.id)} className="flex items-center gap-1 text-xs text-[var(--cf-accent)] transition-colors hover:opacity-80">
+                            <button type="button" onClick={() => toggleTip(doc.id)} className="flex items-center gap-1 text-xs text-[#53917E] transition-colors hover:opacity-80">
                               <Info className="h-3.5 w-3.5" />
                               {tipOpen ? 'Hide tip' : '💡 Tip'}
                               {tipOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                             </button>
-                            <button type="button" onClick={() => toggleNote(doc.id)} className="flex items-center gap-1 text-xs text-[var(--cf-cover-muted)] transition-colors hover:text-[var(--cf-cover-fg)]">
+                            <button type="button" onClick={() => toggleNote(doc.id)} className="flex items-center gap-1 text-xs text-[#475569] transition-colors hover:text-[#0f172a]">
                               📝 {noteOpen ? 'Hide note' : state.notes ? 'Edit note' : 'Add note'}
                               {noteOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                             </button>
                           </div>
 
-                          {tipOpen && <div className="mt-2 rounded-lg border border-[var(--cf-accent-dim)] bg-[var(--cf-accent-dim)] px-3 py-2 text-xs leading-relaxed text-[var(--cf-cover-fg)]">{doc.tips}</div>}
+                          {tipOpen && <div className="mt-2 rounded-lg border border-[#53917E1a] bg-[#53917E1a] px-3 py-2 text-xs leading-relaxed text-[#0f172a]">{doc.tips}</div>}
 
                           {noteOpen && (
                             <textarea
@@ -668,11 +668,11 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
                               onChange={(e) => updateDoc(doc.id, { notes: e.target.value })}
                               placeholder="Reference number, submission date, translation note..."
                               rows={2}
-                              className="mt-2 w-full resize-none rounded border border-[var(--cf-cover-line)] bg-[var(--cf-cover-bg-dim)] px-2 py-1.5 text-xs text-[var(--cf-cover-fg)] placeholder:text-[var(--cf-cover-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--cf-accent-dim)]"
+                              className="mt-2 w-full resize-none rounded border border-[#e2e8f0] bg-[#f8fafc] px-2 py-1.5 text-xs text-[#0f172a] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#53917E1a]"
                             />
                           )}
 
-                          {!noteOpen && state.notes && <p className="mt-1.5 truncate text-xs italic text-[var(--cf-cover-muted)]">📝 {state.notes}</p>}
+                          {!noteOpen && state.notes && <p className="mt-1.5 truncate text-xs italic text-[#475569]">📝 {state.notes}</p>}
                         </div>
                       </div>
                     </div>
@@ -684,10 +684,10 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
         })}
 
         <div className="flex items-center justify-between pb-10 pt-2 print:hidden">
-          <Link href={backHref} className="flex items-center gap-1 text-sm text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-fg)]">
+          <Link href={backHref} className="flex items-center gap-1 text-sm text-[#475569] transition-colors hover:text-[#0f172a]">
             <ArrowLeft className="h-4 w-4" /> {pack.differentVisa}
           </Link>
-          <button onClick={() => window.print()} className="rounded-sm bg-[var(--cf-accent)] px-4 py-2 text-sm font-medium text-[var(--cf-bg-deep)] transition-colors hover:opacity-90">
+          <button onClick={() => window.print()} className="rounded-sm bg-[#53917E] px-4 py-2 text-sm font-medium text-[#ffffff] transition-colors hover:opacity-90">
             <Printer className="mr-2 inline-block h-4 w-4" /> {pack.printButton}
           </button>
         </div>
