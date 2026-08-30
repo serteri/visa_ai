@@ -47,7 +47,7 @@ export default async function VisasOverviewPage({ params }: PageProps) {
         ? "探索澳大利亚的学习、工作和永久居留签证。"
         : "Explore Australia visas for study, work, and permanent residency.",
       href: `/${locale}/visas/australia`,
-      accent: "border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-300 hover:bg-blue-100",
+      accent: "border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-300 hover:bg-blue-100 dark:text-blue-300",
     },
     {
       label: isTr ? "Kanada" : isZh ? "加拿大" : "Canada",
@@ -57,7 +57,7 @@ export default async function VisasOverviewPage({ params }: PageProps) {
         ? "通过快速通道了解加拿大永久居留申请流程。"
         : "Learn how Express Entry supports Canada permanent residency applications.",
       href: `/${locale}/visas/canada`,
-      accent: "border-rose-200 bg-rose-50 text-rose-700 hover:border-rose-300 hover:bg-rose-100",
+      accent: "border-rose-200 bg-rose-50 text-rose-700 hover:border-rose-300 hover:bg-rose-100 dark:text-rose-300",
     },
   ];
 

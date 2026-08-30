@@ -303,19 +303,19 @@ export default async function CanadaPnpNonExpressEntryPage({ params }: PageProps
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.fee}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.fee}</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{feeText}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.processingTime}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.processingTime}</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{processingTimeText}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.supportingDocs}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.supportingDocs}</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{supportingDocuments.length}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.source}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.source}</p>
                 <a
                   href={pnp.sourceUrl}
                   target="_blank"

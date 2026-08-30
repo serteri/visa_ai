@@ -306,10 +306,10 @@ export default async function CanadaQuebecBusinessPage({ params }: PageProps) {
                 <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">{ui.twoStageProcess}</p>
                 <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                   <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.stage1}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.stage1}</p>
                     <p className="mt-1 font-semibold text-slate-900 dark:text-white">{localizedTwoStage?.stage1_quebec?.authority}</p>
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{ui.outcome}: {localizedTwoStage?.stage1_quebec?.outcome}</p>
-                    <p className="mt-1 text-xs text-slate-500">{l(localizedTwoStage?.stage1_quebec?.note ?? "Unlike the previous skilled-worker file, this file includes Quebec-side selection criteria in detail; see the subStreams section below.")}</p>
+                    <p className="mt-1 text-xs text-slate-400">{l(localizedTwoStage?.stage1_quebec?.note ?? "Unlike the previous skilled-worker file, this file includes Quebec-side selection criteria in detail; see the subStreams section below.")}</p>
                   </div>
                   <div className="flex justify-center text-slate-400">
                     <ArrowRight className="h-5 w-5" />

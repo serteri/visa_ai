@@ -388,23 +388,23 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.lastVerified}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.lastVerified}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{data.lastVerified ?? "2026-06-27"}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.intlTrainedPhysicians}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.intlTrainedPhysicians}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">
                   {data.sectorStatistics?.internationallyTrainedFamilyPhysiciansPercent2024 ?? 31}%
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.immigrantHealthcareRatio}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.immigrantHealthcareRatio}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">
                   {data.sectorStatistics?.immigrantHealthcareWorkersRatio ?? "1 in 4"}
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.arrivalsViaEconomic}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.arrivalsViaEconomic}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">
                   {data.sectorStatistics?.healthcareWorkersArrived2024ViaEconomicPrograms ?? "11,000+"}
                 </p>
@@ -447,7 +447,7 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
                     ))}
                   </ul>
                   {pathway.processSteps && pathway.processSteps.length > 0 ? (
-                    <p className="mt-2 text-xs font-medium text-slate-500">
+                    <p className="mt-2 text-xs font-medium text-slate-400">
                       {ui.processSteps}: {pathway.processSteps.length}
                     </p>
                   ) : null}
@@ -578,14 +578,14 @@ export default async function CanadaMedicalDoctorPage({ params }: PageProps) {
               <div>
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.withCanadianMdExp}</p>
                 <p className="mt-1">{l(data.applicantTracks?.hasCanadianMDExperience?.description)}</p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-slate-400">
                   {(data.applicantTracks?.hasCanadianMDExperience?.availablePathways ?? []).map(pathLabel).map(l).join(" • ")}
                 </p>
               </div>
               <div>
                 <p className="font-semibold text-slate-900 dark:text-white">{ui.noCanadianMdExp}</p>
                 <p className="mt-1">{l(data.applicantTracks?.noCanadianMDExperienceYet?.description)}</p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-slate-400">
                   {(data.applicantTracks?.noCanadianMDExperienceYet?.availablePathways ?? []).map(pathLabel).map(l).join(" • ")}
                 </p>
                 <p className="mt-1">{l(data.applicantTracks?.noCanadianMDExperienceYet?.prerequisite)}</p>

@@ -371,19 +371,19 @@ export default async function AtlanticImmigrationProgramPage({ params }: PagePro
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">ID</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">ID</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{aipData.id}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{isTr ? "Ulke" : isZh ? "国家" : "Country"}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{isTr ? "Ulke" : isZh ? "国家" : "Country"}</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(aipData.country)}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{isTr ? "Durum" : isZh ? "状态" : "Status"}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{isTr ? "Durum" : isZh ? "状态" : "Status"}</p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(aipData.status)}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{isTr ? "Hedef eyaletler" : isZh ? "目标省份" : "Target provinces"}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{isTr ? "Hedef eyaletler" : isZh ? "目标省份" : "Target provinces"}</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {aipData.target_provinces.map((province) => (
                     <span key={province} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">

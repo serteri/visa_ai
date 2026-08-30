@@ -454,7 +454,7 @@ export default async function CanadaQuebecSkilledWorkersPage({ params }: PagePro
                 <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">{ui.twoStageMap}</p>
                 <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                   <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.stage1Quebec}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.stage1Quebec}</p>
                     <p className="mt-1 font-semibold text-slate-900 dark:text-white">{localizedTwoStage?.stage1_quebec?.name ?? t.stage1Name}</p>
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{ui.separateNotDetailed}</p>
                   </div>

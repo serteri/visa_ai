@@ -462,7 +462,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {processingTimeLabel}
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">
@@ -470,13 +470,13 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {visaFeeLabel}
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{fee}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {minPointsLabel}
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">
@@ -484,7 +484,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {officialInfoLabel}
                 </p>
                 <a
@@ -541,7 +541,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                 <CardContent className="space-y-3">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:border-slate-800">
+                      <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-400 dark:border-slate-800">
                         <th className="pb-2">{testLabel}</th>
                         <th className="pb-2">{minimumScoreLabel}</th>
                       </tr>
@@ -638,7 +638,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                     {getLocalizedPacificNote(pacificConcession, locale)}
                   </p>
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                       {eligibleCountriesLabel}
                     </p>
                     <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">
@@ -660,7 +660,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                   </p>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                         {pacificCountriesLabel}
                       </p>
                       <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">
@@ -668,7 +668,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                         {aseanCountriesLabel}
                       </p>
                       <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">

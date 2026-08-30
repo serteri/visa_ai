@@ -336,19 +336,19 @@ export default async function CanadaRuralPilotPage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.pathwayGroup}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.pathwayGroup}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{pathwayGroupText}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.lastVerified}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.lastVerified}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{data.lastVerified}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.languageRequirement}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.languageRequirement}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{localizedField(rcip as unknown as Record<string, unknown>, "languageRequirement")}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.optionalWorkPermit}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.optionalWorkPermit}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{rcip?.optionalWorkPermit ? ui.yes : ui.no}</p>
               </div>
             </CardContent>

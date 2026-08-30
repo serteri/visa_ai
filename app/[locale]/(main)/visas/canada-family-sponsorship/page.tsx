@@ -394,19 +394,19 @@ export default async function CanadaFamilySponsorshipPage({ params }: PageProps)
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {isTr ? "Ücret" : isZh ? "费用" : "Fee"}
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.fees)}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {isTr ? "İşlem süresi" : isZh ? "处理时间" : "Processing time"}
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.processing_time)}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {isTr ? "Durum" : isZh ? "状态" : "Status"}
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{l(data.status)}</p>

@@ -316,19 +316,19 @@ export default async function CanadaFrancophonePilotPage({ params }: PageProps) 
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.pathwayGroup}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.pathwayGroup}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{pathwayGroupText}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.lastVerified}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.lastVerified}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{data.lastVerified}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.languageRequirement}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.languageRequirement}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{localizedField(fcip as unknown as Record<string, unknown>, "languageRequirement")}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ui.optionalWorkPermit}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{ui.optionalWorkPermit}</p>
                 <p className="mt-1 font-medium text-slate-900 dark:text-white">{fcip?.optionalWorkPermit ? ui.yes : ui.no}</p>
               </div>
             </CardContent>
