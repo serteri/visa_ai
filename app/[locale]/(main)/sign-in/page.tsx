@@ -9,6 +9,8 @@ import { toast } from "sonner";
 
 import { TrustBanner } from "@/components/trust-banner";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function SignInPage() {
   const params = useParams();
   const locale = (params.locale as string) ?? "en";
@@ -17,9 +19,12 @@ export default function SignInPage() {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loginEmailError, setLoginEmailError] = useState("");
+  const [loginPasswordError, setLoginPasswordError] = useState("");
   const [isPending, startTransition] = useTransition();
 
   const [magicLinkEmail, setMagicLinkEmail] = useState("");
+  const [magicLinkFieldError, setMagicLinkFieldError] = useState("");
   const [magicLinkError, setMagicLinkError] = useState("");
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [isSendingMagicLink, startMagicLinkTransition] = useTransition();
@@ -28,7 +33,15 @@ export default function SignInPage() {
     e.preventDefault();
     setMagicLinkError("");
     const email = magicLinkEmail.trim();
-    if (!email) return;
+    if (!email) {
+      setMagicLinkFieldError("Please enter your email.");
+      return;
+    }
+    if (!EMAIL_PATTERN.test(email)) {
+      setMagicLinkFieldError("Please enter a valid email address.");
+      return;
+    }
+    setMagicLinkFieldError("");
 
     startMagicLinkTransition(async () => {
       const result = await signIn("email", { email, redirect: false });
@@ -45,8 +58,28 @@ export default function SignInPage() {
     e.preventDefault();
     setError("");
     const fd = new FormData(e.currentTarget);
-    const email = fd.get("email") as string;
-    const password = fd.get("password") as string;
+    const email = ((fd.get("email") as string) ?? "").trim();
+    const password = (fd.get("password") as string) ?? "";
+
+    let hasError = false;
+    if (!email) {
+      setLoginEmailError("Please enter your email.");
+      hasError = true;
+    } else if (!EMAIL_PATTERN.test(email)) {
+      setLoginEmailError("Please enter a valid email address.");
+      hasError = true;
+    } else {
+      setLoginEmailError("");
+    }
+
+    if (!password) {
+      setLoginPasswordError("Please enter your password.");
+      hasError = true;
+    } else {
+      setLoginPasswordError("");
+    }
+
+    if (hasError) return;
 
     startTransition(async () => {
       const result = await signIn("credentials", {
@@ -120,7 +153,7 @@ export default function SignInPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleMagicLink} className="space-y-3">
+            <form onSubmit={handleMagicLink} noValidate className="space-y-3">
               <div>
                 <label htmlFor="magic-link-email" className="mb-1.5 block text-xs font-medium text-slate-700">
                   Email
@@ -128,13 +161,23 @@ export default function SignInPage() {
                 <input
                   id="magic-link-email"
                   type="email"
-                  required
                   autoComplete="email"
                   value={magicLinkEmail}
-                  onChange={(e) => setMagicLinkEmail(e.target.value)}
+                  onChange={(e) => {
+                    setMagicLinkEmail(e.target.value);
+                    if (magicLinkFieldError) setMagicLinkFieldError("");
+                  }}
                   placeholder="you@example.com"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                  aria-invalid={magicLinkFieldError ? true : undefined}
+                  className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:ring-2 ${
+                    magicLinkFieldError
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100"
+                  }`}
                 />
+                {magicLinkFieldError && (
+                  <p className="text-sm text-red-500 mt-1.5">{magicLinkFieldError}</p>
+                )}
               </div>
 
               {magicLinkError && (
@@ -171,7 +214,7 @@ export default function SignInPage() {
               </button>
 
               {showPasswordForm && (
-                <form onSubmit={handleCredentials} className="mt-3 space-y-4">
+                <form onSubmit={handleCredentials} noValidate className="mt-3 space-y-4">
                   <div>
                     <label htmlFor="email" className="mb-1.5 block text-xs font-medium text-slate-700">
                       Email
@@ -180,11 +223,19 @@ export default function SignInPage() {
                       id="email"
                       name="email"
                       type="email"
-                      required
                       autoComplete="email"
                       placeholder="you@example.com"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                      onChange={() => loginEmailError && setLoginEmailError("")}
+                      aria-invalid={loginEmailError ? true : undefined}
+                      className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:ring-2 ${
+                        loginEmailError
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                          : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100"
+                      }`}
                     />
+                    {loginEmailError && (
+                      <p className="text-sm text-red-500 mt-1.5">{loginEmailError}</p>
+                    )}
                   </div>
 
                   <div>
@@ -196,10 +247,15 @@ export default function SignInPage() {
                         id="password"
                         name="password"
                         type={showPassword ? "text" : "password"}
-                        required
                         autoComplete="current-password"
                         placeholder="••••••••"
-                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-11 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                        onChange={() => loginPasswordError && setLoginPasswordError("")}
+                        aria-invalid={loginPasswordError ? true : undefined}
+                        className={`w-full rounded-xl border bg-white px-4 py-3 pr-11 text-sm text-slate-800 outline-none transition focus:ring-2 ${
+                          loginPasswordError
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                            : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100"
+                        }`}
                       />
                       <button
                         type="button"
@@ -210,6 +266,9 @@ export default function SignInPage() {
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
+                    {loginPasswordError && (
+                      <p className="text-sm text-red-500 mt-1.5">{loginPasswordError}</p>
+                    )}
                   </div>
 
                   {error && (
