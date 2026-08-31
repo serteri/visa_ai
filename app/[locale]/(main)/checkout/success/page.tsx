@@ -21,12 +21,13 @@ export default function CheckoutSuccessPage() {
   useEffect(() => {
     if (typeof window !== "undefined" && typeof window.fbq === "function") {
       // Pricing diverges by product: the readiness report ("premium") is
-      // $19.99 + GST, while the PDF guides (pdf_book, pdf_book_global)
-      // remain $9.99.
-      const value = product === "premium" ? 19.99 : 9.99;
+      // 19.99 AUD + GST, while the PDF guides (pdf_book, pdf_book_global)
+      // remain $9.99 USD.
+      const isPremium = product === "premium";
+      const value = isPremium ? 19.99 : 9.99;
       window.fbq("track", "Purchase", {
         value,
-        currency: "USD",
+        currency: isPremium ? "AUD" : "USD",
         content_type: "product",
         content_name: product ?? "premium",
       });

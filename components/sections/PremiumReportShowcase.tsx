@@ -30,7 +30,7 @@ const FEATURES: Array<{ key: FeatureKey; icon: LucideIcon; image: string }> = [
 ];
 
 /**
- * Homepage section explaining what the $19.99 + GST premium report actually
+ * Homepage section explaining what the 19.99 AUD + GST premium report actually
  * contains -- horizontal tabs on desktop (feature list left, PDF preview
  * image right), stacking to image-below-text on mobile. Every string comes
  * from public/locales/{locale}.json via useTranslation(), keyed under
@@ -58,7 +58,7 @@ export function PremiumReportShowcase() {
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#53917E]/30 bg-[#53917E]/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#53917E]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#53917E]" />
-            {t("home.reportShowcase.eyebrow", "$19.99 + GST Premium Report")}
+            {t("home.reportShowcase.eyebrow", "19.99 AUD + GST Premium Report")}
           </span>
           <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
             {t("home.reportShowcase.title", "What's Inside the Premium Report?")}
@@ -66,7 +66,7 @@ export function PremiumReportShowcase() {
           <p className="mt-4 text-lg font-medium leading-relaxed text-slate-700">
             {t(
               "home.reportShowcase.subtitle",
-              "Stop guessing. Get the exact AI-powered blueprint used by migration experts, detailing your precise points, hidden risks, and a clear roadmap to Permanent Residency. All for $19.99 + GST."
+              "Stop guessing. Get the exact AI-powered blueprint used by migration experts, detailing your precise points, hidden risks, and a clear roadmap to Permanent Residency. All for 19.99 AUD + GST."
             )}
           </p>
         </div>
