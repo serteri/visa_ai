@@ -122,6 +122,16 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           remainingSpots={remainingSpots}
           formHeader={
             <>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
+                <p className="text-lg font-medium text-slate-600">
+                  {tx("Full Visa Readiness Report", "Tam Vize Hazırlık Raporu", "完整签证准备度报告")}
+                </p>
+                <p className="whitespace-nowrap">
+                  <span className="text-3xl font-extrabold text-slate-900">19.99 AUD</span>{" "}
+                  <span className="text-sm text-slate-500">+ GST</span>
+                </p>
+              </div>
+
               <div className="mb-6 space-y-3">
                 <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                   {tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告")}

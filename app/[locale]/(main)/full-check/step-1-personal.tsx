@@ -138,14 +138,6 @@ export function Step1Personal({
           className={selectClassName}
         />
         <input type="hidden" name="targetCountry" value={selectedCountry} />
-        <p className="flex items-center gap-1.5 rounded-lg border border-[#53917E]/30 bg-[#53917E]/10 px-3 py-2 text-xs font-semibold text-[#53917E]">
-          <span>💳</span>
-          {txt(
-            "Avustralya veya Kanada — Tam Hazırlık Raporu: 19.99 AUD + GST",
-            "Australia or Canada — Full Readiness Report: 19.99 AUD + GST",
-            "澳大利亚或加拿大 — 完整准备度报告：19.99 澳元 + GST"
-          )}
-        </p>
       </div>
 
       <div className="space-y-3">
