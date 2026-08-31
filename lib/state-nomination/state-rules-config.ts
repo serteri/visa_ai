@@ -93,6 +93,32 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     lastVerified: "2026-08-19",
     sourceDocument: "data/knowledge/State Immigrations/NT/NT Government visa nomination.pdf",
   },
+  TAS: {
+    code: "TAS",
+    name: "Tasmania",
+    status: "Open (Onshore & Offshore)",
+    note: "Migration Tasmania ranks Registrations of Interest (ROI) into a Gold/Green/Orange-Plus/Orange/Red pass system across four onshore pathways (Skilled Employment, Skilled Graduate, Established Resident, Business Operator) plus a narrow Overseas Applicant (health/education job-offer) pathway -- the general offshore-only 491 pathway is currently paused for the 2026-27 program year.",
+    offshoreQuotaPressure: "medium",
+    aiSummary:
+      "Migration Tasmania nominates for subclass 190 (+5 DHA points) and subclass 491 (+15 DHA points), on top of the Department of Home Affairs baseline requirements: under 45, an occupation on the relevant skilled occupation list, a valid positive skills assessment, at least Competent English, and at least 65 points on the DHA points test. Beyond that DHA baseline, Tasmania has its own nomination pathways, each with its own minimum requirements: Tasmanian Skilled Employment (TSE, for people already working in Tasmania in a role matching their skills assessment), Tasmanian Skilled Graduate (TSG, for Tasmanian tertiary graduates), Tasmanian Established Resident (TER, for long-term Tasmanian residents including remote workers and business owners), Tasmanian Business Operator (TBO, 491 only, for people who have run a profitable Tasmanian business for 12+ months), and a narrow Overseas Applicant pathway for people offshore with a genuine health/education-sector Tasmanian job offer. A general offshore-only 491 pathway (no Tasmanian job offer or ties) exists but Migration Tasmania is NOT issuing invitations under it for the 2026-27 program year. Meeting a pathway's minimum requirements only allows you to register interest -- it does not guarantee nomination, since Registrations of Interest (ROI) are ranked competitively into five tiers (Gold, Green, Orange-Plus, Orange, Red) based on priority attributes like wage level, length of Tasmanian employment/residence, and English level, and only the most competitive ROIs in each program year are invited to apply.",
+    keyFacts: [
+      "DHA baseline for state nomination: under 45, skills-assessed occupation on the relevant list, valid positive skills assessment, at least Competent English, at least 65 DHA points.",
+      "Priority income level (needed for Gold/Green/Orange-Plus tiers): $57,000/year or $28.85/hour base rate, excluding overtime, penalties, bonuses or casual loading.",
+      "Higher wage tiers used in priority scoring: $71,480/yr ($36.17/hr), $79,423/yr ($40.19/hr) -- the Temporary Skilled Migration Income Threshold -- and $106,600/yr ($53.95/hr).",
+      "Five pass tiers ranked by priority attributes: Gold (1000 pts, immediate nomination), Green (500/300/250 pts, invited within ~6 months), Orange-Plus (30-100 pts, high priority within the Orange band), Orange (lower point attributes), Red (does not meet minimum requirements, cannot apply).",
+      "Tasmanian Skilled Employment (TSE): requires 6-15 months (subclass 190) or 9-12 months (subclass 491) working in Tasmania at 20+ hrs/week, generally in a role matching the skills assessment, at or above the priority income level for the higher tiers.",
+      "Tasmanian Skilled Graduate (TSG): all skills assessments eligible; requires a CRICOS-registered Tasmanian course (92 weeks min for 190, 40 weeks for 491), full-time on-site study, and 1-2 years living in Tasmania depending on subclass.",
+      "Tasmanian Established Resident (TER): requires 2-3 years living in Tasmania (max 50% of total Australian residence elsewhere) plus qualifying employment, remote work (190 only), or a profitable Tasmanian business.",
+      "Tasmanian Business Operator (TBO, 491 only): 12+ months operating a Tasmanian business, in profit after paying yourself at least 85% of the Temporary Skilled Migration Income Threshold (currently $67,509).",
+      "Overseas Applicant (Health/Education job-offer) pathway: automatic Gold Pass for skills-assessed teachers, health/allied-health/medical/nursing professionals (ANZSCO 241/251/252/253/254) with a genuine 30+ hr/week Tasmanian job offer in a matching role.",
+      "General offshore-only subclass 491 pathway is currently NOT open -- Migration Tasmania is not issuing invitations under it for the 2026-27 program year.",
+      "Nomination application fee: AU$387 (plus 10% GST), non-refundable. Once invited, applicants have 28 days to apply for nomination and, once nominated, 60 days to apply for the visa.",
+      "2-year commitment to live and work in Tasmania after nomination approval is mandatory across all pathways; subclass 491 nominees can never later be renominated for subclass 190.",
+      "Mandatory documents across all pathways include: passport bio page, SkillSelect EOI, skills assessment (<=3 years old), English test (<=3 years old), 10-year CV, travel/arrival evidence, Tasmanian residence evidence, and bank statements showing Tasmanian living expenses.",
+    ],
+    lastVerified: "2026-08-31",
+    sourceDocument: "data/knowledge/State Immigrations/TAS/Migration Tasmania-Skilled Migration.pdf",
+  },
 };
 
 export function getStateRule(code: string): StateRuleConfig | undefined {
