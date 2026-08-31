@@ -136,7 +136,6 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
                 </span>
               </DropdownLink>
               <DropdownLink href={`/${locale}/ai-visa-match`}>AI Visa Match ⚡</DropdownLink>
-              <DropdownLink href={`/${locale}/ai-assistant`}>AI Assistant ✨</DropdownLink>
             </DropdownMenu>
 
             {/* Resources Dropdown */}
@@ -145,6 +144,16 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <DropdownLink href={`/${locale}/tools/document-checklist-2026`}>{tx("Belge Kontrol", "Document Checklist", "文件清单")}</DropdownLink>
               <DropdownLink href={`/${locale}/contact`}>{tx("İletişim", "Contact", "联系我们")}</DropdownLink>
             </DropdownMenu>
+
+            {/* AI Assistant -- standalone first-level link, not buried in a
+                dropdown, with a sage accent so it reads as an AI-powered
+                feature at a glance. */}
+            <Link
+              href={`/${locale}/ai-assistant`}
+              className="whitespace-nowrap text-sm font-semibold text-[#53917E] transition-colors hover:opacity-80"
+            >
+              ✨ {tx("AI Asistan", "AI Assistant", "AI 助手")}
+            </Link>
           </div>
 
           {/* Right side */}
@@ -184,6 +193,8 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
         {mobileOpen && (
           <div className="mt-3 border-t border-[var(--cf-line)] pt-3 lg:hidden">
             <div className="flex flex-col gap-1">
+              <Link href={`/${locale}/ai-assistant`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-bold text-[#53917E]">✨ {tx("AI Asistan", "AI Assistant", "AI 助手")}</Link>
+              <div className="my-1 h-px bg-[var(--cf-line)]" />
               <Link href={`/${locale}/visas/australia`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Avustralya Vizeleri", "Australia Visas", "澳大利亚签证")}</Link>
               <Link href={`/${locale}/visas/canada`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Kanada Vizeleri", "Canada Visas", "加拿大签证")}</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
@@ -195,7 +206,6 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
                 <BetaPill />
               </Link>
               <Link href={`/${locale}/ai-visa-match`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--cf-accent)]">AI Visa Match ⚡</Link>
-              <Link href={`/${locale}/ai-assistant`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--cf-accent)]">AI Assistant ✨</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
               <Link href={`/${locale}/guides`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Rehberler", "Guides", "指南")}</Link>
               <Link href={`/${locale}/tools/document-checklist-2026`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Belge Kontrol", "Document Checklist", "文件清单")}</Link>
