@@ -200,7 +200,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[640px] text-sm">
                       <thead>
-                        <tr className="border-b border-slate-200 bg-[#EEF5DB] text-left">
+                        <tr className="border-b border-slate-200 bg-slate-50 text-left">
                           <th className="px-4 py-3 font-semibold text-slate-600">
                             {t(translations, "rounds.table.stream", "Stream")}
                           </th>

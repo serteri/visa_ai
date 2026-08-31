@@ -76,7 +76,7 @@ export function LandingFooter({ locale }: LandingFooterProps) {
       : "LogiVisa is an independent information platform and does not provide immigration advice. We are not a MARA-registered agent or an RCIC. Content is for information only and is independent of any official body.";
 
   return (
-    <footer className="case-file border-t border-[var(--cf-line)] bg-[var(--cf-bg-deep)] text-[var(--cf-muted)]">
+    <footer className="case-file border-t border-[var(--cf-line)] bg-transparent text-[var(--cf-muted)]">
       <div className="section-shell py-20">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-[1.4fr_1fr_1fr]">
           <div>

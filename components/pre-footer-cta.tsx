@@ -11,7 +11,7 @@ export function PreFooterCta({ locale }: { locale: string }) {
 
   return (
     <section className="section-shell">
-      <div className="rounded-3xl bg-[var(--cf-bg-deep)] px-6 py-12 text-center shadow-2xl shadow-[var(--cf-shadow)] sm:px-12">
+      <div className="rounded-3xl bg-transparent px-6 py-12 text-center sm:px-12">
         <h2 className="text-2xl font-extrabold tracking-tight text-[var(--cf-fg)] sm:text-3xl">
           {isTr
             ? "Vize Yolunuzu Bulmaya Hazır mısınız?"
@@ -30,14 +30,14 @@ export function PreFooterCta({ locale }: { locale: string }) {
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
           <Link
             href={`/${locale}/full-check?country=AU`}
-            className="group inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-[var(--cf-accent)] px-8 py-4 text-base font-extrabold text-[var(--cf-bg-deep)] shadow-xl transition-all duration-300 hover:scale-105 sm:w-auto sm:px-10 sm:text-lg"
+            className="group inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-[var(--cf-accent)] px-8 py-4 text-base font-extrabold text-white shadow-xl transition-all duration-300 hover:scale-105 sm:w-auto sm:px-10 sm:text-lg"
           >
             {isTr ? "Avustralya Değerlendirmesini Başlat" : isZh ? "开始澳大利亚评估" : "Start Australia Assessment"}
             <span className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
           <Link
             href={`/${locale}/full-check?country=CA`}
-            className="group inline-flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-[var(--cf-line)] bg-transparent px-8 py-4 text-base font-extrabold text-[var(--cf-fg)] shadow-xl transition-all duration-300 hover:scale-105 hover:bg-white/10 sm:w-auto sm:px-10 sm:text-lg"
+            className="group inline-flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-[var(--cf-line)] bg-transparent px-8 py-4 text-base font-extrabold text-[var(--cf-fg)] shadow-xl transition-all duration-300 hover:scale-105 hover:bg-slate-100 sm:w-auto sm:px-10 sm:text-lg"
           >
             {isTr ? "Kanada Değerlendirmesini Başlat" : isZh ? "开始加拿大评估" : "Start Canada Assessment"}
             <span className="transition-transform group-hover:translate-x-1">→</span>

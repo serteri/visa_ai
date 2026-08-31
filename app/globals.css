@@ -180,8 +180,8 @@ option {
    rule. Still only one mode -- .light below matches .dark/:root.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --cf-bg: #eef5db;
-  --cf-bg-deep: #eef5db;
+  --cf-bg: #f8fafc;
+  --cf-bg-deep: #f8fafc;
   --cf-fg: #0f172a; /* slate-900 */
   --cf-muted: #334155; /* slate-700 */
   --cf-line: #e2e8f0; /* slate-200 */
@@ -217,8 +217,8 @@ option {
    class resolve to the same Modern Sage values as :root/.dark above. */
 @media (prefers-color-scheme: light) {
   :root {
-    --cf-bg: #eef5db;
-    --cf-bg-deep: #eef5db;
+    --cf-bg: #f8fafc;
+    --cf-bg-deep: #f8fafc;
     --cf-fg: #0f172a;
     --cf-muted: #334155;
     --cf-line: #e2e8f0;
@@ -260,8 +260,8 @@ option {
   --popover: #ffffff;
   --popover-foreground: #0f172a;
 
-  --cf-bg: #eef5db;
-  --cf-bg-deep: #eef5db;
+  --cf-bg: #f8fafc;
+  --cf-bg-deep: #f8fafc;
   --cf-fg: #0f172a;
   --cf-muted: #334155;
   --cf-line: #e2e8f0;
@@ -294,8 +294,8 @@ option {
   --popover: #ffffff;
   --popover-foreground: #0f172a;
 
-  --cf-bg: #eef5db;
-  --cf-bg-deep: #eef5db;
+  --cf-bg: #f8fafc;
+  --cf-bg-deep: #f8fafc;
   --cf-fg: #0f172a;
   --cf-muted: #334155;
   --cf-line: #e2e8f0;

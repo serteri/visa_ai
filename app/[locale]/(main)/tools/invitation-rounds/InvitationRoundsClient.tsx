@@ -373,7 +373,7 @@ export function InvitationRoundsClient({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-[#EEF5DB] text-xs font-semibold uppercase text-slate-600">
+                  <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase text-slate-600">
                     <th className="px-4 py-3 text-left">{t("ir.date", "Date")}</th>
                     <th className="px-4 py-3 text-left">{t("ir.visa", "Visa")}</th>
                     <th className="px-4 py-3 text-right">{t("ir.lowestPoints", "Lowest Points")}</th>
@@ -453,7 +453,7 @@ export function InvitationRoundsClient({
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 bg-[#EEF5DB] text-xs font-semibold uppercase text-slate-600">
+              <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase text-slate-600">
                 <th className="px-4 py-3 text-left">{t("ir.occupation", "Occupation")}</th>
                 <th className="px-4 py-3 text-right">{t("ir.subclass189MinPoints", "Subclass 189 Min Points")}</th>
                 <th className="px-4 py-3 text-right">{t("ir.subclass491MinPoints", "Subclass 491 Min Points")}</th>

@@ -109,7 +109,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
 
   return (
     <header className="fixed top-4 left-0 right-0 z-50 px-4 sm:px-6">
-      <div className="mx-auto max-w-7xl rounded-2xl border border-[var(--cf-line)] bg-[var(--cf-bg)]/80 px-4 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-md sm:px-6">
+      <div className="mx-auto max-w-7xl rounded-2xl border border-[var(--cf-line)] bg-white/80 px-4 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-md sm:px-6">
         <nav className="flex items-center justify-between">
           {/* Logo */}
           <Link href={`/${locale}`} className="text-lg font-extrabold tracking-tight text-[var(--cf-fg)]">

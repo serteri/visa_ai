@@ -253,7 +253,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
   }, [open, query, results.length, isTr, isZh, targetCountry, t]);
 
   return (
-    <section className="case-file relative overflow-hidden bg-[var(--cf-bg)] pb-24 pt-20 sm:pb-32 sm:pt-28">
+    <section className="case-file relative overflow-hidden bg-transparent pb-24 pt-20 sm:pb-32 sm:pt-28">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
@@ -430,7 +430,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             )}
           </span>
           <span className="font-bold text-slate-900">
-            {t("hero.pricingBadgePrice", isTr ? "Sadece 49$" : isZh ? "仅需 $49" : "Only $49")}
+            {t("hero.pricingBadgePrice", isTr ? "Sadece 19.99$ + GST" : isZh ? "仅需 $19.99 + GST" : "Only $19.99 + GST")}
           </span>
         </div>
 

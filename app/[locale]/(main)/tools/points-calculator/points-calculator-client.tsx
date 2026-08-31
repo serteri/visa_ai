@@ -711,7 +711,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
               )}
 
               {/* Breakdown */}
-              <div className="mt-4 rounded-lg bg-[#EEF5DB] px-4 py-4">
+              <div className="mt-4 rounded-lg bg-slate-50 px-4 py-4">
                 <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-slate-600">
                   {t("pc.summary.breakdown")}
                 </p>
@@ -840,7 +840,7 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
             )}
 
             {/* Premium Marketing Hook */}
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white via-[#EEF5DB] to-white p-[1px] shadow-lg">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white via-slate-50 to-white p-[1px] shadow-lg">
               <div className="relative rounded-[11px] bg-white p-6 text-center">
                 <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-[#53917E]/20 blur-[40px]" />
                 <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-[#53917E]/10 blur-[40px]" />

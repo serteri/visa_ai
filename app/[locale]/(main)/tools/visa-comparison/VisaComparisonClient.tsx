@@ -304,7 +304,7 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
 
           <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200">
             <table className="min-w-full text-sm">
-              <thead className="bg-[#EEF5DB] text-slate-600">
+              <thead className="bg-slate-50 text-slate-600">
                 <tr>
                   <th className="px-4 py-3 text-left font-semibold">{copy.feature}</th>
                   <th className="px-4 py-3 text-left font-semibold">189</th>
@@ -381,7 +381,7 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
             </Button>
           </div>
 
-          <div className="mt-4 rounded-xl border border-slate-200 bg-[#EEF5DB] p-4">
+          <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
             <h3 className="text-base font-bold text-slate-900">{copy.toolCtaTitle}</h3>
             <p className="mt-1 text-sm text-slate-600">{copy.toolCtaText}</p>
             <Button asChild variant="outline" className="mt-4">
