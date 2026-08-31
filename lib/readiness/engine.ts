@@ -3760,7 +3760,20 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // gate (education/employment zeroed when assessment is missing). We sum the
   // final breakdown values rather than using result.total189, which doesn't
   // account for the assessment gate applied above.
-  const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
+  const rawEstimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
+
+  // DHA hard gate: Competent English (or higher) is a legal prerequisite to
+  // lodge a skilled migration EOI at all -- not just another scored row. The
+  // "none" dropdown option (no valid/current test) fails this gate even
+  // though parseEnglishOption("none") maps to the "competent" tier purely so
+  // the English row itself scores 0 rather than throwing. Previously nothing
+  // stopped the OTHER categories (age, employment, education, partner,
+  // bonuses) from still summing to a large, presentable "estimated points"
+  // total for someone who cannot legally lodge an EOI without English at
+  // all -- e.g. a 38-year-old with no English test could see ~97 points.
+  // Zeroing the total here (not just the English row) makes the number
+  // reflect reality: no valid English test means no real points position.
+  const estimatedPoints = meetsCompetentEnglish ? rawEstimatedPoints : 0;
 
   // Real EOI eligibility, now that estimatedPoints is known: age + Skills
   // Assessment + Competent English are necessary but not sufficient -- DHA

@@ -64,7 +64,7 @@ function AgentSelect({ lead, agents, locale }: { lead: Lead; agents: Agent[]; lo
 
   if (agents.length === 0) {
     return (
-      <p className="w-[200px] rounded-lg border border-dashed border-slate-700 px-3 py-2 text-sm text-slate-400">
+      <p className="w-[200px] rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-600">
         No agents available
       </p>
     );
@@ -93,8 +93,8 @@ function DetailField({ label, value }: { label: string; value: React.ReactNode }
   if (value === undefined || value === null || value === "") return null;
   return (
     <div>
-      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</dt>
-      <dd className="mt-0.5 text-sm text-white">{value}</dd>
+      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-600">{label}</dt>
+      <dd className="mt-0.5 text-sm text-slate-900">{value}</dd>
     </div>
   );
 }
@@ -163,8 +163,8 @@ function LeadDetailSheet({
           <DetailField label="Submitted" value={lead.createdAt.toLocaleString()} />
         </dl>
 
-        <div className="mt-2 border-t border-slate-800 pt-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="mt-2 border-t border-slate-200 pt-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
             Assign to Agent (optional)
           </p>
           <AgentSelect lead={lead} agents={agents} locale={locale} />
@@ -179,10 +179,10 @@ function LeadRow({ lead, agents, locale }: { lead: Lead; agents: Agent[]; locale
 
   return (
     <>
-      <tr className="border-b border-slate-800 hover:bg-slate-800/50">
-        <td className="py-3 pr-4 font-medium text-white">{lead.fullName || "—"}</td>
-        <td className="px-4 py-3 text-slate-400">{lead.email}</td>
-        <td className="px-4 py-3 font-semibold text-slate-200">{lead.pointsTier || "—"}</td>
+      <tr className="border-b border-slate-200 hover:bg-slate-50">
+        <td className="py-3 pr-4 font-medium text-slate-900">{lead.fullName || "—"}</td>
+        <td className="px-4 py-3 text-slate-600">{lead.email}</td>
+        <td className="px-4 py-3 font-semibold text-slate-900">{lead.pointsTier || "—"}</td>
         <td className="px-4 py-3">
           <AgentSelect lead={lead} agents={agents} locale={locale} />
         </td>
@@ -190,7 +190,7 @@ function LeadRow({ lead, agents, locale }: { lead: Lead; agents: Agent[]; locale
           <button
             type="button"
             onClick={() => setDetailOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-indigo-400 hover:text-indigo-300"
+            className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-600 transition hover:border-[#53917E] hover:text-[#53917E]"
           >
             <Eye className="h-3.5 w-3.5" />
             View Details
@@ -213,7 +213,7 @@ export function LeadAssigner({
 }) {
   if (unassignedLeads.length === 0) {
     return (
-      <p className="py-8 text-center text-sm text-slate-400">
+      <p className="py-8 text-center text-sm text-slate-600">
         No unassigned leads in the pool.
       </p>
     );
@@ -223,7 +223,7 @@ export function LeadAssigner({
     <div className="overflow-x-auto">
       <table className="w-full min-w-[860px] text-sm">
         <thead>
-          <tr className="border-b border-slate-700 text-left text-slate-400">
+          <tr className="border-b border-slate-200 text-left text-slate-600">
             <th className="py-3 pr-4 font-semibold">Lead</th>
             <th className="px-4 py-3 font-semibold">Email</th>
             <th className="px-4 py-3 font-semibold">Tier</th>
