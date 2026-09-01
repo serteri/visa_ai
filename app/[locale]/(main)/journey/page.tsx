@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
+import { auth } from "@/auth";
 import { JourneyDashboard } from "./JourneyDashboard";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -49,5 +51,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function JourneyPage({ params }: PageProps) {
   const { locale } = await params;
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect(`/${locale}/sign-in`);
+  }
+
   return <JourneyDashboard locale={locale} />;
 }

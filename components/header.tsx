@@ -166,9 +166,12 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
                 on /dashboard after signing in. */}
             <Link
               href={`/${locale}/dashboard`}
-              className="hidden whitespace-nowrap rounded-full border border-[var(--cf-accent)] px-3.5 py-1.5 text-sm font-semibold text-[var(--cf-accent)] transition-colors hover:bg-[var(--cf-accent-dim)] sm:inline-flex"
+              className="hidden items-center gap-1.5 whitespace-nowrap rounded-full border border-[var(--cf-accent)] px-3.5 py-1.5 text-sm font-semibold text-[var(--cf-accent)] transition-colors hover:bg-[var(--cf-accent-dim)] sm:inline-flex"
             >
               {tx("Vize Sürecim", "My Visa Journey", "我的签证进程")}
+              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-bold text-green-700">
+                {tx("Ücretsiz", "Free", "免费")}
+              </span>
             </Link>
             <ThemeToggle />
             <LanguageSelector currentLocale={locale} compact />
@@ -211,8 +214,11 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <Link href={`/${locale}/tools/document-checklist-2026`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Belge Kontrol", "Document Checklist", "文件清单")}</Link>
               <Link href={`/${locale}/contact`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("İletişim", "Contact", "联系我们")}</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
-              <Link href={`/${locale}/dashboard`} onClick={() => setMobileOpen(false)} className="rounded-full border border-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--cf-accent)]">
+              <Link href={`/${locale}/dashboard`} onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-1.5 rounded-full border border-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--cf-accent)]">
                 {tx("Vize Sürecim", "My Visa Journey", "我的签证进程")}
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-bold text-green-700">
+                  {tx("Ücretsiz", "Free", "免费")}
+                </span>
               </Link>
               <Link href={`/${locale}/full-check`} onClick={() => setMobileOpen(false)} className="mt-1 rounded-full bg-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-white">
                 {tx("Değerlendirme Başlat", "Start Assessment", "开始评估")}
