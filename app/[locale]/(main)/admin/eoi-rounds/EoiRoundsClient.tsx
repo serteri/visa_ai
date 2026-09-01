@@ -9,6 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { addEoiRound, deleteEoiRound } from "./actions";
 
+type TierBreakdown = {
+  gold?: number;
+  green?: number;
+  orangePlus?: number;
+  orange?: number;
+};
+
 type EoiRound = {
   id: string;
   roundDate: Date;
@@ -20,7 +27,19 @@ type EoiRound = {
   notes: string | null;
   isEstimated: boolean;
   source: string;
+  issuingAuthority: string;
+  state: string | null;
+  pathway: string | null;
+  tierBreakdown: unknown;
 };
+
+function asTierBreakdown(value: unknown): TierBreakdown | null {
+  if (!value || typeof value !== "object") return null;
+  return value as TierBreakdown;
+}
+
+const STATE_OPTIONS = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
+const TASMANIA_PATHWAYS = ["TSE", "TSG", "TER", "TBO", "General"];
 
 function formatDate(date: Date | string): string {
   const d = date instanceof Date ? date : new Date(date);
@@ -48,7 +67,7 @@ export function EoiRoundsClient({
   const [isPending, startTransition] = useTransition();
 
   // Form state
-  const [formData, setFormData] = useState({
+  const emptyFormData = {
     roundDate: "",
     visaSubclass: "189",
     lowestPoints: "",
@@ -56,7 +75,15 @@ export function EoiRoundsClient({
     poolSize: "",
     notes: "",
     isEstimated: false,
-  });
+    issuingAuthority: "FEDERAL",
+    state: "",
+    pathway: "",
+    tierGold: "",
+    tierGreen: "",
+    tierOrangePlus: "",
+    tierOrange: "",
+  };
+  const [formData, setFormData] = useState(emptyFormData);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
@@ -79,28 +106,40 @@ export function EoiRoundsClient({
       return;
     }
 
+    if (formData.issuingAuthority === "STATE" && !formData.state) {
+      setMessage({ type: "error", text: "Select a state" });
+      return;
+    }
+
+    const hasTierInput =
+      formData.state === "TAS" &&
+      (formData.tierGold || formData.tierGreen || formData.tierOrangePlus || formData.tierOrange);
+
     startTransition(async () => {
       const result = await addEoiRound({
         roundDate: formData.roundDate,
-        visaSubclass: formData.visaSubclass,
+        visaSubclass: formData.visaSubclass as "189" | "190" | "491",
         lowestPoints: Number(formData.lowestPoints),
         invitations: Number(formData.invitations),
         poolSize: formData.poolSize ? Number(formData.poolSize) : null,
         notes: formData.notes || null,
         isEstimated: formData.isEstimated,
+        issuingAuthority: formData.issuingAuthority as "FEDERAL" | "STATE",
+        state: formData.issuingAuthority === "STATE" ? (formData.state as never) : null,
+        pathway: formData.issuingAuthority === "STATE" ? formData.pathway || null : null,
+        tierBreakdown: hasTierInput
+          ? {
+              ...(formData.tierGold ? { gold: Number(formData.tierGold) } : {}),
+              ...(formData.tierGreen ? { green: Number(formData.tierGreen) } : {}),
+              ...(formData.tierOrangePlus ? { orangePlus: Number(formData.tierOrangePlus) } : {}),
+              ...(formData.tierOrange ? { orange: Number(formData.tierOrange) } : {}),
+            }
+          : null,
       });
 
       if (result.success) {
         setMessage({ type: "success", text: result.message });
-        setFormData({
-          roundDate: "",
-          visaSubclass: "189",
-          lowestPoints: "",
-          invitations: "",
-          poolSize: "",
-          notes: "",
-          isEstimated: false,
-        });
+        setFormData(emptyFormData);
         // Refetch rounds
         location.reload();
       } else {
@@ -135,6 +174,79 @@ export function EoiRoundsClient({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAddRound} className="space-y-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium">Issuing Authority *</label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="issuingAuthority"
+                    value="FEDERAL"
+                    checked={formData.issuingAuthority === "FEDERAL"}
+                    onChange={handleInputChange}
+                  />
+                  Federal
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="issuingAuthority"
+                    value="STATE"
+                    checked={formData.issuingAuthority === "STATE"}
+                    onChange={handleInputChange}
+                  />
+                  State
+                </label>
+              </div>
+            </div>
+
+            {formData.issuingAuthority === "STATE" && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">State *</label>
+                  <select
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Select a state...</option>
+                    {STATE_OPTIONS.map((code) => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">Pathway (optional)</label>
+                  {formData.state === "TAS" ? (
+                    <select
+                      name="pathway"
+                      value={formData.pathway}
+                      onChange={handleInputChange}
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="">Select a pathway...</option>
+                      {TASMANIA_PATHWAYS.map((p) => (
+                        <option key={p} value={p}>
+                          {p}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <Input
+                      type="text"
+                      name="pathway"
+                      value={formData.pathway}
+                      onChange={handleInputChange}
+                      placeholder="e.g. General"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-1 block text-sm font-medium">Round Date *</label>
@@ -208,6 +320,59 @@ export function EoiRoundsClient({
                 </label>
               </div>
             </div>
+
+            {formData.state === "TAS" && (
+              <div className="rounded-md border border-input p-4">
+                <label className="mb-3 block text-sm font-semibold">Pass Tier Breakdown (Optional)</label>
+                <div className="grid gap-4 sm:grid-cols-4">
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-muted-foreground">Gold Invitations</label>
+                    <Input
+                      type="number"
+                      name="tierGold"
+                      min={0}
+                      value={formData.tierGold}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 17"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-muted-foreground">Green Invitations</label>
+                    <Input
+                      type="number"
+                      name="tierGreen"
+                      min={0}
+                      value={formData.tierGreen}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 3"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-muted-foreground">Orange Plus Invitations</label>
+                    <Input
+                      type="number"
+                      name="tierOrangePlus"
+                      min={0}
+                      value={formData.tierOrangePlus}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 5"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-muted-foreground">Orange Invitations</label>
+                    <Input
+                      type="number"
+                      name="tierOrange"
+                      min={0}
+                      value={formData.tierOrange}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 8"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="mb-1 block text-sm font-medium">Notes (optional)</label>
               <textarea
@@ -268,6 +433,7 @@ export function EoiRoundsClient({
                   <tr className="border-b border-border text-left">
                     <th className="px-4 py-3 font-semibold">Date</th>
                     <th className="px-4 py-3 font-semibold">Subclass</th>
+                    <th className="px-4 py-3 font-semibold">State / Authority</th>
                     <th className="px-4 py-3 font-semibold text-right">Points</th>
                     <th className="px-4 py-3 font-semibold text-right">Invitations</th>
                     <th className="px-4 py-3 font-semibold text-right">Pool Size</th>
@@ -281,6 +447,43 @@ export function EoiRoundsClient({
                     <tr key={round.id} className="border-b border-border/50 hover:bg-muted/30">
                       <td className="px-4 py-3">{formatDate(round.roundDate)}</td>
                       <td className="px-4 py-3 font-medium">{round.visaSubclass}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <Badge variant={round.issuingAuthority === "STATE" ? "secondary" : "outline"}>
+                            {round.issuingAuthority === "STATE" ? round.state ?? "STATE" : "Federal"}
+                          </Badge>
+                          {round.pathway && (
+                            <span className="text-xs text-muted-foreground">{round.pathway}</span>
+                          )}
+                          {round.state === "TAS" && asTierBreakdown(round.tierBreakdown) && (() => {
+                            const tiers = asTierBreakdown(round.tierBreakdown)!;
+                            return (
+                              <>
+                                {tiers.gold !== undefined && (
+                                  <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-semibold text-yellow-800">
+                                    Gold: {tiers.gold}
+                                  </span>
+                                )}
+                                {tiers.green !== undefined && (
+                                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800">
+                                    Green: {tiers.green}
+                                  </span>
+                                )}
+                                {tiers.orangePlus !== undefined && (
+                                  <span className="rounded-full bg-orange-200 px-2 py-0.5 text-xs font-semibold text-orange-900">
+                                    Orange+: {tiers.orangePlus}
+                                  </span>
+                                )}
+                                {tiers.orange !== undefined && (
+                                  <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-800">
+                                    Orange: {tiers.orange}
+                                  </span>
+                                )}
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </td>
                       <td className="px-4 py-3 text-right font-semibold">{round.lowestPoints ?? "Varies"}</td>
                       <td className="px-4 py-3 text-right">{round.invitations.toLocaleString()}</td>
                       <td className="px-4 py-3 text-right text-muted-foreground">

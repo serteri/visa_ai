@@ -477,6 +477,27 @@ model EoiRound {
   source       String   @default("scraper")
   createdAt    DateTime @default(now()) @map("created_at")
 
+  /// "FEDERAL" (Department of Home Affairs SkillSelect round) or "STATE"
+  /// (a state/territory government's own nomination round, e.g. Migration
+  /// Tasmania's ROI intake) -- distinguishes the two fundamentally
+  /// different processes both feeding this same rounds table.
+  issuingAuthority String  @default("FEDERAL") @map("issuing_authority")
+  /// State/territory code (TAS, NSW, VIC, QLD, WA, SA, ACT, NT) when
+  /// issuingAuthority is "STATE"; null for FEDERAL rounds.
+  state            String?
+  /// State-specific nomination pathway (e.g. Tasmania's TSE/TSG/TER/TBO,
+  /// or "General" for states without named sub-pathways); null when not
+  /// applicable.
+  pathway          String?
+  /// Freeform pass-tier invitation breakdown for states that rank
+  /// Registrations of Interest into named tiers instead of (or alongside)
+  /// a single points cutoff -- e.g. Tasmania's
+  /// { gold: number, green: number, orangePlus?: number, orange?: number }.
+  /// Kept as Json (not normalized columns) since tier structures differ
+  /// per state and this is display/reporting data, not something queried
+  /// by individual tier value.
+  tierBreakdown    Json?   @map("tier_breakdown")
+
   @@unique([roundDate, visaSubclass])
   @@map("eoi_rounds")
 }
