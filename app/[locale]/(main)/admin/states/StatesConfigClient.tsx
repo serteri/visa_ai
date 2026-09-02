@@ -42,11 +42,12 @@ const STATUS_OPTIONS: Exclude<
   "Not configured" | "Open for Offshore" | "High Demand" | "Closed" | "Onshore Only"
 >[] = ["Open (Onshore & Offshore)", "Open (Onshore Only)", "Open (Offshore Only)", "Suspended / Closed"];
 
-/** Fallback official state/territory skilled-migration program pages, used
- *  only until an admin sets/overrides a state's `officialWebsite` in the
- *  form below (which is what's actually persisted and linked from the
- *  ExternalLink icon). */
-const STATE_OFFICIAL_URL_FALLBACK: Record<string, string> = {
+/** Default official state/territory skilled-migration program pages. Prefilled
+ *  directly into the "Official URL" input's value (not just shown as a
+ *  placeholder) whenever a state has no `officialWebsite` saved yet, so the
+ *  admin sees the form already populated and can just hit Save -- or edit
+ *  it first if the default is stale. */
+const DEFAULT_STATE_URLS: Record<string, string> = {
   NSW: "https://www.nsw.gov.au/visas-and-migration",
   VIC: "https://liveinmelbourne.vic.gov.au/",
   WA: "https://migration.wa.gov.au/",
@@ -77,7 +78,7 @@ type RowFormState = {
   officialWebsite: string;
 };
 
-function toFormState(row: StateRow): RowFormState {
+function toFormState(row: StateRow, defaultUrl?: string): RowFormState {
   const legacyToCurrent: Partial<Record<StateStatus, (typeof STATUS_OPTIONS)[number]>> = {
     "Open for Offshore": "Open (Offshore Only)",
     "High Demand": "Open (Onshore & Offshore)",
@@ -94,14 +95,14 @@ function toFormState(row: StateRow): RowFormState {
     visa491: row.supportedVisas.includes("491"),
     feeAud: row.feeAud !== null ? String(row.feeAud) : "",
     customAiNote: row.customAiNote ?? "",
-    officialWebsite: row.officialWebsite ?? "",
+    officialWebsite: row.officialWebsite ?? defaultUrl ?? "",
   };
 }
 
 export function StatesConfigClient({ initialRows, disabled }: { initialRows: StateRow[]; disabled?: boolean }) {
   const [rows, setRows] = useState<StateRow[]>(initialRows);
   const [forms, setForms] = useState<Record<string, RowFormState>>(() =>
-    Object.fromEntries(initialRows.map((row) => [row.code, toFormState(row)]))
+    Object.fromEntries(initialRows.map((row) => [row.code, toFormState(row, DEFAULT_STATE_URLS[row.code])]))
   );
   const [savingCode, setSavingCode] = useState<string | null>(null);
   const [messages, setMessages] = useState<Record<string, { type: "success" | "error"; text: string }>>({});
@@ -197,7 +198,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                 const form = forms[row.code];
                 const message = messages[row.code];
                 const saving = savingCode === row.code;
-                const officialUrl = row.officialWebsite || STATE_OFFICIAL_URL_FALLBACK[row.code] || null;
+                const officialUrl = form.officialWebsite.trim() || null;
                 return (
                   <tr key={row.code} className="border-b border-border/50 align-top hover:bg-muted/30">
                     <td className="px-4 py-4 font-medium">
