@@ -27,6 +27,9 @@ import {
 import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
+import { generatePremiumStrategy } from "@/lib/ai/generate-premium-strategy";
+import { retrieveVisaContext } from "@/lib/ai/retrieve-visa-context";
+import { retrieveStateContext } from "@/lib/ai/retrieve-state-context";
 import {
   createUserReport,
   getUserReportById,
@@ -1227,6 +1230,39 @@ export async function submitFullCheckWaitlist(
     }),
     targetCountry
   );
+
+  // Premium AI Strategy layer: purely additive narrative/advisory content on
+  // top of the deterministic report above -- never a source of truth for
+  // points or eligibility (see generatePremiumStrategy's system prompt). RAG
+  // context is built from the same signals the deterministic engine already
+  // used (occupation, preferred state, detected subclasses), reusing the
+  // existing retrieval utilities rather than duplicating retrieval logic.
+  // A failure here (missing API key, model error) must not block the
+  // deterministic report from being generated and saved, so it's caught and
+  // logged rather than thrown.
+  const strategyQueryText = [occupation, preferredState, ...(generatedReport.detectedSubclasses ?? [])]
+    .filter((value): value is string => Boolean(value && value.trim()))
+    .join(" ");
+
+  let aiStrategy: ReadinessReport["aiStrategy"];
+  try {
+    const [ragVisaContext, ragStateContext] = await Promise.all([
+      retrieveVisaContext({ message: strategyQueryText }),
+      retrieveStateContext(strategyQueryText),
+    ]);
+
+    aiStrategy = await generatePremiumStrategy(
+      generatedReport,
+      { visaContext: ragVisaContext, stateContext: ragStateContext },
+      resolvedLocale
+    );
+  } catch (error) {
+    console.error("[full-check] Premium AI strategy generation failed:", error);
+  }
+
+  if (aiStrategy) {
+    generatedReport.aiStrategy = aiStrategy;
+  }
 
   if (analysisProgressId) {
     await updateFullCheckProgress(analysisProgressId, "analyzing_trends");
