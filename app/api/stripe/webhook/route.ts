@@ -3,7 +3,6 @@ import Stripe from "stripe";
 
 import { prisma } from "@/lib/prisma";
 import { generateAndSendReport } from "@/lib/services/report-service";
-import type { ReadinessReport } from "@/lib/readiness/types";
 import type { ReadinessInput } from "@/lib/readiness/types";
 import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
 import { recordCommissionTransaction, recordCommissionTransactionForLead, hasRecordedTransaction } from "@/lib/stripe/commission";
@@ -149,44 +148,37 @@ async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Res
   }
 
   try {
-    const rows = await prisma.$queryRawUnsafe<
-      Array<{
-        id: string;
-        email: string;
-        locale: string;
-        full_name: string | null;
-        source: string;
-        preferred_path: string | null;
-        report_json: ReadinessReport;
-        input_json: ReadinessInput;
-      }>
-    >(
-      `SELECT id, email, locale, full_name, source, preferred_path, report_json, input_json FROM user_reports WHERE id::text = $1::text LIMIT 1`,
-      reportId
-    );
+    const record = await prisma.userReport.findUnique({
+      where: { id: reportId },
+      select: {
+        id: true,
+        email: true,
+        locale: true,
+        fullName: true,
+        source: true,
+        preferredPath: true,
+        reportJson: true,
+        inputJson: true,
+      },
+    });
 
-    const record = rows[0];
     if (!record) {
       console.error(`Webhook: Report ${reportId} not found`);
       return new Response("Report not found", { status: 404 });
     }
 
     // Mark as unlocked with payment
-    await prisma.$executeRawUnsafe(
-      `
-        UPDATE user_reports
-        SET
-          email = $1,
-          unlock_method = 'payment',
-          payment_status = 'paid',
-          is_unlocked = TRUE,
-          pdf_sent = FALSE,
-          unlocked_at = NOW()
-        WHERE id::text = $2::text
-      `,
-      email,
-      reportId
-    );
+    await prisma.userReport.update({
+      where: { id: reportId },
+      data: {
+        email,
+        unlockMethod: "payment",
+        paymentStatus: "paid",
+        isUnlocked: true,
+        pdfSent: false,
+        unlockedAt: new Date(),
+      },
+    });
 
     // Affiliate commission ledger -- best-effort, must never fail this
     // webhook or block PDF delivery below. No-ops if this session has no
@@ -204,11 +196,11 @@ async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Res
     // must never fail this webhook and trigger a Stripe retry of a charge
     // that already went through.
     try {
-      const input = (record.input_json ?? {}) as Partial<ReadinessInput>;
+      const input = (record.inputJson ?? {}) as Partial<ReadinessInput>;
       await sendFullCheckAdminEmail({
-        fullName: record.full_name ?? "",
+        fullName: record.fullName ?? "",
         email,
-        visaInterest: record.preferred_path ?? input.preferredPathway ?? "",
+        visaInterest: record.preferredPath ?? input.preferredPathway ?? "",
         preferredLanguage: record.locale,
         currentCountry: input.currentCountry ?? "",
         passportCountry: input.passportCountry ?? "",
@@ -239,7 +231,7 @@ async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Res
     // PDF/email failure here must never fail this webhook and cause Stripe
     // to retry a charge that already went through.
     try {
-      const { pdfSent } = await generateAndSendReport(reportId, email, record.full_name ?? undefined);
+      const { pdfSent } = await generateAndSendReport(reportId, email, record.fullName ?? undefined);
       console.log(`Webhook: Report ${reportId} unlock processed, pdfSent=${pdfSent}`, { email });
     } catch (emailErr) {
       console.error("Webhook: PDF generation or email delivery failed:", emailErr);
