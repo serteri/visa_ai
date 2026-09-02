@@ -2184,6 +2184,116 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   /**
+   * Renders the Premium AI Strategy layer (lib/ai/generate-premium-strategy.ts)
+   * immediately after the Report Overview page, when present. Purely
+   * additive on top of the deterministic report above it -- report.aiStrategy
+   * is optional (absent when the AI call failed or wasn't attempted), so
+   * this section renders nothing at all in that case rather than an empty
+   * placeholder.
+   */
+  function renderAiStrategySection() {
+    const strategy = report.aiStrategy;
+    if (!strategy) return;
+
+    const isTr = effectiveLocale === "tr";
+    const isZh = effectiveLocale === "zh-Hans";
+
+    const sectionTitle = isTr ? "Yapay Zeka Strateji Özeti" : isZh ? "AI 战略摘要" : "AI Strategy Summary";
+    addSectionHeading("🧭", sectionTitle);
+
+    // ── Executive summary highlight box ───────────────────────────────
+    if (strategy.executiveSummary.trim()) {
+      const summaryLines = doc.splitTextToSize(safeText(strategy.executiveSummary), contentWidth - 16);
+      const boxHeight = Math.max(20, 10 + summaryLines.length * 4.6);
+      ensurePageSpace(boxHeight + 8);
+
+      const boxY = yPosition;
+      doc.setFillColor(COLORS.cream.r, COLORS.cream.g, COLORS.cream.b);
+      doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
+      doc.setLineWidth(0.6);
+      doc.roundedRect(margin, boxY, contentWidth, boxHeight, 2, 2, "FD");
+      doc.setFillColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
+      doc.rect(margin, boxY, 2.8, boxHeight, "F");
+
+      setBaseFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+      doc.text(summaryLines, margin + 8, boxY + 8, { lineHeightFactor: 1.2 });
+
+      yPosition = boxY + boxHeight + 6;
+    }
+
+    // ── Top recommended pathways ───────────────────────────────────────
+    if (strategy.topRecommendedPathways.length > 0) {
+      const pathwaysHeading = isTr ? "Önerilen Vize Yolları" : isZh ? "推荐签证路径" : "Top Recommended Pathways";
+      addHeading(pathwaysHeading);
+
+      strategy.topRecommendedPathways.forEach((pathway) => {
+        const pathwayLabel = `${pathway.state} — Subclass ${pathway.subclass}`;
+        addPremiumKeyValueContainer(
+          pathwayLabel,
+          [[isTr ? "Neden" : isZh ? "原因" : "Reason", pathway.reason]],
+          COLORS.primary,
+        );
+        if (pathway.nextSteps.length > 0) {
+          addPremiumBulletContainer(
+            isTr ? "Sonraki Adımlar" : isZh ? "下一步" : "Next Steps",
+            pathway.nextSteps,
+            COLORS.accent,
+          );
+        }
+        yPosition += 1;
+      });
+    }
+
+    // ── Points booster roadmap ─────────────────────────────────────────
+    if (strategy.pointsBoosterStrategy.length > 0) {
+      const boosterHeading = isTr ? "Puan Artırma Yol Haritası" : isZh ? "积分提升路线图" : "Points Booster Roadmap";
+      addHeading(boosterHeading);
+
+      const difficultyLabel = (level: "Low" | "Medium" | "High"): string => {
+        if (level === "Low") return isTr ? "Düşük" : isZh ? "低" : "Low";
+        if (level === "Medium") return isTr ? "Orta" : isZh ? "中" : "Medium";
+        return isTr ? "Yüksek" : isZh ? "高" : "High";
+      };
+      const difficultyColor = (level: "Low" | "Medium" | "High") => {
+        if (level === "Low") return COLORS.riskLow;
+        if (level === "Medium") return COLORS.riskMedium;
+        return COLORS.riskHigh;
+      };
+
+      drawTable(
+        [
+          isTr ? "Aksiyon" : isZh ? "行动" : "Action",
+          isTr ? "Kazanılacak Puan" : isZh ? "可获积分" : "Points Gained",
+          isTr ? "Zorluk" : isZh ? "难度" : "Difficulty",
+        ],
+        strategy.pointsBoosterStrategy.map((booster) => [
+          booster.action,
+          `+${booster.pointsGained}`,
+          difficultyLabel(booster.difficulty),
+        ]),
+        [0.55, 0.2, 0.25],
+        (rowIndex, colIndex) => {
+          if (colIndex !== 2) return null;
+          const booster = strategy.pointsBoosterStrategy[rowIndex];
+          return booster ? difficultyColor(booster.difficulty) : null;
+        },
+      );
+      yPosition += 2;
+    }
+
+    // ── Timeline estimate ───────────────────────────────────────────────
+    if (strategy.timelineEstimate.trim()) {
+      const timelineHeading = isTr ? "Tahmini Zaman Çizelgesi" : isZh ? "预计时间线" : "Timeline Estimate";
+      addSmallText(`${timelineHeading}: ${strategy.timelineEstimate}`, 0);
+      yPosition += 2;
+    }
+
+    yPosition += 3;
+  }
+
+  /**
    * Defines the report's recurring generic terms once, up front, instead of
    * relying on readers to infer meaning from repeated bare labels
    * (Strength/Confidence/Friction/Signal Confidence/Evidence Load/Evidence
@@ -4132,6 +4242,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     drawPartnerSponsorshipReport();
   } else {
     addReportOverview();
+    // Premium AI Strategy layer (if present) renders right after the
+    // Overview page, before the deterministic personalized sections below.
+    renderAiStrategySection();
     // Personalized sections (EOI banner → points breakdown → viability)
     // render immediately after the executive summary so the most critical
     // data appears on pages 2-3 rather than buried at the end.
