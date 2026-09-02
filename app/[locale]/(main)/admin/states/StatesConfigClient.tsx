@@ -47,14 +47,14 @@ const STATUS_OPTIONS: Exclude<
  *  form below (which is what's actually persisted and linked from the
  *  ExternalLink icon). */
 const STATE_OFFICIAL_URL_FALLBACK: Record<string, string> = {
-  NSW: "https://www.nsw.gov.au/migrating-to-nsw/skilled-visa-nomination",
-  VIC: "https://www.liveinmelbourne.vic.gov.au/migrate/skilled-and-business-visas",
+  NSW: "https://www.nsw.gov.au/visas-and-migration",
+  VIC: "https://liveinmelbourne.vic.gov.au/",
   WA: "https://migration.wa.gov.au/",
-  SA: "https://migration.sa.gov.au/",
+  SA: "https://www.migration.sa.gov.au/",
   QLD: "https://migration.qld.gov.au/",
-  NT: "https://theterritory.com.au/migrate",
   TAS: "https://www.migration.tas.gov.au/",
-  ACT: "https://www.canberramigration.com.au/",
+  ACT: "https://www.act.gov.au/migration",
+  NT: "https://theterritory.com.au/migrate",
 };
 
 function statusBadgeClass(status: StateStatus): string {
@@ -203,23 +203,20 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                     <td className="px-4 py-4 font-medium">
                       <div className="flex items-center gap-1.5">
                         <span className="font-bold text-slate-900">{row.code}</span>
-                        {officialUrl ? (
-                          <a
-                            href={officialUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title={`${row.name} official Skilled Migration page`}
-                            className="text-slate-600 transition-colors hover:text-[#53917E]"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </a>
-                        ) : (
-                          <ExternalLink
-                            className="h-3.5 w-3.5 text-slate-300"
-                            aria-disabled="true"
-                            aria-label="No official URL set"
-                          />
-                        )}
+                        <a
+                          href={officialUrl || "#"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={officialUrl ? `${row.name} official Skilled Migration page` : "No official URL set"}
+                          aria-disabled={!officialUrl}
+                          className={
+                            officialUrl
+                              ? "text-slate-600 transition-colors hover:text-[#53917E]"
+                              : "pointer-events-none text-slate-300 opacity-50"
+                          }
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
                       </div>
                       <div className="text-xs font-normal text-slate-600">{row.name}</div>
                     </td>
@@ -287,7 +284,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                         value={form.officialWebsite}
                         disabled={disabled}
                         onChange={(e) => updateForm(row.code, { officialWebsite: e.target.value })}
-                        placeholder="https://migration.tas.gov.au"
+                        placeholder="e.g. https://liveinmelbourne.vic.gov.au"
                         className="w-56"
                       />
                     </td>
