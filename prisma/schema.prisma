@@ -727,6 +727,7 @@ model StateNominationConfig {
   supportedVisas String[] @map("supported_visas")
   feeAud         Float?   @map("fee_aud")
   customAiNote   String?  @map("custom_ai_note") @db.Text
+  officialWebsite String? @map("official_website")
   updatedBy      String?  @map("updated_by")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")

@@ -32,6 +32,7 @@ export type StateRow = {
   supportedVisas: string[];
   feeAud: number | null;
   customAiNote: string | null;
+  officialWebsite: string | null;
   updatedAt: string | null;
   isConfigured: boolean;
 };
@@ -41,10 +42,11 @@ const STATUS_OPTIONS: Exclude<
   "Not configured" | "Open for Offshore" | "High Demand" | "Closed" | "Onshore Only"
 >[] = ["Open (Onshore & Offshore)", "Open (Onshore Only)", "Open (Offshore Only)", "Suspended / Closed"];
 
-/** Official state/territory skilled-migration program pages -- linked next
- *  to each state's name via the ExternalLink icon so an admin can verify
- *  the live program status before setting it here. */
-const STATE_OFFICIAL_URL: Record<string, string> = {
+/** Fallback official state/territory skilled-migration program pages, used
+ *  only until an admin sets/overrides a state's `officialWebsite` in the
+ *  form below (which is what's actually persisted and linked from the
+ *  ExternalLink icon). */
+const STATE_OFFICIAL_URL_FALLBACK: Record<string, string> = {
   NSW: "https://www.nsw.gov.au/migrating-to-nsw/skilled-visa-nomination",
   VIC: "https://www.liveinmelbourne.vic.gov.au/migrate/skilled-and-business-visas",
   WA: "https://migration.wa.gov.au/",
@@ -72,6 +74,7 @@ type RowFormState = {
   visa491: boolean;
   feeAud: string;
   customAiNote: string;
+  officialWebsite: string;
 };
 
 function toFormState(row: StateRow): RowFormState {
@@ -91,6 +94,7 @@ function toFormState(row: StateRow): RowFormState {
     visa491: row.supportedVisas.includes("491"),
     feeAud: row.feeAud !== null ? String(row.feeAud) : "",
     customAiNote: row.customAiNote ?? "",
+    officialWebsite: row.officialWebsite ?? "",
   };
 }
 
@@ -129,6 +133,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
             supportedVisas,
             feeAud: form.feeAud.trim() === "" ? null : Number(form.feeAud),
             customAiNote: form.customAiNote.trim() || null,
+            officialWebsite: form.officialWebsite.trim() || null,
           }),
         });
 
@@ -148,6 +153,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                   supportedVisas,
                   feeAud: form.feeAud.trim() === "" ? null : Number(form.feeAud),
                   customAiNote: form.customAiNote.trim() || null,
+                  officialWebsite: form.officialWebsite.trim() || null,
                   isConfigured: true,
                   updatedAt: new Date().toISOString(),
                 }
@@ -173,16 +179,17 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[920px] text-sm">
+          <table className="w-full min-w-[1180px] text-sm">
             <thead>
               <tr className="border-b border-border text-left">
-                <th className="px-3 py-3 font-semibold">State</th>
-                <th className="px-3 py-3 font-semibold">Current status</th>
-                <th className="px-3 py-3 font-semibold">Set status</th>
-                <th className="px-3 py-3 font-semibold">Visas</th>
-                <th className="px-3 py-3 font-semibold">Fee (AUD)</th>
-                <th className="px-3 py-3 font-semibold">AI note</th>
-                <th className="px-3 py-3 font-semibold text-right">Action</th>
+                <th className="px-4 py-3 font-semibold">State</th>
+                <th className="px-4 py-3 font-semibold">Current status</th>
+                <th className="px-4 py-3 font-semibold">Set status</th>
+                <th className="px-4 py-3 font-semibold">Visas</th>
+                <th className="px-4 py-3 font-semibold">Fee (AUD)</th>
+                <th className="px-4 py-3 font-semibold">Official URL</th>
+                <th className="px-4 py-3 font-semibold">AI note</th>
+                <th className="px-4 py-3 font-semibold text-right">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -190,13 +197,13 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                 const form = forms[row.code];
                 const message = messages[row.code];
                 const saving = savingCode === row.code;
-                const officialUrl = STATE_OFFICIAL_URL[row.code];
+                const officialUrl = row.officialWebsite || STATE_OFFICIAL_URL_FALLBACK[row.code] || null;
                 return (
                   <tr key={row.code} className="border-b border-border/50 align-top hover:bg-muted/30">
-                    <td className="px-3 py-3 font-medium">
+                    <td className="px-4 py-4 font-medium">
                       <div className="flex items-center gap-1.5">
                         <span className="font-bold text-slate-900">{row.code}</span>
-                        {officialUrl && (
+                        {officialUrl ? (
                           <a
                             href={officialUrl}
                             target="_blank"
@@ -206,11 +213,17 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
                           </a>
+                        ) : (
+                          <ExternalLink
+                            className="h-3.5 w-3.5 text-slate-300"
+                            aria-disabled="true"
+                            aria-label="No official URL set"
+                          />
                         )}
                       </div>
                       <div className="text-xs font-normal text-slate-600">{row.name}</div>
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-4">
                       <Badge className={statusBadgeClass(row.status)} variant="outline">
                         {row.status}
                       </Badge>
@@ -220,14 +233,14 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                         </div>
                       )}
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-4">
                       <select
                         value={form.status}
                         disabled={disabled}
                         onChange={(e) =>
                           updateForm(row.code, { status: e.target.value as RowFormState["status"] })
                         }
-                        className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 disabled:opacity-50"
+                        className="w-full min-w-[190px] rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 disabled:opacity-50"
                       >
                         {STATUS_OPTIONS.map((option) => (
                           <option key={option} value={option} className="bg-white text-slate-900">
@@ -236,7 +249,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                         ))}
                       </select>
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-4">
                       <label className="flex items-center gap-1.5 text-xs">
                         <input
                           type="checkbox"
@@ -256,7 +269,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                         491
                       </label>
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-4">
                       <Input
                         type="number"
                         min={0}
@@ -265,10 +278,20 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                         disabled={disabled}
                         onChange={(e) => updateForm(row.code, { feeAud: e.target.value })}
                         placeholder="e.g. 357.50"
-                        className="w-28"
+                        className="w-32"
                       />
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-4">
+                      <Input
+                        type="url"
+                        value={form.officialWebsite}
+                        disabled={disabled}
+                        onChange={(e) => updateForm(row.code, { officialWebsite: e.target.value })}
+                        placeholder="https://migration.tas.gov.au"
+                        className="w-56"
+                      />
+                    </td>
+                    <td className="px-4 py-4">
                       <textarea
                         value={form.customAiNote}
                         disabled={disabled}
@@ -278,7 +301,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                         className="w-56 rounded-md border border-input bg-background px-2 py-1.5 text-xs disabled:opacity-50"
                       />
                     </td>
-                    <td className="px-3 py-3 text-right">
+                    <td className="px-4 py-4 text-right">
                       <button
                         onClick={() => handleSave(row.code)}
                         disabled={disabled || saving || isPending}

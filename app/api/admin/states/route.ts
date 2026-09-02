@@ -77,7 +77,10 @@ export async function POST(request: NextRequest) {
     return Response.json({ ok: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { stateCode, status, supportedVisas, feeAud, customAiNote } = (body ?? {}) as Record<string, unknown>;
+  const { stateCode, status, supportedVisas, feeAud, customAiNote, officialWebsite } = (body ?? {}) as Record<
+    string,
+    unknown
+  >;
 
   if (typeof stateCode !== "string" || !KNOWN_STATE_CODES.has(stateCode)) {
     return Response.json(
@@ -109,6 +112,15 @@ export async function POST(request: NextRequest) {
 
   const note = typeof customAiNote === "string" && customAiNote.trim() ? customAiNote.trim() : null;
 
+  let website: string | null = null;
+  if (typeof officialWebsite === "string" && officialWebsite.trim()) {
+    const trimmed = officialWebsite.trim();
+    if (!/^https?:\/\//i.test(trimmed)) {
+      return Response.json({ ok: false, error: "officialWebsite must start with http:// or https://" }, { status: 400 });
+    }
+    website = trimmed;
+  }
+
   try {
     const saved = await prisma.stateNominationConfig.upsert({
       where: { stateCode },
@@ -118,12 +130,14 @@ export async function POST(request: NextRequest) {
         supportedVisas: visasArray,
         feeAud: fee,
         customAiNote: note,
+        officialWebsite: website,
       },
       update: {
         status,
         supportedVisas: visasArray,
         feeAud: fee,
         customAiNote: note,
+        officialWebsite: website,
       },
     });
 

@@ -50,6 +50,7 @@ export default async function StatesConfigPage({ params }: PageProps) {
       supportedVisas: config?.supportedVisas ?? [],
       feeAud: config?.feeAud ?? null,
       customAiNote: config?.customAiNote ?? null,
+      officialWebsite: config?.officialWebsite ?? null,
       updatedAt: config?.updatedAt ? config.updatedAt.toISOString() : null,
       isConfigured: Boolean(config),
     };
