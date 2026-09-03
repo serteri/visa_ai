@@ -57,3 +57,8 @@ legacy_referrals_export.json
 
 # chatbot training knowledge base (PDF/xlsx/md/json) -- never commit (size + not meant to be public)
 data/knowledge/
+
+# generated test PDFs (scripts/test-personas.ts, scripts/test-pdf-generation.ts etc.) -- local scratch output, never commit
+/temp_tests/
+test-output.pdf
+
