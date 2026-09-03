@@ -121,6 +121,15 @@ export function PremiumFeatureGate({
       return;
     }
     setTermsError(false);
+
+    // Fires right as the form action (unlockAction -> /api/checkout ->
+    // Stripe redirect) is about to run -- the earliest point at which the
+    // user has actually committed to checkout, as opposed to just opening
+    // the modal (setShowModal(true) above, which many visitors abandon).
+    trackGaEvent("checkout_initiated", {
+      report_id: reportId,
+      product_type: "premium",
+    });
   }
 
   const termsLabel = isTr ? (
