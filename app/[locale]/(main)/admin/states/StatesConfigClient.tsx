@@ -280,14 +280,30 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                       />
                     </td>
                     <td className="px-4 py-4">
-                      <Input
-                        type="url"
-                        value={form.officialWebsite}
-                        disabled={disabled}
-                        onChange={(e) => updateForm(row.code, { officialWebsite: e.target.value })}
-                        placeholder="e.g. https://liveinmelbourne.vic.gov.au"
-                        className="w-56"
-                      />
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="url"
+                          value={form.officialWebsite}
+                          disabled={disabled}
+                          onChange={(e) => updateForm(row.code, { officialWebsite: e.target.value })}
+                          placeholder="e.g. https://liveinmelbourne.vic.gov.au"
+                          className="w-56"
+                        />
+                        <a
+                          href={form.officialWebsite.trim() || "#"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={form.officialWebsite.trim() ? "Open this URL in a new tab" : "No URL entered yet"}
+                          aria-disabled={!form.officialWebsite.trim()}
+                          className={
+                            form.officialWebsite.trim()
+                              ? "text-slate-600 transition-colors hover:text-[#53917E]"
+                              : "pointer-events-none text-slate-300 opacity-50"
+                          }
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </div>
                     </td>
                     <td className="px-4 py-4">
                       <textarea
