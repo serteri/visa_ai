@@ -1,11 +1,19 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CheckCircle, AlertCircle, ExternalLink, Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle, ExternalLink, Loader2, Pencil } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // "High Demand" was an occupation-dependent, vague signal that doesn't
 // belong in a program-level status -- kept here only so a legacy row
@@ -107,14 +115,27 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
   const [savingCode, setSavingCode] = useState<string | null>(null);
   const [messages, setMessages] = useState<Record<string, { type: "success" | "error"; text: string }>>({});
   const [isPending, startTransition] = useTransition();
+  const [editingUrlCode, setEditingUrlCode] = useState<string | null>(null);
+  const [urlDraft, setUrlDraft] = useState("");
 
   function updateForm(code: string, patch: Partial<RowFormState>) {
     setForms((prev) => ({ ...prev, [code]: { ...prev[code], ...patch } }));
   }
 
-  function handleSave(code: string) {
-    const form = forms[code];
-    if (!form) return;
+  function openUrlModal(code: string) {
+    setUrlDraft(forms[code]?.officialWebsite ?? "");
+    setEditingUrlCode(code);
+  }
+
+  /** Shared by the row's main "Save" button and the URL edit modal's own
+   *  save action -- `overrides` lets the URL modal persist a just-typed
+   *  value without waiting on a setState round-trip to land in `forms`
+   *  first (which would otherwise read the pre-edit value back out of the
+   *  stale closure). */
+  function persistRow(code: string, overrides: Partial<RowFormState> = {}) {
+    const base = forms[code];
+    if (!base) return;
+    const form = { ...base, ...overrides };
 
     setMessages((prev) => ({ ...prev, [code]: undefined as unknown as never }));
     setSavingCode(code);
@@ -145,6 +166,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
           return;
         }
 
+        setForms((prev) => ({ ...prev, [code]: form }));
         setRows((prev) =>
           prev.map((row) =>
             row.code === code
@@ -162,6 +184,7 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
           )
         );
         setMessages((prev) => ({ ...prev, [code]: { type: "success", text: "Saved." } }));
+        setEditingUrlCode((current) => (current === code ? null : current));
       } catch (err) {
         setMessages((prev) => ({
           ...prev,
@@ -171,6 +194,14 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
         setSavingCode(null);
       }
     });
+  }
+
+  function handleSave(code: string) {
+    persistRow(code);
+  }
+
+  function handleSaveUrl(code: string) {
+    persistRow(code, { officialWebsite: urlDraft });
   }
 
   return (
@@ -280,29 +311,32 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
                       />
                     </td>
                     <td className="px-4 py-4">
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="url"
-                          value={form.officialWebsite}
-                          disabled={disabled}
-                          onChange={(e) => updateForm(row.code, { officialWebsite: e.target.value })}
-                          placeholder="e.g. https://liveinmelbourne.vic.gov.au"
-                          className="w-56"
-                        />
+                      <div className="flex items-center gap-1.5">
                         <a
                           href={form.officialWebsite.trim() || "#"}
                           target="_blank"
                           rel="noopener noreferrer"
-                          title={form.officialWebsite.trim() ? "Open this URL in a new tab" : "No URL entered yet"}
+                          title={form.officialWebsite.trim() ? "Open this URL in a new tab" : "No URL set yet"}
                           aria-disabled={!form.officialWebsite.trim()}
                           className={
                             form.officialWebsite.trim()
-                              ? "text-slate-600 transition-colors hover:text-[#53917E]"
-                              : "pointer-events-none text-slate-300 opacity-50"
+                              ? "flex items-center gap-1.5 rounded-md border border-slate-300 px-2 py-1.5 text-xs text-slate-700 transition-colors hover:border-[#53917E] hover:text-[#53917E]"
+                              : "flex items-center gap-1.5 rounded-md border border-slate-200 px-2 py-1.5 text-xs text-slate-300 opacity-50 pointer-events-none"
                           }
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          Open link
                         </a>
+                        <button
+                          type="button"
+                          onClick={() => openUrlModal(row.code)}
+                          disabled={disabled}
+                          title="Edit official URL"
+                          className="flex items-center gap-1 rounded-md border border-slate-300 px-2 py-1.5 text-xs text-slate-700 transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Edit
+                        </button>
                       </div>
                     </td>
                     <td className="px-4 py-4">
@@ -346,6 +380,52 @@ export function StatesConfigClient({ initialRows, disabled }: { initialRows: Sta
           </table>
         </div>
       </CardContent>
+
+      <Dialog
+        open={editingUrlCode !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingUrlCode(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Edit official URL{editingUrlCode ? ` — ${editingUrlCode}` : ""}
+            </DialogTitle>
+            <DialogDescription>
+              This is the state's official skilled-migration program page, linked from the "Open link" button in
+              the table.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Input
+            type="url"
+            value={urlDraft}
+            onChange={(e) => setUrlDraft(e.target.value)}
+            placeholder="e.g. https://liveinmelbourne.vic.gov.au"
+            autoFocus
+          />
+
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setEditingUrlCode(null)}
+              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => editingUrlCode && handleSaveUrl(editingUrlCode)}
+              disabled={!editingUrlCode || savingCode === editingUrlCode || isPending}
+              className="flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-60"
+            >
+              {editingUrlCode && savingCode === editingUrlCode && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              Save
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
