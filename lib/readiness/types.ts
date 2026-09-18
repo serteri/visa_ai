@@ -383,6 +383,54 @@ export type DataCompletenessLevel = "sufficient" | "partial" | "minimal";
 export type OccupationEligibility = "eligible" | "ineligible" | "unverified";
 
 /**
+ * Country-discriminated Employer Sponsorship signal -- AU and CA are two
+ * parallel branches of one shared shape (each with its own nested,
+ * country-specific fields), not one AU-shaped default with a CA exception
+ * bolted on. That "country param present but only some functions honor it"
+ * pattern is what caused the AU-text-leaking-into-CA-reports bugs fixed in
+ * prior sessions, so this type is deliberately structured to make an
+ * unhandled country a compile error at every switch/consumer, not a silent
+ * AU fallback.
+ *
+ * AU (482 Skills in Demand -> 186 Employer Nomination Scheme) is fully
+ * modeled: CSIT salary check against the canonical CURRENT_CSIT constant
+ * (lib/readiness/constants.ts).
+ *
+ * CA has NO intake fields for employer sponsorship yet (no job-offer or
+ * LMIA-status question exists anywhere in the product) -- `ca.dataAvailable`
+ * is always `false` today. This is a placeholder branch, not a modeled one;
+ * do not invent LMIA/job-offer eligibility logic here. It also carries the
+ * confirmed fact (IRCC removed CRS arranged-employment bonus points
+ * effective 2025-03-25) so the CA content builder can state it without
+ * re-deriving or guessing it. See the follow-up task for adding real CA
+ * intake fields and revisiting this scope.
+ */
+export type EmployerSponsorshipSignal =
+  | {
+      country: "AU";
+      /** True when the user selected the "Employer Sponsorship" migration goal or a 482/186 pathway was detected. */
+      applies: boolean;
+      au: {
+        salaryProvided: boolean;
+        annualSalaryAud?: number;
+        /** Canonical CURRENT_CSIT.value (lib/readiness/constants.ts) -- never a separately hardcoded literal. */
+        csitThresholdAud: number;
+        /** undefined when salaryProvided is false -- "unknown", not "false". */
+        meetsCsit?: boolean;
+      };
+    }
+  | {
+      country: "CA";
+      applies: boolean;
+      ca: {
+        /** Always false today -- no CA employer-sponsorship intake fields exist yet. */
+        dataAvailable: false;
+        /** True: IRCC confirmed removal of CRS arranged-employment bonus points effective 2025-03-25. Not a future/pending fact. */
+        arrangedEmploymentCrsPointsRemoved: true;
+      };
+    };
+
+/**
  * Single source of truth for assessment confidence, computed ONCE per report
  * generation in the base engine. Every downstream section (Executive
  * Summary, Visa Viability Ranking, Pathway Comparison, Evidence Snapshot)
@@ -415,6 +463,24 @@ export type AssessmentState = {
   occupationEligibilityReason: string;
   /** True only when dataCompletenessLevel is "sufficient", estimatedPoints is a real calculated value, AND occupationEligibility is "eligible". Gates all numeric %/points display across the report. */
   canShowNumericRanking: boolean;
+  /** Mirrors PointsEstimate.isEoiEligible — surfaced here too so every section that already reads assessmentState.* (rather than pointsEstimate.*) can gate encouraging/"proceed" language off the SAME flag instead of re-deriving EOI eligibility independently. */
+  isEoiEligible: boolean;
+  /** Mirrors PointsEstimate.eoiIneligibilityReason. */
+  eoiIneligibilityReason?: "age" | "skills_assessment" | "english" | "points" | null;
+  /**
+   * Canonical per-pathway points figure, computed ONCE from estimatedPoints
+   * using the same base+bonus arithmetic as the ineligibility narrative text
+   * (see computePathwayPoints in assessment-state.ts). `total` is what every
+   * section must display as "this pathway's points" -- never a separately
+   * recomputed value. `base` always equals estimatedPoints; `bonus` is the
+   * state-nomination (+5, subclass 190) or regional/family (+15, subclass
+   * 491) boost, shown explicitly rather than folded silently into `total`.
+   */
+  pathwayPoints: Record<"189" | "190" | "491", { base: number; bonus: number; total: number }>;
+  /** The single points-test minimum (65) each pathway is compared against. Same value for 189/190/491 today, but kept per-pathway so a future subclass-specific threshold doesn't require touching every reader. */
+  referenceBenchmarks: Record<"189" | "190" | "491", number>;
+  /** Single source of truth for the Employer Sponsorship module (lib/readiness/pdf-content/employer-sponsorship.ts). See EmployerSponsorshipSignal. */
+  employerSponsorship: EmployerSponsorshipSignal;
 };
 
 /**

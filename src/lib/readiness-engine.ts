@@ -13,6 +13,7 @@ import {
 } from "@/lib/readiness/visa-points-calculator";
 import { localizeOccupationWarning, localizeText, t3 } from "@/src/lib/readiness/localization";
 import { canonicalizeOccupationInput, findOccupationRecord as findCanonicalOccupationRecord } from "@/lib/readiness/occupation-eligibility";
+import { logReportInvariantViolations } from "@/lib/readiness/report-invariants";
 import type {
   DocumentCategory,
   ConfidenceLevel,
@@ -165,44 +166,6 @@ function computeBestKnownScore(input: ReadinessInput, base: ReadinessReport, occ
   return points.scores.subclass190;
 }
 
-function computeUserPointsBySubclass(input: ReadinessInput, base: ReadinessReport, occupationCode?: string): {
-  subclass189: number;
-  subclass190: number;
-  subclass491: number;
-} {
-  const ageRange = parseAgeRange(input.age);
-  const englishLevel = parseEnglishLevel(input.englishLevel);
-
-  if (!ageRange || !englishLevel) {
-    const fallback = base.pointsEstimate?.estimatedPoints ?? 0;
-    return {
-      subclass189: fallback,
-      subclass190: fallback,
-      subclass491: fallback,
-    };
-  }
-
-  const points = calculateVisaPoints({
-    ageRange,
-    englishLevel,
-    qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
-    researchDegreeEligibleForSpecialistEducation: isResearchOrDoctorateQualification(input.qualificationLevel),
-    qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
-    qualificationRegionalAustralia: input.qualificationRegionalAustralia,
-    specialistEducationStemResponse: input.specialistEducationStemResponse,
-    offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
-    onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
-    anzscoCode: occupationCode,
-    occupationName: canonicalizeOccupationInput(input.occupation),
-    hasNAATI: false,
-    hasProfessionalYear: false,
-    hasRegionalStudy: false,
-    partnerSkilled: false,
-  });
-
-  return points.scores;
-}
-
 function escalate(current: FrictionScore, next: FrictionScore): FrictionScore {
   const rank: Record<FrictionScore, number> = {
     LOW: 1,
@@ -289,32 +252,20 @@ function buildPremiumDocumentChecklist(input: ReadinessInput, base: ReadinessRep
   return categories;
 }
 
-function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport, occupationCode?: string): string[] {
+function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport): string[] {
   const locale = input.locale;
-  const ageRange = parseAgeRange(input.age);
-  const englishLevel = parseEnglishLevel(input.englishLevel);
 
-  const points = ageRange && englishLevel
-    ? calculateVisaPoints({
-        ageRange,
-        englishLevel,
-        qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
-        researchDegreeEligibleForSpecialistEducation: isResearchOrDoctorateQualification(input.qualificationLevel),
-        qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
-        qualificationRegionalAustralia: input.qualificationRegionalAustralia,
-        specialistEducationStemResponse: input.specialistEducationStemResponse,
-        offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
-        onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
-        anzscoCode: occupationCode,
-        occupationName: input.occupation,
-        hasNAATI: false,
-        hasProfessionalYear: false,
-        hasRegionalStudy: false,
-        partnerSkilled: false,
-      })
-    : undefined;
-
-  const score190 = points?.scores.subclass190 ?? 0;
+  // Read the canonical 190 total (base + state-nomination bonus) from
+  // assessmentState instead of recomputing via calculateVisaPoints -- a
+  // separate calculator with its own defaults (hasNAATI: false,
+  // partnerSkilled: false always) that could silently disagree with the
+  // 190 total shown everywhere else in the report. `0` when estimatedPoints
+  // itself is undefined (age/English not provided), matching the previous
+  // fallback behavior for that case.
+  const score190 =
+    base.assessmentState.estimatedPoints !== undefined
+      ? base.assessmentState.pathwayPoints["190"].total
+      : 0;
   const expYears = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
   const occupationConfirmed = normalize(input.occupationConfirmed) === "yes";
   const lowPointsGap = score190 > 0 && score190 < 85;
@@ -355,17 +306,23 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   const locale = input.locale;
   const occupation = findOccupationRecord(input);
   const trend = findTrendRecord(input, occupation);
-  const scores = computeUserPointsBySubclass(input, base, occupation?.anzsco_code);
 
   let frictionScore: FrictionScore = "MEDIUM";
   const reality: string[] = [];
   const successSignals: string[] = [];
 
   const subclassKey = toPathwayKey(subclass);
+  // Read the canonical per-pathway points figure from assessmentState
+  // (single source of truth, see lib/readiness/assessment-state.ts) instead
+  // of recomputing via calculateVisaPoints -- a separate points calculator
+  // with its own input defaults (e.g. always partnerSkilled: false,
+  // hasNAATI: false) that can silently diverge from the base points shown
+  // everywhere else in the report (Points Breakdown, Pathway Comparison).
+  const canonicalPathwayPoints = base.assessmentState.pathwayPoints;
   const userPoints =
-    subclassKey === "189" ? scores.subclass189
-    : subclassKey === "190" ? scores.subclass190
-    : subclassKey === "491" ? scores.subclass491
+    subclassKey === "189" ? canonicalPathwayPoints["189"].total
+    : subclassKey === "190" ? canonicalPathwayPoints["190"].total
+    : subclassKey === "491" ? canonicalPathwayPoints["491"].total
     : computeBestKnownScore(input, base, occupation?.anzsco_code);
 
   const estimate = trend?.estimates.find((e) => e.subclass === subclassKey) ?? undefined;
@@ -1000,11 +957,17 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
       occupationAuthority: occupation?.authority,
     }),
     documentChecklist: buildPremiumDocumentChecklist(input, base),
-    suggestedNextSteps: buildImmediateActionPlan(input, base, occupation?.anzsco_code),
+    suggestedNextSteps: buildImmediateActionPlan(input, base),
     frictionAnalysis,
   };
 
-  return input.locale === "zh-Hans" ? localizeBaseReportForZh(report) : report;
+  const finalReport = input.locale === "zh-Hans" ? localizeBaseReportForZh(report) : report;
+  // runBaseReadinessEngine already checked invariants on `base`, but this
+  // wrapper rebuilds rankedPathways/pathwayStrengthComparison/frictionAnalysis/
+  // suggestedNextSteps afterwards -- re-check the actual final report (this
+  // is what generateReadinessPDF and the API routes actually receive).
+  logReportInvariantViolations(finalReport, "src/lib/readiness-engine.runReadinessEngine");
+  return finalReport;
 }
 
 export { buildLeadQuality } from "@/lib/readiness/engine";

@@ -25,6 +25,14 @@ export function getPersonalizedApplicationGuide(
   pointsEstimate?: number,
   assessingAuthority?: string,
   isGeneralAuthorityFallback?: boolean,
+  /**
+   * Canonical assessmentState.isEoiEligible. CA has no "Skills Assessment"
+   * concept and no fixed CRS pass/fail threshold (see engine.ts's
+   * buildCanadaPointsEstimate) -- for CA this is the ONLY meaningful
+   * blocking signal (the language-test gate). Optional for AU backward
+   * compatibility, where it falls back to skillsAssessmentDone.
+   */
+  isEoiEligible?: boolean,
 ): {
   title: string;
   userName: string;
@@ -38,31 +46,39 @@ export function getPersonalizedApplicationGuide(
 } {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
+  const isCA = country === "CA";
   const name = profile.name || (isTr ? "Değerli Başvuru Sahibi" : isZh ? "尊敬的申请人" : "Applicant");
+  // CA: isEoiEligible IS the whole story (language-test gate); AU: the
+  // specific skills-assessment signal, same as before.
+  const requirementMet = isCA ? (isEoiEligible ?? true) : skillsAssessmentDone;
 
-  // ── Skills Assessment Status ──────────────────────────────────────────
-  const skillsAssessmentStatus = skillsAssessmentDone
+  // ── Blocking-Requirement Status (Skills Assessment for AU, language test
+  // result for CA -- CA has no "Skills Assessment" concept) ─────────────
+  const skillsAssessmentStatus = requirementMet
     ? (isTr ? "✅ Tamamlandı" : isZh ? "✅ 已完成" : "✅ Completed")
     : (isTr ? "❌ Yapılmadı" : isZh ? "❌ 未完成" : "❌ Not Done");
+  const requirementLabel = isCA
+    ? (isTr ? "Dil Testi Sonucu" : isZh ? "语言考试成绩" : "Language Test Result")
+    : (isTr ? "Beceri Değerlendirmesi" : isZh ? "技能评估" : "Skills Assessment");
 
   // ── Current Status Summary ────────────────────────────────────────────
   const currentStatus = isTr
     ? `${name}, mevcut profilinize göre durumunuz:\n\n` +
       `Meslek: ${profile.occupation || 'Belirtilmedi'}\n` +
-      `Beceri Değerlendirmesi: ${skillsAssessmentStatus}\n` +
+      `${requirementLabel}: ${skillsAssessmentStatus}\n` +
       `Tahmini Puan: ${pointsEstimate !== undefined ? `${pointsEstimate} pts` : 'Hesaplanamadı'}\n` +
       `Yaş: ${profile.age || 'Belirtilmedi'}\n` +
       `Dil Seviyesi: ${profile.englishLevel || 'Belirtilmedi'}`
     : isZh
       ? `${name}，根据您当前的档案，您的状态如下：\n\n` +
         `职业：${profile.occupation || '未填写'}\n` +
-        `技能评估：${skillsAssessmentStatus}\n` +
+        `${requirementLabel}：${skillsAssessmentStatus}\n` +
         `预估积分：${pointsEstimate !== undefined ? `${pointsEstimate} 分` : '无法计算'}\n` +
         `年龄：${profile.age || '未填写'}\n` +
         `语言水平：${profile.englishLevel || '未填写'}`
       : `${name}, based on your current profile, here is your status:\n\n` +
         `Occupation: ${profile.occupation || 'Not specified'}\n` +
-        `Skills Assessment: ${skillsAssessmentStatus}\n` +
+        `${requirementLabel}: ${skillsAssessmentStatus}\n` +
         `Estimated Points: ${pointsEstimate !== undefined ? `${pointsEstimate} pts` : 'Cannot calculate'}\n` +
         `Age: ${profile.age || 'Not specified'}\n` +
         `English Level: ${profile.englishLevel || 'Not specified'}`;
@@ -70,7 +86,17 @@ export function getPersonalizedApplicationGuide(
   // ── Personalized Next Steps ───────────────────────────────────────────
   const nextSteps: Array<{ priority: "high" | "medium" | "low"; title: string; detail: string }> = [];
 
-  if (!skillsAssessmentDone) {
+  if (!requirementMet && isCA) {
+    nextSteps.push({
+      priority: "high",
+      title: isTr ? "Dil Testine Girin" : isZh ? "参加语言考试" : "Take a Language Test",
+      detail: isTr
+        ? `${name}, Express Entry profili oluşturmak için geçerli bir dil testi sonucu (IELTS General, CELPIP, veya TEF Canada) zorunludur. Bu olmadan CEC/FSW/FSTP için profil oluşturamazsınız.`
+        : isZh
+          ? `${name}，创建 Express Entry 档案需要提供有效的语言考试成绩（IELTS General、CELPIP 或 TEF Canada）。没有此成绩，您无法为 CEC/FSW/FSTP 创建档案。`
+          : `${name}, a valid language test result (IELTS General, CELPIP, or TEF Canada) is required to create an Express Entry profile. Without one, you cannot create a profile for CEC/FSW/FSTP.`,
+    });
+  } else if (!requirementMet) {
     const occupationLabel = profile.occupation || (isTr ? "mesleğiniz" : isZh ? "您的职业" : "your occupation");
     nextSteps.push({
       priority: "high",
@@ -100,7 +126,10 @@ export function getPersonalizedApplicationGuide(
     });
   }
 
-  if (pointsEstimate !== undefined && pointsEstimate < 65) {
+  // AU has a real, fixed 65-point EOI minimum. CA's Express Entry has no
+  // fixed minimum CRS score to create a profile -- invitation cutoffs vary
+  // by draw, so this "reach the threshold" step does not apply to CA.
+  if (!isCA && pointsEstimate !== undefined && pointsEstimate < 65) {
     const gap = 65 - pointsEstimate;
     nextSteps.push({
       priority: "high",
@@ -155,23 +184,36 @@ export function getPersonalizedApplicationGuide(
       : "Estimated timeline: Profile to application 6-12 months, application to decision 6-12 months. Total: 12-24 months.";
 
   // ── Detailed Timeline ─────────────────────────────────────────────────
-  // Step 1 assumes Skills Assessment still needs to be lodged -- if the user
-  // already declared it done, that step is dynamically replaced instead of
-  // telling them to do something they've already completed.
-  const skillsAssessmentStepTr = skillsAssessmentDone
-    ? "Ay 1-2: Beceri değerlendirmesi zaten tamamlandı — doğrudan EOI oluşturmaya geçin"
-    : "Ay 1-2: Beceri değerlendirmesi başvurusu ve dil testi";
-  const skillsAssessmentStepZh = skillsAssessmentDone
-    ? "第1-2个月：技能评估已完成——可直接进入创建EOI阶段"
-    : "第1-2个月：提交技能评估申请和语言考试";
-  const skillsAssessmentStepEn = skillsAssessmentDone
-    ? "Month 1-2: Skills assessment already completed — proceed directly to EOI creation"
-    : "Month 1-2: Skills assessment application and language test";
+  // Step 1 assumes the blocking requirement still needs to be met -- if the
+  // user already satisfies it, that step is dynamically replaced instead of
+  // telling them to do something they've already completed. CA has no
+  // "Skills Assessment" concept -- its step 1 is the language test instead.
+  const skillsAssessmentStepTr = isCA
+    ? (requirementMet
+        ? "Ay 1-2: Dil testi sonucu hazır — doğrudan Express Entry profili oluşturmaya geçin"
+        : "Ay 1-2: Dil testine girin (IELTS General / CELPIP / TEF Canada)")
+    : (requirementMet
+        ? "Ay 1-2: Beceri değerlendirmesi zaten tamamlandı — doğrudan EOI oluşturmaya geçin"
+        : "Ay 1-2: Beceri değerlendirmesi başvurusu ve dil testi");
+  const skillsAssessmentStepZh = isCA
+    ? (requirementMet
+        ? "第1-2个月：语言考试成绩已就绪——可直接进入创建 Express Entry 档案阶段"
+        : "第1-2个月：参加语言考试（IELTS General / CELPIP / TEF Canada）")
+    : (requirementMet
+        ? "第1-2个月：技能评估已完成——可直接进入创建EOI阶段"
+        : "第1-2个月：提交技能评估申请和语言考试");
+  const skillsAssessmentStepEn = isCA
+    ? (requirementMet
+        ? "Month 1-2: Language test result ready — proceed directly to Express Entry profile creation"
+        : "Month 1-2: Take a language test (IELTS General / CELPIP / TEF Canada)")
+    : (requirementMet
+        ? "Month 1-2: Skills assessment already completed — proceed directly to EOI creation"
+        : "Month 1-2: Skills assessment application and language test");
 
   const detailedTimeline = isTr
     ? [
         skillsAssessmentStepTr,
-        "Ay 3-4: Değerlendirme sonuçlarını bekleme, EOI oluşturma",
+        isCA ? "Ay 3-4: Express Entry profili oluşturma ve gönderme" : "Ay 3-4: Değerlendirme sonuçlarını bekleme, EOI oluşturma",
         "Ay 5-8: Davet beklemesi (puanınıza bağlı)",
         "Ay 9-10: Başvuru hazırlığı ve belge toplama",
         "Ay 11-12: Başvuru sunma",
@@ -180,7 +222,7 @@ export function getPersonalizedApplicationGuide(
     : isZh
       ? [
           skillsAssessmentStepZh,
-          "第3-4个月：等待评估结果，创建EOI",
+          isCA ? "第3-4个月：创建并提交 Express Entry 档案" : "第3-4个月：等待评估结果，创建EOI",
           "第5-8个月：等待邀请（取决于积分）",
           "第9-10个月：准备申请材料",
           "第11-12个月：提交申请",
@@ -188,7 +230,7 @@ export function getPersonalizedApplicationGuide(
         ]
       : [
           skillsAssessmentStepEn,
-          "Month 3-4: Wait for assessment results, create EOI",
+          isCA ? "Month 3-4: Create and submit Express Entry profile" : "Month 3-4: Wait for assessment results, create EOI",
           "Month 5-8: Wait for invitation (depends on your points)",
           "Month 9-10: Prepare application and gather documents",
           "Month 11-12: Lodge application",
@@ -200,7 +242,9 @@ export function getPersonalizedApplicationGuide(
     ? [
         "✅ Pasaport (geçerli)",
         "✅ Dil testi sonuçları",
-        skillsAssessmentDone ? "✅ Beceri değerlendirmesi" : "❌ Beceri değerlendirmesi (gerekli)",
+        requirementMet
+          ? (isCA ? "✅ Dil testi sonucu" : "✅ Beceri değerlendirmesi")
+          : (isCA ? "❌ Dil testi sonucu (gerekli)" : "❌ Beceri değerlendirmesi (gerekli)"),
         "✅ İş deneyimi mektupları",
         "✅ Eğitim belgeleri",
         "⬜ Polis sabıka kayıtları",
@@ -211,7 +255,9 @@ export function getPersonalizedApplicationGuide(
       ? [
           "✅ 有效护照",
           "✅ 语言测试成绩",
-          skillsAssessmentDone ? "✅ 技能评估" : "❌ 技能评估（必要）",
+          requirementMet
+            ? (isCA ? "✅ 语言考试成绩" : "✅ 技能评估")
+            : (isCA ? "❌ 语言考试成绩（必要）" : "❌ 技能评估（必要）"),
           "✅ 工作经验证明信",
           "✅ 学历文件",
           "⬜ 无犯罪记录证明",
@@ -221,7 +267,9 @@ export function getPersonalizedApplicationGuide(
       : [
           "✅ Valid passport",
           "✅ Language test results",
-          skillsAssessmentDone ? "✅ Skills assessment" : "❌ Skills assessment (required)",
+          requirementMet
+            ? (isCA ? "✅ Language test result" : "✅ Skills assessment")
+            : (isCA ? "❌ Language test result (required)" : "❌ Skills assessment (required)"),
           "✅ Employment reference letters",
           "✅ Educational documents",
           "⬜ Police clearances",

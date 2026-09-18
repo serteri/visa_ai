@@ -1,5 +1,6 @@
 import type { AssessmentState, ReadinessInput } from "./types";
 import { getSpecialistEducationSignals } from "./education-signals";
+import { POINTS_THRESHOLD } from "./assessment-state";
 
 export type InternalLeadTier = "Hot" | "Warm" | "Cold";
 
@@ -38,7 +39,7 @@ export function computeInternalLeadTier(
 
   if (!occupationEligible || points === undefined) return "Cold";
 
-  if (points >= 65) return "Hot";
+  if (points >= POINTS_THRESHOLD) return "Hot";
 
   if (points >= 55) {
     const employmentUnconfirmed = !assessmentState.employmentDataConfirmed;

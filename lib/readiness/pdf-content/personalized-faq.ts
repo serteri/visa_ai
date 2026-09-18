@@ -33,13 +33,23 @@ export function getPersonalizedFaq(
   threshold: number,
   skillsAssessmentDone: boolean,
   assessingAuthority?: AssessmentAuthorityData | null,
+  /**
+   * Canonical assessmentState.isEoiEligible. CA has no "Skills Assessment"
+   * concept and no fixed CRS pass/fail threshold (see engine.ts's
+   * buildCanadaPointsEstimate) -- for CA this is the ONLY meaningful
+   * blocking signal (the language-test gate). Optional for AU backward
+   * compatibility, where it falls back to skillsAssessmentDone.
+   */
+  isEoiEligible?: boolean,
 ): {
   title: string;
   items: Array<{ question: string; answer: string }>;
 } {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
+  const isCA = country === "CA";
   const gap = threshold - estimatedPoints;
+  const requirementMet = isCA ? (isEoiEligible ?? true) : skillsAssessmentDone;
 
   const items: Array<{ question: string; answer: string }> = [];
 
@@ -85,17 +95,44 @@ export function getPersonalizedFaq(
     }
 
     items.push({
-      question: isTr
-        ? `${profile.occupation} mesleği için beceri değerlendirmesi nasıl yapılır?`
-        : isZh
-          ? `如何为${profile.occupation}职业进行技能评估？`
-          : `How do I get a skills assessment for ${profile.occupation}?`,
-      answer: isTr ? answerTr : isZh ? answerZh : answerEn,
+      question: isCA
+        ? (isTr
+            ? `${profile.occupation} mesleği için ECA değerlendirmesi nasıl yapılır?`
+            : isZh
+              ? `如何为${profile.occupation}职业进行 ECA 认证？`
+              : `How do I get an ECA for ${profile.occupation}?`)
+        : (isTr
+            ? `${profile.occupation} mesleği için beceri değerlendirmesi nasıl yapılır?`
+            : isZh
+              ? `如何为${profile.occupation}职业进行技能评估？`
+              : `How do I get a skills assessment for ${profile.occupation}?`),
+      answer: isCA
+        ? (isTr
+            ? "Kanada Express Entry için yurtdışı eğitim belgelerinizin ECA (Eğitim Denkliği) değerlendirmesi gereklidir. WES (World Education Services) en yaygın kullanılan değerlendirme kuruluşudur."
+            : isZh
+              ? "加拿大 Express Entry 需要对海外学历进行 ECA（教育资历评估）认证。WES（世界教育服务）是最常用的评估机构。"
+              : "For Canada Express Entry, your foreign education documents require an ECA (Educational Credential Assessment). WES (World Education Services) is the most commonly used assessment body.")
+        : (isTr ? answerTr : isZh ? answerZh : answerEn),
     });
   }
 
   // ── Points-specific question ──────────────────────────────────────────
-  if (gap > 0) {
+  // CA has no fixed CRS pass/fail threshold -- invitation cutoffs vary by
+  // draw, so a "you are N points below 65" framing does not apply.
+  if (isCA) {
+    items.push({
+      question: isTr
+        ? "CRS puanımı nasıl artırabilirim?"
+        : isZh
+          ? "我该如何提高 CRS 分数？"
+          : "How can I improve my CRS score?",
+      answer: isTr
+        ? "En hızlı yollar: 1) Dil seviyenizi yükseltin (CLB 9+ önemli puan ekler), 2) PNP eyalet adaylığı alın (+600 puan), 3) Kanada iş deneyimi kazanın, 4) İkinci resmi dilde (Fransızca) yeterlilik kazanın."
+        : isZh
+          ? "最快的方法：1）提高语言水平（CLB 9 及以上可大幅加分），2）获得 PNP 省提名（+600分），3）积累加拿大工作经验，4）掌握第二官方语言（法语）。"
+          : "Fastest ways: 1) Improve your language score (CLB 9+ adds significant points), 2) Get a PNP provincial nomination (+600 points), 3) Gain Canadian work experience, 4) Gain proficiency in the second official language (French).",
+    });
+  } else if (gap > 0) {
     items.push({
       question: isTr
         ? `Puanım yetersiz (${estimatedPoints}/${threshold}). Ne yapmalıyım?`
@@ -103,26 +140,39 @@ export function getPersonalizedFaq(
           ? `我的积分不足（${estimatedPoints}/${threshold}）。我该怎么办？`
           : `My points are insufficient (${estimatedPoints}/${threshold}). What should I do?`,
       answer: isTr
-        ? `${gap} puanlık kapatılacak. En hızlı yollar: 1) Dil seviyenizi yükseltin (+20 puan), 2) ${country === 'AU' ? 'Eyalet adaylığı' : 'PNP adaylığı'} alın, 3) ${country === 'CA' ? 'Kanada iş deneyimi' : 'Daha fazla iş deneyimi'} edinin.`
+        ? `${gap} puanlık kapatılacak. En hızlı yollar: 1) Dil seviyenizi yükseltin (+20 puan), 2) Eyalet adaylığı alın, 3) Daha fazla iş deneyimi edinin.`
         : isZh
-          ? `您需要弥补${gap}分的差距。最快的方法：1）提高语言分数（+20分），2）获得${country === 'AU' ? '州提名' : 'PNP省提名'}，3）增加${country === 'CA' ? '加拿大' : ''}工作经验。`
-          : `You need to close a ${gap}-point gap. Fastest ways: 1) Improve English (+20 pts), 2) Get ${country === 'AU' ? 'state' : 'provincial'} nomination, 3) Gain ${country === 'CA' ? 'Canadian' : ''} work experience.`,
+          ? `您需要弥补${gap}分的差距。最快的方法：1）提高语言分数（+20分），2）获得州提名，3）增加工作经验。`
+          : `You need to close a ${gap}-point gap. Fastest ways: 1) Improve English (+20 pts), 2) Get state nomination, 3) Gain more work experience.`,
     });
   }
 
-  // ── Skills assessment question ────────────────────────────────────────
-  if (!skillsAssessmentDone) {
+  // ── Blocking-requirement question (Skills Assessment for AU, language
+  // test for CA -- CA has no "Skills Assessment" concept) ───────────────
+  if (!requirementMet) {
     items.push({
-      question: isTr
-        ? "Beceri değerlendirmesi yapmadan başvuru yapabilir miyim?"
-        : isZh
-          ? "不进行技能评估可以提交申请吗？"
-          : "Can I apply without a skills assessment?",
-      answer: isTr
-        ? `Hayır, beceri değerlendirmesi olmadan ${country === 'AU' ? 'Avustralya' : 'Kanada'} skilled migration başvurusu yapamazsınız. Bu zorunlu bir adımdır.`
-        : isZh
-          ? `不可以，没有技能评估结果无法提交${country === 'AU' ? '澳大利亚' : '加拿大'}技术移民申请。这是必要步骤。`
-          : `No, you cannot apply for ${country === 'AU' ? 'Australian' : 'Canadian'} skilled migration without a skills assessment. This is mandatory.`,
+      question: isCA
+        ? (isTr
+            ? "Geçerli bir dil testi sonucu olmadan Express Entry profili oluşturabilir miyim?"
+            : isZh
+              ? "没有有效的语言考试成绩可以创建 Express Entry 档案吗？"
+              : "Can I create an Express Entry profile without a valid language test result?")
+        : (isTr
+            ? "Beceri değerlendirmesi yapmadan başvuru yapabilir miyim?"
+            : isZh
+              ? "不进行技能评估可以提交申请吗？"
+              : "Can I apply without a skills assessment?"),
+      answer: isCA
+        ? (isTr
+            ? "Hayır, CEC/FSW/FSTP dahil hiçbir Express Entry programı için geçerli bir dil testi sonucu (IELTS General, CELPIP veya TEF Canada) olmadan profil oluşturamazsınız. Bu zorunlu bir adımdır."
+            : isZh
+              ? "不可以，无论是 CEC、FSW 还是 FSTP，任何 Express Entry 项目都要求提供有效的语言考试成绩（IELTS General、CELPIP 或 TEF Canada）才能创建档案。这是必要步骤。"
+              : "No, you cannot create a profile for any Express Entry program (CEC, FSW, or FSTP) without a valid language test result (IELTS General, CELPIP, or TEF Canada). This is mandatory.")
+        : (isTr
+            ? "Hayır, beceri değerlendirmesi olmadan Avustralya skilled migration başvurusu yapamazsınız. Bu zorunlu bir adımdır."
+            : isZh
+              ? "不可以，没有技能评估结果无法提交澳大利亚技术移民申请。这是必要步骤。"
+              : "No, you cannot apply for Australian skilled migration without a skills assessment. This is mandatory."),
     });
   }
 
@@ -188,14 +238,15 @@ export function getPersonalizedFaq(
         ? "工作经验如何验证？"
         : "How is my work experience verified?",
     answer: isTr
-      ? "İşvereninizden imzalı mektup gerekir. Mektup ANZSCO/NOC kodu, görev tanımlarını, çalışma süresini ve maaşı içermelidir."
+      ? `İşvereninizden imzalı mektup gerekir. Mektup ${isCA ? "NOC" : "ANZSCO"} kodu, görev tanımlarını, çalışma süresini ve maaşı içermelidir.`
       : isZh
-        ? "需要雇主签署的证明信。信中需包含ANZSCO/NOC代码、职责描述、工作时间和薪资。"
-        : "You need a signed letter from your employer. It must include ANZSCO/NOC code, duty descriptions, duration, and salary.",
+        ? `需要雇主签署的证明信。信中需包含${isCA ? "NOC" : "ANZSCO"}代码、职责描述、工作时间和薪资。`
+        : `You need a signed letter from your employer. It must include ${isCA ? "NOC" : "ANZSCO"} code, duty descriptions, duration, and salary.`,
   });
 
-  // ── Points Booster Question ───────────────────────────────────────────
-  if (gap > 0) {
+  // ── Points Booster Question (AU only -- CA's equivalent "How can I
+  // improve my CRS score?" item above already covers this) ─────────────
+  if (!isCA && gap > 0) {
     items.push({
       question: isTr
         ? "Puanlarımı hızlıca artırabilir miyim?"
@@ -203,10 +254,10 @@ export function getPersonalizedFaq(
           ? "我能快速提高积分吗？"
           : "Can I quickly boost my points?",
       answer: isTr
-        ? "Evet! En hızlı yollar: 1) Dil puanınızı yükseltin (+20-40 puan), 2) Eyalet/PNP adaylığı alın (+5/+600 puan), 3) Ek iş deneyimi edinin (+5-15 puan)."
+        ? "Evet! En hızlı yollar: 1) Dil puanınızı yükseltin (+20-40 puan), 2) Eyalet adaylığı alın (+5 puan), 3) Ek iş deneyimi edinin (+5-15 puan)."
         : isZh
-          ? "可以！最快的方法：1）提高语言分数（+20-40分），2）获得州/PNP提名（+5/+600分），3）增加工作经验（+5-15分）。"
-          : "Yes! Fastest ways: 1) Improve English (+20-40 pts), 2) Get state/PNP nomination (+5/+600 pts), 3) Gain more work experience (+5-15 pts).",
+          ? "可以！最快的方法：1）提高语言分数（+20-40分），2）获得州提名（+5分），3）增加工作经验（+5-15分）。"
+          : "Yes! Fastest ways: 1) Improve English (+20-40 pts), 2) Get state nomination (+5 pts), 3) Gain more work experience (+5-15 pts).",
     });
   }
 

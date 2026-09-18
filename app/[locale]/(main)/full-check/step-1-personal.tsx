@@ -14,7 +14,7 @@ function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
   return <p className="text-xs text-red-600">{message}</p>;
 }
-import { activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
+import { activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, getMigrationGoalDescription, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
 import { useTranslation } from "@/contexts/language-context";
 import { renderVisaPathwayOptions } from "./full-check-waitlist-form";
 
@@ -154,7 +154,7 @@ export function Step1Personal({
                   </div>
                   <div>
                     <p className={`text-sm font-semibold ${sel ? "text-primary" : "text-foreground"}`}>{goal.label[locale as "en" | "tr" | "zh-Hans"] ?? goal.label.en}</p>
-                    <p className="mt-1 text-xs text-gray-400">{goal.description[locale as "en" | "tr" | "zh-Hans"] ?? goal.description.en}</p>
+                    <p className="mt-1 text-xs text-gray-400">{getMigrationGoalDescription(goal, selectedCountry)[locale as "en" | "tr" | "zh-Hans"] ?? goal.description.en}</p>
                   </div>
                 </div>
               </button>
@@ -175,7 +175,7 @@ export function Step1Personal({
           </select>
         </div>
       )}
-      {migrationGoals.length > 0 && <input type="hidden" name="visaInterest" value={getVisaSubclassesForGoals(migrationGoals).join(",")} />}
+      {migrationGoals.length > 0 && <input type="hidden" name="visaInterest" value={getVisaSubclassesForGoals(migrationGoals, selectedCountry).join(",")} />}
 
       {selectedCountry === "AU" && (migrationGoals.includes("direct_pr") || migrationGoals.includes("regional")) && (
         <div className="space-y-2">

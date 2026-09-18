@@ -790,9 +790,12 @@ export async function submitFullCheckWaitlist(
   const preferredState = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"].includes(preferredStateRaw)
     ? preferredStateRaw
     : undefined;
-  const mappedVisas = getVisaSubclassesForGoals(migrationGoals as MigrationGoalId[]);
-  const effectiveVisaInterest = visaInterest || mappedVisas.join(",") || "";
   const rawTargetCountry = String(formData.get("targetCountry") ?? "").trim();
+  const mappedVisas = getVisaSubclassesForGoals(
+    migrationGoals as MigrationGoalId[],
+    isSupportedCountry(rawTargetCountry) ? rawTargetCountry : defaultCountry
+  );
+  const effectiveVisaInterest = visaInterest || mappedVisas.join(",") || "";
   const submittedLocale = String(
     formData.get("routeLocale") ?? formData.get("locale") ?? formData.get("preferredLanguage") ?? ""
   ).trim();

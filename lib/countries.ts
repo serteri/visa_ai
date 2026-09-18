@@ -36,11 +36,24 @@ export const countryComplianceBadge: Record<SupportedCountry, { en: string; tr: 
 
 export type MigrationGoalId = "direct_pr" | "employer_sponsorship" | "regional";
 
+type LocalizedText = { en: string; tr: string; "zh-Hans": string };
+
 export const migrationGoalOptions: Array<{
   id: MigrationGoalId;
-  label: { en: string; tr: string; "zh-Hans": string };
-  description: { en: string; tr: string; "zh-Hans": string };
+  label: LocalizedText;
+  description: LocalizedText;
   mapsToVisas: string[];
+  /**
+   * Per-country override, consulted first by getMigrationGoalDescription/
+   * getVisaSubclassesForGoals when present. Required whenever `description`/
+   * `mapsToVisas` would otherwise name a country-specific concept (a visa
+   * subclass, program name) that doesn't apply to every activeCountries
+   * entry -- e.g. "employer_sponsorship" names AU's Subclass 186 in its
+   * base `description`, which is simply wrong for a CA user and was being
+   * shown to them unconditionally before this override existed.
+   */
+  descriptionByCountry?: Partial<Record<SupportedCountry, LocalizedText>>;
+  mapsToVisasByCountry?: Partial<Record<SupportedCountry, string[]>>;
 }> = [
   {
     id: "direct_pr",
@@ -55,12 +68,28 @@ export const migrationGoalOptions: Array<{
   {
     id: "employer_sponsorship",
     label: { en: "Employer Sponsorship", tr: "İşveren Sponsorluğu", "zh-Hans": "雇主担保" },
+    // AU (default/base): Subclass 482 -> 186.
     description: {
       en: "Aim for employer-sponsored permanent residency via Subclass 186. The next step will ask which situation applies to you.",
       tr: "Önce 482 ile çalış, sonra 186 ile PR'a geç",
       "zh-Hans": "先持482工作，再通过186转永居",
     },
     mapsToVisas: ["482", "186"],
+    // CA: no employer-sponsorship intake fields exist yet (no job-offer/
+    // LMIA question anywhere in the product) -- this text is honest about
+    // that rather than claiming a program the report can't actually assess,
+    // and mapsToVisasByCountry.CA is intentionally empty (no AU subclass
+    // code, and no CA program slug exists to map to yet either).
+    descriptionByCountry: {
+      CA: {
+        en: "Employer-linked pathways (LMIA-based work permits, PNP employer streams). Full assessment for this isn't available yet -- see the Employer Sponsorship section of your report.",
+        tr: "İşveren bağlantılı yollar (LMIA tabanlı çalışma izinleri, PNP işveren akımları). Bu konuda tam değerlendirme henüz mevcut değil -- raporunuzun İşveren Sponsorluğu bölümüne bakın.",
+        "zh-Hans": "雇主相关途径（基于LMIA的工作许可、PNP雇主通道）。目前尚无法对此进行完整评估——请参阅报告中的雇主担保部分。",
+      },
+    },
+    mapsToVisasByCountry: {
+      CA: [],
+    },
   },
   {
     id: "regional",
@@ -74,12 +103,21 @@ export const migrationGoalOptions: Array<{
   },
 ];
 
-/** Returns all visa subclass codes that map to the given goal IDs. */
-export function getVisaSubclassesForGoals(goalIds: MigrationGoalId[]): string[] {
+/** Resolves the country-appropriate description for a migration goal, falling back to the base (AU-shaped) description when no country override exists. */
+export function getMigrationGoalDescription(
+  goal: (typeof migrationGoalOptions)[number],
+  country: SupportedCountry
+): LocalizedText {
+  return goal.descriptionByCountry?.[country] ?? goal.description;
+}
+
+/** Returns all visa subclass codes that map to the given goal IDs, for the given country. */
+export function getVisaSubclassesForGoals(goalIds: MigrationGoalId[], country: SupportedCountry): string[] {
   const visas = new Set<string>();
   for (const goal of migrationGoalOptions) {
     if (goalIds.includes(goal.id)) {
-      for (const v of goal.mapsToVisas) visas.add(v);
+      const visasForCountry = goal.mapsToVisasByCountry?.[country] ?? goal.mapsToVisas;
+      for (const v of visasForCountry) visas.add(v);
     }
   }
   return Array.from(visas);

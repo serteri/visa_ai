@@ -183,7 +183,7 @@ export function buildCaRankedPathways(
   if (pathways.length === 0) return [];
 
   if (!report.assessmentState.canShowNumericRanking) {
-    const { note: preliminaryNote, forcedTier } = resolveQualitativeNote(report.assessmentState, locale);
+    const { note: preliminaryNote, forcedTier } = resolveQualitativeNote(report.assessmentState, locale, "CA");
     const raw = pathways
       .filter((p) => p.subclass && CA_PATHWAY_LABELS[p.subclass])
       .map((p) => ({
@@ -215,15 +215,23 @@ export function buildCaRankedPathways(
 
   if (raw.length === 0) return [];
 
+  // Mirrors the AU branch's eoiBlocked gate above (calculateRankedPathways):
+  // canShowNumericRanking only guarantees enough data exists to compute a
+  // number, not that EOI lodgement is actually unblocked. Never tag a CA
+  // pathway "Highly Recommended" while blocked.
+  const eoiBlocked = !report.assessmentState.isEoiEligible;
+
   const sorted = [...raw].sort((a, b) => b.matchPercentage! - a.matchPercentage!);
   return sorted.map((item, index) => ({
     ...item,
     recommendationTag:
-      index === 0
-        ? "🌟 Highly Recommended Pathway"
-        : index === 1
-          ? "⚖️ Alternative Option"
-          : "⚠️ High Risk / Low Probability",
+      eoiBlocked
+        ? "⚠️ High Risk / Low Probability"
+        : index === 0
+          ? "🌟 Highly Recommended Pathway"
+          : index === 1
+            ? "⚖️ Alternative Option"
+            : "⚠️ High Risk / Low Probability",
   }));
 }
 
@@ -244,15 +252,40 @@ function qualitativeTierRank(tier: QualitativeFitTier): number {
  * instead of the old generic "Preliminary signal only — points cannot be
  * calculated until X, Y, Z are provided" copy-pasted across all three of
  * 189/190/491 (robotic, and unhelpful since it dumps every missing field at
- * once instead of telling the user what to fix first). Priority order
- * mirrors DHA's actual gating: a missing Skills Assessment blocks the EOI
- * outright regardless of points, so it's named before a threshold gap.
+ * once instead of telling the user what to fix first).
+ *
+ * Reads assessmentState.eoiIneligibilityReason (the canonical, country-aware
+ * blocking reason -- see assessment-state.ts / engine.ts's
+ * buildCanadaPointsEstimate) instead of the AU-only fieldsPresent.
+ * skillsAssessment / a locally-recomputed points<65 check, both of which
+ * are meaningless for CA (fieldsPresent.skillsAssessment is always false
+ * for CA, since occupationConfirmed isn't a CA form field -- this
+ * previously made every CA profile reaching this function say "Positive
+ * Skills Assessment is missing" regardless of the real reason, which for
+ * CA is always the language-test gate).
  */
-function pickHardGateReason(assessmentState: AssessmentState, locale: Locale = "en"): string {
+function pickHardGateReason(assessmentState: AssessmentState, country: "AU" | "CA" = "AU", locale: Locale = "en"): string {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
+  const isCA = country === "CA";
+  const reason = assessmentState.eoiIneligibilityReason;
 
-  if (!assessmentState.fieldsPresent.skillsAssessment) {
+  if (reason === "english") {
+    if (isCA) {
+      return isTr
+        ? "Yol Engellendi: Geçerli bir dil testi sonucu eksik"
+        : isZh
+          ? "路径受阻：缺少有效的语言考试成绩"
+          : "Pathway Blocked: A valid language test result is missing";
+    }
+    return isTr
+      ? "Yol Engellendi: Competent English seviyesi karşılanmadı"
+      : isZh
+        ? "路径受阻：未达到能力级英语水平"
+        : "Pathway Blocked: Competent English level not met";
+  }
+
+  if (reason === "skills_assessment") {
     return isTr
       ? "Yol Engellendi: Olumlu Beceri Değerlendirmesi eksik"
       : isZh
@@ -260,7 +293,17 @@ function pickHardGateReason(assessmentState: AssessmentState, locale: Locale = "
         : "Pathway Blocked: Positive Skills Assessment is missing";
   }
 
-  if (typeof assessmentState.estimatedPoints === "number" && assessmentState.estimatedPoints < 65) {
+  if (reason === "age") {
+    return isTr
+      ? "Yol Engellendi: Yaş sınırı aşıldı"
+      : isZh
+        ? "路径受阻：已超过年龄上限"
+        : "Pathway Blocked: Age limit exceeded";
+  }
+
+  // AU-only: CA has no fixed CRS pass/fail threshold, so
+  // eoiIneligibilityReason is never "points" for CA.
+  if (reason === "points" && typeof assessmentState.estimatedPoints === "number") {
     return isTr
       ? "Yol Engellendi: Puan barajı karşılanmadı"
       : isZh
@@ -299,7 +342,8 @@ function pickHardGateReason(assessmentState: AssessmentState, locale: Locale = "
  */
 function resolveQualitativeNote(
   assessmentState: AssessmentState,
-  locale: Locale
+  locale: Locale,
+  country: "AU" | "CA" = "AU"
 ): { note: string; forcedTier?: QualitativeFitTier } {
   if (assessmentState.occupationEligibility === "ineligible") {
     return { note: assessmentState.occupationEligibilityReason, forcedTier: "Unlikely fit" };
@@ -307,7 +351,7 @@ function resolveQualitativeNote(
   if (assessmentState.occupationEligibility === "unverified" && assessmentState.fieldsPresent.occupation) {
     return { note: assessmentState.occupationEligibilityReason, forcedTier: "Unclear fit" };
   }
-  return { note: pickHardGateReason(assessmentState, locale) };
+  return { note: pickHardGateReason(assessmentState, country, locale) };
 }
 
 /**
@@ -420,6 +464,12 @@ export function calculateRankedPathways(
     report.pointsEstimate?.estimatedPoints ??
     report.pointsBoosterSimulator?.currentEstimate ??
     65;
+  // pointsSignal is rendered under the "Estimated Base Points" label in the
+  // PDF -- it must always equal the SAME base figure shown in the Points
+  // Breakdown table, for every pathway. Read from assessmentState.pathwayPoints
+  // (single source of truth, see assessment-state.ts) rather than deriving a
+  // bonus-inflated number here that would silently diverge from that table.
+  const basePointsSignal = report.assessmentState.pathwayPoints?.["189"]?.base ?? pointsEstimate;
 
   const getPathwayConfidence = (subclass: "189" | "190" | "491") =>
     report.pathwayComparison.find((pathway) => pathway.subclass === subclass)?.confidenceLevel;
@@ -443,7 +493,6 @@ export function calculateRankedPathways(
     score190 = clampPercentage(score190 - 15);
   }
 
-  const pointsSignal491 = pointsEstimate + 15;
   const baselineCompetitive = Math.max(score189, score190);
   score491 = clampPercentage(Math.max(score491 + 8, baselineCompetitive * 1.2));
 
@@ -452,31 +501,41 @@ export function calculateRankedPathways(
       subclass: "189",
       visaLabel: getLocalizedPathwayLabel("189", input.locale ?? "en", "189 Visa"),
       matchPercentage: score189,
-      pointsSignal: pointsEstimate,
+      pointsSignal: basePointsSignal,
     },
     {
       subclass: "190",
       visaLabel: getLocalizedPathwayLabel("190", input.locale ?? "en", "190 Visa"),
       matchPercentage: score190,
-      pointsSignal: pointsEstimate,
+      pointsSignal: basePointsSignal,
     },
     {
       subclass: "491",
       visaLabel: getLocalizedPathwayLabel("491", input.locale ?? "en", "491 Visa"),
       matchPercentage: score491,
-      pointsSignal: pointsSignal491,
+      pointsSignal: basePointsSignal,
     },
   ];
+
+  // canShowNumericRanking only guarantees enough data exists to compute a
+  // number -- it does NOT mean the applicant can actually lodge an EOI (e.g.
+  // skills assessment can still be missing). Never tag a pathway "Highly
+  // Recommended" / imply the applicant should proceed while EOI lodgement
+  // itself is blocked; downgrade to the same neutral tag used for low scores
+  // so this section can't contradict a blocked EOI status shown elsewhere.
+  const eoiBlocked = !report.assessmentState.isEoiEligible;
 
   const sorted = [...raw].sort((a, b) => b.matchPercentage! - a.matchPercentage!);
   const numericRanked: RankedPathway[] = sorted.map((item, index) => ({
     ...item,
     recommendationTag:
-      index === 0
-        ? "🌟 Highly Recommended Pathway"
-        : index === 1
-          ? "⚖️ Alternative Option"
-          : "⚠️ High Risk / Low Probability",
+      eoiBlocked
+        ? "⚠️ High Risk / Low Probability"
+        : index === 0
+          ? "🌟 Highly Recommended Pathway"
+          : index === 1
+            ? "⚖️ Alternative Option"
+            : "⚠️ High Risk / Low Probability",
   }));
 
   return [...numericRanked, ...gateBasedPathways];

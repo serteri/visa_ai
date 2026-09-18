@@ -27,6 +27,9 @@ import {
 } from "@/src/lib/readiness/localization";
 import { resolveOccupationDisplayName } from "./occupation-eligibility";
 import type { ReadinessReport, RankedPathway, RankedPathwayRecommendation, GroupedVisaResult } from "./types";
+import { logReportInvariantViolations } from "./report-invariants";
+import { getEligibilityBadgeState } from "./eligibility-badge";
+import { POINTS_THRESHOLD } from "./assessment-state";
 import { parsePartnerIntakeFromText } from "./partner-sponsorship";
 
 // "Dala" print-friendly palette: inverted from the web's dark-void theme --
@@ -896,6 +899,10 @@ function formatGoalText(value: string): string {
 
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
   const { report, locale, userInputSummary: rawUserInputSummary } = input;
+  // Defense-in-depth: runReadinessEngine already checks invariants when the
+  // report is built, but the PDF can also be regenerated from a
+  // previously-stored report_json, which bypasses that path.
+  logReportInvariantViolations(report, "generateReadinessPDF");
   const userInputSummary = {
     ...rawUserInputSummary,
     name: rawUserInputSummary.name ? toDisplayCase(rawUserInputSummary.name) : rawUserInputSummary.name,
@@ -1872,23 +1879,23 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setFontSize(10);
       doc.setTextColor(COLORS.cream.r, COLORS.cream.g, COLORS.cream.b);
       const thresholdLabel = effectiveLocale === "tr"
-        ? ` / 65 puan eşiği`
+        ? ` / ${POINTS_THRESHOLD} puan eşiği`
         : effectiveLocale === "zh-Hans"
-          ? ` / 目标 65 分`
-          : ` / 65 points threshold`;
+          ? ` / 目标 ${POINTS_THRESHOLD} 分`
+          : ` / ${POINTS_THRESHOLD} points threshold`;
       doc.text(thresholdLabel, margin + 2 + doc.getTextWidth(pointsText) + 4, pointsY);
 
-      // Points status line
+      // Points status line -- canonical passed/blocked state, never raw
+      // `estimatedPoints >= threshold` arithmetic (see eligibility-badge.ts):
+      // a profile that clears the points number but is still blocked (e.g.
+      // missing Skills Assessment) must never render as a plain "exceeded"
+      // green badge with no blocked qualifier.
       setBaseFont();
       doc.setFontSize(9);
-      const passedThreshold = estimatedPoints >= 65;
-      doc.setTextColor(passedThreshold ? COLORS.riskLow.r : COLORS.accent.r,
-        passedThreshold ? COLORS.riskLow.g : COLORS.accent.g,
-        passedThreshold ? COLORS.riskLow.b : COLORS.accent.b);
-      const statusText = passedThreshold
-        ? (effectiveLocale === "tr" ? "Puan barajını aştınız" : effectiveLocale === "zh-Hans" ? "已超过积分门槛" : "Points threshold exceeded")
-        : (effectiveLocale === "tr" ? "Puan barajının altında" : effectiveLocale === "zh-Hans" ? "未达积分门槛" : "Below points threshold");
-      doc.text(safeText(statusText), margin + 2, heroY + 22.5);
+      const badgeState = getEligibilityBadgeState(report.assessmentState, effectiveLocale);
+      const badgeColor = COLORS[badgeState.colorKey];
+      doc.setTextColor(badgeColor.r, badgeColor.g, badgeColor.b);
+      doc.text(safeText(badgeState.label), margin + 2, heroY + 22.5);
 
       stackY = heroY + 22.5 + 5;
     }
@@ -2229,7 +2236,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       addHeading(pathwaysHeading);
 
       strategy.topRecommendedPathways.forEach((pathway) => {
-        const pathwayLabel = `${pathway.state} — Subclass ${pathway.subclass}`;
+        // CA programs (CEC/FSW/FSTP) are not "subclasses" -- that's AU
+        // terminology for a numbered visa category. Avoid it for CA rather
+        // than mislabeling a Canadian program.
+        const pathwayLabel = report.country === "CA"
+          ? `${pathway.state} — ${pathway.subclass}`
+          : `${pathway.state} — Subclass ${pathway.subclass}`;
         addPremiumKeyValueContainer(
           pathwayLabel,
           [[isTr ? "Neden" : isZh ? "原因" : "Reason", pathway.reason]],
@@ -4362,6 +4374,21 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         addSmallText(`${text.confidence}${separator}${formatConfidenceLevel(level)}${separator}${confidenceLevelDefinition(effectiveLocale, level)}`, 0);
       });
     yPosition += 1;
+
+    // "High confidence" and "Extreme friction" measure unrelated things --
+    // shown together with no context, they read as contradictory. Only add
+    // this clarifying note when both actually appear together in this
+    // report's rows (same "only explain what's present" pattern as above).
+    if (presentConfidenceLevels.includes("high") && presentFrictionScores.includes("EXTREME")) {
+      const confidenceFrictionNote =
+        effectiveLocale === "tr"
+          ? "Not: 'Güven' seviyesi, sağladığınız verilerin doğrulanabilirliğini ölçer; 'Rekabet' seviyesi ise puanınızla güncel davet eşikleri arasındaki farkı ölçer. Verileriniz güvenilir olsa da, mevcut rekabet son derece yüksektir."
+          : effectiveLocale === "zh-Hans"
+            ? "注：'置信度'衡量您提供数据的可验证性，而'竞争激烈度'衡量您的分数与当前邀请门槛之间的差距。您的数据高度可靠，但当前竞争极为激烈。"
+            : "Note: 'Confidence' measures the verifiability of your provided data, while 'Friction' measures the gap between your score and current invitation benchmarks. Your data is highly reliable, but current competition is extreme.";
+      addSmallText(confidenceFrictionNote, 0);
+      yPosition += 1;
+    }
 
     // An occupation-level warning (e.g. an assessing-authority caveat) comes
     // back identical on every points-tested subclass (189/190/491) sharing

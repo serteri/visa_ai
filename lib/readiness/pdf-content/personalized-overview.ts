@@ -13,6 +13,29 @@ interface UserProfile {
 }
 
 /**
+ * Country-appropriate name for "the thing blocking EOI lodgement" and
+ * whether the AU-style fixed-points-threshold framing applies at all.
+ *
+ * AU: a positive Skills Assessment is a real, named legal requirement (DHA),
+ * separate from and in addition to the fixed 65-point EOI threshold.
+ *
+ * CA: there is no "Skills Assessment" concept in Express Entry, and no
+ * fixed minimum CRS score required to create a profile -- invitation
+ * cutoffs vary by draw (see the Historical Invitation Trends section for
+ * recent cutoffs). The one real CA hard gate modeled today (see engine.ts's
+ * buildCanadaPointsEstimate) is a valid language test result -- CEC/FSW/FSTP
+ * all require one to create a profile at all.
+ */
+function blockingRequirementNoun(country: Country, locale: Locale): string {
+  const isTr = locale === "tr";
+  const isZh = locale === "zh-Hans";
+  if (country === "CA") {
+    return isTr ? "geçerli bir dil testi sonucu" : isZh ? "有效的语言考试成绩" : "a valid language test result";
+  }
+  return isTr ? "olumlu bir Beceri Değerlendirmesi" : isZh ? "积极的技能评估结果" : "a positive Skills Assessment";
+}
+
+/**
  * Generates a PERSONALIZED executive overview for the PDF.
  * This is the first thing the user sees — it must be compelling and specific.
  */
@@ -27,6 +50,15 @@ export function getPersonalizedOverview(
   matchPercentage?: number,
   migrationGoals?: string[],
   annualSalary?: string,
+  /**
+   * Canonical assessmentState.isEoiEligible -- broader than
+   * skillsAssessmentDone (also covers age/English/points blocks for AU, and
+   * is the ONLY meaningful blocking signal for CA, which has no skills
+   * assessment concept). Optional for backward compatibility with existing
+   * call sites; when omitted, falls back to skillsAssessmentDone && gap <= 0
+   * for AU (CA callers should always pass this explicitly).
+   */
+  isEoiEligible?: boolean,
 ): {
   title: string;
   userName: string;
@@ -39,8 +71,16 @@ export function getPersonalizedOverview(
 } {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
+  const isCA = country === "CA";
   const name = profile.name || (isTr ? "Değerli Başvuru Sahibi" : isZh ? "尊敬的申请人" : "Applicant");
   const gap = threshold - estimatedPoints;
+  const blockingNoun = blockingRequirementNoun(country, locale);
+  // AU: skillsAssessmentDone is the specific legal requirement, checked in
+  // addition to the points threshold. CA: there is no separate "assessment"
+  // step -- isEoiEligible (language-test gate) IS the whole story, so use it
+  // directly rather than the AU-only skillsAssessmentDone signal (which is
+  // always false for CA, since occupationConfirmed isn't a CA form field).
+  const requirementMet = isCA ? (isEoiEligible ?? true) : skillsAssessmentDone;
 
   // ── Title ─────────────────────────────────────────────────────────────
   const title = isTr
@@ -66,9 +106,17 @@ export function getPersonalizedOverview(
         : `${name}, this report evaluates your profile for ${profile.occupation || 'your occupation'} against the ${country === 'AU' ? 'Australian' : 'Canadian'} immigration system.`;
   } else {
     const goalNames: string[] = [];
-    if (hasDirectPR) goalNames.push(isTr ? "bağımsız/eyalet adaylığı kalıcı oturum (189/190)" : isZh ? "独立/州担保永久居留(189/190)" : "permanent residency via skilled migration (189/190)");
-    if (hasEmployer) goalNames.push(isTr ? "işveren sponsorluğu (482/186)" : isZh ? "雇主担保(482/186)" : "employer sponsorship (482/186)");
-    if (hasRegional) goalNames.push(isTr ? "bölgesel yol (491)" : isZh ? "偏远地区路径(491)" : "regional pathway (491)");
+    if (isCA) {
+      // CA has no 189/190/491/482/186 subclasses -- name the actual
+      // Express Entry programs and PNP instead of AU visa codes.
+      if (hasDirectPR) goalNames.push(isTr ? "Express Entry kalıcı oturum (CEC/FSW/FSTP)" : isZh ? "Express Entry 永久居留（CEC/FSW/FSTP）" : "permanent residency via Express Entry (CEC/FSW/FSTP)");
+      if (hasEmployer) goalNames.push(isTr ? "işveren destekli yollar (LMIA / PNP)" : isZh ? "雇主相关途径（LMIA / 省提名）" : "employer-linked pathways (LMIA / PNP)");
+      if (hasRegional) goalNames.push(isTr ? "eyalet adaylığı (PNP)" : isZh ? "省提名（PNP）" : "provincial nomination (PNP)");
+    } else {
+      if (hasDirectPR) goalNames.push(isTr ? "bağımsız/eyalet adaylığı kalıcı oturum (189/190)" : isZh ? "独立/州担保永久居留(189/190)" : "permanent residency via skilled migration (189/190)");
+      if (hasEmployer) goalNames.push(isTr ? "işveren sponsorluğu (482/186)" : isZh ? "雇主担保(482/186)" : "employer sponsorship (482/186)");
+      if (hasRegional) goalNames.push(isTr ? "bölgesel yol (491)" : isZh ? "偏远地区路径(491)" : "regional pathway (491)");
+    }
     const goalStr = goalNames.join(isTr ? " ve " : isZh ? "和" : " and ");
 
     goalIntro = isTr
@@ -78,59 +126,96 @@ export function getPersonalizedOverview(
         : `${name}, this report evaluates ${profile.occupation || 'your occupation'} for ${goalStr}.`;
   }
 
-  const executiveSummary: string[] = [goalIntro,
+  // ── Score / threshold framing ───────────────────────────────────────
+  // AU has a real, fixed 65-point EOI minimum (POINTS_THRESHOLD). CA's
+  // Express Entry has NO fixed minimum CRS score to create a profile --
+  // invitation cutoffs vary by draw (see the report's Historical Invitation
+  // Trends section for recent cutoffs). Presenting a fixed "target: 65
+  // points" / "gap to threshold" for CA would be factually wrong, not just
+  // mislabeled -- so CA gets a structurally different sentence here instead
+  // of a country ternary on the same AU-shaped claim.
+  const scoreLine = isCA
+    ? (isTr
+        ? `Tahmini CRS puanınız ${estimatedPoints}. Express Entry'de profil oluşturmak için sabit bir asgari puan yoktur -- davet eşikleri her turda değişir; yakın dönem eşikler için bu rapordaki Tarihsel Davet Trendleri bölümüne bakın.`
+        : isZh
+          ? `您的预估 CRS 分数为 ${estimatedPoints} 分。创建 Express Entry 档案没有固定的最低分数要求——邀请门槛因每轮抽签而异；近期门槛请参阅本报告的历史邀请趋势部分。`
+          : `Your estimated CRS score is ${estimatedPoints}. There is no fixed minimum score required to create an Express Entry profile -- invitation cutoffs vary by draw; see this report's Historical Invitation Trends section for recent cutoffs.`)
+    : (isTr
+        ? `Tahmini puanınız ${estimatedPoints} puandır. ${targetVisa} vizesi için gereken minimum baraj ${threshold} puandır.`
+        : isZh
+          ? `您的预估积分为${estimatedPoints}分。${targetVisa}签证的最低门槛为${threshold}分。`
+          : `Your estimated score is ${estimatedPoints} points. The minimum threshold for ${targetVisa} is ${threshold} points.`);
 
-    isTr
-      ? `Tahmini puanınız ${estimatedPoints} puandır. ${targetVisa} vizesi için gereken minimum baraj ${threshold} puandır.`
-      : isZh
-        ? `您的预估积分为${estimatedPoints}分。${targetVisa}签证的最低门槛为${threshold}分。`
-        : `Your estimated score is ${estimatedPoints} points. The minimum threshold for ${targetVisa} is ${threshold} points.`,
+  const requirementSentence = isTr
+    ? `Potansiyel puanınız ${estimatedPoints}. Ancak EOI başvurusu yapmadan önce ${blockingNoun} yasal olarak zorunludur. Öncelikli adımınız, bu gereksinimi karşılamaktır.`
+    : isZh
+      ? `您的潜在积分为${estimatedPoints}。但是，在提交EOI之前，法律要求必须提供${blockingNoun}。您当前的首要任务是满足该要求。`
+      : `Your potential score is ${estimatedPoints}. However, ${blockingNoun} is legally required before lodging an EOI. Your immediate priority is meeting this requirement.`;
 
-    gap > 0
-      ? (isTr
-          ? `Puan barajının ${gap} puan altındasınız. Ancak puanınızı artırmak için net yollar mevcuttur.`
-          : isZh
-            ? `您距离积分门槛还差${gap}分。但提高积分的明确途径是存在的。`
-            : `You are ${gap} points below the threshold. However, clear pathways to improve your score exist.`)
-      // Hard gate: a score at/above threshold is NOT a congratulatory result
-      // on its own -- without a positive Skills Assessment, DHA won't accept
-      // an EOI at any score, so "you can now focus on the application
-      // process" would be legally false. skillsAssessmentDone takes priority
-      // over the points comparison here.
-      : !skillsAssessmentDone
-        ? (isTr
-            ? `Potansiyel puanınız ${estimatedPoints}. Ancak EOI başvurusu yapmadan önce olumlu bir Beceri Değerlendirmesi yasal olarak zorunludur. Öncelikli adımınız, bu puanları geçerli kılmak için değerlendirmeyi almaktır.`
-            : isZh
-              ? `您的潜在积分为${estimatedPoints}。但是，在提交EOI之前，法律要求必须获得积极的技能评估结果。您当前的首要任务是获得该评估，以使这些积分生效。`
-              : `Your potential score is ${estimatedPoints}. However, a positive Skills Assessment is legally required before lodging an EOI. Your immediate priority is to obtain this assessment to validate these points.`)
-        // gap === 0 means estimatedPoints === threshold exactly -- "exceeded"
-        // is mathematically wrong for that case (65/65 is met, not exceeded).
-        : gap === 0
+  const executiveSummary: string[] = isCA
+    ? [
+        goalIntro,
+        scoreLine,
+        requirementMet
           ? (isTr
-              ? `Minimum puan barajını karşıladınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+              ? `Dil testi gereksinimini karşıladınız. Şimdi Express Entry havuzunuzu güçlendirmeye ve davet almaya odaklanabilirsiniz.`
               : isZh
-                ? `您已达到最低积分门槛！现在可以专注于申请流程。`
-                : `You have met the minimum points threshold! You can now focus on the application process.`)
+                ? `您已满足语言测试要求。现在可以专注于提升您的 Express Entry 分数池排名并获得邀请。`
+                : `You meet the language test requirement. You can now focus on strengthening your Express Entry pool ranking and receiving an invitation.`)
           : (isTr
-              ? `Puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+              ? `EOI/profil oluşturmadan önce ${blockingNoun} zorunludur. Öncelikli adımınız bu gereksinimi karşılamaktır.`
               : isZh
-                ? `您已超过积分门槛！现在可以专注于申请流程。`
-                : `You have exceeded the threshold! You can now focus on the application process.`),
-  ];
+                ? `在创建 Express Entry 档案之前，${blockingNoun}是法律强制要求。您当前的首要任务是满足该要求。`
+                : `${blockingNoun[0].toUpperCase()}${blockingNoun.slice(1)} is legally required before creating an Express Entry profile. Your immediate priority is meeting this requirement.`),
+      ]
+    : [
+        goalIntro,
+        scoreLine,
+        gap > 0
+          ? (isTr
+              ? `Puan barajının ${gap} puan altındasınız. Ancak puanınızı artırmak için net yollar mevcuttur.`
+              : isZh
+                ? `您距离积分门槛还差${gap}分。但提高积分的明确途径是存在的。`
+                : `You are ${gap} points below the threshold. However, clear pathways to improve your score exist.`)
+          // Hard gate: a score at/above threshold is NOT a congratulatory result
+          // on its own -- without a positive Skills Assessment, DHA won't accept
+          // an EOI at any score, so "you can now focus on the application
+          // process" would be legally false. requirementMet takes priority
+          // over the points comparison here.
+          : !requirementMet
+            ? requirementSentence
+            // gap === 0 means estimatedPoints === threshold exactly -- "exceeded"
+            // is mathematically wrong for that case (65/65 is met, not exceeded).
+            : gap === 0
+              ? (isTr
+                  ? `Minimum puan barajını karşıladınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+                  : isZh
+                    ? `您已达到最低积分门槛！现在可以专注于申请流程。`
+                    : `You have met the minimum points threshold! You can now focus on the application process.`)
+              : (isTr
+                  ? `Puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+                  : isZh
+                    ? `您已超过积分门槛！现在可以专注于申请流程。`
+                    : `You have exceeded the threshold! You can now focus on the application process.`),
+      ];
 
   // ── Key Findings ──────────────────────────────────────────────────────
   const keyFindings: string[] = [];
 
-  // Skills assessment
+  // Blocking requirement (Skills Assessment for AU, language test for CA)
   keyFindings.push(
-    skillsAssessmentDone
-      ? (isTr ? "✅ Beceri değerlendirmesi tamamlandı." : isZh ? "✅ 技能评估已完成。" : "✅ Skills assessment completed.")
-      : (isTr ? "❌ Beceri değerlendirmesi henüz yapılmadı — bu zorunlu bir adımdır." : isZh ? "❌ 技能评估尚未完成——这是必要步骤。" : "❌ Skills assessment not yet completed — this is a mandatory step."),
+    isCA
+      ? (requirementMet
+          ? (isTr ? "✅ Dil testi gereksinimi karşılandı." : isZh ? "✅ 已满足语言测试要求。" : "✅ Language test requirement met.")
+          : (isTr ? "❌ Geçerli bir dil testi sonucu sunulmadı — bu zorunlu bir adımdır." : isZh ? "❌ 未提交有效的语言考试成绩——这是必要步骤。" : "❌ No valid language test result submitted — this is a mandatory step."))
+      : (skillsAssessmentDone
+          ? (isTr ? "✅ Beceri değerlendirmesi tamamlandı." : isZh ? "✅ 技能评估已完成。" : "✅ Skills assessment completed.")
+          : (isTr ? "❌ Beceri değerlendirmesi henüz yapılmadı — bu zorunlu bir adımdır." : isZh ? "❌ 技能评估尚未完成——这是必要步骤。" : "❌ Skills assessment not yet completed — this is a mandatory step.")),
   );
 
   // English level
   if (profile.englishLevel) {
-    const isStrong = /superior|advanced|79|8\.0/i.test(profile.englishLevel);
+    const isStrong = /superior|advanced|79|8\.0|clb9|clb10/i.test(profile.englishLevel);
     keyFindings.push(
       isStrong
         ? (isTr ? "✅ Güçlü dil seviyesi — ekstra puan kazanıyorsunuz." : isZh ? "✅ 语言水平较高——可获得额外积分。" : "✅ Strong English level — earning extra points.")
@@ -138,8 +223,13 @@ export function getPersonalizedOverview(
     );
   }
 
-  // Salary viability (for employer-sponsored goals)
-  if (annualSalary && hasEmployer) {
+  // Salary viability -- AU-only CSIT (Core Skills Income Threshold, subclass
+  // 482/186) has no CA equivalent modeled here. CA's employer-linked route
+  // (LMIA) uses province/occupation-specific wage floors, not a single
+  // national AUD-denominated figure, and the product doesn't collect enough
+  // to state one accurately -- so this bullet simply doesn't apply to CA
+  // rather than showing an AUD figure against a Canadian salary.
+  if (!isCA && annualSalary && hasEmployer) {
     const salaryNum = Number(annualSalary);
     if (Number.isFinite(salaryNum) && salaryNum > 0) {
       const meetsCsit = salaryNum >= CURRENT_CSIT.value;
@@ -169,29 +259,56 @@ export function getPersonalizedOverview(
     }
   }
 
-  // Match percentage
+  // Match percentage -- never claim a "strong profile" while EOI lodgement
+  // is blocked (falls back to skillsAssessmentDone/gap when the caller
+  // hasn't been updated to pass the canonical isEoiEligible flag yet).
+  const eoiEligibleForMatch = isEoiEligible ?? (skillsAssessmentDone && gap <= 0);
   if (matchPercentage !== undefined) {
     keyFindings.push(
-      matchPercentage >= 70
+      matchPercentage >= 70 && eoiEligibleForMatch
         ? (isTr ? `✅ ${matchPercentage}% eşleşme oranı — güçlü bir profil.` : isZh ? `✅ 匹配率${matchPercentage}%——档案较强。` : `✅ ${matchPercentage}% match rate — strong profile.`)
-        : matchPercentage >= 40
+        : matchPercentage >= 40 || !eoiEligibleForMatch
           ? (isTr ? `⚠️ ${matchPercentage}% eşleşme oranı — geliştirilebilir.` : isZh ? `⚠️ 匹配率${matchPercentage}%——有提升空间。` : `⚠️ ${matchPercentage}% match rate — improvable.`)
           : (isTr ? `❌ ${matchPercentage}% eşleşme oranı — ciddi iyileştirme gerekli.` : isZh ? `❌ 匹配率${matchPercentage}%——需要大幅改进。` : `❌ ${matchPercentage}% match rate — significant improvement needed.`),
     );
   }
 
   // ── Recommendation ────────────────────────────────────────────────────
-  const recommendation = isTr
-    ? gap > 0
-      ? `${name}, en kritik önceliğiniz ${gap} puanlık kapatılacak. En hızlı yol: dil seviyenizi 'Superior' seviyesine çıkarmak (+20 puan) veya ${country === 'AU' ? 'eyalet adaylığı' : 'PNP adaylığı'} almak.`
-      : `${name}, profiliniz güçlü! Hemen başvuru sürecine geçebilirsiniz. Belgelerinizi toplamaya başlayın.`
-    : isZh
-      ? gap > 0
-        ? `${name}，当务之急是弥补${gap}分的差距。最快的方法：将语言水平提高到'优秀'级别（+20分）或获得${country === 'AU' ? '州提名' : 'PNP省提名'}。`
-        : `${name}，您的档案较强！可以立即开始申请流程。请开始准备文件。`
-      : gap > 0
-        ? `${name}, your top priority is closing the ${gap}-point gap. Fastest path: upgrade English to Superior (+20 pts) or obtain ${country === 'AU' ? 'state' : 'provincial'} nomination.`
-        : `${name}, your profile is strong! You can proceed directly to the application process. Start gathering your documents.`;
+  // Mirrors the executiveSummary branching above: a met/exceeded points
+  // threshold (AU) or a satisfied language-test gate (CA) is NOT itself a
+  // green light to apply if the OTHER country-appropriate requirement is
+  // still unmet -- "proceed directly to the application process" must never
+  // appear while requirementMet is false.
+  const nominationLabel = isTr ? (isCA ? 'PNP adaylığı' : 'eyalet adaylığı') : isZh ? (isCA ? 'PNP省提名' : '州提名') : (isCA ? 'provincial' : 'state');
+  const recommendation = isCA
+    ? (requirementMet
+        ? (isTr
+            ? `${name}, dil testi gereksiniminizi karşıladınız. Express Entry havuz sıralamanızı güçlendirmeye ve gerekli belgeleri toplamaya odaklanın.`
+            : isZh
+              ? `${name}，您已满足语言测试要求。请专注于提升您的 Express Entry 分数池排名并准备所需文件。`
+              : `${name}, you meet the language test requirement. Focus on strengthening your Express Entry pool ranking and gathering the required documents.`)
+        : (isTr
+            ? `${name}, Express Entry profili oluşturmadan önce ${blockingNoun} sunmanız zorunludur. Öncelikli adımınız bu gereksinimi karşılamaktır.`
+            : isZh
+              ? `${name}，在创建 Express Entry 档案之前，您必须提供${blockingNoun}。您当前的首要任务是满足该要求。`
+              : `${name}, you must provide ${blockingNoun} before creating an Express Entry profile. Your immediate priority is meeting this requirement.`))
+    : (gap > 0
+        ? (isTr
+            ? `${name}, en kritik önceliğiniz ${gap} puanlık kapatılacak. En hızlı yol: dil seviyenizi 'Superior' seviyesine çıkarmak (+20 puan) veya ${nominationLabel} almak.`
+            : isZh
+              ? `${name}，当务之急是弥补${gap}分的差距。最快的方法：将语言水平提高到'优秀'级别（+20分）或获得${nominationLabel}。`
+              : `${name}, your top priority is closing the ${gap}-point gap. Fastest path: upgrade English to Superior (+20 pts) or obtain ${nominationLabel} nomination.`)
+        : !requirementMet
+          ? (isTr
+              ? `${name}, potansiyel puanınız yeterli olsa da, EOI sunmadan önce ${blockingNoun} yasal olarak zorunludur. Öncelikli adımınız bu gereksinimi tamamlamaktır.`
+              : isZh
+                ? `${name}，尽管您的潜在积分已足够，但在提交EOI之前，法律要求必须提供${blockingNoun}。您当前的首要任务是完成该要求。`
+                : `${name}, your potential score meets the threshold, but ${blockingNoun} is legally required before lodging an EOI. Your immediate priority is completing this requirement.`)
+          : (isTr
+              ? `${name}, profiliniz güçlü! Hemen başvuru sürecine geçebilirsiniz. Belgelerinizi toplamaya başlayın.`
+              : isZh
+                ? `${name}，您的档案较强！可以立即开始申请流程。请开始准备文件。`
+                : `${name}, your profile is strong! You can proceed directly to the application process. Start gathering your documents.`));
 
   // ── Confidence Note ───────────────────────────────────────────────────
   const confidenceNote = isTr
@@ -201,48 +318,83 @@ export function getPersonalizedOverview(
       : "This analysis is based on the information you provided. Missing data may affect accuracy.";
 
   // ── Risk Assessment ───────────────────────────────────────────────────
+  const requirementRiskBullet = isCA
+    ? (requirementMet
+        ? (isTr ? "✅ Dil testi gereksinimi karşılandı" : isZh ? "✅ 已满足语言测试要求" : "✅ Language test requirement met")
+        : (isTr ? "❌ Geçerli dil testi sonucu sunulmadı" : isZh ? "❌ 未提交有效语言考试成绩" : "❌ No valid language test result submitted"))
+    : (skillsAssessmentDone
+        ? (isTr ? "✅ Beceri değerlendirmesi tamamlandı" : isZh ? "✅ 技能评估已完成" : "✅ Skills assessment completed")
+        : (isTr ? "❌ Beceri değerlendirmesi yapılmadı" : isZh ? "❌ 技能评估未完成" : "❌ Skills assessment not done"));
+
   const riskAssessment = isTr
     ? [
-        gap > 20 ? "⚠️ Yüksek risk: Puan barajından uzakta" : gap > 10 ? "🟡 Orta risk: Kapatılabilir fark" : gap > 0 ? "🟢 Düşük risk: Küçük iyileştirmeler yeterli" : "✅ Düşük risk: Baraj aşıldı",
-        skillsAssessmentDone ? "✅ Beceri değerlendirmesi tamamlandı" : "❌ Beceri değerlendirmesi yapılmadı",
+        isCA
+          ? (gap > 20 ? "⚠️ Yüksek risk: Tahmini puan düşük" : gap > 10 ? "🟡 Orta risk: Geliştirilebilir" : "✅ Düşük risk: Rekabetçi puan")
+          : (gap > 20 ? "⚠️ Yüksek risk: Puan barajından uzakta" : gap > 10 ? "🟡 Orta risk: Kapatılabilir fark" : gap > 0 ? "🟢 Düşük risk: Küçük iyileştirmeler yeterli" : "✅ Düşük risk: Baraj aşıldı"),
+        requirementRiskBullet,
         profile.englishLevel ? "✅ Dil kanıtı mevcut" : "❌ Dil kanıtı eksik",
       ]
     : isZh
       ? [
-          gap > 20 ? "⚠️ 高风险：距离积分门槛较远" : gap > 10 ? "🟡 中等风险：差距可弥补" : gap > 0 ? "🟢 低风险：小幅改进即可" : "✅ 低风险：已超过门槛",
-          skillsAssessmentDone ? "✅ 技能评估已完成" : "❌ 技能评估未完成",
+          isCA
+            ? (gap > 20 ? "⚠️ 高风险：预估分数偏低" : gap > 10 ? "🟡 中等风险：仍有提升空间" : "✅ 低风险：分数具有竞争力")
+            : (gap > 20 ? "⚠️ 高风险：距离积分门槛较远" : gap > 10 ? "🟡 中等风险：差距可弥补" : gap > 0 ? "🟢 低风险：小幅改进即可" : "✅ 低风险：已超过门槛"),
+          requirementRiskBullet,
           profile.englishLevel ? "✅ 语言证明已提供" : "❌ 语言证明缺失",
         ]
       : [
-          gap > 20 ? "⚠️ High risk: Far from threshold" : gap > 10 ? "🟡 Medium risk: Gap is closable" : gap > 0 ? "🟢 Low risk: Minor improvements needed" : "✅ Low risk: Threshold exceeded",
-          skillsAssessmentDone ? "✅ Skills assessment completed" : "❌ Skills assessment not done",
+          isCA
+            ? (gap > 20 ? "⚠️ High risk: Estimated score is low" : gap > 10 ? "🟡 Medium risk: Room to improve" : "✅ Low risk: Competitive score")
+            : (gap > 20 ? "⚠️ High risk: Far from threshold" : gap > 10 ? "🟡 Medium risk: Gap is closable" : gap > 0 ? "🟢 Low risk: Minor improvements needed" : "✅ Low risk: Threshold exceeded"),
+          requirementRiskBullet,
           profile.englishLevel ? "✅ English evidence provided" : "❌ English evidence missing",
         ];
 
   // ── Next Milestones ───────────────────────────────────────────────────
-  const nextMilestones = isTr
-    ? [
-        "Beceri değerlendirmesi tamamlama",
-        "Dil testi puanını yükseltme",
-        "EOI oluşturma ve sunma",
-        "Davet alma",
-        "Başvuru hazırlığı",
-      ]
-    : isZh
-      ? [
-          "完成技能评估",
-          "提高语言分数",
-          "创建并提交EOI",
-          "收到邀请",
-          "准备申请材料",
-        ]
-      : [
-          "Complete skills assessment",
-          "Improve English score",
-          "Create and lodge EOI",
-          "Receive invitation",
-          "Prepare application",
-        ];
+  const nextMilestones = isCA
+    ? (isTr
+        ? [
+            "Dil testi sonucunu edinme",
+            "Express Entry profili oluşturma",
+            "Davet alma (ITA)",
+            "Başvuru belgelerini hazırlama",
+          ]
+        : isZh
+          ? [
+              "获取语言考试成绩",
+              "创建 Express Entry 档案",
+              "获得邀请（ITA）",
+              "准备申请文件",
+            ]
+          : [
+              "Obtain language test result",
+              "Create Express Entry profile",
+              "Receive invitation to apply (ITA)",
+              "Prepare application documents",
+            ])
+    : (isTr
+        ? [
+            "Beceri değerlendirmesi tamamlama",
+            "Dil testi puanını yükseltme",
+            "EOI oluşturma ve sunma",
+            "Davet alma",
+            "Başvuru hazırlığı",
+          ]
+        : isZh
+          ? [
+              "完成技能评估",
+              "提高语言分数",
+              "创建并提交EOI",
+              "收到邀请",
+              "准备申请材料",
+            ]
+          : [
+              "Complete skills assessment",
+              "Improve English score",
+              "Create and lodge EOI",
+              "Receive invitation",
+              "Prepare application",
+            ]);
 
   return {
     title,

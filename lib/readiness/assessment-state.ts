@@ -1,14 +1,74 @@
 import { findOccupationRecord, getEligibleSkilledSubclasses, isAmbiguousOccupationAlias } from "./occupation-eligibility";
 import { getEmploymentDataSignals } from "./employment-signals";
 import { hasRealEnglishEvidence } from "./english-evidence";
+import { CURRENT_CSIT } from "./constants";
 import type {
   AssessmentState,
   DataCompletenessLevel,
+  EmployerSponsorshipSignal,
   Locale,
   OccupationEligibility,
   PathwayComparison,
+  PointsEstimate,
   ReadinessInput,
 } from "./types";
+
+/** The points-test minimum every GSM pathway (189/190/491) is compared against. Single canonical value — reason-text builders in engine.ts must read this instead of hardcoding 65. */
+export const POINTS_THRESHOLD = 65;
+
+/**
+ * Canonical base+bonus breakdown for each points-tested pathway, computed
+ * from the SAME estimatedPoints number for every section. `bonus` is the
+ * state-nomination (190) or regional/family (491) boost, kept explicit so no
+ * section can present a bonus-inflated figure as if it were the base score.
+ */
+export function computePathwayPoints(
+  estimatedPoints: number | undefined
+): AssessmentState["pathwayPoints"] {
+  const base = estimatedPoints ?? 0;
+  return {
+    "189": { base, bonus: 0, total: base },
+    "190": { base, bonus: 5, total: base + 5 },
+    "491": { base, bonus: 15, total: base + 15 },
+  };
+}
+
+/**
+ * Single computation point for the Employer Sponsorship module -- see
+ * EmployerSponsorshipSignal's doc comment in types.ts for why AU/CA are
+ * parallel branches rather than one AU-shaped default. Every content
+ * builder must read this, never recompute `annualSalaryAud >= CSIT`
+ * locally (that's the exact pattern that caused the raw-threshold-
+ * comparison bugs the check-raw-threshold-comparisons.mjs lint check now
+ * guards against for points -- this guards the same failure mode for
+ * employer sponsorship).
+ */
+export function buildEmployerSponsorshipSignal(input: ReadinessInput): EmployerSponsorshipSignal {
+  const applies = (input.migrationGoals ?? []).includes("employer_sponsorship");
+
+  if (input.country === "CA") {
+    return {
+      country: "CA",
+      applies,
+      ca: {
+        dataAvailable: false,
+        arrangedEmploymentCrsPointsRemoved: true,
+      },
+    };
+  }
+
+  const salaryProvided = typeof input.annualSalaryAud === "number" && input.annualSalaryAud > 0;
+  return {
+    country: "AU",
+    applies,
+    au: {
+      salaryProvided,
+      annualSalaryAud: salaryProvided ? input.annualSalaryAud : undefined,
+      csitThresholdAud: CURRENT_CSIT.value,
+      meetsCsit: salaryProvided ? input.annualSalaryAud! >= CURRENT_CSIT.value : undefined,
+    },
+  };
+}
 
 /**
  * Backed by the 691-entry ANZSCO dataset (src/data/occupations.json), not
@@ -97,9 +157,25 @@ function fieldLabel(key: keyof AssessmentState["fieldsPresent"], locale: Locale)
 export function buildAssessmentState(
   input: ReadinessInput,
   pathwayComparison: PathwayComparison[],
-  estimatedPoints: number | undefined,
+  pointsEstimateOrPoints: PointsEstimate | number | undefined,
   locale: Locale
 ): AssessmentState {
+  // Accepts either the full PointsEstimate (preferred -- carries isEoiEligible
+  // /eoiIneligibilityReason) or a bare number, for callers that only have the
+  // scalar on hand. Either way estimatedPoints/isEoiEligible below end up
+  // consistent with what PointsEstimate itself reports.
+  const estimatedPoints =
+    typeof pointsEstimateOrPoints === "number" || pointsEstimateOrPoints === undefined
+      ? pointsEstimateOrPoints
+      : pointsEstimateOrPoints.estimatedPoints;
+  const isEoiEligible =
+    typeof pointsEstimateOrPoints === "object" && pointsEstimateOrPoints !== null
+      ? pointsEstimateOrPoints.isEoiEligible
+      : (estimatedPoints ?? 0) >= POINTS_THRESHOLD;
+  const eoiIneligibilityReason =
+    typeof pointsEstimateOrPoints === "object" && pointsEstimateOrPoints !== null
+      ? pointsEstimateOrPoints.eoiIneligibilityReason
+      : undefined;
   const employmentSignals = getEmploymentDataSignals(input);
   const fieldsPresent: AssessmentState["fieldsPresent"] = {
     age: Boolean(input.age),
@@ -168,5 +244,10 @@ export function buildAssessmentState(
     occupationEligibility,
     occupationEligibilityReason,
     canShowNumericRanking,
+    isEoiEligible,
+    eoiIneligibilityReason,
+    pathwayPoints: computePathwayPoints(estimatedPoints),
+    referenceBenchmarks: { "189": POINTS_THRESHOLD, "190": POINTS_THRESHOLD, "491": POINTS_THRESHOLD },
+    employerSponsorship: buildEmployerSponsorshipSignal(input),
   };
 }

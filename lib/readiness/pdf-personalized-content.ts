@@ -6,6 +6,7 @@ import { getPersonalizedApplicationGuide } from "./pdf-content/personalized-guid
 import { getPersonalizedFaq } from "./pdf-content/personalized-faq";
 import { getSkillsAssessmentStatus } from "./pdf-content/skills-assessment-status";
 import { getViabilityInsights } from "./pdf-content/viability-insights";
+import { getEmployerSponsorshipContent } from "./pdf-content/employer-sponsorship";
 import { CURRENT_CSIT } from "./constants";
 import {
   getSkillsAssessmentAuthority,
@@ -13,6 +14,9 @@ import {
   type LocalizedString,
 } from "@/lib/skills-assessment";
 import { getAssessingAuthority } from "@/lib/skills-assessment/occupation-authority-map";
+import { getEligibilityBadgeState } from "./eligibility-badge";
+import { checkEmployerSponsorshipTerminology } from "./report-invariants";
+import { POINTS_THRESHOLD } from "./assessment-state";
 
 /** Core Skills Income Threshold — employer-sponsored visa minimum salary (1 July 2026). */
 const CSIT_THRESHOLD_AUD = CURRENT_CSIT.value;
@@ -65,6 +69,16 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   // disagreed with every other section of the same PDF.
   const skillsAssessmentDone = report.assessmentState.fieldsPresent.skillsAssessment;
   const isAusQual = userInputSummary.isAustralianQualification ?? null;
+  // CA's ECA-obtained status is a genuinely different signal from AU's
+  // Skills Assessment (skillsAssessmentDone, always false for CA since
+  // occupationConfirmed isn't a CA form field). It's collected via the SAME
+  // underlying form field as isAustralianQualification -- Step3Language.tsx
+  // relabels it "Did you obtain an ECA?" for CA users -- so reusing that
+  // value here (rather than skillsAssessmentDone) is correct, not another
+  // AU-field-reused-for-CA bug: these are independent, country-specific
+  // interpretations of one raw yes/no answer, not one signal silently
+  // standing in for a different one.
+  const ecaObtained = userInputSummary.isAustralianQualification === true;
   const isQualRecognized = userInputSummary.isQualificationRecognized ?? null;
   const annualSalary = userInputSummary.annualSalaryAud
     ? Number(userInputSummary.annualSalaryAud)
@@ -122,7 +136,10 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
           : "You must be under 45 to lodge an EOI.";
       doc.text(safeText(ineligibleDetail), margin + 8, bannerY + 13);
     } else if (!isEoiEligible && eoiReason === "english") {
-      // RED: BLOCKED — Competent English not met
+      // RED: BLOCKED — no valid language test result (AU: below Competent
+      // English; CA: no CLB-mapped test submitted at all -- CA's language
+      // framework/terminology differs, so this is NOT a country ternary on
+      // the same AU-shaped claim).
       doc.setFillColor(254, 242, 242);
       doc.setDrawColor(220, 38, 38);
       doc.setLineWidth(0.8);
@@ -142,16 +159,26 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       setBaseFont();
       doc.setFontSize(7.5);
       doc.setTextColor(120, 40, 40);
-      const englishDetail = t === "tr"
-        ? "Eylem Gerekli: Bir EOI sunmak için en azından Competent English (yetkin İngilizce) seviyesini kanıtlamanız gerekir."
-        : t === "zh"
-          ? "需要采取行动：递交EOI前，您必须证明至少具备能力级英语水平。"
-          : "Action Required: You must demonstrate at least Competent English to lodge an EOI.";
+      const englishDetail = country === "CA"
+        ? (t === "tr"
+            ? "Eylem Gerekli: Express Entry profili oluşturmak için geçerli bir dil testi sonucu (IELTS General, CELPIP veya TEF Canada) sunmanız gerekir."
+            : t === "zh"
+              ? "需要采取行动：创建 Express Entry 档案前，您必须提供有效的语言考试成绩（IELTS General、CELPIP 或 TEF Canada）。"
+              : "Action Required: You must submit a valid language test result (IELTS General, CELPIP, or TEF Canada) to create an Express Entry profile.")
+        : (t === "tr"
+            ? "Eylem Gerekli: Bir EOI sunmak için en azından Competent English (yetkin İngilizce) seviyesini kanıtlamanız gerekir."
+            : t === "zh"
+              ? "需要采取行动：递交EOI前，您必须证明至少具备能力级英语水平。"
+              : "Action Required: You must demonstrate at least Competent English to lodge an EOI.");
       doc.text(safeText(englishDetail), margin + 8, bannerY + 13);
     } else if (!isEoiEligible && eoiReason === "points") {
       // RED: BLOCKED — Skills Assessment done (and age/English clear), but
       // estimatedPoints is still below the 65 threshold. A positive
       // assessment alone is not enough to lodge a competitive EOI.
+      // AU-only reason: CA's buildCanadaPointsEstimate never sets
+      // eoiIneligibilityReason to "points" (Express Entry has no fixed CRS
+      // pass/fail threshold), but this branch is guarded for safety in case
+      // that ever changes.
       doc.setFillColor(254, 242, 242);
       doc.setDrawColor(220, 38, 38);
       doc.setLineWidth(0.8);
@@ -178,7 +205,9 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
           : "Although your Skills Assessment is complete, your estimated points are below the minimum threshold of 65. You must raise your score before lodging an EOI.";
       doc.text(safeText(pointsBlockedDetail), margin + 8, bannerY + 13);
     } else if (!isEoiEligible) {
-      // RED: BLOCKED — skills assessment missing
+      // RED: BLOCKED — catch-all (AU: skills assessment missing; CA: no
+      // country-specific reason matched above, so use a generic blocked
+      // message rather than assuming the AU skills-assessment requirement).
       doc.setFillColor(254, 242, 242);
       doc.setDrawColor(220, 38, 38);
       doc.setLineWidth(0.8);
@@ -198,11 +227,17 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       setBaseFont();
       doc.setFontSize(7.5);
       doc.setTextColor(120, 40, 40);
-      const blockedDetail = t === "tr"
-        ? "Eylem Gerekli: Bir EOI sunmadan önce mesleğiniz için olumlu bir Beceri Değerlendirmesi yasal olarak zorunludur."
-        : t === "zh"
-          ? "需要采取行动：递交EOI之前，获得提名职业的正面技能评估是法律强制要求。"
-          : "Action Required: A positive Skills Assessment is legally required before lodging an EOI.";
+      const blockedDetail = country === "CA"
+        ? (t === "tr"
+            ? "Eylem Gerekli: Bir Express Entry profili oluşturmadan önce eksik gereksinimleri karşılamanız gerekir."
+            : t === "zh"
+              ? "需要采取行动：创建 Express Entry 档案之前，您需要满足缺失的要求。"
+              : "Action Required: You must meet the missing requirement(s) before creating an Express Entry profile.")
+        : (t === "tr"
+            ? "Eylem Gerekli: Bir EOI sunmadan önce mesleğiniz için olumlu bir Beceri Değerlendirmesi yasal olarak zorunludur."
+            : t === "zh"
+              ? "需要采取行动：递交EOI之前，获得提名职业的正面技能评估是法律强制要求。"
+              : "Action Required: A positive Skills Assessment is legally required before lodging an EOI.");
       doc.text(safeText(blockedDetail), margin + 8, bannerY + 13);
     } else {
       // GREEN: READY
@@ -240,12 +275,13 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     country,
     userInputSummary,
     estimatedPoints,
-    65,
+    POINTS_THRESHOLD,
     report.detectedSubclasses?.[0] || "189",
     skillsAssessmentDone,
     undefined,
     goals,
     hasSalary ? String(annualSalary) : undefined,
+    report.assessmentState.isEoiEligible,
   );
 
   ctx.ensurePageSpace(50);
@@ -268,8 +304,12 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   addSmallText(overview.confidenceNote, 0);
   ctx.yPosition += 2;
 
-  // Employer Sponsored Viability (salary-based)
-  if (hasSalary && hasEmployerSponsored) {
+  // Employer Sponsored Viability (salary-based) -- AU-only. CSIT (Core
+  // Skills Income Threshold, subclass 482/186) has no CA equivalent modeled
+  // here: Canada's employer-linked route (LMIA) uses province/occupation-
+  // specific wage floors, not a single national AUD-denominated figure, and
+  // the product doesn't collect enough to state one accurately.
+  if (country === "AU" && hasSalary && hasEmployerSponsored) {
     ctx.ensurePageSpace(20);
     const meetsCsit = annualSalary! >= CSIT_THRESHOLD_AUD;
     const csitLabel = `CSIT: AUD $${CSIT_THRESHOLD_AUD.toLocaleString("en-AU")}`;
@@ -309,8 +349,9 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       userName,
       estimatedPoints,
       breakdown.map((item) => ({ ...item, max: item.max ?? 0 })),
-      65,
+      POINTS_THRESHOLD,
       skillsAssessmentDone,
+      report.assessmentState.isEoiEligible,
     );
 
     // Section Header
@@ -332,15 +373,17 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       for (let i = 0; i < steps; i++) addSmallText("", 0);
     };
 
-    // ── Total score gauge: claimable points vs. the 65-point EOI minimum ──
-    // Presentation-only visual on top of the existing estimatedPoints/65
-    // values -- no scoring logic changes.
+    // ── Total score gauge: claimable points vs. the EOI minimum ──
+    // Fill color reflects the canonical passed/blocked state (see
+    // eligibility-badge.ts), never raw `estimatedPoints >= threshold`
+    // arithmetic -- a profile that clears the points number but is still
+    // blocked (e.g. missing Skills Assessment) must not render green here.
     {
       const gaugeY = ctx.getCurrentY();
       const gaugeHeight = 9;
-      const scaleMax = Math.max(100, estimatedPoints + 20, 65 + 20);
-      const meetsThreshold = estimatedPoints >= 65;
-      const fillColor = meetsThreshold ? COLORS.riskLow : COLORS.accent;
+      const scaleMax = Math.max(100, estimatedPoints + 20, POINTS_THRESHOLD + 20);
+      const badgeState = getEligibilityBadgeState(report.assessmentState, effectiveLocale);
+      const fillColor = COLORS[badgeState.colorKey];
 
       setBoldFont();
       doc.setFontSize(FONTS.subheading);
@@ -349,7 +392,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       setBaseFont();
       doc.setFontSize(FONTS.small);
       doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
-      doc.text(safeText(`65 ${t === "tr" ? "minimum" : t === "zh" ? "最低要求" : "minimum"}`), margin + contentWidth, gaugeY, { align: "right" });
+      doc.text(safeText(`${POINTS_THRESHOLD} ${t === "tr" ? "minimum" : t === "zh" ? "最低要求" : "minimum"}`), margin + contentWidth, gaugeY, { align: "right" });
 
       const barY = gaugeY + 3;
       doc.setFillColor(COLORS.tableHeader.r, COLORS.tableHeader.g, COLORS.tableHeader.b);
@@ -358,7 +401,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       const fillWidth = Math.max(gaugeHeight, contentWidth * fillRatio);
       doc.setFillColor(fillColor.r, fillColor.g, fillColor.b);
       doc.roundedRect(margin, barY, fillWidth, gaugeHeight, gaugeHeight / 2, gaugeHeight / 2, "F");
-      const thresholdX = margin + contentWidth * Math.min(1, 65 / scaleMax);
+      const thresholdX = margin + contentWidth * Math.min(1, POINTS_THRESHOLD / scaleMax);
       doc.setDrawColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
       doc.setLineWidth(0.6);
       doc.line(thresholdX, barY - 1.5, thresholdX, barY + gaugeHeight + 1.5);
@@ -432,7 +475,12 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
         actionStatus = t === "tr" ? "Yabancı tanıma gerekli"
           : t === "zh" ? "需要海外资格认可"
           : "Requires Overseas Qualification Recognition";
-      } else if (isEmployment && !skillsAssessmentDone) {
+      } else if (isEmployment && country === "AU" && !skillsAssessmentDone) {
+        // CA's breakdown (buildCanadaPointsEstimate) never emits an
+        // employment-labeled row today, so this branch is currently AU-only
+        // in practice -- guarded by country anyway so a future CA
+        // employment row doesn't silently inherit the AU "Skills
+        // Assessment" label.
         actionStatus = t === "tr" ? "Değerlendirme gerekli"
           : t === "zh" ? "需要技能评估"
           : "Requires Skills Assessment";
@@ -607,8 +655,13 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       });
     }
 
-  } else if (hasEmployerSponsored && !showPoints) {
-    // ── EMPLOYER SPONSORSHIP READINESS ────────────────────────────────
+  } else if (country === "AU" && hasEmployerSponsored && !showPoints) {
+    // ── EMPLOYER SPONSORSHIP READINESS (AU only) ────────────────────────
+    // CSIT/482/186 have no CA equivalent modeled here -- see the CSIT box
+    // above for why. For CA, hasEmployerSponsored can still be true (the
+    // "Employer Sponsorship" migration goal is offered regardless of
+    // country), but this AU-specific section simply doesn't render rather
+    // than showing AUD figures or an invented LMIA readiness analysis.
     ctx.ensurePageSpace(40);
     addSectionHeading("📋",
       t === "tr" ? "İşveren Sponsorluğu Hazırlık Analizi"
@@ -641,9 +694,15 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // 4. PREDICTIVE VIABILITY INSIGHTS (isolated & route-split)
+  // 4. PREDICTIVE VIABILITY INSIGHTS (isolated & route-split) -- AU only.
+  // This section's copy (below) hardcodes "Federal 189 Viability" and DHA
+  // round-specific language with no CA branch -- gated defensively even
+  // though userInputSummary.viability is not currently populated by any
+  // production caller for either country (so this is presently dead for
+  // both), since a CA report reaching this branch would show a nonsensical
+  // "Federal 189" reference.
   // ════════════════════════════════════════════════════════════════════════
-  if (showPoints && userInputSummary.viability) {
+  if (country === "AU" && showPoints && userInputSummary.viability) {
     const viab = userInputSummary.viability;
     const isEoiEligible = report.pointsEstimate?.isEoiEligible ?? false;
 
@@ -829,7 +888,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     effectiveLocale,
     country,
     userInputSummary.occupation,
-    skillsAssessmentDone,
+    country === "CA" ? ecaObtained : skillsAssessmentDone,
     resolvedAuthorityName,
     userInputSummary.name,
     isGeneralAuthorityFallback,
@@ -862,6 +921,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     estimatedPoints,
     resolvedAuthorityName,
     isGeneralAuthorityFallback,
+    report.assessmentState.isEoiEligible,
   );
 
   addSectionHeading("📋", guide.title);
@@ -939,10 +999,6 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   }
   ctx.yPosition += 3;
 
-  // ════════════════════════════════════════════════════════════════════════
-  // 7. PERSONALIZED FAQ
-  // ════════════════════════════════════════════════════════════════════════
-  ctx.ensurePageSpace(40);
   // Reuses assessingAuthorityInfo resolved for section 5 above instead of
   // re-deriving it here. authorityNote must be resolved through
   // resolveLocalized() -- authority.notes entries are LocalizedString
@@ -960,14 +1016,46 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     };
   }
 
+  // ════════════════════════════════════════════════════════════════════════
+  // 7. EMPLOYER SPONSORSHIP MODULE (AU: 482→186 fully modeled; CA: honest
+  // placeholder -- see lib/readiness/pdf-content/employer-sponsorship.ts and
+  // EmployerSponsorshipSignal's doc comment in types.ts). Only shown when the
+  // user selected the "Employer Sponsorship" migration goal.
+  // ════════════════════════════════════════════════════════════════════════
+  if (report.assessmentState.employerSponsorship.applies) {
+    ctx.ensurePageSpace(30);
+    const sponsorship = getEmployerSponsorshipContent(effectiveLocale, report.assessmentState.employerSponsorship);
+    const sponsorshipViolations = checkEmployerSponsorshipTerminology(sponsorship, report.assessmentState.employerSponsorship.country);
+    if (sponsorshipViolations.length > 0) {
+      console.error("[report_invariant_violation] (employer-sponsorship terminology)", sponsorshipViolations);
+    }
+    addSectionHeading("🏢", sponsorship.title);
+    addBody(sponsorship.intro);
+    ctx.yPosition += 1;
+    sponsorship.rows.forEach((row) => {
+      if (!row.value) return;
+      addSmallText(`${row.label}: ${row.value}`, 0);
+    });
+    if (sponsorship.note) {
+      ctx.yPosition += 1;
+      addSmallText(sponsorship.note, 0);
+    }
+    ctx.yPosition += 3;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // 8. PERSONALIZED FAQ
+  // ════════════════════════════════════════════════════════════════════════
+  ctx.ensurePageSpace(40);
   const faq = getPersonalizedFaq(
     effectiveLocale,
     country,
     userInputSummary,
     estimatedPoints,
-    65,
+    POINTS_THRESHOLD,
     skillsAssessmentDone,
     faqAssessingAuthority,
+    report.assessmentState.isEoiEligible,
   );
 
   addSectionHeading("❓", faq.title);

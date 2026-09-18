@@ -28,10 +28,11 @@ import { getStateIntelligenceMap, getStateOccupationMatches } from "../lib/state
 import { retrieveVisaContext } from "../lib/ai/retrieve-visa-context";
 import { retrieveStateContext } from "../lib/ai/retrieve-state-context";
 import { generatePremiumStrategy } from "../lib/ai/generate-premium-strategy";
+import { checkReportInvariants } from "../lib/readiness/report-invariants";
 import { prisma } from "../lib/prisma";
 
 type Persona = {
-  id: "A" | "B" | "C";
+  id: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I";
   label: string;
   input: ReadinessInput;
 };
@@ -92,6 +93,150 @@ const PERSONAS: Persona[] = [
       preferredState: "NT",
       preferredPathway: "491",
       migrationGoals: ["regional"],
+    },
+  },
+  {
+    // Reproduces the original sample-PDF scenario reported as drift/contradiction:
+    // points threshold met, but EOI lodgement blocked on a missing Skills
+    // Assessment. Verifies the report-invariants fix end-to-end (real
+    // DB-backed state intelligence + live generatePremiumStrategy call).
+    id: "D",
+    label: "Blocked-but-strong (Software Engineer, 30, Superior English, PhD, no Skills Assessment, 70 pts)",
+    input: {
+      locale: "en",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "India",
+      passportCountry: "India",
+      age: "30",
+      occupation: "Software Engineer 261313",
+      occupationConfirmed: "no",
+      englishLevel: "superior",
+      qualificationLevel: "PhD/Doctorate",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 10,
+      onshoreExperienceYears: 3,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // CA parity check, eligible baseline: real CLB test provided, no hard
+    // gate triggered. Confirms the language-test hard gate (engine.ts's
+    // buildCanadaPointsEstimate) doesn't false-positive on a normal profile.
+    // ECA explicitly obtained ("yes" to Step3Language's CA-relabeled
+    // "Did you obtain an ECA?" question) -- verifies the ECA status fix
+    // (pdf-personalized-content.ts's ecaObtained, wired from
+    // userInputSummary.isAustralianQualification) shows "Completed", not
+    // the previous always-"Not Done" bug.
+    id: "E",
+    label: "CA eligible baseline (CLB9, real language test, ECA obtained)",
+    input: {
+      locale: "en",
+      country: "CA",
+      mainGoal: "Express Entry (CEC/FSW/FSTP)",
+      currentCountry: "Nigeria",
+      passportCountry: "Nigeria",
+      age: "29",
+      occupation: "Software Engineer",
+      englishLevel: "clb9",
+      offshoreExperienceYears: 5,
+      qualificationAwardedInAustralia: true,
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // CA hard-gate check: no language test submitted ("none") -- the ONE
+    // CA EOI hard gate now modeled (buildCanadaPointsEstimate in engine.ts),
+    // since every Express Entry stream (CEC/FSW/FSTP) requires an official
+    // CLB-mapped test result to create a profile at all. Confirms
+    // isEoiEligible now actually goes false for a real CA input (previously
+    // hardcoded true unconditionally), and that the cover-page badge
+    // (getEligibilityBadgeState, reads isEoiEligible directly -- independent
+    // of canShowNumericRanking) reflects it. Note: canShowNumericRanking is
+    // ALSO false for this profile (no real English evidence), so
+    // rankedPathways takes the qualitative fallback branch rather than the
+    // numeric branch's eoiBlocked gate -- that gate is separately confirmed
+    // via a synthetic-report unit check since no real CA input can be both
+    // "sufficient data" and "blocked" simultaneously with only this one gate
+    // modeled (see engine.ts's buildCanadaPointsEstimate comment for why
+    // age/points/ECA/experience gates were deliberately NOT added).
+    // ECA explicitly NOT obtained ("no") -- pairs with Persona E to cover
+    // both ECA states. Also still the language-test-blocked persona.
+    id: "F",
+    label: "CA blocked (no language test submitted, ECA not obtained)",
+    input: {
+      locale: "en",
+      country: "CA",
+      mainGoal: "Express Entry (CEC/FSW/FSTP)",
+      currentCountry: "Nigeria",
+      passportCountry: "Nigeria",
+      age: "29",
+      occupation: "Software Engineer",
+      englishLevel: "none",
+      offshoreExperienceYears: 5,
+      qualificationAwardedInAustralia: false,
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // AU Employer Sponsorship module, qualifying: salary above CSIT
+    // (CURRENT_CSIT.value, lib/readiness/constants.ts -- AUD 79,423 as of
+    // this session). Confirms the 482->186 section renders with a met
+    // CSIT check and no CA terminology leakage.
+    id: "G",
+    label: "AU Employer Sponsorship, qualifying (salary above CSIT)",
+    input: {
+      locale: "en",
+      country: "AU",
+      mainGoal: "Employer Sponsorship",
+      currentCountry: "India",
+      passportCountry: "India",
+      age: "32",
+      occupation: "Software Engineer 261313",
+      occupationConfirmed: "yes",
+      englishLevel: "competent",
+      annualSalaryAud: 95000,
+      migrationGoals: ["employer_sponsorship"],
+    },
+  },
+  {
+    // AU Employer Sponsorship module, non-qualifying: salary below CSIT.
+    id: "H",
+    label: "AU Employer Sponsorship, non-qualifying (salary below CSIT)",
+    input: {
+      locale: "en",
+      country: "AU",
+      mainGoal: "Employer Sponsorship",
+      currentCountry: "India",
+      passportCountry: "India",
+      age: "32",
+      occupation: "Software Engineer 261313",
+      occupationConfirmed: "yes",
+      englishLevel: "competent",
+      annualSalaryAud: 60000,
+      migrationGoals: ["employer_sponsorship"],
+    },
+  },
+  {
+    // CA Employer-Linked Pathways placeholder: confirms the honest
+    // "not yet modeled" section renders (no invented LMIA/job-offer
+    // eligibility, no AU terminology) when a CA user selects the same
+    // "Employer Sponsorship" migration goal.
+    id: "I",
+    label: "CA Employer-Linked Pathways placeholder",
+    input: {
+      locale: "en",
+      country: "CA",
+      mainGoal: "Employer-linked pathways",
+      currentCountry: "Philippines",
+      passportCountry: "Philippines",
+      age: "31",
+      occupation: "Software Engineer",
+      englishLevel: "clb8",
+      offshoreExperienceYears: 4,
+      migrationGoals: ["employer_sponsorship"],
     },
   },
 ];
@@ -165,18 +310,44 @@ async function runPersona(persona: Persona): Promise<void> {
       age: persona.input.age,
       occupation: persona.input.occupation,
       englishLevel: persona.input.englishLevel,
+      isAustralianQualification: persona.input.qualificationAwardedInAustralia,
     },
   });
 
   const outputPath = path.join(OUTPUT_DIR, `persona-${persona.id}.pdf`);
   writeFileSync(outputPath, Buffer.from(pdfBytes));
   console.log(`PDF written: ${outputPath} (${pdfBytes.byteLength} bytes)`);
+
+  console.log("assessmentState.isEoiEligible:", report.assessmentState.isEoiEligible);
+  console.log("assessmentState.eoiIneligibilityReason:", report.assessmentState.eoiIneligibilityReason);
+  console.log("assessmentState.pathwayPoints:", report.assessmentState.pathwayPoints);
+  console.log("assessmentState.referenceBenchmarks:", report.assessmentState.referenceBenchmarks);
+  console.log(
+    "rankedPathways (189/190/491):",
+    (report.rankedPathways ?? [])
+      .filter((p) => ["189", "190", "491"].includes(p.subclass))
+      .map((p) => ({ subclass: p.subclass, pointsSignal: p.pointsSignal, tag: p.recommendationTag }))
+  );
+  if (report.aiStrategy) {
+    console.log("aiStrategy.executiveSummary:", report.aiStrategy.executiveSummary);
+  }
+
+  const violations = checkReportInvariants(report);
+  console.log(`checkReportInvariants: ${violations.length === 0 ? "NONE" : violations.length + " violation(s)"}`);
+  if (violations.length > 0) {
+    console.log(violations);
+  }
 }
 
 async function main() {
   mkdirSync(OUTPUT_DIR, { recursive: true });
 
-  for (const persona of PERSONAS) {
+  // Optional PERSONA_FILTER=D env var to run a single persona during
+  // debugging without re-running the whole (LLM-call-costing) suite.
+  const filterId = process.env.PERSONA_FILTER;
+  const personas = filterId ? PERSONAS.filter((p) => p.id === filterId) : PERSONAS;
+
+  for (const persona of personas) {
     await runPersona(persona);
   }
 

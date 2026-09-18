@@ -406,6 +406,11 @@ export function FullCheckWaitlistForm({
               currentCountry: initialValues.currentCountry,
               age: initialValues.age,
               englishLevel,
+              // For AU this means "qualification awarded in Australia"; for
+              // CA the same form field is relabeled "Did you obtain an ECA?"
+              // (see Step3Language) -- either way it's the raw yes/no answer,
+              // interpreted per-country downstream (pdf-personalized-content.ts).
+              isAustralianQualification: qualificationAwardedInAustralia === "yes",
             },
           });
           const blob = new Blob([pdfBytes as unknown as ArrayBuffer], { type: "application/pdf" });
@@ -446,7 +451,7 @@ export function FullCheckWaitlistForm({
       report: unlockedReportState.report,
       locale: locale as "en" | "tr" | "zh-Hans",
       saveToFile: false,
-      userInputSummary: { name: unlockedReportState.name, email: unlockedReportState.email, occupation: submittedOccupationValue, mainGoal: initialValues.mainGoal, currentCountry: initialValues.currentCountry, age: initialValues.age, englishLevel },
+      userInputSummary: { name: unlockedReportState.name, email: unlockedReportState.email, occupation: submittedOccupationValue, mainGoal: initialValues.mainGoal, currentCountry: initialValues.currentCountry, age: initialValues.age, englishLevel, isAustralianQualification: qualificationAwardedInAustralia === "yes" },
     });
     const blob = new Blob([pdfBytes as unknown as ArrayBuffer], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);

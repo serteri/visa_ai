@@ -1,5 +1,6 @@
 import { CURRENT_CSIT } from "@/lib/readiness/constants";
-import { buildAssessmentState } from "@/lib/readiness/assessment-state";
+import { buildAssessmentState, buildEmployerSponsorshipSignal, computePathwayPoints, POINTS_THRESHOLD } from "@/lib/readiness/assessment-state";
+import { logReportInvariantViolations } from "@/lib/readiness/report-invariants";
 import {
   buildEmploymentExperienceCaveat,
   getEmploymentDataSignals,
@@ -530,7 +531,8 @@ function buildSubclassIneligiblePointsReason(
 ): string {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
-  const gap = 65 - estimatedPoints;
+  const gap = POINTS_THRESHOLD - estimatedPoints;
+  const pathwayPoints = computePathwayPoints(estimatedPoints);
   const displayOccupation = input.occupation
     ? resolveOccupationDisplayName(input.occupation, locale)
     : (isTr ? "mesleğiniz" : isZh ? "您的职业" : "your occupation");
@@ -546,8 +548,8 @@ function buildSubclassIneligiblePointsReason(
   }
 
   if (subclass === "190") {
-    const potentialScore = estimatedPoints + 5;
-    const remainingGap = Math.max(0, 65 - potentialScore);
+    const potentialScore = pathwayPoints["190"].total;
+    const remainingGap = Math.max(0, POINTS_THRESHOLD - potentialScore);
     if (isTr) {
       return `Tahmini puanınız ${estimatedPoints} olup, gereken asgari 65 barajının ${gap} puan altındadır. Eyalet adaylığı (Subclass 190) size +5 ek puan sağlayarak potansiyel puanınızı ${potentialScore}'e yükseltir; ancak bu durumda dahi 65 barajına ulaşmak için ${remainingGap} puanlık bir açığınız kalacaktır. Eyalet sponsorluğuyla bu vizeye başvurabilmek için temel puanınızı en az 60'a yükseltmeniz gerekir. Eyaletlerin ${displayOccupation} mesleğini talep edip etmediğini görmek için bu rapordaki Eyalet Adaylığı Takipçisine göz atın.`;
     }
@@ -558,8 +560,8 @@ function buildSubclassIneligiblePointsReason(
   }
 
   if (subclass === "491") {
-    const potentialScore = estimatedPoints + 15;
-    const remainingGap = Math.max(0, 65 - potentialScore);
+    const potentialScore = pathwayPoints["491"].total;
+    const remainingGap = Math.max(0, POINTS_THRESHOLD - potentialScore);
     if (isTr) {
       return `Tahmini temel puanınız ${estimatedPoints} olup, 65 barajının ${gap} puan altındadır. Ancak Subclass 491, bölgesel adaylık veya aile sponsorluğu aracılığıyla +15 puanlık en büyük tekil puan desteğini sunarak potansiyel puanınızı ${potentialScore}'e yükseltir ve kalan açığı sadece ${remainingGap} puana indirir. Bu yolu uygulanabilir kılmak için temel puanınızı en az 50'ye yükseltmeniz yeterli olacaktır. Subclass 491, profiliniz için en gerçekçi ve en hızlı uygulanabilir nitelikli göç yolu olup, uygunluğa ulaşmak için İngilizce sonucunuzu yükseltmek gibi küçük temel puan artışları yeterlidir.`;
     }
@@ -2305,7 +2307,7 @@ function getPathwayConfidenceLevel(
   }
 
   if (subclass === "189") {
-    if (input.occupation && input.age && input.englishLevel && estimatedPoints !== undefined && estimatedPoints >= 65) {
+    if (input.occupation && input.age && input.englishLevel && estimatedPoints !== undefined && estimatedPoints >= POINTS_THRESHOLD) {
       return dataCompletenessPercentage >= 60 ? "high" : "medium";
     }
     if (dataCompletenessPercentage < 40) return "low";
@@ -2313,7 +2315,7 @@ function getPathwayConfidenceLevel(
   }
 
   if (subclass === "190") {
-    if (input.occupation && input.age && input.englishLevel && estimatedPoints !== undefined && estimatedPoints >= 65) {
+    if (input.occupation && input.age && input.englishLevel && estimatedPoints !== undefined && estimatedPoints >= POINTS_THRESHOLD) {
       return dataCompletenessPercentage >= 60 ? "medium" : "low";
     }
     if (dataCompletenessPercentage < 40) return "low";
@@ -3343,7 +3345,39 @@ function parseCanadaAgeBracket(ageStr?: string): CanadaCRSInput["age"] | null {
 function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstimate {
   const isTr = locale === "tr";
   const ageBracket = parseCanadaAgeBracket(input.age);
-  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const englishLevelRaw = (input.englishLevel ?? "").trim().toLowerCase();
+
+  // ── CA EOI Hard Gate: valid language test result ──────────────────────
+  // Every Express Entry stream this estimate covers (CEC/FSW/FSTP) requires
+  // submitting an official CLB-mapped language test result to create a
+  // profile at all -- the "none" dropdown option means no valid test was
+  // submitted, which blocks EOI regardless of any other signal. Treated as
+  // "no test" here (englishOption stays null) rather than routing through
+  // parseEnglishOption's shared AU/CA "none" -> "competent" fallback (that
+  // 0-point tiering is correct for the AU points TABLE, but would silently
+  // let a CA profile with no test compute CRS language points and read as
+  // eligible).
+  //
+  // Deliberately NOT modeled as hard gates here (unlike AU's buildPointsEstimate):
+  //  - Age: Express Entry has no age cutoff for submitting a profile -- 45+
+  //    simply scores 0 CRS age points, it does not block eligibility
+  //    (unlike AU's DHA 45+ absolute EOI bar).
+  //  - A fixed points/CRS threshold: there is no minimum CRS score required
+  //    to submit an Express Entry profile -- invitation cutoffs vary by
+  //    draw, unlike AU's fixed 65-point EOI minimum.
+  //  - ECA (Educational Credential Assessment): required for FSW when
+  //    claiming points for foreign education, but NOT required for CEC at
+  //    all. Since this estimate blanket-applies to CEC/FSW/FSTP, a
+  //    missing-ECA gate would incorrectly disqualify CEC-eligible profiles
+  //    -- not modeled until the report targets a single stream.
+  //  - Work experience minimums: genuinely stream-specific (CEC >=1yr,
+  //    FSW >=1yr, FSTP >=2yrs in-trade) with no single safe blanket rule.
+  const englishOption = input.englishLevel && englishLevelRaw !== "none" ? parseEnglishOption(input.englishLevel) : null;
+  const hasNoValidLanguageTest = englishLevelRaw === "none";
+  const isEoiEligible = !hasNoValidLanguageTest;
+  const eoiIneligibilityReason: "age" | "skills_assessment" | "english" | "points" | null = isEoiEligible
+    ? null
+    : "english";
 
   if (!ageBracket && !englishOption) {
     return {
@@ -3353,8 +3387,8 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
       note: isTr
         ? "CRS tahmini için yaş ve İngilizce seviyesi sağlanmadı. Puan hesaplaması mevcut değil."
         : "Age and English level were not provided. A CRS estimate is not available.",
-      isEoiEligible: true,
-      eoiIneligibilityReason: null,
+      isEoiEligible,
+      eoiIneligibilityReason,
     };
   }
 
@@ -3403,8 +3437,8 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
     estimatedPoints,
     breakdown,
     note,
-    isEoiEligible: true,
-    eoiIneligibilityReason: null,
+    isEoiEligible,
+    eoiIneligibilityReason,
   };
 }
 
@@ -3780,7 +3814,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // only invites EOIs that also clear the points threshold (65). A positive
   // Skills Assessment alone (preliminaryEoiEligible above) must not read as
   // "READY" when the points position doesn't support an invitation.
-  const meetsPointsThreshold = estimatedPoints >= 65;
+  const meetsPointsThreshold = estimatedPoints >= POINTS_THRESHOLD;
   const isEoiEligible = preliminaryEoiEligible && meetsPointsThreshold;
   const eoiIneligibilityReason: "age" | "skills_assessment" | "english" | "points" | null = isEoiEligible
     ? null
@@ -5776,17 +5810,16 @@ function buildCanadaPointsBoosterSimulator(
     });
   }
 
-  // LMIA job offer
-  scenarios.push({
-    label: t("Valid LMIA-backed job offer (NOC TEER 0/1/2/3)", "Geçerli LMIA destekli iş teklifi (NOC TEER 0/1/2/3)", "有效的LMIA担保工作邀约（NOC TEER 0/1/2/3）"),
-    estimatedChange: 50,
-    resultingEstimate: currentEstimate !== undefined ? currentEstimate + 50 : undefined,
-    explanation: t(
-      "A valid LMIA-supported job offer in a NOC TEER 0/1/2/3 occupation adds exactly +50 CRS points. Senior management roles classified as TEER 0 (e.g., NOC 00011 Senior managers – financial / communications / other business services) qualify for +200 points instead. The LMIA (Labour Market Impact Assessment) must be positive, issued to the specific employer, and must correspond to the exact NOC code and TEER level of the offer. The employer receives the LMIA from Employment and Social Development Canada (ESDC); IRCC does not issue LMIAs. LMIA-exempt job offers (e.g., under CUSMA/USMCA, intra-company transfers, or International Agreements) do not attract CRS job offer points. Note: LMIA-exempt offers under the C-10, C-11, or C-12 exemption codes may still qualify for +0, +50, or +200 depending on specific circumstances — verify with a Regulated Canadian Immigration Consultant (RCIC).",
-      "NOC TEER 0/1/2/3 mesleklerde geçerli bir LMIA destekli iş teklifi tam olarak +50 CRS puanı ekler. Üst düzey yönetim rolleri (TEER 0) veya bazı spesifik NOC kodları için +200 puan uygulanabilir.",
-      "NOC TEER 0/1/2/3职业的有效LMIA支持工作邀约可精确增加+50 CRS分。高管职位（TEER 0）或特定NOC代码可能获+200分。LMIA必须为正面、有效且由雇主持有。"
-    ),
-  });
+  // LMIA job offer: NOT included as a points-boosting scenario. IRCC
+  // removed CRS bonus points for arranged employment/LMIA-backed job
+  // offers effective 2025-03-25 -- a job offer no longer adds any CRS
+  // points, so it doesn't belong in a "Points Booster Simulator" (see
+  // EmployerSponsorshipSignal.ca.arrangedEmploymentCrsPointsRemoved in
+  // types.ts, and the CA Employer-Linked Pathways report section, which
+  // states this fact to the user directly). Do not re-add this scenario
+  // with a nonzero estimatedChange without first confirming against
+  // current IRCC rules -- this was previously a genuine bonus that IRCC
+  // discontinued, so it can be reintroduced or changed again.
 
   // Provincial nomination
   scenarios.push({
@@ -5838,12 +5871,12 @@ function buildCanadaPointsBoosterSimulator(
   const baseScore = currentEstimate ?? 0;
   const crsDrawNote = teer !== undefined && teer <= 1
     ? t(
-        `CRS Draw Targets for TEER ${teer} occupations — General pool draws: 470–520 CRS (STEM/most occupations). Category-based draws (introduced May 2023): Healthcare workers 430–480 CRS; French-language proficiency 375–425 CRS; Agriculture/Agri-food 300–360 CRS; Trade occupations 350–390 CRS. PNP nomination: +600 CRS points, effectively guarantees ITA in any draw. Itemized CRS buildup from your profile (estimated): Base score ${baseScore} CRS → +Language upgrade (if applicable) → +Education (ECA assessed) → +Experience → +Job offer (LMIA: +50/+200) → +PNP nomination (+600) = Total. Gap-to-invite analysis: the simplest path to a general draw invitation is typically: (1) optimise language to CLB 9+ (~+12–28 pts), then (2) pursue PNP stream matching your NOC code and province of interest.`,
+        `CRS Draw Targets for TEER ${teer} occupations — General pool draws: 470–520 CRS (STEM/most occupations). Category-based draws (introduced May 2023): Healthcare workers 430–480 CRS; French-language proficiency 375–425 CRS; Agriculture/Agri-food 300–360 CRS; Trade occupations 350–390 CRS. PNP nomination: +600 CRS points, effectively guarantees ITA in any draw. Note: IRCC removed CRS bonus points for arranged employment/LMIA-backed job offers effective March 25, 2025 -- a job offer no longer adds CRS points. Itemized CRS buildup from your profile (estimated): Base score ${baseScore} CRS → +Language upgrade (if applicable) → +Education (ECA assessed) → +Experience → +PNP nomination (+600) = Total. Gap-to-invite analysis: the simplest path to a general draw invitation is typically: (1) optimise language to CLB 9+ (~+12–28 pts), then (2) pursue PNP stream matching your NOC code and province of interest.`,
         `TEER ${teer} meslekler için CRS çekim hedefleri — Genel havuz: 470–520 CRS. Kategori bazlı çekimler (2023'ten itibaren): Sağlık 430–480; Fransızca 375–425; Tarım 300–360; Meslekler 350–390. PNP adaylığı: +600 CRS.`,
         `TEER ${teer}职业CRS抽签目标——综合池：470–520。类别专项抽签（2023年起）：医疗430–480；法语375–425；农业300–360；技术工种350–390。省提名+600分。`
       )
     : t(
-        `CRS Draw Targets — General pool draws: 470–520 CRS (most occupations). Category-based draws (May 2023+): French-language 375–425 CRS; Healthcare workers 430–480 CRS; Agriculture/Agri-food 300–360 CRS; Trade occupations 350–390 CRS. A PNP nomination adds +600 CRS, effectively eliminating the points competition. Itemized CRS buildup from your profile (estimated): Base score ${baseScore} CRS → +Language upgrade → +Education (ECA) → +Work experience → +Job offer (LMIA: +50/+200) → +PNP nomination (+600) = Total. The fastest realistic path to a general draw invitation typically combines language optimization (CLB 9+) with either a targeted PNP stream or category-based draw alignment.`,
+        `CRS Draw Targets — General pool draws: 470–520 CRS (most occupations). Category-based draws (May 2023+): French-language 375–425 CRS; Healthcare workers 430–480 CRS; Agriculture/Agri-food 300–360 CRS; Trade occupations 350–390 CRS. A PNP nomination adds +600 CRS, effectively eliminating the points competition. Note: IRCC removed CRS bonus points for arranged employment/LMIA-backed job offers effective March 25, 2025 -- a job offer no longer adds CRS points. Itemized CRS buildup from your profile (estimated): Base score ${baseScore} CRS → +Language upgrade → +Education (ECA) → +Work experience → +PNP nomination (+600) = Total. The fastest realistic path to a general draw invitation typically combines language optimization (CLB 9+) with either a targeted PNP stream or category-based draw alignment.`,
         `CRS çekim hedefleri — Genel havuz: 470–520. Kategori çekimleri: Fransızca 375–425; Sağlık 430–480; Tarım 300–360; Meslekler 350–390. PNP adaylığı +600 CRS puan ekler.`,
         `CRS抽签目标——综合池470–520；类别专项：法语375–425，医疗430–480，农业300–360，技术工种350–390。省提名+600分，实际消除积分竞争。`
       );
@@ -6187,7 +6220,7 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
     });
   }
   const occupationIndication = buildCanadaOccupationIndication(input, locale);
-  const assessmentState = buildAssessmentState(input, pathwayComparison, pointsEstimate.estimatedPoints, locale);
+  const assessmentState = buildAssessmentState(input, pathwayComparison, pointsEstimate, locale);
   const stateNominationTracker = buildCanadaStateNominationTracker(input, locale);
 
   const riskIndicators = buildCanadaRiskIndicators({
@@ -6412,6 +6445,12 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
 }
 
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
+  const report = runReadinessEngineInternal(input);
+  logReportInvariantViolations(report, "runReadinessEngine");
+  return report;
+}
+
+function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
   if (input.country === "CA") return runCanadaReadinessEngine(input);
 
   if (isPartnerFamilySponsorship(input.preferredPathway)) {
@@ -6571,7 +6610,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const assessmentState = buildAssessmentState(
     input,
     pathwayComparison,
-    pointsEstimate?.estimatedPoints,
+    pointsEstimate,
     locale
   );
   const executiveSummary = buildExecutiveSummary(
@@ -6874,6 +6913,13 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
     occupationEligibility: "eligible" as const,
     occupationEligibilityReason: "",
     canShowNumericRanking: false,
+    // Partner/family sponsorship (820/801) is not a points-tested pathway --
+    // EOI lodgement and the 189/190/491 points threshold don't apply here.
+    isEoiEligible: false,
+    eoiIneligibilityReason: undefined,
+    pathwayPoints: computePathwayPoints(undefined),
+    referenceBenchmarks: { "189": POINTS_THRESHOLD, "190": POINTS_THRESHOLD, "491": POINTS_THRESHOLD },
+    employerSponsorship: buildEmployerSponsorshipSignal(input),
   };
 
   const signalSnapshot = {
