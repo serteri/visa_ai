@@ -32,7 +32,7 @@ import { checkReportInvariants } from "../lib/readiness/report-invariants";
 import { prisma } from "../lib/prisma";
 
 type Persona = {
-  id: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J";
+  id: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N";
   label: string;
   input: ReadinessInput;
 };
@@ -258,6 +258,104 @@ const PERSONAS: Persona[] = [
       occupationConfirmed: "yes",
       englishLevel: "proficient",
       qualificationLevel: "Bachelor's Degree",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 5,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // Turkish-locale Software Engineer: reproduces the reported cross-section
+    // authority contradiction (Financial Roadmap shows ACS, Skills Assessment
+    // and Personalized Guide sections show "VETASSESS / General Professional
+    // Authority").
+    id: "K",
+    label: "Turkish-locale Software Engineer (261313, no Skills Assessment)",
+    input: {
+      locale: "tr",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "Turkey",
+      passportCountry: "Turkey",
+      age: "30",
+      occupation: "Software Engineer 261313",
+      occupationConfirmed: "no",
+      englishLevel: "superior",
+      qualificationLevel: "Bachelor's Degree",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 5,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // Chinese-locale Software Engineer: reproduces the reported cross-section
+    // authority contradiction for zh-Hans.
+    id: "L",
+    label: "Chinese-locale Software Engineer (261313, no Skills Assessment)",
+    input: {
+      locale: "zh-Hans",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "China",
+      passportCountry: "China",
+      age: "30",
+      occupation: "Software Engineer 261313",
+      occupationConfirmed: "no",
+      englishLevel: "superior",
+      qualificationLevel: "Bachelor's Degree",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 5,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // Turkish-locale Civil Engineer: verified resolveOccupationDisplayName strips
+    // 'Civil Engineer 233211' to 'İnşaat Mühendisi' in Turkish, masking the code
+    // from getSkillsAssessmentAuthority() lookup. Verifies authority resolution
+    // works via fuzzy keyword 'mühendis' (Engineer) in AuthorityRegistry_TR,
+    // pointing to Engineers Australia (EA).
+    id: "M",
+    label: "Turkish-locale Civil Engineer (233211)",
+    input: {
+      locale: "tr",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "Turkey",
+      passportCountry: "Turkey",
+      age: "30",
+      occupation: "Civil Engineer 233211",
+      occupationConfirmed: "yes",
+      englishLevel: "superior",
+      qualificationLevel: "Bachelor's Degree",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 5,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // Chinese-locale Chef: verified resolveOccupationDisplayName strips 'Chef
+    // 351311' to '主厨' in zh-Hans, masking code. Verifies TRA fuzzy keyword
+    // '主厨' (Chef) works in zh-Hans, pointing to Trades Recognition Australia (TRA).
+    id: "N",
+    label: "Chinese-locale Chef (351311)",
+    input: {
+      locale: "zh-Hans",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "China",
+      passportCountry: "China",
+      age: "30",
+      occupation: "Chef 351311",
+      occupationConfirmed: "yes",
+      englishLevel: "superior",
+      qualificationLevel: "Diploma",
       isQualificationRecognized: true,
       offshoreExperienceYears: 5,
       preferredState: "NSW",

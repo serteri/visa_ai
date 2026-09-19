@@ -285,6 +285,8 @@ export interface UserInputSummary {
   passportCountry?: string;
   age?: string;
   occupation?: string;
+  /** Raw untranslated occupation string (e.g. "Software Engineer 261313") preserved before display localization. */
+  rawOccupation?: string;
   preferredPathway?: string;
   sponsorOrFamily?: string;
   biggestConcern?: string;

@@ -30,35 +30,65 @@ export type AssessingAuthorityMatch = {
  * Ordered so more specific keywords are checked before broader ones that
  * would otherwise shadow them -- e.g. "software engineer" must resolve to
  * ACS, not EA, so "software"/"developer"/"programmer" are listed before the
- * generic "engineer" keyword.
+ * generic "engineer" keyword. Includes English, Turkish, and Chinese terms
+ * so fuzzy resolution works across all supported locales even when an
+ * ANZSCO code is omitted from the input string.
  */
 const AUTHORITY_KEYWORDS: Array<{ keywords: string[]; match: Omit<AssessingAuthorityMatch, "isGeneralFallback"> }> = [
   {
-    keywords: ["software", "developer", "programmer", "web design", "ict", "cyber security", "data scientist", "database", "network engineer", "systems analyst", "it support", "information technology"],
+    keywords: [
+      "software", "developer", "programmer", "web design", "ict", "cyber security", "data scientist", "database", "network engineer", "systems analyst", "it support", "information technology",
+      "yazılım", "yazilim", "geliştirici", "gelistirici", "programcı", "programci", "siber güvenlik", "bilgi teknolojileri", "veri bilimci",
+      "软件", "程序员", "开发人员", "网络安全", "数据科学家", "信息技术",
+    ],
     match: { authorityId: "ACS", authorityName: "Australian Computer Society (ACS)" },
   },
   {
-    keywords: ["chef", "cook", "mechanic", "electrician", "plumber", "carpenter", "hairdresser", "baker", "butcher", "welder", "bricklayer", "cabinetmaker", "boilermaker", "toolmaker", "fitter", "joiner"],
+    keywords: [
+      "chef", "cook", "mechanic", "electrician", "plumber", "carpenter", "hairdresser", "baker", "butcher", "welder", "bricklayer", "cabinetmaker", "boilermaker", "toolmaker", "fitter", "joiner",
+      "aşçı", "asci", "tamirci", "elektrikçi", "elektrikci", "tesisatçı", "marangoz", "berber", "fırıncı",
+      "厨师", "技工", "电工", "水管工", "木工", "理发师",
+    ],
     match: { authorityId: "TRA", authorityName: "Trades Recognition Australia (TRA)" },
   },
   {
-    keywords: ["nurse", "nursing", "midwife", "midwifery"],
+    keywords: [
+      "nurse", "nursing", "midwife", "midwifery",
+      "hemşire", "hemsire", "ebe",
+      "护士", "护理", "助产士",
+    ],
     match: { authorityId: "ANMAC", authorityName: "Australian Nursing and Midwifery Accreditation Council (ANMAC)" },
   },
   {
-    keywords: ["doctor", "physician", "surgeon", "medical practitioner", "general practitioner", "psychiatrist", "anaesthetist", "paediatrician", "dentist"],
+    keywords: [
+      "doctor", "physician", "surgeon", "medical practitioner", "general practitioner", "psychiatrist", "anaesthetist", "paediatrician", "dentist",
+      "doktor", "hekim", "cerrah", "diş hekimi", "dis hekimi", "psikiyatrist",
+      "医生", "医师", "外科医生", "牙医",
+    ],
     match: { authorityId: "AHPRA", authorityName: "Australian Health Practitioner Regulation Agency (AHPRA)" },
   },
   {
-    keywords: ["account", "auditor", "bookkeeper", "tax agent"],
+    keywords: [
+      "account", "auditor", "bookkeeper", "tax agent",
+      "muhasebe", "mali müşavir", "denetçi", "denetci",
+      "会计", "审计", "记账员",
+    ],
     match: { authorityId: "CPA", authorityName: "CPA Australia" },
   },
   {
-    keywords: ["engineer", "engineering"],
+    keywords: [
+      "engineer", "engineering",
+      "mühendis", "muhendis", "mühendislik", "muhendislik",
+      "工程师", "工程",
+    ],
     match: { authorityId: "EA", authorityName: "Engineers Australia (EA)" },
   },
   {
-    keywords: ["architect"],
+    keywords: [
+      "architect",
+      "mimar", "mimarlık",
+      "建筑师", "建筑",
+    ],
     match: { authorityId: "AACA", authorityName: "Architects Accreditation Council of Australia (AACA)" },
   },
 ];

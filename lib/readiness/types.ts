@@ -438,6 +438,8 @@ export type EmployerSponsorshipSignal =
  * enough data exists to show a specific number.
  */
 export type AssessmentState = {
+  /** Raw intake occupation string (e.g. "Software Engineer 261313") preserved for deterministic assessing-authority and code lookups across all locales. */
+  occupation?: string;
   employmentDataProvided: boolean;
   employmentDataConfirmed: boolean;
   fieldsPresent: {
