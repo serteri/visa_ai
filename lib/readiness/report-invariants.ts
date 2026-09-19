@@ -129,6 +129,21 @@ export function checkReportInvariants(report: ReadinessReport): string[] {
     );
   }
 
+  // 6. Benchmark consistency: within each pathway's reality-check text, the
+  // per-round invitation benchmark must not cite conflicting unlabeled numbers.
+  // Any secondary threshold (e.g. occupation-specific competitive pressure at 90)
+  // must be explicitly labeled as distinct from the per-round benchmark.
+  for (const item of report.frictionAnalysis ?? []) {
+    const text = item.realityCheck ?? "";
+    const benchmarkMatches = Array.from(text.matchAll(/invitation benchmark(?:s)? \((?:is )?(\d+)\)/gi)).map((m) => m[1]);
+    const uniqueBenchmarks = new Set(benchmarkMatches);
+    if (uniqueBenchmarks.size > 1) {
+      violations.push(
+        `Pathway ${item.pathway} reality-check text contains multiple conflicting invitation benchmarks: ${Array.from(uniqueBenchmarks).join(", ")}.`
+      );
+    }
+  }
+
   return violations;
 }
 

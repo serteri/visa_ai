@@ -63,6 +63,15 @@ type RequirementsDataset = {
 const TREND_ROWS = (visaTrendsData as { occupation_trends: TrendRecord[] }).occupation_trends;
 const REQUIREMENTS = documentRequirementsData as RequirementsDataset;
 
+/**
+ * Occupation-specific competitive-pressure threshold for high-demand occupations.
+ * Software Engineer (261313) and Accountant (221111) face elevated selection
+ * pressure below this point, distinct from the per-round invitation benchmark.
+ * Used in friction/reality-check text to explicitly label the occupation-specific
+ * competitive zone vs. the historical trend benchmark.
+ */
+const HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD = 90;
+
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
 }
@@ -329,6 +338,16 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   const lastInvitedPoint = getTrendPoint(estimate);
 
   if (["189", "190", "491"].includes(subclassKey)) {
+    // Read canonical base+bonus breakdown from assessmentState to avoid duplicating
+    // points-calculation logic here -- every friction text mentioning "your score"
+    // must reference the SAME number the Points Breakdown section displays.
+    const pathwayPoints = base.assessmentState.pathwayPoints[subclassKey as "189" | "190" | "491"];
+    const basePoints = pathwayPoints.base;
+    const bonusPoints = pathwayPoints.bonus;
+    const totalAnnotation = bonusPoints > 0
+      ? t3(locale, ` (base ${basePoints} + nomination bonus ${bonusPoints})`, ` (temel ${basePoints} + adaylık bonusu ${bonusPoints})`, ` (基础分 ${basePoints} + 提名加分 ${bonusPoints})`)
+      : "";
+
     if (lastInvitedPoint !== undefined) {
       const gap = userPoints - lastInvitedPoint;
       if (gap < -10) {
@@ -342,21 +361,26 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
       }
 
       if (frictionScore === "EXTREME") {
-        reality.push(t3(locale, `Historical invitation data indicates the current score (${userPoints}) sits more than 10 points below the recent ${subclassKey} reference (${lastInvitedPoint}).`, `${subclassKey} icin tarihsel davet verisi, mevcut puanin (${userPoints}) yakin donem referansinin (${lastInvitedPoint}) 10 puandan fazla altinda oldugunu gostermektedir.`, `历史邀请数据表明，当前分数（${userPoints}）较近期 ${subclassKey} 参考分（${lastInvitedPoint}）低超过 10 分。`));
+        reality.push(t3(locale, `Historical invitation data indicates the current score (${userPoints}${totalAnnotation}) sits more than 10 points below the recent ${subclassKey} per-round invitation benchmark (${lastInvitedPoint}).`, `${subclassKey} için tarihsel davet verisi, mevcut puanın (${userPoints}${totalAnnotation}) yakın dönem tur-bazlı davet eşiğinin (${lastInvitedPoint}) 10 puandan fazla altında olduğunu göstermektedir.`, `历史邀请数据表明，当前分数（${userPoints}${totalAnnotation}）较近期 ${subclassKey} 单轮邀请基准分（${lastInvitedPoint}）低超过 10 分。`));
       } else if (frictionScore === "LOW") {
-        reality.push(t3(locale, `Historical invitation data indicates the current score (${userPoints}) is at or above the recent ${subclassKey} reference (${lastInvitedPoint}).`, `${subclassKey} icin tarihsel davet verisi, mevcut puanin (${userPoints}) yakin donem referansina esit veya ustunde oldugunu gostermektedir (${lastInvitedPoint}).`, `历史邀请数据表明，当前分数（${userPoints}）已达到或超过近期 ${subclassKey} 参考分（${lastInvitedPoint}）。`));
+        reality.push(t3(locale, `Historical invitation data indicates the current score (${userPoints}${totalAnnotation}) is at or above the recent ${subclassKey} per-round invitation benchmark (${lastInvitedPoint}).`, `${subclassKey} için tarihsel davet verisi, mevcut puanın (${userPoints}${totalAnnotation}) yakın dönem tur-bazlı davet eşiğine eşit veya üstünde olduğunu göstermektedir (${lastInvitedPoint}).`, `历史邀请数据表明，当前分数（${userPoints}${totalAnnotation}）已达到或超过近期 ${subclassKey} 单轮邀请基准分（${lastInvitedPoint}）。`));
       } else if (frictionScore === "HIGH") {
-        reality.push(t3(locale, `Historical invitation movement shows the current score is close to, but still below, recent ${subclassKey} references (${userPoints} vs ${lastInvitedPoint}).`, `${subclassKey} icin tarihsel davet hareketi, mevcut puanin yakin donem referanslara yakin ancak hala altinda oldugunu gostermektedir (${userPoints} vs ${lastInvitedPoint}).`, `历史邀请走势显示，当前分数已接近近期 ${subclassKey} 参考区间，但仍略低（${userPoints} vs ${lastInvitedPoint}）。`));
+        reality.push(t3(locale, `Historical invitation movement shows the current score (${userPoints}${totalAnnotation}) is close to, but still below, recent ${subclassKey} per-round invitation benchmarks (${lastInvitedPoint}).`, `${subclassKey} için tarihsel davet hareketi, mevcut puanın (${userPoints}${totalAnnotation}) yakın dönem tur-bazlı davet eşiklerine yakın ancak hala altında olduğunu göstermektedir (${lastInvitedPoint}).`, `历史邀请走势显示，当前分数（${userPoints}${totalAnnotation}）已接近近期 ${subclassKey} 单轮邀请基准区间，但仍略低（${lastInvitedPoint}）。`));
       } else {
-        reality.push(t3(locale, `Historical invitation movement places the current score within a comparatively narrow range of recent ${subclassKey} references (${userPoints} vs ${lastInvitedPoint}).`, `${subclassKey} icin tarihsel davet hareketi, mevcut puani yakin donem referanslara gore goreli olarak dar bir aralikta konumlandirmaktadir (${userPoints} vs ${lastInvitedPoint}).`, `历史邀请走势表明，当前分数与近期 ${subclassKey} 参考分之间的差距相对可控（${userPoints} vs ${lastInvitedPoint}）。`));
+        reality.push(t3(locale, `Historical invitation movement places the current score (${userPoints}${totalAnnotation}) within a comparatively narrow range of recent ${subclassKey} per-round invitation benchmarks (${lastInvitedPoint}).`, `${subclassKey} için tarihsel davet hareketi, mevcut puanı (${userPoints}${totalAnnotation}) yakın dönem tur-bazlı davet eşiklerine göre göreli olarak dar bir aralıkta konumlandırmaktadır (${lastInvitedPoint}).`, `历史邀请走势表明，当前分数（${userPoints}${totalAnnotation}）与近期 ${subclassKey} 单轮邀请基准分之间的差距相对可控（${lastInvitedPoint}）。`));
       }
     } else {
       reality.push(t3(locale, `No recent invitation point benchmark was matched for ${subclassKey}; score pressure is estimated from profile-only indicators.`, `${subclassKey} icin guncel davet puan referansi eslesmedi; puan baskisi yalnizca profil gostergelerine gore tahmin edildi.`, `${subclassKey} 未匹配到最新邀请分参考；当前竞争压力基于档案指标估算。`));
     }
 
-    if (subclassKey === "189" && ["221111", "261313"].includes(occupation?.anzsco_code ?? "") && userPoints < 90) {
+    if (subclassKey === "189" && ["221111", "261313"].includes(occupation?.anzsco_code ?? "") && userPoints < HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD) {
       frictionScore = userPoints < 85 ? "EXTREME" : escalate(frictionScore, "HIGH");
-      reality.push(t3(locale, "Historical 189 patterns for this occupation show stronger selection pressure on profiles below 90 points.", "Bu meslek icin 189 tarihsel desenleri, 90 alti profillerde daha yuksek secilim baskisina isaret etmektedir.", "该职业在 189 路径的历史模式显示，90 分以下档案通常面临更高筛选压力。"));
+      reality.push(t3(
+        locale,
+        `For this high-demand occupation, historical 189 patterns show elevated selection pressure below the occupation-specific competitive threshold (${HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD} points), separate from the per-round invitation benchmark.`,
+        `Bu yüksek talep gören meslek için, 189 tarihsel desenleri meslek-bazlı rekabet eşiğinin (${HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD} puan) altında yüksek seçilim baskısı göstermektedir (tur-bazlı davet eşiğinden ayrı).`,
+        `对于该高需求职业，189 历史模式显示，低于职业特定竞争门槛（${HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD} 分）的档案面临更高筛选压力（与单轮邀请基准分独立）。`
+      ));
     }
   }
 
