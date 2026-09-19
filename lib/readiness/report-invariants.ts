@@ -1,5 +1,7 @@
 import type { ReadinessReport } from "./types";
 import { getEligibilityBadgeState } from "./eligibility-badge";
+import { getSkillsAssessmentAuthority, getAuthorityById } from "../skills-assessment";
+import { getAssessingAuthority } from "../skills-assessment/occupation-authority-map";
 
 /**
  * Post-generation consistency check, run before a report is shown to the
@@ -141,6 +143,36 @@ export function checkReportInvariants(report: ReadinessReport): string[] {
       violations.push(
         `Pathway ${item.pathway} reality-check text contains multiple conflicting invitation benchmarks: ${Array.from(uniqueBenchmarks).join(", ")}.`
       );
+    }
+  }
+
+  // 7. Assessing authority consistency: if an occupation resolves to a specific
+  // assessing authority (e.g. ACS, AACA, TRA, Engineers Australia), financial
+  // roadmap items must cite that authority, not a conflicting generic fallback.
+  if (report.assessmentState.occupation) {
+    const rawOcc = report.assessmentState.occupation;
+    const specificAuthority =
+      getSkillsAssessmentAuthority(rawOcc) ??
+      getAuthorityById(getAssessingAuthority(rawOcc).authorityId);
+
+    if (specificAuthority && specificAuthority.authorityId !== "GENERAL") {
+      for (const item of report.financialRoadmap ?? []) {
+        if (
+          item.category.includes("Skills Assessment") ||
+          item.category.includes("Beceri Değerlendirmesi") ||
+          item.category.includes("技能评估")
+        ) {
+          const content = `${item.category} ${item.explanation}`;
+          if (
+            /VETASSESS/i.test(content) &&
+            specificAuthority.authorityId !== "VETASSESS"
+          ) {
+            violations.push(
+              `Financial roadmap skills assessment item cites VETASSESS, but occupation "${rawOcc}" resolves to ${specificAuthority.authorityName} (${specificAuthority.authorityId}).`
+            );
+          }
+        }
+      }
     }
   }
 

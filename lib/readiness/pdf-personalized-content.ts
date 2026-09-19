@@ -861,8 +861,11 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     authorityName: string;
     notes?: LocalizedString[];
   } | null = null;
-  if (userInputSummary.occupation) {
-    assessingAuthorityInfo = getSkillsAssessmentAuthority(userInputSummary.occupation);
+  // Use the raw untranslated occupation from assessmentState so code-based
+  // resolution (e.g. "Software Engineer 261313") works regardless of display locale.
+  const rawOccupation = ctx.report.assessmentState.occupation || userInputSummary.occupation;
+  if (rawOccupation) {
+    assessingAuthorityInfo = getSkillsAssessmentAuthority(rawOccupation);
   }
   // Precise ANZSCO-code match covers only a fraction of occupations -- when
   // it misses (most commonly because the occupation string has no code
@@ -873,7 +876,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   // no longer an "unresolved" case here -- isGeneralFallback distinguishes
   // "we know exactly who" from "this will likely go to a general authority".
   const fuzzyAuthorityMatch = !assessingAuthorityInfo
-    ? getAssessingAuthority(userInputSummary.occupation)
+    ? getAssessingAuthority(rawOccupation)
     : null;
   // Shared across this section and the Application Guide below, so both
   // name the same authority instead of one saying "ACS" and the other

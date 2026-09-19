@@ -32,7 +32,10 @@ import { checkReportInvariants } from "../lib/readiness/report-invariants";
 import { prisma } from "../lib/prisma";
 
 type Persona = {
+<<<<<<< HEAD
   id: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I";
+=======
+  id: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L";
   label: string;
   input: ReadinessInput;
 };
@@ -237,6 +240,82 @@ const PERSONAS: Persona[] = [
       englishLevel: "clb8",
       offshoreExperienceYears: 4,
       migrationGoals: ["employer_sponsorship"],
+    },
+  },
+<<<<<<< HEAD
+=======
+  {
+    // Accountant (221111) test: verifies that the removed hardcoded "90"
+    // competitive threshold is also gone from Accountant reports (which
+    // shared the ["221111", "261313"] heuristic in readiness-engine.ts).
+    // Uses 75 points to verify clean, single-benchmark reporting (95 per-round
+    // benchmark only).
+    id: "J",
+    label: "Accountant (221111, 75 pts, Proficient English, 5 yrs offshore)",
+    input: {
+      locale: "en",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "India",
+      passportCountry: "India",
+      age: "30",
+      occupation: "Accountant (General) 221111",
+      occupationConfirmed: "yes",
+      englishLevel: "proficient",
+      qualificationLevel: "Bachelor's Degree",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 5,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // Turkish-locale Software Engineer: reproduces the reported cross-section
+    // authority contradiction (Financial Roadmap shows ACS, Skills Assessment
+    // and Personalized Guide sections show "VETASSESS / General Professional
+    // Authority").
+    id: "K",
+    label: "Turkish-locale Software Engineer (261313, no Skills Assessment)",
+    input: {
+      locale: "tr",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "Turkey",
+      passportCountry: "Turkey",
+      age: "30",
+      occupation: "Software Engineer 261313",
+      occupationConfirmed: "no",
+      englishLevel: "superior",
+      qualificationLevel: "Bachelor's Degree",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 5,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
+    },
+  },
+  {
+    // Chinese-locale Software Engineer: reproduces the reported cross-section
+    // authority contradiction for zh-Hans.
+    id: "L",
+    label: "Chinese-locale Software Engineer (261313, no Skills Assessment)",
+    input: {
+      locale: "zh-Hans",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "China",
+      passportCountry: "China",
+      age: "30",
+      occupation: "Software Engineer 261313",
+      occupationConfirmed: "no",
+      englishLevel: "superior",
+      qualificationLevel: "Bachelor's Degree",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 5,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
     },
   },
 ];

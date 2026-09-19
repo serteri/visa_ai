@@ -234,6 +234,7 @@ export function buildAssessmentState(
     occupationEligibility === "eligible";
 
   return {
+    occupation: input.occupation,
     employmentDataProvided: employmentSignals.employmentDataProvided,
     employmentDataConfirmed: employmentSignals.workExperienceYearsConfirmed,
     fieldsPresent,
