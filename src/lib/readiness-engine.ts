@@ -63,14 +63,6 @@ type RequirementsDataset = {
 const TREND_ROWS = (visaTrendsData as { occupation_trends: TrendRecord[] }).occupation_trends;
 const REQUIREMENTS = documentRequirementsData as RequirementsDataset;
 
-/**
- * Occupation-specific competitive-pressure threshold for high-demand occupations.
- * Software Engineer (261313) and Accountant (221111) face elevated selection
- * pressure below this point, distinct from the per-round invitation benchmark.
- * Used in friction/reality-check text to explicitly label the occupation-specific
- * competitive zone vs. the historical trend benchmark.
- */
-const HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD = 90;
 
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
@@ -371,16 +363,6 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
       }
     } else {
       reality.push(t3(locale, `No recent invitation point benchmark was matched for ${subclassKey}; score pressure is estimated from profile-only indicators.`, `${subclassKey} icin guncel davet puan referansi eslesmedi; puan baskisi yalnizca profil gostergelerine gore tahmin edildi.`, `${subclassKey} 未匹配到最新邀请分参考；当前竞争压力基于档案指标估算。`));
-    }
-
-    if (subclassKey === "189" && ["221111", "261313"].includes(occupation?.anzsco_code ?? "") && userPoints < HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD) {
-      frictionScore = userPoints < 85 ? "EXTREME" : escalate(frictionScore, "HIGH");
-      reality.push(t3(
-        locale,
-        `For this high-demand occupation, historical 189 patterns show elevated selection pressure below the occupation-specific competitive threshold (${HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD} points), separate from the per-round invitation benchmark.`,
-        `Bu yüksek talep gören meslek için, 189 tarihsel desenleri meslek-bazlı rekabet eşiğinin (${HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD} puan) altında yüksek seçilim baskısı göstermektedir (tur-bazlı davet eşiğinden ayrı).`,
-        `对于该高需求职业，189 历史模式显示，低于职业特定竞争门槛（${HIGH_DEMAND_OCCUPATION_COMPETITIVE_THRESHOLD} 分）的档案面临更高筛选压力（与单轮邀请基准分独立）。`
-      ));
     }
   }
 

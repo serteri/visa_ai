@@ -32,7 +32,7 @@ import { checkReportInvariants } from "../lib/readiness/report-invariants";
 import { prisma } from "../lib/prisma";
 
 type Persona = {
-  id: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I";
+  id: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J";
   label: string;
   input: ReadinessInput;
 };
@@ -237,6 +237,32 @@ const PERSONAS: Persona[] = [
       englishLevel: "clb8",
       offshoreExperienceYears: 4,
       migrationGoals: ["employer_sponsorship"],
+    },
+  },
+  {
+    // Accountant (221111) test: verifies that the removed hardcoded "90"
+    // competitive threshold is also gone from Accountant reports (which
+    // shared the ["221111", "261313"] heuristic in readiness-engine.ts).
+    // Uses 75 points to verify clean, single-benchmark reporting (95 per-round
+    // benchmark only).
+    id: "J",
+    label: "Accountant (221111, 75 pts, Proficient English, 5 yrs offshore)",
+    input: {
+      locale: "en",
+      country: "AU",
+      mainGoal: "Skilled migration through 189, 190 or 491",
+      currentCountry: "India",
+      passportCountry: "India",
+      age: "30",
+      occupation: "Accountant (General) 221111",
+      occupationConfirmed: "yes",
+      englishLevel: "proficient",
+      qualificationLevel: "Bachelor's Degree",
+      isQualificationRecognized: true,
+      offshoreExperienceYears: 5,
+      preferredState: "NSW",
+      preferredPathway: "189",
+      migrationGoals: ["direct_pr"],
     },
   },
 ];
