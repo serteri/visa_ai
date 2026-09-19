@@ -4,7 +4,8 @@ import { PDFParse } from "pdf-parse";
 async function extractPdfText(pdfPath: string): Promise<string> {
   const dataBuffer = readFileSync(pdfPath);
   const parser = new PDFParse({ data: new Uint8Array(dataBuffer) });
-  return await parser.getText();
+  const result = await parser.getText();
+  return typeof result === "string" ? result : result.text || "";
 }
 
 async function main() {
