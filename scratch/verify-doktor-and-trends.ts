@@ -105,10 +105,10 @@ function verifyHistoricalUnmatchedFallback() {
       occupationInput: occupation,
       resolvedCode: findOccupationRecord(occupation)?.anzsco_code ?? null,
       matchedOccupationGroup: report.premiumSections.historicalInvitationTrends.matchedOccupationGroup,
-      anzscoCode: report.premiumSections.historicalInvitationTrends.anzscoCode,
+      occupationCode: report.premiumSections.historicalInvitationTrends.occupationCode,
       estimateCount: report.premiumSections.historicalInvitationTrends.estimates.length,
       containsSoftwareEngineer: /software engineer|261313/i.test(
-        `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} ${report.premiumSections.historicalInvitationTrends.anzscoCode}`
+        `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} ${report.premiumSections.historicalInvitationTrends.occupationCode}`
       ),
     };
   });

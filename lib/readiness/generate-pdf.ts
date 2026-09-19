@@ -4707,22 +4707,31 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     } else {
       addBody(text.invitationTrends);
     addSmallText(
-      `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.anzscoCode})`,
+      `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.occupationCode})`,
       2
     );
     const trendEstimates = report.premiumSections.historicalInvitationTrends.estimates;
     if (trendEstimates.length > 0) {
       addSmallText(
         effectiveLocale === "tr"
-          ? "Bu puanlar ve bekleme süreleri, bu meslek için son davet turlarındaki gerçek sonuçları yansıtır (her alt sınıf için son davet edilen puan) — tahmin değildir."
+          ? (report.country === "CA"
+              ? "Bu puanlar ve bekleme süreleri, bu meslek için son davet turlarındaki gerçek sonuçları yansıtır (her program için son davet edilen puan) — tahmin değildir."
+              : "Bu puanlar ve bekleme süreleri, bu meslek için son davet turlarındaki gerçek sonuçları yansıtır (her alt sınıf için son davet edilen puan) — tahmin değildir.")
           : effectiveLocale === "zh-Hans"
-            ? "以下分数和等待时间反映该职业近期邀请轮次的真实结果（每个子类别最近一次获邀分数）——并非预测。"
-            : "The points and wait windows below reflect real results from this occupation's recent invitation rounds (the last invited point per subclass) — not a projection.",
+            ? (report.country === "CA"
+                ? "以下分数和等待时间反映该职业近期邀请轮次的真实结果（每个项目最近一次获邀分数）——并非预测。"
+                : "以下分数和等待时间反映该职业近期邀请轮次的真实结果（每个子类别最近一次获邀分数）——并非预测。")
+            : (report.country === "CA"
+                ? "The points and wait windows below reflect real results from this occupation's recent invitation rounds (the last invited point per program) — not a projection."
+                : "The points and wait windows below reflect real results from this occupation's recent invitation rounds (the last invited point per subclass) — not a projection."),
         2
       );
     }
+    const subclassHeader = report.country === "CA"
+      ? (effectiveLocale === "tr" ? "Program" : effectiveLocale === "zh-Hans" ? "项目" : "Program")
+      : text.subclass;
     drawTable(
-      [text.subclass, text.estimatedPoints, text.estimatedWait],
+      [subclassHeader, text.estimatedPoints, text.estimatedWait],
       trendEstimates.map((item) => [
         cleanNum(item.subclass) + (item.isReferenceOnly ? ` (${text.referenceOnly})` : ""),
         cleanNum(`${item.estimatedPoints}`),

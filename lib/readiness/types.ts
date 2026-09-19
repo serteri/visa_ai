@@ -633,7 +633,8 @@ export type PremiumInvitationTrendEstimate = {
 
 export type PremiumInvitationTrendSection = {
   matchedOccupationGroup: string;
-  anzscoCode: string;
+  /** ANZSCO code for AU, NOC code for CA */
+  occupationCode: string;
   estimates: PremiumInvitationTrendEstimate[];
   note: string;
 };

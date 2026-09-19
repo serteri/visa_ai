@@ -245,7 +245,7 @@ function auditUnmatchedTrendFallback() {
       resolvedOccupationCode: findOccupationRecord(occupation)?.anzsco_code ?? null,
       assessmentOccupationEligibility: report.assessmentState.occupationEligibility,
       historicalMatchedOccupationGroup: report.premiumSections.historicalInvitationTrends.matchedOccupationGroup,
-      historicalAnzscoCode: report.premiumSections.historicalInvitationTrends.anzscoCode,
+      historicalOccupationCode: report.premiumSections.historicalInvitationTrends.occupationCode,
     };
   });
 }

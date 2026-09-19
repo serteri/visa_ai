@@ -6994,7 +6994,7 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
     premiumSections: {
       historicalInvitationTrends: {
         matchedOccupationGroup: "",
-        anzscoCode: "",
+        occupationCode: "",
         estimates: [],
         note: isTr
           ? "Partner vizeleri puan-bazlı olmadığı için davet taban puanları geçerli değildir."

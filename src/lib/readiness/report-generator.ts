@@ -109,7 +109,8 @@ export type InvitationTrendEstimate = {
 
 export type InvitationTrendSection = {
   matchedOccupationGroup: string;
-  anzscoCode: string;
+  /** ANZSCO code for AU, NOC code for CA */
+  occupationCode: string;
   estimates: InvitationTrendEstimate[];
   note: string;
 };
@@ -719,7 +720,7 @@ export function generatePremiumSections(input: {
     return {
       historicalInvitationTrends: {
         matchedOccupationGroup: localizeText(locale, inferCanadaOccupationGroup(input.occupation)),
-        anzscoCode: extractNocCode(input.occupation),
+        occupationCode: extractNocCode(input.occupation),
         estimates: annotateTrendEstimates(
           inferCanadaTrendEstimates({
             locale,
@@ -816,14 +817,14 @@ export function generatePremiumSections(input: {
   const historicalInvitationTrends = input.isPartnerPathway
     ? {
         matchedOccupationGroup: partnerPathwayOutOfScopeMessage,
-        anzscoCode: "",
+        occupationCode: "",
         estimates: [],
         note: partnerPathwayOutOfScopeMessage,
       }
     : trend
     ? {
         matchedOccupationGroup: getTrendOccupationGroup(locale, trend),
-        anzscoCode: trend.anzsco_code,
+        occupationCode: trend.anzsco_code,
         estimates: annotateTrendEstimates(
           trend.estimates.map((e) => ({
             subclass: e.subclass,
@@ -844,7 +845,7 @@ export function generatePremiumSections(input: {
       }
     : {
         matchedOccupationGroup: unavailableTrendMessage,
-        anzscoCode: "",
+        occupationCode: "",
         estimates: [],
         note: unavailableTrendMessage,
       };
