@@ -99,66 +99,105 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   // ════════════════════════════════════════════════════════════════════════
   // 1. EOI STATUS BANNER (reason-aware)
   // ════════════════════════════════════════════════════════════════════════
+  //
+  // Phase 2 fix: the banner box used to be a fixed 18mm height with a single
+  // un-wrapped doc.text() call for the detail line -- fine for the original
+  // short sentences, but the Phase 1 wording fix (removing the "legally
+  // required before lodging an EOI" claim) made the AU blocked-detail
+  // sentence long enough to run off the page edge, rendering as
+  // "...and a positive Skills Assess" with no visible wrap or truncation
+  // indicator. drawEoiBanner() below wraps the detail text to the box width
+  // and sizes the box (and the space reserved after it) to the actual
+  // number of wrapped lines, for every branch and every locale -- not just
+  // the one that happened to break.
+  function drawEoiBanner(
+    title: string,
+    detail: string | null,
+    palette: { bg: [number, number, number]; border: [number, number, number]; accent: [number, number, number]; titleColor: [number, number, number]; detailColor: [number, number, number] }
+  ): void {
+    ctx.ensurePageSpace(30);
+    const bannerY = ctx.getCurrentY();
+    const detailMaxWidth = contentWidth - 16;
+
+    setBaseFont();
+    doc.setFontSize(7.5);
+    const wrappedDetail: string[] = detail ? doc.splitTextToSize(safeText(detail), detailMaxWidth) : [];
+
+    const titleH = 7;
+    const detailLineH = 4.2;
+    const topPad = 3;
+    const bottomPad = 4;
+    const bannerH = detail
+      ? topPad + titleH + wrappedDetail.length * detailLineH + bottomPad
+      : topPad + titleH + bottomPad;
+
+    doc.setFillColor(...palette.bg);
+    doc.setDrawColor(...palette.border);
+    doc.setLineWidth(0.8);
+    doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
+    doc.setFillColor(...palette.accent);
+    doc.rect(margin, bannerY, 3, bannerH, "F");
+
+    setBoldFont();
+    doc.setFontSize(9);
+    doc.setTextColor(...palette.titleColor);
+    doc.text(safeText(title), margin + 8, bannerY + topPad + 4);
+
+    if (detail) {
+      setBaseFont();
+      doc.setFontSize(7.5);
+      doc.setTextColor(...palette.detailColor);
+      wrappedDetail.forEach((line, i) => {
+        doc.text(line, margin + 8, bannerY + topPad + titleH + 3 + i * detailLineH);
+      });
+    }
+
+    // Advance past exactly the box height just drawn, plus a small gap --
+    // no more fixed 5x addSmallText("", 0) assuming an 18mm box.
+    ctx.yPosition = bannerY + bannerH + 4;
+  }
+
   if (showPoints) {
     // Read the engine's EOI eligibility flag (age < 45 AND skills assessment done)
     const isEoiEligible = report.pointsEstimate?.isEoiEligible ?? false;
     const eoiReason = report.pointsEstimate?.eoiIneligibilityReason ?? null;
 
-    ctx.ensurePageSpace(20);
-    const bannerY = ctx.getCurrentY();
-    const bannerH = 18;
+    const RED_PALETTE = {
+      bg: [254, 242, 242] as [number, number, number],
+      border: [220, 38, 38] as [number, number, number],
+      accent: [220, 38, 38] as [number, number, number],
+      titleColor: [180, 38, 38] as [number, number, number],
+      detailColor: [120, 40, 40] as [number, number, number],
+    };
+    const GREEN_PALETTE = {
+      bg: [220, 253, 230] as [number, number, number],
+      border: [22, 163, 74] as [number, number, number],
+      accent: [22, 163, 74] as [number, number, number],
+      titleColor: [22, 101, 52] as [number, number, number],
+      detailColor: [22, 101, 52] as [number, number, number],
+    };
 
     if (!isEoiEligible && eoiReason === "age") {
       // RED: INELIGIBLE — age limit exceeded
-      doc.setFillColor(254, 242, 242);
-      doc.setDrawColor(220, 38, 38);
-      doc.setLineWidth(0.8);
-      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
-      doc.setFillColor(220, 38, 38);
-      doc.rect(margin, bannerY, 3, bannerH, "F");
-
-      setBoldFont();
-      doc.setFontSize(9);
-      doc.setTextColor(180, 38, 38);
       const ineligibleTitle = t === "tr"
         ? "EOI DURUMU: UYGUN DEĞİL. Yaş Sınırı Aşıldı."
         : t === "zh" ? "EOI 状态：不符合资格。已超过年龄上限。"
         : "EOI STATUS: INELIGIBLE. Age Limit Exceeded.";
-      doc.text(safeText(ineligibleTitle), margin + 8, bannerY + 7);
-
-      setBaseFont();
-      doc.setFontSize(7.5);
-      doc.setTextColor(120, 40, 40);
       const ineligibleDetail = t === "tr"
         ? "Bir EOI sunmak için 45 yaşın altında olmanız gerekir."
         : t === "zh"
           ? "递交EOI必须年满45周岁以下。"
           : "You must be under 45 to lodge an EOI.";
-      doc.text(safeText(ineligibleDetail), margin + 8, bannerY + 13);
+      drawEoiBanner(ineligibleTitle, ineligibleDetail, RED_PALETTE);
     } else if (!isEoiEligible && eoiReason === "english") {
       // RED: BLOCKED — no valid language test result (AU: below Competent
       // English; CA: no CLB-mapped test submitted at all -- CA's language
       // framework/terminology differs, so this is NOT a country ternary on
       // the same AU-shaped claim).
-      doc.setFillColor(254, 242, 242);
-      doc.setDrawColor(220, 38, 38);
-      doc.setLineWidth(0.8);
-      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
-      doc.setFillColor(220, 38, 38);
-      doc.rect(margin, bannerY, 3, bannerH, "F");
-
-      setBoldFont();
-      doc.setFontSize(9);
-      doc.setTextColor(180, 38, 38);
       const englishTitle = t === "tr"
         ? "EOI DURUMU: ENGELLİ."
         : t === "zh" ? "EOI 状态：已阻止。"
         : "EOI STATUS: BLOCKED.";
-      doc.text(safeText(englishTitle), margin + 8, bannerY + 7);
-
-      setBaseFont();
-      doc.setFontSize(7.5);
-      doc.setTextColor(120, 40, 40);
       const englishDetail = country === "CA"
         ? (t === "tr"
             ? "Eylem Gerekli: Express Entry profili oluşturmak için geçerli bir dil testi sonucu (IELTS General, CELPIP veya TEF Canada) sunmanız gerekir."
@@ -170,7 +209,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
             : t === "zh"
               ? "需要采取行动：递交EOI前，您必须证明至少具备能力级英语水平。"
               : "Action Required: You must demonstrate at least Competent English to lodge an EOI.");
-      doc.text(safeText(englishDetail), margin + 8, bannerY + 13);
+      drawEoiBanner(englishTitle, englishDetail, RED_PALETTE);
     } else if (!isEoiEligible && eoiReason === "points") {
       // RED: BLOCKED — Skills Assessment done (and age/English clear), but
       // estimatedPoints is still below the 65 threshold. A positive
@@ -179,54 +218,24 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       // eoiIneligibilityReason to "points" (Express Entry has no fixed CRS
       // pass/fail threshold), but this branch is guarded for safety in case
       // that ever changes.
-      doc.setFillColor(254, 242, 242);
-      doc.setDrawColor(220, 38, 38);
-      doc.setLineWidth(0.8);
-      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
-      doc.setFillColor(220, 38, 38);
-      doc.rect(margin, bannerY, 3, bannerH, "F");
-
-      setBoldFont();
-      doc.setFontSize(9);
-      doc.setTextColor(180, 38, 38);
       const pointsBlockedTitle = t === "tr"
         ? "EOI DURUMU: ENGELLİ (Puan Barajı Karşılanmadı)."
         : t === "zh" ? "EOI 状态：已阻止（未达到积分门槛）。"
         : "EOI STATUS: BLOCKED (Points Below Threshold).";
-      doc.text(safeText(pointsBlockedTitle), margin + 8, bannerY + 7);
-
-      setBaseFont();
-      doc.setFontSize(7.5);
-      doc.setTextColor(120, 40, 40);
       const pointsBlockedDetail = t === "tr"
         ? "Beceri Değerlendirmeniz tamamlanmış olsa da, tahmini puanınız asgari 65 barajının altında. Bir EOI sunmadan önce puanınızı artırmanız gerekir."
         : t === "zh"
           ? "尽管您的技能评估已完成，您的预估积分仍低于最低65分门槛。递交EOI前需要先提高积分。"
           : "Although your Skills Assessment is complete, your estimated points are below the minimum threshold of 65. You must raise your score before lodging an EOI.";
-      doc.text(safeText(pointsBlockedDetail), margin + 8, bannerY + 13);
+      drawEoiBanner(pointsBlockedTitle, pointsBlockedDetail, RED_PALETTE);
     } else if (!isEoiEligible) {
       // RED: BLOCKED — catch-all (AU: skills assessment missing; CA: no
       // country-specific reason matched above, so use a generic blocked
       // message rather than assuming the AU skills-assessment requirement).
-      doc.setFillColor(254, 242, 242);
-      doc.setDrawColor(220, 38, 38);
-      doc.setLineWidth(0.8);
-      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
-      doc.setFillColor(220, 38, 38);
-      doc.rect(margin, bannerY, 3, bannerH, "F");
-
-      setBoldFont();
-      doc.setFontSize(9);
-      doc.setTextColor(180, 38, 38);
       const blockedTitle = t === "tr"
         ? "EOI DURUMU: ENGELLİ."
         : t === "zh" ? "EOI 状态：已阻止。"
         : "EOI STATUS: BLOCKED.";
-      doc.text(safeText(blockedTitle), margin + 8, bannerY + 7);
-
-      setBaseFont();
-      doc.setFontSize(7.5);
-      doc.setTextColor(120, 40, 40);
       const blockedDetail = country === "CA"
         ? (t === "tr"
             ? "Eylem Gerekli: Bir Express Entry profili oluşturmadan önce eksik gereksinimleri karşılamanız gerekir."
@@ -238,33 +247,15 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
             : t === "zh"
               ? "需要采取行动：在您的技能评估获得正面结果之前，本报告不计入与职业相关的积分；递交签证申请前需要获得正面的技能评估结果。"
               : "Action Required: Skilled-employment points are not counted in this report until your Skills Assessment is confirmed positive, and a positive Skills Assessment is required before a visa application can be lodged.");
-      doc.text(safeText(blockedDetail), margin + 8, bannerY + 13);
+      drawEoiBanner(blockedTitle, blockedDetail, RED_PALETTE);
     } else {
       // GREEN: READY
-      doc.setFillColor(220, 253, 230);
-      doc.setDrawColor(22, 163, 74);
-      doc.setLineWidth(0.8);
-      doc.roundedRect(margin, bannerY, contentWidth, bannerH, 2, 2, "FD");
-      doc.setFillColor(22, 163, 74);
-      doc.rect(margin, bannerY, 3, bannerH, "F");
-
-      setBoldFont();
-      doc.setFontSize(9);
-      doc.setTextColor(22, 101, 52);
       const readyTitle = t === "tr"
         ? "EOI DURUMU: HAZIR."
         : t === "zh" ? "EOI 状态：就绪。"
         : "EOI STATUS: READY.";
-      doc.text(safeText(readyTitle), margin + 8, bannerY + 10);
+      drawEoiBanner(readyTitle, null, GREEN_PALETTE);
     }
-
-    // Advance closure yPosition past the 18mm banner + 5mm gap.
-    // Each addSmallText("", 0) advances by lineHeight (~5mm).
-    addSmallText("", 0);
-    addSmallText("", 0);
-    addSmallText("", 0);
-    addSmallText("", 0);
-    addSmallText("", 0);
   }
 
   // ════════════════════════════════════════════════════════════════════════
