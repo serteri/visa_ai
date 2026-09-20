@@ -2,6 +2,7 @@ import { findOccupationRecord, getEligibleSkilledSubclasses, isAmbiguousOccupati
 import { getEmploymentDataSignals } from "./employment-signals";
 import { hasRealEnglishEvidence } from "./english-evidence";
 import { CURRENT_CSIT } from "./constants";
+import { nominationBonusFor } from "./pathway-scores";
 import type {
   AssessmentState,
   DataCompletenessLevel,
@@ -27,9 +28,9 @@ export function computePathwayPoints(
 ): AssessmentState["pathwayPoints"] {
   const base = estimatedPoints ?? 0;
   return {
-    "189": { base, bonus: 0, total: base },
-    "190": { base, bonus: 5, total: base + 5 },
-    "491": { base, bonus: 15, total: base + 15 },
+    "189": { base, bonus: nominationBonusFor("189"), total: base + nominationBonusFor("189") },
+    "190": { base, bonus: nominationBonusFor("190"), total: base + nominationBonusFor("190") },
+    "491": { base, bonus: nominationBonusFor("491"), total: base + nominationBonusFor("491") },
   };
 }
 

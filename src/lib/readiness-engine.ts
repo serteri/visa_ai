@@ -2,17 +2,13 @@ import occupationsData from "@/src/data/occupations.json";
 import { isEnglishAtMaximum } from "@/lib/points/parse-english";
 import documentRequirementsData from "@/src/data/document-requirements.json";
 import { ENGLISH_TEST_VALIDITY_YEARS } from "@/lib/readiness/constants";
-import visaTrendsData from "@/src/data/visa-trends.json";
 import { generateChecklist } from "@/lib/generateChecklist";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateRankedPathways } from "@/lib/readiness/ranked-pathways";
+import { describePathwayScore, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
+import { orderBySkilledRanking } from "@/lib/readiness/pathway-ranking";
 import { calculateStateNominationTracker } from "@/lib/readiness/state-nomination";
-import {
-  calculateVisaPoints,
-  type AgeRange,
-  type EnglishLevel,
-  type QualificationLevel,
-} from "@/lib/readiness/visa-points-calculator";
+import type { EnglishLevel } from "@/lib/readiness/visa-points-calculator";
 import { localizeOccupationWarning, localizeText, t3 } from "@/src/lib/readiness/localization";
 import { canonicalizeOccupationInput, findOccupationRecord as findCanonicalOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import { logReportInvariantViolations } from "@/lib/readiness/report-invariants";
@@ -25,18 +21,6 @@ import type {
   ReadinessInput,
   ReadinessReport,
 } from "@/lib/readiness/types";
-
-type TrendRecord = {
-  occupation_group: string;
-  occupation_group_zh?: string;
-  anzsco_code: string;
-  estimates: Array<{
-    subclass: "189" | "190" | "491";
-    last_invited_point?: number;
-    estimated_points: number;
-    estimated_wait: string;
-  }>;
-};
 
 type OccupationRecord = {
   anzsco_code: string;
@@ -62,7 +46,6 @@ type RequirementsDataset = {
   };
 };
 
-const TREND_ROWS = (visaTrendsData as { occupation_trends: TrendRecord[] }).occupation_trends;
 const REQUIREMENTS = documentRequirementsData as RequirementsDataset;
 
 
@@ -70,36 +53,8 @@ function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
 }
 
-function parseAnzscoCode(occupation?: string): string | undefined {
-  if (!occupation) return undefined;
-  const codeMatch = occupation.match(/(\d{6})/);
-  return codeMatch?.[1];
-}
-
 function findOccupationRecord(input: ReadinessInput): OccupationRecord | undefined {
   return findCanonicalOccupationRecord(canonicalizeOccupationInput(input.occupation)) as OccupationRecord | undefined;
-}
-
-// Matches strictly by ANZSCO code -- see the equivalent, more heavily used
-// matchTrendByOccupation() in src/lib/readiness/report-generator.ts for why
-// a name-based fallback here is unsafe (distinct codes sharing an
-// occupation name, e.g. Software Engineer 233119 vs 261313, would silently
-// borrow the wrong occupation's friction/reality text otherwise).
-function findTrendRecord(input: ReadinessInput, occupation?: OccupationRecord): TrendRecord | undefined {
-  const code = occupation?.anzsco_code ?? parseAnzscoCode(canonicalizeOccupationInput(input.occupation));
-  if (!code) return undefined;
-
-  return TREND_ROWS.find((row) => row.anzsco_code === code);
-}
-
-function parseAgeRange(age?: string): AgeRange | undefined {
-  const n = Number((age ?? "").trim());
-  if (!Number.isFinite(n)) return undefined;
-  if (n >= 18 && n <= 24) return "18_24";
-  if (n >= 25 && n <= 32) return "25_32";
-  if (n >= 33 && n <= 39) return "33_39";
-  if (n >= 40 && n <= 44) return "40_44";
-  return "45_plus";
 }
 
 function parseEnglishLevel(value?: string): EnglishLevel | undefined {
@@ -111,64 +66,6 @@ function parseEnglishLevel(value?: string): EnglishLevel | undefined {
   return undefined;
 }
 
-function normalizeQualificationLevelForPoints(
-  level?: ReadinessInput["qualificationLevel"]
-): QualificationLevel {
-  switch (level) {
-    case "PhD/Doctorate":
-    case "PhD":
-      return "PhD";
-    case "Bachelor's Degree":
-    case "Master's Degree (Coursework)":
-    case "Master's Degree (Research)":
-    case "Bachelor":
-      return "Bachelor";
-    case "Diploma":
-      return "Diploma";
-    case "Certificate":
-      return "Certificate";
-    case "High School":
-    case "Other":
-    default:
-      return "Other";
-  }
-}
-
-function isResearchOrDoctorateQualification(
-  level?: ReadinessInput["qualificationLevel"]
-): boolean {
-  return level === "Master's Degree (Research)" || level === "PhD/Doctorate" || level === "PhD";
-}
-
-function computeBestKnownScore(input: ReadinessInput, base: ReadinessReport, occupationCode?: string): number {
-  const ageRange = parseAgeRange(input.age);
-  const englishLevel = parseEnglishLevel(input.englishLevel);
-
-  if (!ageRange || !englishLevel) {
-    return base.pointsEstimate?.estimatedPoints ?? 0;
-  }
-
-  const points = calculateVisaPoints({
-    ageRange,
-    englishLevel,
-    qualificationLevel: normalizeQualificationLevelForPoints(input.qualificationLevel),
-    researchDegreeEligibleForSpecialistEducation: isResearchOrDoctorateQualification(input.qualificationLevel),
-    qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
-    qualificationRegionalAustralia: input.qualificationRegionalAustralia,
-    specialistEducationStemResponse: input.specialistEducationStemResponse,
-    offshoreExperienceYears: input.offshoreExperienceYears ?? 0,
-    onshoreExperienceYears: input.onshoreExperienceYears ?? 0,
-    anzscoCode: occupationCode,
-    occupationName: canonicalizeOccupationInput(input.occupation),
-    hasNAATI: false,
-    hasProfessionalYear: false,
-    hasRegionalStudy: false,
-    partnerSkilled: false,
-  });
-
-  return points.scores.subclass190;
-}
-
 function escalate(current: FrictionScore, next: FrictionScore): FrictionScore {
   const rank: Record<FrictionScore, number> = {
     LOW: 1,
@@ -177,11 +74,6 @@ function escalate(current: FrictionScore, next: FrictionScore): FrictionScore {
     EXTREME: 4,
   };
   return rank[next] > rank[current] ? next : current;
-}
-
-function getTrendPoint(estimate?: { last_invited_point?: number; estimated_points: number }): number | undefined {
-  if (!estimate) return undefined;
-  return estimate.last_invited_point ?? estimate.estimated_points;
 }
 
 function toPathwayKey(subclass: string): string {
@@ -282,20 +174,13 @@ function buildPremiumDocumentChecklist(input: ReadinessInput, base: ReadinessRep
 function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport): string[] {
   const locale = input.locale;
 
-  // Read the canonical 190 total (base + state-nomination bonus) from
-  // assessmentState instead of recomputing via calculateVisaPoints -- a
-  // separate calculator with its own defaults (hasNAATI: false,
-  // partnerSkilled: false always) that could silently disagree with the
-  // 190 total shown everywhere else in the report. `0` when estimatedPoints
-  // itself is undefined (age/English not provided), matching the previous
-  // fallback behavior for that case.
-  const score190 =
-    base.assessmentState.estimatedPoints !== undefined
-      ? base.assessmentState.pathwayPoints["190"].total
-      : 0;
+  // Read the 190 figures from the single PathwayScoreSet (pathway-scores.ts). The base score is the
+  // applicant's current score; the nomination bonus is never counted as if it were already secured.
+  const score190 = base.pathwayScores?.["190"];
   const expYears = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
   const occupationConfirmed = normalize(input.occupationConfirmed) === "yes";
-  const lowPointsGap = score190 > 0 && score190 < 85;
+  // Below the recent 190 benchmark on the CURRENT (base) score; without a benchmark, below the 65-point minimum.
+  const lowPointsGap = score190 !== undefined && (score190.gapBase !== null ? score190.gapBase > 0 : score190.baseScore < 65);
   const englishAtMax = isEnglishAtMaximum(input.englishLevel);
   const lowExperienceGap = expYears < 3;
 
@@ -333,63 +218,34 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport):
 function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclass: string): FrictionAnalysisItem {
   const locale = input.locale;
   const occupation = findOccupationRecord(input);
-  const trend = findTrendRecord(input, occupation);
 
   let frictionScore: FrictionScore = "MEDIUM";
   const reality: string[] = [];
   const successSignals: string[] = [];
 
   const subclassKey = toPathwayKey(subclass);
-  // Read the canonical per-pathway points figure from assessmentState
-  // (single source of truth, see lib/readiness/assessment-state.ts) instead
-  // of recomputing via calculateVisaPoints -- a separate points calculator
-  // with its own input defaults (e.g. always partnerSkilled: false,
-  // hasNAATI: false) that can silently diverge from the base points shown
-  // everywhere else in the report (Points Breakdown, Pathway Comparison).
-  const canonicalPathwayPoints = base.assessmentState.pathwayPoints;
-  const userPoints =
-    subclassKey === "189" ? canonicalPathwayPoints["189"].total
-    : subclassKey === "190" ? canonicalPathwayPoints["190"].total
-    : subclassKey === "491" ? canonicalPathwayPoints["491"].total
-    : computeBestKnownScore(input, base, occupation?.anzsco_code);
-
-  const estimate = trend?.estimates.find((e) => e.subclass === subclassKey) ?? undefined;
-  const lastInvitedPoint = getTrendPoint(estimate);
+  // The per-pathway score, benchmark and gaps come from the single PathwayScoreSet (pathway-scores.ts);
+  // nothing here computes a score or a gap. Friction is measured on the CURRENT (base) score -- a
+  // nomination bonus the applicant has not secured never lowers it.
+  const score = base.pathwayScores?.[subclassKey as PathwaySubclass];
 
   if (["189", "190", "491"].includes(subclassKey)) {
-    // Read canonical base+bonus breakdown from assessmentState to avoid duplicating
-    // points-calculation logic here -- every friction text mentioning "your score"
-    // must reference the SAME number the Points Breakdown section displays.
-    const pathwayPoints = base.assessmentState.pathwayPoints[subclassKey as "189" | "190" | "491"];
-    const basePoints = pathwayPoints.base;
-    const bonusPoints = pathwayPoints.bonus;
-    const totalAnnotation = bonusPoints > 0
-      ? t3(locale, ` (base ${basePoints} + nomination bonus ${bonusPoints})`, ` (temel ${basePoints} + adaylık bonusu ${bonusPoints})`, ` (基础分 ${basePoints} + 提名加分 ${bonusPoints})`)
-      : "";
-
-    if (lastInvitedPoint !== undefined) {
-      const gap = userPoints - lastInvitedPoint;
-      if (gap < -10) {
-        frictionScore = "EXTREME";
-      } else if (gap >= 0) {
-        frictionScore = "LOW";
-      } else if (gap <= -6) {
-        frictionScore = "HIGH";
-      } else {
-        frictionScore = "MEDIUM";
+    if (score) {
+      if (score.gapBase !== null) {
+        const gap = -score.gapBase; // current score minus benchmark (negative = short)
+        if (gap < -10) {
+          frictionScore = "EXTREME";
+        } else if (gap >= 0) {
+          frictionScore = "LOW";
+        } else if (gap <= -6) {
+          frictionScore = "HIGH";
+        } else {
+          frictionScore = "MEDIUM";
+        }
       }
-
-      if (frictionScore === "EXTREME") {
-        reality.push(t3(locale, `Historical invitation data indicates the current score (${userPoints}${totalAnnotation}) sits more than 10 points below the recent ${subclassKey} per-round invitation benchmark (${lastInvitedPoint}).`, `${subclassKey} için tarihsel davet verisi, mevcut puanın (${userPoints}${totalAnnotation}) yakın dönem tur-bazlı davet eşiğinin (${lastInvitedPoint}) 10 puandan fazla altında olduğunu göstermektedir.`, `历史邀请数据表明，当前分数（${userPoints}${totalAnnotation}）较近期 ${subclassKey} 单轮邀请基准分（${lastInvitedPoint}）低超过 10 分。`));
-      } else if (frictionScore === "LOW") {
-        reality.push(t3(locale, `Historical invitation data indicates the current score (${userPoints}${totalAnnotation}) is at or above the recent ${subclassKey} per-round invitation benchmark (${lastInvitedPoint}).`, `${subclassKey} için tarihsel davet verisi, mevcut puanın (${userPoints}${totalAnnotation}) yakın dönem tur-bazlı davet eşiğine eşit veya üstünde olduğunu göstermektedir (${lastInvitedPoint}).`, `历史邀请数据表明，当前分数（${userPoints}${totalAnnotation}）已达到或超过近期 ${subclassKey} 单轮邀请基准分（${lastInvitedPoint}）。`));
-      } else if (frictionScore === "HIGH") {
-        reality.push(t3(locale, `Historical invitation movement shows the current score (${userPoints}${totalAnnotation}) is close to, but still below, recent ${subclassKey} per-round invitation benchmarks (${lastInvitedPoint}).`, `${subclassKey} için tarihsel davet hareketi, mevcut puanın (${userPoints}${totalAnnotation}) yakın dönem tur-bazlı davet eşiklerine yakın ancak hala altında olduğunu göstermektedir (${lastInvitedPoint}).`, `历史邀请走势显示，当前分数（${userPoints}${totalAnnotation}）已接近近期 ${subclassKey} 单轮邀请基准区间，但仍略低（${lastInvitedPoint}）。`));
-      } else {
-        reality.push(t3(locale, `Historical invitation movement places the current score (${userPoints}${totalAnnotation}) within a comparatively narrow range of recent ${subclassKey} per-round invitation benchmarks (${lastInvitedPoint}).`, `${subclassKey} için tarihsel davet hareketi, mevcut puanı (${userPoints}${totalAnnotation}) yakın dönem tur-bazlı davet eşiklerine göre göreli olarak dar bir aralıkta konumlandırmaktadır (${lastInvitedPoint}).`, `历史邀请走势表明，当前分数（${userPoints}${totalAnnotation}）与近期 ${subclassKey} 单轮邀请基准分之间的差距相对可控（${lastInvitedPoint}）。`));
-      }
+      reality.push(describePathwayScore(score, locale));
     } else {
-      reality.push(t3(locale, `No recent invitation point benchmark was matched for ${subclassKey}; score pressure is estimated from profile-only indicators.`, `${subclassKey} icin guncel davet puan referansi eslesmedi; puan baskisi yalnizca profil gostergelerine gore tahmin edildi.`, `${subclassKey} 未匹配到最新邀请分参考；当前竞争压力基于档案指标估算。`));
+      reality.push(t3(locale, `No recent invitation point benchmark was matched for ${subclassKey}; score pressure is estimated from profile-only indicators.`, `${subclassKey} icin guncel davet puan referansi eslesmedi; puan baskisi yalnizca profil gostergelerine gore tahmin edildi.`, `${subclassKey} 未匹配到最新邀请分数参考；分数压力仅根据档案指标估算。`));
     }
   }
 
@@ -429,7 +285,7 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
     successSignals.push(t3(locale, "Nomination-linked pathways incorporate additional points-table variables compared with independent routes.", "Adaylik baglantili yollar, bagimsiz yollara gore ek puan tablosu degiskenleri icerir.", "与独立路径相比，提名相关路径会纳入额外的打分变量。"));
   }
 
-  if (["189", "190", "491"].includes(subclassKey) && lastInvitedPoint !== undefined && userPoints >= lastInvitedPoint) {
+  if (["189", "190", "491"].includes(subclassKey) && score && score.gapBase !== null && score.gapBase <= 0) {
     successSignals.push(t3(locale, "The current score meets or exceeds the latest invitation reference observed for this pathway.", "Mevcut puan, bu yol icin gozlenen en guncel davet referansina esit veya ustundedir.", "当前分数已达到或超过该路径观察到的最近邀请参考分。"));
   }
 
@@ -953,9 +809,9 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     base.pathwayComparison,
     base.assessmentState
   );
-  const frictionAnalysis = buildFrictionAnalysis(input, base);
+  const frictionAnalysis = orderBySkilledRanking(buildFrictionAnalysis(input, base), (item) => item.pathway, base.pathwayRanking);
 
-  const pathwayStrengthComparison = base.pathwayStrengthComparison.map((item) => {
+  const pathwayStrengthComparison = orderBySkilledRanking(base.pathwayStrengthComparison, (item) => item.subclass, base.pathwayRanking).map((item) => {
     const dyn = frictionAnalysis.find((f) => f.pathway === item.subclass);
     if (dyn) {
       const score = dyn.frictionScore;
@@ -988,6 +844,7 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
       assessmentState: base.assessmentState,
       stateNominationTracker,
       occupationAuthority: occupation?.authority,
+      pathwayRanking: base.pathwayRanking,
     }),
     documentChecklist: buildPremiumDocumentChecklist(input, base),
     suggestedNextSteps: buildImmediateActionPlan(input, base),

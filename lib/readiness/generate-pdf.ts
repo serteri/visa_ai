@@ -1,5 +1,8 @@
 import { CURRENT_CSIT } from "./constants";
 import { assembleBoosterRows } from "./points-booster";
+import { blockedLabel, describePathwayScore } from "./pathway-scores";
+import { deterministicRecommendations, findRecommendationViolations } from "./pathway-recommendations";
+import { orderBySkilledRanking } from "./pathway-ranking";
 import { computeEstimatedTotalAud, describeTotalScope, formatEstimatedTotalLine } from "./financial-roadmap-totals";
 import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
@@ -1723,6 +1726,42 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += bannerHeight + 5;
   }
 
+  // Page (1-based) of the Historical Invitation Trends section, set while it is drawn; the cover note that
+  // points to it is drawn last (drawCoverPointsNote) once the page number is known.
+  let trendsSectionPage: number | undefined;
+  let coverPointsNote: { x: number; y: number; width: number } | undefined;
+
+  function coverPointsNoteText(page: number | undefined): string | null {
+    const scores = report.pathwayScores;
+    const est = report.pointsEstimate?.estimatedPoints;
+    if (est === undefined || report.country === "CA") return null;
+    const benchmarks = scores
+      ? (["189", "190", "491"] as const).filter((s) => scores[s].benchmark !== null).map((s) => `${s}: ${scores[s].benchmark}`)
+      : [];
+    const higher = scores ? (["189", "190", "491"] as const).some((s) => (scores[s].benchmark ?? 0) > est) : false;
+    const ref = page ? page : "--";
+    if (effectiveLocale === "tr") {
+      return `Tahmini puan ${est}; puan testli vize için asgari puan ${POINTS_THRESHOLD}. ${benchmarks.length > 0 ? `Mesleğiniz için yakın dönem davet referansları ${higher ? "daha yüksektir" : "karşılanmaktadır"} (${benchmarks.join(", ")}; bkz. sayfa ${ref}).` : ""}`.trim();
+    }
+    if (effectiveLocale === "zh-Hans") {
+      return `预估分数 ${est}；打分制签证最低要求 ${POINTS_THRESHOLD} 分。${benchmarks.length > 0 ? `您所在职业的近期邀请参考分${higher ? "更高" : "已达到"}（${benchmarks.join("，")}；见第 ${ref} 页）。` : ""}`.trim();
+    }
+    return `Estimated points ${est}; minimum for a points-tested visa ${POINTS_THRESHOLD}. ${benchmarks.length > 0 ? `The recent invitation benchmarks for your occupation are ${higher ? "higher" : "met"} (${benchmarks.join(", ")}; see page ${ref}).` : ""}`.trim();
+  }
+
+  function drawCoverPointsNote() {
+    if (!coverPointsNote) return;
+    const note = coverPointsNoteText(trendsSectionPage);
+    if (!note) return;
+    const last = doc.getNumberOfPages();
+    doc.setPage(1);
+    setBaseFont();
+    doc.setFontSize(8.5);
+    doc.setTextColor(COLORS.cream.r, COLORS.cream.g, COLORS.cream.b);
+    doc.text(doc.splitTextToSize(safeText(note), coverPointsNote.width), coverPointsNote.x, coverPointsNote.y);
+    doc.setPage(last);
+  }
+
   function addCoverPage() {
     const reportDate = new Intl.DateTimeFormat(locale, {
       timeZone: "Australia/Brisbane",
@@ -1904,6 +1943,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.text(safeText(badgeState.label), margin + 2, heroY + 22.5);
 
       stackY = heroY + 22.5 + 5;
+
+      // What "N / 65" means (drawn last, when the page of the trends section is known).
+      const noteProbe = coverPointsNoteText(undefined);
+      if (noteProbe) {
+        setBaseFont();
+        doc.setFontSize(8.5);
+        const noteLines = doc.splitTextToSize(safeText(noteProbe.replace("--", "00")), contentWidth - 4);
+        coverPointsNote = { x: margin + 2, y: stackY, width: contentWidth - 4 };
+        stackY += noteLines.length * 3.8 + 4;
+      }
     }
 
     // Advisory intro — always rendered last, below the hero stack
@@ -2211,12 +2260,27 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const isTr = effectiveLocale === "tr";
     const isZh = effectiveLocale === "zh-Hans";
 
+    // AU: the stored model output is re-checked against the single ranking / open-state data / score set
+    // (the same validator used when it was generated). A recommendation outside them is replaced by the
+    // deterministic list, so nothing stored earlier can contradict the ranking shown elsewhere.
+    const recommendationViolations =
+      report.country === "CA" || !report.pathwayRanking ? [] : findRecommendationViolations(strategy, report);
+    const shownPathways =
+      recommendationViolations.length > 0 ? deterministicRecommendations(report, effectiveLocale) : strategy.topRecommendedPathways;
+    const summaryText = recommendationViolations.some((v) => v.path === "executiveSummary")
+      ? (isTr
+          ? "Bu bölüm için ayrıntılı bir strateji özeti bulunmuyor -- puanlar, uygunluk ve yol karşılaştırması için raporun deterministik bölümlerine bakın."
+          : isZh
+            ? "本节暂无详细战略摘要——积分、资格与路径对比请参见报告中的确定性章节。"
+            : "A detailed strategy summary is not available for this section -- see the deterministic sections of this report for your points, eligibility, and pathway comparison.")
+      : strategy.executiveSummary;
+
     const sectionTitle = isTr ? "Yapay Zeka Strateji Özeti" : isZh ? "AI 战略摘要" : "AI Strategy Summary";
     addSectionHeading("🧭", sectionTitle);
 
     // ── Executive summary highlight box ───────────────────────────────
-    if (strategy.executiveSummary.trim()) {
-      const summaryLines = doc.splitTextToSize(safeText(strategy.executiveSummary), contentWidth - 16);
+    if (summaryText.trim()) {
+      const summaryLines = doc.splitTextToSize(safeText(summaryText), contentWidth - 16);
       const boxHeight = Math.max(20, 10 + summaryLines.length * 4.6);
       ensurePageSpace(boxHeight + 8);
 
@@ -2237,11 +2301,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
 
     // ── Top recommended pathways ───────────────────────────────────────
-    if (strategy.topRecommendedPathways.length > 0) {
+    if (shownPathways.length > 0) {
       const pathwaysHeading = isTr ? "Önerilen Vize Yolları" : isZh ? "推荐签证路径" : "Top Recommended Pathways";
       addHeading(pathwaysHeading);
 
-      strategy.topRecommendedPathways.forEach((pathway) => {
+      shownPathways.forEach((pathway) => {
         // CA programs (CEC/FSW/FSTP) are not "subclasses" -- that's AU
         // terminology for a numbered visa category. Avoid it for CA rather
         // than mislabeling a Canadian program.
@@ -3420,7 +3484,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return { label: text.highRiskBadge, color: COLORS.riskHigh };
   }
 
-  function qualitativeTierBadge(tier?: "Potential fit" | "Unclear fit" | "Unlikely fit") {
+  function qualitativeTierBadge(tier?: "Potential fit" | "Unclear fit" | "Unlikely fit" | "Blocked", blockReason?: Parameters<typeof blockedLabel>[0]) {
+    if (tier === "Blocked" && blockReason) return { label: blockedLabel(blockReason, effectiveLocale), color: COLORS.riskHigh };
     if (tier === "Potential fit") return { label: text.qualitativeFitPotential, color: COLORS.riskLow };
     if (tier === "Unclear fit") return { label: text.qualitativeFitUnclear, color: COLORS.riskMedium };
     return { label: text.qualitativeFitUnlikely, color: COLORS.riskHigh };
@@ -3509,12 +3574,18 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // Hard Gate (1 July 2026): ineligible pathways are unconditionally pinned
     // to the top of the ranking, ahead of any match-percentage score below.
     const ineligiblePathways = buildIneligiblePathwayEntries(report);
-    const rawRankedPathways = [
-      ...ineligiblePathways,
-      ...computedRankedPathways.filter(
-        (rp) => !ineligiblePathways.some((ie) => ie.subclass === rp.subclass)
-      ),
-    ];
+    // The points-tested pathways follow the single ranking (pathway-ranking.ts) whatever their status;
+    // pathways it does not cover (482, 485, 186 ...) keep their previous order after them.
+    const rawRankedPathways = orderBySkilledRanking(
+      [
+        ...ineligiblePathways,
+        ...computedRankedPathways.filter(
+          (rp) => !ineligiblePathways.some((ie) => ie.subclass === rp.subclass)
+        ),
+      ],
+      (rp) => rp.subclass,
+      report.pathwayRanking
+    );
     const rankedPathways = groupVisaPathways(rawRankedPathways, report, effectiveLocale);
     if (rankedPathways.length === 0) return;
 
@@ -3713,10 +3784,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       }
 
       if (item.isPreliminaryOnly) {
-        const rowHeight = 16;
+        const rowHeight = 21;
         ensurePageSpace(rowHeight + 2);
         const topY = yPosition;
-        const badge = qualitativeTierBadge(item.qualitativeTier);
+        const badge = qualitativeTierBadge(item.qualitativeTier, item.blockReason);
 
         doc.setFillColor(255, 255, 255);
         doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
@@ -3746,7 +3817,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
           safeText(item.preliminaryNote ?? ""),
           contentWidth - 5
         );
-        doc.text(noteLines.slice(0, 2), margin + 2.5, topY + 9.6, { lineHeightFactor: 1.18 });
+        doc.text(noteLines.slice(0, 3), margin + 2.5, topY + 9.6, { lineHeightFactor: 1.18 });
 
         yPosition += rowHeight + 2;
         return;
@@ -4351,7 +4422,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     } else {
     addSmallText(text.pathwayTableIntro, 0);
     yPosition += 2;
-    const pathwayRows = report.pathwayComparison.map((item) => {
+    const pathwayRows = orderBySkilledRanking(report.pathwayComparison, (item) => item.subclass, report.pathwayRanking).map((item) => {
       const friction = getFrictionForPathway(item.subclass);
       const frictionScore = friction?.frictionScore ?? "MEDIUM";
       // Strip any existing "(subclass N)" from visaName before appending
@@ -4780,11 +4851,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       drawGanttTimeline();
     } else {
       addBody(text.invitationTrends);
+      trendsSectionPage = doc.getNumberOfPages();
     addSmallText(
       `${report.premiumSections.historicalInvitationTrends.matchedOccupationGroup} (${report.premiumSections.historicalInvitationTrends.occupationCode})`,
       2
     );
-    const trendEstimates = report.premiumSections.historicalInvitationTrends.estimates;
+    const trendEstimates = orderBySkilledRanking(report.premiumSections.historicalInvitationTrends.estimates, (item) => item.subclass, report.pathwayRanking);
     const trendDataAsOf = report.premiumSections.historicalInvitationTrends.dataAsOf;
     if (trendEstimates.length > 0) {
       // Previously claimed these were "real results ... not a projection" --
@@ -4829,28 +4901,14 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         addCriticalAlertText(`${item.subclass}: ${item.referenceOnlyNote}`, 2);
       });
 
-    // Gap-to-benchmark: for AU points-tested subclasses, spell out how the
-    // user's own estimated score compares to the real recent benchmark,
-    // rather than leaving readers to subtract the two numbers themselves.
-    const userAuPoints = report.pointsEstimate?.estimatedPoints;
-    if (userAuPoints !== undefined) {
+    // Gap-to-benchmark: one sentence per points-tested subclass, read from the single PathwayScoreSet
+    // (the same sentence the Reality Check shows) -- this section never subtracts anything itself.
+    if (report.pathwayScores) {
       trendEstimates
         .filter((item) => ["189", "190", "491"].includes(item.subclass))
         .forEach((item) => {
-          const diff = item.estimatedPoints - userAuPoints;
-          const gapLine =
-            diff > 0
-              ? effectiveLocale === "tr"
-                ? `Subclass ${item.subclass}: ${trendDataAsOf ? `${trendDataAsOf} tarihli anlık görüntü` : "gösterge niteliğindeki veri"} bu meslek için ${item.estimatedPoints} puan gösteriyor — tahmini puanınız bu referansın ${diff} puan altında.`
-                : effectiveLocale === "zh-Hans"
-                  ? `Subclass ${item.subclass}：${trendDataAsOf ? `截至 ${trendDataAsOf} 的快照` : "指示性数据"}显示该职业的分数为 ${item.estimatedPoints} 分——您的预估分数比该参考分低 ${diff} 分。`
-                  : `Subclass ${item.subclass}: the ${trendDataAsOf ? `snapshot as of ${trendDataAsOf}` : "indicative data"} shows ${item.estimatedPoints} points for this occupation — your estimated score is ${diff} points below that benchmark.`
-              : effectiveLocale === "tr"
-                ? `Subclass ${item.subclass}: ${trendDataAsOf ? `${trendDataAsOf} tarihli anlık görüntü` : "gösterge niteliğindeki veri"} bu meslek için ${item.estimatedPoints} puan gösteriyor — tahmini puanınız bu referansın ${Math.abs(diff)} puan üzerinde veya eşit.`
-                : effectiveLocale === "zh-Hans"
-                  ? `Subclass ${item.subclass}：${trendDataAsOf ? `截至 ${trendDataAsOf} 的快照` : "指示性数据"}显示该职业的分数为 ${item.estimatedPoints} 分——您的预估分数已达到或高于该参考分 ${Math.abs(diff)} 分。`
-                  : `Subclass ${item.subclass}: the ${trendDataAsOf ? `snapshot as of ${trendDataAsOf}` : "indicative data"} shows ${item.estimatedPoints} points for this occupation — your estimated score is at or above that benchmark (by ${Math.abs(diff)} points).`;
-          addSmallText(gapLine, 2);
+          const score = report.pathwayScores![item.subclass as "189" | "190" | "491"];
+          addSmallText(`Subclass ${item.subclass}: ${describePathwayScore(score, effectiveLocale)}`, 2);
         });
     }
 
@@ -5131,6 +5189,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   addViralCTABanner();
 
   // Global running header (gold wordmark + rule) and footer on every page
+  drawCoverPointsNote();
   addGlobalHeaders();
   addGlobalFooters();
 

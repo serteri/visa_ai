@@ -36,6 +36,9 @@ import { PDFParse } from "pdf-parse";
 
 import type { PointsActionPlan, ReadinessInput, ReadinessReport } from "../lib/readiness/types";
 import { generatePremiumStrategy } from "../lib/ai/generate-premium-strategy";
+import { blockedLabel, describePathwayScore, PATHWAY_SUBCLASSES } from "../lib/readiness/pathway-scores";
+import { deterministicRecommendations, findOpenState } from "../lib/readiness/pathway-recommendations";
+import visaTrends from "../src/data/visa-trends.json";
 import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
@@ -58,6 +61,7 @@ const base: ReadinessInput = {
   occupationConfirmed: "no",
   englishLevel: "superior",
   qualificationLevel: "PhD/Doctorate",
+  isQualificationRecognized: true, // overseas PhD recognised => 70 base points (the live report's profile)
   migrationGoals: ["direct_pr"],
   sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
 };
@@ -419,12 +423,10 @@ function hostileResult(rand: () => number, plan: PointsActionPlan): PremiumStrat
 }
 
 /** A fully valid output: engine ids, engine numbers, only the wording is the model's own. */
-function validResult(plan: PointsActionPlan): PremiumStrategyResult {
+function validResult(plan: PointsActionPlan, recommendations: PremiumStrategyResult["topRecommendedPathways"]): PremiumStrategyResult {
   return {
     executiveSummary: "A concise, valid summary.",
-    topRecommendedPathways: [
-      { state: "NSW", subclass: "190", reason: "Fits the profile.", nextSteps: ["Prepare documents for the nomination application"] },
-    ],
+    topRecommendedPathways: recommendations,
     pointsBoosterStrategy: plan.actions.map((a) => ({
       actionId: a.id,
       action: `model label ${a.id}`,
@@ -538,8 +540,8 @@ async function runPointsActionChecks(
         let calls = 0;
         const stub: StrategyStub = async () => {
           calls++;
-          if (run.kind === "valid") return validResult(plan);
-          if (run.kind === "hostile-then-valid" && calls === 2) return validResult(plan);
+          if (run.kind === "valid") return validResult(plan, deterministicRecommendations(baseReport, locale));
+          if (run.kind === "hostile-then-valid" && calls === 2) return validResult(plan, deterministicRecommendations(baseReport, locale));
           return hostileResult(rand, plan);
         };
         // Quiet the expected [llm_text_invariant_violation] logging.
@@ -687,6 +689,266 @@ async function runPointsActionChecks(
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// One score and one ranking (Phase 2b)
+//
+// Every section must read the single PathwayScoreSet / PathwayRanking:
+//  - Reality Check and Historical Invitation Trends state the SAME sentence (same numbers) per pathway;
+//  - a nomination-bonus score is always conditional ("only if ... is secured");
+//  - the ranking order is identical in the Visa Viability Ranking, Signal Snapshot, Reality Check,
+//    Historical Invitation Trends, the lodgement checklist and the (LLM) recommendations;
+//  - the LLM step (stubbed hostile) can only recommend recommendable pathways and OPEN states, and any
+//    score it states must equal the engine's; the validator replaces anything else;
+//  - the cover explains "N / 65" and points at the page of the invitation benchmarks.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const PATHWAY_PROFILES: Array<{ name: string; input: ReadinessInput }> = [
+  { name: "p-partnered-se", input: { ...base } },
+  { name: "p-single-se", input: { ...base, sponsorOrFamily: "Single / No Dependants" } },
+  {
+    // Civil Engineer 233211, positive assessment, 5 years overseas (blocked only by the points minimum)
+    name: "p-civil-233211",
+    input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "competent", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 },
+  },
+  {
+    // Same, with Superior English: unblocked, so recommendations are allowed
+    name: "p-civil-233211-superior",
+    input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "superior", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 },
+  },
+];
+
+async function extractPdfPages(bytes: Uint8Array): Promise<string[]> {
+  const parser = new PDFParse({ data: bytes.slice() });
+  const result = await parser.getText();
+  return (result.pages ?? []).map((p: { text: string }) => p.text);
+}
+
+/** First-appearance order of the subclass codes captured by `re` (group 1), de-duplicated. */
+function orderOf(text: string, re: RegExp): string[] {
+  const seen: string[] = [];
+  for (const m of text.matchAll(re)) if (!seen.includes(m[1])) seen.push(m[1]);
+  return seen;
+}
+
+function hostilePathwayResult(rand: () => number, report: ReadinessReport): PremiumStrategyResult {
+  const scores = report.pathwayScores!;
+  const pick = <T,>(xs: T[]): T => xs[Math.floor(rand() * xs.length)];
+  const wrong = pick([92, 88, 81, 79]);
+  const closed = (report.stateNominationTracker?.states ?? []).find((s) => s.isOpen === false);
+  return {
+    executiveSummary: `${HOSTILE} Your score is ${wrong}, so subclass 491 is a strong fit and viable now; apply immediately.`,
+    topRecommendedPathways: [
+      // A pathway the ranking does not allow, praised, with the bonus score presented as the current score
+      { state: closed?.code ?? "NT", subclass: "491", reason: `${HOSTILE} Your ${scores["491"].subclass} score is ${scores["491"].scoreIfNominated} and clears the benchmark`, nextSteps: [`${HOSTILE} Lodge now`] },
+      { state: "ZZ", subclass: "190", reason: `${HOSTILE} ${wrong} points, a ${wrong - 60}-point gap`, nextSteps: [] },
+      { state: "NSW", subclass: "189", reason: `${HOSTILE} strong`, nextSteps: [] },
+    ],
+    pointsBoosterStrategy: [],
+    timelineEstimate: "6-12 months",
+  };
+}
+
+async function runPathwayChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  const emptyRag = { visaContext: {}, stateContext: {} } as never;
+
+  for (const profile of PATHWAY_PROFILES) {
+    for (const locale of LOCALES) {
+      const input: ReadinessInput = { ...profile.input, locale };
+      const baseReport = runReadinessEngine(input);
+      const scores = baseReport.pathwayScores;
+      const ranking = baseReport.pathwayRanking;
+      const label = `pathways ${profile.name}/${locale}`;
+      console.log(`\n=== ${label} ===`);
+      let caseFailed = false;
+      const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+      if (!scores || !ranking) {
+        f("engine produced no pathwayScores/pathwayRanking");
+        continue;
+      }
+      const expectedOrder: string[] = ranking.entries.map((e) => e.subclass);
+
+      // Scores are one set: base is the engine estimate, bonus from the points table, gaps derived, no invented benchmark.
+      for (const s of PATHWAY_SUBCLASSES) {
+        const p = scores[s];
+        if (p.baseScore !== baseReport.pointsEstimate?.estimatedPoints) f(`${s}: baseScore ${p.baseScore} != engine estimate ${baseReport.pointsEstimate?.estimatedPoints}`);
+        if (p.scoreIfNominated !== p.baseScore + p.nominationBonus) f(`${s}: scoreIfNominated is not base + bonus`);
+        if (p.benchmark !== null && p.gapBase !== p.benchmark - p.baseScore) f(`${s}: gapBase is not benchmark - base`);
+        if (p.benchmark !== null && p.gapIfNominated !== p.benchmark - p.scoreIfNominated) f(`${s}: gapIfNominated is not benchmark - scoreIfNominated`);
+        if (p.benchmark !== null && p.benchmark !== (visaTrendsBenchmark(input.occupation, s) ?? -1)) f(`${s}: benchmark ${p.benchmark} is not the visa-trends.json snapshot`);
+      }
+
+      // ── LLM step, stubbed hostile ─────────────────────────────────────
+      const RUNS = 5;
+      const hostileRuns: Array<{ kind: "hostile" | "valid"; seed: number }> = [
+        ...Array.from({ length: RUNS }, (_, i) => ({ kind: "hostile" as const, seed: 77 + i * 131 })),
+        { kind: "valid", seed: 0 },
+      ];
+      let lastBytes: Uint8Array | undefined;
+      for (const run of hostileRuns) {
+        const rand = mulberry32(run.seed);
+        let calls = 0;
+        const deterministic = deterministicRecommendations(baseReport, locale);
+        const stub: StrategyStub = async () => {
+          calls++;
+          if (run.kind === "valid") {
+            return {
+              executiveSummary: "A concise, valid summary.",
+              topRecommendedPathways: deterministic,
+              pointsBoosterStrategy: (baseReport.pointsEstimate?.actionPlan?.actions ?? []).map((a) => ({
+                actionId: a.id, action: a.label, pointsGained: a.gain, difficulty: a.difficulty, reason: null, difficultyExplanation: null,
+              })),
+              timelineEstimate: "6-12 months",
+            };
+          }
+          return hostilePathwayResult(rand, baseReport);
+        };
+        const origError = console.error;
+        console.error = () => undefined;
+        let strategy: PremiumStrategyResult;
+        try {
+          strategy = await generatePremiumStrategy(baseReport, emptyRag, locale, stub);
+        } finally {
+          console.error = origError;
+        }
+        const runLabel = `[${run.kind} seed=${run.seed}]`;
+        if (calls !== (run.kind === "valid" ? 1 : 2)) f(`${runLabel} LLM stub called ${calls}x`);
+        const recs = strategy.topRecommendedPathways;
+        // Only recommendable pathways, in ranking order, only open states
+        const positions = recs.map((r) => expectedOrder.indexOf(r.subclass));
+        if (recs.some((r) => !ranking.recommendable.includes(r.subclass as never))) f(`${runLabel} recommends a pathway the ranking does not allow: ${recs.map((r) => r.subclass)}`);
+        if (positions.some((p, i) => i > 0 && p < positions[i - 1])) f(`${runLabel} recommendations are not in ranking order`);
+        for (const r of recs) {
+          if ((r.subclass === "190" || r.subclass === "491") && !findOpenState(baseReport, r.state)) f(`${runLabel} recommends state ${r.state}, which is not open in the state data`);
+        }
+        if (ranking.allBlocked && recs.length > 0) f(`${runLabel} every pathway is blocked but ${recs.length} recommendations remain`);
+        if (JSON.stringify(strategy).includes(HOSTILE)) f(`${runLabel} hostile text survived validation`);
+        if (run.kind === "hostile" && JSON.stringify(recs) !== JSON.stringify(deterministic)) f(`${runLabel} hostile recommendations were not replaced by the deterministic list`);
+        if (run.kind === "valid" && JSON.stringify(recs) !== JSON.stringify(deterministic)) f(`${runLabel} a valid recommendation list was altered`);
+        if (/\b(?:92|88|81|79)\b/.test(strategy.executiveSummary)) f(`${runLabel} a different score survived in the summary`);
+
+        // Same path as production: report_json carries aiStrategy, PDF from the route handler
+        const report: ReadinessReport = JSON.parse(JSON.stringify({ ...baseReport, aiStrategy: strategy }));
+        const reportId = `pathways-${profile.name}-${locale}-${run.kind}-${run.seed}`;
+        rows.set(reportId, {
+          id: reportId, email: "qa@example.com", locale, report_json: report, input_json: JSON.parse(JSON.stringify(input)),
+          agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+        });
+        const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+        if (res.status !== 200) { f(`${runLabel} route returned HTTP ${res.status}`); continue; }
+        const bytes = new Uint8Array(await res.arrayBuffer());
+        const flatAll = flatten(await extractPdfText(bytes));
+        if (flatAll.includes(HOSTILE)) f(`${runLabel} hostile text appears in the PDF`);
+        lastBytes = bytes;
+      }
+      if (!lastBytes) continue;
+
+      // ── Section checks on the (valid-run) PDF ─────────────────────────
+      const pages = (await extractPdfPages(lastBytes)).map((p) => p.replace(/L o g i V i s a\s*/g, "").replace(/\d+ \/ \d+\s*Generated by[^\n]*\n?/g, "").replace(/-- \d+ of \d+ --/g, ""));
+      const raw = pages.join("\n");
+      await writeFile(path.join(outDir, `pathways-${profile.name}-${locale}.txt`), raw);
+      const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
+      const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
+
+      // 1. One statement per pathway, identical in Reality Check and Historical Invitation Trends
+      for (const s of PATHWAY_SUBCLASSES) {
+        const statement = sq(describePathwayScore(scores[s], locale));
+        const count = flat.split(statement).length - 1;
+        const rankingRowNeedsIt = 0; // the ranking row may truncate the sentence; Reality Check + Trends must state it in full
+        // Reality Check + Trends (+ the ranking row when it is a qualitative/blocked row)
+        if (count < 2 + rankingRowNeedsIt) f(`${s}: the score sentence appears ${count}x, expected >= ${2 + rankingRowNeedsIt} (Reality Check, Trends${rankingRowNeedsIt ? ", ranking" : ""})`);
+      }
+      // 2. Bonus scores are never presented as current
+      if (/nomination bonus|adaylık bonusu|提名加分|\(base \d+ \+/i.test(flat)) f("old '(base N + nomination bonus M)' wording is still shown");
+      for (const s of ["190", "491"] as const) {
+        const p = scores[s];
+        const conditional = sq(describePathwayScore(p, locale));
+        // Every sentence that states "<bonus score> only if ..." is inside the shared, conditional statement
+        const re = new RegExp(`(?:${p.scoreIfNominated} (?:only if|yalnızca)|仅在获得[^；]{0,12}后为 ?${p.scoreIfNominated})`, "g");
+        const conditionalMentions = (flat.match(re) ?? []).length;
+        if (!flat.includes(conditional)) f(`${s}: the conditional statement is missing`);
+        if (conditionalMentions < 2) f(`${s}: bonus score ${p.scoreIfNominated} is not shown as conditional in at least two sections (${conditionalMentions})`);
+      }
+      // 3. Gap numbers in Reality Check == gap numbers in Trends
+      for (const s of PATHWAY_SUBCLASSES) {
+        const p = scores[s];
+        const reality = flat.match(new RegExp(`${s}\\)? ?- ?(?:Reality Check|Gerçeklik Kontrolü|实际难度评估): ?(.{0,400})`));
+        const trends = flat.match(new RegExp(`Subclass ?${s}: ?(.{0,400})`, "g")) ?? [];
+        const gapNums = (t: string) => [...t.matchAll(/(\d+)(?: points below| puan altında|分)/g)].map((m) => Number(m[1]));
+        const expected = [p.gapBase, p.gapIfNominated].filter((n): n is number => n !== null && n > 0);
+        if (reality && expected.length > 0 && !expected.every((n) => gapNums(reality[1]).includes(n))) f(`${s}: Reality Check gap numbers ${gapNums(reality[1])} != engine ${expected}`);
+        const trendLine = trends.find((t) => /Score now|Şu anki puan|当前分数/.test(t));
+        if (trendLine && expected.length > 0 && !expected.every((n) => gapNums(trendLine).includes(n))) f(`${s}: Trends gap numbers ${gapNums(trendLine)} != engine ${expected}`);
+        if (reality && trendLine && p.gapBase !== null && !gapNums(reality[1]).includes(p.gapBase) && p.gapBase > 0) f(`${s}: Reality Check and Trends disagree on the gap`);
+      }
+      // 4. Ranking order identical across sections
+      const sections: Array<[string, string[]]> = [];
+      // Rows read "491 Visa - ..." (one per pathway) or, when grouped, "491 / 190 / 189 - General Skilled Migration".
+      const rankingLabel = /(189|190|491)(?= Visa| Vizesi| ?签证| ?\/ ?(?:189|190|491)| ?- ?(?:General|Genel|一般))/g;
+      const rankingStart = flat.search(/The ranking below orders|Aşağıdaki sıralama, olası|以下排序按合规状态/);
+      if (rankingStart >= 0) sections.push(["Visa Viability Ranking", orderOf(flat.slice(rankingStart, rankingStart + 4000), rankingLabel)]);
+      const snapStart = flat.search(/Signal Snapshot|Sinyal Özeti|匹配度概览/);
+      if (snapStart >= 0) sections.push(["Signal Snapshot", orderOf(flat.slice(snapStart, snapStart + 700), /\((189|190|491)\)/g)]);
+      sections.push(["Reality Check", orderOf(flat, /\((189|190|491)\) ?- ?(?:Reality Check|Gerçeklik Kontrolü|实际难度评估)/g)]);
+      sections.push(["Historical Invitation Trends", orderOf(flat, /Subclass ?(189|190|491): ?(?:Score now|Şu anki puan|当前分数)/g)]);
+      const checklist = flat.match(/(?:in ranking order|sıralama düzeninde yollar|按排序顺序的路径)[:：] ?([^.。]{0,120})/);
+      if (checklist) sections.push(["Lodgement checklist", orderOf(checklist[1], /(189|190|491)/g)]);
+      for (const [name, order] of sections) {
+        if (order.length === 0) { f(`${name}: no pathways found to compare`); continue; }
+        const expectedSubset = expectedOrder.filter((s) => order.includes(s));
+        if (JSON.stringify(order) !== JSON.stringify(expectedSubset)) f(`${name} order [${order}] != ranking [${expectedOrder}]`);
+      }
+      // strongest signal == ranking #1
+      const strongest = flat.match(/(?:Strongest signal|En güçlü sinyal|最高匹配路径) ?[^()]*\((189|190|491)\)/);
+      if (strongest && strongest[1] !== expectedOrder[0]) f(`Signal Snapshot strongest (${strongest[1]}) != ranking #1 (${expectedOrder[0]})`);
+      // every-blocked: one consistent label
+      if (ranking.allBlocked && ranking.commonBlockReason) {
+        const lbl = sq(blockedLabel(ranking.commonBlockReason, locale));
+        const n = flat.split(lbl).length - 1;
+        if (n < 4) f(`the blocked label "${lbl}" appears only ${n}x (expected in ranking x3 + snapshot + checklist)`);
+        if (ranking.entries.some((e) => e.fit !== "blocked")) f("allBlocked but a pathway is not blocked");
+      }
+      // fit labels come from the ranking only: no "Potential fit"/"Unclear fit" on a blocked pathway
+      if (ranking.allBlocked && /Potential fit|Unclear fit|Unlikely fit|Olası uyum|Belirsiz uyum|可能匹配|匹配度不明/.test(flat.slice(Math.max(0, rankingStart), rankingStart + 4000))) {
+        f("a fit label is shown although every pathway is blocked");
+      }
+
+      // 5. Cover: "N / 65" explained, page reference correct, number equals the breakdown total
+      const est = baseReport.pointsEstimate?.estimatedPoints;
+      const cover = squashAll(pages[0] ?? "");
+      if (est !== undefined) {
+        const coverNote = locale === "tr" ? `Tahminipuan${est};` : locale === "zh-Hans" ? `预估分数${est}；` : `Estimatedpoints${est};`;
+        if (!cover.includes(coverNote)) f(`cover does not explain the score ("${coverNote}")`);
+        if (!cover.includes(`${est}/65`) && !cover.includes(`${est}`)) f("cover does not show the estimate");
+        const seeRef = cover.match(/(?:seepage|bkz\.sayfa|见第)(\d+)/);
+        const hasBenchmark = PATHWAY_SUBCLASSES.some((s) => scores[s].benchmark !== null);
+        if (hasBenchmark) {
+          if (!seeRef) f("cover has no page reference to the invitation benchmarks");
+          else {
+            const target = pages[Number(seeRef[1]) - 1] ?? "";
+            if (!/Historical Invitation Trends|Tarihsel Davet Trendleri|历史邀请趋势/.test(target)) f(`cover points to page ${seeRef[1]}, which is not the Historical Invitation Trends page`);
+          }
+        }
+        const totalLine = flat.match(/(?:TOTAL|TOPLAM|总分)[:：] ?(\d+) ?\/ ?65/);
+        if (totalLine && Number(totalLine[1]) !== est) f(`cover estimate ${est} != points breakdown total ${totalLine[1]}`);
+      }
+      if (!caseFailed) console.log("  ✅ ok");
+    }
+  }
+}
+
+/** The dated snapshot benchmark straight from src/data/visa-trends.json (independent of the engine). */
+function visaTrendsBenchmark(occupation: string | undefined, subclass: string): number | undefined {
+  const code = occupation?.match(/(\d{6})/)?.[1];
+  const rec = (visaTrends as { occupation_trends: Array<{ anzsco_code: string; estimates: Array<{ subclass: string; last_invited_point?: number; estimated_points: number }> }> }).occupation_trends.find((r) => r.anzsco_code === code);
+  const e = rec?.estimates.find((x) => x.subclass === subclass);
+  return e ? (e.last_invited_point ?? e.estimated_points) : undefined;
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -768,6 +1030,12 @@ async function main() {
       }
     }
   }
+
+  // One score and one ranking (LLM stubbed with hostile output)
+  await runPathwayChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
 
   // Points Booster Roadmap / Points Improvement Tips (LLM stubbed with hostile output)
   await runPointsActionChecks(GET, rows, outDir, (m) => {

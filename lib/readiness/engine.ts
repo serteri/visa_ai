@@ -75,7 +75,9 @@ import enTranslations from "@/public/locales/en.json";
 import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
-import { generatePremiumSections } from "@/src/lib/readiness/report-generator";
+import { generatePremiumSections, getTrendBenchmarks } from "@/src/lib/readiness/report-generator";
+import { blockedLabel, computePathwayScores, type PathwayScoreSet } from "@/lib/readiness/pathway-scores";
+import { orderBySkilledRanking, rankPathways, type PathwayRanking } from "@/lib/readiness/pathway-ranking";
 import type { InvitationTrendEstimate } from "@/src/lib/readiness/report-generator";
 import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-checklists";
 import { buildRiskIndicators, buildCanadaRiskIndicators } from "./risk-rules";
@@ -4554,7 +4556,7 @@ function buildPointsBoosterSimulator(
   subclasses: string[],
   pointsEstimate: PointsEstimate | undefined,
   locale: Locale,
-  trendEstimates?: InvitationTrendEstimate[]
+  pathwayScores?: PathwayScoreSet
 ): PointsBoosterSimulator | undefined {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -4822,8 +4824,11 @@ function buildPointsBoosterSimulator(
     // use the highest one that's actually reachable with the available
     // boosters -- an ambitious target the profile can't realistically reach
     // is skipped in favor of the next real target down.
-    const relevantTrendEstimates = [...(trendEstimates ?? [])]
-      .filter((e) => subclasses.includes(e.subclass) && e.estimatedPoints > currentEstimate)
+    // Benchmarks come from the single PathwayScoreSet (never a second trend lookup).
+    const relevantTrendEstimates = (["189", "190", "491"] as const)
+      .map((subclass) => ({ subclass, estimatedPoints: pathwayScores?.[subclass].benchmark ?? null }))
+      .filter((e): e is { subclass: "189" | "190" | "491"; estimatedPoints: number } =>
+        e.estimatedPoints !== null && subclasses.includes(e.subclass) && e.estimatedPoints > currentEstimate)
       .sort((a, b) => b.estimatedPoints - a.estimatedPoints);
 
     for (const target of relevantTrendEstimates) {
@@ -5577,23 +5582,32 @@ function relativePositionScore(position: PathwayStrengthComparison["relativePosi
 
 function buildSignalSnapshot(
   pathwayStrengthComparison: PathwayStrengthComparison[],
-  confidenceExplanation: string
+  confidenceExplanation: string,
+  ranking?: PathwayRanking,
+  locale: Locale = "en"
 ): SignalSnapshot {
-  const sorted = [...pathwayStrengthComparison].sort((a, b) => {
+  const legacyOrder = [...pathwayStrengthComparison].sort((a, b) => {
     const positionDiff =
       relativePositionScore(b.relativePosition) - relativePositionScore(a.relativePosition);
     if (positionDiff !== 0) return positionDiff;
     const frictionRank = { low: 4, medium: 3, high: 2, extreme: 1 };
     return frictionRank[b.friction] - frictionRank[a.friction];
   });
+  // With a ranking, the points-tested pathways follow THE ranking (pathway-ranking.ts); only the
+  // pathways it does not cover (482, 186, ...) keep the older strength ordering, after them.
+  const sorted = orderBySkilledRanking(legacyOrder, (item) => item.subclass, ranking);
+  const rankedEntry = (subclass: string) => ranking?.entries.find((e) => e.subclass === subclass);
 
   const strongestPathway = sorted[0];
+  const strongestEntry = strongestPathway ? rankedEntry(strongestPathway.subclass) : undefined;
   const confidenceLabel: SignalSnapshot["confidenceLabel"] =
-    strongestPathway?.relativePosition === "stronger_signal"
-      ? "stronger"
-      : strongestPathway?.relativePosition === "moderate_signal"
-        ? "moderate"
-        : "limited";
+    strongestEntry?.fit === "blocked"
+      ? "limited"
+      : strongestPathway?.relativePosition === "stronger_signal"
+        ? "stronger"
+        : strongestPathway?.relativePosition === "moderate_signal"
+          ? "moderate"
+          : "limited";
 
   // Strip any existing "(subclass N)" or "(N)" suffix from visaName before
   // appending the subclass code, to avoid duplication (e.g. 186's VISA_NAMES
@@ -5601,7 +5615,10 @@ function buildSignalSnapshot(
   // produce "... (subclass 186) (186)").
   const formatVisaLabel = (name: string, sub: string): string => {
     const stripped = name.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "");
-    return `${stripped} (${sub})`;
+    const entry = rankedEntry(sub);
+    // A blocked pathway carries the SAME label as in every other section.
+    const blocked = entry?.fit === "blocked" && entry.blockReason ? ` — ${blockedLabel(entry.blockReason, locale)}` : "";
+    return `${stripped} (${sub})${blocked}`;
   };
 
   return {
@@ -6743,6 +6760,23 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     pointsEstimate,
     locale
   );
+  // THE per-pathway score set and THE ranking (see pathway-scores.ts / pathway-ranking.ts):
+  // every section below and in the wrapper engine reads these, none recomputes a score or a gap.
+  const pathwayScores: PathwayScoreSet | undefined =
+    pointsEstimate?.estimatedPoints !== undefined
+      ? computePathwayScores({
+          estimatedPoints: pointsEstimate.estimatedPoints,
+          benchmarks: getTrendBenchmarks(input.occupation),
+          eoiBlockReason: assessmentState.eoiIneligibilityReason ?? null,
+          occupationEligibleSubclasses:
+            assessmentState.occupationEligibility === "eligible"
+              ? getEligibleSkilledSubclasses(input.occupation)
+              : assessmentState.occupationEligibility === "ineligible"
+                ? []
+                : null,
+        })
+      : undefined;
+  const pathwayRanking = pathwayScores ? rankPathways(pathwayScores) : undefined;
   const executiveSummary = buildExecutiveSummary(
     input,
     pathwayComparison,
@@ -6781,7 +6815,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     detectedSubclasses,
     pointsEstimate,
     locale,
-    generatedPremiumSections.historicalInvitationTrends.estimates
+    pathwayScores
   );
   const financialRoadmap = buildFinancialRoadmap(
     detectedSubclasses,
@@ -6809,7 +6843,9 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
   );
   const signalSnapshot = buildSignalSnapshot(
     pathwayStrengthComparison,
-    confidenceExplanation
+    confidenceExplanation,
+    pathwayRanking,
+    locale
   );
   const primaryLimitingFactor = buildPrimaryLimitingFactor(
     input,
@@ -6875,6 +6911,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     keyVisaRequirements,
     factorsAffectingPathways,
     pointsEstimate,
+    pathwayScores,
+    pathwayRanking,
     occupationIndication,
     riskIndicators,
     documentChecklist,

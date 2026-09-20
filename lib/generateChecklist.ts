@@ -1,4 +1,6 @@
 import occupationsData from "@/src/data/occupations.json";
+import { blockedLabel } from "@/lib/readiness/pathway-scores";
+import type { PathwayRanking } from "@/lib/readiness/pathway-ranking";
 import type {
   AssessmentState,
   ChecklistItem,
@@ -15,8 +17,26 @@ const GSM_SUBCLASSES = ["189", "190", "491"];
 function getGsmBlockReason(
   pathwayComparison: PathwayComparison[],
   assessmentState: AssessmentState,
-  locale: Locale
+  locale: Locale,
+  ranking?: PathwayRanking
 ): string | undefined {
+  // With the single ranking (pathway-ranking.ts) the block is stated once, with the same label and
+  // in the same order as the Visa Viability Ranking and the Signal Snapshot.
+  const blockedEntries = ranking?.entries.filter((e) => e.fit === "blocked" && e.blockReason) ?? [];
+  if (ranking && blockedEntries.length > 0) {
+    const shared = ranking.commonBlockReason;
+    const list = blockedEntries
+      .map((e) => (shared ? e.subclass : `${e.subclass} (${blockedLabel(e.blockReason!, locale)})`))
+      .join(", ");
+    const head = shared ? blockedLabel(shared, locale) : t(locale, "Blocked", "Engelli", "受阻");
+    return t(
+      locale,
+      `${head} — pathways in ranking order: ${list}. See the Visa Viability Ranking section.`,
+      `${head} — sıralama düzeninde yollar: ${list}. Vize Uygulanabilirlik Sıralaması bölümüne bakın.`,
+      `${head} —— 按排序顺序的路径：${list}。详见"签证可行性排序"部分。`
+    );
+  }
+
   const ineligiblePathway = pathwayComparison.find(
     (p) => GSM_SUBCLASSES.includes(p.subclass) && p.relevance === "ineligible"
   );
@@ -115,10 +135,11 @@ export function generateChecklist(args: {
   assessmentState: AssessmentState;
   stateNominationTracker?: StateNominationTracker;
   occupationAuthority?: string;
+  pathwayRanking?: PathwayRanking;
 }): LodgementReadyChecklist {
   const { input, pathwayComparison, assessmentState, stateNominationTracker } = args;
   const items: ChecklistItem[] = [];
-  const gsmBlockReason = getGsmBlockReason(pathwayComparison, assessmentState, input.locale);
+  const gsmBlockReason = getGsmBlockReason(pathwayComparison, assessmentState, input.locale, args.pathwayRanking);
   const englishBand = parseEnglishBand(input.englishLevel);
 
   if (englishBand < 1) {
@@ -173,7 +194,10 @@ export function generateChecklist(args: {
       detail: gsmBlockReason,
     });
   } else {
-    const topState = stateNominationTracker?.topRecommendedStates?.[0];
+    // A state is only suggested when the ranking marks a state-nominated pathway recommendable; the tracker's
+    // top states are already limited to states whose program is open to this applicant.
+    const stateRecommendable = !args.pathwayRanking || args.pathwayRanking.recommendable.some((s) => s === "190" || s === "491");
+    const topState = stateRecommendable ? stateNominationTracker?.topRecommendedStates?.[0] : undefined;
     if (topState) {
       items.push({
         id: `eoi-${topState.code.toLowerCase()}`,

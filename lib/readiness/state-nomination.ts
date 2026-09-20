@@ -118,14 +118,6 @@ function maxExperienceYears(input: ReadinessInput): number {
   return Math.max(input.offshoreExperienceYears ?? 0, input.onshoreExperienceYears ?? 0);
 }
 
-function parsePointsEstimate(mainGoal?: string): number | undefined {
-  if (!mainGoal) return undefined;
-  const match = mainGoal.match(/\b(6[5-9]|[7-9]\d|1\d\d)\b/);
-  if (!match) return undefined;
-  const value = Number(match[1]);
-  return Number.isFinite(value) ? value : undefined;
-}
-
 function englishBand(level?: string): 0 | 1 | 2 {
   const normalized = normalize(level);
   if (!normalized) return 0;
@@ -447,7 +439,9 @@ export function calculateStateNominationTracker(
   const offshore = isOffshore(input.currentCountry);
   const experienceYears = maxExperienceYears(input);
   const regionalWilling = Boolean(input.regionalWilling);
-  const pointsEstimate = parsePointsEstimate(input.mainGoal);
+  // The engine's own estimate (assessmentState.estimatedPoints) -- previously a number regex-parsed out of the
+  // free-text main goal, which matched the subclass numbers ("189, 190 or 491") instead of any score.
+  const pointsEstimate = assessmentState.estimatedPoints;
   const englishScore = englishBand(input.englishLevel);
 
   const states = STATE_ROWS.map((row): StateNominationState => {
@@ -579,6 +573,14 @@ export function calculateStateNominationTracker(
 
     const matchLevel: StateMatchLevel = score >= 70 ? "high" : score >= 45 ? "medium" : "low";
 
+    // Open = the program is not closed/suspended AND the on/offshore requirement is met by this
+    // applicant. Only open states may be recommended anywhere in the report (incl. the LLM step).
+    const isOpen =
+      !isClosedStatus(effectiveStatus) &&
+      !isClosedStatus(displayStatus) &&
+      !(isOnshoreOnlyStatus(displayStatus) && offshore) &&
+      !(isOffshoreOnlyStatus(displayStatus) && !offshore);
+
     // buildSummary/buildRequirements read row.status for their copy -- pass
     // the effective (rule-overridden) status through so the PDF's prose
     // matches the score/badge above instead of the raw JSON estimate.
@@ -601,6 +603,7 @@ export function calculateStateNominationTracker(
       name: row.name,
       status: displayStatus,
       matchLevel,
+      isOpen,
       score,
       summary: buildSummary({
         locale: input.locale,
@@ -631,7 +634,7 @@ export function calculateStateNominationTracker(
 
   return {
     states,
-    topRecommendedStates: states.filter((item) => item.matchLevel !== "low").slice(0, 2),
+    topRecommendedStates: states.filter((item) => item.matchLevel !== "low" && item.isOpen).slice(0, 2),
     eligibilityBlocked: false,
     note: t(
       input.locale,

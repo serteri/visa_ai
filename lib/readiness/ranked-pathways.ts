@@ -6,9 +6,12 @@ import type {
   PathwayComparison,
   QualitativeFitTier,
   RankedPathway,
+  RankedPathwayRecommendation,
   ReadinessReport,
 } from "./types";
 import { isPartnerPathwaySelected } from "./engine";
+import { describePathwayScore } from "./pathway-scores";
+import type { PathwayFit } from "./pathway-ranking";
 
 type RankedPathwayInput = {
   age?: string;
@@ -437,6 +440,68 @@ function buildGateBasedRankedPathways(report: ReadinessReport, locale: Locale): 
   }));
 }
 
+const FIT_TO_TIER: Record<Exclude<PathwayFit, "blocked">, QualitativeFitTier> = {
+  potential_fit: "Potential fit",
+  unclear_fit: "Unclear fit",
+  unlikely_fit: "Unlikely fit",
+};
+
+/**
+ * AU 189/190/491 rows, derived ONLY from report.pathwayRanking (pathway-ranking.ts): the order, the fit
+ * label and the score sentence come from there. A blocked pathway is always shown as "Blocked" with the
+ * same label, in the same order, as every other section.
+ */
+function buildAuRankedFromRanking(report: ReadinessReport, locale: Locale): RankedPathway[] {
+  const ranking = report.pathwayRanking!;
+  const numeric = report.assessmentState.canShowNumericRanking;
+
+  // Legacy display percentages (only for unblocked pathways, only when a number may be shown): the
+  // same figures as before, but assigned in RANKING order so the percentage can never contradict it.
+  let percentages: number[] = [];
+  if (numeric) {
+    const pointsDelta = Math.max(-10, Math.min(30, ranking.entries[0].score.baseScore - 65));
+    const conf = (s: "189" | "190" | "491") =>
+      clampPercentage(confidenceToBaseScore(report.pathwayComparison.find((p) => p.subclass === s)?.confidenceLevel) + pointsDelta);
+    percentages = ranking.entries.map((e) => conf(e.subclass)).sort((a, b) => b - a);
+  }
+
+  let firstRecommendable = true;
+  let secondRecommendable = false;
+  return ranking.entries.map((entry, index): RankedPathway => {
+    const base: Omit<RankedPathway, "recommendationTag"> = {
+      subclass: entry.subclass,
+      visaLabel: getLocalizedPathwayLabel(entry.subclass, locale, `${entry.subclass} Visa`),
+    };
+    const note = describePathwayScore(entry.score, locale);
+    if (entry.fit === "blocked" || !numeric) {
+      return {
+        ...base,
+        qualitativeTier: entry.fit === "blocked" ? "Blocked" : FIT_TO_TIER[entry.fit],
+        blockReason: entry.blockReason ?? undefined,
+        isPreliminaryOnly: true,
+        preliminaryNote: note,
+        recommendationTag: "🔍 Preliminary Signal Only",
+      };
+    }
+    let tag: RankedPathwayRecommendation = "⚠️ High Risk / Low Probability";
+    if (entry.recommendable && firstRecommendable) {
+      tag = "🌟 Highly Recommended Pathway";
+      firstRecommendable = false;
+      secondRecommendable = true;
+    } else if (entry.recommendable && secondRecommendable) {
+      tag = "⚖️ Alternative Option";
+      secondRecommendable = false;
+    }
+    return {
+      ...base,
+      matchPercentage: percentages[index],
+      pointsSignal: entry.score.baseScore,
+      preliminaryNote: note,
+      recommendationTag: tag,
+    };
+  });
+}
+
 export function calculateRankedPathways(
   report: ReadinessReport,
   input: RankedPathwayInput
@@ -456,87 +521,11 @@ export function calculateRankedPathways(
     ["189", "190", "491"].includes(subclass)
   );
 
-  if (!report.assessmentState.canShowNumericRanking || !skilledDetected) {
-    return [...calculateQualitativeRankedPathways(report, locale), ...gateBasedPathways];
+  // AU with a score set: the single ranking decides order, fit and label.
+  if (report.pathwayRanking && skilledDetected) {
+    return [...buildAuRankedFromRanking(report, locale), ...gateBasedPathways];
   }
 
-  const pointsEstimate =
-    report.pointsEstimate?.estimatedPoints ??
-    report.pointsBoosterSimulator?.currentEstimate ??
-    65;
-  // pointsSignal is rendered under the "Estimated Base Points" label in the
-  // PDF -- it must always equal the SAME base figure shown in the Points
-  // Breakdown table, for every pathway. Read from assessmentState.pathwayPoints
-  // (single source of truth, see assessment-state.ts) rather than deriving a
-  // bonus-inflated number here that would silently diverge from that table.
-  const basePointsSignal = report.assessmentState.pathwayPoints?.["189"]?.base ?? pointsEstimate;
-
-  const getPathwayConfidence = (subclass: "189" | "190" | "491") =>
-    report.pathwayComparison.find((pathway) => pathway.subclass === subclass)?.confidenceLevel;
-
-  const scoreFromSignals = (subclass: "189" | "190" | "491", subclassBias = 0): number => {
-    const confidenceBase = confidenceToBaseScore(getPathwayConfidence(subclass));
-    const pointsDelta = Math.max(-10, Math.min(30, pointsEstimate - 65));
-    return clampPercentage(confidenceBase + pointsDelta + subclassBias);
-  };
-
-  let score189 = scoreFromSignals("189", 0);
-  let score190 = scoreFromSignals("190", 3);
-  let score491 = scoreFromSignals("491", 6);
-
-  const age = parseAgeNumber(input.age);
-  if (typeof age === "number" && age > 39) {
-    score189 = Math.min(score189, 15);
-  }
-
-  if (isLikelyOffshore(input.currentCountry)) {
-    score190 = clampPercentage(score190 - 15);
-  }
-
-  const baselineCompetitive = Math.max(score189, score190);
-  score491 = clampPercentage(Math.max(score491 + 8, baselineCompetitive * 1.2));
-
-  const raw: Array<Omit<RankedPathway, "recommendationTag">> = [
-    {
-      subclass: "189",
-      visaLabel: getLocalizedPathwayLabel("189", input.locale ?? "en", "189 Visa"),
-      matchPercentage: score189,
-      pointsSignal: basePointsSignal,
-    },
-    {
-      subclass: "190",
-      visaLabel: getLocalizedPathwayLabel("190", input.locale ?? "en", "190 Visa"),
-      matchPercentage: score190,
-      pointsSignal: basePointsSignal,
-    },
-    {
-      subclass: "491",
-      visaLabel: getLocalizedPathwayLabel("491", input.locale ?? "en", "491 Visa"),
-      matchPercentage: score491,
-      pointsSignal: basePointsSignal,
-    },
-  ];
-
-  // canShowNumericRanking only guarantees enough data exists to compute a
-  // number -- it does NOT mean the applicant can actually lodge an EOI (e.g.
-  // skills assessment can still be missing). Never tag a pathway "Highly
-  // Recommended" / imply the applicant should proceed while EOI lodgement
-  // itself is blocked; downgrade to the same neutral tag used for low scores
-  // so this section can't contradict a blocked EOI status shown elsewhere.
-  const eoiBlocked = !report.assessmentState.isEoiEligible;
-
-  const sorted = [...raw].sort((a, b) => b.matchPercentage! - a.matchPercentage!);
-  const numericRanked: RankedPathway[] = sorted.map((item, index) => ({
-    ...item,
-    recommendationTag:
-      eoiBlocked
-        ? "⚠️ High Risk / Low Probability"
-        : index === 0
-          ? "🌟 Highly Recommended Pathway"
-          : index === 1
-            ? "⚖️ Alternative Option"
-            : "⚠️ High Risk / Low Probability",
-  }));
-
-  return [...numericRanked, ...gateBasedPathways];
+  // No score set (no estimate could be computed): the qualitative fallback is the only honest output.
+  return [...calculateQualitativeRankedPathways(report, locale), ...gateBasedPathways];
 }

@@ -1,3 +1,5 @@
+import type { PathwayBlockReason, PathwayScoreSet } from "./pathway-scores";
+import type { PathwayRanking } from "./pathway-ranking";
 import type { PremiumStrategyResult } from "@/lib/ai/strategy-schema";
 
 export type Locale = "en" | "tr" | "zh-Hans";
@@ -396,7 +398,7 @@ export type RankedPathwayRecommendation =
   | "🔍 Preliminary Signal Only";
 
 /** Shown instead of a fabricated %/points figure when assessmentState.canShowNumericRanking is false. */
-export type QualitativeFitTier = "Potential fit" | "Unclear fit" | "Unlikely fit";
+export type QualitativeFitTier = "Potential fit" | "Unclear fit" | "Unlikely fit" | "Blocked";
 
 export type RankedPathway = {
   subclass: "189" | "190" | "491" | "482" | "485" | "500" | "186" | "CEC" | "FSW" | "FSTP" | "PNP" | "AIP" | "FAMILY_SPONSORSHIP";
@@ -407,6 +409,8 @@ export type RankedPathway = {
   pointsSignal?: number;
   /** Populated instead of matchPercentage/pointsSignal when data is insufficient for a real points calculation. */
   qualitativeTier?: QualitativeFitTier;
+  /** Set with qualitativeTier "Blocked": why this pathway is blocked (see pathway-scores.ts blockedLabel). */
+  blockReason?: PathwayBlockReason;
   /** True when matchPercentage/pointsSignal were withheld because dataCompletenessLevel is "partial" or "minimal". */
   isPreliminaryOnly?: boolean;
   /** "Preliminary signal only — points cannot be calculated until [missing fields] are provided." Set when isPreliminaryOnly is true. */
@@ -591,6 +595,8 @@ export type StateNominationState = {
   name: string;
   status: StateNominationStatus;
   matchLevel: StateMatchLevel;
+  /** The state's program is open to THIS applicant (status not closed/suspended, and the on/offshore requirement is met). Only open states may be recommended. */
+  isOpen?: boolean;
   score: number;
   summary: string;
   requirements: string[];
@@ -780,6 +786,10 @@ export type ReadinessReport = {
   executiveSummary: string[];
   detectedSubclasses?: string[];
   rankedPathways?: RankedPathway[];
+  /** AU: the single per-pathway score set every section reads (pathway-scores.ts). */
+  pathwayScores?: PathwayScoreSet;
+  /** AU: the single ranking every section reads (pathway-ranking.ts). */
+  pathwayRanking?: PathwayRanking;
   stateNominationTracker?: StateNominationTracker;
   lodgementReadyChecklist?: LodgementReadyChecklist;
   signalSnapshot: SignalSnapshot;

@@ -6,7 +6,12 @@ import type { RetrievedVisaContext } from "@/lib/ai/retrieve-visa-context";
 import type { RetrievedStateContext } from "@/lib/ai/retrieve-state-context";
 import { premiumStrategySchema, type PremiumStrategyResult } from "@/lib/ai/strategy-schema";
 import { textMatchesBlockedLanguage } from "@/lib/readiness/report-invariants";
-import type { PointsActionPlan, PointsEstimate } from "@/lib/readiness/types";
+import type { Locale, PointsActionPlan, PointsEstimate } from "@/lib/readiness/types";
+import {
+  deterministicRecommendations,
+  findRecommendationViolations,
+  findScoreViolations,
+} from "@/lib/readiness/pathway-recommendations";
 import {
   assembleBoosterRows,
   findPointsClaimViolations,
@@ -206,7 +211,7 @@ function buildSystemPrompt(locale: string, country: "AU" | "CA"): string {
       : "For candidates blocked by a hard gate (age 45 or older, missing Skills Assessment, or no valid/current English test), do not present the blocked pathway (189/190/491) as viable -- instead recommend realistic alternative routes consistent with the deterministic report's own hard-gate findings (e.g. employer sponsorship, retesting English, partner pathways, other visa subclasses). NEVER mention Canadian terminology (CRS, Express Entry, CEC/FSW/FSTP, NOC, IRCC, ECA) in an Australian report.",
     isCA
       ? ""
-      : "POINTS ACTION RULE: 'deterministicReport.pointsEstimate.actionPlan.actions' is the COMPLETE and FINAL list of actions that can still raise this applicant's score, with the engine's exact pointsGained and difficulty. pointsBoosterStrategy must contain one entry per listed action and nothing else: set actionId to the action's id, pointsGained and difficulty to the engine's values, and write ONLY the 'reason' and 'difficultyExplanation' wording yourself. Never add, remove, rename or re-score an action, and never mention a points value or a scoring factor (for example English, education, partner, work experience) that is not in that list -- factors absent from the list are already at their maximum or cannot be improved. A Skills Assessment is not a points action; it is never a pointsBoosterStrategy entry. Do not put point values in nextSteps.",
+      : "POINTS ACTION RULE: 'deterministicReport.pointsEstimate.actionPlan.actions' is the COMPLETE and FINAL list of actions that can still raise this applicant's score, with the engine's exact pointsGained and difficulty. pointsBoosterStrategy must contain one entry per listed action and nothing else: set actionId to the action's id, pointsGained and difficulty to the engine's values, and write ONLY the 'reason' and 'difficultyExplanation' wording yourself. Never add, remove, rename or re-score an action, and never mention a points value or a scoring factor (for example English, education, partner, work experience) that is not in that list -- factors absent from the list are already at their maximum or cannot be improved. A Skills Assessment is not a points action; it is never a pointsBoosterStrategy entry. Do not put point values in nextSteps. RECOMMENDATION RULE: topRecommendedPathways may only contain subclasses listed in 'deterministicReport.pathwayRanking.recommendable', in that exact order; for subclass 190 or 491 the 'state' must be a state in 'deterministicReport.stateNominationTracker.states' whose isOpen is true. Every score, gap or benchmark you state must equal 'deterministicReport.pathwayScores' (baseScore is the applicant's CURRENT score; scoreIfNominated is conditional and must always be described as only applying if the nomination is secured). If 'recommendable' is empty every pathway is blocked: return an empty topRecommendedPathways array, do not praise any pathway as viable, and say plainly that progress is blocked and why.",
     `CRITICAL LANGUAGE RULE: the user's requested language code is '${locale}'. Every piece of text you return in the JSON output (executiveSummary, reason, nextSteps, action, timelineEstimate -- all of it) MUST be written entirely in '${locale}'. Do not mix languages and do not default to English unless '${locale}' is 'en'.`,
   ]
     .filter(Boolean)
@@ -341,11 +346,27 @@ async function generatePremiumStrategyInternal(
     blocked: isEoiEligible ? [] : findBlockedLanguageViolations(r, country),
     country: findCountryMismatchViolations(r, country),
     points: plan ? findPointsPlanViolations(r, plan, estimate) : [],
+    recs: plan ? findRecommendationViolations(r, deterministicReport) : [],
   });
-  const done = (r: PremiumStrategyResult, useLlm: boolean) => (plan ? finalizeAuPoints(r, plan, estimate, useLlm) : r);
+  const clean = (v: ReturnType<typeof check>) => v.blocked.length === 0 && v.country.length === 0 && v.points.length === 0 && v.recs.length === 0;
+  const loc = (locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en") as Locale;
+  const done = (r: PremiumStrategyResult, useLlm: boolean) => {
+    if (!plan) return r;
+    const pointsDone = finalizeAuPoints(r, plan, estimate, useLlm);
+    // Recommendations: the model's list survives only if it passes every check; otherwise the
+    // deterministic list (ranking + open states + the engine's score sentence) replaces it.
+    const recViolations = findRecommendationViolations(pointsDone, deterministicReport);
+    if (recViolations.length === 0) return pointsDone;
+    const badPaths = new Set(recViolations.map((v) => v.path));
+    return {
+      ...pointsDone,
+      topRecommendedPathways: deterministicRecommendations(deterministicReport, loc),
+      executiveSummary: badPaths.has("executiveSummary") ? countryMismatchFallbackText("executiveSummary") : pointsDone.executiveSummary,
+    };
+  };
 
   let violations = check(result);
-  if (violations.blocked.length === 0 && violations.country.length === 0 && violations.points.length === 0) {
+  if (clean(violations)) {
     return done(result, true);
   }
 
@@ -356,7 +377,7 @@ async function generatePremiumStrategyInternal(
   // fixed upstream, so it needs its own (non-log-only) handling.
   console.error(
     "[llm_text_invariant_violation] generatePremiumStrategy: violation(s) on first attempt, retrying with correction",
-    { blockedViolations: violations.blocked, countryViolations: violations.country, pointsViolations: violations.points.map((v) => v.message) }
+    { blockedViolations: violations.blocked, countryViolations: violations.country, pointsViolations: violations.points.map((v) => v.message), recommendationViolations: violations.recs.map((v) => v.message) }
   );
   const correctionParts: string[] = [];
   if (violations.blocked.length > 0) {
@@ -374,11 +395,16 @@ async function generatePremiumStrategyInternal(
       `Your output departed from the engine's points action list (${violations.points.slice(0, 6).map((v) => v.message).join(" | ")}). The ONLY allowed pointsBoosterStrategy entries are these actionIds with these exact values: ${JSON.stringify(plan.actions.map((a) => ({ actionId: a.id, pointsGained: a.gain, difficulty: a.difficulty })))}. Write only 'reason' and 'difficultyExplanation' for them; do not mention any other scoring factor or points value anywhere, including nextSteps.`
     );
   }
+  if (plan && violations.recs.length > 0) {
+    correctionParts.push(
+      `Your recommendations departed from the engine's ranking and data (${violations.recs.slice(0, 5).map((v) => v.message).join(" | ")}). Allowed subclasses, in this order: ${JSON.stringify(deterministicReport.pathwayRanking?.recommendable ?? [])}. Allowed states (open only): ${JSON.stringify((deterministicReport.stateNominationTracker?.states ?? []).filter((s) => s.isOpen === true).map((s) => s.code))}. Use only the scores in deterministicReport.pathwayScores.`
+    );
+  }
   const correctionSystem = `${system} CORRECTION: ${correctionParts.join(" ")} Rewrite your entire response accordingly.`;
   result = await generateFn({ system: correctionSystem, prompt });
 
   violations = check(result);
-  if (violations.blocked.length === 0 && violations.country.length === 0 && violations.points.length === 0) {
+  if (clean(violations)) {
     return done(result, true);
   }
 

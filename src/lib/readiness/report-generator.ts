@@ -375,6 +375,19 @@ function matchTrendByOccupation(occupation?: string): TrendRecord | undefined {
   return TREND_DATA.occupation_trends.find((row) => row.anzsco_code === codeMatch);
 }
 
+/**
+ * The dated benchmark snapshot (src/data/visa-trends.json last_invited_point)
+ * for an occupation -- the ONLY benchmark source pathway-scores.ts uses.
+ * Null when the occupation has no trend row.
+ */
+export function getTrendBenchmarks(occupation?: string): { asOf?: string; values: Partial<Record<"189" | "190" | "491", number>> } | null {
+  const trend = matchTrendByOccupation(occupation);
+  if (!trend) return null;
+  const values: Partial<Record<"189" | "190" | "491", number>> = {};
+  for (const e of trend.estimates) values[e.subclass] = e.last_invited_point ?? e.estimated_points;
+  return { asOf: TREND_DATA.generated_on, values };
+}
+
 function buildRawGanttSteps(
   timeline?: string,
   occupation?: string,
