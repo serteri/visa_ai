@@ -60,9 +60,23 @@ const base: ReadinessInput = {
   sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
 };
 
-const PERSONAS: Array<{ name: string; input: ReadinessInput; partnered: boolean; blocked: boolean }> = [
+const PERSONAS: Array<{ name: string; input: ReadinessInput; partnered: boolean; blocked: boolean; bannerInClientShape?: boolean }> = [
   { name: "se-partnered", input: base, partnered: true, blocked: true },
   { name: "se-single", input: { ...base, sponsorOrFamily: undefined }, partnered: false, blocked: true },
+  {
+    name: "se-long-occupation",
+    input: {
+      ...base,
+      sponsorOrFamily: undefined,
+      occupation:
+        "Chief Visionary Officer of Quantum Blockchain Synergy Innovation Solutions and Cross-Functional Strategic Partnerships Enablement",
+    },
+    partnered: false,
+    blocked: true,
+    // Unmatched occupation: no detected subclass, and the browser download passes no
+    // migrationGoals, so its PDF has no points section (and no banner) at all.
+    bannerInClientShape: false,
+  },
   {
     name: "civil-233211-positive-assessment",
     input: {
@@ -84,15 +98,16 @@ const PERSONAS: Array<{ name: string; input: ReadinessInput; partnered: boolean;
 // Final words of the cover EOI banner's detail sentence (banner is only drawn
 // for blocked profiles). A clipped banner loses these.
 const BANNER_TAIL: Record<Locale, RegExp> = {
-  en: /positive Skills Assessment is required before a visa application can be lodged\./,
-  tr: /bir vize başvurusu sunulmadan önce gereklidir\./,
-  "zh-Hans": /递交签证申请前需要获得正面的技能评估结果。/,
+  en: /A positive Skills Assessment is also required before a visa application can be lodged./,
+  tr: /ayrıca olumlu bir Beceri Değerlendirmesi gereklidir./,
+  "zh-Hans": /此外，提交签证申请前也需要获得正面的技能评估结果。/,
 };
 
 const BANNED: Array<[string, RegExp]> = [
   ["legally required", /legally required/i],
   ["Less than 2 years", /Less than 2 years|2 yıldan az|2 年内/i],
   ["recent rounds", /recent rounds|son turlarda|近期轮次/i],
+  ["duplicated skills-assessment sentence", /confirmed positive, and a positive|olumlu bir Beceri Değerlendirmesi olumlu|积极的技能评估结果获得正面结果/i],
   ["'columns' pointer to a table that does not exist", /partner\/child columns|partner\/çocuk sütun|VAC 表格/i],
 ];
 
@@ -122,28 +137,102 @@ async function extractPdfText(bytes: Uint8Array): Promise<string> {
   return typeof result === "string" ? result : result.text || "";
 }
 
-/** Text items whose box extends past the page's right edge (or starts left of it). */
-async function findOffPageText(bytes: Uint8Array): Promise<string[]> {
+type Rect = { x0: number; y0: number; x1: number; y1: number };
+type LayoutReport = { offPage: string[]; overlaps: string[]; bannerIssues: string[]; bannerCount: number };
+
+// Fill colours of the EOI STATUS banner box (RED_PALETTE.bg / GREEN_PALETTE.bg in pdf-personalized-content.ts).
+const BANNER_FILLS: Array<[number, number, number]> = [
+  [254, 242, 242],
+  [220, 253, 230],
+];
+/** True when a "#rrggbb" fill is (within rounding) one of the banner background colours. */
+function isBannerFill(hex: string): boolean {
+  const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/.exec(hex);
+  if (!m) return false;
+  const rgb = [1, 2, 3].map((i) => parseInt(m[i], 16));
+  return BANNER_FILLS.some((c) => c.every((v, i) => Math.abs(v - rgb[i]) <= 3));
+}
+
+/**
+ * Geometry analysis of the finished PDF, from pdf.js text items (transform
+ * coordinates) and the page operator list (filled rectangles):
+ *   - offPage: text past the page's right edge;
+ *   - overlaps: two text items whose boxes intersect by more than 2pt in BOTH
+ *     axes (text drawn over text);
+ *   - bannerIssues: any text item intersecting an EOI banner box that is not
+ *     the banner's own text. Banner text (title + wrapped detail) all starts
+ *     at the title's x; anything else inside the box was drawn over it.
+ */
+async function analyzeLayout(bytes: Uint8Array): Promise<LayoutReport> {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   // pdf-parse registers its own (older) pdf.js worker on globalThis; drop it so
   // this pdf.js instance loads its matching worker instead of failing the version check.
   delete (globalThis as { pdfjsWorker?: unknown }).pdfjsWorker;
   const doc = await pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true, disableFontFace: true }).promise;
-  const offenders: string[] = [];
+  const out: LayoutReport = { offPage: [], overlaps: [], bannerIssues: [], bannerCount: 0 };
+  const TOL = 2;
+  const { OPS } = pdfjs;
+
   for (let n = 1; n <= doc.numPages; n++) {
     const page = await doc.getPage(n);
     const { width } = page.getViewport({ scale: 1 });
+
+    // Text item boxes (PDF user space: origin bottom-left, baseline at transform[5]).
     const content = await page.getTextContent();
+    const items: Array<{ str: string; box: Rect }> = [];
     for (const item of content.items) {
       if (!("str" in item) || !item.str.trim()) continue;
       const x = item.transform[4];
-      const right = x + item.width;
-      if (right > width - 10 || x < 0) {
-        offenders.push(`p${n}: "${item.str.slice(0, 60)}" (x=${x.toFixed(0)}, right=${right.toFixed(0)}, page=${width.toFixed(0)})`);
+      const y = item.transform[5];
+      const h = item.height || Math.abs(item.transform[3]) || 8;
+      const box = { x0: x, x1: x + item.width, y0: y - 0.2 * h, y1: y + 0.8 * h };
+      items.push({ str: item.str, box });
+      if (box.x1 > width - 10 || x < 0) {
+        out.offPage.push(`p${n}: "${item.str.slice(0, 60)}" (x=${x.toFixed(0)}, right=${box.x1.toFixed(0)}, page=${width.toFixed(0)})`);
+      }
+    }
+
+    // Text over text.
+    for (let i = 0; i < items.length; i++) {
+      for (let j = i + 1; j < items.length; j++) {
+        const a = items[i].box;
+        const b = items[j].box;
+        const ox = Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0);
+        const oy = Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0);
+        if (ox > TOL && oy > TOL) {
+          out.overlaps.push(`p${n}: "${items[i].str.slice(0, 40)}" overlaps "${items[j].str.slice(0, 40)}" (${ox.toFixed(1)}x${oy.toFixed(1)}pt)`);
+        }
+      }
+    }
+
+    // Banner boxes: wide rectangles filled with a banner background colour.
+    const ops = await page.getOperatorList();
+    let fill = "";
+    const banners: Rect[] = [];
+    ops.fnArray.forEach((fn, i) => {
+      const args = ops.argsArray[i];
+      if (fn === OPS.setFillRGBColor) fill = String(args[0]).toLowerCase();
+      else if (fn === OPS.constructPath && args[0] !== OPS.stroke && isBannerFill(fill)) {
+        const mm = args[2] as Record<string, number>;
+        if (mm && mm[2] - mm[0] > 400 && mm[3] - mm[1] > 10) banners.push({ x0: mm[0], y0: mm[1], x1: mm[2], y1: mm[3] });
+      }
+    });
+    for (const box of banners) {
+      const inside = items.filter(
+        (it) => Math.min(it.box.x1, box.x1) - Math.max(it.box.x0, box.x0) > TOL && Math.min(it.box.y1, box.y1) - Math.max(it.box.y0, box.y0) > TOL
+      );
+      const title = inside.find((it) => /^EOI/.test(it.str));
+      // Other alert boxes reuse the red palette; only a box carrying the EOI title is the banner.
+      if (!title) continue;
+      out.bannerCount++;
+      for (const it of inside) {
+        if (Math.abs(it.box.x0 - title.box.x0) > 1.5 || it.box.x1 > box.x1) {
+          out.bannerIssues.push(`p${n}: "${it.str.slice(0, 50)}" drawn on top of the banner box`);
+        }
       }
     }
   }
-  return offenders;
+  return out;
 }
 
 type CaseCtx = { label: string; fail: (msg: string) => void };
@@ -154,7 +243,8 @@ async function checkPdf(
   locale: Locale,
   persona: (typeof PERSONAS)[number],
   report: ReadinessReport,
-  outStem: string
+  outStem: string,
+  expectBanner: boolean
 ) {
   await writeFile(`${outStem}.pdf`, pdfBytes);
   const text = await extractPdfText(pdfBytes);
@@ -165,17 +255,22 @@ async function checkPdf(
     if (re.test(flat) || re.test(squashAll(flat))) ctx.fail(`banned text present: ${name}`);
   }
 
-  // English-test validity: never the stale hardcoded "2 years" (already banned
-  // above); the checklist must state the constant's figure.
-  if (locale === "en" && !new RegExp(`Less than ${ENGLISH_TEST_VALIDITY_YEARS.AU} years old`).test(flat)) {
-    ctx.fail(`English checklist item does not state ${ENGLISH_TEST_VALIDITY_YEARS.AU} years (ENGLISH_TEST_VALIDITY_YEARS.AU)`);
+  // English-test validity: whenever the checklist states one, it must be the
+  // constant's figure (never the stale hardcoded "2 years").
+  for (const m of flat.matchAll(/Test Results \(Less than (\d+) years old\)/g)) {
+    if (Number(m[1]) !== ENGLISH_TEST_VALIDITY_YEARS.AU) {
+      ctx.fail(`English checklist states ${m[1]} years, ENGLISH_TEST_VALIDITY_YEARS.AU is ${ENGLISH_TEST_VALIDITY_YEARS.AU}`);
+    }
   }
 
-  if (persona.blocked) {
-    if (!BANNER_TAIL[locale].test(flat) && !BANNER_TAIL[locale].test(squashAll(flat))) ctx.fail("cover EOI banner sentence missing its final words");
-    const offenders = await findOffPageText(pdfBytes);
-    if (offenders.length > 0) ctx.fail(`text runs past the page edge (clipped): ${offenders.slice(0, 3).join(" | ")}`);
+  if (expectBanner && !BANNER_TAIL[locale].test(flat) && !BANNER_TAIL[locale].test(squashAll(flat))) {
+    ctx.fail("cover EOI banner sentence missing its final words");
   }
+  const layout = await analyzeLayout(pdfBytes);
+  if (layout.offPage.length > 0) ctx.fail(`text runs past the page edge (clipped): ${layout.offPage.slice(0, 3).join(" | ")}`);
+  if (layout.overlaps.length > 0) ctx.fail(`${layout.overlaps.length} text overlap(s): ${layout.overlaps.slice(0, 4).join(" | ")}`);
+  if (layout.bannerIssues.length > 0) ctx.fail(`EOI banner overlap: ${layout.bannerIssues.slice(0, 3).join(" | ")}`);
+  if (expectBanner && layout.bannerCount === 0) ctx.fail("blocked profile but no EOI banner box found in the PDF");
 
   const total = computeEstimatedTotalAud(report.financialRoadmap);
   if (!total) {
@@ -256,7 +351,7 @@ async function main() {
           ctx.fail(`route returned HTTP ${res.status} / ${res.headers.get("content-type")}`);
         } else {
           const bytes = new Uint8Array(await res.arrayBuffer());
-          await checkPdf(ctx, bytes, locale, persona, JSON.parse(JSON.stringify(report)), path.join(outDir, `route-${persona.name}-${locale}`));
+          await checkPdf(ctx, bytes, locale, persona, JSON.parse(JSON.stringify(report)), path.join(outDir, `route-${persona.name}-${locale}`), persona.blocked);
         }
         if (!caseFailed) console.log("  ✅ ok");
       }
@@ -282,7 +377,7 @@ async function main() {
             isAustralianQualification: false,
           },
         });
-        await checkPdf(ctx, bytes, locale, persona, JSON.parse(JSON.stringify(report)), path.join(outDir, `client-${persona.name}-${locale}`));
+        await checkPdf(ctx, bytes, locale, persona, JSON.parse(JSON.stringify(report)), path.join(outDir, `client-${persona.name}-${locale}`), persona.blocked && persona.bannerInClientShape !== false);
         if (!caseFailed) console.log("  ✅ ok");
       }
     }

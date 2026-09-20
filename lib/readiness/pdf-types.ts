@@ -372,6 +372,8 @@ export interface PDFContext {
   yPosition: number;
   /** Return the current closure y-position (the actual rendering cursor). */
   getCurrentY(): number;
+  /** Moves the real drawing cursor down by `mm`. Blocks that draw at getCurrentY() must advance through this, not by assigning yPosition (a delta-tracked copy). */
+  advanceCursor(mm: number): void;
   /** Number of pages currently in the document (sections may add pages). */
   pageCount: number;
 

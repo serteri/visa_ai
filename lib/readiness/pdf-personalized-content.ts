@@ -1,6 +1,7 @@
 import type { PDFContext } from "./pdf-types";
 import type { Locale } from "./types";
 import { getPersonalizedPointsBreakdown } from "./pdf-content/personalized-points";
+import { skillsAssessmentClaimText } from "./pdf-content/skills-assessment-claim";
 import { getPersonalizedOverview } from "./pdf-content/personalized-overview";
 import { getPersonalizedApplicationGuide } from "./pdf-content/personalized-guide";
 import { getPersonalizedFaq } from "./pdf-content/personalized-faq";
@@ -115,8 +116,6 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     detail: string | null,
     palette: { bg: [number, number, number]; border: [number, number, number]; accent: [number, number, number]; titleColor: [number, number, number]; detailColor: [number, number, number] }
   ): void {
-    ctx.ensurePageSpace(30);
-    const bannerY = ctx.getCurrentY();
     const detailMaxWidth = contentWidth - 16;
 
     setBaseFont();
@@ -127,9 +126,16 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     const detailLineH = 4.2;
     const topPad = 3;
     const bottomPad = 4;
+    const BANNER_GAP = 4;
     const bannerH = detail
       ? topPad + titleH + wrappedDetail.length * detailLineH + bottomPad
       : topPad + titleH + bottomPad;
+
+    // Reserve the FULL box height (+ gap) before drawing: if it does not fit in
+    // the remaining space the banner starts on a new page instead of running
+    // off the bottom, and bannerY is read only after any page break.
+    ctx.ensurePageSpace(bannerH + BANNER_GAP);
+    const bannerY = ctx.getCurrentY();
 
     doc.setFillColor(...palette.bg);
     doc.setDrawColor(...palette.border);
@@ -152,9 +158,10 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       });
     }
 
-    // Advance past exactly the box height just drawn, plus a small gap --
-    // no more fixed 5x addSmallText("", 0) assuming an 18mm box.
-    ctx.yPosition = bannerY + bannerH + 4;
+    // Advance the REAL cursor past the box plus a gap. (Assigning ctx.yPosition
+    // here -- what this used to do -- only wrote the delta-tracked copy, so
+    // the next heading/paragraph was drawn at bannerY, on top of the box.)
+    ctx.advanceCursor(bannerH + BANNER_GAP);
   }
 
   if (showPoints) {
@@ -243,10 +250,10 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
               ? "需要采取行动：创建 Express Entry 档案之前，您需要满足缺失的要求。"
               : "Action Required: You must meet the missing requirement(s) before creating an Express Entry profile.")
         : (t === "tr"
-            ? "Eylem Gerekli: Beceri Değerlendirmeniz olumlu sonuçlanana kadar bu raporda meslekle ilgili puanlar sayılmaz ve olumlu bir Beceri Değerlendirmesi, bir vize başvurusu sunulmadan önce gereklidir."
+            ? `Eylem Gerekli: ${skillsAssessmentClaimText("tr")}`
             : t === "zh"
-              ? "需要采取行动：在您的技能评估获得正面结果之前，本报告不计入与职业相关的积分；递交签证申请前需要获得正面的技能评估结果。"
-              : "Action Required: Skilled-employment points are not counted in this report until your Skills Assessment is confirmed positive, and a positive Skills Assessment is required before a visa application can be lodged.");
+              ? `需要采取行动：${skillsAssessmentClaimText("zh-Hans")}`
+              : `Action Required: ${skillsAssessmentClaimText("en")}`);
       drawEoiBanner(blockedTitle, blockedDetail, RED_PALETTE);
     } else {
       // GREEN: READY
@@ -711,8 +718,20 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
 
     // ── Condition A: EOI is BLOCKED → locked state ─────────────────────
     if (!isEoiEligible) {
+      const lockedDetail = t === "tr"
+        ? "Tahmini analiz şu anda kilitli. Tarihsel uygunluğu analiz etmeden önce EOI engellerini (Yaş veya Beceri Değerlendirmesi) çözmelisiniz."
+        : t === "zh"
+          ? "预测分析当前已锁定。在分析历史可行性之前，您必须先解决EOI障碍（年龄或技能评估）。"
+          : "Predictive insights are currently locked. You must resolve the EOI blockers (Age or Skills Assessment) before analyzing historical viability.";
+      // Wrap the detail to the box width and size the box to it (a single
+      // unwrapped line ran past the box/page edge), then reserve the full
+      // height before drawing so the box never straddles a page break.
+      setBaseFont();
+      doc.setFontSize(7.5);
+      const lockedLines = doc.splitTextToSize(safeText(lockedDetail), contentWidth - 16) as string[];
+      const boxH = 14 + lockedLines.length * 4.2 + 3;
+      ctx.ensurePageSpace(boxH + 4);
       const boxY = ctx.getCurrentY();
-      const boxH = 22;
       doc.setFillColor(250, 250, 250);
       doc.setDrawColor(148, 163, 184);
       doc.setLineWidth(0.8);
@@ -732,19 +751,10 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       setBaseFont();
       doc.setFontSize(7.5);
       doc.setTextColor(100, 116, 139);
-      const lockedDetail = t === "tr"
-        ? "Tahmini analiz şu anda kilitli. Tarihsel uygunluğu analiz etmeden önce EOI engellerini (Yaş veya Beceri Değerlendirmesi) çözmelisiniz."
-        : t === "zh"
-          ? "预测分析当前已锁定。在分析历史可行性之前，您必须先解决EOI障碍（年龄或技能评估）。"
-          : "Predictive insights are currently locked. You must resolve the EOI blockers (Age or Skills Assessment) before analyzing historical viability.";
-      doc.text(safeText(lockedDetail), margin + 8, boxY + 14);
+      lockedLines.forEach((line, i) => doc.text(line, margin + 8, boxY + 14 + i * 4.2));
 
-      // Advance closure yPosition past the 22mm box + gap
-      addSmallText("", 0);
-      addSmallText("", 0);
-      addSmallText("", 0);
-      addSmallText("", 0);
-      addSmallText("", 0);
+      // Advance the REAL cursor past the box plus a gap.
+      ctx.advanceCursor(boxH + 4);
     }
     // ── Condition C: State Nomination (190/491) outlook ────────────────
     else if (viab.stateAllocation) {

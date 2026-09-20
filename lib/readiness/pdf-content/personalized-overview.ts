@@ -1,3 +1,4 @@
+import { skillsAssessmentClaimText } from "./skills-assessment-claim";
 import type { Locale } from "../types";
 import { CURRENT_CSIT } from "../constants";
 
@@ -80,6 +81,7 @@ export function getPersonalizedOverview(
   const hasEnglishEvidence = Boolean(profile.englishLevel && profile.englishLevel.trim().toLowerCase() !== "none");
   const gap = threshold - estimatedPoints;
   const blockingNoun = blockingRequirementNoun(country, locale);
+  const claimText = skillsAssessmentClaimText(locale);
   // AU: skillsAssessmentDone is the specific legal requirement, checked in
   // addition to the points threshold. CA: there is no separate "assessment"
   // step -- isEoiEligible (language-test gate) IS the whole story, so use it
@@ -152,10 +154,10 @@ export function getPersonalizedOverview(
           : `Your estimated score is ${estimatedPoints} points. The minimum threshold for ${targetVisa} is ${threshold} points.`);
 
   const requirementSentence = isTr
-    ? `Potansiyel puanınız ${estimatedPoints}. Ancak beceriye dayalı istihdam puanları, ${blockingNoun} olumlu sonuçlanana kadar bu raporda sayılmaz ve bir vize başvurusu yapılmadan önce olumlu bir beceri değerlendirmesi gereklidir. Öncelikli adımınız, bu gereksinimi karşılamaktır.`
+    ? `Potansiyel puanınız ${estimatedPoints}. ${claimText} Öncelikli adımınız, bu gereksinimi karşılamaktır.`
     : isZh
-      ? `您的潜在积分为${estimatedPoints}。但是，在${blockingNoun}获得正面结果之前，本报告不计入技能就业积分，并且在提交签证申请之前需要获得正面的技能评估结果。您当前的首要任务是满足该要求。`
-      : `Your potential score is ${estimatedPoints}. However, skilled-employment points are not counted in this report until ${blockingNoun} is confirmed positive, and a positive skills assessment is required before a visa application can be lodged. Your immediate priority is meeting this requirement.`;
+      ? `您的潜在积分为${estimatedPoints}。${claimText}您当前的首要任务是满足该要求。`
+      : `Your potential score is ${estimatedPoints}. ${claimText} Your immediate priority is meeting this requirement.`;
 
   const executiveSummary: string[] = isCA
     ? [
@@ -305,10 +307,10 @@ export function getPersonalizedOverview(
               : `${name}, your top priority is closing the ${gap}-point gap. Fastest path: upgrade English to Superior (+20 pts) or obtain ${nominationLabel} nomination.`)
         : !requirementMet
           ? (isTr
-              ? `${name}, potansiyel puanınız yeterli olsa da, beceriye dayalı istihdam puanları ${blockingNoun} olumlu sonuçlanana kadar sayılmaz ve bir vize başvurusu yapılmadan önce olumlu bir beceri değerlendirmesi gereklidir. Öncelikli adımınız bu gereksinimi tamamlamaktır.`
+              ? `${name}, potansiyel puanınız yeterli. ${claimText} Öncelikli adımınız bu gereksinimi tamamlamaktır.`
               : isZh
-                ? `${name}，尽管您的潜在积分已足够，但在${blockingNoun}获得正面结果之前，技能就业积分不计入本报告，并且在提交签证申请之前需要获得正面的技能评估结果。您当前的首要任务是完成该要求。`
-                : `${name}, your potential score meets the threshold, but skilled-employment points are not counted until ${blockingNoun} is confirmed positive, and a positive skills assessment is required before a visa application can be lodged. Your immediate priority is completing this requirement.`)
+                ? `${name}，您的潜在积分已足够。${claimText}您当前的首要任务是完成该要求。`
+                : `${name}, your potential score meets the threshold. ${claimText} Your immediate priority is completing this requirement.`)
           : (isTr
               ? `${name}, profiliniz güçlü! Hemen başvuru sürecine geçebilirsiniz. Belgelerinizi toplamaya başlayın.`
               : isZh

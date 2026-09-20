@@ -1840,7 +1840,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       setBaseFont();
       doc.setFontSize(9);
       doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-      doc.text(safeText(userInputSummary.occupation), margin + 6, chipY + 6);
+      // Clip to the chip width -- a long occupation name used to run past the page edge.
+      doc.text(safeText(clipToWidth(userInputSummary.occupation, contentWidth - 12)), margin + 6, chipY + 6);
       stackY = chipY + 9 + 4;
     }
 
@@ -1874,6 +1875,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
       const pointsText = `${estimatedPoints}`;
       doc.text(pointsText, margin + 2, pointsY);
+      // Measure while the 28pt bold font is active -- measured after the switch to
+      // the 10pt label font it came out ~3x too narrow and the label overlapped the score.
+      const pointsTextWidth = doc.getTextWidth(pointsText);
 
       // Threshold label — baseline-aligned with the score, gap of 4mm
       setBaseFont();
@@ -1884,7 +1888,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         : effectiveLocale === "zh-Hans"
           ? ` / 目标 ${POINTS_THRESHOLD} 分`
           : ` / ${POINTS_THRESHOLD} points threshold`;
-      doc.text(thresholdLabel, margin + 2 + doc.getTextWidth(pointsText) + 4, pointsY);
+      doc.text(thresholdLabel, margin + 2 + pointsTextWidth + 4, pointsY);
 
       // Points status line -- canonical passed/blocked state, never raw
       // `estimatedPoints >= threshold` arithmetic (see eligibility-badge.ts):
@@ -4924,6 +4928,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         const entryY = yPosition;
         const ctx: any = {
           getCurrentY: () => yPosition,
+          // Moves the REAL cursor by an exact number of mm. ctx.yPosition is only
+          // a delta-tracked copy (see the reconcile below), so a block that
+          // draws at getCurrentY() must advance through this, never by assigning
+          // ctx.yPosition -- that never moved the real cursor.
+          advanceCursor: (mm: number) => {
+            yPosition += mm;
+          },
           doc,
           report,
           locale,
