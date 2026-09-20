@@ -74,12 +74,25 @@ export async function createCheckoutSession(
         {
           price_data: {
             currency: "usd",
-            product_data: { name: campaign.name },
+            product_data: {
+              name: campaign.name,
+              // General - Electronically Supplied Services: matches the
+              // digitally-delivered PDF/report products this action sells.
+              tax_code: "txcd_10000000",
+            },
             unit_amount: campaign.price,
+            // campaign.price is the exact amount the customer pays; GST (or
+            // other Stripe Tax-calculated tax) must come out of that amount,
+            // not be added on top.
+            tax_behavior: "inclusive",
           },
           quantity: 1,
         },
       ],
+      // Stripe Tax needs a customer location to calculate GST; this is the
+      // billing address Checkout collects to satisfy that requirement.
+      billing_address_collection: "required",
+      automatic_tax: { enabled: true },
       success_url: successUrl,
       cancel_url: cancelUrl,
       // Key names "campaign"/"agentId" are a fixed contract with

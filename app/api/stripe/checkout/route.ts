@@ -57,6 +57,10 @@ export async function POST(req: NextRequest) {
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: session?.user?.email || undefined,
+      // Stripe Tax needs a customer location to calculate GST; this is the
+      // billing address Checkout collects to satisfy that requirement.
+      billing_address_collection: "required",
+      automatic_tax: { enabled: true },
       success_url: `${baseUrl}/ai-assistant?success=true`,
       cancel_url: `${baseUrl}/pricing?canceled=true`,
       metadata: {

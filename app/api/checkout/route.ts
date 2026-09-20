@@ -114,6 +114,10 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
       customer_email: body.email || undefined,
       client_reference_id: body.userId || body.email || undefined,
+      // Stripe Tax needs a customer location to calculate GST; this is the
+      // billing address Checkout collects to satisfy that requirement.
+      billing_address_collection: "required",
+      automatic_tax: { enabled: true },
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: {
