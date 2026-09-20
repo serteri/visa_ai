@@ -34,7 +34,7 @@ export function TermsGate({
       <label
         className={[
           "flex cursor-pointer items-start gap-2 text-sm transition-colors",
-          termsError ? "text-rose-400" : "text-gray-300",
+          termsError ? "text-rose-400" : "text-slate-700",
         ].join(" ")}
       >
         <input
