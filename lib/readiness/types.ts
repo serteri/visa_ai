@@ -293,6 +293,29 @@ export type FinancialRoadmapItem = {
   estimateType: "official_fee" | "third_party_estimate" | "variable";
   amountLabel: string;
   explanation: string;
+  /**
+   * Machine-readable min/max for this line item, in the report's currency
+   * (AUD/CAD per the report's own `country`). Optional: some rows (e.g.
+   * "Family/dependant information not provided") have no numeric estimate
+   * at all. When present, amountMin === amountMax means an exact figure
+   * rather than a range.
+   *
+   * Added so the personalized FAQ and Application Guide's cost sections can
+   * sum the SAME figures shown here instead of maintaining their own
+   * separately hardcoded "Estimated total" string (Phase 1 report
+   * consistency fix, item D3) -- this is the one place a report-wide total
+   * should be computed from.
+   */
+  amountMin?: number;
+  amountMax?: number;
+  /**
+   * Stable identifier for the handful of line items other report sections
+   * (personalized FAQ, Application Guide) need to find reliably across all
+   * locales -- matching on `category` text would break the moment the
+   * localized label changes. Only tagged where another section actually
+   * needs to reference this row; most items have no `kind`.
+   */
+  kind?: "vac" | "skills_assessment" | "english_test" | "medical" | "police";
 };
 
 export type ProgressionPathway = {
@@ -639,6 +662,17 @@ export type PremiumInvitationTrendSection = {
   occupationCode: string;
   estimates: PremiumInvitationTrendEstimate[];
   note: string;
+  /**
+   * ISO date (from src/data/visa-trends.json's own `generated_on`) the
+   * underlying benchmark data was last curated as of. Set only when the
+   * estimates come from that dated static snapshot (AU) -- CA's estimates
+   * are scenario-based inference with no equivalent snapshot date, so this
+   * stays undefined there. Lets the PDF say "as of <date>" instead of the
+   * unverifiable "real results ... not a projection" claim the snapshot's
+   * own methodology_note directly contradicts (Phase 1 report consistency
+   * fix, item B3).
+   */
+  dataAsOf?: string;
 };
 
 export type PremiumLivingCostSection = {

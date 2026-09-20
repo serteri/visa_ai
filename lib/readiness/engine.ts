@@ -1,4 +1,10 @@
-import { CURRENT_CSIT } from "@/lib/readiness/constants";
+import {
+  CURRENT_CSIT,
+  BASE_VAC_AUD,
+  resolveSecondInstalmentAud,
+  INCOME_THRESHOLD_491_TO_191_AUD,
+  ENGLISH_TEST_VALIDITY_YEARS,
+} from "@/lib/readiness/constants";
 import { buildAssessmentState, buildEmployerSponsorshipSignal, computePathwayPoints, POINTS_THRESHOLD } from "@/lib/readiness/assessment-state";
 import { logReportInvariantViolations } from "@/lib/readiness/report-invariants";
 import {
@@ -133,15 +139,17 @@ function hasSponsorContext(raw?: string): boolean {
 const JULY_2026_CSIT_AUD = CURRENT_CSIT.value;
 const JULY_2026_485_STANDARD_MAX_AGE = 35;
 const JULY_2026_485_EXCEPTION_MAX_AGE = 50;
-const JULY_2026_482_BASE_COST_AUD = 4015;
 // 189 and 190 do NOT share an identical base VAC -- keep them as separate
 // constants (matching the DHA fee schedule) instead of one shared value, so
 // every surface that quotes either figure (GOV_FEES_EN/TR fee table and the
 // Financial Roadmap narrative note) reads from the same single source and
 // can never drift into quoting two different numbers for the same subclass.
-const JULY_2026_189_BASE_COST_AUD = 6135;
-const JULY_2026_190_491_BASE_COST_AUD = 6140;
-const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
+// All read from lib/readiness/constants.ts's BASE_VAC_AUD -- the single
+// source shared with next-steps.ts, the chat system prompt, and the
+// personalized FAQ/guide (Phase 1 report consistency fix).
+const JULY_2026_482_BASE_COST_AUD = BASE_VAC_AUD["482"];
+const JULY_2026_189_BASE_COST_AUD = BASE_VAC_AUD["189"];
+const JULY_2026_190_491_BASE_COST_AUD = BASE_VAC_AUD["491"];
 const SKILLED_MIGRATION_MIN_POINTS = 65;
 
 function parseDeclaredSalaryAud(input: ReadinessInput): number | null {
@@ -4874,6 +4882,9 @@ function buildFinancialRoadmap(
       explanation: isTr
         ? `Resmi başvuru ücreti vize türüne göre değişir ve 1 Temmuz 2026 sonrası güncellenmiştir. 482 temel ücret: AUD ${JULY_2026_482_BASE_COST_AUD.toLocaleString("en-AU")}. 189 temel ücret: AUD ${JULY_2026_189_BASE_COST_AUD.toLocaleString("en-AU")}. 190/491 temel ücret: yaklaşık AUD ${JULY_2026_190_491_BASE_COST_AUD.toLocaleString("en-AU")}. Ücretler dönemsel olarak endekslenebilir; başvuru öncesi güncel tablo doğrulanmalıdır.`
         : `Official visa application charges vary by subclass and were updated for the post-1 July 2026 schedule. Subclass 482 base charge: AUD ${JULY_2026_482_BASE_COST_AUD.toLocaleString("en-AU")}. Subclass 189 base charge: AUD ${JULY_2026_189_BASE_COST_AUD.toLocaleString("en-AU")}. Subclass 190/491 base charge: about AUD ${JULY_2026_190_491_BASE_COST_AUD.toLocaleString("en-AU")}. Charges can be indexed periodically and should be verified before lodgement.`,
+      kind: "vac",
+      amountMin: feeSubclass ? BASE_VAC_AUD[feeSubclass] : undefined,
+      amountMax: feeSubclass ? BASE_VAC_AUD[feeSubclass] : undefined,
     },
     {
       category: isTr ? "İngilizce Dil Testi (IELTS / PTE / OET)" : "English Language Test (IELTS / PTE / OET)",
@@ -4882,8 +4893,11 @@ function buildFinancialRoadmap(
         ? "AUD 385–590 (teste ve lokasyona göre)"
         : "AUD $385–$590 (varies by test and location)",
       explanation: isTr
-        ? "Avustralya göçü için kabul edilen testler şunlardır: IELTS Academic veya General Training (~AUD 385–405), PTE Academic (~AUD 375–395), OET (Occupational English Test, sağlık meslekleri için, ~AUD 587), TOEFL iBT (~AUD 340–390, bazı akışlar için kabul edilir). Competent English için genel eşikler: IELTS her bantta minimum 6.0, PTE her bantta minimum 50. Superior English (IELTS 8.0+) puan tablosunda +20 ek puan sağlar. Sınavlar 2 yıldan uzun süre önce alınmışsa yenilenmesi gerekir."
-        : "Tests accepted for Australian migration include: IELTS Academic or General Training (~AUD $385–$405 per attempt), PTE Academic (~AUD $375–$395), OET (Occupational English Test, used by healthcare occupations, ~AUD $587), and TOEFL iBT (~AUD $340–$390, accepted for some streams). Minimum Competent English thresholds: IELTS 6.0 in all four bands, PTE 50 in all bands. Achieving Superior English (IELTS 8.0+ in all four bands or PTE 79+) unlocks +20 additional points in the Australian points test — a significant investment if retesting is needed. Scores must be no more than 3 years old at time of visa grant.",
+        ? `Avustralya göçü için kabul edilen testler şunlardır: IELTS Academic veya General Training (~AUD 385–405), PTE Academic (~AUD 375–395), OET (Occupational English Test, sağlık meslekleri için, ~AUD 587), TOEFL iBT (~AUD 340–390, bazı akışlar için kabul edilir). Competent English için genel eşikler: IELTS her bantta minimum 6.0, PTE her bantta minimum 50. Superior English (IELTS 8.0+) puan tablosunda +20 ek puan sağlar. Sınavlar ${ENGLISH_TEST_VALIDITY_YEARS.AU} yıldan eski olamaz.`
+        : `Tests accepted for Australian migration include: IELTS Academic or General Training (~AUD $385–$405 per attempt), PTE Academic (~AUD $375–$395), OET (Occupational English Test, used by healthcare occupations, ~AUD $587), and TOEFL iBT (~AUD $340–$390, accepted for some streams). Minimum Competent English thresholds: IELTS 6.0 in all four bands, PTE 50 in all bands. Achieving Superior English (IELTS 8.0+ in all four bands or PTE 79+) unlocks +20 additional points in the Australian points test — a significant investment if retesting is needed. Scores must be no more than ${ENGLISH_TEST_VALIDITY_YEARS.AU} years old at time of visa grant.`,
+      kind: "english_test",
+      amountMin: 385,
+      amountMax: 590,
     },
   ];
 
@@ -4892,6 +4906,17 @@ function buildFinancialRoadmap(
   // unless the user actually provided family/dependant information. Without
   // that, there is nothing to assess — showing the alarming headline and a
   // specific AUD figure regardless was a fabrication, not a real finding.
+  //
+  // 189/190 (AUD 4,885) and 491 (AUD 4,890) do NOT share the same second-
+  // instalment figure (src/data/visa-fees.json's own vac_note text confirms
+  // this) -- resolveSecondInstalmentAud() picks the value(s) that actually
+  // apply to this report's detected subclass(es) instead of one flat number
+  // applied to all three (Phase 1 report consistency fix, item D6).
+  const secondInstalmentValue = resolveSecondInstalmentAud(subclasses);
+  const secondInstalmentLabel =
+    typeof secondInstalmentValue === "number"
+      ? secondInstalmentValue.toLocaleString("en-AU")
+      : `${secondInstalmentValue.min.toLocaleString("en-AU")}–${secondInstalmentValue.max.toLocaleString("en-AU")}`;
   if (!hasFamilyStatusProvided) {
     items.push({
       category: isTr
@@ -4910,17 +4935,17 @@ function buildFinancialRoadmap(
   } else if (hasNoFunctionalEnglishDependants) {
     items.push({
       category: isTr
-        ? `🚨 KRİTİK UYUMLULUK UYARISI: 18+ bağımlılar için olası ikinci taksit ücreti ~AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}`
+        ? `🚨 KRİTİK UYUMLULUK UYARISI: 18+ bağımlılar için olası ikinci taksit ücreti ~AUD ${secondInstalmentLabel}`
         : isZh
-          ? `🚨 关键合规警报：18岁及以上受抚养人可能产生约 AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} 的第二期费用`
-          : `🚨 CRITICAL COMPLIANCE ALERT: Potential second-instalment charge of ~${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} AUD`,
+          ? `🚨 关键合规警报：18岁及以上受抚养人可能产生约 AUD ${secondInstalmentLabel} 的第二期费用`
+          : `🚨 CRITICAL COMPLIANCE ALERT: Potential second-instalment charge of ~${secondInstalmentLabel} AUD`,
       estimateType: "official_fee",
       amountLabel: isTr
-        ? `Bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}`
-        : `About AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant`,
+        ? `Bağımlı başına yaklaşık AUD ${secondInstalmentLabel}`
+        : `About AUD ${secondInstalmentLabel} per dependant`,
       explanation: isTr
-        ? `Seçilen aile durumunda (18+ bağımlılarda Functional English yok), ikinci taksit riski aktif görünüyor: bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")}.`
-        : `Your selected family status indicates no functional English for dependants aged 18+, so the second-instalment risk appears active at about AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant.`,
+        ? `Seçilen aile durumunda (18+ bağımlılarda Functional English yok), ikinci taksit riski aktif görünüyor: bağımlı başına yaklaşık AUD ${secondInstalmentLabel}.`
+        : `Your selected family status indicates no functional English for dependants aged 18+, so the second-instalment risk appears active at about AUD ${secondInstalmentLabel} per dependant.`,
     });
   } else {
     items.push({
@@ -4931,8 +4956,8 @@ function buildFinancialRoadmap(
           : "Second-instalment risk (dependant English status)",
       estimateType: "variable",
       amountLabel: isTr
-        ? `Bağımlı başına yaklaşık AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} (belirtilen aile durumunda görünmüyor)`
-        : `About AUD ${JULY_2026_SECOND_INSTALMENT_AUD.toLocaleString("en-AU")} per dependant (not indicated by your provided family status)`,
+        ? `Bağımlı başına yaklaşık AUD ${secondInstalmentLabel} (belirtilen aile durumunda görünmüyor)`
+        : `About AUD ${secondInstalmentLabel} per dependant (not indicated by your provided family status)`,
       explanation: isTr
         ? "18 yaş ve üzeri bağımlılar Functional English kanıtı sunamazsa kişi başı ikinci taksit ücreti uygulanabilir. Sağladığınız aile durumu bu riski işaret etmiyor, ancak koşullar değişirse yeniden değerlendirilmelidir."
         : "Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant. Your provided family status does not indicate this risk, but it should be reassessed if circumstances change.",
@@ -5013,6 +5038,9 @@ function buildFinancialRoadmap(
         explanation: isTr
           ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
           : `Assessing authority: ${authority.authorityName}. Default pathway: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
+        kind: "skills_assessment",
+        amountMin: primaryFee?.amountAUD,
+        amountMax: primaryFee?.amountAUD,
       });
     } else {
       // Should not be reachable now that generalAuthority (VETASSESS /
@@ -5029,6 +5057,9 @@ function buildFinancialRoadmap(
         explanation: isTr
           ? "Değerlendirme kurumu ANZSCO meslek koduna göre belirlenir: BT/ICT rolleri (ANZSCO Major Group 26) → ACS (AUD 530–665, 6–12 hafta); Mühendislik → Engineers Australia (AUD 735–900, 4–10 hafta); Sağlık meslekleri → AHPRA (AUD 890+, lisans gereklidir); Muhasebe → CPA Australia, CAANZ veya IPA (AUD 600–800); Genel meslekler → VETASSESS (AUD 850, 10–16 hafta). Değerlendirme genellikle noterli belge kopyaları, iş referans mektupları ve resmi transkriptleri kapsar. ACS değerlendirmeleri için, son 8 yıl içinde en az 1 yıl BT ile ilgili iş deneyimi zorunludur. Bazı değerlendirme kurumları tekrar başvuru için indirimli ücret uygular."
           : "The assessing authority is determined by your ANZSCO occupation code: IT/ICT roles (ANZSCO Major Group 26) → ACS (AUD $530–$665, 6–12 weeks); Engineering → Engineers Australia (AUD $735–$900, 4–10 weeks); Healthcare professions → AHPRA (AUD $890+, requires registration); Accounting → CPA Australia, CAANZ, or IPA (AUD $600–$800); General professional and trade occupations → VETASSESS (AUD $850, 10–16 weeks). All assessments require certified copies of qualifications, official transcripts, and detailed employment reference letters specifying duties, dates, and hours worked. ACS requires a minimum of 1 year of relevant IT work experience in the past 8 years. Negative assessment outcomes can be challenged or a re-assessment sought, which incurs additional fees (typically 50–80% of the original charge).",
+        kind: "skills_assessment",
+        amountMin: 530,
+        amountMax: 900,
       });
     }
   }
@@ -5043,6 +5074,9 @@ function buildFinancialRoadmap(
       explanation: isTr
         ? "Her başvurucu, İçişleri Bakanlığı (Department of Home Affairs) tarafından onaylı panel sağlayıcısı Bupa Medical Visa Services aracılığıyla eMedical muayenesi yaptırmalıdır. Çocuklar ve gençler daha düşük ücretle muayene olabilir. Muayene akciğer röntgeni (11 yaş ve üzeri için), kan testi ve genel fizik muayeneyi kapsar. Sonuçlar eMedical sistemi üzerinden elektronik olarak Department of Home Affairs'e iletilir — kağıt rapor gönderimi gerekmez. Geçerlilik süresi 12 aydır. Mevcut TB salgını olan ülkelerden gelenler ek testlerden geçebilir, bu da süreci 6–12 ay uzatabilir."
         : "Every applicant must complete a medical examination through Bupa Medical Visa Services, the panel provider approved by the Department of Home Affairs. Indicative costs: adults AUD $300–$400; children under 15 approximately AUD $150–$250. The examination includes a chest X-ray (for applicants 11+), blood tests, and a general physical assessment. Medical results are electronically transmitted to the Department of Home Affairs via the eMedical system — there is no paper report to submit. Results are valid for 12 months. Applicants from tuberculosis-prevalent countries may require additional chest monitoring, extending the process by 6–12 months.",
+      kind: "medical",
+      amountMin: 300,
+      amountMax: 500,
     },
     {
       category: isTr ? "Polis Belgesi / Karakter Belgeleri" : "Police Clearance Certificates",
@@ -5050,6 +5084,9 @@ function buildFinancialRoadmap(
       amountLabel: isTr
         ? "AUD 42–200+ (ülkeye göre, kişi başı)"
         : "AUD $42–$200+ (per person, varies by country)",
+      kind: "police",
+      amountMin: 42,
+      amountMax: 200,
       explanation: isTr
         ? "18 yaş ve üzeri her başvurucu, son 12 ayda ikamet ettiği ve 12 ayı aşan süreyle yaşadığı her ülke için polis belgesi sunmalıdır. Avustralya Federal Polis (AFP) belgesi: AUD 42 (online). Her ülkenin kendi belgesi, süreç ve maliyeti vardır; bazı ülkelerde noterlendirme ve resmi çeviri gerekebilir. Bazı ülkeler için belgeler haftalar içinde hazırlanırken, diğerleri için 3–6 ay sürebilir. Mümkün olduğunca erken başlatılması önerilir."
         : "Every applicant aged 18+ must provide police clearance certificates for every country where they have lived for 12 months or more in the past 10 years (for skilled visas). The Australian Federal Police (AFP) check costs AUD $42 and is processed online within 15 business days. International certificates vary widely: United Kingdom (ACPO check, ~GBP 25), United States (FBI Identity History, ~USD 18 + fingerprint costs), India (state-level, ~INR 500–2,000 plus notarisation), China (~CNY 80–100 via local public security bureau). Non-English certificates must be translated by a NAATI-certified translator. Plan for 4–12 weeks lead time for overseas police clearances — start these before lodging your EOI.",
@@ -5182,15 +5219,15 @@ function buildProgressionPathways(
       label: isTr ? "Bölgesel geçiş bağlamı" : isZh ? "偏远地区过渡路径" : "Regional progression context",
       explanation: isTr
         ? gap > 0
-          ? `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve vergilendirilebilir gelir şartını (yıllık 53.900 AUD; bkz. Tahmini Maliyet Yol Haritası) karşılamanız gerekir. Mevcut ${gap} puanlık açığınız göz önüne olduğunda, 491 vizesi üzerinden +15 puanlık bölgesel adaylık desteği almak, bu açığı kapatarak PR'a giden yolda son derece gerçekçi ve gerekli bir adımdır.`
-          : `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve vergilendirilebilir gelir şartını (yıllık 53.900 AUD; bkz. Tahmini Maliyet Yol Haritası) karşılamanız gerekir.`
+          ? `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve vergilendirilebilir gelir şartını (yıllık ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("tr-TR")} AUD; bkz. Tahmini Maliyet Yol Haritası) karşılamanız gerekir. Mevcut ${gap} puanlık açığınız göz önüne olduğunda, 491 vizesi üzerinden +15 puanlık bölgesel adaylık desteği almak, bu açığı kapatarak PR'a giden yolda son derece gerçekçi ve gerekli bir adımdır.`
+          : `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve vergilendirilebilir gelir şartını (yıllık ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("tr-TR")} AUD; bkz. Tahmini Maliyet Yol Haritası) karşılamanız gerekir.`
         : isZh
           ? gap > 0
-            ? `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并满足应纳税收入要求（目前为每年 53,900 澳元；请参见财务路线图部分）。鉴于您目前有 ${gap} 分的分数差距，通过 491 获得偏远地区州担保的 +15 分加分，是通往 191 永久居民签证的一条非常务实且必不可少的捷径。`
-            : `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并满足应纳税收入要求（目前为每年 53,900 澳元；请参见财务路线图部分），方可递交 191 永久居民签证。`
+            ? `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并满足应纳税收入要求（目前为每年 ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("en-AU")} 澳元；请参见财务路线图部分）。鉴于您目前有 ${gap} 分的分数差距，通过 491 获得偏远地区州担保的 +15 分加分，是通往 191 永久居民签证的一条非常务实且必不可少的捷径。`
+            : `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并满足应纳税收入要求（目前为每年 ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("en-AU")} 澳元；请参见财务路线图部分），方可递交 191 永久居民签证。`
           : gap > 0
-            ? `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and meet taxable income requirements (currently AUD 53,900/year; refer to the Financial Roadmap). Given your current points gap of ${gap} points, securing the +15 point regional nomination via subclass 491 is a highly realistic and essential stepping stone to permanent residency (subclass 191).`
-            : `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and meet taxable income requirements (currently AUD 53,900/year; refer to the Financial Roadmap) to progress to permanent residency (subclass 191).`,
+            ? `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and meet taxable income requirements (currently AUD ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("en-AU")}/year; refer to the Financial Roadmap). Given your current points gap of ${gap} points, securing the +15 point regional nomination via subclass 491 is a highly realistic and essential stepping stone to permanent residency (subclass 191).`
+            : `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and meet taxable income requirements (currently AUD ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("en-AU")}/year; refer to the Financial Roadmap) to progress to permanent residency (subclass 191).`,
     });
   }
 
@@ -5680,7 +5717,7 @@ function buildCanadaFinancialRoadmap(
       estimateType: "third_party_estimate",
       amountLabel: t("CAD $300–$370 per attempt", "CAD 300–370 (deneme başına)", "每次CAD $300–$370"),
       explanation: t(
-        "IELTS General Training and CELPIP-General are the two IRCC-accepted English tests. Scores must be valid (within 2 years). CLB 9+ in all four skills maximises CRS language points (~124 points for primary applicant).",
+        `IELTS General Training and CELPIP-General are the two IRCC-accepted English tests. Scores must be valid (within ${ENGLISH_TEST_VALIDITY_YEARS.CA} years). CLB 9+ in all four skills maximises CRS language points (~124 points for primary applicant).`,
         "IELTS Genel Eğitim ve CELPIP-General, IRCC tarafından kabul edilen iki İngilizce testidir. CLB 9+ tüm dört beceride CRS dil puanını maksimize eder (~124 puan).",
         "IELTS普通培训和CELPIP-General是IRCC认可的两项英语考试。四项技能均达CLB 9+可最大化CRS语言分（主申请人约124分）。"
       ),

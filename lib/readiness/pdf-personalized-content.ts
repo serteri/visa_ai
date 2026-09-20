@@ -234,10 +234,10 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
               ? "需要采取行动：创建 Express Entry 档案之前，您需要满足缺失的要求。"
               : "Action Required: You must meet the missing requirement(s) before creating an Express Entry profile.")
         : (t === "tr"
-            ? "Eylem Gerekli: Bir EOI sunmadan önce mesleğiniz için olumlu bir Beceri Değerlendirmesi yasal olarak zorunludur."
+            ? "Eylem Gerekli: Beceri Değerlendirmeniz olumlu sonuçlanana kadar bu raporda meslekle ilgili puanlar sayılmaz ve olumlu bir Beceri Değerlendirmesi, bir vize başvurusu sunulmadan önce gereklidir."
             : t === "zh"
-              ? "需要采取行动：递交EOI之前，获得提名职业的正面技能评估是法律强制要求。"
-              : "Action Required: A positive Skills Assessment is legally required before lodging an EOI.");
+              ? "需要采取行动：在您的技能评估获得正面结果之前，本报告不计入与职业相关的积分；递交签证申请前需要获得正面的技能评估结果。"
+              : "Action Required: Skilled-employment points are not counted in this report until your Skills Assessment is confirmed positive, and a positive Skills Assessment is required before a visa application can be lodged.");
       doc.text(safeText(blockedDetail), margin + 8, bannerY + 13);
     } else {
       // GREEN: READY
@@ -925,6 +925,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     resolvedAuthorityName,
     isGeneralAuthorityFallback,
     report.assessmentState.isEoiEligible,
+    report.financialRoadmap,
   );
 
   addSectionHeading("📋", guide.title);
@@ -1059,6 +1060,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     skillsAssessmentDone,
     faqAssessingAuthority,
     report.assessmentState.isEoiEligible,
+    report.financialRoadmap,
   );
 
   addSectionHeading("❓", faq.title);

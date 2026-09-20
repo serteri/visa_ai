@@ -1,6 +1,6 @@
 import type { Locale, PathwayComparison } from "./types";
 import type { CanadaPathwayCode } from "./engine";
-import { CURRENT_CSIT } from "./constants";
+import { CURRENT_CSIT, BASE_VAC_AUD, SECOND_INSTALMENT_AUD } from "./constants";
 
 type NextStepsContext = {
   locale: Locale;
@@ -66,10 +66,15 @@ export function buildNextSteps(ctx: NextStepsContext): string[] {
   }
 
   if (ctx.has482Pathway || ctx.hasSkilledPathway) {
+    // 189 and 190/491 do NOT share the same base charge or second-instalment
+    // figure -- read both from lib/readiness/constants.ts (the same source
+    // engine.ts's Financial Roadmap uses) instead of one flat pair of
+    // numbers applied to all three subclasses (Phase 1 report consistency
+    // fix, items D1/D6).
     steps.push(
       isTr
-        ? "Ücret/harç planlamasında 2026 tabanları dikkate alınmalıdır: 482 temel harcı AUD 4,015; 189/190 temel harcı yaklaşık AUD 6,140; 18+ bağımlılarda Functional English yoksa kişi başı yaklaşık AUD 4,890 ikinci taksit riski olabilir."
-        : "Cost planning should use 2026 baselines: 482 base charge AUD 4,015; 189/190 base charge about AUD 6,140; and dependants aged 18+ without functional English may trigger a second-instalment risk of about AUD 4,890 each."
+        ? `Ücret/harç planlamasında 2026 tabanları dikkate alınmalıdır: 482 temel harcı AUD ${BASE_VAC_AUD["482"].toLocaleString("en-AU")}; 189 temel harcı AUD ${BASE_VAC_AUD["189"].toLocaleString("en-AU")}; 190/491 temel harcı yaklaşık AUD ${BASE_VAC_AUD["491"].toLocaleString("en-AU")}; 18+ bağımlılarda Functional English yoksa kişi başı ikinci taksit riski 189/190 için yaklaşık AUD ${SECOND_INSTALMENT_AUD["189"].toLocaleString("en-AU")}, 491 için yaklaşık AUD ${SECOND_INSTALMENT_AUD["491"].toLocaleString("en-AU")} olabilir.`
+        : `Cost planning should use 2026 baselines: 482 base charge AUD ${BASE_VAC_AUD["482"].toLocaleString("en-AU")}; 189 base charge AUD ${BASE_VAC_AUD["189"].toLocaleString("en-AU")}; 190/491 base charge about AUD ${BASE_VAC_AUD["491"].toLocaleString("en-AU")}; and dependants aged 18+ without functional English may trigger a second-instalment risk of about AUD ${SECOND_INSTALMENT_AUD["189"].toLocaleString("en-AU")} each for 189/190, or about AUD ${SECOND_INSTALMENT_AUD["491"].toLocaleString("en-AU")} each for 491.`
     );
   }
 

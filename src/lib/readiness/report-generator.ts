@@ -113,6 +113,12 @@ export type InvitationTrendSection = {
   occupationCode: string;
   estimates: InvitationTrendEstimate[];
   note: string;
+  /**
+   * ISO date (src/data/visa-trends.json's own `generated_on`) the benchmark
+   * data was last curated as of. Set only for AU's dated static snapshot;
+   * CA's estimates are scenario-based inference with no equivalent date.
+   */
+  dataAsOf?: string;
 };
 
 export type LivingCostSection = {
@@ -183,6 +189,7 @@ type LivingCostDataset = {
 };
 
 const TREND_DATA = visaTrendsData as {
+  generated_on?: string;
   methodology_note?: string;
   methodology_note_zh?: string;
   occupation_trends: TrendRecord[];
@@ -842,6 +849,7 @@ export function generatePremiumSections(input: {
           ),
           methodologyNote,
         ].filter(Boolean).join(" "),
+        dataAsOf: TREND_DATA.generated_on,
       }
     : {
         matchedOccupationGroup: unavailableTrendMessage,

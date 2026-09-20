@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import type { AssistantReportData } from "@/lib/readiness/types";
-import { CURRENT_CSIT } from "@/lib/readiness/constants";
+import { CURRENT_CSIT, BASE_VAC_AUD, SECOND_INSTALMENT_AUD } from "@/lib/readiness/constants";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -25,7 +25,7 @@ const SYSTEM_PROMPTS: Record<"AU" | "CA", string> = {
     `- Core Skills Income Threshold (CSIT) is exactly ${CURRENT_CSIT.label}.`,
     `- If a declared salary offer is below ${CURRENT_CSIT.label}, employer-sponsored pathways such as Subclass 482 and 186 must be described as ineligible under this threshold.`,
     "- Subclass 485 maximum age is 35, except where the applicant has a Masters by Research, a PhD, or a Hong Kong/BNO passport (these exceptions can use age 50).",
-    "- Cost/risk warnings: Subclass 482 base charge is AUD 4,015; Subclass 189/190 base charge is about AUD 6,140; and a second instalment risk of about AUD 4,890 can apply for each dependant aged 18+ without functional English.",
+    `- Cost/risk warnings: Subclass 482 base charge is AUD ${BASE_VAC_AUD["482"].toLocaleString("en-AU")}; Subclass 189 base charge is AUD ${BASE_VAC_AUD["189"].toLocaleString("en-AU")}; Subclass 190/491 base charge is about AUD ${BASE_VAC_AUD["491"].toLocaleString("en-AU")}; and a second instalment risk of about AUD ${SECOND_INSTALMENT_AUD["189"].toLocaleString("en-AU")} (189/190) or AUD ${SECOND_INSTALMENT_AUD["491"].toLocaleString("en-AU")} (491) can apply for each dependant aged 18+ without functional English.`,
     "If the user asks outside available context, say details are insufficient rather than guessing.",
   ].join(" "),
   CA: [

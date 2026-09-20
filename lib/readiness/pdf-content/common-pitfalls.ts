@@ -1,4 +1,5 @@
 import type { Locale } from "../types";
+import { ENGLISH_TEST_VALIDITY_YEARS } from "../constants";
 
 type Country = "AU" | "CA";
 
@@ -64,8 +65,8 @@ export function getCommonPitfalls(locale: Locale, country: Country): {
           ? [
               { category: "Beceri Değerlendirmesi", title: "Yanlış ANZSCO Kodu Seçimi", body: "Meslek tanımınızla uyuşmayan bir ANZSCO kodu seçmek reddetmeye yol açar. Her kodun ' ana görevleri ' (lead activities) listesini dikkatlice okuyun." },
               { category: "Beceri Değerlendirmesi", title: "Eksik İş Deneyimi Kanıtı", body: "İş mektupları ANZSCO kodu, görev tanımlarını, çalışma süresini ve maaşı içermelidir. ' Genel ifadeler ' yetersiz kabul edilir." },
-              { category: "Dil Testi", title: "Skor Geçerliliği Sorunu", body: "Dil testi sonuçları 2-3 yıl geçerlidir. Süresi dolmuş skorla başvuru yapmak otomatik ret nedenidir." },
-              { category: "Dil Testi", title: "Yanlış Test Seçimi", body: "Her vize türü için kabul edilen testler farklıdır. Örneğin IELTS Academic Genel Göçmenlik için kabul edilmez." },
+              { category: "Dil Testi", title: "Skor Geçerliliği Sorunu", body: `Avustralya skilled migration için dil testi sonuçları vize verilme tarihinde ${ENGLISH_TEST_VALIDITY_YEARS.AU} yıldan eski olamaz. Süresi dolmuş skorla başvuru yapmak otomatik ret nedenidir.` },
+              { category: "Dil Testi", title: "Yanlış Test Seçimi", body: "IELTS Academic ve General Training, PTE Academic ve TOEFL iBT, Avustralya Genel Beceri Göçü (GSM) puan tablosu için kabul edilen testlerdir; OET yalnızca sağlık meslekleri için geçerlidir. Meslek koduna ve vize alt sınıfına göre hangi testin size uygun olduğunu kontrol edin." },
               { category: "Başvuru", title: "60 Gün Kuralı", body: "Davet aldıktan sonra 60 gün içinde başvuru sunulmalıdır. Bu süre uzatılamaz. Başvurunuzu davet öncesi hazırlayın." },
               { category: "Finansal", title: "Yetersiz Settlement Funds", body: "Aile büyüklüğüne göre yeterli fon gösterilmelidir. Eksik fon kanıtı başvuru reddedilmesinin yaygın nedenlerinden biridir." },
               { category: "Sağlık", title: "Geçersiz Sağlık Raporu", body: "Sağlık muayenesi sadecepanel onaylı doktorlar tarafından yapılmalıdır. Yanlış klinikte yaptırılan muayene geçersiz sayılır." },
@@ -75,8 +76,8 @@ export function getCommonPitfalls(locale: Locale, country: Country): {
             ? [
                 { category: "技能评估", title: "选择了错误的ANZSCO代码", body: "选择与职业描述不匹配的ANZSCO代码会导致拒签。请仔细阅读每个代码的主要职责列表。" },
                 { category: "技能评估", title: "工作经验证明不全", body: "工作推荐信需包含ANZSCO代码、职责描述、工作时间和薪资。笼统的表述会被视为不合格。" },
-                { category: "语言考试", title: "成绩过期问题", body: "语言考试成绩有效期为2-3年。使用过期成绩申请会自动被拒。" },
-                { category: "语言考试", title: "选择了错误的考试", body: "不同签证类型接受的考试不同。例如，IELTS Academic不被技术移民接受。" },
+                { category: "语言考试", title: "成绩过期问题", body: `澳大利亚技术移民要求语言考试成绩在签证批准时不得超过 ${ENGLISH_TEST_VALIDITY_YEARS.AU} 年。使用过期成绩申请会自动被拒。` },
+                { category: "语言考试", title: "选择了错误的考试", body: "IELTS Academic 和 General Training、PTE Academic 以及 TOEFL iBT 均被澳大利亚技术移民（GSM）积分测试接受；OET 仅适用于医疗相关职业。请根据您的职业代码和签证子类确认适用的考试。" },
                 { category: "申请流程", title: "60天期限", body: "收到邀请后须在60天内提交申请，此期限不可延长。请在收到邀请前就准备好申请材料。" },
                 { category: "财务", title: "定居资金不足", body: "需要根据家庭人数提供足够的资金证明。资金不足是申请被拒的常见原因之一。" },
                 { category: "健康", title: "体检报告无效", body: "体检只能由指定诊所的医生进行。在非指定机构做的体检无效。" },
@@ -85,8 +86,8 @@ export function getCommonPitfalls(locale: Locale, country: Country): {
             : [
                 { category: "Skills Assessment", title: "Wrong ANZSCO Code Selection", body: "Choosing an occupation code that doesn't match your actual duties leads to rejection. Carefully read the 'lead activities' list for each code." },
                 { category: "Skills Assessment", title: "Insufficient Work Evidence", body: "Employment letters must include ANZSCO code, duty descriptions, duration, and salary. Generic statements are rejected." },
-                { category: "Language Test", title: "Score Validity Issues", body: "Language test results are valid for 2-3 years. Applying with an expired score results in automatic rejection." },
-                { category: "Language Test", title: "Wrong Test Selection", body: "Different visa types accept different tests. For example, IELTS Academic is not accepted for General Skilled Migration." },
+                { category: "Language Test", title: "Score Validity Issues", body: `For Australian skilled migration, language test results must be no more than ${ENGLISH_TEST_VALIDITY_YEARS.AU} years old at the time the visa is granted. Applying with an expired score results in automatic rejection.` },
+                { category: "Language Test", title: "Wrong Test Selection", body: "IELTS Academic and General Training, PTE Academic, and TOEFL iBT are all accepted for the Australian General Skilled Migration (GSM) points test; OET is specific to healthcare occupations. Check which test suits your occupation code and visa subclass." },
                 { category: "Application", title: "The 60-Day Rule", body: "You must lodge your application within 60 days of invitation. This deadline cannot be extended. Prepare before you receive the invitation." },
                 { category: "Financial", title: "Insufficient Settlement Funds", body: "You must demonstrate adequate funds for your family size. Insufficient financial evidence is a common rejection reason." },
                 { category: "Health", title: "Invalid Health Examination", body: "Health examinations must be conducted by panel-approved doctors only. Examinations at non-approved clinics are invalid." },

@@ -29,3 +29,84 @@ export const CSIT_HISTORY: ReadonlyArray<{
  * operative value. Historical values remain in CSIT_HISTORY above.
  */
 export const CURRENT_CSIT = CSIT_HISTORY[CSIT_HISTORY.length - 1];
+
+/**
+ * Base Visa Application Charge (VAC) per subclass, post-1 July 2026
+ * schedule. Matches src/data/visa-fees.json and src/data/visa-details.json
+ * exactly -- this is the single source every surface that quotes a base
+ * charge (engine.ts's Financial Roadmap / GOV_FEES tables, next-steps.ts,
+ * the chat system prompt, the personalized FAQ and application guide) must
+ * read from, instead of each hardcoding its own copy of the number.
+ */
+export const BASE_VAC_AUD: Readonly<Record<string, number>> = {
+  "482": 4015,
+  "189": 6135,
+  "190": 6140,
+  "491": 6140,
+};
+
+/**
+ * Returns the base VAC for the first applicable subclass found in
+ * `subclasses` (in the order given), or null if none of them have a known
+ * charge in {@link BASE_VAC_AUD}.
+ */
+export function resolveBaseVac(
+  subclasses: readonly string[]
+): { subclass: string; amount: number } | null {
+  for (const subclass of subclasses) {
+    if (subclass in BASE_VAC_AUD) {
+      return { subclass, amount: BASE_VAC_AUD[subclass] };
+    }
+  }
+  return null;
+}
+
+/**
+ * Second-instalment English surcharge, per subclass -- 189/190 and 491 are
+ * NOT the same figure (src/data/visa-fees.json's own vac_note text states
+ * "AUD 4,885.00" for 189/190 and "AUD 4,890.00" for 491). A single flat
+ * constant applied to all three subclasses was a real bug (Phase 1 report
+ * consistency audit, item D6) -- always resolve through
+ * {@link resolveSecondInstalmentAud} instead of hardcoding one number.
+ */
+export const SECOND_INSTALMENT_AUD: Readonly<Record<string, number>> = {
+  "189": 4885,
+  "190": 4885,
+  "491": 4890,
+};
+
+/**
+ * Resolves the second-instalment charge for whichever subclass(es) are
+ * relevant. When both the 4,885 group (189/190) and 491 are simultaneously
+ * relevant, returns a { min, max } range rather than guessing one number --
+ * callers must render both figures explicitly in that case.
+ */
+export function resolveSecondInstalmentAud(
+  subclasses: readonly string[]
+): number | { min: number; max: number } {
+  const has189or190 = subclasses.some((s) => s === "189" || s === "190");
+  const has491 = subclasses.includes("491");
+  if (has189or190 && has491) return { min: 4885, max: 4890 };
+  if (has491) return SECOND_INSTALMENT_AUD["491"];
+  return SECOND_INSTALMENT_AUD["189"];
+}
+
+/**
+ * Taxable income threshold gating the subclass 491 -> 191 (permanent)
+ * transition. Previously inlined as literal text in ~4 places across
+ * engine.ts (EN/TR/ZH x singular/plural phrasing) -- centralized here so an
+ * update only needs to happen once.
+ */
+export const INCOME_THRESHOLD_491_TO_191_AUD = 53_900;
+
+/**
+ * How long an English-test score remains valid, per country's own skilled-
+ * migration program. Australia and Canada (Express Entry) genuinely differ
+ * here -- this is NOT a single shared number, and the generic "2-3 years"
+ * disclaimer some report copy used is exactly the kind of blended, imprecise
+ * figure this constant exists to replace.
+ */
+export const ENGLISH_TEST_VALIDITY_YEARS: Readonly<Record<"AU" | "CA", number>> = {
+  AU: 3,
+  CA: 2,
+};

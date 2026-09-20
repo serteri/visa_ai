@@ -1,4 +1,5 @@
-import type { Locale } from "../types";
+import type { Locale, FinancialRoadmapItem } from "../types";
+import { computeEstimatedTotalAud, findFinancialRoadmapItem } from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
 
@@ -41,6 +42,16 @@ export function getPersonalizedFaq(
    * compatibility, where it falls back to skillsAssessmentDone.
    */
   isEoiEligible?: boolean,
+  /**
+   * The report's own Financial Roadmap line items. When present for AU
+   * (tagged with `kind`), the cost-question answer below reads the VAC,
+   * skills-assessment fee, and English-test cost -- and the "Total" -- from
+   * these SAME figures instead of maintaining its own separately hardcoded
+   * numbers, so this section can never drift out of sync with the
+   * Financial Roadmap section shown elsewhere in the same report (Phase 1
+   * report consistency fix, items D1/D2/D3).
+   */
+  financialRoadmap?: FinancialRoadmapItem[],
 ): {
   title: string;
   items: Array<{ question: string; answer: string }>;
@@ -197,23 +208,43 @@ export function getPersonalizedFaq(
   });
 
   // ── Cost question ─────────────────────────────────────────────────────
+  // AU: reads the VAC, skills-assessment fee, English-test cost and total
+  // directly from the report's own Financial Roadmap (financialRoadmap
+  // param) instead of separately hardcoded figures, so this answer can
+  // never disagree with the Financial Roadmap section shown elsewhere in
+  // the same report. Falls back to a locale/authority-agnostic sentence
+  // (no invented numbers) only if the Financial Roadmap data isn't
+  // available to this call for some reason.
+  const roadmap = financialRoadmap ?? [];
+  const vacItem = findFinancialRoadmapItem(roadmap, "vac");
+  const skillsItem = findFinancialRoadmapItem(roadmap, "skills_assessment");
+  const englishItem = findFinancialRoadmapItem(roadmap, "english_test");
+  const total = computeEstimatedTotalAud(roadmap);
+
   items.push({
     question: isTr
       ? "Başvuru sürecinin toplam maliyeti nedir?"
       : isZh
         ? "申请流程的总费用是多少？"
         : "What is the total cost of the application process?",
-    answer: isTr
-      ? country === 'AU'
-        ? "Beceri değerlendirmesi: 500-1200 AUD. Dil testi: 400-550 AUD. Başvuru ücreti: 4640 AUD. Toplam: 6000-7000 AUD."
-        : "ECA: 200-300 CAD. Dil testi: 300-400 CAD. Başvuru ücreti: 1365 CAD. Toplam: 2000-3000 CAD."
-      : isZh
-        ? country === 'AU'
-          ? "技能评估：500-1200澳元。语言考试：400-550澳元。申请费：4640澳元。总计：6000-7000澳元。"
-          : "ECA：200-300加元。语言考试：300-400加元。申请费：1365加元。总计：2000-3000加元。"
-        : country === 'AU'
-          ? "Skills assessment: AUD 500-1,200. Language test: AUD 400-550. Application fee: AUD 4,640. Total: AUD 6,000-7,000."
-          : "ECA: CAD 200-300. Language test: CAD 300-400. Application fee: CAD 1,365. Total: CAD 2,000-3,000.",
+    answer:
+      country === "AU"
+        ? vacItem && skillsItem && englishItem && total
+          ? isTr
+              ? `Beceri değerlendirmesi (${skillsItem.category.replace(/^Beceri Değerlendirmesi\s*—?\s*/, "") || "ilgili kurum"}): ${skillsItem.amountLabel}. Dil testi: ${englishItem.amountLabel}. Başvuru ücreti (VAC): ${vacItem.amountLabel}. Tahmini toplam (ana başvurucu): AUD ${total.min.toLocaleString("tr-TR")}-${total.max.toLocaleString("tr-TR")}.`
+            : isZh
+              ? `技能评估（${skillsItem.category.replace(/^Skills Assessment\s*—?\s*/, "") || "相关机构"}）：${skillsItem.amountLabel}。语言考试：${englishItem.amountLabel}。申请费（VAC）：${vacItem.amountLabel}。预计总计（主申请人）：AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}。`
+              : `Skills assessment (${skillsItem.category.replace(/^Skills Assessment\s*—?\s*/, "") || "relevant authority"}): ${skillsItem.amountLabel}. Language test: ${englishItem.amountLabel}. Application fee (VAC): ${vacItem.amountLabel}. Estimated total (primary applicant): AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}.`
+          : isTr
+            ? "Toplam maliyet; beceri değerlendirmesi ücretiniz, dil testi ve resmi başvuru ücretine (VAC) bağlıdır -- bu Tahmini Maliyet Yol Haritası bölümünde ayrıntılı olarak gösterilmiştir."
+            : isZh
+              ? "总费用取决于您的技能评估费用、语言考试费用和官方申请费（VAC）——详见本报告的费用路线图部分。"
+              : "Total cost depends on your skills-assessment fee, language test, and the official application fee (VAC) -- see the Financial Roadmap section of this report for the full breakdown."
+        : isTr
+          ? "ECA: 200-300 CAD. Dil testi: 300-400 CAD. Başvuru ücreti: 1365 CAD. Toplam: 2000-3000 CAD."
+          : isZh
+            ? "ECA：200-300加元。语言考试：300-400加元。申请费：1365加元。总计：2000-3000加元。"
+            : "ECA: CAD 200-300. Language test: CAD 300-400. Application fee: CAD 1,365. Total: CAD 2,000-3,000.",
   });
 
   // ── Partner question ──────────────────────────────────────────────────

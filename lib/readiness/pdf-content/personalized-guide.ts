@@ -1,4 +1,5 @@
-import type { Locale } from "../types";
+import type { Locale, FinancialRoadmapItem } from "../types";
+import { computeEstimatedTotalAud, findFinancialRoadmapItem } from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
 
@@ -33,6 +34,14 @@ export function getPersonalizedApplicationGuide(
    * compatibility, where it falls back to skillsAssessmentDone.
    */
   isEoiEligible?: boolean,
+  /**
+   * The report's own Financial Roadmap line items -- see the matching
+   * parameter on getPersonalizedFaq() in personalized-faq.ts for why: this
+   * section's Cost Estimate reads the SAME VAC/skills-assessment/English-
+   * test/total figures rather than maintaining its own separately hardcoded
+   * numbers (Phase 1 report consistency fix, items D1/D2/D3).
+   */
+  financialRoadmap?: FinancialRoadmapItem[],
 ): {
   title: string;
   userName: string;
@@ -278,33 +287,54 @@ export function getPersonalizedApplicationGuide(
         ];
 
   // ── Cost Estimate ─────────────────────────────────────────────────────
+  // AU: read the VAC, skills-assessment fee, English-test cost, medical
+  // exam and total directly from the report's own Financial Roadmap
+  // (financialRoadmap param) -- see getPersonalizedFaq's matching comment.
+  // Falls back to a no-invented-numbers pointer to the Financial Roadmap
+  // section if that data isn't available to this call.
+  const roadmap = financialRoadmap ?? [];
+  const guideVacItem = findFinancialRoadmapItem(roadmap, "vac");
+  const guideSkillsItem = findFinancialRoadmapItem(roadmap, "skills_assessment");
+  const guideEnglishItem = findFinancialRoadmapItem(roadmap, "english_test");
+  const guideMedicalItem = findFinancialRoadmapItem(roadmap, "medical");
+  const guideTotal = computeEstimatedTotalAud(roadmap);
+  const hasAuFinancialData = Boolean(
+    guideVacItem && guideSkillsItem && guideEnglishItem && guideMedicalItem && guideTotal
+  );
+
   const costEstimate = country === "AU"
-    ? (isTr
-        ? [
-            "Beceri değerlendirmesi: AUD 500-1,200",
-            "Dil testi: AUD 400-550",
-            "Başvuru ücreti: AUD 4,640 (başvuran)",
-            "Ek partner/çocuk: AUD 2,320 kişi başı",
-            "Sağlık muayenesi: AUD 400-600",
-            "Toplam tahmini: AUD 6,000-8,000",
-          ]
-        : isZh
-          ? [
-              "技能评估：500-1200澳元",
-              "语言考试：400-550澳元",
-              "申请费：4640澳元（主申请人）",
-              "随行伴侣/子女：每人2320澳元",
-              "体检：400-600澳元",
-              "预计总计：6000-8000澳元",
-            ]
-          : [
-              "Skills assessment: AUD 500-1,200",
-              "Language test: AUD 400-550",
-              "Application fee: AUD 4,640 (primary)",
-              "Additional partner/child: AUD 2,320 each",
-              "Health examination: AUD 400-600",
-              "Estimated total: AUD 6,000-8,000",
-            ])
+    ? (hasAuFinancialData
+        ? (isTr
+            ? [
+                `Beceri değerlendirmesi: ${guideSkillsItem!.amountLabel}`,
+                `Dil testi: ${guideEnglishItem!.amountLabel}`,
+                `Başvuru ücreti (VAC): ${guideVacItem!.amountLabel}`,
+                "Ek partner/çocuk: VAC tablosunun partner/çocuk sütununa bakın (bkz. Tahmini Maliyet Yol Haritası)",
+                `Sağlık muayenesi: ${guideMedicalItem!.amountLabel}`,
+                `Toplam tahmini (ana başvurucu): AUD ${guideTotal!.min.toLocaleString("tr-TR")}-${guideTotal!.max.toLocaleString("tr-TR")}`,
+              ]
+            : isZh
+              ? [
+                  `技能评估：${guideSkillsItem!.amountLabel}`,
+                  `语言考试：${guideEnglishItem!.amountLabel}`,
+                  `申请费（VAC）：${guideVacItem!.amountLabel}`,
+                  "随行伴侣/子女：见费用路线图部分的 VAC 表格",
+                  `体检：${guideMedicalItem!.amountLabel}`,
+                  `预计总计（主申请人）：AUD ${guideTotal!.min.toLocaleString("en-AU")}-${guideTotal!.max.toLocaleString("en-AU")}`,
+                ]
+              : [
+                  `Skills assessment: ${guideSkillsItem!.amountLabel}`,
+                  `Language test: ${guideEnglishItem!.amountLabel}`,
+                  `Application fee (VAC): ${guideVacItem!.amountLabel}`,
+                  "Additional partner/child: see the VAC partner/child columns in the Financial Roadmap section",
+                  `Health examination: ${guideMedicalItem!.amountLabel}`,
+                  `Estimated total (primary applicant): AUD ${guideTotal!.min.toLocaleString("en-AU")}-${guideTotal!.max.toLocaleString("en-AU")}`,
+                ])
+        : (isTr
+            ? ["Tahmini maliyet dökümü için bu raporun Tahmini Maliyet Yol Haritası bölümüne bakın."]
+            : isZh
+              ? ["详细费用估算请参见本报告的费用路线图部分。"]
+              : ["See this report's Financial Roadmap section for the detailed cost breakdown."]))
     : (isTr
         ? [
             "ECA değerlendirmesi: CAD 200-300",

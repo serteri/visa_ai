@@ -4711,19 +4711,28 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       2
     );
     const trendEstimates = report.premiumSections.historicalInvitationTrends.estimates;
+    const trendDataAsOf = report.premiumSections.historicalInvitationTrends.dataAsOf;
     if (trendEstimates.length > 0) {
+      // Previously claimed these were "real results ... not a projection" --
+      // the underlying data (src/data/visa-trends.json) is a hand-curated,
+      // dated snapshot whose OWN methodology_note says it's for planning
+      // context only, directly contradicting that claim. Say what this
+      // actually is: an indicative estimate as of a specific date, not a
+      // live feed and not a forecast (Phase 1 report consistency fix, item
+      // B3). CA's estimates have no equivalent dated snapshot (scenario-
+      // based inference instead), so trendDataAsOf is undefined there.
       addSmallText(
         effectiveLocale === "tr"
-          ? (report.country === "CA"
-              ? "Bu puanlar ve bekleme süreleri, bu meslek için son davet turlarındaki gerçek sonuçları yansıtır (her program için son davet edilen puan) — tahmin değildir."
-              : "Bu puanlar ve bekleme süreleri, bu meslek için son davet turlarındaki gerçek sonuçları yansıtır (her alt sınıf için son davet edilen puan) — tahmin değildir.")
+          ? (trendDataAsOf
+              ? `Aşağıdaki puanlar ve bekleme süreleri, ${trendDataAsOf} tarihli bir referans verisine dayanan gösterge niteliğinde tahminlerdir — yalnızca planlama amaçlıdır, gelecekteki davet turlarının bir tahmini/garantisi değildir.`
+              : "Aşağıdaki puanlar ve bekleme süreleri senaryo tabanlı, gösterge niteliğinde planlama tahminleridir — gelecekteki davet turlarının bir tahmini/garantisi değildir.")
           : effectiveLocale === "zh-Hans"
-            ? (report.country === "CA"
-                ? "以下分数和等待时间反映该职业近期邀请轮次的真实结果（每个项目最近一次获邀分数）——并非预测。"
-                : "以下分数和等待时间反映该职业近期邀请轮次的真实结果（每个子类别最近一次获邀分数）——并非预测。")
-            : (report.country === "CA"
-                ? "The points and wait windows below reflect real results from this occupation's recent invitation rounds (the last invited point per program) — not a projection."
-                : "The points and wait windows below reflect real results from this occupation's recent invitation rounds (the last invited point per subclass) — not a projection."),
+            ? (trendDataAsOf
+                ? `以下分数和等待时间是基于截至 ${trendDataAsOf} 的参考数据得出的指示性估算——仅供规划参考，并非对未来邀请轮次的预测或保证。`
+                : "以下分数和等待时间是基于情景推断得出的指示性规划估算——并非对未来邀请轮次的预测或保证。")
+            : (trendDataAsOf
+                ? `The points and wait windows below are indicative estimates based on reference data as of ${trendDataAsOf} — for planning purposes only, not a forecast or guarantee of future invitation rounds.`
+                : "The points and wait windows below are indicative, scenario-based planning estimates — not a forecast or guarantee of future invitation rounds."),
         2
       );
     }
