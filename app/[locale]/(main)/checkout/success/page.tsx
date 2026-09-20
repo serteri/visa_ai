@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
+import { PREMIUM_PRICE_AUD } from "@/lib/pricing";
+
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
@@ -21,10 +23,12 @@ export default function CheckoutSuccessPage() {
   useEffect(() => {
     if (typeof window !== "undefined" && typeof window.fbq === "function") {
       // Pricing diverges by product: the readiness report ("premium") is
-      // 19.99 AUD + GST, while the PDF guides (pdf_book, pdf_book_global)
-      // remain $9.99 USD.
+      // PREMIUM_PRICE_AUD (A$21.99 inc. GST -- the actual GST-inclusive
+      // total Stripe charges, not the net price), while the PDF guides
+      // (pdf_book, pdf_book_global) remain $9.99 USD. This value must match
+      // what was actually charged for ad-platform ROAS to be meaningful.
       const isPremium = product === "premium";
-      const value = isPremium ? 19.99 : 9.99;
+      const value = isPremium ? PREMIUM_PRICE_AUD : 9.99;
       window.fbq("track", "Purchase", {
         value,
         currency: isPremium ? "AUD" : "USD",

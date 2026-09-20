@@ -139,6 +139,14 @@ model Transaction {
   totalAmount      Decimal  @map("total_amount") @db.Decimal(10, 2)
   commissionRate   Decimal? @map("commission_rate") @db.Decimal(5, 4)
   commissionAmount Decimal? @map("commission_amount") @db.Decimal(10, 2)
+  // GST-inclusive pricing (Stripe automatic tax): additive, nullable columns
+  // so existing rows are left untouched. totalCents/gstCents come straight
+  // from session.amount_total / session.total_details.amount_tax -- never
+  // recomputed -- so this ledger always reflects exactly what Stripe
+  // actually charged and taxed, not a locally-derived approximation.
+  totalCents       Int?     @map("total_cents")
+  gstCents         Int?     @map("gst_cents")
+  currency         String?  @map("currency")
   createdAt        DateTime @default(now()) @map("created_at")
 
   // SetNull (not Cascade): deleting a lead must never silently delete its

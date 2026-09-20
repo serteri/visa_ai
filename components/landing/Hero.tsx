@@ -430,7 +430,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             )}
           </span>
           <span className="font-bold text-slate-900">
-            {t("hero.pricingBadgePrice", isTr ? "Sadece 19.99 AUD + GST" : isZh ? "仅需 19.99 AUD + GST" : "Only 19.99 AUD + GST")}
+            {t("hero.pricingBadgePrice", isTr ? "Sadece GST dahil A$21.99" : isZh ? "仅需 A$21.99（含GST）" : "Only A$21.99 inc. GST")}
           </span>
         </div>
 

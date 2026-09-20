@@ -7,6 +7,7 @@ import { FullCheckInteractiveSection } from "./full-check-interactive-section";
 import { ShareLogivisaCard } from "@/components/share-logivisa-card";
 import { getFreePromoStatus } from "@/lib/services/free-promo";
 import { isSupportedCountry } from "@/lib/countries";
+import { PREMIUM_PRICE_DISPLAY } from "@/lib/pricing";
 
 const BASE_URL = "https://www.logivisa.com";
 
@@ -127,8 +128,9 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                   {tx("Full Visa Readiness Report", "Tam Vize Hazırlık Raporu", "完整签证准备度报告")}
                 </p>
                 <p className="whitespace-nowrap">
-                  <span className="text-3xl font-extrabold text-slate-900">19.99 AUD</span>{" "}
-                  <span className="text-sm text-slate-500">+ GST</span>
+                  <span className="text-3xl font-extrabold text-slate-900">
+                    {tx(PREMIUM_PRICE_DISPLAY.en, PREMIUM_PRICE_DISPLAY.tr, PREMIUM_PRICE_DISPLAY["zh-Hans"])}
+                  </span>
                 </p>
               </div>
 

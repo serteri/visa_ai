@@ -7,6 +7,7 @@ import {
   type StripeProductType,
 } from "@/lib/stripe";
 import { getUserReportById } from "@/src/lib/user-reports";
+import { PREMIUM_PRICE_AUD_CENTS } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -92,7 +93,35 @@ export async function POST(request: NextRequest) {
     }
 
     const stripe = getStripeClient();
-    const priceId = getPriceIdForProduct(productType);
+
+    // "premium" is priced inline (price_data) instead of a pre-created
+    // Stripe Price so the GST-inclusive total and tax_behavior live in one
+    // place (lib/pricing.ts) rather than requiring a Price object edit in
+    // the Stripe dashboard (which is also immutable for tax_behavior once
+    // created). pdf_book/pdf_book_global are a different product/SKU with
+    // their own existing Price IDs, untouched by this GST-inclusive pricing
+    // change -- they keep using getPriceIdForProduct().
+    const lineItem =
+      productType === "premium"
+        ? {
+            price_data: {
+              currency: "aud",
+              product_data: {
+                name: "Full Visa Readiness Report (Premium)",
+                // General - Electronically Supplied Services: matches the
+                // digitally-delivered PDF report this route sells.
+                tax_code: "txcd_10000000",
+              },
+              unit_amount: PREMIUM_PRICE_AUD_CENTS,
+              // The advertised price (A$21.99) is the exact GST-inclusive
+              // total the customer pays -- GST comes out of that amount,
+              // never added on top. Required for ACL-compliant single-price
+              // display now that Checkout shows the GST line separately.
+              tax_behavior: "inclusive" as const,
+            },
+            quantity: 1,
+          }
+        : { price: getPriceIdForProduct(productType), quantity: 1 };
 
     // reportId is only meaningful for the "premium" product (pdf_book/
     // pdf_book_global purchases aren't tied to a UserReport) -- appended
@@ -104,7 +133,7 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [lineItem],
       // Stripe rejects a session that sets both `discounts` and
       // `allow_promotion_codes` ("You may only specify one of these
       // parameters"). No automatic discount is applied server-side anymore

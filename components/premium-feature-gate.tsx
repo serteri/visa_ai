@@ -11,6 +11,7 @@ import {
   unlockPremiumReport,
 } from "@/app/[locale]/(main)/full-check/actions";
 import type { ReadinessReport } from "@/lib/readiness/types";
+import { PREMIUM_PRICE_DISPLAY } from "@/lib/pricing";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -250,7 +251,9 @@ export function PremiumFeatureGate({
                 <p className="text-xs uppercase tracking-wide text-muted-foreground">
                   {isTr ? "Premium Rapor" : isZh ? "高级报告" : "Premium Report"}
                 </p>
-                <p className="text-lg font-bold text-primary">19.99 AUD + GST</p>
+                <p className="text-lg font-bold text-primary">
+                  {isTr ? PREMIUM_PRICE_DISPLAY.tr : isZh ? PREMIUM_PRICE_DISPLAY["zh-Hans"] : PREMIUM_PRICE_DISPLAY.en}
+                </p>
               </div>
             </div>
 
@@ -347,7 +350,11 @@ export function PremiumFeatureGate({
                       existing unlockMethod handling doesn't need to change. */}
                   <input type="hidden" name="unlockMethod" value="payment" />
                   <div className="h-12 flex items-center rounded-xl border border-primary/30 bg-primary/5 px-3 text-sm font-medium text-primary">
-                    {isTr ? "🔓 Ödeme ile aç (19.99 AUD + GST)" : isZh ? "🔓 支付解锁 (19.99 AUD + GST)" : "🔓 Unlock with Payment (19.99 AUD + GST)"}
+                    {isTr
+                      ? `🔓 Ödeme ile aç (${PREMIUM_PRICE_DISPLAY.tr})`
+                      : isZh
+                        ? `🔓 支付解锁 (${PREMIUM_PRICE_DISPLAY["zh-Hans"]})`
+                        : `🔓 Unlock with Payment (${PREMIUM_PRICE_DISPLAY.en})`}
                   </div>
                 </div>
 

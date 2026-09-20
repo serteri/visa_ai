@@ -76,8 +76,14 @@ export async function recordCommissionTransactionForLead(params: {
   agentId: string | null;
   stripeSessionId: string;
   totalAmount: number;
+  /** session.amount_total verbatim (cents) -- GST-inclusive pricing, not recomputed. */
+  totalCents?: number | null;
+  /** session.total_details.amount_tax verbatim (cents) -- not recomputed. */
+  gstCents?: number | null;
+  /** session.currency verbatim, e.g. "aud". */
+  currency?: string | null;
 }): Promise<void> {
-  const { leadId, buyerEmail, agentId, stripeSessionId, totalAmount } = params;
+  const { leadId, buyerEmail, agentId, stripeSessionId, totalAmount, totalCents, gstCents, currency } = params;
   if (!leadId && !buyerEmail) {
     throw new Error("recordCommissionTransactionForLead requires either leadId or buyerEmail.");
   }
@@ -100,6 +106,9 @@ export async function recordCommissionTransactionForLead(params: {
         totalAmount,
         commissionRate,
         commissionAmount,
+        totalCents: totalCents ?? null,
+        gstCents: gstCents ?? null,
+        currency: currency ?? null,
       },
     });
   } catch (error) {
@@ -128,5 +137,15 @@ export async function recordCommissionTransaction(session: Stripe.Checkout.Sessi
   const agentId = session.metadata?.agentId?.trim() || null;
   const totalAmount = (session.amount_total ?? 0) / 100;
 
-  await recordCommissionTransactionForLead({ leadId, agentId, stripeSessionId: session.id, totalAmount });
+  await recordCommissionTransactionForLead({
+    leadId,
+    agentId,
+    stripeSessionId: session.id,
+    totalAmount,
+    // Verbatim from Stripe -- never recomputed locally, so this always
+    // reflects exactly what automatic tax actually calculated.
+    totalCents: session.amount_total ?? null,
+    gstCents: session.total_details?.amount_tax ?? null,
+    currency: session.currency ?? null,
+  });
 }
