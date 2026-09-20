@@ -1,0 +1,46 @@
+name: Report checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  typecheck-and-report-tests:
+    runs-on: ubuntu-latest
+    env:
+      # Build-time only: prisma generate needs a syntactically valid
+      # DATABASE_URL to run, but nothing in this job makes a real database
+      # connection -- runReadinessEngine/generateReadinessPDF and the fee-
+      # provenance checks are pure functions over in-repo data.
+      DATABASE_URL: "postgresql://user:pass@localhost:5432/dummy?sslmode=disable"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # Whole-repo `npm run lint` is intentionally NOT gated here: this
+      # repo currently has ~120 pre-existing eslint errors unrelated to the
+      # report/fee-consistency work this workflow guards (old scripts,
+      # src/lib/readiness-engine.ts, etc.) -- gating on it would make this
+      # workflow permanently red for reasons unrelated to any given PR.
+      # Lint is checked manually, scoped to changed files, per change.
+
+      - name: Report consistency tests (FAQ/Guide/Financial Roadmap agreement + banned-string regression, en/tr/zh-Hans)
+        run: npm run test:report-consistency
+
+      - name: Fee/threshold provenance and duplicate-definition tests
+        run: npm run test:fee-provenance

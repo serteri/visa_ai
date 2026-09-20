@@ -4,6 +4,7 @@ import {
   type PointsCalculatorInput,
   type PointsCalculatorResult,
 } from "@/lib/readiness/visa-points-calculator";
+import { getAuthorityById, getDefaultPathway } from "@/lib/skills-assessment";
 
 export type SupportedSubclass = "500" | "485" | "482" | "189" | "190" | "491" | "820/801" | "820_801";
 export type SupportedAuthority = "ACS" | "Engineers Australia" | "VETASSESS" | string;
@@ -53,12 +54,6 @@ type VisaFeeTable = {
   vac: VisaVac;
 };
 
-type SkillsAssessmentRange = {
-  min: number;
-  max: number;
-  typical: number;
-};
-
 type VisaFeesDataset = {
   currency: "AUD";
   visas: Record<string, VisaFeeTable>;
@@ -66,12 +61,6 @@ type VisaFeesDataset = {
     medical_check_per_person: number;
     biometrics_per_person: number;
     police_check_per_country_per_adult: number;
-  };
-  skills_assessment_estimates: {
-    ACS: SkillsAssessmentRange;
-    "Engineers Australia": SkillsAssessmentRange;
-    VETASSESS: SkillsAssessmentRange;
-    default: SkillsAssessmentRange;
   };
   optional_estimates: {
     naati_ccl: number;
@@ -96,6 +85,28 @@ function getVisaFeeTable(subclass: SupportedSubclass | string): VisaFeeTable {
     throw new Error(`Unsupported visa subclass: ${subclass}`);
   }
   return table;
+}
+
+// Maps this module's legacy loose authority labels onto the real
+// registry's authorityId values (lib/skills-assessment/authorities/*.ts) --
+// "Engineers Australia" here vs "EA" there, "default"/unmatched here vs
+// "GENERAL" there.
+const AUTHORITY_LABEL_TO_ID: Record<string, string> = {
+  ACS: "ACS",
+  "Engineers Australia": "EA",
+  VETASSESS: "VETASSESS",
+};
+
+function resolveSkillsAssessmentFeeEstimate(authority: SupportedAuthority): number {
+  const authorityId = AUTHORITY_LABEL_TO_ID[authority] ?? "GENERAL";
+  const resolved = getAuthorityById(authorityId) ?? getAuthorityById("GENERAL");
+  const pathway = getDefaultPathway(resolved);
+  const fee = pathway?.fees.find((f) => typeof f.amountAUD === "number");
+  // GENERAL (VETASSESS / General Professional Authority) is always
+  // registered, so this fallback should be unreachable -- kept defensive
+  // only, matching the same "should not be reachable" pattern engine.ts
+  // uses for the equivalent lookup in buildFinancialRoadmap.
+  return fee?.amountAUD ?? 850;
 }
 
 function normalizeFamily(familyComposition?: FamilyComposition): Required<FamilyComposition> {
@@ -137,9 +148,15 @@ export function estimateThirdPartyCosts(
   const peopleCount = 1 + family.adultDependants + family.childDependants;
   const adultCount = 1 + family.adultDependants;
 
-  const skillsRange =
-    FEES.skills_assessment_estimates[authority as keyof VisaFeesDataset["skills_assessment_estimates"]] ??
-    FEES.skills_assessment_estimates.default;
+  // visa-fees.json used to carry its own skills_assessment_estimates table
+  // here (ACS 560, Engineers Australia 800-1,100, VETASSESS 1,000) --
+  // deleted as dead data (unused by the report/chat/admin code paths,
+  // confirmed by repo-wide grep) and because it disagreed with the real,
+  // occupation/pathway-specific fees in lib/skills-assessment/authorities/*
+  // (e.g. ACS's actual General Skills Assessment pathway fee is AUD 1,498,
+  // not 560). Resolve the same authority registry the report's own
+  // Financial Roadmap uses instead of a second, drifting copy.
+  const skillsAssessmentEstimate = resolveSkillsAssessmentFeeEstimate(authority);
 
   const medical = FEES.mandatory_estimates.medical_check_per_person * peopleCount;
   const biometrics = FEES.mandatory_estimates.biometrics_per_person * peopleCount;
@@ -150,7 +167,7 @@ export function estimateThirdPartyCosts(
 
   return {
     authority,
-    skillsAssessmentEstimate: skillsRange.typical,
+    skillsAssessmentEstimate,
     mandatoryChecksEstimate: medical + biometrics + police,
     mandatoryBreakdown: {
       medical,

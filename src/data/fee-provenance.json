@@ -1,0 +1,160 @@
+{
+  "_readme": "Provenance manifest for every fee/threshold fact centralized in lib/readiness/constants.ts and src/data/visa-fees.json / visa-details.json. Added per the fee/threshold truth-audit task. NOTE: data/knowledge/ (the official-source snapshot folder) is not present in this repo/environment (it is explicitly gitignored -- see .gitignore's 'chatbot training knowledge base ... never commit' entry) -- every 'source' field below that says 'needs human verification' means exactly that: the value could not be checked against an official document from inside this environment, and was left as whatever the codebase already had (Phase 1 audit already reconciled the code's own internal disagreements; this manifest does not change any value beyond that unless a source is cited). Do not treat a 'needs human verification' source as a confirmed fact.",
+  "generated_on": "2026-09-20",
+  "facts": [
+    {
+      "id": "vac_189",
+      "description": "Subclass 189 (Skilled Independent) base Visa Application Charge, main applicant",
+      "value": 6135,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:BASE_VAC_AUD[\"189\"]",
+        "src/data/visa-fees.json:visas.189.vac.main",
+        "src/data/visa-details.json[subclass=189].fee"
+      ]
+    },
+    {
+      "id": "vac_190",
+      "description": "Subclass 190 (Skilled Nominated) base Visa Application Charge, main applicant",
+      "value": 6140,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:BASE_VAC_AUD[\"190\"]",
+        "src/data/visa-fees.json:visas.190.vac.main",
+        "src/data/visa-details.json[subclass=190].fee"
+      ]
+    },
+    {
+      "id": "vac_491",
+      "description": "Subclass 491 (Skilled Work Regional) base Visa Application Charge, main applicant",
+      "value": 6140,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:BASE_VAC_AUD[\"491\"]",
+        "src/data/visa-fees.json:visas.491.vac.main",
+        "src/data/visa-details.json[subclass=491].fee"
+      ]
+    },
+    {
+      "id": "vac_482",
+      "description": "Subclass 482 (Skills in Demand / Core Skills) base Visa Application Charge, main applicant",
+      "value": 4015,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:BASE_VAC_AUD[\"482\"]",
+        "src/data/visa-fees.json:visas.482.vac.main",
+        "src/data/visa-details.json[subclass=482].fee"
+      ]
+    },
+    {
+      "id": "vac_186",
+      "description": "Subclass 186 (Employer Nomination Scheme) base Visa Application Charge, main applicant -- NOT DEFINED anywhere in this codebase (no constant, no JSON entry). Listed here as a known gap, not a confirmed value.",
+      "value": null,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "MISSING -- not defined in code; not verifiable without data/knowledge/",
+      "locations": []
+    },
+    {
+      "id": "second_instalment_189_190",
+      "description": "Second-instalment English surcharge, subclass 189/190, per applicant 18+ without functional English",
+      "value": 4885,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:SECOND_INSTALMENT_AUD[\"189\"|\"190\"]",
+        "src/data/visa-fees.json:visas.189.vac.secondInstalmentEnglish, visas.190.vac.secondInstalmentEnglish",
+        "src/data/visa-details.json[subclass=189|190].secondInstalment.amount"
+      ]
+    },
+    {
+      "id": "second_instalment_491",
+      "description": "Second-instalment English surcharge, subclass 491, per applicant 18+ without functional English",
+      "value": 4890,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:SECOND_INSTALMENT_AUD[\"491\"]",
+        "src/data/visa-fees.json:visas.491.vac.secondInstalmentEnglish",
+        "src/data/visa-details.json[subclass=491].secondInstalment.amount"
+      ]
+    },
+    {
+      "id": "income_threshold_491_to_191",
+      "description": "Taxable income threshold gating the subclass 491 -> 191 (permanent) transition",
+      "value": 53900,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment. This is the pre-existing codebase value; whether it reflects the post-1-July-2026 indexed threshold is NOT confirmed.",
+      "locations": [
+        "lib/readiness/constants.ts:INCOME_THRESHOLD_491_TO_191_AUD"
+      ]
+    },
+    {
+      "id": "acs_general_skills_assessment_fee",
+      "description": "ACS General Skills Assessment pathway fee (applies to an occupation/qualification profile with no other ACS pathway match, e.g. overseas PhD holder with no AU study and no prior assessment)",
+      "value": 1498,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2025-11-03",
+      "source": "needs human verification -- data/knowledge/ not present in this environment. lib/skills-assessment/authorities/acs.ts's own header comment cites \"ACS Migration Skills Assessment -- official guide, fee increase effective 3 November 2025\" but that source document is not present in this repo to re-check.",
+      "locations": [
+        "lib/skills-assessment/authorities/acs.ts:pathways[GENERAL_SKILLS].fees[0].amountAUD"
+      ]
+    },
+    {
+      "id": "english_test_validity_au",
+      "description": "Validity period of an English test score for Australian skilled migration",
+      "value": 3,
+      "unit": "years",
+      "effective_from": null,
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:ENGLISH_TEST_VALIDITY_YEARS.AU"
+      ]
+    },
+    {
+      "id": "english_test_validity_ca",
+      "description": "Validity period of an English/French test score for Canada Express Entry",
+      "value": 2,
+      "unit": "years",
+      "effective_from": null,
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:ENGLISH_TEST_VALIDITY_YEARS.CA"
+      ]
+    },
+    {
+      "id": "csit_current",
+      "description": "Core Skills Income Threshold (subclass 482/186 sponsorship salary floor)",
+      "value": 79423,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-20",
+      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "locations": [
+        "lib/readiness/constants.ts:CURRENT_CSIT"
+      ]
+    }
+  ]
+}
