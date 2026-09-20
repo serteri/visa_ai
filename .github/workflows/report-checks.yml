@@ -44,3 +44,10 @@ jobs:
 
       - name: Fee/threshold provenance and duplicate-definition tests
         run: npm run test:fee-provenance
+
+      # Calls the real route handler production serves the PDF from
+      # (app/api/reports/[reportId]/pdf/route.ts, DB layer stubbed), extracts
+      # text + geometry from the returned bytes, and fails on banned strings,
+      # a clipped EOI banner, or a Financial Roadmap without a total row.
+      - name: PDF route-handler tests (banned strings, banner clipping, Roadmap total row; en/tr/zh-Hans)
+        run: npm run test:pdf-route

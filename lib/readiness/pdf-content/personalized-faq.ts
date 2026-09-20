@@ -1,5 +1,5 @@
 import type { Locale, FinancialRoadmapItem } from "../types";
-import { computeEstimatedTotalAud, describeTotalGaps, findFinancialRoadmapItem } from "../financial-roadmap-totals";
+import { computeEstimatedTotalAud, findFinancialRoadmapItem, formatEstimatedTotalLine } from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
 
@@ -231,18 +231,7 @@ export function getPersonalizedFaq(
       country === "AU"
         ? total
           ? (() => {
-              const gaps = describeTotalGaps(total, locale);
-              const totalLabel = total.complete
-                ? isTr
-                  ? `Tahmini toplam (ana başvurucu): AUD ${total.min.toLocaleString("tr-TR")}-${total.max.toLocaleString("tr-TR")}.`
-                  : isZh
-                    ? `预计总计（主申请人）：AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}。`
-                    : `Estimated total (primary applicant): AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}.`
-                : isTr
-                  ? `Tahmini toplam (ana başvurucu, en az): AUD ${total.min.toLocaleString("tr-TR")}-${total.max.toLocaleString("tr-TR")}.${gaps}`
-                  : isZh
-                    ? `预计总计（主申请人，最低金额）：AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}。${gaps}`
-                    : `Estimated total (primary applicant, minimum): AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}.${gaps}`;
+              const totalLabel = formatEstimatedTotalLine(total, locale, isZh ? "。" : ".");
               const componentParts: string[] = [];
               if (skillsItem) {
                 componentParts.push(

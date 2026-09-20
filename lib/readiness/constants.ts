@@ -1,3 +1,5 @@
+import visaFeesData from "../../src/data/visa-fees.json";
+
 /**
  * Centralized thresholds for Australian immigration rules.
  *
@@ -44,6 +46,22 @@ export const BASE_VAC_AUD: Readonly<Record<string, number>> = {
   "190": 6140,
   "491": 6140,
 };
+
+/**
+ * Additional-applicant VAC for one subclass, read straight from
+ * src/data/visa-fees.json (the same file BASE_VAC_AUD mirrors): `adult` is
+ * the charge for each partner/dependant aged 18+, `child` for each child
+ * under 18. Returns null when the file has no such figures for the subclass
+ * (callers must then omit the line, never invent a number).
+ */
+export function resolveAdditionalApplicantVac(subclass: string): { adult: number; child: number } | null {
+  const visas = (visaFeesData as unknown as {
+    visas: Record<string, { vac?: { partner_18_plus?: number; child_under_18?: number } }>;
+  }).visas;
+  const vac = visas[subclass]?.vac;
+  if (!vac || typeof vac.partner_18_plus !== "number" || typeof vac.child_under_18 !== "number") return null;
+  return { adult: vac.partner_18_plus, child: vac.child_under_18 };
+}
 
 /**
  * Returns the base VAC for the first applicable subclass found in

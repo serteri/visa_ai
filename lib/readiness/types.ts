@@ -315,7 +315,7 @@ export type FinancialRoadmapItem = {
    * localized label changes. Only tagged where another section actually
    * needs to reference this row; most items have no `kind`.
    */
-  kind?: "vac" | "skills_assessment" | "english_test" | "medical" | "police";
+  kind?: "vac" | "skills_assessment" | "english_test" | "medical" | "police" | "vac_additional";
 };
 
 export type ProgressionPathway = {

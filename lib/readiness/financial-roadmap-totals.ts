@@ -21,6 +21,8 @@ export type FinancialRoadmapTotal = {
   max: number;
   /** True only if every core item resolved to a real number. */
   complete: boolean;
+  /** Core kinds present in the roadmap that contributed a real amount to min/max. */
+  includedKinds: ReadonlyArray<NonNullable<FinancialRoadmapItem["kind"]>>;
   /**
    * Core kinds that don't appear in this report's roadmap at all (e.g.
    * "skills_assessment" for a partner-pathway report, which never generates
@@ -63,6 +65,7 @@ export function computeEstimatedTotalAud(
 
   const excludedKinds = found.filter((f) => !f.item).map((f) => f.kind);
   const missingAmountKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
+  const includedKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
 
   let min = 0;
   let max = 0;
@@ -70,6 +73,7 @@ export function computeEstimatedTotalAud(
     if (typeof item.amountMin === "number" && typeof item.amountMax === "number") {
       min += item.amountMin;
       max += item.amountMax;
+      includedKinds.push(kind);
     } else {
       missingAmountKinds.push(kind);
     }
@@ -78,6 +82,7 @@ export function computeEstimatedTotalAud(
     min,
     max,
     complete: missingAmountKinds.length === 0 && excludedKinds.length === 0,
+    includedKinds,
     excludedKinds,
     missingAmountKinds,
   };
@@ -97,6 +102,7 @@ const KIND_LABEL: Record<NonNullable<FinancialRoadmapItem["kind"]>, { en: string
   english_test: { en: "the language test", tr: "dil testi", zh: "语言考试" },
   medical: { en: "the health examination", tr: "sağlık muayenesi", zh: "体检" },
   police: { en: "the police clearance", tr: "polis kaydı belgesi", zh: "无犯罪证明" },
+  vac_additional: { en: "the partner/child charges", tr: "partner/çocuk ücretleri", zh: "随行伴侣/子女的费用" },
 };
 
 /**
@@ -121,7 +127,69 @@ export function describeTotalGaps(total: FinancialRoadmapTotal, locale: "en" | "
     if (notYetKnown.length) parts.push(`金额尚未确定：${notYetKnown.join("、")}`);
     return `（此总计${parts.join("；")}。）`;
   }
-  if (notApplicable.length) parts.push(`does not apply to this profile: ${notApplicable.join(", ")}`);
-  if (notYetKnown.length) parts.push(`not yet known: ${notYetKnown.join(", ")}`);
-  return ` (This total excludes what ${parts.join("; ")}.)`;
+  if (notApplicable.length) parts.push(`${notApplicable.join(", ")} (does not apply to this profile)`);
+  if (notYetKnown.length) parts.push(`${notYetKnown.join(", ")} (amount not yet known)`);
+  return ` (This total leaves out ${parts.join("; ")}.)`;
+}
+
+/**
+ * The one place the "Estimated total" line is worded. The personalized FAQ,
+ * the Application Guide and the Financial Roadmap section all call this with
+ * the same computeEstimatedTotalAud() result, so the three sections cannot
+ * drift apart in figure or wording. `terminal` is punctuation placed right
+ * after the range (before any excluded-items note).
+ */
+export function formatEstimatedTotalLine(
+  total: FinancialRoadmapTotal,
+  locale: "en" | "tr" | "zh-Hans",
+  terminal = ""
+): string {
+  const numLocale = locale === "tr" ? "tr-TR" : "en-AU";
+  const range = `AUD ${total.min.toLocaleString(numLocale)}-${total.max.toLocaleString(numLocale)}${terminal}`;
+  const gaps = total.complete ? "" : describeTotalGaps(total, locale);
+  const label =
+    locale === "tr"
+      ? total.complete ? "Tahmini toplam (ana başvurucu): " : "Tahmini toplam (ana başvurucu, en az): "
+      : locale === "zh-Hans"
+        ? total.complete ? "预计总计（主申请人）：" : "预计总计（主申请人，最低金额）："
+        : total.complete ? "Estimated total (primary applicant): " : "Estimated total (primary applicant, minimum): ";
+  return `${label}${range}${gaps}`;
+}
+
+const KIND_NOUN: Record<NonNullable<FinancialRoadmapItem["kind"]>, { en: string; tr: string; zh: string }> = {
+  vac: { en: "visa application charge", tr: "vize başvuru ücreti", zh: "签证申请费" },
+  skills_assessment: { en: "skills assessment", tr: "beceri değerlendirmesi", zh: "技能评估" },
+  english_test: { en: "language test", tr: "dil testi", zh: "语言考试" },
+  medical: { en: "health examination", tr: "sağlık muayenesi", zh: "体检" },
+  police: { en: "police clearance", tr: "polis kaydı belgesi", zh: "无犯罪证明" },
+  vac_additional: { en: "partner/child charges", tr: "partner/çocuk ücretleri", zh: "随行伴侣/子女的费用" },
+};
+
+/**
+ * Names what the Estimated total covers and what it leaves out, for the
+ * Financial Roadmap's total row. "Included" is exactly total.includedKinds;
+ * "not included" is whichever core items didn't contribute a number plus the
+ * costs the total never covers (partner/child charges and any second
+ * instalment, NAATI translation, migration agent/lawyer fees).
+ */
+export function describeTotalScope(
+  total: FinancialRoadmapTotal,
+  locale: "en" | "tr" | "zh-Hans"
+): { included: string; notIncluded: string } {
+  const lang = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh" : "en";
+  const sep = lang === "zh" ? "、" : ", ";
+  const included = total.includedKinds.map((k) => KIND_NOUN[k][lang]);
+  const leftOut = [...total.excludedKinds, ...total.missingAmountKinds].map((k) => KIND_NOUN[k][lang]);
+  const fixedExtras =
+    lang === "tr"
+      ? ["partner/çocuk ücretleri ve varsa ikinci taksit", "NAATI onaylı çeviri", "göçmenlik danışmanı veya avukat ücretleri"]
+      : lang === "zh"
+        ? ["随行伴侣/子女的费用及可能的第二期费用", "NAATI 认证翻译", "移民代理或律师费用"]
+        : ["partner/child charges and any second instalment", "NAATI-certified translation", "migration agent or lawyer fees"];
+  const notIncluded = [...leftOut, ...fixedExtras];
+  return lang === "tr"
+    ? { included: `Bu toplama dahil: ${included.join(sep)}.`, notIncluded: `Dahil değil: ${notIncluded.join(sep)}.` }
+    : lang === "zh"
+      ? { included: `此总计包含：${included.join(sep)}。`, notIncluded: `不包含：${notIncluded.join(sep)}。` }
+      : { included: `Included in this total: ${included.join(sep)}.`, notIncluded: `Not included: ${notIncluded.join(sep)}.` };
 }

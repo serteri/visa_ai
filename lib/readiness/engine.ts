@@ -1,6 +1,7 @@
 import {
   CURRENT_CSIT,
   BASE_VAC_AUD,
+  resolveAdditionalApplicantVac,
   resolveSecondInstalmentAud,
   INCOME_THRESHOLD_491_TO_191_AUD,
   ENGLISH_TEST_VALIDITY_YEARS,
@@ -3551,7 +3552,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
 
   // ── Absolute EOI Hard Gates (DHA) ──────────────────────────────────────
   // 1. Age: applicants 45 or older cannot lodge an EOI.
-  // 2. Skills Assessment: a positive assessment is legally required.
+  // 2. Skills Assessment: a positive skills assessment is required before a visa application can be lodged.
   // 3. English: at least "Competent English" (the legal minimum) is required.
   //    NOTE: parseEnglishOption("none") maps to "competent" for the points
   //    tiering, but the "none" dropdown option means "no valid test / test
@@ -3811,7 +3812,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // the English row itself scores 0 rather than throwing. Previously nothing
   // stopped the OTHER categories (age, employment, education, partner,
   // bonuses) from still summing to a large, presentable "estimated points"
-  // total for someone who cannot legally lodge an EOI without English at
+  // total for someone who cannot lodge an EOI without English at
   // all -- e.g. a 38-year-old with no English test could see ~97 points.
   // Zeroing the total here (not just the English row) makes the number
   // reflect reality: no valid English test means no real points position.
@@ -4867,6 +4868,48 @@ const GOV_FEES_TR: Record<string, string> = {
   "801": "Ayrı bir ücret yok — subclass 820 başvurusu kapsamında ödenmiştir",
 };
 
+/**
+ * "Additional applicants" VAC row for the Financial Roadmap -- emitted only
+ * when the applicant said they have a partner/dependants AND visa-fees.json
+ * carries the per-person figures for the detected fee subclass.
+ */
+function buildAdditionalApplicantVacItems(
+  feeSubclass: string | undefined,
+  input: ReadinessInput,
+  isTr: boolean,
+  isZh: boolean
+): FinancialRoadmapItem[] {
+  const family = norm(input.sponsorOrFamily ?? "");
+  // Form values are "Single / No Dependants" or "Partner / Dependants ...".
+  if (!feeSubclass || !family.startsWith("partner")) return [];
+  const extra = resolveAdditionalApplicantVac(feeSubclass);
+  if (!extra || (extra.adult === 0 && extra.child === 0)) return [];
+
+  const fmt = (n: number) => n.toLocaleString(isTr ? "tr-TR" : "en-AU");
+  const amountLabel = isTr
+    ? `Partner/18+ bağımlı: kişi başı AUD ${fmt(extra.adult)}; 18 yaş altı çocuk: kişi başı AUD ${fmt(extra.child)}`
+    : isZh
+      ? `配偶/18岁及以上受抚养人：每人 AUD ${fmt(extra.adult)}；18岁以下子女：每人 AUD ${fmt(extra.child)}`
+      : `Partner/dependant 18+: AUD ${fmt(extra.adult)} each; child under 18: AUD ${fmt(extra.child)} each`;
+  return [
+    {
+      category: isTr
+        ? "Ek başvurucular için vize başvuru ücreti (partner / çocuklar)"
+        : isZh
+          ? "随行申请人的签证申请费（配偶/子女）"
+          : "Visa Application Charge for additional applicants (partner / children)",
+      estimateType: "official_fee",
+      amountLabel,
+      explanation: isTr
+        ? `Alt sınıf ${feeSubclass} için kişi başı ek başvuru ücretleri. Bu tutarlar ana başvurucu için hesaplanan tahmini toplama dahil değildir; ayrıca 18+ bağımlılar için ikinci taksit uygulanabilir (aşağıya bakın).`
+        : isZh
+          ? `子类 ${feeSubclass} 的每位随行申请人费用。这些金额不包含在按主申请人计算的预计总计中；18岁及以上受抚养人另可能产生第二期费用（见下文）。`
+          : `Per-person charges for additional applicants on subclass ${feeSubclass}. These are not included in the primary-applicant Estimated total; a second instalment can also apply to dependants aged 18+ (see below).`,
+      kind: "vac_additional",
+    },
+  ];
+}
+
 function buildFinancialRoadmap(
   subclasses: string[],
   input: ReadinessInput,
@@ -4898,6 +4941,11 @@ function buildFinancialRoadmap(
       amountMin: feeSubclass ? BASE_VAC_AUD[feeSubclass] : undefined,
       amountMax: feeSubclass ? BASE_VAC_AUD[feeSubclass] : undefined,
     },
+    // Partner/dependant VAC (per person), same visa-fees.json source as the
+    // base charge. Deliberately has no amountMin/amountMax: it is NOT part of
+    // the primary-applicant "Estimated total" (see financial-roadmap-totals.ts);
+    // the Application Guide reads this row by `kind` for its cost list.
+    ...buildAdditionalApplicantVacItems(feeSubclass, input, isTr, isZh),
     {
       category: isTr ? "İngilizce Dil Testi (IELTS / PTE / OET)" : "English Language Test (IELTS / PTE / OET)",
       estimateType: "third_party_estimate",

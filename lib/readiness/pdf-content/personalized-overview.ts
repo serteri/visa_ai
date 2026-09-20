@@ -170,8 +170,8 @@ export function getPersonalizedOverview(
           : (isTr
               ? `EOI/profil oluşturmadan önce ${blockingNoun} zorunludur. Öncelikli adımınız bu gereksinimi karşılamaktır.`
               : isZh
-                ? `在创建 Express Entry 档案之前，${blockingNoun}是法律强制要求。您当前的首要任务是满足该要求。`
-                : `${blockingNoun[0].toUpperCase()}${blockingNoun.slice(1)} is legally required before creating an Express Entry profile. Your immediate priority is meeting this requirement.`),
+                ? `在创建 Express Entry 档案之前，必须先完成${blockingNoun}。您当前的首要任务是满足该要求。`
+                : `${blockingNoun[0].toUpperCase()}${blockingNoun.slice(1)} is required before creating an Express Entry profile. Your immediate priority is meeting this requirement.`),
       ]
     : [
         goalIntro,

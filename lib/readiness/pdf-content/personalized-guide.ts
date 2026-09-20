@@ -1,5 +1,5 @@
 import type { Locale, FinancialRoadmapItem } from "../types";
-import { computeEstimatedTotalAud, describeTotalGaps, findFinancialRoadmapItem } from "../financial-roadmap-totals";
+import { computeEstimatedTotalAud, findFinancialRoadmapItem, formatEstimatedTotalLine } from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
 
@@ -301,23 +301,14 @@ export function getPersonalizedApplicationGuide(
   const guideSkillsItem = findFinancialRoadmapItem(roadmap, "skills_assessment");
   const guideEnglishItem = findFinancialRoadmapItem(roadmap, "english_test");
   const guideMedicalItem = findFinancialRoadmapItem(roadmap, "medical");
+  const guidePoliceItem = findFinancialRoadmapItem(roadmap, "police");
+  const guideAdditionalVacItem = findFinancialRoadmapItem(roadmap, "vac_additional");
   const guideTotal = computeEstimatedTotalAud(roadmap);
 
   const costEstimate = country === "AU"
     ? (guideTotal
         ? (() => {
-            const gaps = describeTotalGaps(guideTotal, locale);
-            const totalLine = guideTotal.complete
-              ? isTr
-                ? `Toplam tahmini (ana başvurucu): AUD ${guideTotal.min.toLocaleString("tr-TR")}-${guideTotal.max.toLocaleString("tr-TR")}`
-                : isZh
-                  ? `预计总计（主申请人）：AUD ${guideTotal.min.toLocaleString("en-AU")}-${guideTotal.max.toLocaleString("en-AU")}`
-                  : `Estimated total (primary applicant): AUD ${guideTotal.min.toLocaleString("en-AU")}-${guideTotal.max.toLocaleString("en-AU")}`
-              : isTr
-                ? `Toplam tahmini (ana başvurucu, en az): AUD ${guideTotal.min.toLocaleString("tr-TR")}-${guideTotal.max.toLocaleString("tr-TR")}${gaps}`
-                : isZh
-                  ? `预计总计（主申请人，最低金额）：AUD ${guideTotal.min.toLocaleString("en-AU")}-${guideTotal.max.toLocaleString("en-AU")}${gaps}`
-                  : `Estimated total (primary applicant, minimum): AUD ${guideTotal.min.toLocaleString("en-AU")}-${guideTotal.max.toLocaleString("en-AU")}${gaps}`;
+            const totalLine = formatEstimatedTotalLine(guideTotal, locale);
 
             const lines: string[] = [];
             if (guideSkillsItem) {
@@ -329,15 +320,17 @@ export function getPersonalizedApplicationGuide(
             if (guideVacItem) {
               lines.push(isTr ? `Başvuru ücreti (VAC): ${guideVacItem.amountLabel}` : isZh ? `申请费（VAC）：${guideVacItem.amountLabel}` : `Application fee (VAC): ${guideVacItem.amountLabel}`);
             }
-            lines.push(
-              isTr
-                ? "Ek partner/çocuk: VAC tablosunun partner/çocuk sütununa bakın (bkz. Tahmini Maliyet Yol Haritası)"
-                : isZh
-                  ? "随行伴侣/子女：见费用路线图部分的 VAC 表格"
-                  : "Additional partner/child: see the VAC partner/child columns in the Financial Roadmap section"
-            );
+            // Partner/child VAC comes from the same visa-fees.json data as the
+            // primary VAC, carried on the roadmap as a "vac_additional" row --
+            // omitted (never invented) when the roadmap has no such row.
+            if (guideAdditionalVacItem) {
+              lines.push(isTr ? `Ek başvurucular (VAC): ${guideAdditionalVacItem.amountLabel}` : isZh ? `随行人员申请费（VAC）：${guideAdditionalVacItem.amountLabel}` : `Additional applicants (VAC): ${guideAdditionalVacItem.amountLabel}`);
+            }
             if (guideMedicalItem) {
               lines.push(isTr ? `Sağlık muayenesi: ${guideMedicalItem.amountLabel}` : isZh ? `体检：${guideMedicalItem.amountLabel}` : `Health examination: ${guideMedicalItem.amountLabel}`);
+            }
+            if (guidePoliceItem) {
+              lines.push(isTr ? `Polis belgeleri: ${guidePoliceItem.amountLabel}` : isZh ? `无犯罪证明：${guidePoliceItem.amountLabel}` : `Police certificates: ${guidePoliceItem.amountLabel}`);
             }
             lines.push(totalLine);
             return lines;

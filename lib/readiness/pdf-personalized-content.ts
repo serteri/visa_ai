@@ -812,10 +812,10 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       // Dynamic gap text block (rendered via closure helpers for cursor sync)
       if (claimableTotal >= viab.cutoffScore) {
         const competitiveText = t === "tr"
-          ? "Son davet turlarına göre yüksek rekabet gücüne sahipsiniz."
+          ? "Yukarıda gösterilen tarihli kesim puanına göre yüksek rekabet gücüne sahipsiniz."
           : t === "zh"
-            ? "基于近期邀请轮次，您具有很强的竞争力。"
-            : "Highly competitive based on recent rounds.";
+            ? "相对于上述带日期的分数线，您具有较强的竞争力。"
+            : "Competitive against the dated cut-off shown above.";
         addSmallText(competitiveText, 4);
       } else {
         const gap = viab.cutoffScore - claimableTotal;

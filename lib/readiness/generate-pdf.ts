@@ -1,5 +1,5 @@
 import { CURRENT_CSIT } from "./constants";
-import { computeEstimatedTotalAud, describeTotalGaps } from "./financial-roadmap-totals";
+import { computeEstimatedTotalAud, describeTotalScope, formatEstimatedTotalLine } from "./financial-roadmap-totals";
 import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
@@ -1657,7 +1657,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     appendixInfoRow("Total Typical Timeline", "3–6 years from Canadian arrival to full P.Eng. licence");
     appendixInfoRow("Annual Licensing Fee", "CAD 200–500 per year depending on province and registration level");
     yPosition += 2;
-    appendixBody("Professional Engineering licensure in Canada is a provincial responsibility administered by self-governing associations. The P.Eng. (Professional Engineer) designation grants legal authority to sign engineering drawings and take professional responsibility for engineering work in Canada. It is legally required for many senior engineering roles.");
+    appendixBody("Professional Engineering licensure in Canada is a provincial responsibility administered by self-governing associations. The P.Eng. (Professional Engineer) designation grants legal authority to sign engineering drawings and take professional responsibility for engineering work in Canada. It is required for many senior engineering roles.");
     yPosition += 2;
     appendixMilestone(1, "Educational Credential Assessment (ECA)", "Apply to Engineers Canada (National Examination Program — NExT) or an equivalent provincial body. Submit transcripts, course descriptions, syllabus documents, and degree certificates. The association assesses equivalency of your foreign engineering degree to a CEAB-accredited Canadian degree. Non-CEAB degrees require additional technical exams.", "3–8 months");
     appendixMilestone(2, "Provisional / Engineering-in-Training (EIT) Registration", "Register with your provincial association as an EIT or Provisional Member immediately upon landing. EIT status allows you to practise engineering under the supervision of a P.Eng. Begin accumulating supervised engineering experience. Fee: CAD 100–250 initial registration.", "Apply upon arrival");
@@ -4625,18 +4625,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // not appearing at all.
     const roadmapTotal = computeEstimatedTotalAud(report.financialRoadmap);
     if (roadmapTotal) {
-      const gaps = describeTotalGaps(roadmapTotal, effectiveLocale);
-      const totalText = roadmapTotal.complete
-        ? effectiveLocale === "tr"
-          ? `Tahmini toplam (ana başvurucu): AUD ${roadmapTotal.min.toLocaleString("tr-TR")}-${roadmapTotal.max.toLocaleString("tr-TR")}`
-          : effectiveLocale === "zh-Hans"
-            ? `预计总计（主申请人）：AUD ${roadmapTotal.min.toLocaleString("en-AU")}-${roadmapTotal.max.toLocaleString("en-AU")}`
-            : `Estimated total (primary applicant): AUD ${roadmapTotal.min.toLocaleString("en-AU")}-${roadmapTotal.max.toLocaleString("en-AU")}`
-        : effectiveLocale === "tr"
-          ? `Tahmini toplam (ana başvurucu, en az): AUD ${roadmapTotal.min.toLocaleString("tr-TR")}-${roadmapTotal.max.toLocaleString("tr-TR")}${gaps}`
-          : effectiveLocale === "zh-Hans"
-            ? `预计总计（主申请人，最低金额）：AUD ${roadmapTotal.min.toLocaleString("en-AU")}-${roadmapTotal.max.toLocaleString("en-AU")}${gaps}`
-            : `Estimated total (primary applicant, minimum): AUD ${roadmapTotal.min.toLocaleString("en-AU")}-${roadmapTotal.max.toLocaleString("en-AU")}${gaps}`;
+      const totalText = formatEstimatedTotalLine(roadmapTotal, effectiveLocale);
+      const scope = describeTotalScope(roadmapTotal, effectiveLocale);
 
       ensurePageSpace(14);
       yPosition += 2;
@@ -4650,6 +4640,18 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       const wrappedTotal = doc.splitTextToSize(safeText(totalText), contentWidth) as string[];
       doc.text(wrappedTotal, margin, yPosition);
       yPosition += wrappedTotal.length * 4.6 + 3;
+      // What the total covers and what it leaves out, so the reader can see
+      // the total's scope without cross-referencing the rows above.
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
+      doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+      for (const scopeLine of [scope.included, scope.notIncluded]) {
+        const wrappedScope = doc.splitTextToSize(safeText(scopeLine), contentWidth) as string[];
+        ensurePageSpace(wrappedScope.length * 3.8 + 2);
+        doc.text(wrappedScope, margin, yPosition);
+        yPosition += wrappedScope.length * 3.8 + 1.5;
+      }
+      yPosition += 1.5;
       setBaseFont();
     }
   }
