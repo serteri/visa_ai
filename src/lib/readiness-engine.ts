@@ -5,7 +5,8 @@ import { ENGLISH_TEST_VALIDITY_YEARS } from "@/lib/readiness/constants";
 import { generateChecklist } from "@/lib/generateChecklist";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateRankedPathways } from "@/lib/readiness/ranked-pathways";
-import { describePathwayScore, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
+import { describePathwayScore, frictionFromScore, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
+import { occupationWarningFor, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { orderBySkilledRanking } from "@/lib/readiness/pathway-ranking";
 import { calculateStateNominationTracker } from "@/lib/readiness/state-nomination";
 import type { EnglishLevel } from "@/lib/readiness/visa-points-calculator";
@@ -68,6 +69,7 @@ function parseEnglishLevel(value?: string): EnglishLevel | undefined {
 
 function escalate(current: FrictionScore, next: FrictionScore): FrictionScore {
   const rank: Record<FrictionScore, number> = {
+    NOT_ASSESSED: 0,
     LOW: 1,
     MEDIUM: 2,
     HIGH: 3,
@@ -219,7 +221,8 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   const locale = input.locale;
   const occupation = findOccupationRecord(input);
 
-  let frictionScore: FrictionScore = "MEDIUM";
+  // A friction LEVEL exists only when a benchmark and a score gap exist (frictionFromScore); otherwise "not assessed".
+  let frictionScore: FrictionScore = "NOT_ASSESSED";
   const reality: string[] = [];
   const successSignals: string[] = [];
 
@@ -231,26 +234,16 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
 
   if (["189", "190", "491"].includes(subclassKey)) {
     if (score) {
-      if (score.gapBase !== null) {
-        const gap = -score.gapBase; // current score minus benchmark (negative = short)
-        if (gap < -10) {
-          frictionScore = "EXTREME";
-        } else if (gap >= 0) {
-          frictionScore = "LOW";
-        } else if (gap <= -6) {
-          frictionScore = "HIGH";
-        } else {
-          frictionScore = "MEDIUM";
-        }
-      }
+      frictionScore = frictionFromScore(score);
       reality.push(describePathwayScore(score, locale));
     } else {
       reality.push(t3(locale, `No recent invitation point benchmark was matched for ${subclassKey}; score pressure is estimated from profile-only indicators.`, `${subclassKey} icin guncel davet puan referansi eslesmedi; puan baskisi yalnizca profil gostergelerine gore tahmin edildi.`, `${subclassKey} 未匹配到最新邀请分数参考；分数压力仅根据档案指标估算。`));
     }
   }
 
-  if (["189", "190", "491"].includes(subclassKey) && occupation?.authority === "ACS" && (input.offshoreExperienceYears ?? 0) < 2) {
-    frictionScore = "EXTREME";
+  if (["189", "190", "491"].includes(subclassKey) && resolveAssessingAuthority(input.occupation).authorityId === "ACS" && (input.offshoreExperienceYears ?? 0) < 2) {
+    // The ACS deduction risk only raises a level that a benchmark gap has already established.
+    if (frictionScore !== "NOT_ASSESSED") frictionScore = "EXTREME";
     reality.push(t3(locale, "ACS experience deduction risk is high because declared experience is below 2 years.", "Beyan edilen deneyim 2 yilin altinda oldugu icin ACS deneyim kesintisi riski yuksektir.", "因申报经验不足 2 年，ACS 经验扣减风险较高。"));
   }
 
@@ -259,15 +252,18 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   // every points-tested subclass (189/190/491) sharing the same occupation.
   // Returned separately so the renderer can show it once instead of
   // verbatim under each subclass row.
-  const localizedOccupationWarning = localizeOccupationWarning(locale, occupation?.critical_warning);
+  // The dataset's warning text can name a different assessing body than the registry resolves (e.g. "AMC pathway"
+  // for a code the registry gives to AHPRA); such a warning is dropped so ONE authority is named per occupation.
+  const localizedOccupationWarning = localizeOccupationWarning(
+    locale,
+    occupationWarningFor(occupation?.critical_warning, resolveAssessingAuthority(input.occupation))
+  );
 
   if (subclassKey === "820/801") {
-    frictionScore = "MEDIUM";
     reality.push(t3(locale, "Relationship evidence preparation is documentation-heavy and consistency-sensitive.", "Iliski kaniti hazirligi belge yogundur ve tutarlilik hassasiyeti yuksektir.", "关系证明准备材料量大且对一致性要求高。"));
   }
 
   if (subclassKey === "482") {
-    frictionScore = "HIGH";
     reality.push(t3(locale, "Employer sponsorship dependency creates a practical bottleneck even with a valid profile.", "Profil uygun olsa bile isveren sponsoruna bagimlilik pratikte darbogaz yaratir.", "即使档案合格，雇主担保依赖仍会形成现实瓶颈。"));
   }
 
@@ -651,12 +647,14 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
         ? `由于已提供${zhProvidedFieldsList}等核心信息，报告置信度较强；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息。`
         : `由于部分核心信息已提供，报告置信度为中等；${estimatedPoints !== undefined ? `当前初步打分估算为 ${estimatedPoints}。` : ""}本内容仅为一般信息，仍取决于个人具体情况。`;
 
+  const zhSnapName = (item: string) =>
+    item.replace(/(.+) \(([^)]+)\)/, (_match, _name, subclass) => `${zhVisaName(subclass, String(_name))} (${subclass})`);
   const signalSnapshot = {
-    strongest: report.signalSnapshot.strongest.replace(/(.+) \(([^)]+)\)/, (_match, _name, subclass) => `${zhVisaName(subclass, String(_name))} (${subclass})`),
-    secondary: report.signalSnapshot.secondary.map((item) =>
-      item.replace(/(.+) \(([^)]+)\)/, (_match, _name, subclass) => `${zhVisaName(subclass, String(_name))} (${subclass})`)
-    ),
-    confidenceLabel: report.signalSnapshot.confidenceLabel,
+    ...report.signalSnapshot,
+    // The all-blocked status sentence is already localized by the base engine; only visa names are translated.
+    strongest: report.signalSnapshot.allBlocked ? report.signalSnapshot.strongest : zhSnapName(report.signalSnapshot.strongest),
+    secondary: report.signalSnapshot.secondary.map(zhSnapName),
+    blockedOrder: report.signalSnapshot.blockedOrder?.map(zhSnapName),
     confidenceExplanation: zhConfidenceExplanation,
   };
 
@@ -815,8 +813,9 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     const dyn = frictionAnalysis.find((f) => f.pathway === item.subclass);
     if (dyn) {
       const score = dyn.frictionScore;
-      const mappedFriction: "low" | "medium" | "high" | "extreme" =
-        score === "EXTREME" ? "extreme"
+      const mappedFriction: "low" | "medium" | "high" | "extreme" | "not_assessed" =
+        score === "NOT_ASSESSED" ? "not_assessed"
+        : score === "EXTREME" ? "extreme"
         : score === "HIGH" ? "high"
         : score === "MEDIUM" ? "medium"
         : "low";
@@ -825,7 +824,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
         friction: mappedFriction,
       };
     }
-    return item;
+    // No friction analysis for this pathway: no benchmark-based level exists.
+    return { ...item, friction: "not_assessed" as const };
   });
 
   const report = {
@@ -843,7 +843,6 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
       pathwayComparison: base.pathwayComparison,
       assessmentState: base.assessmentState,
       stateNominationTracker,
-      occupationAuthority: occupation?.authority,
       pathwayRanking: base.pathwayRanking,
     }),
     documentChecklist: buildPremiumDocumentChecklist(input, base),

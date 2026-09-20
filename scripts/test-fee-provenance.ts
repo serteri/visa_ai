@@ -23,6 +23,8 @@ import {
   CURRENT_CSIT,
 } from "../lib/readiness/constants";
 import { acsAuthority } from "../lib/skills-assessment/authorities/acs";
+import { listAuthorities } from "../lib/skills-assessment";
+import { findAuthorityConflicts } from "../lib/skills-assessment/resolve-authority";
 
 type Fact = {
   id: string;
@@ -175,6 +177,22 @@ checkSecondInstalment("491", "second_instalment_491");
   } else {
     ok(`vac_186: consistently marked MISSING in both the manifest and BASE_VAC_AUD (no invented number).`);
   }
+}
+
+console.log("\n==================== (3) authority conflicts recorded as needing human verification ====================");
+{
+  const conflicts = findAuthorityConflicts(listAuthorities());
+  const recorded = facts.filter((f) => f.id.startsWith("authority_conflict_"));
+  const before = failures;
+  for (const c of conflicts) {
+    const fact = recorded.find((f) => f.id === `authority_conflict_${c.anzscoCode}`);
+    if (!fact) fail(`ANZSCO ${c.anzscoCode} (${c.title}) names two authorities but has no authority_conflict_* fact -- run: npx tsx scripts/audit-authority-conflicts.ts --write`);
+    else if (fact.last_verified !== null || !/needs human verification/.test(fact.source ?? "")) fail(`${fact.id}: must be last_verified null and marked "needs human verification"`);
+  }
+  for (const fact of recorded) {
+    if (!conflicts.some((c) => `authority_conflict_${c.anzscoCode}` === fact.id)) fail(`${fact.id} no longer matches a real conflict -- re-run the audit with --write`);
+  }
+  if (failures === before) ok(`${conflicts.length} authority conflicts recorded (last_verified null, needs human verification)`);
 }
 
 console.log(`\n\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);

@@ -41,6 +41,11 @@ const AUTHORITIES: SkillsAssessmentAuthority[] = [
   generalAuthority,
 ];
 
+/** Every registered authority (read-only), e.g. for the authority-conflict audit. */
+export function listAuthorities(): readonly SkillsAssessmentAuthority[] {
+  return AUTHORITIES;
+}
+
 /**
  * Looks up a registered authority by its authorityId (e.g. "ACS", "GENERAL")
  * -- used to resolve the fuzzy-matched result from getAssessingAuthority()

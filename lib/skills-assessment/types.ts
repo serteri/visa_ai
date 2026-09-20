@@ -42,6 +42,12 @@ export interface AuthorityFee {
   amountCAD?: number;
   /** Footnote explaining variations (e.g. "Card surcharge applies"). */
   note?: LocalizedString;
+  /**
+   * True when this figure is a placeholder estimate pending verification against the authority's own
+   * fee schedule. Every figure derived from it (roadmap row, guide cost list, FAQ answer, Estimated total)
+   * carries the same "estimate pending verification" qualifier.
+   */
+  estimated?: boolean;
 }
 
 export interface ProcessingTime {

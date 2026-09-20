@@ -198,3 +198,33 @@ export function describePathwayScore(score: PathwayScore, locale: Locale): strin
     `当前分数 ${baseScore}；仅在获得${nominationKind(subclass, locale)}后为 ${scoreIfNominated}（尚未获得）；${bench}。`
   );
 }
+
+/** "(skills assessment missing)" style phrase for the Signal Snapshot status sentence. */
+export function blockedReasonPhrase(reason: PathwayBlockReason, locale: Locale): string {
+  switch (reason) {
+    case "skills_assessment":
+      return T(locale, "skills assessment missing", "beceri değerlendirmesi eksik", "缺少技能评估");
+    case "age":
+      return T(locale, "age limit exceeded", "yaş sınırı aşıldı", "超过年龄上限");
+    case "english":
+      return T(locale, "English requirement not met", "İngilizce şartı karşılanmadı", "未满足英语要求");
+    case "points":
+      return T(locale, "below the 65-point minimum", "65 puan asgari şartının altında", "低于65分最低要求");
+    case "occupation":
+      return T(locale, "occupation not eligible", "meslek uygun değil", "职业不符合资格");
+  }
+}
+
+/**
+ * Friction is measured against the invitation benchmark: a level exists ONLY when a benchmark and a score
+ * gap both exist, otherwise the pathway is "not assessed" (never a default LOW/MEDIUM/HIGH/EXTREME).
+ * Measured on the CURRENT (base) score -- an unsecured nomination bonus never lowers it.
+ */
+export function frictionFromScore(score: PathwayScore | undefined): "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED" {
+  if (!score || score.benchmark === null || score.gapBase === null) return "NOT_ASSESSED";
+  const gap = -score.gapBase; // current score minus benchmark (negative = short)
+  if (gap < -10) return "EXTREME";
+  if (gap >= 0) return "LOW";
+  if (gap <= -6) return "HIGH";
+  return "MEDIUM";
+}

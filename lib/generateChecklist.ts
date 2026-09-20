@@ -1,5 +1,5 @@
-import occupationsData from "@/src/data/occupations.json";
 import { blockedLabel } from "@/lib/readiness/pathway-scores";
+import { authorityDisplayName, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import type { PathwayRanking } from "@/lib/readiness/pathway-ranking";
 import type {
   AssessmentState,
@@ -62,14 +62,6 @@ function getGsmBlockReason(
   return undefined;
 }
 
-type OccupationRecord = {
-  anzsco_code: string;
-  occupation_name: string;
-  authority: string;
-};
-
-const OCCUPATION_ROWS = (occupationsData as { occupations: OccupationRecord[] }).occupations;
-
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
 }
@@ -102,39 +94,12 @@ function parseEnglishBand(value?: string): 0 | 1 | 2 {
   return 0;
 }
 
-function findOccupationAuthority(occupation?: string): string | undefined {
-  const code = occupation?.match(/(\d{6})/)?.[1];
-  if (code) {
-    const byCode = OCCUPATION_ROWS.find((row) => row.anzsco_code === code);
-    if (byCode) return byCode.authority;
-  }
-
-  const query = normalize(occupation);
-  if (!query) return undefined;
-
-  const exact = OCCUPATION_ROWS.find((row) => normalize(row.occupation_name) === query);
-  if (exact) return exact.authority;
-
-  return OCCUPATION_ROWS.find((row) => normalize(row.occupation_name).includes(query))?.authority;
-}
-
-function authorityLabel(authority: string, locale: Locale): string {
-  const normalized = authority.toUpperCase();
-  if (normalized === "CPA AUSTRALIA" || normalized === "CPA") {
-    return t(locale, "CPA Australia", "CPA Australia", "CPA Australia");
-  }
-  if (normalized === "CAANZ") {
-    return t(locale, "CA ANZ", "CA ANZ", "CA ANZ");
-  }
-  return authority;
-}
 
 export function generateChecklist(args: {
   input: ReadinessInput;
   pathwayComparison: PathwayComparison[];
   assessmentState: AssessmentState;
   stateNominationTracker?: StateNominationTracker;
-  occupationAuthority?: string;
   pathwayRanking?: PathwayRanking;
 }): LodgementReadyChecklist {
   const { input, pathwayComparison, assessmentState, stateNominationTracker } = args;
@@ -161,16 +126,19 @@ export function generateChecklist(args: {
     });
   }
 
-  const authority = args.occupationAuthority ?? findOccupationAuthority(input.occupation);
+  // The authority comes from the same resolver as the guide, FAQ, roadmap and status (never the dataset's
+  // own `authority` field, which uses another vocabulary and disagrees for some codes).
+  const resolvedAuthority = resolveAssessingAuthority(input.occupation);
+  const authority = resolvedAuthority.isGeneralFallback ? undefined : authorityDisplayName(resolvedAuthority);
   if (authority) {
     items.push({
       id: "skills-assessment",
       priority: "important",
       title: t(
         input.locale,
-        `Skills assessment pathway alignment with ${authorityLabel(authority, input.locale)}`,
-        `${authorityLabel(authority, input.locale)} ile beceri incelemesi yol uyumu`,
-        `${authorityLabel(authority, input.locale)} 的技能评估路径对齐`
+        `Skills assessment pathway alignment with ${authority}`,
+        `${authority} ile beceri incelemesi yol uyumu`,
+        `${authority} 的技能评估路径对齐`
       ),
       detail: t(
         input.locale,

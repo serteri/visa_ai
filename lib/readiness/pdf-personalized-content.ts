@@ -14,7 +14,7 @@ import {
   resolveLocalized,
   type LocalizedString,
 } from "@/lib/skills-assessment";
-import { getAssessingAuthority } from "@/lib/skills-assessment/occupation-authority-map";
+import { authorityDisplayName, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { getEligibilityBadgeState } from "./eligibility-badge";
 import { checkEmployerSponsorshipTerminology } from "./report-invariants";
 import { POINTS_THRESHOLD } from "./assessment-state";
@@ -869,27 +869,17 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
   // Use the raw untranslated occupation from assessmentState so code-based
   // resolution (e.g. "Software Engineer 261313") works regardless of display locale.
   const rawOccupation = ctx.report.assessmentState.occupation || userInputSummary.occupation;
-  if (rawOccupation) {
-    assessingAuthorityInfo = getSkillsAssessmentAuthority(rawOccupation);
+  // ONE resolver for every section that names the authority (resolve-authority.ts).
+  const resolvedAuthority = resolveAssessingAuthority(rawOccupation);
+  if (resolvedAuthority.source === "registry-code") {
+    assessingAuthorityInfo = resolvedAuthority.authority;
   }
-  // Precise ANZSCO-code match covers only a fraction of occupations -- when
-  // it misses (most commonly because the occupation string has no code
-  // attached at all, e.g. a bare "Software Engineer"), fall back to fuzzy
-  // keyword matching on the title itself. getAssessingAuthority() always
-  // resolves to something now (a specific authority via keyword, or
-  // generalAuthority / VETASSESS as the universal last resort), so there is
-  // no longer an "unresolved" case here -- isGeneralFallback distinguishes
-  // "we know exactly who" from "this will likely go to a general authority".
-  const fuzzyAuthorityMatch = !assessingAuthorityInfo
-    ? getAssessingAuthority(rawOccupation)
-    : null;
+  const fuzzyAuthorityMatch = resolvedAuthority.source === "registry-code" ? null : resolvedAuthority;
   // Shared across this section and the Application Guide below, so both
   // name the same authority instead of one saying "ACS" and the other
   // falling back to generic text for the same occupation.
-  const resolvedAuthorityName = assessingAuthorityInfo
-    ? `${assessingAuthorityInfo.authorityName} (${assessingAuthorityInfo.authorityId})`
-    : fuzzyAuthorityMatch!.authorityName;
-  const isGeneralAuthorityFallback = !assessingAuthorityInfo && (fuzzyAuthorityMatch?.isGeneralFallback ?? false);
+  const resolvedAuthorityName = authorityDisplayName(resolvedAuthority);
+  const isGeneralAuthorityFallback = resolvedAuthority.isGeneralFallback;
 
   ctx.ensurePageSpace(25);
   const skillsStatus = getSkillsAssessmentStatus(

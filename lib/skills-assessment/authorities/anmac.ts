@@ -60,6 +60,7 @@ export const anmacAuthority: SkillsAssessmentAuthority = {
         {
           label: { en: "Skills Assessment Application (estimate)", tr: "Beceri Değerlendirmesi Başvurusu (tahmini)", "zh-Hans": "技能评估申请（估算）" },
           amountAUD: 1000,
+          estimated: true,
         },
       ],
       processingTimeWeeks: {

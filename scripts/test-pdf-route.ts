@@ -39,10 +39,12 @@ import { generatePremiumStrategy } from "../lib/ai/generate-premium-strategy";
 import { blockedLabel, describePathwayScore, PATHWAY_SUBCLASSES } from "../lib/readiness/pathway-scores";
 import { deterministicRecommendations, findOpenState } from "../lib/readiness/pathway-recommendations";
 import visaTrends from "../src/data/visa-trends.json";
+import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
+import { confidenceLevelLabel, frictionBandDefinition, frictionBandLabel, frictionLevelDefinitionGeneric } from "../src/lib/readiness/localization";
 import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
-import { computeEstimatedTotalAud, formatEstimatedTotalLine } from "../lib/readiness/financial-roadmap-totals";
+import { computeEstimatedTotalAud, estimateQualifier, formatEstimatedTotalLine } from "../lib/readiness/financial-roadmap-totals";
 import { ENGLISH_TEST_VALIDITY_YEARS } from "../lib/readiness/constants";
 
 const LOCALES = ["en", "tr", "zh-Hans"] as const;
@@ -909,7 +911,8 @@ async function runPathwayChecks(
       if (ranking.allBlocked && ranking.commonBlockReason) {
         const lbl = sq(blockedLabel(ranking.commonBlockReason, locale));
         const n = flat.split(lbl).length - 1;
-        if (n < 4) f(`the blocked label "${lbl}" appears only ${n}x (expected in ranking x3 + snapshot + checklist)`);
+        const expectedLabels = ranking.commonBlockReason === "skills_assessment" ? 4 : 1; // ranking x3 + snapshot + checklist; grouped points-blocked ranking rows keep their own heading
+        if (n < expectedLabels) f(`the blocked label "${lbl}" appears only ${n}x (expected >= ${expectedLabels})`);
         if (ranking.entries.some((e) => e.fit !== "blocked")) f("allBlocked but a pathway is not blocked");
       }
       // fit labels come from the ranking only: no "Potential fit"/"Unclear fit" on a blocked pathway
@@ -947,6 +950,197 @@ function visaTrendsBenchmark(occupation: string | undefined, subclass: string): 
   const rec = (visaTrends as { occupation_trends: Array<{ anzsco_code: string; estimates: Array<{ subclass: string; last_invited_point?: number; estimated_points: number }> }> }).occupation_trends.find((r) => r.anzsco_code === code);
   const e = rec?.estimates.find((x) => x.subclass === subclass);
   return e ? (e.last_invited_point ?? e.estimated_points) : undefined;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Unsupported labels / one authority / estimate qualifier (Phase 2d-lite)
+//  - no friction level when the occupation has no invitation benchmark ("Not assessed");
+//  - one confidence value, identical in the pathway table and the Signal Snapshot;
+//  - "Strongest signal" never shown when every pathway is blocked;
+//  - one assessing authority per occupation in the whole text;
+//  - every figure from an authority fee flagged `estimated` carries "estimate pending verification",
+//    including the Estimated total line.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const AUTHORITY_PROFILES: Array<{ name: string; input: ReadinessInput }> = [
+  {
+    // General Practitioner 253111, no assessment: no benchmark, AHPRA estimated fee
+    name: "a-gp-253111",
+    input: { ...base, currentCountry: "Turkey", age: "34", occupation: "General Practitioner 253111", sponsorOrFamily: undefined },
+  },
+  { name: "a-se-261313", input: { ...base } },
+  {
+    name: "a-civil-233211-positive",
+    input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "competent", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 },
+  },
+];
+
+const CONF_WORDS = Object.fromEntries(
+  LOCALES.map((l) => [l, { low: confidenceLevelLabel(l, "low"), medium: confidenceLevelLabel(l, "medium"), high: confidenceLevelLabel(l, "high") }])
+) as Record<Locale, { low: string; medium: string; high: string }>;
+const CONF_RANK = { low: 0, medium: 1, high: 2 } as const;
+
+const NO_BENCHMARK_PHRASE: Record<Locale, string> = {
+  en: "no recent invitation benchmark is available for this occupation",
+  tr: "bu meslek için yakın dönem davet referansı bulunmuyor",
+  "zh-Hans": "该职业暂无近期邀请参考分",
+};
+const STRONGEST_LABEL: Record<Locale, string> = { en: "Strongest signal", tr: "En güçlü sinyal", "zh-Hans": "最高匹配路径" };
+const ONCE_UNBLOCKED: Record<Locale, string> = {
+  en: "Would be evaluated first once unblocked",
+  tr: "Engel kalktığında ilk değerlendirilecek yollar",
+  "zh-Hans": "解除阻碍后将优先评估",
+};
+const RESOURCES_HEADING: Record<Locale, string> = { en: "Official Resources", tr: "Resmi Kaynaklar", "zh-Hans": "官方资源" };
+
+// Authority acronyms/names that must not appear for another occupation's authority (registry authorityId -> patterns)
+const AUTHORITY_PATTERNS: Array<{ id: string; re: RegExp }> = [
+  { id: "ACS", re: /\bACS\b|Australian ?Computer ?Society/ },
+  { id: "EA", re: /Engineers ?Australia/ },
+  { id: "VETASSESS", re: /\bVETASSESS\b/ },
+  { id: "TRA", re: /\bTRA\b|Trades ?Recognition ?Australia/ },
+  { id: "ANMAC", re: /\bANMAC\b/ },
+  { id: "AHPRA", re: /\bAHPRA\b|Health ?Practitioner ?Regulation ?Agency/ },
+  { id: "AMC", re: /\bAMC\b|Australian ?Medical ?Council/ },
+  { id: "CPA", re: /CPA ?Australia/ },
+  { id: "CA-ANZ", re: /\bCA ?ANZ\b|\bCAANZ\b/ },
+  { id: "AACA", re: /\bAACA\b/ },
+];
+
+async function runAuthorityChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  for (const profile of AUTHORITY_PROFILES) {
+    for (const locale of LOCALES) {
+      const label = `authority ${profile.name}/${locale}`;
+      console.log(`\n=== ${label} ===`);
+      let caseFailed = false;
+      const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+      const input: ReadinessInput = { ...profile.input, locale };
+      const report = runReadinessEngine(input);
+      const scores = report.pathwayScores!;
+      const ranking = report.pathwayRanking!;
+      const reportId = `authority-${profile.name}-${locale}`;
+      rows.set(reportId, {
+        id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+        agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+      });
+      const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+      if (res.status !== 200) { f(`route returned HTTP ${res.status}`); continue; }
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      const pages = (await extractPdfPages(bytes)).map((p) => p.replace(/L o g i V i s a\s*/g, "").replace(/\d+ \/ \d+\s*Generated by[^\n]*\n?/g, "").replace(/-- \d+ of \d+ --/g, ""));
+      const raw = pages.join("\n");
+      await writeFile(path.join(outDir, `authority-${profile.name}-${locale}.txt`), raw);
+      const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
+      const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
+
+      // ── 1. Friction: a level only with a benchmark and a score gap ──────────
+      const noBenchmark = PATHWAY_SUBCLASSES.filter((s) => scores[s].benchmark === null);
+      const levels = ["LOW", "MEDIUM", "HIGH", "EXTREME"] as const;
+      const notAssessedDef = sq(frictionBandDefinition(locale, "NOT_ASSESSED"));
+      const notAssessedLabel = sq(frictionBandLabel(locale, "NOT_ASSESSED"));
+      if (noBenchmark.length === PATHWAY_SUBCLASSES.length) {
+        for (const lv of levels) {
+          const def = sq(frictionBandDefinition(locale, lv));
+          if (flat.includes(def)) f(`friction level ${lv} is shown although no pathway has an invitation benchmark`);
+        }
+        if (!flat.includes(sq(NO_BENCHMARK_PHRASE[locale]))) f("the Reality Check does not say there is no invitation benchmark");
+        if (!flat.includes(notAssessedLabel)) f(`"Not assessed" label is missing ("${notAssessedLabel}")`);
+        if (!flat.includes(notAssessedDef)) f("the 'Not assessed' friction definition is missing");
+      } else if (noBenchmark.length === 0) {
+        // Positive control: with benchmarks a real level IS shown and "Not assessed" is not
+        if (!levels.some((lv) => flat.includes(sq(frictionBandDefinition(locale, lv))))) f("no friction level is shown although benchmarks exist");
+        if (flat.includes(notAssessedLabel)) f("'Not assessed' is shown although benchmarks exist");
+      }
+      // Glossary: the friction definition says levels exist only with a benchmark and a score gap
+      if (!flat.includes(sq(frictionLevelDefinitionGeneric(locale)))) f("glossary friction definition (levels only with a benchmark and a gap) is missing");
+      // the sentence that contradicts the Reality Check
+      if (flat.includes(sq(NO_BENCHMARK_PHRASE[locale])) && /A (?:moderate|meaningful|substantial) gap exists between your profile and/.test(flat) && noBenchmark.length === PATHWAY_SUBCLASSES.length) {
+        f("a 'gap exists between your profile and recent benchmarks' definition is shown next to 'no benchmark available'");
+      }
+
+      // ── 2. Confidence: one value in the table and the Snapshot ─────────────
+      const words = CONF_WORDS[locale];
+      const wordRe = `(${words.high}|${words.medium}|${words.low})`;
+      const tableStart = flat.search(/Structured Pathway Comparison|Vize Yolu Karşılaştırması|签证路径结构化对比/);
+      const snapStart = flat.search(/Signal Snapshot|Sinyal Özeti|匹配度概览/);
+      const snapMatch = snapStart >= 0 ? flat.slice(snapStart, snapStart + 900).match(new RegExp(`(?:Confidence|Güven|置信度) ?${wordRe}`)) : null;
+      const snapLevel = snapMatch ? (Object.entries(words).find(([, w]) => w === snapMatch[1])?.[0] as keyof typeof CONF_RANK) : undefined;
+      if (!snapLevel) f("no confidence value found in the Signal Snapshot");
+      const tableLevels: Array<keyof typeof CONF_RANK> = [];
+      if (tableStart >= 0) {
+        const slice = flat.slice(tableStart, tableStart + 3500);
+        for (const m of slice.matchAll(new RegExp(`\\((?:189|190|491|482|485|500|186|820/801)\\) ?${wordRe}`, "g"))) {
+          const lv = Object.entries(words).find(([, w]) => w === m[1])?.[0] as keyof typeof CONF_RANK;
+          if (lv) tableLevels.push(lv);
+        }
+      }
+      if (tableLevels.length === 0) f("no pathway confidence found in the comparison table");
+      if (snapLevel) {
+        for (const lv of tableLevels) if (CONF_RANK[lv] > CONF_RANK[snapLevel]) f(`table confidence ${lv} is higher than the Snapshot's ${snapLevel}`);
+        if (tableLevels.some((lv) => lv !== snapLevel)) f(`table confidence [${tableLevels}] differs from the Snapshot's ${snapLevel}`);
+        if (snapLevel !== undefined && report.signalSnapshot.overallConfidence !== snapLevel) f(`Snapshot text ${snapLevel} != engine overallConfidence ${report.signalSnapshot.overallConfidence}`);
+        // capped by completeness: a missing skills assessment caps at Medium
+        if (!report.assessmentState.fieldsPresent.skillsAssessment && CONF_RANK[snapLevel] > CONF_RANK.medium) f("confidence exceeds Medium although the skills assessment is missing");
+      }
+
+      // ── 3. Snapshot when every pathway is blocked ──────────────────────────
+      if (ranking.allBlocked) {
+        if (snapStart >= 0 && flat.slice(snapStart, snapStart + 900).includes(sq(STRONGEST_LABEL[locale]))) f('"Strongest signal" is shown although every pathway is blocked');
+        const status = sq(report.signalSnapshot.strongest);
+        if (!flat.includes(status)) f(`Snapshot status sentence missing ("${report.signalSnapshot.strongest}")`);
+        const onceIdx = flat.indexOf(sq(ONCE_UNBLOCKED[locale]));
+        if (onceIdx < 0) f("'would be evaluated first once unblocked' row is missing");
+        else {
+          const order = orderOf(flat.slice(onceIdx, onceIdx + 500), /\((189|190|491)\)/g);
+          const expected = ranking.entries.map((e) => e.subclass);
+          if (JSON.stringify(order) !== JSON.stringify(expected)) f(`unblocked order [${order}] != ranking [${expected}]`);
+        }
+      } else if (snapStart >= 0 && !flat.slice(snapStart, snapStart + 900).includes(sq(STRONGEST_LABEL[locale]))) {
+        f('"Strongest signal" is missing although a pathway is not blocked');
+      }
+
+      // ── 4. One authority per occupation in the whole text ──────────────────
+      const resolved = resolveAssessingAuthority(profile.input.occupation);
+      const resStart = flat.indexOf(sq(RESOURCES_HEADING[locale]));
+      const body = resStart >= 0 ? flat.slice(0, resStart) : flat; // the generic "Official Resources" link list is exempt
+      const named = AUTHORITY_PATTERNS.filter((a) => a.re.test(body)).map((a) => a.id);
+      const stray = named.filter((id) => id !== resolved.authorityId);
+      if (stray.length > 0) f(`text names other authorities ${stray} although ${profile.input.occupation} resolves to ${resolved.authorityId}`);
+      if (!named.includes(resolved.authorityId)) f(`the resolved authority ${resolved.authorityId} is never named`);
+
+      // ── 5. Estimate qualifier next to every figure from an estimated fee ───
+      const qualifier = sq(estimateQualifier(locale));
+      const estimatedItems = report.financialRoadmap.filter((i) => i.estimated === true);
+      const total = computeEstimatedTotalAud(report.financialRoadmap);
+      if (estimatedItems.length > 0) {
+        for (const item of estimatedItems) {
+          // The label carries the qualifier (from the data flag)...
+          if (!item.amountLabel.includes(estimateQualifier(locale)) && !item.amountLabel.includes("估算")) f(`roadmap item "${item.category}" is flagged estimated but its amount label has no qualifier`);
+          // ...and every section quoting the figure quotes that label: Roadmap + guide cost list + FAQ answer.
+          const labelCount = flat.split(sq(item.amountLabel)).length - 1;
+          if (labelCount < 3) f(`estimated fee "${item.amountLabel}" appears ${labelCount}x with its qualifier, expected in the Roadmap, guide cost list and FAQ`);
+          // No skills-assessment sentence quotes the figure without the qualifier
+          const fig = String(item.amountMin).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          const bare = new RegExp(`(?:Skills assessment|Beceri değerlendirmesi|技能评估)[^.。;]{0,90}?${fig.replace(",", "[,.]")}(?!\\d)(?![^]{0,4}[(（])`, "gi");
+          for (const m of flat.matchAll(bare)) {
+            const tail = flat.slice(m.index! + m[0].length, m.index! + m[0].length + 60);
+            if (!sq(tail).includes(qualifier) && !sq(tail).includes("估算")) f(`fee ${fig} quoted without the qualifier: "...${m[0].slice(-40)}${tail.slice(0, 30)}..."`);
+          }
+        }
+        const totalLine = sq(formatEstimatedTotalLine(total!, locale));
+        const totalCount = flat.split(totalLine.replace(/\.$/, "")).length - 1;
+        if (totalCount < 3) f(`Estimated total line with the estimate qualifier appears ${totalCount}x (need Roadmap + FAQ + guide)`);
+        if (!totalLine.includes(qualifier)) f("Estimated total line lacks the estimate qualifier");
+      } else if (flat.includes(qualifier)) {
+        f("the estimate qualifier is shown although no fee is flagged estimated");
+      }
+      if (!caseFailed) console.log("  ✅ ok");
+    }
+  }
 }
 
 async function main() {
@@ -1030,6 +1224,12 @@ async function main() {
       }
     }
   }
+
+  // Unsupported labels, one authority, estimate qualifier
+  await runAuthorityChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
 
   // One score and one ranking (LLM stubbed with hostile output)
   await runPathwayChecks(GET, rows, outDir, (m) => {

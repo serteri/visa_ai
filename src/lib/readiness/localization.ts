@@ -218,7 +218,14 @@ export function localizeTrendDescription(locale: Locale, description?: string): 
   return localizeText(locale, description);
 }
 
-export function frictionBandLabel(locale: Locale, score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME"): string {
+export function frictionBandLabel(locale: Locale, score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED"): string {
+  if (score === "NOT_ASSESSED") {
+    return locale === "tr"
+      ? "Değerlendirilmedi (bu meslek için davet referansı yok)"
+      : locale === "zh-Hans"
+        ? "未评估（该职业暂无邀请参考分）"
+        : "Not assessed (no invitation benchmark available for this occupation)";
+  }
   if (locale === "zh-Hans") {
     if (score === "EXTREME") return "竞争极高";
     if (score === "HIGH") return "竞争较高";
@@ -243,7 +250,14 @@ export function frictionBandLabel(locale: Locale, score: "LOW" | "MEDIUM" | "HIG
  * buildFrictionItem in src/lib/readiness-engine.ts for the underlying gap
  * thresholds), not just the label word itself.
  */
-export function frictionBandDefinition(locale: Locale, score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME"): string {
+export function frictionBandDefinition(locale: Locale, score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED"): string {
+  if (score === "NOT_ASSESSED") {
+    return locale === "tr"
+      ? "Rekabet düzeyi yalnızca güncel bir davet referansı ve bir puan farkı varsa gösterilir; bu yol için ikisi birden mevcut değil."
+      : locale === "zh-Hans"
+        ? "仅当同时存在近期邀请参考分和分数差距时才显示竞争激烈度；该路径二者不齐备。"
+        : "A friction level is shown only when a recent invitation benchmark and a score gap both exist; for this pathway they do not.";
+  }
   if (locale === "zh-Hans") {
     if (score === "EXTREME") return "您的档案与近期获邀参考分数之间存在较大差距——目前有多个不利因素叠加影响该路径。";
     if (score === "HIGH") return "您的档案与近期参考分数之间存在明显差距——很可能需要大量补充材料或显著提升档案。";
@@ -312,12 +326,12 @@ export function confidenceDefinitionGeneric(locale: Locale): string {
 /** General glossary-level definition of what "Friction Level" measures, independent of any single LOW/MEDIUM/HIGH/EXTREME band (see frictionBandDefinition for the per-band text shown inline next to a specific rating). */
 export function frictionLevelDefinitionGeneric(locale: Locale): string {
   if (locale === "tr") {
-    return "Rekabet Düzeyi (Friction Level), profilinizin puanı ile bu yol için güncel davet referansları arasındaki farkı gösterir -- Düşük/Orta/Yüksek/Çok Yüksek olarak derecelendirilir.";
+    return "Rekabet Düzeyi (Friction Level), profilinizin puanı ile bu yol için güncel davet referansları arasındaki farkı gösterir -- Düşük/Orta/Yüksek/Çok Yüksek olarak derecelendirilir. Yalnızca güncel bir davet referansı ve bir puan farkı varsa gösterilir; aksi halde yol \"Değerlendirilmedi\" olarak işaretlenir.";
   }
   if (locale === "zh-Hans") {
-    return "竞争激烈度（Friction Level）表示您的档案分数与该路径当前获邀参考分数之间的差距——分为低/中/高/极高四档。";
+    return "竞争激烈度（Friction Level）表示您的档案分数与该路径当前获邀参考分数之间的差距——分为低/中/高/极高四档。仅当同时存在近期邀请参考分和分数差距时才显示；否则标记为“未评估”。";
   }
-  return "Friction Level indicates the gap between your profile's points and the current invitation benchmark for this pathway -- rated Low, Medium, High, or Extreme.";
+  return "Friction Level indicates the gap between your profile's points and the current invitation benchmark for this pathway -- rated Low, Medium, High, or Extreme. It is shown only when a recent invitation benchmark and a score gap both exist; otherwise the pathway is marked \"Not assessed\".";
 }
 
 export function strengthLabel(locale: Locale, level: "limited" | "moderate" | "strong"): string {

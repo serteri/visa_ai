@@ -155,6 +155,513 @@
       "locations": [
         "lib/readiness/constants.ts:CURRENT_CSIT"
       ]
+    },
+    {
+      "id": "authority_conflict_121211",
+      "description": "ANZSCO 121211 (Cotton Grower): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_121213",
+      "description": "ANZSCO 121213 (Fruit or Nut Grower): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_132211",
+      "description": "ANZSCO 132211 (Finance Manager): the codebase names more than one assessing authority -- CPA (registry) vs CA-ANZ (registry) vs IPA (registry) vs CA-ANZ (dataset authority field) vs CPA (dataset authority field) vs IPA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_134211",
+      "description": "ANZSCO 134211 (Medical Administrator): the codebase names more than one assessing authority -- AHPRA (registry) vs AHPRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_221213",
+      "description": "ANZSCO 221213 (External Auditor): the codebase names more than one assessing authority -- CPA (registry) vs CA-ANZ (registry) vs IPA (registry) vs CA-ANZ (dataset authority field) vs CPA (dataset authority field) vs IPA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_225211",
+      "description": "ANZSCO 225211 (ICT Account Manager): the codebase names more than one assessing authority -- ACS (registry) vs ACS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_225212",
+      "description": "ANZSCO 225212 (ICT Business Development Manager): the codebase names more than one assessing authority -- ACS (registry) vs ACS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_232111",
+      "description": "ANZSCO 232111 (Architect): the codebase names more than one assessing authority -- AACA (registry) vs VETASSESS (registry) vs VETASSESS (dataset authority field) vs AACA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_233916",
+      "description": "ANZSCO 233916 (Naval Architect): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_234611",
+      "description": "ANZSCO 234611 (Medical Laboratory Scientist): the codebase names more than one assessing authority -- AIMS (registry) vs AIMS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_242211",
+      "description": "ANZSCO 242211 (Vocational Education Teacher): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_252311",
+      "description": "ANZSCO 252311 (Dental Specialist): the codebase names more than one assessing authority -- ADC (registry) vs ADC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_252312",
+      "description": "ANZSCO 252312 (Dentist): the codebase names more than one assessing authority -- ADC (registry) vs ADC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_253111",
+      "description": "ANZSCO 253111 (General Practitioner): the codebase names more than one assessing authority -- AHPRA (registry) vs AHPRA (dataset authority field) vs AMC (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254211",
+      "description": "ANZSCO 254211 (Nurse Educator): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254212",
+      "description": "ANZSCO 254212 (Nurse Researcher): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254311",
+      "description": "ANZSCO 254311 (Nurse Manager): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254411",
+      "description": "ANZSCO 254411 (Nurse Practitioner): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254412",
+      "description": "ANZSCO 254412 (Registered Nurse (Aged Care)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254413",
+      "description": "ANZSCO 254413 (Registered Nurse (Child and Family Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254414",
+      "description": "ANZSCO 254414 (Registered Nurse (Community Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254415",
+      "description": "ANZSCO 254415 (Registered Nurse (Critical Care and Emergency)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254418",
+      "description": "ANZSCO 254418 (Registered Nurse (Medical)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254422",
+      "description": "ANZSCO 254422 (Registered Nurse (Mental Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254423",
+      "description": "ANZSCO 254423 (Registered Nurse (Perioperative)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254425",
+      "description": "ANZSCO 254425 (Registered Nurse (Paediatrics)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254499",
+      "description": "ANZSCO 254499 (Registered Nurses nec): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_311213",
+      "description": "ANZSCO 311213 (Medical Laboratory Technician): the codebase names more than one assessing authority -- VETASSESS (registry) vs AIMS (registry) vs VETASSESS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312211",
+      "description": "ANZSCO 312211 (Civil Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312311",
+      "description": "ANZSCO 312311 (Electrical Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312312",
+      "description": "ANZSCO 312312 (Electrical Engineering Technician): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312411",
+      "description": "ANZSCO 312411 (Electronic Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312412",
+      "description": "ANZSCO 312412 (Electronic Engineering Technician): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312511",
+      "description": "ANZSCO 312511 (Mechanical Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312512",
+      "description": "ANZSCO 312512 (Mechanical Engineering Technician): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_313213",
+      "description": "ANZSCO 313213 (Telecommunications Network Planner): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_399111",
+      "description": "ANZSCO 399111 (Boat Builder and Repairer): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_399511",
+      "description": "ANZSCO 399511 (Broadcast Transmitter Operator): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs TRA (dataset authority field). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_411411",
+      "description": "ANZSCO 411411 (Enrolled Nurse): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
     }
   ]
 }

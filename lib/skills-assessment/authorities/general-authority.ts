@@ -49,6 +49,7 @@ export const generalAuthority: SkillsAssessmentAuthority = {
         {
           label: { en: "General Skills Assessment (estimate)", tr: "Genel Beceri Değerlendirmesi (tahmini)", "zh-Hans": "通用技能评估（估算）" },
           amountAUD: 950,
+          estimated: true,
         },
       ],
       processingTimeWeeks: {

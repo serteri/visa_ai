@@ -31,6 +31,8 @@ export type FinancialRoadmapTotal = {
    * because one line item doesn't apply to this pathway.
    */
   excludedKinds: ReadonlyArray<NonNullable<FinancialRoadmapItem["kind"]>>;
+  /** Core kinds whose figure is flagged `estimated` (pending verification) and is included in min/max. */
+  estimatedKinds: ReadonlyArray<NonNullable<FinancialRoadmapItem["kind"]>>;
   /**
    * Core kinds that ARE present but had no numeric amountMin/amountMax
    * (e.g. VAC when the fee subclass wasn't detected) -- summed as 0 and
@@ -66,6 +68,7 @@ export function computeEstimatedTotalAud(
   const excludedKinds = found.filter((f) => !f.item).map((f) => f.kind);
   const missingAmountKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
   const includedKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
+  const estimatedKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
 
   let min = 0;
   let max = 0;
@@ -74,6 +77,7 @@ export function computeEstimatedTotalAud(
       min += item.amountMin;
       max += item.amountMax;
       includedKinds.push(kind);
+      if (item.estimated === true) estimatedKinds.push(kind);
     } else {
       missingAmountKinds.push(kind);
     }
@@ -83,6 +87,7 @@ export function computeEstimatedTotalAud(
     max,
     complete: missingAmountKinds.length === 0 && excludedKinds.length === 0,
     includedKinds,
+    estimatedKinds,
     excludedKinds,
     missingAmountKinds,
   };
@@ -145,15 +150,23 @@ export function formatEstimatedTotalLine(
   terminal = ""
 ): string {
   const numLocale = locale === "tr" ? "tr-TR" : "en-AU";
-  const range = `AUD ${total.min.toLocaleString(numLocale)}-${total.max.toLocaleString(numLocale)}${terminal}`;
+  const range = `AUD ${total.min.toLocaleString(numLocale)}-${total.max.toLocaleString(numLocale)}`;
   const gaps = total.complete ? "" : describeTotalGaps(total, locale);
+  const estimated =
+    total.estimatedKinds.length > 0
+      ? locale === "tr"
+        ? ` (${total.estimatedKinds.map((k) => KIND_NOUN[k].tr).join(", ")}: ${estimateQualifier(locale)})`
+        : locale === "zh-Hans"
+          ? `（${total.estimatedKinds.map((k) => KIND_NOUN[k].zh).join("、")}：${estimateQualifier(locale)}）`
+          : ` (${total.estimatedKinds.map((k) => KIND_NOUN[k].en).join(", ")}: ${estimateQualifier(locale)})`
+      : "";
   const label =
     locale === "tr"
       ? total.complete ? "Tahmini toplam (ana başvurucu): " : "Tahmini toplam (ana başvurucu, en az): "
       : locale === "zh-Hans"
         ? total.complete ? "预计总计（主申请人）：" : "预计总计（主申请人，最低金额）："
         : total.complete ? "Estimated total (primary applicant): " : "Estimated total (primary applicant, minimum): ";
-  return `${label}${range}${gaps}`;
+  return `${label}${range}${estimated}${terminal}${gaps}`;
 }
 
 const KIND_NOUN: Record<NonNullable<FinancialRoadmapItem["kind"]>, { en: string; tr: string; zh: string }> = {
@@ -192,4 +205,9 @@ export function describeTotalScope(
     : lang === "zh"
       ? { included: `此总计包含：${included.join(sep)}。`, notIncluded: `不包含：${notIncluded.join(sep)}。` }
       : { included: `Included in this total: ${included.join(sep)}.`, notIncluded: `Not included: ${notIncluded.join(sep)}.` };
+}
+
+/** The one qualifier every figure taken from an authority fee flagged `estimated` carries. */
+export function estimateQualifier(locale: "en" | "tr" | "zh-Hans"): string {
+  return locale === "tr" ? "doğrulama bekleyen tahmin" : locale === "zh-Hans" ? "估算，待核实" : "estimate pending verification";
 }

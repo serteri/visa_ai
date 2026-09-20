@@ -28,7 +28,8 @@ import {
   resolveLocalized,
   resolveLocalizedArray,
 } from "@/lib/skills-assessment";
-import { getAssessingAuthority } from "@/lib/skills-assessment/occupation-authority-map";
+import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
+import { estimateQualifier } from "@/lib/readiness/financial-roadmap-totals";
 import {
   type ProvinceCode,
   type ProvinceStream,
@@ -76,7 +77,8 @@ import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections, getTrendBenchmarks } from "@/src/lib/readiness/report-generator";
-import { blockedLabel, computePathwayScores, type PathwayScoreSet } from "@/lib/readiness/pathway-scores";
+import { blockedLabel, blockedReasonPhrase, computePathwayScores, type PathwayScoreSet } from "@/lib/readiness/pathway-scores";
+import { computeConfidence } from "@/lib/readiness/confidence";
 import { orderBySkilledRanking, rankPathways, type PathwayRanking } from "@/lib/readiness/pathway-ranking";
 import type { InvitationTrendEstimate } from "@/src/lib/readiness/report-generator";
 import { getDocumentChecklist, getCanadaDocumentChecklist } from "./document-checklists";
@@ -5084,9 +5086,7 @@ function buildFinancialRoadmap(
     // paragraph. getAuthorityById turns that match's authorityId back into
     // the full authority object so the same fee/pathway rendering below
     // works identically for both the precise and fuzzy-matched cases.
-    const authority =
-      getSkillsAssessmentAuthority(input.occupation) ??
-      getAuthorityById(getAssessingAuthority(input.occupation).authorityId);
+    const authority = resolveAssessingAuthority(input.occupation).authority;
     let primaryPathway = getDefaultPathway(authority);
 
     // ACS-specific: resolve pathway from intake data instead of default
@@ -5103,9 +5103,10 @@ function buildFinancialRoadmap(
     if (authority && primaryPathway) {
       const primaryFee = primaryPathway.fees.find((f) => typeof f.amountAUD === "number")
         ?? primaryPathway.fees[0];
-      const feeLabel = primaryFee?.amountAUD !== undefined
-        ? `AUD $${primaryFee.amountAUD.toLocaleString("en-AU")} ${primaryFee.note ? `(${resolveLocalized(primaryFee.note, locale)})` : ""}`
-        : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "");
+      const feeIsEstimate = primaryFee?.estimated === true;
+      const feeLabel = (primaryFee?.amountAUD !== undefined
+        ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU")} ${primaryFee.note ? `(${resolveLocalized(primaryFee.note, locale)})` : ""}`
+        : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "")).trim() + (feeIsEstimate ? ` (${estimateQualifier(locale)})` : "");
       const processing = primaryPathway.processingTimeWeeks
         ? `${primaryPathway.processingTimeWeeks.standard} wk${primaryPathway.processingTimeWeeks.ifIncomplete ? ` (${primaryPathway.processingTimeWeeks.ifIncomplete} wk if incomplete)` : ""}`
         : "";
@@ -5135,6 +5136,7 @@ function buildFinancialRoadmap(
         kind: "skills_assessment",
         amountMin: primaryFee?.amountAUD,
         amountMax: primaryFee?.amountAUD,
+        estimated: feeIsEstimate || undefined,
       });
     } else {
       // Should not be reachable now that generalAuthority (VETASSESS /
@@ -5584,13 +5586,14 @@ function buildSignalSnapshot(
   pathwayStrengthComparison: PathwayStrengthComparison[],
   confidenceExplanation: string,
   ranking?: PathwayRanking,
-  locale: Locale = "en"
+  locale: Locale = "en",
+  overallConfidence?: ConfidenceLevel
 ): SignalSnapshot {
   const legacyOrder = [...pathwayStrengthComparison].sort((a, b) => {
     const positionDiff =
       relativePositionScore(b.relativePosition) - relativePositionScore(a.relativePosition);
     if (positionDiff !== 0) return positionDiff;
-    const frictionRank = { low: 4, medium: 3, high: 2, extreme: 1 };
+    const frictionRank = { low: 4, medium: 3, high: 2, extreme: 1, not_assessed: 0 };
     return frictionRank[b.friction] - frictionRank[a.friction];
   });
   // With a ranking, the points-tested pathways follow THE ranking (pathway-ranking.ts); only the
@@ -5600,8 +5603,13 @@ function buildSignalSnapshot(
 
   const strongestPathway = sorted[0];
   const strongestEntry = strongestPathway ? rankedEntry(strongestPathway.subclass) : undefined;
-  const confidenceLabel: SignalSnapshot["confidenceLabel"] =
-    strongestEntry?.fit === "blocked"
+  const confidenceLabel: SignalSnapshot["confidenceLabel"] = overallConfidence
+    ? overallConfidence === "high"
+      ? "stronger"
+      : overallConfidence === "medium"
+        ? "moderate"
+        : "limited"
+    : strongestEntry?.fit === "blocked"
       ? "limited"
       : strongestPathway?.relativePosition === "stronger_signal"
         ? "stronger"
@@ -5621,12 +5629,39 @@ function buildSignalSnapshot(
     return `${stripped} (${sub})${blocked}`;
   };
 
+  // Every points-tested pathway blocked: nothing is "strongest". State it once, and list the pathways in
+  // ranking order as "would be evaluated first once unblocked".
+  if (ranking?.allBlocked && ranking.commonBlockReason !== undefined) {
+    const reason = ranking.commonBlockReason;
+    const isTr = locale === "tr";
+    const isZh = locale === "zh-Hans";
+    const phrase = reason ? blockedReasonPhrase(reason, locale) : isTr ? "farklı gereksinimler" : isZh ? "不同的要求" : "different requirements";
+    const bare = (name: string, sub: string) => name.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "") + ` (${sub})`;
+    return {
+      strongest: isTr
+        ? `Şu anda uygun yol yok: tümü engelli (${phrase})`
+        : isZh
+          ? `当前没有可用路径：全部受阻（${phrase}）`
+          : `No pathway currently available: all blocked (${phrase})`,
+      secondary: [],
+      confidenceLabel,
+      overallConfidence,
+      allBlocked: true,
+      blockedOrder: ranking.entries
+        .map((e) => sorted.find((i) => i.subclass === e.subclass))
+        .filter((i): i is PathwayStrengthComparison => Boolean(i))
+        .map((i) => bare(i.visaName, i.subclass)),
+      confidenceExplanation,
+    };
+  }
+
   return {
     strongest: strongestPathway
       ? formatVisaLabel(strongestPathway.visaName, strongestPathway.subclass)
       : "General pathway signal",
     secondary: sorted.slice(1, 3).map((item) => formatVisaLabel(item.visaName, item.subclass)),
     confidenceLabel,
+    overallConfidence,
     confidenceExplanation,
   };
 }
@@ -6760,6 +6795,10 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     pointsEstimate,
     locale
   );
+  // THE one confidence: capped by data completeness, overall = lowest, shown identically everywhere.
+  const overallConfidence = computeConfidence(pathwayComparison, assessmentState, "AU");
+  for (const pathway of pathwayComparison) pathway.confidenceLevel = overallConfidence;
+
   // THE per-pathway score set and THE ranking (see pathway-scores.ts / pathway-ranking.ts):
   // every section below and in the wrapper engine reads these, none recomputes a score or a gap.
   const pathwayScores: PathwayScoreSet | undefined =
@@ -6845,7 +6884,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     pathwayStrengthComparison,
     confidenceExplanation,
     pathwayRanking,
-    locale
+    locale,
+    overallConfidence
   );
   const primaryLimitingFactor = buildPrimaryLimitingFactor(
     input,

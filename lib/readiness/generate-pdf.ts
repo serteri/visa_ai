@@ -3431,7 +3431,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     );
   }
 
-  function formatDifficulty(level: "low" | "medium" | "high" | "extreme") {
+  function formatDifficulty(level: "low" | "medium" | "high" | "extreme" | "not_assessed") {
+    if (level === "not_assessed") return frictionBandLabel(effectiveLocale, "NOT_ASSESSED");
     if (level === "extreme") return effectiveLocale === "tr" ? "Çok yüksek" : effectiveLocale === "zh-Hans" ? "极高" : "Extreme";
     if (level === "high") return text.highRisk;
     if (level === "medium") return text.mediumRisk;
@@ -4124,7 +4125,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       // past the box's right edge instead of wrapping, unlike item.detail
       // just below it. Wrap both and size the box off their combined
       // line count, matching the pattern used everywhere else in this file.
+      // Measure each in the font it is drawn in (the title is bold): a title measured in the regular font
+      // re-wraps when drawn bold and its extra line ran into the detail text.
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
       const titleLines = doc.splitTextToSize(safeText(item.title), contentWidth - 34);
+      setBaseFont();
+      doc.setFontSize(FONTS.small);
       const detailLines = doc.splitTextToSize(safeText(item.detail), contentWidth - 34);
       const titleBlockHeight = titleLines.length * 4.6;
       const boxHeight = Math.max(16, 6 + titleBlockHeight + detailLines.length * 4.4);
@@ -4185,7 +4192,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
   }
 
-  function getFrictionColorByLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME") {
+  function getFrictionColorByLabel(score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED") {
+    if (score === "NOT_ASSESSED") return { r: 107, g: 114, b: 128 };
     if (score === "EXTREME") return { r: 220, g: 38, b: 38 };
     if (score === "HIGH") return { r: 217, g: 119, b: 6 };
     if (score === "MEDIUM") return { r: 202, g: 138, b: 4 };
@@ -4381,16 +4389,36 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   if (!report.partnerSponsorshipAssessment) {
-  addPremiumKeyValueContainer(text.signalSnapshot, [
-    [text.strongestSignal, report.signalSnapshot.strongest],
-    [
-      text.secondarySignals,
-      report.signalSnapshot.secondary.length > 0
-        ? report.signalSnapshot.secondary.join(", ")
-        : text.noClearSecondarySignal,
-    ],
-    [text.confidence, formatSignalConfidence(report.signalSnapshot.confidenceLabel)],
-  ]);
+  {
+    const snap = report.signalSnapshot;
+    // The Snapshot shows the SAME overall confidence as the Structured Pathway Comparison table (confidence.ts).
+    const snapConfidence = snap.overallConfidence
+      ? formatConfidenceLevel(snap.overallConfidence)
+      : formatSignalConfidence(snap.confidenceLabel);
+    const snapRows: Array<[string, string]> = snap.allBlocked
+      ? [
+          // Every pathway blocked: nothing is "strongest". One status sentence, then the ranking order.
+          [effectiveLocale === "tr" ? "Durum" : effectiveLocale === "zh-Hans" ? "状态" : "Status", snap.strongest],
+          [
+            // Short label (the key/value box has a narrow label column); the phrase itself leads the value.
+            effectiveLocale === "tr" ? "Sıralama" : effectiveLocale === "zh-Hans" ? "排序" : "Ranking",
+            `${
+              effectiveLocale === "tr"
+                ? "Engel kalktığında ilk değerlendirilecek yollar"
+                : effectiveLocale === "zh-Hans"
+                  ? "解除阻碍后将优先评估"
+                  : "Would be evaluated first once unblocked"
+            }: ${(snap.blockedOrder ?? []).join(", ")}`,
+          ],
+          [text.confidence, snapConfidence],
+        ]
+      : [
+          [text.strongestSignal, snap.strongest],
+          [text.secondarySignals, snap.secondary.length > 0 ? snap.secondary.join(", ") : text.noClearSecondarySignal],
+          [text.confidence, snapConfidence],
+        ];
+    addPremiumKeyValueContainer(text.signalSnapshot, snapRows);
+  }
 
   // Points breakdown is now rendered by renderPersonalizedContent
   // (immediately after cover page + executive summary). Only show the
@@ -4424,7 +4452,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 2;
     const pathwayRows = orderBySkilledRanking(report.pathwayComparison, (item) => item.subclass, report.pathwayRanking).map((item) => {
       const friction = getFrictionForPathway(item.subclass);
-      const frictionScore = friction?.frictionScore ?? "MEDIUM";
+      // No friction analysis / no benchmark: "not assessed", never a default level.
+      const frictionScore = friction?.frictionScore ?? "NOT_ASSESSED";
       // Strip any existing "(subclass N)" from visaName before appending
       // stream suffix + subclass code, to avoid duplication.
       const baseName = item.visaName.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "");
@@ -4455,9 +4484,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // Only the levels actually shown in this report's rows get a definition
     // line -- no point explaining EXTREME if nothing in this report is EXTREME.
     const presentFrictionScores = Array.from(new Set(pathwayRows.map((row) => row.frictionScore))) as Array<
-      "LOW" | "MEDIUM" | "HIGH" | "EXTREME"
+      "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED"
     >;
-    const frictionOrder: Record<"LOW" | "MEDIUM" | "HIGH" | "EXTREME", number> = { LOW: 0, MEDIUM: 1, HIGH: 2, EXTREME: 3 };
+    const frictionOrder: Record<"LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED", number> = { NOT_ASSESSED: -1, LOW: 0, MEDIUM: 1, HIGH: 2, EXTREME: 3 };
     presentFrictionScores
       .sort((a, b) => frictionOrder[a] - frictionOrder[b])
       .forEach((score) => {
@@ -4569,12 +4598,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // Definition lines for the friction levels present in the comparison block
     const presentFrictionLevels = Array.from(
       new Set(report.pathwayStrengthComparison.map((item) => item.friction))
-    ) as Array<"low" | "medium" | "high" | "extreme">;
-    const frictionOrder: Record<"low" | "medium" | "high" | "extreme", number> = { low: 0, medium: 1, high: 2, extreme: 3 };
+    ) as Array<"low" | "medium" | "high" | "extreme" | "not_assessed">;
+    const frictionOrder: Record<"low" | "medium" | "high" | "extreme" | "not_assessed", number> = { not_assessed: -1, low: 0, medium: 1, high: 2, extreme: 3 };
     presentFrictionLevels
       .sort((a, b) => frictionOrder[a] - frictionOrder[b])
       .forEach((level) => {
-        const upper = level.toUpperCase() as "LOW" | "MEDIUM" | "HIGH" | "EXTREME";
+        const upper = level.toUpperCase() as "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED";
         const rawLabel = frictionBandLabel(effectiveLocale, upper);
         const label = effectiveLocale === "zh-Hans" ? rawLabel.replace("竞争", "") : rawLabel;
         const separator = effectiveLocale === "zh-Hans" ? "：" : ": ";

@@ -1,7 +1,6 @@
 import type { ReadinessReport } from "./types";
 import { getEligibilityBadgeState } from "./eligibility-badge";
-import { getSkillsAssessmentAuthority, getAuthorityById } from "../skills-assessment";
-import { getAssessingAuthority } from "../skills-assessment/occupation-authority-map";
+import { resolveAssessingAuthority } from "../skills-assessment/resolve-authority";
 
 /**
  * Post-generation consistency check, run before a report is shown to the
@@ -151,9 +150,7 @@ export function checkReportInvariants(report: ReadinessReport): string[] {
   // roadmap items must cite that authority, not a conflicting generic fallback.
   if (report.assessmentState.occupation) {
     const rawOcc = report.assessmentState.occupation;
-    const specificAuthority =
-      getSkillsAssessmentAuthority(rawOcc) ??
-      getAuthorityById(getAssessingAuthority(rawOcc).authorityId);
+    const specificAuthority = resolveAssessingAuthority(rawOcc).authority;
 
     if (specificAuthority && specificAuthority.authorityId !== "GENERAL") {
       for (const item of report.financialRoadmap ?? []) {

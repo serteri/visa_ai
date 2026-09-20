@@ -75,10 +75,12 @@ export const ahpraAuthority: SkillsAssessmentAuthority = {
         {
           label: { en: "Specialist College Assessment (estimate)", tr: "Uzmanlık Koleji Değerlendirmesi (tahmini)", "zh-Hans": "专科医学院评估（估算）" },
           amountAUD: 2500,
+          estimated: true,
         },
         {
           label: { en: "AHPRA Registration Fee (estimate)", tr: "AHPRA Kayıt Ücreti (tahmini)", "zh-Hans": "AHPRA注册费（估算）" },
           amountAUD: 850,
+          estimated: true,
         },
       ],
       processingTimeWeeks: {

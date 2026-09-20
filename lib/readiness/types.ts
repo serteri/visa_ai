@@ -301,7 +301,8 @@ export type PathwayStrengthComparison = {
   subclass: string;
   visaName: string;
   strength: "limited" | "moderate" | "strong";
-  friction: "low" | "medium" | "high" | "extreme";
+  /** "not_assessed" whenever no invitation benchmark / score gap exists for the pathway. */
+  friction: "low" | "medium" | "high" | "extreme" | "not_assessed";
   evidenceLoad: "low" | "medium" | "high";
   typicalPath: string;
   explanation: string;
@@ -361,6 +362,8 @@ export type FinancialRoadmapItem = {
    */
   amountMin?: number;
   amountMax?: number;
+  /** True when the figure comes from an authority fee flagged `estimated` (pending verification); every section quoting it says so. */
+  estimated?: boolean;
   /**
    * Stable identifier for the handful of line items other report sections
    * (personalized FAQ, Application Guide) need to find reliably across all
@@ -679,6 +682,12 @@ export type SignalSnapshot = {
   strongest: string;
   secondary: string[];
   confidenceLabel: "limited" | "moderate" | "stronger";
+  /** The one overall confidence (confidence.ts), shown identically in the pathway table and here. */
+  overallConfidence?: "low" | "medium" | "high";
+  /** True when every pathway is blocked: nothing is "strongest"; `strongest` then carries the status sentence. */
+  allBlocked?: boolean;
+  /** When allBlocked: the pathways in ranking order, "would be evaluated first once unblocked". */
+  blockedOrder?: string[];
   confidenceExplanation: string;
 };
 
@@ -692,7 +701,8 @@ export type PositionChanger = {
   explanation: string;
 };
 
-export type FrictionScore = "LOW" | "MEDIUM" | "HIGH" | "EXTREME";
+/** NOT_ASSESSED: a level is only shown when a benchmark AND a score gap exist (see frictionFromScore in pathway-scores.ts). */
+export type FrictionScore = "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED";
 
 export type FrictionAnalysisItem = {
   pathway: string;
