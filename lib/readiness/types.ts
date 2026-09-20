@@ -203,6 +203,57 @@ export type PointsEstimate = {
   isEoiEligible: boolean;
   /** Why EOI lodgement is blocked (only set when isEoiEligible === false). */
   eoiIneligibilityReason?: "age" | "skills_assessment" | "english" | "points" | null;
+  /**
+   * AU only: the deterministic list of actions that can still raise this
+   * applicant's score (see points-actions.ts). Absent on CA reports and on
+   * reports stored before this field existed.
+   */
+  actionPlan?: PointsActionPlan;
+};
+
+export type PointsActionId =
+  | "english_upgrade"
+  | "overseas_employment"
+  | "australian_employment"
+  | "education"
+  | "australian_study"
+  | "specialist_education"
+  | "community_language"
+  | "professional_year"
+  | "regional_study"
+  | "partner_skills"
+  | "state_nomination_190"
+  | "regional_nomination_491";
+
+export type PointsActionDifficulty = "Low" | "Medium" | "High";
+
+export type PointsActionFactorStatus = "action" | "at_maximum" | "already_claimed" | "not_applicable";
+
+/** One action that can still raise the score, with its gain taken from the engine's points table. */
+export type PointsAction = {
+  id: PointsActionId;
+  /** Exact points gain from the engine's own tables (always > 0). */
+  gain: number;
+  difficulty: PointsActionDifficulty;
+  /** Engine wording (locale-specific). */
+  label: string;
+  /** Engine fallback reason; the LLM may replace it with validated wording. */
+  reason: string;
+  /** Engine fallback difficulty explanation; the LLM may replace it with validated wording. */
+  difficultyNote: string;
+  /** Employment actions only count once a positive skills assessment covers the work. */
+  requiresSkillsAssessment: boolean;
+};
+
+export type PointsActionPlan = {
+  /** Ordered by gain (desc), then fixed difficulty table, then fixed id order. */
+  actions: PointsAction[];
+  /** Steps with NO points value that unlock points (e.g. the skills assessment). */
+  enablingSteps: Array<{ id: "skills_assessment"; label: string; reason: string }>;
+  /** Why each scoring factor does or does not appear in `actions`. */
+  factors: Array<{ factor: string; status: PointsActionFactorStatus }>;
+  /** English is provided and already at the table's top tier: no English wording anywhere. */
+  englishAtMaximum: boolean;
 };
 
 export type OccupationMatch = {

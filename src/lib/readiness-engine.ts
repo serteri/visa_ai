@@ -1,4 +1,5 @@
 import occupationsData from "@/src/data/occupations.json";
+import { isEnglishAtMaximum } from "@/lib/points/parse-english";
 import documentRequirementsData from "@/src/data/document-requirements.json";
 import { ENGLISH_TEST_VALIDITY_YEARS } from "@/lib/readiness/constants";
 import visaTrendsData from "@/src/data/visa-trends.json";
@@ -295,12 +296,13 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport):
   const expYears = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
   const occupationConfirmed = normalize(input.occupationConfirmed) === "yes";
   const lowPointsGap = score190 > 0 && score190 < 85;
+  const englishAtMax = isEnglishAtMaximum(input.englishLevel);
   const lowExperienceGap = expYears < 3;
 
   if (lowPointsGap) {
     return [
-      t3(locale, "Data analysis indicates a material gap between the current points profile and recent invitation references, with English score weight acting as a major variable.", "Veri analizi, mevcut puan profili ile yakın dönem davet referansları arasında belirgin bir fark olduğunu ve dil puanı ağırlığının ana değişkenlerden biri olduğunu göstermektedir.", "数据分析显示，当前分数画像与近期邀请参考之间存在明显差距，其中英语分值权重是主要变量之一。"),
-      t3(locale, "Scenario modelling shows that +5 to +15 point changes linked to nomination or language-related variables can materially alter the comparative position.", "Senaryo modellemesi, adaylik veya dil baglantili degiskenlerdeki +5 ile +15 puanlik farklarin karsilastirmali konumu anlamli bicimde degistirebildigini gostermektedir.", "情景建模显示，与提名或语言相关变量有关的 +5 至 +15 分变化，可能明显改变相对位置。"),
+      t3(locale, englishAtMax ? "Data analysis indicates a material gap between the current points profile and recent invitation references." : "Data analysis indicates a material gap between the current points profile and recent invitation references, with English score weight acting as a major variable.", englishAtMax ? "Veri analizi, mevcut puan profili ile yakın dönem davet referansları arasında belirgin bir fark olduğunu göstermektedir." : "Veri analizi, mevcut puan profili ile yakın dönem davet referansları arasında belirgin bir fark olduğunu ve dil puanı ağırlığının ana değişkenlerden biri olduğunu göstermektedir.", englishAtMax ? "数据分析显示，当前分数画像与近期邀请参考之间存在明显差距。" : "数据分析显示，当前分数画像与近期邀请参考之间存在明显差距，其中英语分值权重是主要变量之一。"),
+      t3(locale, englishAtMax ? "Scenario modelling shows that +5 to +15 point changes linked to nomination variables can materially alter the comparative position." : "Scenario modelling shows that +5 to +15 point changes linked to nomination or language-related variables can materially alter the comparative position.", englishAtMax ? "Senaryo modellemesi, adaylik baglantili degiskenlerdeki +5 ile +15 puanlik farklarin karsilastirmali konumu anlamli bicimde degistirebildigini gostermektedir." : "Senaryo modellemesi, adaylik veya dil baglantili degiskenlerdeki +5 ile +15 puanlik farklarin karsilastirmali konumu anlamli bicimde degistirebildigini gostermektedir.", englishAtMax ? "情景建模显示，与提名相关变量有关的 +5 至 +15 分变化，可能明显改变相对位置。" : "情景建模显示，与提名或语言相关变量有关的 +5 至 +15 分变化，可能明显改变相对位置。"),
       t3(locale, "Historical invitation movement suggests EOI competitiveness is more sensitive when score uplift variables are not yet reflected in the profile.", "Tarihsel davet hareketleri, puan artisi degiskenleri profile yansimadiginda EOI rekabet baskisinin arttigini gostermektedir.", "历史邀请走势显示，当加分变量尚未反映到档案中时，EOI 竞争压力会更高。"),
     ];
   }

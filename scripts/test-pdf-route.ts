@@ -34,7 +34,9 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { PDFParse } from "pdf-parse";
 
-import type { ReadinessInput, ReadinessReport } from "../lib/readiness/types";
+import type { PointsActionPlan, ReadinessInput, ReadinessReport } from "../lib/readiness/types";
+import { generatePremiumStrategy } from "../lib/ai/generate-premium-strategy";
+import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
 import { computeEstimatedTotalAud, formatEstimatedTotalLine } from "../lib/readiness/financial-roadmap-totals";
@@ -301,6 +303,390 @@ async function checkPdf(
   console.log(`  ${needle} | occurrences=${occurrences}`);
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Points Booster Roadmap / Points Improvement Tips (Phase 2c)
+//
+// The roadmap and tips must contain only actions that can still raise THIS
+// applicant's score, with the engine's own point values. The LLM step is stubbed
+// with hostile output (English +20, Masters +20, unmapped actions, foreign
+// numbers, a skills assessment "worth" points ...); the validator must replace
+// it, and the PDF from the route handler must show only the engine's list.
+// ─────────────────────────────────────────────────────────────────────────────
+
+type StrategyStub = (args: { system: string; prompt: string }) => Promise<PremiumStrategyResult>;
+
+const POINTS_PROFILES: Array<{
+  name: string;
+  input: ReadinessInput;
+  expectEnglishAction: boolean;
+  expectEducationAction: boolean;
+  expectPartnerAction: boolean;
+  expectEnablingStep: boolean;
+}> = [
+  {
+    // (a) English superior (20/20) + PhD (20/20), partnered, partner without functional English
+    name: "a-superior-phd-partnered",
+    input: { ...base },
+    expectEnglishAction: false,
+    expectEducationAction: false,
+    expectPartnerAction: true,
+    expectEnablingStep: true,
+  },
+  {
+    // (b) English competent (no bonus yet) + bachelor, single
+    name: "b-competent-bachelor-single",
+    input: { ...base, englishLevel: "competent", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: "Single / No Dependants" },
+    expectEnglishAction: true,
+    expectEducationAction: true,
+    expectPartnerAction: false,
+    expectEnablingStep: true,
+  },
+  {
+    // (c) Civil Engineer 233211, positive assessment, 5 years overseas
+    name: "c-civil-233211-positive-assessment",
+    input: {
+      ...base,
+      currentCountry: "Turkey",
+      age: "35",
+      occupation: "Civil Engineer 233211",
+      occupationConfirmed: "yes",
+      englishLevel: "competent",
+      qualificationLevel: "Bachelor's Degree",
+      sponsorOrFamily: "Single / No Dependants",
+      offshoreExperienceYears: 5,
+    },
+    expectEnglishAction: true,
+    expectEducationAction: true,
+    expectPartnerAction: false,
+    expectEnablingStep: false,
+  },
+];
+
+/** Deterministic PRNG so a failing hostile run can be reproduced from its seed. */
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const HOSTILE = "HOSTILE";
+
+/** A model output built to break every rule: unmapped ids, foreign numbers, factors at their maximum, a skills assessment "worth" points. */
+function hostileResult(rand: () => number, plan: PointsActionPlan): PremiumStrategyResult {
+  const pick = <T,>(xs: T[]): T => xs[Math.floor(rand() * xs.length)];
+  // Never an engine gain, so every hostile string is wrong for EVERY profile (even where English/education are real actions).
+  const n = () => pick([11, 12, 13, 17, 22, 23, 27]);
+  const boosters: PremiumStrategyResult["pointsBoosterStrategy"] = [
+    { actionId: "english_upgrade", action: `${HOSTILE} Improve English test results to Superior level +${n()}`, pointsGained: pick([20, 11]), difficulty: "Low", reason: `${HOSTILE} Retest English for +${n()} points`, difficultyExplanation: "Easy" },
+    { actionId: null, action: `${HOSTILE} Masters degree +${n()}`, pointsGained: 20, difficulty: "Medium", reason: `${HOSTILE} A Masters adds +${n()} points`, difficultyExplanation: "Medium" },
+    { actionId: "education", action: `${HOSTILE} Obtain a Masters`, pointsGained: n(), difficulty: "High", reason: null, difficultyExplanation: null },
+    { actionId: "skills_assessment", action: `${HOSTILE} Obtain a Skills Assessment`, pointsGained: pick([0, 15]), difficulty: "Medium", reason: null, difficultyExplanation: null },
+    { actionId: "partner_skills", action: `${HOSTILE} Partner`, pointsGained: 99, difficulty: "Low", reason: `${HOSTILE} partner`, difficultyExplanation: null },
+    // Right id, right number, wrong wording (a factor that is at its maximum)
+    ...plan.actions.slice(0, 2).map((a) => ({
+      actionId: a.id as string | null,
+      action: `${HOSTILE} ${a.label}`,
+      pointsGained: a.gain,
+      difficulty: "Low" as const,
+      reason: `${HOSTILE} Also improve your English result by +${n()} points`,
+      difficultyExplanation: null,
+    })),
+  ];
+  // Random subset, random order
+  const chosen = boosters.filter(() => rand() > 0.25).sort(() => rand() - 0.5);
+  return {
+    executiveSummary: `${HOSTILE} Improving English to Superior would add +${n()} points.`,
+    topRecommendedPathways: [
+      {
+        state: "NSW",
+        subclass: "190",
+        reason: `${HOSTILE} A Masters degree gives +${n()} points`,
+        nextSteps: [
+          `${HOSTILE} Retake the English test for +${n()} points`,
+          `${HOSTILE} Complete a Masters degree to gain +${n()} points`,
+          "Prepare documents for the nomination application",
+        ],
+      },
+    ],
+    pointsBoosterStrategy: chosen.length > 0 ? chosen : boosters,
+    timelineEstimate: "6-12 months",
+  };
+}
+
+/** A fully valid output: engine ids, engine numbers, only the wording is the model's own. */
+function validResult(plan: PointsActionPlan): PremiumStrategyResult {
+  return {
+    executiveSummary: "A concise, valid summary.",
+    topRecommendedPathways: [
+      { state: "NSW", subclass: "190", reason: "Fits the profile.", nextSteps: ["Prepare documents for the nomination application"] },
+    ],
+    pointsBoosterStrategy: plan.actions.map((a) => ({
+      actionId: a.id,
+      action: `model label ${a.id}`,
+      pointsGained: a.gain,
+      difficulty: "Low" as const,
+      reason: `TESTWORD-${a.id} reason.`,
+      difficultyExplanation: `TESTDIFF-${a.id} explanation.`,
+    })),
+    timelineEstimate: "6-12 months",
+  };
+}
+
+const ROADMAP_HEADING: Record<Locale, string> = {
+  en: "Points Booster Roadmap",
+  tr: "Puan Artırma Yol Haritası",
+  "zh-Hans": "积分提升路线图",
+};
+const TIMELINE_HEADING: Record<Locale, string> = {
+  en: "Timeline Estimate",
+  tr: "Tahmini Zaman Çizelgesi",
+  "zh-Hans": "预计时间线",
+};
+const TIPS_HEADING: Record<Locale, string> = {
+  en: "Points Improvement Tips",
+  tr: "Puan Artırma Önerileri",
+  "zh-Hans": "积分提升建议",
+};
+const TABLE_HEADER: Record<Locale, string> = { en: "Points Gained", tr: "Kazanılacak Puan", "zh-Hans": "可获积分" };
+
+const ENGLISH_RE = /english|ielts|pte\b|ingilizce|İngilizce|dil (?:testi|puan|seviye)|英语|英文|雅思/i;
+const EDUCATION_RE = /doctorate|\bphd\b|master|bachelor|degree|doktora|yüksek lisans|lisans|博士|硕士|学位|学士/i;
+const PARTNER_RE = /partner|spouse|(?<![a-zçğıöşü])eş(?![a-zçğıöşü])|配偶|伴侣/i;
+
+/** Every "+N" token, sorted. */
+/** Removes the engine's partner-action strings: they legitimately mention the PARTNER's English, which is not an English improvement for the applicant. */
+const withoutPartnerWording = (t: string, plan: PointsActionPlan, sq: (x: string) => string): string => {
+  let out = t;
+  for (const a of plan.actions.filter((x) => x.id === "partner_skills")) {
+    for (const piece of [a.label, a.reason]) out = out.split(sq(piece)).join(" ");
+  }
+  return out;
+};
+
+const plusNumbers = (t: string): number[] => [...t.matchAll(/\+\s?(\d+)/g)].map((m) => Number(m[1])).sort((x, y) => x - y);
+
+function sliceBetween(flat: string, from: string, toCandidates: string[], maxLen = 6000): string {
+  const i = flat.indexOf(from);
+  if (i < 0) return "";
+  let end = Math.min(flat.length, i + maxLen);
+  for (const c of toCandidates) {
+    const j = flat.indexOf(c, i + from.length);
+    if (j >= 0 && j < end) end = j;
+  }
+  return flat.slice(i, end);
+}
+
+async function runPointsActionChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  const RUNS_PER_PROFILE = 5; // hostile runs per profile and locale
+  const emptyRag = { visaContext: {}, stateContext: {} } as never;
+
+  for (const profile of POINTS_PROFILES) {
+    for (const locale of LOCALES) {
+      const input: ReadinessInput = { ...profile.input, locale };
+      const baseReport = runReadinessEngine(input);
+      const plan = baseReport.pointsEstimate?.actionPlan;
+      const label = `points ${profile.name}/${locale}`;
+      if (!plan) {
+        console.log(`\n=== ${label} ===`);
+        fail(`${label}: engine produced no actionPlan`);
+        continue;
+      }
+      const ids = plan.actions.map((a) => a.id);
+      const gains = plan.actions.map((a) => a.gain).sort((x, y) => x - y);
+      const has = (id: string) => (ids as string[]).includes(id);
+
+      // ── Engine plan expectations (deterministic, before any LLM) ──────────
+      const planIssues: string[] = [];
+      if (has("english_upgrade") !== profile.expectEnglishAction) planIssues.push(`english action ${has("english_upgrade") ? "present" : "absent"}, expected ${profile.expectEnglishAction ? "present" : "absent"}`);
+      if (has("education") !== profile.expectEducationAction) planIssues.push(`education action ${has("education") ? "present" : "absent"}, expected ${profile.expectEducationAction ? "present" : "absent"}`);
+      if (has("partner_skills") !== profile.expectPartnerAction) planIssues.push(`partner action ${has("partner_skills") ? "present" : "absent"}, expected ${profile.expectPartnerAction ? "present" : "absent"}`);
+      if ((plan.enablingSteps.length > 0) !== profile.expectEnablingStep) planIssues.push(`enabling step ${plan.enablingSteps.length > 0 ? "present" : "absent"}, expected ${profile.expectEnablingStep ? "present" : "absent"}`);
+      if (plan.actions.some((a) => (a.id as string) === "skills_assessment" || a.gain <= 0)) planIssues.push("plan contains a non-points or zero-gain action");
+      const sorted = [...plan.actions].every((a, i, arr) => i === 0 || arr[i - 1].gain >= a.gain);
+      if (!sorted) planIssues.push("actions are not ordered by gain");
+      if (planIssues.length > 0) {
+        console.log(`\n=== ${label} (engine plan) ===`);
+        planIssues.forEach((m) => fail(m));
+      }
+
+      // Runs: N hostile (both attempts hostile -> deterministic fallback), one hostile-then-valid
+      // (retry accepted, model wording used), one valid (first attempt accepted).
+      type Run = { kind: "hostile" | "hostile-then-valid" | "valid"; seed: number };
+      const runs: Run[] = [
+        ...Array.from({ length: RUNS_PER_PROFILE }, (_, i): Run => ({ kind: "hostile", seed: 1000 + i * 7919 })),
+        { kind: "hostile-then-valid", seed: 4242 },
+        { kind: "valid", seed: 0 },
+      ];
+
+      for (const run of runs) {
+        const runLabel = `${label} [${run.kind} seed=${run.seed}]`;
+        console.log(`\n=== ${runLabel} ===`);
+        let runFailed = false;
+        const f = (m: string) => { runFailed = true; fail(`${runLabel}: ${m}`); };
+
+        const rand = mulberry32(run.seed);
+        let calls = 0;
+        const stub: StrategyStub = async () => {
+          calls++;
+          if (run.kind === "valid") return validResult(plan);
+          if (run.kind === "hostile-then-valid" && calls === 2) return validResult(plan);
+          return hostileResult(rand, plan);
+        };
+        // Quiet the expected [llm_text_invariant_violation] logging.
+        const origError = console.error;
+        console.error = () => undefined;
+        let strategy: PremiumStrategyResult;
+        try {
+          strategy = await generatePremiumStrategy(baseReport, emptyRag, locale, stub);
+        } finally {
+          console.error = origError;
+        }
+
+        const expectedCalls = run.kind === "valid" ? 1 : 2;
+        if (calls !== expectedCalls) f(`LLM stub called ${calls}x, expected ${expectedCalls}`);
+
+        // Stored strategy: rows must equal the engine plan exactly.
+        const strat = strategy.pointsBoosterStrategy;
+        if (strat.length !== plan.actions.length) f(`strategy has ${strat.length} rows, engine has ${plan.actions.length}`);
+        strat.forEach((row, i) => {
+          const a = plan.actions[i];
+          if (!a || row.actionId !== a.id || row.pointsGained !== a.gain || row.difficulty !== a.difficulty || row.action !== a.label) {
+            f(`strategy row ${i} (${row.actionId}, +${row.pointsGained}) differs from engine (${a?.id}, +${a?.gain})`);
+          }
+        });
+        if (JSON.stringify(strategy).includes(HOSTILE)) f("hostile text survived validation in the stored strategy");
+
+        // Same path as production: report_json carries aiStrategy, PDF comes from the route handler.
+        const report: ReadinessReport = JSON.parse(JSON.stringify({ ...baseReport, aiStrategy: strategy }));
+        const reportId = `points-${profile.name}-${locale}-${run.kind}-${run.seed}`;
+        rows.set(reportId, {
+          id: reportId,
+          email: "qa@example.com",
+          locale,
+          report_json: report,
+          input_json: JSON.parse(JSON.stringify(input)),
+          agent_id: null,
+          is_unlocked: true,
+          full_name: "Test Persona",
+          preview_data: null,
+        });
+        const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+        if (res.status !== 200) {
+          f(`route returned HTTP ${res.status}`);
+          continue;
+        }
+        const bytes = new Uint8Array(await res.arrayBuffer());
+        const text = await extractPdfText(bytes);
+        const flat = locale === "zh-Hans" ? squashAll(text) : flatten(text);
+        const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
+        if (run.seed === 1000 || run.kind !== "hostile") {
+          await writeFile(path.join(outDir, `points-${profile.name}-${locale}-${run.kind}.txt`), text);
+        }
+
+        if (flat.includes(HOSTILE)) f("hostile text appears in the PDF");
+
+        // The longer roadmap/tips must not overlap other text or run off the page.
+        const layout = await analyzeLayout(bytes);
+        if (layout.overlaps.length > 0) f(`${layout.overlaps.length} text overlap(s): ${layout.overlaps.slice(0, 3).join(" | ")}`);
+        if (layout.offPage.length > 0) f(`text runs past the page edge: ${layout.offPage.slice(0, 3).join(" | ")}`);
+
+        // ── Roadmap section ───────────────────────────────────────────
+        const roadmap = sliceBetween(flat, sq(ROADMAP_HEADING[locale]), [sq(TIMELINE_HEADING[locale])]);
+        if (!roadmap) {
+          f("Points Booster Roadmap section missing from the PDF");
+          continue;
+        }
+        const roadmapGains = plusNumbers(roadmap);
+        if (JSON.stringify(roadmapGains) !== JSON.stringify(gains)) f(`roadmap points [${roadmapGains}] != engine [${gains}]`);
+        for (const a of plan.actions) {
+          if (!roadmap.includes(sq(a.label).slice(0, 40))) f(`roadmap is missing engine action ${a.id}`);
+        }
+        if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("roadmap mentions English although English is at the maximum");
+        if (!profile.expectEducationAction && EDUCATION_RE.test(roadmap)) f("roadmap mentions education although it is at the maximum");
+        if (!profile.expectPartnerAction && PARTNER_RE.test(roadmap)) f("roadmap mentions a partner for a single applicant");
+
+        // Enabling step: separate, no points value.
+        const step = plan.enablingSteps[0];
+        if (profile.expectEnablingStep) {
+          if (!step || !roadmap.includes(sq(step.label))) {
+            f("enabling step (skills assessment) row missing");
+          } else {
+            const after = roadmap.slice(roadmap.indexOf(sq(step.label)) + sq(step.label).length);
+            const reasonAt = after.indexOf(sq(step.reason));
+            if (reasonAt < 0 || reasonAt > 120) {
+              f("enabling step lacks its 'unlocks skilled-employment points' sentence right after the label");
+            } else {
+              const enablingBlock = after.slice(0, reasonAt + sq(step.reason).length);
+              if (/[+\d]/.test(enablingBlock)) f(`enabling step carries a points value: "${enablingBlock.slice(0, 120)}"`);
+            }
+          }
+        } else if (/Enabling step|Etkinleştirici adım|前置步骤/.test(roadmap)) {
+          f("enabling step shown although a positive assessment is already on file");
+        }
+
+        if (run.kind === "valid" || run.kind === "hostile-then-valid") {
+          for (const a of plan.actions) {
+            if (!roadmap.includes(sq(`TESTWORD-${a.id}`))) f(`validated model wording for ${a.id} was not used`);
+          }
+        } else if (/TESTWORD/.test(roadmap)) {
+          f("model wording used although validation failed");
+        }
+
+        // ── Points Improvement Tips + gap analysis ────────────────────
+        const tipsRaw = sliceBetween(flat, sq(TIPS_HEADING[locale]), [], 6000);
+        let tips = "";
+        {
+          let seen = 0;
+          const re = /\+\s?\d+\s?(?:pts|puan|分)/g;
+          let m: RegExpExecArray | null;
+          while ((m = re.exec(tipsRaw)) !== null) {
+            if (++seen === gains.length) {
+              tips = tipsRaw.slice(0, m.index + m[0].length);
+              break;
+            }
+          }
+          if (!tips && gains.length === 0) tips = tipsRaw.slice(0, 200);
+        }
+        if (!tips) {
+          f("Points Improvement Tips missing from the PDF");
+        } else {
+          // The container ends where the next block starts; the engine gains must be exactly the ones listed, in order.
+          const tipGains = plusNumbers(tips).slice(0, gains.length).sort((x, y) => x - y);
+          if (JSON.stringify(tipGains) !== JSON.stringify(gains)) f(`tips points [${tipGains}] != engine [${gains}]`);
+          for (const a of plan.actions) {
+            if (!tips.includes(sq(a.label).slice(0, 40))) f(`tips are missing engine action ${a.id}`);
+          }
+          if (/\+10-20|\+10 - 20/.test(tips)) f("static '+10-20' Masters/PhD tip is still shown");
+        }
+        const gapAnalysis = sliceBetween(flat, locale === "en" ? "TOTAL:" : locale === "tr" ? "TOPLAM:" : "总分：", [sq(TIPS_HEADING[locale])], 1500);
+        if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(gapAnalysis, plan, sq))) f(`gap analysis mentions English although it is at the maximum: "${gapAnalysis.slice(0, 200)}"`);
+        if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(tips, plan, sq))) f("tips mention English although it is at the maximum");
+        if (!profile.expectEducationAction && EDUCATION_RE.test(tips)) f("tips mention education although it is at the maximum");
+        if (!profile.expectPartnerAction && PARTNER_RE.test(tips)) f("tips mention a partner for a single applicant");
+
+        // ── Whole-PDF: no English improvement advice at the maximum ──
+        if (!profile.expectEnglishAction) {
+          const adviceRe = /(?:improve|upgrad\w*|enhance|retak\w*|retest\w*|raise|boost)[^.]{0,50}english|english[^.]{0,40}\+\s?\d+|english (?:score|test)[^.]{0,30}(?:weight|retest)|(?:dil|ingilizce)[^.]{0,40}(?:yükselt|artır)|(?:提高|提升)[^。]{0,10}(?:语言|英语)/i;
+          const m = adviceRe.exec(withoutPartnerWording(flat, plan, sq));
+          if (m) f(`PDF still advises improving English at the maximum: "...${withoutPartnerWording(flat, plan, sq).slice(Math.max(0, m.index - 30), m.index + 110)}..."`);
+        }
+
+        if (!runFailed) console.log("  ✅ ok");
+      }
+    }
+  }
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -382,6 +768,12 @@ async function main() {
       }
     }
   }
+
+  // Points Booster Roadmap / Points Improvement Tips (LLM stubbed with hostile output)
+  await runPointsActionChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
 
   if (failed) {
     console.error("\n❌ test-pdf-route FAILED");

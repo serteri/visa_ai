@@ -1,4 +1,5 @@
-import type { Locale, FinancialRoadmapItem } from "../types";
+import type { Locale, FinancialRoadmapItem, PointsActionPlan } from "../types";
+import { numberedWays } from "../points-action-text";
 import { computeEstimatedTotalAud, findFinancialRoadmapItem, formatEstimatedTotalLine } from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
@@ -52,6 +53,8 @@ export function getPersonalizedFaq(
    * report consistency fix, items D1/D2/D3).
    */
   financialRoadmap?: FinancialRoadmapItem[],
+  /** AU: the engine's action plan -- only levers that can still raise the score are suggested. */
+  pointsActionPlan?: PointsActionPlan,
 ): {
   title: string;
   items: Array<{ question: string; answer: string }>;
@@ -60,6 +63,7 @@ export function getPersonalizedFaq(
   const isZh = locale === "zh-Hans";
   const isCA = country === "CA";
   const gap = threshold - estimatedPoints;
+  const ways = numberedWays(locale, pointsActionPlan, (profile as { englishLevel?: string }).englishLevel);
   const requirementMet = isCA ? (isEoiEligible ?? true) : skillsAssessmentDone;
 
   const items: Array<{ question: string; answer: string }> = [];
@@ -151,10 +155,10 @@ export function getPersonalizedFaq(
           ? `我的积分不足（${estimatedPoints}/${threshold}）。我该怎么办？`
           : `My points are insufficient (${estimatedPoints}/${threshold}). What should I do?`,
       answer: isTr
-        ? `${gap} puanlık kapatılacak. En hızlı yollar: 1) Dil seviyenizi yükseltin (+20 puan), 2) Eyalet adaylığı alın, 3) Daha fazla iş deneyimi edinin.`
+        ? `${gap} puanlık kapatılacak.${ways ? ` En hızlı yollar: ${ways}.` : " Puanı artırabilecek eylemler için Puan Artırma bölümlerine bakın."}`
         : isZh
-          ? `您需要弥补${gap}分的差距。最快的方法：1）提高语言分数（+20分），2）获得州提名，3）增加工作经验。`
-          : `You need to close a ${gap}-point gap. Fastest ways: 1) Improve English (+20 pts), 2) Get state nomination, 3) Gain more work experience.`,
+          ? `您需要弥补${gap}分的差距。${ways ? `最快的方法：${ways}。` : "请参阅积分相关章节，了解仍可提高积分的行动。"}`
+          : `You need to close a ${gap}-point gap.${ways ? ` Fastest ways: ${ways}.` : " See the points sections of this report for the actions that can still raise your score."}`,
     });
   }
 
@@ -308,10 +312,10 @@ export function getPersonalizedFaq(
           ? "我能快速提高积分吗？"
           : "Can I quickly boost my points?",
       answer: isTr
-        ? "Evet! En hızlı yollar: 1) Dil puanınızı yükseltin (+20-40 puan), 2) Eyalet adaylığı alın (+5 puan), 3) Ek iş deneyimi edinin (+5-15 puan)."
+        ? (ways ? `Evet! En hızlı yollar: ${ways}.` : "Puanı artırabilecek eylemler için Puan Artırma Yol Haritası bölümüne bakın.")
         : isZh
-          ? "可以！最快的方法：1）提高语言分数（+20-40分），2）获得州提名（+5分），3）增加工作经验（+5-15分）。"
-          : "Yes! Fastest ways: 1) Improve English (+20-40 pts), 2) Get state nomination (+5 pts), 3) Gain more work experience (+5-15 pts).",
+          ? (ways ? `可以！最快的方法：${ways}。` : "仍可提高积分的行动请参阅积分提升路线图。")
+          : (ways ? `Yes! Fastest ways: ${ways}.` : "See the Points Booster Roadmap for the actions that can still raise your score."),
     });
   }
 

@@ -57,11 +57,14 @@ import {
   resolvePSTQStream,
 } from "@/lib/readiness/quebec-pstq";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
+import { buildPointsActionPlan } from "@/lib/readiness/points-actions";
+import { isEnglishAtMaximum, parseEnglishOption } from "@/lib/points/parse-english";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
 import type { CanadaCRSInput, CLBLevel } from "@/lib/points/canada-types";
 import type { PartnerOption } from "@/lib/points/types";
 import type {
   AgeOption,
+  AustraliaPointsInput,
   AustralianEmploymentOption,
   EducationOption,
   EnglishOption,
@@ -108,6 +111,7 @@ import type {
   SignalSnapshot,
   StateNominationTracker,
   StateNominationState,
+  PointsActionPlan,
 } from "./types";
 
 export type LeadTier = "High intent" | "Moderate intent" | "Low intent";
@@ -542,18 +546,21 @@ function buildSubclassIneligiblePointsReason(
   const isZh = locale === "zh-Hans";
   const gap = POINTS_THRESHOLD - estimatedPoints;
   const pathwayPoints = computePathwayPoints(estimatedPoints);
+  const englishAtMax = isEnglishAtMaximum(input.englishLevel);
+  // Competent -> Superior is +20, Proficient -> Superior is +10 (points table).
+  const englishGain = parseEnglishOption(input.englishLevel ?? "") === "proficient" ? 10 : 20;
   const displayOccupation = input.occupation
     ? resolveOccupationDisplayName(input.occupation, locale)
     : (isTr ? "mesleğiniz" : isZh ? "您的职业" : "your occupation");
 
   if (subclass === "189") {
     if (isTr) {
-      return `Tahmini temel puanınız ${estimatedPoints} olup, 189 vizesi için gereken asgari 65 barajının ${gap} puan altındadır. Subclass 189 tamamen bağımsız bir vize olup, puanınızı artıracak herhangi bir eyalet veya akraba sponsorluğu katkısı sunmaz. Bu vize yolunu ulaşılabilir kılmak için, puan açığını tamamen dil puanınızı yükseltmek (örneğin Superior English ile +20 puan) veya daha fazla iş deneyimi kazanmak gibi kişisel niteliklerinizle kapatmanız gerekir.`;
+      return `Tahmini temel puanınız ${estimatedPoints} olup, 189 vizesi için gereken asgari 65 barajının ${gap} puan altındadır. Subclass 189 tamamen bağımsız bir vize olup, puanınızı artıracak herhangi bir eyalet veya akraba sponsorluğu katkısı sunmaz. Bu vize yolunu ulaşılabilir kılmak için, puan açığını tamamen ${englishAtMax ? "daha fazla iş deneyimi kazanmak" : `dil puanınızı yükseltmek (örneğin Superior English ile +${englishGain} puan) veya daha fazla iş deneyimi kazanmak`} gibi kişisel niteliklerinizle kapatmanız gerekir.`;
     }
     if (isZh) {
-      return `您的预估分数为 ${estimatedPoints} 分，距离 189 签证最低要求的 65 分还有 ${gap} 分的差距。189 类属于完全独立的技术移民签证，没有额外的州担保或亲属担保加分来弥补这一分差。要使该途径可行，您必须完全通过提升个人基本背景（例如将英语成绩提高到 Superior 水平以获得 +20 加分，或积累更多相关工作经验）来弥补差距。`;
+      return `您的预估分数为 ${estimatedPoints} 分，距离 189 签证最低要求的 65 分还有 ${gap} 分的差距。189 类属于完全独立的技术移民签证，没有额外的州担保或亲属担保加分来弥补这一分差。要使该途径可行，您必须完全通过提升个人基本背景${englishAtMax ? "（例如积累更多相关工作经验）" : `（例如将英语成绩提高到 Superior 水平以获得 +${englishGain} 加分，或积累更多相关工作经验）`}来弥补差距。`;
     }
-    return `Your estimated baseline score is ${estimatedPoints} points, leaving a ${gap}-point gap to the 189 visa minimum of 65. As a purely independent pathway, subclass 189 does not offer any state nomination or family sponsorship points to help offset this shortfall. To make this visa viable, you must close this points deficit entirely through improving your personal credentials (e.g., achieving a Superior English exam result for +20 points, or accumulating more skilled work experience).`;
+    return `Your estimated baseline score is ${estimatedPoints} points, leaving a ${gap}-point gap to the 189 visa minimum of 65. As a purely independent pathway, subclass 189 does not offer any state nomination or family sponsorship points to help offset this shortfall. To make this visa viable, you must close this points deficit entirely through improving your personal credentials ${englishAtMax ? "(e.g., accumulating more skilled work experience)" : `(e.g., achieving a Superior English exam result for +${englishGain} points, or accumulating more skilled work experience)`}.`;
   }
 
   if (subclass === "190") {
@@ -3207,39 +3214,6 @@ function parseAgeOption(ageStr: string): AgeOption | null {
   return "45_plus";
 }
 
-function parseEnglishOption(raw: string): EnglishOption | null {
-  const s = raw.toLowerCase().trim();
-  // Strict exact-match mapping for the standardized "English Level" dropdown
-  // values (none/competent/proficient/superior) before falling back to the
-  // fuzzy free-text matching below (used by other callers, e.g. chat intake).
-  if (s === "none") return "competent"; // 0 points — same tier as "competent"
-  if (s === "competent") return "competent";
-  if (s === "proficient") return "proficient";
-  if (s === "superior") return "superior";
-  if (s.includes("superior") || s.includes("高级") || s.includes("优秀") || /ielts\s*[89]/.test(s) || /pte\s*7[0-9]/.test(s) || /pte\s*8/.test(s))
-    return "superior";
-  if (s.includes("proficient") || s.includes("熟练") || /ielts\s*7/.test(s) || /pte\s*6[0-9]/.test(s))
-    return "proficient";
-  if (s.includes("competent") || s.includes("合格") || /ielts\s*6/.test(s) || /pte\s*5[0-9]/.test(s) || s.includes("functional"))
-    return "competent";
-  // Handle raw numeric scores (e.g., "8", "8.5", "7.5", "6.5") treated as IELTS-band-equivalent
-  const numericScore = parseFloat(s);
-  if (!isNaN(numericScore) && numericScore >= 1 && numericScore <= 9) {
-    if (numericScore >= 7.5) return "superior";
-    if (numericScore >= 7.0) return "proficient";
-    if (numericScore >= 6.0) return "competent";
-  }
-  // Handle "level N" or "N/9" patterns
-  const levelMatch = s.match(/(?:level|lvl|band|clb)\s*(\d+(?:\.\d+)?)/);
-  if (levelMatch) {
-    const level = parseFloat(levelMatch[1]);
-    if (level >= 9) return "superior";
-    if (level >= 7) return "proficient";
-    if (level >= 5) return "competent";
-  }
-  return null;
-}
-
 function yearsToOverseasEmploymentOption(years: number | undefined): OverseasEmploymentOption {
   if (years === undefined) return "lt3";
   if (years >= 8) return "8_plus";
@@ -3511,6 +3485,57 @@ function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, loc
   };
 }
 
+/**
+ * The exact input the AU points table is run on. buildPointsEstimate and the
+ * deterministic action plan (points-actions.ts) both start from THIS, so the
+ * "points gain" of an action is always measured against the same baseline the
+ * report's own score was computed from.
+ */
+function buildBaselineAuCalcInput(input: ReadinessInput, locale: Locale) {
+  const ageOption = input.age ? parseAgeOption(input.age) : null;
+  const englishOption = input.englishLevel ? parseEnglishOption(input.englishLevel) : null;
+  const hasExperienceInput =
+    input.offshoreExperienceYears !== undefined || input.onshoreExperienceYears !== undefined;
+  const occupationHasDatasetMatch = Boolean(
+    input.occupation?.trim() && getEligibleSkilledSubclasses(input.occupation).length > 0
+  );
+  const canApplyExperiencePoints = !hasExperienceInput || occupationHasDatasetMatch;
+  const calc: AustraliaPointsInput = {
+    age: ageOption ?? "18_24",
+    english: englishOption ?? "competent",
+    overseasEmployment: yearsToOverseasEmploymentOption(canApplyExperiencePoints ? input.offshoreExperienceYears : undefined),
+    australianEmployment: yearsToAustralianEmploymentOption(canApplyExperiencePoints ? input.onshoreExperienceYears : undefined),
+    education: qualificationToEducationOption(input.qualificationLevel, isAustralianQualification(input)),
+    specialistEducation: hasSpecialistEducationClaim(input),
+    australianStudyRequirement: isAustralianQualification(input),
+    professionalYear: false,
+    credentialledCommunityLanguage: false,
+    regionalStudy: isRegionalAustralianQualification(input),
+    partner: sponsorOrFamilyToPartnerOption(input.sponsorOrFamily, locale).option,
+    hasStateNomination190: false,
+    hasNominationOrSponsorship491: false,
+  };
+  return { calc, ageOption, englishOption, canApplyExperiencePoints };
+}
+
+/** AU only: deterministic list of actions that can still raise this applicant's score. */
+function buildAuPointsActionPlan(input: ReadinessInput, subclasses: readonly string[], locale: Locale): PointsActionPlan {
+  const b = buildBaselineAuCalcInput(input, locale);
+  return buildPointsActionPlan({
+    base: b.calc,
+    locale,
+    englishProvided: b.englishOption !== null && hasRealEnglishEvidence(input),
+    canApplyExperience: b.canApplyExperiencePoints,
+    assessmentDone: (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes",
+    isResearchOrDoctorate: isResearchOrDoctorateQualification(input.qualificationLevel),
+    isAustralianQualification: isAustralianQualification(input),
+    specialistStemResponse: input.specialistEducationStemResponse,
+    professionalYearRelevant: isProfessionalYearRelevantOccupation(input),
+    partnerStatusProvided: Boolean((input.sponsorOrFamily ?? "").trim()),
+    subclasses,
+  });
+}
+
 function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstimate {
   if (input.country === "CA") return buildCanadaPointsEstimate(input, locale);
 
@@ -3621,21 +3646,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   const regionalStudy = isRegionalAustralianQualification(input);
   const partner = sponsorOrFamilyToPartnerOption(input.sponsorOrFamily, locale);
 
-  const result = calculateAustraliaPoints({
-    age: ageOption ?? "18_24",
-    english: englishOption ?? "competent",
-    overseasEmployment,
-    australianEmployment,
-    education,
-    specialistEducation,
-    australianStudyRequirement,
-    professionalYear: false,
-    credentialledCommunityLanguage: false,
-    regionalStudy,
-    partner: partner.option,
-    hasStateNomination190: false,
-    hasNominationOrSponsorship491: false,
-  });
+  const result = calculateAustraliaPoints(buildBaselineAuCalcInput(input, locale).calc);
 
   const employmentCapNote = result.employmentCapApplied
     ? isTr
@@ -4556,6 +4567,21 @@ function buildPointsBoosterSimulator(
   const ageOption = input.age ? parseAgeOption(input.age) : null;
   const employmentSignals = getEmploymentDataSignals(input);
 
+  // AU: the scenarios ARE the engine's deterministic action plan (points-actions.ts) -- the same list
+  // the Points Booster Roadmap and Points Improvement Tips use -- so nothing here can offer a factor
+  // that is already at its maximum (English at Superior, a PhD, a single applicant's partner points).
+  const actionPlan = pointsEstimate?.actionPlan;
+  if (actionPlan) {
+    for (const a of actionPlan.actions) {
+      scenarios.push({
+        label: a.label,
+        estimatedChange: a.gain,
+        resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + a.gain,
+        explanation: a.reason,
+      });
+    }
+  }
+  if (!actionPlan) {
   // Superior English: +20 points vs Proficient, +10 vs Competent
   // (Schedule 6A of the Migration Regulations 1994: Competent=0, Proficient=10, Superior=20)
   if (englishOption === "competent") {
@@ -4702,6 +4728,8 @@ function buildPointsBoosterSimulator(
     });
   }
 
+  }
+
   if (scenarios.length === 0) {
     scenarios.push({
       label: isTr
@@ -4727,7 +4755,8 @@ function buildPointsBoosterSimulator(
   // minimum from the applicant's current score, and (b) -- only when a real,
   // occupation-matched recent invitation benchmark exists (never a guessed
   // number) -- the smallest combination that reaches that benchmark.
-  const combinable = scenarios.filter((s) => s.estimatedChange > 0);
+  // Only the largest single gains are combined (the list is ordered by gain).
+  const combinable = scenarios.filter((s) => s.estimatedChange > 0).slice(0, 6);
   type Combo = { items: typeof combinable; total: number };
   const combos: Combo[] = [];
   for (let i = 0; i < combinable.length; i++) {
@@ -5184,6 +5213,7 @@ function buildProgressionPathways(
   input?: ReadinessInput,
   pointsEstimate?: PointsEstimate
 ): ProgressionPathway[] {
+  const englishAtMax = isEnglishAtMaximum(input?.englishLevel);
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const items: ProgressionPathway[] = [];
@@ -5317,14 +5347,14 @@ function buildProgressionPathways(
       label: isTr ? "Bağımsız nitelikli göç süreci" : isZh ? "独立技术移民流程" : "Independent skilled progression",
       explanation: isTr
         ? gap > 0
-          ? `189 vizesi için süreç, eyalet adaylığı olmaksızın tamamen puan bazlıdır. Mevcut ${gap} puanlık açığınız göz önüne alındığında, davet turlarında rekabetçi olabilmek için tekil veya birleşik puan artırıcıları (örn. İngilizce sınavı, NAATI) aktif olarak hedeflemelisiniz.`
+          ? `189 vizesi için süreç, eyalet adaylığı olmaksızın tamamen puan bazlıdır. Mevcut ${gap} puanlık açığınız göz önüne alındığında, davet turlarında rekabetçi olabilmek için tekil veya birleşik puan artırıcıları (${englishAtMax ? "örn. NAATI" : "örn. İngilizce sınavı, NAATI"}) aktif olarak hedeflemelisiniz.`
           : `189 vizesi için süreç, eyalet adaylığı olmaksızın tamamen puan bazlıdır. Davet turlarında doğrudan kalıcı ikamet hakkı sağlar.`
         : isZh
           ? gap > 0
-            ? `对于 189 独立技术移民签证，申请完全基于您的打分，无需州担保。鉴于您目前有 ${gap} 分的分数差距，您必须积极争取单项或组合加分（例如英语考试、NAATI 社区语言认证），才能在邀请轮次中具备竞争力。`
+            ? `对于 189 独立技术移民签证，申请完全基于您的打分，无需州担保。鉴于您目前有 ${gap} 分的分数差距，您必须积极争取单项或组合加分${englishAtMax ? "（例如 NAATI 社区语言认证）" : "（例如英语考试、NAATI 社区语言认证）"}，才能在邀请轮次中具备竞争力。`
             : `对于 189 独立技术移民签证，申请完全基于您的打分，达到门槛后可通过递交 EOI 竞争直接受邀获得永久居民身份。`
           : gap > 0
-            ? `For subclass 189, progression is purely points-based without state nomination. Given your current gap of ${gap} points, you must actively pursue single or combined points boosters (e.g. English test, NAATI) to become competitive for invitation rounds.`
+            ? `For subclass 189, progression is purely points-based without state nomination. Given your current gap of ${gap} points, you must actively pursue single or combined points boosters (${englishAtMax ? "e.g. NAATI" : "e.g. English test, NAATI"}) to become competitive for invitation rounds.`
             : `For subclass 189, progression is purely points-based, leading directly to permanent residency upon invitation.`,
     });
   }
@@ -5359,10 +5389,10 @@ function buildProgressionPathways(
       to: isTr ? "Stratejik nitelikli göç yolu" : isZh ? "战略技术移民路线" : "Strategic skilled migration route",
       label: isTr ? "Nitelikli göç için standart ilerleme" : isZh ? "技术移民标准进度" : "Standard progression for skilled professionals",
       explanation: isTr
-        ? "Mevcut ortamda nitelikli profesyoneller için standart ilerleme genellikle olumlu bir Skills Assessment alınmasını, İngilizce puanını Superior seviyeye taşımayı ve hem Eyalet (190) hem de Bölgesel (491) sponsorluklarını hedefleyen stratejik bir Expression of Interest (EOI) sunumunu içerir."
+        ? `Mevcut ortamda nitelikli profesyoneller için standart ilerleme genellikle olumlu bir Skills Assessment alınmasını${englishAtMax ? "" : ", İngilizce puanını Superior seviyeye taşımayı"} ve hem Eyalet (190) hem de Bölgesel (491) sponsorluklarını hedefleyen stratejik bir Expression of Interest (EOI) sunumunu içerir.`
         : isZh
-          ? "在当前环境下，技术专业人员的标准进度通常包括获得正面的职业评估、将英语成绩提高到 Superior 级别，并递交针对州担保 (190) 和偏远地区担保 (491) 的战略性 EOI 意向书。"
-          : "Standard progression for skilled professionals in the current landscape typically involves securing a positive Skills Assessment, maximizing English scores to Superior, and lodging a strategic Expression of Interest (EOI) targeting both State (190) and Regional (491) sponsorships.",
+          ? `在当前环境下，技术专业人员的标准进度通常包括获得正面的职业评估${englishAtMax ? "" : "、将英语成绩提高到 Superior 级别"}，并递交针对州担保 (190) 和偏远地区担保 (491) 的战略性 EOI 意向书。`
+          : `Standard progression for skilled professionals in the current landscape typically involves securing a positive Skills Assessment${englishAtMax ? "" : ", maximizing English scores to Superior,"} and lodging a strategic Expression of Interest (EOI) targeting both State (190) and Regional (491) sponsorships.`,
     });
   }
 
@@ -6563,6 +6593,9 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
   const pointsEstimate = hasSkilledPathway
     ? buildPointsEstimate(input, locale)
     : undefined;
+  if (pointsEstimate && pointsEstimate.estimatedPoints !== undefined) {
+    pointsEstimate.actionPlan = buildAuPointsActionPlan(input, detectedSubclasses, locale);
+  }
   const dataCompleteness = buildDataCompleteness(input, locale);
 
   let pathwayComparison: PathwayComparison[];

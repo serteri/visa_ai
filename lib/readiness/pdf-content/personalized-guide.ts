@@ -1,4 +1,5 @@
-import type { Locale, FinancialRoadmapItem } from "../types";
+import type { Locale, FinancialRoadmapItem, PointsActionPlan } from "../types";
+import { fastestWaysPhrase, getPointsLevers } from "../points-action-text";
 import { computeEstimatedTotalAud, findFinancialRoadmapItem, formatEstimatedTotalLine } from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
@@ -42,6 +43,8 @@ export function getPersonalizedApplicationGuide(
    * numbers (Phase 1 report consistency fix, items D1/D2/D3).
    */
   financialRoadmap?: FinancialRoadmapItem[],
+  /** AU: the engine's action plan -- English/nomination are only suggested when it lists them. */
+  pointsActionPlan?: PointsActionPlan,
 ): {
   title: string;
   userName: string;
@@ -142,28 +145,30 @@ export function getPersonalizedApplicationGuide(
   // AU has a real, fixed 65-point EOI minimum. CA's Express Entry has no
   // fixed minimum CRS score to create a profile -- invitation cutoffs vary
   // by draw, so this "reach the threshold" step does not apply to CA.
+  const levers = getPointsLevers(pointsActionPlan, profile.englishLevel);
   if (!isCA && pointsEstimate !== undefined && pointsEstimate < 65) {
     const gap = 65 - pointsEstimate;
+    const ways = fastestWaysPhrase(locale, levers);
     nextSteps.push({
       priority: "high",
       title: isTr ? `Puan Barajını Aşın (${gap} puan eksik)` : isZh ? `达到积分门槛（差${gap}分）` : `Reach Points Threshold (${gap} pts short)`,
       detail: isTr
-        ? `Mevcut tahmini puanınız ${pointsEstimate}, asgari 65 barajının ${gap} puan altında. Puanınızı artırmak için dil seviyenizi yükseltin veya eyalet adaylığı alın.`
+        ? `Mevcut tahmini puanınız ${pointsEstimate}, asgari 65 barajının ${gap} puan altında.${ways ? ` Puanınızı artırmak için: ${ways}.` : ""}`
         : isZh
-          ? `您当前的预估积分为${pointsEstimate}分，距离最低65分门槛还差${gap}分。建议提高语言分数或获得州提名来增加积分。`
-          : `Your estimated score is ${pointsEstimate} points, ${gap} points below the minimum threshold of 65. Consider improving your English score or obtaining state nomination to boost your points.`,
+          ? `您当前的预估积分为${pointsEstimate}分，距离最低65分门槛还差${gap}分。${ways ? `建议：${ways}。` : ""}`
+          : `Your estimated score is ${pointsEstimate} points, ${gap} points below the minimum threshold of 65.${ways ? ` Consider: ${ways}.` : ""}`,
     });
   }
 
-  if (profile.englishLevel && !profile.englishLevel.toLowerCase().includes("superior") && !profile.englishLevel.toLowerCase().includes("advanced")) {
+  if (profile.englishLevel && levers.englishGain !== null && !profile.englishLevel.toLowerCase().includes("superior") && !profile.englishLevel.toLowerCase().includes("advanced")) {
     nextSteps.push({
       priority: "medium",
       title: isTr ? "Dil Seviyenizi Yükseltin" : isZh ? "提高语言分数" : "Improve English Score",
       detail: isTr
-        ? "Dil seviyenizi 'Superior' (IELTS 8.0 / PTE 79) seviyesine çıkarmak +20 puan kazandırabilir. Bu, puan barajını aşmada en etkili yoldur."
+        ? `Dil seviyenizi 'Superior' (IELTS 8.0 / PTE 79) seviyesine çıkarmak +${levers.englishGain} puan kazandırabilir. Bu, puan barajını aşmada en etkili yoldur.`
         : isZh
-          ? "将语言水平提高到'优秀'级别（雅思8.0 / PTE 79）可获得+20分加分。这是突破积分门槛最有效的方式。"
-          : "Upgrading your English to Superior level (IELTS 8.0 / PTE 79) can earn you +20 points. This is the most effective way to bridge the points gap.",
+          ? `将语言水平提高到'优秀'级别（雅思8.0 / PTE 79）可获得+${levers.englishGain}分加分。这是突破积分门槛最有效的方式。`
+          : `Upgrading your English to Superior level (IELTS 8.0 / PTE 79) can earn you +${levers.englishGain} points. This is the most effective way to bridge the points gap.`,
     });
   }
 

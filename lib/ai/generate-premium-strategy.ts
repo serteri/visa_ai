@@ -6,6 +6,11 @@ import type { RetrievedVisaContext } from "@/lib/ai/retrieve-visa-context";
 import type { RetrievedStateContext } from "@/lib/ai/retrieve-state-context";
 import { premiumStrategySchema, type PremiumStrategyResult } from "@/lib/ai/strategy-schema";
 import { textMatchesBlockedLanguage } from "@/lib/readiness/report-invariants";
+import type { PointsActionPlan, PointsEstimate } from "@/lib/readiness/types";
+import {
+  assembleBoosterRows,
+  findPointsClaimViolations,
+} from "@/lib/readiness/points-booster";
 
 const STRATEGY_MODEL_ID = "gpt-4o-mini";
 
@@ -31,7 +36,7 @@ async function defaultGenerateFn({ system, prompt }: { system: string; prompt: s
 }
 
 /** Every free-text field the model can populate -- what the blocked-language scan and fallback substitution operate over. */
-function collectNarrativeStrings(result: PremiumStrategyResult): Array<{ text: string; path: string }> {
+function collectNarrativeStrings(result: PremiumStrategyResult, country: "AU" | "CA" = "CA"): Array<{ text: string; path: string }> {
   const entries: Array<{ text: string; path: string }> = [
     { text: result.executiveSummary, path: "executiveSummary" },
     { text: result.timelineEstimate, path: "timelineEstimate" },
@@ -40,13 +45,16 @@ function collectNarrativeStrings(result: PremiumStrategyResult): Array<{ text: s
     entries.push({ text: pathway.reason, path: `topRecommendedPathways[${i}].reason` });
   });
   result.pointsBoosterStrategy.forEach((step, i) => {
-    entries.push({ text: step.action, path: `pointsBoosterStrategy[${i}].action` });
+    // AU: the label (`action`) is never shown -- the engine's label replaces it -- so only the wording fields are scanned.
+    if (country === "CA") entries.push({ text: step.action, path: `pointsBoosterStrategy[${i}].action` });
+    if (step.reason) entries.push({ text: step.reason, path: `pointsBoosterStrategy[${i}].reason` });
+    if (step.difficultyExplanation) entries.push({ text: step.difficultyExplanation, path: `pointsBoosterStrategy[${i}].difficultyExplanation` });
   });
   return entries;
 }
 
-function findBlockedLanguageViolations(result: PremiumStrategyResult): string[] {
-  return collectNarrativeStrings(result)
+function findBlockedLanguageViolations(result: PremiumStrategyResult, country: "AU" | "CA"): string[] {
+  return collectNarrativeStrings(result, country)
     .filter(({ text }) => textMatchesBlockedLanguage(text))
     .map(({ path, text }) => `${path}: "${text}"`);
 }
@@ -57,7 +65,7 @@ const CA_ONLY_TERMS = /\b(CRS score|Express Entry|\bCEC\b|\bFSW\b|\bFSTP\b|\bNOC
 
 function findCountryMismatchViolations(result: PremiumStrategyResult, country: "AU" | "CA"): string[] {
   const wrongCountryPattern = country === "CA" ? AU_ONLY_TERMS : CA_ONLY_TERMS;
-  return collectNarrativeStrings(result)
+  return collectNarrativeStrings(result, country)
     .filter(({ text }) => wrongCountryPattern.test(text))
     .map(({ path, text }) => `${path}: "${text}"`);
 }
@@ -167,6 +175,10 @@ function applyFallback(
     if (violatingPaths.has(path)) {
       step.action = fallbackFor(path);
     }
+    if (violatingPaths.has(`pointsBoosterStrategy[${i}].reason`)) step.reason = fallbackFor(`pointsBoosterStrategy[${i}].reason`);
+    if (violatingPaths.has(`pointsBoosterStrategy[${i}].difficultyExplanation`)) {
+      step.difficultyExplanation = fallbackFor(`pointsBoosterStrategy[${i}].difficultyExplanation`);
+    }
   });
 
   return next;
@@ -192,8 +204,13 @@ function buildSystemPrompt(locale: string, country: "AU" | "CA"): string {
     isCA
       ? "CRITICAL COUNTRY RULE: this report is for CANADA. Only reference Canadian programs and terminology: CEC, FSW, FSTP, PNP, CRS score, Express Entry, ECA, NOC codes, IRCC. NEVER mention Australian visa subclasses (189, 190, 491, 482, 186, 485, 500), ANZSCO codes, DHA, Skills Assessment, or any other Australian-specific term -- Canada has no equivalent to 'Skills Assessment' (the closest analog is an ECA, which is a different concept). For candidates blocked by the hard gate (no valid language test result), do not present CEC/FSW/FSTP as viable -- state plainly that a valid language test result (IELTS General, CELPIP, or TEF/TCF Canada) is required before creating an Express Entry profile. CRITICAL CRS FACT: IRCC removed CRS bonus points for arranged employment (job offers) effective March 25, 2025 -- do NOT claim a job offer, LMIA-backed offer, or arranged employment adds any CRS points (e.g. '+50' or '+200') in pointsBoosterStrategy or anywhere else; a job offer is not currently a points-earning factor under Express Entry."
       : "For candidates blocked by a hard gate (age 45 or older, missing Skills Assessment, or no valid/current English test), do not present the blocked pathway (189/190/491) as viable -- instead recommend realistic alternative routes consistent with the deterministic report's own hard-gate findings (e.g. employer sponsorship, retesting English, partner pathways, other visa subclasses). NEVER mention Canadian terminology (CRS, Express Entry, CEC/FSW/FSTP, NOC, IRCC, ECA) in an Australian report.",
+    isCA
+      ? ""
+      : "POINTS ACTION RULE: 'deterministicReport.pointsEstimate.actionPlan.actions' is the COMPLETE and FINAL list of actions that can still raise this applicant's score, with the engine's exact pointsGained and difficulty. pointsBoosterStrategy must contain one entry per listed action and nothing else: set actionId to the action's id, pointsGained and difficulty to the engine's values, and write ONLY the 'reason' and 'difficultyExplanation' wording yourself. Never add, remove, rename or re-score an action, and never mention a points value or a scoring factor (for example English, education, partner, work experience) that is not in that list -- factors absent from the list are already at their maximum or cannot be improved. A Skills Assessment is not a points action; it is never a pointsBoosterStrategy entry. Do not put point values in nextSteps.",
     `CRITICAL LANGUAGE RULE: the user's requested language code is '${locale}'. Every piece of text you return in the JSON output (executiveSummary, reason, nextSteps, action, timelineEstimate -- all of it) MUST be written entirely in '${locale}'. Do not mix languages and do not default to English unless '${locale}' is 'en'.`,
-  ].join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 /**
@@ -214,6 +231,86 @@ export async function generatePremiumStrategy(
   return sanitizeJobOfferPoints(result, country);
 }
 
+const EMPTY_PLAN: PointsActionPlan = { actions: [], enablingSteps: [], factors: [], englishAtMaximum: false };
+
+/** AU only: violations of the engine's action list in the model's output, keyed by the field they are in. */
+type PointsViolation = { path: string; message: string };
+
+function findPointsPlanViolations(
+  result: PremiumStrategyResult,
+  plan: PointsActionPlan,
+  estimate: PointsEstimate | undefined
+): PointsViolation[] {
+  const violations: PointsViolation[] = [];
+
+  // Roadmap rows: every action must map to an engine action id and every number must equal the engine value.
+  for (const message of assembleBoosterRows(plan, result.pointsBoosterStrategy).violations) {
+    violations.push({ path: "pointsBoosterStrategy", message });
+  }
+
+  // Narrative: points values must be engine values; next steps additionally may not mention factors with no action.
+  const numbersOnly: Array<[string, string]> = [
+    ["executiveSummary", result.executiveSummary],
+    ["timelineEstimate", result.timelineEstimate],
+    ...result.topRecommendedPathways.map((p, i): [string, string] => [`topRecommendedPathways[${i}].reason`, p.reason]),
+  ];
+  for (const [path, text] of numbersOnly) {
+    for (const message of findPointsClaimViolations(text, plan, { checkFactors: false, estimate })) {
+      violations.push({ path, message: `${message}: "${text}"` });
+    }
+  }
+  result.topRecommendedPathways.forEach((pathway, i) => {
+    pathway.nextSteps.forEach((step, j) => {
+      for (const message of findPointsClaimViolations(step, plan, { checkFactors: true, estimate })) {
+        violations.push({ path: `topRecommendedPathways[${i}].nextSteps[${j}]`, message: `${message}: "${step}"` });
+      }
+    });
+  });
+  return violations;
+}
+
+/**
+ * AU: makes the roadmap the engine's, whatever the model returned. Rows, order,
+ * points, difficulty and labels always come from the engine; the model's
+ * reason/difficultyExplanation are used only when `useLlm` and fully valid.
+ * Next steps that still carry an unlisted factor or points value are dropped,
+ * and summary/reason text with a foreign points value gets static fallback text.
+ */
+function finalizeAuPoints(
+  result: PremiumStrategyResult,
+  plan: PointsActionPlan,
+  estimate: PointsEstimate | undefined,
+  useLlm: boolean
+): PremiumStrategyResult {
+  const { rows } = assembleBoosterRows(plan, result.pointsBoosterStrategy, { useLlm });
+
+  const badPaths = new Set(
+    findPointsPlanViolations(result, plan, estimate)
+      .map((v) => v.path)
+      .filter((p) => p !== "pointsBoosterStrategy")
+  );
+  const next: PremiumStrategyResult = {
+    ...result,
+    topRecommendedPathways: result.topRecommendedPathways.map((pathway, i) => ({
+      ...pathway,
+      reason: badPaths.has(`topRecommendedPathways[${i}].reason`) ? countryMismatchFallbackText("topRecommendedPathways") : pathway.reason,
+      nextSteps: pathway.nextSteps.filter((step) => findPointsClaimViolations(step, plan, { checkFactors: true, estimate }).length === 0),
+    })),
+    pointsBoosterStrategy: rows.map((r) => ({
+      actionId: r.actionId,
+      action: r.action,
+      pointsGained: r.pointsGained,
+      difficulty: r.difficulty,
+      reason: r.reason,
+      difficultyExplanation: r.difficultyExplanation,
+    })),
+    enablingSteps: plan.enablingSteps.map((e) => ({ ...e })),
+  };
+  if (badPaths.has("executiveSummary")) next.executiveSummary = countryMismatchFallbackText("executiveSummary");
+  if (badPaths.has("timelineEstimate")) next.timelineEstimate = countryMismatchFallbackText("timelineEstimate");
+  return next;
+}
+
 async function generatePremiumStrategyInternal(
   deterministicReport: ReadinessReport,
   ragContext: PremiumStrategyRagContext,
@@ -224,19 +321,33 @@ async function generatePremiumStrategyInternal(
   const system = buildSystemPrompt(locale, country);
   const prompt = JSON.stringify({ deterministicReport, ragContext, locale });
 
+  // AU: the engine's action list is the only source of roadmap rows (see points-actions.ts).
+  const estimate = deterministicReport.pointsEstimate;
+  const plan: PointsActionPlan | null = country === "AU" ? (estimate?.actionPlan ?? EMPTY_PLAN) : null;
+
   let result = await generateFn({ system, prompt });
 
   const isEoiEligible = deterministicReport.assessmentState.isEoiEligible;
   const eoiIneligibilityReason = deterministicReport.assessmentState.eoiIneligibilityReason;
 
-  // Two independent violation classes, checked every time (not just when
-  // blocked): blocked-language only matters while !isEoiEligible, but a
+  // Three independent violation classes, checked every time (not just when
+  // blocked): blocked-language only matters while !isEoiEligible; a
   // country-context mismatch (e.g. the model reverting to its AU-strategist
-  // default and mentioning "subclass 189" in a CA report -- see the system
-  // prompt's explicit country rule above) is wrong regardless of EOI status.
-  let blockedViolations = isEoiEligible ? [] : findBlockedLanguageViolations(result);
-  let countryViolations = findCountryMismatchViolations(result, country);
-  if (blockedViolations.length === 0 && countryViolations.length === 0) return result;
+  // default and mentioning "subclass 189" in a CA report) is wrong regardless
+  // of EOI status; and (AU) anything that departs from the engine's points
+  // action list -- an unmapped action, a different number, a factor that is
+  // already at its maximum.
+  const check = (r: PremiumStrategyResult) => ({
+    blocked: isEoiEligible ? [] : findBlockedLanguageViolations(r, country),
+    country: findCountryMismatchViolations(r, country),
+    points: plan ? findPointsPlanViolations(r, plan, estimate) : [],
+  });
+  const done = (r: PremiumStrategyResult, useLlm: boolean) => (plan ? finalizeAuPoints(r, plan, estimate, useLlm) : r);
+
+  let violations = check(result);
+  if (violations.blocked.length === 0 && violations.country.length === 0 && violations.points.length === 0) {
+    return done(result, true);
+  }
 
   // One corrective retry with a combined, specific correction. Per-request
   // LLM drift can still happen even though the upstream deterministic
@@ -245,38 +356,47 @@ async function generatePremiumStrategyInternal(
   // fixed upstream, so it needs its own (non-log-only) handling.
   console.error(
     "[llm_text_invariant_violation] generatePremiumStrategy: violation(s) on first attempt, retrying with correction",
-    { blockedViolations, countryViolations }
+    { blockedViolations: violations.blocked, countryViolations: violations.country, pointsViolations: violations.points.map((v) => v.message) }
   );
   const correctionParts: string[] = [];
-  if (blockedViolations.length > 0) {
+  if (violations.blocked.length > 0) {
     correctionParts.push(
       `The applicant's EOI lodgement is currently BLOCKED (reason: ${eoiIneligibilityReason ?? "unspecified"}). You previously used encouraging or "proceed"/"apply now"/"strong fit" language, which is STRICTLY PROHIBITED while blocked. State plainly that progress is blocked and why, and do not imply the applicant should proceed to application.`
     );
   }
-  if (countryViolations.length > 0) {
+  if (violations.country.length > 0) {
     correctionParts.push(
       `This report is for ${country === "CA" ? "CANADA" : "AUSTRALIA"}. You previously mentioned ${country === "CA" ? "Australian visa subclasses, ANZSCO, or Skills Assessment terminology" : "Canadian CRS/Express Entry/CEC/FSW/FSTP/NOC/IRCC/ECA terminology"}, which does not apply here. Rewrite using only ${country === "CA" ? "Canadian Express Entry" : "Australian"} terminology.`
+    );
+  }
+  if (plan && violations.points.length > 0) {
+    correctionParts.push(
+      `Your output departed from the engine's points action list (${violations.points.slice(0, 6).map((v) => v.message).join(" | ")}). The ONLY allowed pointsBoosterStrategy entries are these actionIds with these exact values: ${JSON.stringify(plan.actions.map((a) => ({ actionId: a.id, pointsGained: a.gain, difficulty: a.difficulty })))}. Write only 'reason' and 'difficultyExplanation' for them; do not mention any other scoring factor or points value anywhere, including nextSteps.`
     );
   }
   const correctionSystem = `${system} CORRECTION: ${correctionParts.join(" ")} Rewrite your entire response accordingly.`;
   result = await generateFn({ system: correctionSystem, prompt });
 
-  blockedViolations = isEoiEligible ? [] : findBlockedLanguageViolations(result);
-  countryViolations = findCountryMismatchViolations(result, country);
-  if (blockedViolations.length === 0 && countryViolations.length === 0) return result;
+  violations = check(result);
+  if (violations.blocked.length === 0 && violations.country.length === 0 && violations.points.length === 0) {
+    return done(result, true);
+  }
 
   // Still violating after the retry -- replace only the offending fields
   // with static fallback text. The original violating text is never
   // returned to the caller/user. Blocked-language violations take priority
   // per field (more specific, actionable text) when a field trips both.
+  // Points violations: the roadmap is rebuilt from the engine's deterministic
+  // text WITHOUT any of the model's wording (useLlm = false).
   console.error(
     "[llm_text_invariant_violation] generatePremiumStrategy: still violating after retry, applying static fallback",
-    { blockedViolations, countryViolations }
+    { blockedViolations: violations.blocked, countryViolations: violations.country, pointsViolations: violations.points.map((v) => v.message) }
   );
-  const blockedPaths = new Set(blockedViolations.map((v) => v.split(":")[0]));
-  const countryPaths = new Set(countryViolations.map((v) => v.split(":")[0]));
+  const blockedPaths = new Set(violations.blocked.map((v) => v.split(":")[0]));
+  const countryPaths = new Set(violations.country.map((v) => v.split(":")[0]));
   const allPaths = new Set([...blockedPaths, ...countryPaths]);
-  return applyFallback(result, allPaths, (path) =>
+  const patched = applyFallback(result, allPaths, (path) =>
     blockedPaths.has(path) ? fallbackText(path, eoiIneligibilityReason) : countryMismatchFallbackText(path)
   );
+  return done(patched, violations.points.length === 0);
 }

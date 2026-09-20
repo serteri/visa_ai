@@ -1,4 +1,5 @@
 import { CURRENT_CSIT } from "./constants";
+import { assembleBoosterRows } from "./points-booster";
 import { computeEstimatedTotalAud, describeTotalScope, formatEstimatedTotalLine } from "./financial-roadmap-totals";
 import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
@@ -2264,9 +2265,36 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
 
     // ── Points booster roadmap ─────────────────────────────────────────
-    if (strategy.pointsBoosterStrategy.length > 0) {
+    // AU: rows come from the engine's action plan (pointsEstimate.actionPlan);
+    // the stored model output only contributes wording, and only if it still
+    // passes the same validation used when it was generated. Reports stored
+    // before the plan existed (AU, no actionPlan) show no roadmap rather than
+    // an unvalidated model-written one. CA keeps the model-written rows.
+    const auPlan = report.country === "CA" ? undefined : report.pointsEstimate?.actionPlan;
+    const boosterRows: Array<{ action: string; pointsGained: number; difficulty: "Low" | "Medium" | "High"; reason: string; difficultyExplanation: string }> =
+      report.country === "CA"
+        ? strategy.pointsBoosterStrategy.map((b) => ({
+            action: b.action,
+            pointsGained: b.pointsGained,
+            difficulty: b.difficulty,
+            reason: "",
+            difficultyExplanation: "",
+          }))
+        : auPlan
+          ? assembleBoosterRows(auPlan, strategy.pointsBoosterStrategy).rows
+          : [];
+    const enablingSteps = report.country === "CA" ? [] : (auPlan?.enablingSteps ?? []);
+
+    if (boosterRows.length > 0 || enablingSteps.length > 0) {
       const boosterHeading = isTr ? "Puan Artırma Yol Haritası" : isZh ? "积分提升路线图" : "Points Booster Roadmap";
       addHeading(boosterHeading);
+
+      // A skills assessment is an enabling step, not a points action: its own row, no points value.
+      enablingSteps.forEach((step) => {
+        addBody(step.label);
+        addSmallText(step.reason, 4);
+        yPosition += 1;
+      });
 
       const difficultyLabel = (level: "Low" | "Medium" | "High"): string => {
         if (level === "Low") return isTr ? "Düşük" : isZh ? "低" : "Low";
@@ -2279,24 +2307,26 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         return COLORS.riskHigh;
       };
 
-      drawTable(
-        [
-          isTr ? "Aksiyon" : isZh ? "行动" : "Action",
-          isTr ? "Kazanılacak Puan" : isZh ? "可获积分" : "Points Gained",
-          isTr ? "Zorluk" : isZh ? "难度" : "Difficulty",
-        ],
-        strategy.pointsBoosterStrategy.map((booster) => [
-          booster.action,
-          `+${booster.pointsGained}`,
-          difficultyLabel(booster.difficulty),
-        ]),
-        [0.55, 0.2, 0.25],
-        (rowIndex, colIndex) => {
-          if (colIndex !== 2) return null;
-          const booster = strategy.pointsBoosterStrategy[rowIndex];
-          return booster ? difficultyColor(booster.difficulty) : null;
-        },
-      );
+      if (boosterRows.length > 0) {
+        drawTable(
+          [
+            isTr ? "Aksiyon" : isZh ? "行动" : "Action",
+            isTr ? "Kazanılacak Puan" : isZh ? "可获积分" : "Points Gained",
+            isTr ? "Zorluk" : isZh ? "难度" : "Difficulty",
+          ],
+          boosterRows.map((booster) => [
+            booster.reason ? `${booster.action} — ${booster.reason}` : booster.action,
+            `+${booster.pointsGained}`,
+            booster.difficultyExplanation ? `${difficultyLabel(booster.difficulty)} — ${booster.difficultyExplanation}` : difficultyLabel(booster.difficulty),
+          ]),
+          [0.5, 0.15, 0.35],
+          (rowIndex, colIndex) => {
+            if (colIndex !== 2) return null;
+            const booster = boosterRows[rowIndex];
+            return booster ? difficultyColor(booster.difficulty) : null;
+          },
+        );
+      }
       yPosition += 2;
     }
 

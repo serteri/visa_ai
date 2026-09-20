@@ -1,4 +1,6 @@
 import { skillsAssessmentClaimText } from "./skills-assessment-claim";
+import { fastestWaysPhrase, getPointsLevers } from "../points-action-text";
+import type { PointsActionPlan } from "../types";
 import type { Locale } from "../types";
 import { CURRENT_CSIT } from "../constants";
 
@@ -60,6 +62,8 @@ export function getPersonalizedOverview(
    * for AU (CA callers should always pass this explicitly).
    */
   isEoiEligible?: boolean,
+  /** AU: the engine's action plan -- English/nomination/experience are only suggested when it lists them. */
+  pointsActionPlan?: PointsActionPlan,
 ): {
   title: string;
   userName: string;
@@ -80,6 +84,7 @@ export function getPersonalizedOverview(
   // that flag everywhere English-evidence status is shown (Phase 2a C4).
   const hasEnglishEvidence = Boolean(profile.englishLevel && profile.englishLevel.trim().toLowerCase() !== "none");
   const gap = threshold - estimatedPoints;
+  const levers = getPointsLevers(pointsActionPlan, profile.englishLevel);
   const blockingNoun = blockingRequirementNoun(country, locale);
   const claimText = skillsAssessmentClaimText(locale);
   // AU: skillsAssessmentDone is the specific legal requirement, checked in
@@ -222,11 +227,12 @@ export function getPersonalizedOverview(
 
   // English level
   if (profile.englishLevel) {
-    const isStrong = /superior|advanced|79|8\.0|clb9|clb10/i.test(profile.englishLevel);
+    // At the table's top tier (or when the engine lists no English action) there is nothing to upgrade.
+    const isStrong = /superior|advanced|79|8\.0|clb9|clb10/i.test(profile.englishLevel) || (Boolean(pointsActionPlan) && levers.englishGain === null);
     keyFindings.push(
       isStrong
         ? (isTr ? "✅ Güçlü dil seviyesi — ekstra puan kazanıyorsunuz." : isZh ? "✅ 语言水平较高——可获得额外积分。" : "✅ Strong English level — earning extra points.")
-        : (isTr ? "⚠️ Dil seviyenizi yükseltmek +20 puana kadar kazandırabilir." : isZh ? "⚠️ 提高语言分数可获得最多+20分加分。" : "⚠️ Upgrading English could earn up to +20 more points."),
+        : (isTr ? `⚠️ Dil seviyenizi yükseltmek +${levers.englishGain ?? 20} puana kadar kazandırabilir.` : isZh ? `⚠️ 提高语言分数可获得最多+${levers.englishGain ?? 20}分加分。` : `⚠️ Upgrading English could earn up to +${levers.englishGain ?? 20} more points.`),
     );
   }
 
@@ -286,6 +292,7 @@ export function getPersonalizedOverview(
   // green light to apply if the OTHER country-appropriate requirement is
   // still unmet -- "proceed directly to the application process" must never
   // appear while requirementMet is false.
+  const fastestWays = fastestWaysPhrase(locale, levers, undefined);
   const nominationLabel = isTr ? (isCA ? 'PNP adaylığı' : 'eyalet adaylığı') : isZh ? (isCA ? 'PNP省提名' : '州提名') : (isCA ? 'provincial' : 'state');
   const recommendation = isCA
     ? (requirementMet
@@ -301,10 +308,10 @@ export function getPersonalizedOverview(
               : `${name}, you must provide ${blockingNoun} before creating an Express Entry profile. Your immediate priority is meeting this requirement.`))
     : (gap > 0
         ? (isTr
-            ? `${name}, en kritik önceliğiniz ${gap} puanlık kapatılacak. En hızlı yol: dil seviyenizi 'Superior' seviyesine çıkarmak (+20 puan) veya ${nominationLabel} almak.`
+            ? `${name}, en kritik önceliğiniz ${gap} puanlık kapatılacak. ${fastestWays ? `En hızlı yol: ${fastestWays}.` : "Puanı artırabilecek eylemler için bu raporun puan bölümlerine bakın."}`
             : isZh
-              ? `${name}，当务之急是弥补${gap}分的差距。最快的方法：将语言水平提高到'优秀'级别（+20分）或获得${nominationLabel}。`
-              : `${name}, your top priority is closing the ${gap}-point gap. Fastest path: upgrade English to Superior (+20 pts) or obtain ${nominationLabel} nomination.`)
+              ? `${name}，当务之急是弥补${gap}分的差距。${fastestWays ? `最快的方法：${fastestWays}。` : "请参阅本报告的积分章节，了解仍可提高积分的行动。"}`
+              : `${name}, your top priority is closing the ${gap}-point gap. ${fastestWays ? `Fastest path: ${fastestWays}.` : "See the points sections of this report for the actions that can still raise your score."}`)
         : !requirementMet
           ? (isTr
               ? `${name}, potansiyel puanınız yeterli. ${claimText} Öncelikli adımınız bu gereksinimi tamamlamaktır.`

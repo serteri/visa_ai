@@ -1,4 +1,4 @@
-import type { Locale } from "../types";
+import type { Locale, PointsActionPlan } from "../types";
 
 interface PointCategory {
   label: string;
@@ -31,6 +31,12 @@ export function getPersonalizedPointsBreakdown(
    * falls back to skillsAssessmentDone.
    */
   isEoiEligible?: boolean,
+  /**
+   * AU: the engine's deterministic action list (report.pointsEstimate.actionPlan).
+   * Tips and gap analysis are built ONLY from it; absent on reports stored before
+   * it existed, in which case no points tips are shown rather than guessed ones.
+   */
+  actionPlan?: PointsActionPlan,
 ): {
   title: string;
   userName: string;
@@ -174,11 +180,30 @@ export function getPersonalizedPointsBreakdown(
               ? `${userName}，在创建 Express Entry 档案之前，必须提供有效的语言考试成绩。`
               : `${userName}, a valid language test result is required before creating an Express Entry profile.`))
     : (gap > 0
-        ? (isTr
-            ? `${userName}, ${gap} puanlık bir fark var. En hızlı artırma yolları dil seviyenizi yükseltmek veya eyalet adaylığı almaktır.`
-            : isZh
-              ? `${userName}，您还差${gap}分。最快的方式是提高语言分数或获得州提名。`
-              : `${userName}, you have a ${gap}-point gap. The fastest ways to improve are upgrading your English score or obtaining state nomination.`)
+        ? (() => {
+            // Built from the engine's action list only: English (or any other
+            // factor) is named only when it can still add points.
+            const top = (actionPlan?.actions ?? []).slice(0, 2).map((a) => `${a.label} (+${a.gain})`);
+            if (!actionPlan) {
+              return isTr
+                ? `${userName}, ${gap} puanlık bir fark var.`
+                : isZh
+                  ? `${userName}，您还差${gap}分。`
+                  : `${userName}, you have a ${gap}-point gap.`;
+            }
+            if (top.length === 0) {
+              return isTr
+                ? `${userName}, ${gap} puanlık bir fark var; puan tablosunda şu anda artırabileceğiniz başka bir faktör görünmüyor.`
+                : isZh
+                  ? `${userName}，您还差${gap}分；积分表中目前没有其他可以提高的因素。`
+                  : `${userName}, you have a ${gap}-point gap; no other points-table factor can currently be improved.`;
+            }
+            return isTr
+              ? `${userName}, ${gap} puanlık bir fark var. Şu anda mevcut en büyük artışlar: ${top.join("; ")}.`
+              : isZh
+                ? `${userName}，您还差${gap}分。目前可获得的最大加分：${top.join("；")}。`
+                : `${userName}, you have a ${gap}-point gap. The largest gains currently available: ${top.join("; ")}.`;
+          })()
         // Hard gate: a score at/above threshold is not itself a green light
         // without a positive Skills Assessment -- DHA won't accept an EOI at
         // any score without one, so the congratulatory line would be legally
@@ -198,25 +223,30 @@ export function getPersonalizedPointsBreakdown(
   // ── Improvement Tips ──────────────────────────────────────────────────
   const improvementTips: string[] = [];
 
-  const englishCat = categories.find((c) => c.label.toLowerCase().includes("english") || c.label.toLowerCase().includes("dil") || c.label.toLowerCase().includes("语言"));
-  if (englishCat && englishCat.status !== "excellent") {
-    improvementTips.push(
-      isCA
-        ? (isTr ? "Dil puanınızı yükseltin: CLB 9+ önemli CRS puanı ekler."
-            : isZh ? "提高语言分数：CLB 9 及以上可显著增加 CRS 积分。"
-            : "Improve your language score: CLB 9+ adds significant CRS points.")
-        : (isTr ? "Dil puanınızı yükseltin: Superior (IELTS 8.0) +20 puan ekler."
-            : isZh ? "提高语言分数：优秀级别（雅思8.0）可获得+20分加分。"
-            : "Improve English: Superior level (IELTS 8.0) adds +20 points."),
-    );
+  // CA: unchanged (CLB-based wording; AU actions below do not apply).
+  if (isCA) {
+    const englishCat = categories.find((c) => c.label.toLowerCase().includes("english") || c.label.toLowerCase().includes("dil") || c.label.toLowerCase().includes("语言"));
+    if (englishCat && englishCat.status !== "excellent") {
+      improvementTips.push(
+        isTr ? "Dil puanınızı yükseltin: CLB 9+ önemli CRS puanı ekler."
+          : isZh ? "提高语言分数：CLB 9 及以上可显著增加 CRS 积分。"
+          : "Improve your language score: CLB 9+ adds significant CRS points.",
+      );
+    }
   }
 
+  // AU: one tip per action the engine says can still raise THIS applicant's
+  // score, with the engine's own gain. Factors at their maximum, already
+  // claimed or not applicable (e.g. English at Superior, a PhD, a single
+  // applicant's partner points) never appear.
   if (country === "AU") {
-    improvementTips.push(
-      isTr ? "Eyalet adaylığı: Subclass 190 +5 puan, 491 +15 puan ekler."
-        : isZh ? "州提名：190子类别+5分，491子类别+15分加分。"
-        : "State nomination: Subclass 190 adds +5, 491 adds +15 points.",
-    );
+    for (const action of actionPlan?.actions ?? []) {
+      improvementTips.push(
+        isTr ? `${action.label}: +${action.gain} puan`
+          : isZh ? `${action.label}：+${action.gain}分`
+          : `${action.label}: +${action.gain} pts`,
+      );
+    }
   }
 
   if (country === "CA") {
@@ -231,8 +261,9 @@ export function getPersonalizedPointsBreakdown(
   // AU-only concepts (NAATI, Professional Year, "Australian study") have no
   // CA equivalent -- CA gets its own grounded CRS-booster list instead of a
   // country ternary on the same AU-shaped items.
-  const additionalStrategies = isCA
-    ? (isTr
+  const additionalStrategies: string[] = country === "AU"
+    ? []
+    : (isTr
         ? [
             "İkinci dil (Fransızca): CLB 7+ ile eşleştirilmiş güçlü İngilizce +50 CRS ikidillilik bonusu sağlar",
             "ECA (Eğitim Denkliği): Yurt dışı eğitim puanlarını talep etmek için gereklidir",
@@ -254,29 +285,6 @@ export function getPersonalizedPointsBreakdown(
               "Canadian work experience: unlocks CEC eligibility and adds significant CRS points",
               "Spouse/partner factors: your spouse's language and education can add further CRS points",
               "Master's/PhD degree: adds points in the education category",
-            ])
-    : (isTr
-        ? [
-            "NAATI sertifikası: +5 puan (çift dil kanıtı)",
-            "Profesyonel yıl programı: +5 puan (Avustralya'da eğitim)",
-            "Bölgesel çalışma/yaşama: +5-15 puan",
-            "İş teklifi: +5-15 puan",
-            "Yüksek lisans/doktora: +10-20 puan",
-          ]
-        : isZh
-          ? [
-              "NAATI证书：+5分（双语证明）",
-              "职业年项目：+5分（澳大利亚学习）",
-              "偏远地区学习/居住：+5-15分",
-              "工作邀请：+5-15分",
-              "硕士/博士学位：+10-20分",
-            ]
-          : [
-              "NAATI certification: +5 pts (bilingual evidence)",
-              "Professional Year program: +5 pts (Australian study)",
-              "Regional study/living: +5-15 pts",
-              "Job offer: +5-15 pts",
-              "Masters/PhD degree: +10-20 pts",
             ]);
 
   return {

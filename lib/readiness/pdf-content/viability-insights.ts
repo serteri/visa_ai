@@ -1,4 +1,5 @@
-import type { Locale } from "../types";
+import type { Locale, PointsActionPlan } from "../types";
+import { getPointsLevers } from "../points-action-text";
 
 type ViabilityInput = {
   occupationTitle?: string;
@@ -9,6 +10,9 @@ type ViabilityInput = {
   gap: number;
   viability: "strong" | "viable" | "borderline" | "below_threshold";
   hasSkillsAssessment: boolean;
+  /** AU: the engine's action plan -- language is only suggested when it can still add points. */
+  pointsActionPlan?: PointsActionPlan;
+  englishLevel?: string;
 };
 
 /**
@@ -100,6 +104,7 @@ export function getViabilityInsights(
   }
 
   // Recommendation
+  const languageCanHelp = getPointsLevers(input.pointsActionPlan, input.englishLevel).englishGain !== null;
   let recommendation: string;
   if (input.viability === "strong") {
     recommendation = isTr
@@ -109,16 +114,16 @@ export function getViabilityInsights(
         : "Continue strengthening your profile and prepare your EOI.";
   } else if (input.viability === "viable") {
     recommendation = isTr
-      ? "Profiliniz rekabetçi. Puan artışı için dil veya eyalet adaylığını değerlendirin."
+      ? (languageCanHelp ? "Profiliniz rekabetçi. Puan artışı için dil veya eyalet adaylığını değerlendirin." : "Profiliniz rekabetçi. Puan artışı için eyalet adaylığını değerlendirin.")
       : isZh
-        ? "您的档案具有竞争力。考虑通过语言或州提名来提高积分。"
-        : "Your profile is competitive. Consider improving your score through language or state nomination.";
+        ? (languageCanHelp ? "您的档案具有竞争力。考虑通过语言或州提名来提高积分。" : "您的档案具有竞争力。考虑通过州提名来提高积分。")
+        : (languageCanHelp ? "Your profile is competitive. Consider improving your score through language or state nomination." : "Your profile is competitive. Consider improving your score through state nomination.");
   } else {
     recommendation = isTr
-      ? "En hızlı puan artışı yolları: dil seviyenizi yükseltin veya bölgesel yolları (491) değerlendirin."
+      ? (languageCanHelp ? "En hızlı puan artışı yolları: dil seviyenizi yükseltin veya bölgesel yolları (491) değerlendirin." : "En hızlı puan artışı yolu: bölgesel yolları (491) değerlendirin.")
       : isZh
-        ? "最快的提分途径：提高语言分数或考虑偏远地区路径（491）。"
-        : "Fastest ways to improve: upgrade your English score or consider regional pathways (491).";
+        ? (languageCanHelp ? "最快的提分途径：提高语言分数或考虑偏远地区路径（491）。" : "最快的提分途径：考虑偏远地区路径（491）。")
+        : (languageCanHelp ? "Fastest ways to improve: upgrade your English score or consider regional pathways (491)." : "Fastest way to improve: consider regional pathways (491).");
   }
 
   return { title, summary, details, recommendation };

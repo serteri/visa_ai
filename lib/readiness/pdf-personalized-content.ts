@@ -280,6 +280,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     goals,
     hasSalary ? String(annualSalary) : undefined,
     report.assessmentState.isEoiEligible,
+    report.pointsEstimate?.actionPlan,
   );
 
   ctx.ensurePageSpace(50);
@@ -350,6 +351,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       POINTS_THRESHOLD,
       skillsAssessmentDone,
       report.assessmentState.isEoiEligible,
+      report.pointsEstimate.actionPlan,
     );
 
     // Section Header
@@ -805,6 +807,8 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
               ? "borderline"
               : "below_threshold",
         hasSkillsAssessment: skillsAssessmentDone,
+        pointsActionPlan: report.pointsEstimate?.actionPlan,
+        englishLevel: userInputSummary.englishLevel,
       });
 
       addBody(viabData.summary);
@@ -830,10 +834,10 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       } else {
         const gap = viab.cutoffScore - claimableTotal;
         const shortText = t === "tr"
-          ? `Son kesim puanının ${gap} puan altındasınız. Daha yüksek dil puanı, NAATI veya Partner puanları gibi ek puan yollarını değerlendirin.`
+          ? `Son kesim puanının ${gap} puan altındasınız. Puan Artırma bölümlerinde listelenen ek puan yollarını değerlendirin.`
           : t === "zh"
-            ? `您目前距离最近的历史分数线还差${gap}分。建议探索额外加分途径（如优秀语言成绩、NAATI或伴侣积分）。`
-            : `You are currently ${gap} points short of the recent historical cut-off. We recommend exploring additional point avenues (e.g., superior English, NAATI, or Partner points).`;
+            ? `您目前距离最近的历史分数线还差${gap}分。建议探索积分提升章节中列出的额外加分途径。`
+            : `You are currently ${gap} points short of the recent historical cut-off. We recommend exploring the additional points actions listed in this report's points sections.`;
         addSmallText(shortText, 4);
       }
 
@@ -927,6 +931,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     isGeneralAuthorityFallback,
     report.assessmentState.isEoiEligible,
     report.financialRoadmap,
+    report.pointsEstimate?.actionPlan,
   );
 
   addSectionHeading("📋", guide.title);
@@ -1062,6 +1067,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     faqAssessingAuthority,
     report.assessmentState.isEoiEligible,
     report.financialRoadmap,
+    report.pointsEstimate?.actionPlan,
   );
 
   addSectionHeading("❓", faq.title);
