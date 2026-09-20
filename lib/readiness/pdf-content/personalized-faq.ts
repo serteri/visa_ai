@@ -1,5 +1,5 @@
 import type { Locale, FinancialRoadmapItem } from "../types";
-import { computeEstimatedTotalAud, findFinancialRoadmapItem } from "../financial-roadmap-totals";
+import { computeEstimatedTotalAud, describeTotalGaps, findFinancialRoadmapItem } from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
 
@@ -229,12 +229,46 @@ export function getPersonalizedFaq(
         : "What is the total cost of the application process?",
     answer:
       country === "AU"
-        ? vacItem && skillsItem && englishItem && total
-          ? isTr
-              ? `Beceri değerlendirmesi (${skillsItem.category.replace(/^Beceri Değerlendirmesi\s*—?\s*/, "") || "ilgili kurum"}): ${skillsItem.amountLabel}. Dil testi: ${englishItem.amountLabel}. Başvuru ücreti (VAC): ${vacItem.amountLabel}. Tahmini toplam (ana başvurucu): AUD ${total.min.toLocaleString("tr-TR")}-${total.max.toLocaleString("tr-TR")}.`
-            : isZh
-              ? `技能评估（${skillsItem.category.replace(/^Skills Assessment\s*—?\s*/, "") || "相关机构"}）：${skillsItem.amountLabel}。语言考试：${englishItem.amountLabel}。申请费（VAC）：${vacItem.amountLabel}。预计总计（主申请人）：AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}。`
-              : `Skills assessment (${skillsItem.category.replace(/^Skills Assessment\s*—?\s*/, "") || "relevant authority"}): ${skillsItem.amountLabel}. Language test: ${englishItem.amountLabel}. Application fee (VAC): ${vacItem.amountLabel}. Estimated total (primary applicant): AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}.`
+        ? total
+          ? (() => {
+              const gaps = describeTotalGaps(total, locale);
+              const totalLabel = total.complete
+                ? isTr
+                  ? `Tahmini toplam (ana başvurucu): AUD ${total.min.toLocaleString("tr-TR")}-${total.max.toLocaleString("tr-TR")}.`
+                  : isZh
+                    ? `预计总计（主申请人）：AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}。`
+                    : `Estimated total (primary applicant): AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}.`
+                : isTr
+                  ? `Tahmini toplam (ana başvurucu, en az): AUD ${total.min.toLocaleString("tr-TR")}-${total.max.toLocaleString("tr-TR")}.${gaps}`
+                  : isZh
+                    ? `预计总计（主申请人，最低金额）：AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}。${gaps}`
+                    : `Estimated total (primary applicant, minimum): AUD ${total.min.toLocaleString("en-AU")}-${total.max.toLocaleString("en-AU")}.${gaps}`;
+              const componentParts: string[] = [];
+              if (skillsItem) {
+                componentParts.push(
+                  isTr
+                    ? `Beceri değerlendirmesi (${skillsItem.category.replace(/^Beceri Değerlendirmesi\s*—?\s*/, "") || "ilgili kurum"}): ${skillsItem.amountLabel}.`
+                    : isZh
+                      ? `技能评估（${skillsItem.category.replace(/^Skills Assessment\s*—?\s*/, "") || "相关机构"}）：${skillsItem.amountLabel}。`
+                      : `Skills assessment (${skillsItem.category.replace(/^Skills Assessment\s*—?\s*/, "") || "relevant authority"}): ${skillsItem.amountLabel}.`
+                );
+              }
+              if (englishItem) {
+                componentParts.push(
+                  isTr ? `Dil testi: ${englishItem.amountLabel}.` : isZh ? `语言考试：${englishItem.amountLabel}。` : `Language test: ${englishItem.amountLabel}.`
+                );
+              }
+              if (vacItem) {
+                componentParts.push(
+                  isTr
+                    ? `Başvuru ücreti (VAC): ${vacItem.amountLabel}.`
+                    : isZh
+                      ? `申请费（VAC）：${vacItem.amountLabel}。`
+                      : `Application fee (VAC): ${vacItem.amountLabel}.`
+                );
+              }
+              return `${componentParts.join(" ")} ${totalLabel}`;
+            })()
           : isTr
             ? "Toplam maliyet; beceri değerlendirmesi ücretiniz, dil testi ve resmi başvuru ücretine (VAC) bağlıdır -- bu Tahmini Maliyet Yol Haritası bölümünde ayrıntılı olarak gösterilmiştir."
             : isZh

@@ -1,4 +1,5 @@
 import { CURRENT_CSIT } from "./constants";
+import { computeEstimatedTotalAud, describeTotalGaps } from "./financial-roadmap-totals";
 import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
@@ -4614,6 +4615,43 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       yPosition = rowTop + rowHeight;
       setBaseFont();
     });
+
+    // Estimated total row -- summed from whichever core items (VAC, skills
+    // assessment, English test, medical, police) are present in this
+    // report's own roadmap, per Phase 2a item A3. Never silently omitted:
+    // when a core item doesn't apply to this pathway (e.g. no skills
+    // assessment on a partner-pathway report) or lacks a numeric amount,
+    // the total is labelled "minimum" and names what it excludes instead of
+    // not appearing at all.
+    const roadmapTotal = computeEstimatedTotalAud(report.financialRoadmap);
+    if (roadmapTotal) {
+      const gaps = describeTotalGaps(roadmapTotal, effectiveLocale);
+      const totalText = roadmapTotal.complete
+        ? effectiveLocale === "tr"
+          ? `Tahmini toplam (ana başvurucu): AUD ${roadmapTotal.min.toLocaleString("tr-TR")}-${roadmapTotal.max.toLocaleString("tr-TR")}`
+          : effectiveLocale === "zh-Hans"
+            ? `预计总计（主申请人）：AUD ${roadmapTotal.min.toLocaleString("en-AU")}-${roadmapTotal.max.toLocaleString("en-AU")}`
+            : `Estimated total (primary applicant): AUD ${roadmapTotal.min.toLocaleString("en-AU")}-${roadmapTotal.max.toLocaleString("en-AU")}`
+        : effectiveLocale === "tr"
+          ? `Tahmini toplam (ana başvurucu, en az): AUD ${roadmapTotal.min.toLocaleString("tr-TR")}-${roadmapTotal.max.toLocaleString("tr-TR")}${gaps}`
+          : effectiveLocale === "zh-Hans"
+            ? `预计总计（主申请人，最低金额）：AUD ${roadmapTotal.min.toLocaleString("en-AU")}-${roadmapTotal.max.toLocaleString("en-AU")}${gaps}`
+            : `Estimated total (primary applicant, minimum): AUD ${roadmapTotal.min.toLocaleString("en-AU")}-${roadmapTotal.max.toLocaleString("en-AU")}${gaps}`;
+
+      ensurePageSpace(14);
+      yPosition += 2;
+      doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
+      doc.setLineWidth(0.5);
+      doc.line(margin, yPosition, margin + contentWidth, yPosition);
+      yPosition += 5;
+      setBoldFont();
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      const wrappedTotal = doc.splitTextToSize(safeText(totalText), contentWidth) as string[];
+      doc.text(wrappedTotal, margin, yPosition);
+      yPosition += wrappedTotal.length * 4.6 + 3;
+      setBaseFont();
+    }
   }
 
   if (!report.partnerSponsorshipAssessment) {
@@ -4767,15 +4805,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
           const gapLine =
             diff > 0
               ? effectiveLocale === "tr"
-                ? `Subclass ${item.subclass}: bu meslek son turlarda ortalama ${item.estimatedPoints} puanla davet edildi — tahmini puanınız bu referansın ${diff} puan altında.`
+                ? `Subclass ${item.subclass}: ${trendDataAsOf ? `${trendDataAsOf} tarihli anlık görüntü` : "gösterge niteliğindeki veri"} bu meslek için ${item.estimatedPoints} puan gösteriyor — tahmini puanınız bu referansın ${diff} puan altında.`
                 : effectiveLocale === "zh-Hans"
-                  ? `Subclass ${item.subclass}：该职业近期轮次的平均获邀分数为 ${item.estimatedPoints} 分——您的预估分数比该参考分低 ${diff} 分。`
-                  : `Subclass ${item.subclass}: this occupation was invited at ${item.estimatedPoints} points in recent rounds — your estimated score is ${diff} points below that benchmark.`
+                  ? `Subclass ${item.subclass}：${trendDataAsOf ? `截至 ${trendDataAsOf} 的快照` : "指示性数据"}显示该职业的分数为 ${item.estimatedPoints} 分——您的预估分数比该参考分低 ${diff} 分。`
+                  : `Subclass ${item.subclass}: the ${trendDataAsOf ? `snapshot as of ${trendDataAsOf}` : "indicative data"} shows ${item.estimatedPoints} points for this occupation — your estimated score is ${diff} points below that benchmark.`
               : effectiveLocale === "tr"
-                ? `Subclass ${item.subclass}: bu meslek son turlarda ortalama ${item.estimatedPoints} puanla davet edildi — tahmini puanınız bu referansın ${Math.abs(diff)} puan üzerinde veya eşit.`
+                ? `Subclass ${item.subclass}: ${trendDataAsOf ? `${trendDataAsOf} tarihli anlık görüntü` : "gösterge niteliğindeki veri"} bu meslek için ${item.estimatedPoints} puan gösteriyor — tahmini puanınız bu referansın ${Math.abs(diff)} puan üzerinde veya eşit.`
                 : effectiveLocale === "zh-Hans"
-                  ? `Subclass ${item.subclass}：该职业近期轮次的平均获邀分数为 ${item.estimatedPoints} 分——您的预估分数已达到或高于该参考分 ${Math.abs(diff)} 分。`
-                  : `Subclass ${item.subclass}: this occupation was invited at ${item.estimatedPoints} points in recent rounds — your estimated score is at or above that benchmark (by ${Math.abs(diff)} points).`;
+                  ? `Subclass ${item.subclass}：${trendDataAsOf ? `截至 ${trendDataAsOf} 的快照` : "指示性数据"}显示该职业的分数为 ${item.estimatedPoints} 分——您的预估分数已达到或高于该参考分 ${Math.abs(diff)} 分。`
+                  : `Subclass ${item.subclass}: the ${trendDataAsOf ? `snapshot as of ${trendDataAsOf}` : "indicative data"} shows ${item.estimatedPoints} points for this occupation — your estimated score is at or above that benchmark (by ${Math.abs(diff)} points).`;
           addSmallText(gapLine, 2);
         });
     }

@@ -1,5 +1,5 @@
 import type { Locale, FinancialRoadmapItem } from "../types";
-import { computeEstimatedTotalAud, findFinancialRoadmapItem } from "../financial-roadmap-totals";
+import { computeEstimatedTotalAud, describeTotalGaps, findFinancialRoadmapItem } from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
 
@@ -57,6 +57,10 @@ export function getPersonalizedApplicationGuide(
   const isZh = locale === "zh-Hans";
   const isCA = country === "CA";
   const name = profile.name || (isTr ? "Değerli Başvuru Sahibi" : isZh ? "尊敬的申请人" : "Applicant");
+  // Same "none" check as hasRealEnglishEvidence (lib/readiness/english-
+  // evidence.ts) -- must agree with that flag everywhere English-evidence
+  // status is shown (Phase 2a C4).
+  const hasEnglishEvidence = Boolean(profile.englishLevel && profile.englishLevel.trim().toLowerCase() !== "none");
   // CA: isEoiEligible IS the whole story (language-test gate); AU: the
   // specific skills-assessment signal, same as before.
   const requirementMet = isCA ? (isEoiEligible ?? true) : skillsAssessmentDone;
@@ -258,7 +262,7 @@ export function getPersonalizedApplicationGuide(
         "✅ Eğitim belgeleri",
         "⬜ Polis sabıka kayıtları",
         "⬜ Sağlık muayene raporu (davet sonrası)",
-        profile.englishLevel ? "✅ Dil kanıtı" : "❌ Dil kanıtı (gerekli)",
+        hasEnglishEvidence ? "✅ Dil kanıtı" : "❌ Dil kanıtı (gerekli)",
       ]
     : isZh
       ? [
@@ -271,7 +275,7 @@ export function getPersonalizedApplicationGuide(
           "✅ 学历文件",
           "⬜ 无犯罪记录证明",
           "⬜ 体检报告（获邀后）",
-          profile.englishLevel ? "✅ 语言证明" : "❌ 语言证明（必要）",
+          hasEnglishEvidence ? "✅ 语言证明" : "❌ 语言证明（必要）",
         ]
       : [
           "✅ Valid passport",
@@ -283,7 +287,7 @@ export function getPersonalizedApplicationGuide(
           "✅ Educational documents",
           "⬜ Police clearances",
           "⬜ Health examination (after invitation)",
-          profile.englishLevel ? "✅ English evidence" : "❌ English evidence (required)",
+          hasEnglishEvidence ? "✅ English evidence" : "❌ English evidence (required)",
         ];
 
   // ── Cost Estimate ─────────────────────────────────────────────────────
@@ -298,38 +302,46 @@ export function getPersonalizedApplicationGuide(
   const guideEnglishItem = findFinancialRoadmapItem(roadmap, "english_test");
   const guideMedicalItem = findFinancialRoadmapItem(roadmap, "medical");
   const guideTotal = computeEstimatedTotalAud(roadmap);
-  const hasAuFinancialData = Boolean(
-    guideVacItem && guideSkillsItem && guideEnglishItem && guideMedicalItem && guideTotal
-  );
 
   const costEstimate = country === "AU"
-    ? (hasAuFinancialData
-        ? (isTr
-            ? [
-                `Beceri değerlendirmesi: ${guideSkillsItem!.amountLabel}`,
-                `Dil testi: ${guideEnglishItem!.amountLabel}`,
-                `Başvuru ücreti (VAC): ${guideVacItem!.amountLabel}`,
-                "Ek partner/çocuk: VAC tablosunun partner/çocuk sütununa bakın (bkz. Tahmini Maliyet Yol Haritası)",
-                `Sağlık muayenesi: ${guideMedicalItem!.amountLabel}`,
-                `Toplam tahmini (ana başvurucu): AUD ${guideTotal!.min.toLocaleString("tr-TR")}-${guideTotal!.max.toLocaleString("tr-TR")}`,
-              ]
-            : isZh
-              ? [
-                  `技能评估：${guideSkillsItem!.amountLabel}`,
-                  `语言考试：${guideEnglishItem!.amountLabel}`,
-                  `申请费（VAC）：${guideVacItem!.amountLabel}`,
-                  "随行伴侣/子女：见费用路线图部分的 VAC 表格",
-                  `体检：${guideMedicalItem!.amountLabel}`,
-                  `预计总计（主申请人）：AUD ${guideTotal!.min.toLocaleString("en-AU")}-${guideTotal!.max.toLocaleString("en-AU")}`,
-                ]
-              : [
-                  `Skills assessment: ${guideSkillsItem!.amountLabel}`,
-                  `Language test: ${guideEnglishItem!.amountLabel}`,
-                  `Application fee (VAC): ${guideVacItem!.amountLabel}`,
-                  "Additional partner/child: see the VAC partner/child columns in the Financial Roadmap section",
-                  `Health examination: ${guideMedicalItem!.amountLabel}`,
-                  `Estimated total (primary applicant): AUD ${guideTotal!.min.toLocaleString("en-AU")}-${guideTotal!.max.toLocaleString("en-AU")}`,
-                ])
+    ? (guideTotal
+        ? (() => {
+            const gaps = describeTotalGaps(guideTotal, locale);
+            const totalLine = guideTotal.complete
+              ? isTr
+                ? `Toplam tahmini (ana başvurucu): AUD ${guideTotal.min.toLocaleString("tr-TR")}-${guideTotal.max.toLocaleString("tr-TR")}`
+                : isZh
+                  ? `预计总计（主申请人）：AUD ${guideTotal.min.toLocaleString("en-AU")}-${guideTotal.max.toLocaleString("en-AU")}`
+                  : `Estimated total (primary applicant): AUD ${guideTotal.min.toLocaleString("en-AU")}-${guideTotal.max.toLocaleString("en-AU")}`
+              : isTr
+                ? `Toplam tahmini (ana başvurucu, en az): AUD ${guideTotal.min.toLocaleString("tr-TR")}-${guideTotal.max.toLocaleString("tr-TR")}${gaps}`
+                : isZh
+                  ? `预计总计（主申请人，最低金额）：AUD ${guideTotal.min.toLocaleString("en-AU")}-${guideTotal.max.toLocaleString("en-AU")}${gaps}`
+                  : `Estimated total (primary applicant, minimum): AUD ${guideTotal.min.toLocaleString("en-AU")}-${guideTotal.max.toLocaleString("en-AU")}${gaps}`;
+
+            const lines: string[] = [];
+            if (guideSkillsItem) {
+              lines.push(isTr ? `Beceri değerlendirmesi: ${guideSkillsItem.amountLabel}` : isZh ? `技能评估：${guideSkillsItem.amountLabel}` : `Skills assessment: ${guideSkillsItem.amountLabel}`);
+            }
+            if (guideEnglishItem) {
+              lines.push(isTr ? `Dil testi: ${guideEnglishItem.amountLabel}` : isZh ? `语言考试：${guideEnglishItem.amountLabel}` : `Language test: ${guideEnglishItem.amountLabel}`);
+            }
+            if (guideVacItem) {
+              lines.push(isTr ? `Başvuru ücreti (VAC): ${guideVacItem.amountLabel}` : isZh ? `申请费（VAC）：${guideVacItem.amountLabel}` : `Application fee (VAC): ${guideVacItem.amountLabel}`);
+            }
+            lines.push(
+              isTr
+                ? "Ek partner/çocuk: VAC tablosunun partner/çocuk sütununa bakın (bkz. Tahmini Maliyet Yol Haritası)"
+                : isZh
+                  ? "随行伴侣/子女：见费用路线图部分的 VAC 表格"
+                  : "Additional partner/child: see the VAC partner/child columns in the Financial Roadmap section"
+            );
+            if (guideMedicalItem) {
+              lines.push(isTr ? `Sağlık muayenesi: ${guideMedicalItem.amountLabel}` : isZh ? `体检：${guideMedicalItem.amountLabel}` : `Health examination: ${guideMedicalItem.amountLabel}`);
+            }
+            lines.push(totalLine);
+            return lines;
+          })()
         : (isTr
             ? ["Tahmini maliyet dökümü için bu raporun Tahmini Maliyet Yol Haritası bölümüne bakın."]
             : isZh

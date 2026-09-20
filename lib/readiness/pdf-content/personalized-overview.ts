@@ -73,6 +73,11 @@ export function getPersonalizedOverview(
   const isZh = locale === "zh-Hans";
   const isCA = country === "CA";
   const name = profile.name || (isTr ? "Değerli Başvuru Sahibi" : isZh ? "尊敬的申请人" : "Applicant");
+  // Same "none" check as hasRealEnglishEvidence (lib/readiness/english-
+  // evidence.ts) -- this function only has the profile-summary shape
+  // (englishLevel string), not the full ReadinessInput, but must agree with
+  // that flag everywhere English-evidence status is shown (Phase 2a C4).
+  const hasEnglishEvidence = Boolean(profile.englishLevel && profile.englishLevel.trim().toLowerCase() !== "none");
   const gap = threshold - estimatedPoints;
   const blockingNoun = blockingRequirementNoun(country, locale);
   // AU: skillsAssessmentDone is the specific legal requirement, checked in
@@ -332,7 +337,7 @@ export function getPersonalizedOverview(
           ? (gap > 20 ? "⚠️ Yüksek risk: Tahmini puan düşük" : gap > 10 ? "🟡 Orta risk: Geliştirilebilir" : "✅ Düşük risk: Rekabetçi puan")
           : (gap > 20 ? "⚠️ Yüksek risk: Puan barajından uzakta" : gap > 10 ? "🟡 Orta risk: Kapatılabilir fark" : gap > 0 ? "🟢 Düşük risk: Küçük iyileştirmeler yeterli" : "✅ Düşük risk: Baraj aşıldı"),
         requirementRiskBullet,
-        profile.englishLevel ? "✅ Dil kanıtı mevcut" : "❌ Dil kanıtı eksik",
+        hasEnglishEvidence ? "✅ Dil kanıtı mevcut" : "❌ Dil kanıtı eksik",
       ]
     : isZh
       ? [
@@ -340,14 +345,14 @@ export function getPersonalizedOverview(
             ? (gap > 20 ? "⚠️ 高风险：预估分数偏低" : gap > 10 ? "🟡 中等风险：仍有提升空间" : "✅ 低风险：分数具有竞争力")
             : (gap > 20 ? "⚠️ 高风险：距离积分门槛较远" : gap > 10 ? "🟡 中等风险：差距可弥补" : gap > 0 ? "🟢 低风险：小幅改进即可" : "✅ 低风险：已超过门槛"),
           requirementRiskBullet,
-          profile.englishLevel ? "✅ 语言证明已提供" : "❌ 语言证明缺失",
+          hasEnglishEvidence ? "✅ 语言证明已提供" : "❌ 语言证明缺失",
         ]
       : [
           isCA
             ? (gap > 20 ? "⚠️ High risk: Estimated score is low" : gap > 10 ? "🟡 Medium risk: Room to improve" : "✅ Low risk: Competitive score")
             : (gap > 20 ? "⚠️ High risk: Far from threshold" : gap > 10 ? "🟡 Medium risk: Gap is closable" : gap > 0 ? "🟢 Low risk: Minor improvements needed" : "✅ Low risk: Threshold exceeded"),
           requirementRiskBullet,
-          profile.englishLevel ? "✅ English evidence provided" : "❌ English evidence missing",
+          hasEnglishEvidence ? "✅ English evidence provided" : "❌ English evidence missing",
         ];
 
   // ── Next Milestones ───────────────────────────────────────────────────

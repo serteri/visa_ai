@@ -4098,6 +4098,18 @@ function buildExecutiveSummary(
   // confidence, instead of contradicting the section right below it.
   const hasPreliminaryPointsSignal = estimatedPoints === undefined && rawEstimatedPoints !== undefined;
   const skilledVisible = pathways.some((pathway) => ["189", "190", "491"].includes(pathway.subclass));
+  // Name a profile detail that's ACTUALLY still missing as the example --
+  // this sentence used to always say "English test evidence" regardless of
+  // whether English had been provided, contradicting the Evidence Readiness
+  // Snapshot (which reads the same hasRealEnglishEvidence flag) whenever the
+  // applicant had entered an English level. One flag, one wording (Phase 2a
+  // item C4).
+  const hasEnglishForSummary = hasRealEnglishEvidence(input);
+  const missingDetailExample = {
+    en: hasEnglishForSummary ? "skills-assessment status" : "English test evidence",
+    tr: hasEnglishForSummary ? "beceri değerlendirmesi durumu" : "İngilizce sınav kanıtı",
+    zh: hasEnglishForSummary ? "技能评估状态" : "英语考试证明",
+  };
   const pathwayNames = pathways
     .filter((pathway) => pathway.subclass !== "general")
     .slice(0, 6)
@@ -4126,7 +4138,7 @@ function buildExecutiveSummary(
       skilledVisible && estimatedPoints !== undefined
         ? `Tahmini temel puan ${estimatedPoints}; bu puan, puan testli yolların sıralamasını belirleyen ana faktördür.`
         : skilledVisible && hasPreliminaryPointsSignal
-          ? `Tahmini temel puan yaklaşık ${rawEstimatedPoints}; ancak İngilizce sınav kanıtı gibi bazı profil ayrıntıları eksik olduğu için sıralama güveni sınırlıdır.`
+          ? `Tahmini temel puan yaklaşık ${rawEstimatedPoints}; ancak ${missingDetailExample.tr} gibi bazı profil ayrıntıları eksik olduğu için sıralama güveni sınırlıdır.`
           : "Puan bağlamı sınırlı olduğunda puan testli yolların sıralaması doğrulanamaz.",
       "Beceri değerlendirmesi, adaylık bağlamı, sponsor bilgisi ve belge tamlığı, yol gücü sıralamasını doğrudan belirler.",
     ];
@@ -4141,7 +4153,7 @@ function buildExecutiveSummary(
       skilledVisible && estimatedPoints !== undefined
         ? `当前加分信号为 ${estimatedPoints}；该分数是决定打分制路径排序的关键因素。`
         : skilledVisible && hasPreliminaryPointsSignal
-          ? `预计基础分数约为 ${rawEstimatedPoints}；但由于英语考试证明等部分档案信息缺失，排序的可信度仍然有限。`
+          ? `预计基础分数约为 ${rawEstimatedPoints}；但由于${missingDetailExample.zh}等部分档案信息缺失，排序的可信度仍然有限。`
           : "加分背景有限时，打分制路径的排序无法得到确认。",
       "职业评估、州担保背景、担保信息与材料完整度，直接决定路径强度排序。",
     ];
@@ -4155,7 +4167,7 @@ function buildExecutiveSummary(
     skilledVisible && estimatedPoints !== undefined
       ? `Estimated base points are ${estimatedPoints}; this is a determining factor in the ranking of points-tested pathways.`
       : skilledVisible && hasPreliminaryPointsSignal
-        ? `Estimated base points are approximately ${rawEstimatedPoints}, but ranking confidence remains limited because some profile details (e.g., English test evidence) are not yet provided.`
+        ? `Estimated base points are approximately ${rawEstimatedPoints}, but ranking confidence remains limited because some profile details (e.g., ${missingDetailExample.en}) are not yet provided.`
         : "Limited points context means the ranking of points-tested pathways cannot be confirmed.",
     "Skills assessment, nomination context, sponsorship evidence, and documentation completeness directly determine the pathway strength ranking.",
   ];

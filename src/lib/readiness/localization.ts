@@ -8,7 +8,6 @@ const textMap: Record<string, { tr?: string; zh?: string }> = {
   "CRITICAL": { tr: "KRİTİK", zh: "关键" },
   "Passport (6+ months validity)": { tr: "Pasaport (en az 6 ay geçerli)", zh: "护照（有效期至少 6 个月）" },
   "Birth Certificate (NAATI translated)": { tr: "Doğum belgesi (NAATI çevirili)", zh: "出生证明（NAATI 认证翻译）" },
-  "Test Results (Less than 2 years old)": { tr: "Sınav sonucu (2 yıldan eski olmamalı)", zh: "语言成绩（2 年内）" },
   "Degree Certificates": { tr: "Diploma belgeleri", zh: "学历证书" },
   "Academic Transcripts": { tr: "Transkript", zh: "成绩单" },
   "Employment References (aligned with Authority rules)": {

@@ -39,6 +39,8 @@ const BANNED_STRINGS = [
   "not accepted for General Skilled",
   "real results",
   "legally required before lodging",
+  "recent rounds",
+  "Less than 2 years",
 ];
 
 const testInput: ReadinessInput = {
@@ -56,6 +58,63 @@ const testInput: ReadinessInput = {
   migrationGoals: ["direct_pr"],
   // single applicant: no sponsorOrFamily set
 };
+
+/**
+ * Phase 2a personas -- the exact failing production profile (A3) plus three
+ * variants isolating which input actually drives the missing-total bug:
+ * single-applicant (control, known-good from Phase 1), non-AU currentCountry
+ * (rules out A3's "currentCountry === AU" candidate), and a positive-
+ * skills-assessment Civil Engineer (a real detectedSubclasses-bearing
+ * profile, so its Financial Roadmap DOES get a skills_assessment item).
+ */
+const failingPersona: ReadinessInput = {
+  locale: "en",
+  country: "AU",
+  mainGoal: "Skilled migration through 189, 190 or 491 with a competitive points profile",
+  currentCountry: "Australia",
+  passportCountry: "Turkey",
+  age: "32",
+  occupation: "Software Engineer 261313",
+  occupationConfirmed: "no",
+  englishLevel: "superior",
+  qualificationLevel: "PhD/Doctorate",
+  preferredPathway: "190",
+  migrationGoals: ["direct_pr"],
+  sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
+};
+
+const failingPersonaSingle: ReadinessInput = {
+  ...failingPersona,
+  sponsorOrFamily: undefined,
+};
+
+const failingPersonaNotAU: ReadinessInput = {
+  ...failingPersona,
+  currentCountry: "Turkey",
+};
+
+const civilEngineerPersona: ReadinessInput = {
+  locale: "en",
+  country: "AU",
+  mainGoal: "Skilled migration through 189, 190 or 491 with a competitive points profile",
+  currentCountry: "Turkey",
+  passportCountry: "Turkey",
+  age: "35",
+  occupation: "Civil Engineer 233211",
+  occupationConfirmed: "yes",
+  englishLevel: "competent",
+  qualificationLevel: "Bachelor's Degree",
+  preferredPathway: "190",
+  migrationGoals: ["direct_pr"],
+  offshoreExperienceYears: 5,
+};
+
+const PHASE_2A_PERSONAS: Array<{ name: string; input: ReadinessInput }> = [
+  { name: "failing-profile (partnered, AU, no skills assessment)", input: failingPersona },
+  { name: "failing-profile-single", input: failingPersonaSingle },
+  { name: "failing-profile-not-AU", input: failingPersonaNotAU },
+  { name: "civil-engineer-233211-positive-assessment", input: civilEngineerPersona },
+];
 
 async function extractPdfText(bytes: Uint8Array): Promise<string> {
   const parser = new PDFParse({ data: bytes });
@@ -211,6 +270,82 @@ async function main() {
     ];
     for (const [label, re] of figureChecks) {
       console.log(`  figure check "${label}": ${re.test(text) ? "present" : "absent"}`);
+    }
+  }
+
+  // ── Phase 2a: failing profile + variants, all locales ────────────────
+  // Calls the same runReadinessEngine (src/lib/readiness-engine.ts) the
+  // production server action (submitFullCheckWaitlist,
+  // app/[locale]/(main)/full-check/actions.ts) invokes -- confirmed by
+  // direct code trace that this delegates 100% of financialRoadmap
+  // computation to lib/readiness/engine.ts's buildFinancialRoadmap, and
+  // that the action's own post-processing (ensureCountrySpecificReportSchema)
+  // never touches financialRoadmap. Full server-action invocation (which
+  // also requires a live Postgres connection, Resend API key, and a
+  // next/headers request context) is not reproducible in a standalone
+  // script -- see the final report for this caveat.
+  for (const persona of PHASE_2A_PERSONAS) {
+    for (const locale of LOCALES) {
+      console.log(`\n==================== Phase 2a: ${persona.name} / ${locale} ====================`);
+      const input: ReadinessInput = { ...persona.input, locale };
+      const report = runReadinessEngine(input);
+      const roadmap = report.financialRoadmap;
+      const total = computeEstimatedTotalAud(roadmap);
+
+      console.log(`  Financial roadmap items: ${roadmap.map((i) => i.kind ?? i.category).join(", ")}`);
+      console.log(`  Total: ${total ? `AUD ${total.min}-${total.max} (complete=${total.complete}, excluded=[${total.excludedKinds.join(",")}], missingAmount=[${total.missingAmountKinds.join(",")}])` : "null"}`);
+
+      if (!total) {
+        anyFailure = true;
+        console.error(`  ❌ FAILED: no Estimated total computed at all for ${persona.name}/${locale}`);
+      }
+
+      const pdfBytes = await generateReadinessPDF({
+        report,
+        locale,
+        saveToFile: false,
+        userInputSummary: {
+          name: "Test Persona",
+          email: "qa@example.com",
+          mainGoal: input.mainGoal,
+          currentCountry: input.currentCountry,
+          passportCountry: input.passportCountry,
+          age: input.age,
+          occupation: input.occupation,
+          englishLevel: input.englishLevel,
+        },
+      });
+      const outPath = path.join(outDir, `phase2a-${persona.name.replace(/[^a-z0-9-]/gi, "_")}-${locale}.pdf`);
+      await writeFile(outPath, Buffer.from(pdfBytes));
+      const text = await extractPdfText(pdfBytes);
+
+      // (A3) Estimated total renders in the PDF and reflects the computed sum.
+      const totalRe = /Estimated total[^0-9]*([0-9,]+)-([0-9,]+)|预计总计[^0-9]*([0-9,]+)-([0-9,]+)|Tahmini toplam[^0-9]*([0-9,]+)[.,]([0-9]{3})?-?/i;
+      if (!totalRe.test(text)) {
+        anyFailure = true;
+        console.error(`  ❌ FAILED: "Estimated total" wording not found in ${persona.name}/${locale} PDF text`);
+      } else {
+        console.log(`  ✅ Estimated total wording present`);
+      }
+
+      // (A4) snapshot date present above trend table when trends exist; no "recent rounds" fact-sentence.
+      if (/recent rounds|son turlarda|近期轮次/.test(text)) {
+        anyFailure = true;
+        console.error(`  ❌ FAILED: banned "recent rounds"-style sentence found in ${persona.name}/${locale}`);
+      }
+
+      // (A5) no hardcoded "Less than 2 years" wording.
+      if (/Less than 2 years/i.test(text)) {
+        anyFailure = true;
+        console.error(`  ❌ FAILED: hardcoded "Less than 2 years" found in ${persona.name}/${locale}`);
+      }
+
+      for (const banned of BANNED_STRINGS) {
+        if (text.includes(banned)) {
+          anyFailure = true;
+          console.error(`  ❌ FAILED: banned string "${banned}" found in ${persona.name}/${locale}`);
+        }
+      }
     }
   }
 

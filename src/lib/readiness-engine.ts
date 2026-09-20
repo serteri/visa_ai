@@ -1,5 +1,6 @@
 import occupationsData from "@/src/data/occupations.json";
 import documentRequirementsData from "@/src/data/document-requirements.json";
+import { ENGLISH_TEST_VALIDITY_YEARS } from "@/lib/readiness/constants";
 import visaTrendsData from "@/src/data/visa-trends.json";
 import { generateChecklist } from "@/lib/generateChecklist";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
@@ -209,9 +210,33 @@ function getRequirementCategoryLabel(locale: ReadinessInput["locale"], category:
   return localizeText(locale, category.category);
 }
 
+/**
+ * document-requirements.json hardcodes "Test Results (Less than 2 years
+ * old)" / "语言成绩（2 年内）" as static data -- these categories only ever
+ * apply to AU pathways (see baseCategories[].appliesTo), so the validity
+ * period must match ENGLISH_TEST_VALIDITY_YEARS.AU (3), not the stale
+ * literal "2" baked into the JSON. Rewritten here at read time rather than
+ * hand-editing the JSON so a future change to the constant can't silently
+ * drift back out of sync with this checklist item (Phase 2a item A5).
+ */
+function applyEnglishValidityYears(item: string, locale: ReadinessInput["locale"]): string {
+  const years = ENGLISH_TEST_VALIDITY_YEARS.AU;
+  // The JSON only carries English and zh-Hans item text (no items_tr) -- TR
+  // falls back to the English base string, so this checklist item needs its
+  // own full TR translation here rather than a number-only substitution
+  // (there's no pre-existing Turkish string to substitute into).
+  if (/test results \(less than \d+ years? old\)/i.test(item)) {
+    if (locale === "tr") return `Sınav sonucu (${years} yıldan eski olmamalı)`;
+    if (locale === "zh-Hans") return `语言成绩（${years} 年内）`;
+    return `Test Results (Less than ${years} years old)`;
+  }
+  if (locale === "zh-Hans") return item.replace(/2\s*年内/, `${years} 年内`);
+  return item;
+}
+
 function getRequirementItems(locale: ReadinessInput["locale"], category: RequirementCategory): string[] {
-  if (locale === "zh-Hans" && category.items_zh?.length) return category.items_zh;
-  return category.items;
+  const items = locale === "zh-Hans" && category.items_zh?.length ? category.items_zh : category.items;
+  return items.map((item) => applyEnglishValidityYears(item, locale));
 }
 
 function buildPremiumDocumentChecklist(input: ReadinessInput, base: ReadinessReport): DocumentCategory[] {
