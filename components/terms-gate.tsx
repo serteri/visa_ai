@@ -33,8 +33,8 @@ export function TermsGate({
     <div className={["space-y-2", className].filter(Boolean).join(" ")}>
       <label
         className={[
-          "flex cursor-pointer items-start gap-2 text-sm transition-colors",
-          termsError ? "text-rose-400" : "text-slate-700",
+          "flex cursor-pointer items-start gap-2 text-sm font-normal transition-colors",
+          termsError ? "text-rose-400" : "text-slate-800",
         ].join(" ")}
       >
         <input
@@ -62,7 +62,7 @@ export function TermsGateLink({ children }: { children: React.ReactNode }) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={(event) => event.stopPropagation()}
-      className="font-semibold text-[#8052ff] underline underline-offset-2 hover:text-purple-400"
+      className="rounded-sm font-semibold text-violet-700 underline underline-offset-2 hover:text-violet-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-700 focus-visible:ring-offset-1"
     >
       {children}
     </Link>

@@ -344,10 +344,18 @@ export function FullCheckWaitlistForm({
     ? [txt("516 NOC kodu taranıyor...", "Scanning 516 NOC codes...", "扫描516 NOC代码..."), txt("CRS çizimi analiz ediliyor...", "Analysing CRS draw trends...", "分析CRS趋势..."), txt("PNP akışları işleniyor...", "Processing PNP streams...", "处理PNP通道..."), txt("Sonuçlar derleniyor...", "Compiling results...", "编译结果...")]
     : [txt("Meslek aranıyor...", "Searching occupation...", "搜索职业..."), txt("Değerlendirme kurumları eşleştiriliyor...", "Matching assessing authorities...", "匹配评估机构..."), txt("Puan hesaplanıyor...", "Calculating points...", "计算分数..."), txt("Vize yolları analiz ediliyor...", "Analysing visa pathways...", "分析签证路径...")];
 
-  const termsLabel = txt(
-    "Kullanım Koşullarını ve veri işleme politikalarını kabul ediyorum.",
-    "I agree to the Terms of Service and data processing policies.",
-    "我已阅读并同意服务条款和数据处理政策。"
+  const termsLabel = isTr ? (
+    <>
+      <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme politikalarını kabul ediyorum.
+    </>
+  ) : isZh ? (
+    <>
+      我已阅读并同意<TermsGateLink>服务条款</TermsGateLink>和数据处理政策。
+    </>
+  ) : (
+    <>
+      I agree to the <TermsGateLink>Terms of Service</TermsGateLink> and data processing policies.
+    </>
   );
   const termsErrorText = txt(
     "Devam etmek için lütfen yasal şartları kabul edin.",
