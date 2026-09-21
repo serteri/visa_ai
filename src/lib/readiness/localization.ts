@@ -218,6 +218,8 @@ export function localizeTrendDescription(locale: Locale, description?: string): 
   return localizeText(locale, description);
 }
 
+import { FRICTION_MAX_GAP } from "@/lib/readiness/pathway-scores";
+
 export function frictionBandLabel(locale: Locale, score: "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED"): string {
   if (score === "NOT_ASSESSED") {
     return locale === "tr"
@@ -258,24 +260,27 @@ export function frictionBandDefinition(locale: Locale, score: "LOW" | "MEDIUM" |
         ? "仅当同时存在近期邀请参考分和分数差距时才显示竞争激烈度；该路径二者不齐备。"
         : "A friction level is shown only when a recent invitation benchmark and a score gap both exist; for this pathway they do not.";
   }
+  const lo = FRICTION_MAX_GAP.LOW + 1;
+  const mid = FRICTION_MAX_GAP.MEDIUM;
+  const hi = FRICTION_MAX_GAP.HIGH;
   if (locale === "zh-Hans") {
-    if (score === "EXTREME") return "您的档案与近期获邀参考分数之间存在较大差距——目前有多个不利因素叠加影响该路径。";
-    if (score === "HIGH") return "您的档案与近期参考分数之间存在明显差距——很可能需要大量补充材料或显著提升档案。";
-    if (score === "MEDIUM") return "您的档案与近期参考分数之间存在中等差距——可能需要补充材料或适度提升。";
-    return "您的档案已达到或超过该路径近期的参考分数——只需标准材料，没有明显差距需要弥补。";
+    if (score === "EXTREME") return `您的当前分数比近期邀请参考分低 ${hi} 分以上——差距很大，多个不利因素叠加影响该路径。`;
+    if (score === "HIGH") return `您的当前分数比近期邀请参考分低 ${mid + 1}–${hi} 分——差距明显，很可能需要大量补充材料或显著提升档案。`;
+    if (score === "MEDIUM") return `您的当前分数比近期邀请参考分低 ${lo}–${mid} 分——差距中等，可能需要补充材料或适度提升。`;
+    return "您的当前分数已达到或超过近期邀请参考分——无需弥补分数差距。";
   }
 
   if (locale === "tr") {
-    if (score === "EXTREME") return "Profiliniz ile güncel davet referansları arasında ciddi bir fark var — bu yolu şu an olumsuz etkileyen birden fazla faktör bir araya geliyor.";
-    if (score === "HIGH") return "Profiliniz ile güncel referans puanlar arasında belirgin bir fark var — önemli ek kanıt veya profil iyileştirmesi muhtemelen gerekli.";
-    if (score === "MEDIUM") return "Profiliniz ile güncel referans puanlar arasında orta düzey bir fark var — ek kanıt veya ölçülü bir iyileştirme gerekebilir.";
-    return "Profiliniz bu yol için güncel referans puanlara eşit veya üzerinde — standart kanıt yeterli, kapatılması gereken büyük bir açık yok.";
+    if (score === "EXTREME") return `Güncel puanınız yakın dönem davet referansının ${hi} puandan fazla altında — fark çok büyük; bu yolu olumsuz etkileyen birden fazla faktör bir araya geliyor.`;
+    if (score === "HIGH") return `Güncel puanınız yakın dönem davet referansının ${mid + 1}–${hi} puan altında — belirgin bir fark; önemli ek kanıt veya profil iyileştirmesi muhtemelen gerekli.`;
+    if (score === "MEDIUM") return `Güncel puanınız yakın dönem davet referansının ${lo}–${mid} puan altında — orta düzey bir fark; ek kanıt veya ölçülü bir iyileştirme gerekebilir.`;
+    return "Güncel puanınız yakın dönem davet referansına eşit veya üzerinde — kapatılması gereken bir puan açığı yok.";
   }
 
-  if (score === "EXTREME") return "A substantial gap exists between your profile and recent invitation benchmarks -- multiple compounding factors currently work against this pathway.";
-  if (score === "HIGH") return "A meaningful gap exists between your profile and recent benchmarks -- significant additional evidence or profile improvement is likely required.";
-  if (score === "MEDIUM") return "A moderate gap exists between your profile and recent benchmarks -- some additional evidence or a modest improvement may be needed.";
-  return "Your profile is at or above recent benchmarks for this pathway -- standard evidence is expected, no major gap to close.";
+  if (score === "EXTREME") return `Your current score is more than ${hi} points below the recent invitation benchmark -- a substantial gap; multiple compounding factors work against this pathway.`;
+  if (score === "HIGH") return `Your current score is ${mid + 1}-${hi} points below the recent invitation benchmark -- a meaningful gap; significant additional evidence or profile improvement is likely required.`;
+  if (score === "MEDIUM") return `Your current score is ${lo}-${mid} points below the recent invitation benchmark -- a moderate gap; additional evidence or a modest improvement may be needed.`;
+  return "Your current score is at or above the recent invitation benchmark -- no points gap to close.";
 }
 
 export function t3(locale: Locale, en: string, tr: string, zh: string): string {

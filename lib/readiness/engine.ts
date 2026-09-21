@@ -77,7 +77,7 @@ import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections, getTrendBenchmarks } from "@/src/lib/readiness/report-generator";
-import { blockedLabel, blockedReasonPhrase, computePathwayScores, type PathwayScoreSet } from "@/lib/readiness/pathway-scores";
+import { blockedLabel, blockedReasonPhrase, computePathwayScores, frictionFromScore, frictionKey, type PathwayScoreSet, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
 import { computeConfidence } from "@/lib/readiness/confidence";
 import { orderBySkilledRanking, rankPathways, type PathwayRanking } from "@/lib/readiness/pathway-ranking";
 import type { InvitationTrendEstimate } from "@/src/lib/readiness/report-generator";
@@ -4257,7 +4257,6 @@ function getEvidenceStatusItems(
 const PATHWAY_STRENGTH_META: Record<
   string,
   {
-    friction: "low" | "medium" | "high";
     evidenceLoad: "low" | "medium" | "high";
     typicalPathEn: string;
     typicalPathTr: string;
@@ -4268,7 +4267,6 @@ const PATHWAY_STRENGTH_META: Record<
   }
 > = {
   "500": {
-    friction: "medium",
     evidenceLoad: "medium",
     typicalPathEn: "Study pathway",
     typicalPathTr: "Eğitim yolu",
@@ -4278,7 +4276,6 @@ const PATHWAY_STRENGTH_META: Record<
     limitingFactorsTr: ["Kurs kaydı, OSHC ve mali kanıt bağlamı bu yolu etkileyebilir"],
   },
   "485": {
-    friction: "medium",
     evidenceLoad: "medium",
     typicalPathEn: "Post-study temporary graduate pathway",
     typicalPathTr: "Mezuniyet sonrası geçici mezun yolu",
@@ -4288,7 +4285,6 @@ const PATHWAY_STRENGTH_META: Record<
     limitingFactorsTr: ["Son Avustralya eğitimi, yaş, İngilizce, AFP kontrolü ve sigorta bağlamı bu yolu etkileyebilir"],
   },
   "482": {
-    friction: "medium",
     evidenceLoad: "high",
     typicalPathEn: "Employer-sponsored work pathway",
     typicalPathTr: "İşveren sponsorlu çalışma yolu",
@@ -4298,7 +4294,6 @@ const PATHWAY_STRENGTH_META: Record<
     limitingFactorsTr: ["İşveren sponsoru bağlamı bu yol için merkezi önemdedir"],
   },
   "189": {
-    friction: "high",
     evidenceLoad: "high",
     typicalPathEn: "Invitation-based skilled pathway",
     typicalPathTr: "Davet tabanlı nitelikli yol",
@@ -4320,7 +4315,6 @@ const PATHWAY_STRENGTH_META: Record<
     ],
   },
   "190": {
-    friction: "high",
     evidenceLoad: "high",
     typicalPathEn: "State or territory nomination pathway",
     typicalPathTr: "Eyalet veya bölge adaylık yolu",
@@ -4330,7 +4324,6 @@ const PATHWAY_STRENGTH_META: Record<
     limitingFactorsTr: ["Eyalet veya bölge adaylık ayarları bu yolu etkileyebilir"],
   },
   "491": {
-    friction: "medium",
     evidenceLoad: "high",
     typicalPathEn: "Regional provisional pathway",
     typicalPathTr: "Bölgesel geçici yol",
@@ -4340,7 +4333,6 @@ const PATHWAY_STRENGTH_META: Record<
     limitingFactorsTr: ["Bölgesel adaylık veya akraba sponsorluğu bağlamı bu yolu etkileyebilir"],
   },
   "820": {
-    friction: "high",
     evidenceLoad: "high",
     typicalPathEn: "Onshore partner pathway (temporary stage)",
     typicalPathTr: "Avustralya içi partner yolu (geçici aşama)",
@@ -4350,7 +4342,6 @@ const PATHWAY_STRENGTH_META: Record<
     limitingFactorsTr: ["İlişki kanıtı ve sponsor bağlamı bu yol için merkezi önemdedir"],
   },
   "801": {
-    friction: "medium",
     evidenceLoad: "medium",
     typicalPathEn: "Onshore partner pathway (permanent stage)",
     typicalPathTr: "Avustralya içi partner yolu (kalıcı aşama)",
@@ -4364,7 +4355,8 @@ const PATHWAY_STRENGTH_META: Record<
 function buildPathwayStrengthComparison(
   pathways: PathwayComparison[],
   locale: Locale,
-  input: ReadinessInput
+  input: ReadinessInput,
+  scores?: PathwayScoreSet
 ): PathwayStrengthComparison[] {
   const isTr = locale === "tr";
 
@@ -4377,7 +4369,8 @@ function buildPathwayStrengthComparison(
   return pathways.map((pathway) => {
     const strength = strengthFor(pathway);
     const meta = PATHWAY_STRENGTH_META[pathway.subclass];
-    const friction: "low" | "medium" | "high" = meta?.friction ?? (pathway.difficulty === "high" ? "high" : pathway.difficulty === "medium" ? "medium" : "low");
+    // Friction comes ONLY from the score gap (frictionFromScore); pathways without a benchmark are "not assessed".
+    const friction = frictionKey(frictionFromScore(scores?.[pathway.subclass as PathwaySubclass]));
     const evidenceLoad: "low" | "medium" | "high" = meta?.evidenceLoad ?? "medium";
     const typicalPath = meta
       ? isTr ? meta.typicalPathTr : meta.typicalPathEn
@@ -4398,8 +4391,8 @@ function buildPathwayStrengthComparison(
       ? strength === "strong" ? "daha güçlü sinyal" : strength === "moderate" ? "orta sinyal" : "sınırlı sinyal"
       : strength === "strong" ? "stronger signal" : strength === "moderate" ? "moderate signal" : "limited signal";
     const frictionLabel = isTr
-      ? friction === "high" ? "yüksek" : friction === "medium" ? "orta" : "düşük"
-      : friction;
+      ? friction === "extreme" ? "çok yüksek" : friction === "high" ? "yüksek" : friction === "medium" ? "orta" : friction === "low" ? "düşük" : "değerlendirilmedi"
+      : friction === "not_assessed" ? "not assessed (no benchmark)" : friction;
     const evidenceLoadLabel = isTr
       ? evidenceLoad === "high" ? "yüksek" : evidenceLoad === "medium" ? "orta" : "düşük"
       : evidenceLoad;
@@ -6827,7 +6820,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
   const pathwayStrengthComparison = buildPathwayStrengthComparison(
     pathwayComparison,
     locale,
-    input
+    input,
+    pathwayScores
   );
   const evidenceReadiness = buildEvidenceReadiness(
     input,

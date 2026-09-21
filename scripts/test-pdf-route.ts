@@ -1143,6 +1143,136 @@ async function runAuthorityChecks(
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Friction level from the actual score gap (Phase 2e)
+//
+// Friction is derived ONLY from gapBase (benchmark - current score). Independent copy of the threshold
+// table, on purpose: <= 0 LOW, 1-15 MEDIUM, 16-25 HIGH, > 25 EXTREME; no benchmark = NOT_ASSESSED.
+// The table, the Pathway Strength section, the LLM input (the report) and the explanatory sentences under
+// the table must all agree with it.
+// ─────────────────────────────────────────────────────────────────────────────
+
+type FrictionName = "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED";
+
+function expectedFriction(gapBase: number | null): FrictionName {
+  if (gapBase === null) return "NOT_ASSESSED";
+  if (gapBase <= 0) return "LOW";
+  if (gapBase <= 15) return "MEDIUM";
+  if (gapBase <= 25) return "HIGH";
+  return "EXTREME";
+}
+
+const FRICTION_PROFILES: Array<{ name: string; input: ReadinessInput; expected?: Record<string, FrictionName> }> = [
+  // Score 70; benchmarks 95/85/75 -> gaps 25/15/5
+  { name: "f-se-261313-gaps-25-15-5", input: { ...base }, expected: { "189": "HIGH", "190": "MEDIUM", "491": "MEDIUM" } },
+  // Civil 233211 with Superior English: score 70 is AT the 491 benchmark (gap 0) -> LOW; 190 gap 10, 189 gap 20
+  {
+    name: "f-civil-233211-at-benchmark",
+    input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "superior", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 },
+    expected: { "189": "HIGH", "190": "MEDIUM", "491": "LOW" },
+  },
+  // GP 253111: no benchmark for the occupation
+  { name: "f-gp-253111-no-benchmark", input: { ...base, currentCountry: "Turkey", age: "34", occupation: "General Practitioner 253111", sponsorOrFamily: undefined }, expected: { "189": "NOT_ASSESSED", "190": "NOT_ASSESSED", "491": "NOT_ASSESSED" } },
+  // Large gaps: score 50 -> 491 gap 20 HIGH, 190 gap 30 EXTREME, 189 EXTREME
+  { name: "f-civil-233211-large-gaps", expected: { "189": "EXTREME", "190": "EXTREME", "491": "HIGH" }, input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "competent", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 } },
+];
+
+const FRICTION_NAMES: FrictionName[] = ["LOW", "MEDIUM", "HIGH", "EXTREME", "NOT_ASSESSED"];
+const COMPOUNDING: Record<Locale, RegExp> = { en: /multiple compounding factors/, tr: /birden fazla faktör/, "zh-Hans": /多个不利因素/ };
+
+async function runFrictionChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  for (const profile of FRICTION_PROFILES) {
+    for (const locale of LOCALES) {
+      const label = `friction ${profile.name}/${locale}`;
+      console.log(`\n=== ${label} ===`);
+      let caseFailed = false;
+      const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+      const input: ReadinessInput = { ...profile.input, locale };
+      const report = runReadinessEngine(input);
+      const scores = report.pathwayScores!;
+      const expected = {} as Record<string, FrictionName>;
+      for (const s of PATHWAY_SUBCLASSES) expected[s] = expectedFriction(scores[s].gapBase);
+      if (profile.expected) {
+        for (const s of PATHWAY_SUBCLASSES) if (expected[s] !== profile.expected[s]) f(`${s}: gap ${scores[s].gapBase} gives ${expected[s]}, the profile was designed for ${profile.expected[s]}`);
+      }
+
+      // Data: frictionAnalysis, pathwayStrengthComparison and the LLM input (this report) carry the same level
+      for (const s of PATHWAY_SUBCLASSES) {
+        const fa = report.frictionAnalysis.find((x) => x.pathway === s)?.frictionScore;
+        const ps = report.pathwayStrengthComparison.find((x) => x.subclass === s)?.friction;
+        if (fa !== expected[s]) f(`${s}: frictionAnalysis ${fa} != ${expected[s]} (gap ${scores[s].gapBase})`);
+        if (ps !== expected[s].toLowerCase()) f(`${s}: pathwayStrengthComparison ${ps} != ${expected[s].toLowerCase()}`);
+      }
+      const llmInput = JSON.stringify(report);
+      for (const s of PATHWAY_SUBCLASSES) {
+        if (!llmInput.includes(`"friction":"${expected[s].toLowerCase()}"`)) f(`${s}: the report handed to the LLM does not carry friction ${expected[s].toLowerCase()}`);
+      }
+
+      const reportId = `friction-${profile.name}-${locale}`;
+      rows.set(reportId, {
+        id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+        agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+      });
+      const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+      if (res.status !== 200) { f(`route returned HTTP ${res.status}`); continue; }
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      const pages = (await extractPdfPages(bytes)).map((p) => p.replace(/L o g i V i s a\s*/g, "").replace(/\d+ \/ \d+\s*Generated by[^\n]*\n?/g, "").replace(/-- \d+ of \d+ --/g, ""));
+      const raw = pages.join("\n");
+      await writeFile(path.join(outDir, `friction-${profile.name}-${locale}.txt`), raw);
+      const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
+      const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
+
+      // ── The table ────────────────────────────────────────────────────────
+      const tableStart = flat.search(/Structured Pathway Comparison|Vize Yolu Karşılaştırması|签证路径结构化对比/);
+      const tableEnd = flat.indexOf("Reality Check", tableStart) > 0 ? tableStart + 2500 : tableStart + 2500;
+      const tableText = tableStart >= 0 ? flat.slice(tableStart, tableEnd) : "";
+      const labelOf = (lv: FrictionName) => sq(frictionBandLabel(locale, lv));
+      const words = CONF_WORDS[locale];
+      const shown: Record<string, FrictionName> = {};
+      for (const s of PATHWAY_SUBCLASSES) {
+        const re = new RegExp(`\\(${s}\\) ?(?:${words.high}|${words.medium}|${words.low}) ?(${FRICTION_NAMES.map((lv) => labelOf(lv).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`);
+        const m = tableText.match(re);
+        const lv = m ? FRICTION_NAMES.find((n) => labelOf(n) === m[1]) : undefined;
+        if (!lv) f(`${s}: no friction label found in the comparison table`);
+        else {
+          shown[s] = lv;
+          if (lv !== expected[s]) f(`${s}: table shows ${lv} but the gap ${scores[s].gapBase} means ${expected[s]}`);
+        }
+      }
+
+      // ── The sentences under the table match the levels actually shown ────
+      const presentLevels = new Set(Object.values(shown));
+      const sentenceZone = tableText;
+      for (const lv of FRICTION_NAMES) {
+        const def = sq(frictionBandDefinition(locale, lv));
+        const isShown = sentenceZone.includes(def);
+        if (presentLevels.has(lv) && !isShown) f(`level ${lv} is in the table but its sentence is missing`);
+        if (!presentLevels.has(lv) && isShown) f(`sentence for ${lv} is shown but no pathway has that level`);
+      }
+      const compoundingShown = COMPOUNDING[locale].test(sentenceZone);
+      if (compoundingShown !== presentLevels.has("EXTREME")) f(`"multiple compounding factors" wording ${compoundingShown ? "shown" : "absent"} while EXTREME ${presentLevels.has("EXTREME") ? "is" : "is not"} in the table`);
+      if (/multiple compounding factors/.test(flat.slice(tableStart, tableStart + 2500)) && !presentLevels.has("EXTREME")) f("'multiple compounding factors' shown without an EXTREME level");
+
+      // ── Pathway Strength section (en): same level per pathway ────────────
+      if (locale === "en") {
+        for (const s of PATHWAY_SUBCLASSES) {
+          const secStart = flat.indexOf("Pathway Strength Comparison", flat.indexOf("Pathway Strength Comparison") + 1) > 0 ? flat.lastIndexOf("Pathway Strength Comparison") : flat.indexOf("Pathway Strength Comparison");
+          const m = flat.slice(secStart).match(new RegExp(`\\(${s}\\)[^]{0,300}?Friction: (Low|Medium|High|Extreme|Not assessed)`));
+          if (!m) { f(`${s}: no Friction line found in the Pathway Strength section`); continue; }
+          const got = m[1].toUpperCase().startsWith("NOT") ? "NOT_ASSESSED" : m[1].toUpperCase();
+          if (got !== expected[s]) f(`${s}: Pathway Strength shows friction ${got} but the gap means ${expected[s]}`);
+        }
+      }
+      if (!caseFailed) console.log("  ✅ ok");
+    }
+  }
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -1233,6 +1363,12 @@ async function main() {
 
   // One score and one ranking (LLM stubbed with hostile output)
   await runPathwayChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
+
+  // Friction Level derived from the score gap
+  await runFrictionChecks(GET, rows, outDir, (m) => {
     failed = true;
     console.error("  ❌ " + m);
   });

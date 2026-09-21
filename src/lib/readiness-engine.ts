@@ -67,17 +67,6 @@ function parseEnglishLevel(value?: string): EnglishLevel | undefined {
   return undefined;
 }
 
-function escalate(current: FrictionScore, next: FrictionScore): FrictionScore {
-  const rank: Record<FrictionScore, number> = {
-    NOT_ASSESSED: 0,
-    LOW: 1,
-    MEDIUM: 2,
-    HIGH: 3,
-    EXTREME: 4,
-  };
-  return rank[next] > rank[current] ? next : current;
-}
-
 function toPathwayKey(subclass: string): string {
   return subclass;
 }
@@ -242,8 +231,7 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   }
 
   if (["189", "190", "491"].includes(subclassKey) && resolveAssessingAuthority(input.occupation).authorityId === "ACS" && (input.offshoreExperienceYears ?? 0) < 2) {
-    // The ACS deduction risk only raises a level that a benchmark gap has already established.
-    if (frictionScore !== "NOT_ASSESSED") frictionScore = "EXTREME";
+    // (The deduction risk is stated in the text; it does not change the friction LEVEL, which is the score gap only.)
     reality.push(t3(locale, "ACS experience deduction risk is high because declared experience is below 2 years.", "Beyan edilen deneyim 2 yilin altinda oldugu icin ACS deneyim kesintisi riski yuksektir.", "因申报经验不足 2 年，ACS 经验扣减风险较高。"));
   }
 
@@ -809,24 +797,9 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   );
   const frictionAnalysis = orderBySkilledRanking(buildFrictionAnalysis(input, base), (item) => item.pathway, base.pathwayRanking);
 
-  const pathwayStrengthComparison = orderBySkilledRanking(base.pathwayStrengthComparison, (item) => item.subclass, base.pathwayRanking).map((item) => {
-    const dyn = frictionAnalysis.find((f) => f.pathway === item.subclass);
-    if (dyn) {
-      const score = dyn.frictionScore;
-      const mappedFriction: "low" | "medium" | "high" | "extreme" | "not_assessed" =
-        score === "NOT_ASSESSED" ? "not_assessed"
-        : score === "EXTREME" ? "extreme"
-        : score === "HIGH" ? "high"
-        : score === "MEDIUM" ? "medium"
-        : "low";
-      return {
-        ...item,
-        friction: mappedFriction,
-      };
-    }
-    // No friction analysis for this pathway: no benchmark-based level exists.
-    return { ...item, friction: "not_assessed" as const };
-  });
+  // Friction on each pathway was set in the base engine from the same score gap as frictionAnalysis
+  // (frictionFromScore) -- nothing is overridden here, only the order follows the ranking.
+  const pathwayStrengthComparison = orderBySkilledRanking(base.pathwayStrengthComparison, (item) => item.subclass, base.pathwayRanking);
 
   const report = {
     ...base,

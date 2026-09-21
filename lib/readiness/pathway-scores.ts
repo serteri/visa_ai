@@ -216,15 +216,36 @@ export function blockedReasonPhrase(reason: PathwayBlockReason, locale: Locale):
 }
 
 /**
- * Friction is measured against the invitation benchmark: a level exists ONLY when a benchmark and a score
- * gap both exist, otherwise the pathway is "not assessed" (never a default LOW/MEDIUM/HIGH/EXTREME).
- * Measured on the CURRENT (base) score -- an unsecured nomination bonus never lowers it.
+ * THE friction thresholds -- the only place they are defined. Friction is measured on the points the
+ * applicant is SHORT of the recent invitation benchmark on their CURRENT (base) score (gapBase):
+ *
+ *   gapBase <= 0        LOW       at or above the benchmark
+ *   1  ..  15           MEDIUM    moderate gap
+ *   16 ..  25           HIGH      meaningful gap
+ *   more than 25        EXTREME   substantial gap
+ *
+ * (MEDIUM covers the whole "small to moderate" range: with four levels there is no separate "low-medium",
+ * and LOW is reserved for "meets the benchmark" as its definition says.) A pathway that reaches the
+ * benchmark only if nominated is labelled by its gapBase, never higher, and never lower either.
  */
-export function frictionFromScore(score: PathwayScore | undefined): "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED" {
+export const FRICTION_MAX_GAP = { LOW: 0, MEDIUM: 15, HIGH: 25 } as const;
+
+export type FrictionLevel = "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED";
+
+/**
+ * A level exists ONLY when a benchmark and a score gap both exist, otherwise the pathway is "not assessed"
+ * (never a default). Nothing else -- no static per-pathway table, no experience-deduction bump -- changes it.
+ */
+export function frictionFromScore(score: PathwayScore | undefined): FrictionLevel {
   if (!score || score.benchmark === null || score.gapBase === null) return "NOT_ASSESSED";
-  const gap = -score.gapBase; // current score minus benchmark (negative = short)
-  if (gap < -10) return "EXTREME";
-  if (gap >= 0) return "LOW";
-  if (gap <= -6) return "HIGH";
-  return "MEDIUM";
+  const gap = score.gapBase; // points short of the benchmark (<= 0: at or above)
+  if (gap <= FRICTION_MAX_GAP.LOW) return "LOW";
+  if (gap <= FRICTION_MAX_GAP.MEDIUM) return "MEDIUM";
+  if (gap <= FRICTION_MAX_GAP.HIGH) return "HIGH";
+  return "EXTREME";
+}
+
+/** Lower-case form used by PathwayStrengthComparison.friction. */
+export function frictionKey(level: FrictionLevel): "low" | "medium" | "high" | "extreme" | "not_assessed" {
+  return level === "NOT_ASSESSED" ? "not_assessed" : (level.toLowerCase() as "low" | "medium" | "high" | "extreme");
 }
