@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { pdfDownloads } from "@/db/schema";
 import { eq, and, inArray, notInArray, count } from "drizzle-orm";
 import { PDF_SLUGS, PDF_LEAD_CATEGORY, type PdfProduct, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
+import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { prisma } from "@/lib/prisma";
 import { PDF_LEAD_SOURCE, marketForSlug } from "@/lib/crm/pdf-lead-sources";
 
@@ -230,11 +231,16 @@ export async function POST(req: NextRequest) {
               },
             })
             .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err)),
-          sendPdfDeliveryEmail({ fullName: full_name.trim(), email: normalizedEmail, slug }).catch((err) => {
-            console.error("[pdf-download] Delivery email failed (non-blocking):", err);
-            throw err;
-          }),
-          sendPdfLeadAdminEmail({
+          // Admin allow-list address (free admin order): no delivery email and no internal lead notification.
+          shouldSuppressReportEmails({ email: normalizedEmail }, "pdf_download_delivery_email")
+            ? Promise.resolve()
+            : sendPdfDeliveryEmail({ fullName: full_name.trim(), email: normalizedEmail, slug }).catch((err) => {
+                console.error("[pdf-download] Delivery email failed (non-blocking):", err);
+                throw err;
+              }),
+          shouldSuppressReportEmails({ email: normalizedEmail }, "pdf_download_admin_notification")
+            ? Promise.resolve()
+            : sendPdfLeadAdminEmail({
             fullName: full_name.trim(),
             email: normalizedEmail,
             phone: phone.trim(),

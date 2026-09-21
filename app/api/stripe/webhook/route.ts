@@ -8,6 +8,8 @@ import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
 import { recordCommissionTransaction, recordCommissionTransactionForLead, hasRecordedTransaction } from "@/lib/stripe/commission";
 import { getStripeClient } from "@/lib/stripe";
 import { sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
+import { shouldSuppressReportEmails } from "@/lib/email/suppression";
+import { getSessionPromotionCodes } from "@/lib/stripe/session-discounts";
 
 export const dynamic = "force-dynamic";
 
@@ -109,7 +111,7 @@ function resolveCampaignPdfSlug(campaign: string | undefined): string | null {
   return knownSlugs.includes(campaign) ? campaign : null;
 }
 
-async function handlePdfBookPurchase(session: Stripe.Checkout.Session, slug: string): Promise<void> {
+async function handlePdfBookPurchase(stripe: Stripe, session: Stripe.Checkout.Session, slug: string): Promise<void> {
   const email =
     session.metadata?.email?.trim() ||
     session.customer_email?.trim() ||
@@ -125,6 +127,18 @@ async function handlePdfBookPurchase(session: Stripe.Checkout.Session, slug: str
     return;
   }
 
+  // Free admin order (ADMINFREE applied on the session, or an admin allow-list address): no delivery email.
+  // Decided server-side from the Stripe session, never from anything the browser sent.
+  const promotionCodes = await getSessionPromotionCodes(stripe, session);
+  if (
+    shouldSuppressReportEmails(
+      { email: [email, session.metadata?.email, session.customer_email, session.customer_details?.email], promotionCode: promotionCodes },
+      "stripe_webhook_pdf_delivery"
+    )
+  ) {
+    return;
+  }
+
   const result = await sendPdfDeliveryEmail({ fullName, email, slug });
   console.log("[stripe webhook] pdf delivery", {
     sessionId: session.id,
@@ -135,7 +149,7 @@ async function handlePdfBookPurchase(session: Stripe.Checkout.Session, slug: str
   });
 }
 
-async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Response> {
+async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Session): Promise<Response> {
   // assessmentId is the explicit metadata key set by app/api/checkout/route.ts
   // for this purpose; reportId is kept as a fallback for older sessions
   // created before that key existed.
@@ -195,31 +209,42 @@ async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Res
     // and the DB unlock above already succeeded, so a Resend failure here
     // must never fail this webhook and trigger a Stripe retry of a charge
     // that already went through.
+    // Free admin order (ADMINFREE on the session, or an admin allow-list address): neither the internal
+    // notification below nor the customer email further down is sent. The unlock, the commission ledger
+    // and the on-demand PDF are unaffected.
+    const promotionCodes = await getSessionPromotionCodes(stripe, session);
+    const suppressionInput = {
+      email: [email, session.metadata?.email, session.customer_email, session.customer_details?.email, record.email],
+      promotionCode: promotionCodes,
+    };
+
     try {
-      const input = (record.inputJson ?? {}) as Partial<ReadinessInput>;
-      await sendFullCheckAdminEmail({
-        fullName: record.fullName ?? "",
-        email,
-        visaInterest: record.preferredPath ?? input.preferredPathway ?? "",
-        preferredLanguage: record.locale,
-        currentCountry: input.currentCountry ?? "",
-        passportCountry: input.passportCountry ?? "",
-        age: input.age ?? "",
-        occupation: input.occupation ?? "",
-        englishLevel: input.englishLevel ?? "",
-        occupationConfirmed: input.occupationConfirmed ?? "",
-        estimatedBudgetRange: input.estimatedBudgetRange ?? "",
-        timeline: input.timeline ?? "",
-        qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
-        qualificationRegionalAustralia: input.qualificationRegionalAustralia,
-        specialistEducationStemResponse: input.specialistEducationStemResponse,
-        offshoreExperienceYears: input.offshoreExperienceYears,
-        onshoreExperienceYears: input.onshoreExperienceYears,
-        sponsorOrFamily: input.sponsorOrFamily ?? "",
-        biggestConcern: input.biggestConcern ?? "",
-        mainGoal: input.mainGoal ?? "",
-        source: record.source,
-      });
+      if (!shouldSuppressReportEmails(suppressionInput, "stripe_webhook_admin_notification")) {
+        const input = (record.inputJson ?? {}) as Partial<ReadinessInput>;
+        await sendFullCheckAdminEmail({
+          fullName: record.fullName ?? "",
+          email,
+          visaInterest: record.preferredPath ?? input.preferredPathway ?? "",
+          preferredLanguage: record.locale,
+          currentCountry: input.currentCountry ?? "",
+          passportCountry: input.passportCountry ?? "",
+          age: input.age ?? "",
+          occupation: input.occupation ?? "",
+          englishLevel: input.englishLevel ?? "",
+          occupationConfirmed: input.occupationConfirmed ?? "",
+          estimatedBudgetRange: input.estimatedBudgetRange ?? "",
+          timeline: input.timeline ?? "",
+          qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
+          qualificationRegionalAustralia: input.qualificationRegionalAustralia,
+          specialistEducationStemResponse: input.specialistEducationStemResponse,
+          offshoreExperienceYears: input.offshoreExperienceYears,
+          onshoreExperienceYears: input.onshoreExperienceYears,
+          sponsorOrFamily: input.sponsorOrFamily ?? "",
+          biggestConcern: input.biggestConcern ?? "",
+          mainGoal: input.mainGoal ?? "",
+          source: record.source,
+        });
+      }
     } catch (adminEmailErr) {
       console.error("Webhook: PAID admin notification email failed (non-blocking):", adminEmailErr);
     }
@@ -231,7 +256,9 @@ async function handleReportUnlock(session: Stripe.Checkout.Session): Promise<Res
     // PDF/email failure here must never fail this webhook and cause Stripe
     // to retry a charge that already went through.
     try {
-      const { pdfSent } = await generateAndSendReport(reportId, email, record.fullName ?? undefined);
+      const { pdfSent } = await generateAndSendReport(reportId, email, record.fullName ?? undefined, {
+        suppressEmail: shouldSuppressReportEmails(suppressionInput, "stripe_webhook_customer_report_email"),
+      });
       console.log(`Webhook: Report ${reportId} unlock processed, pdfSent=${pdfSent}`, { email });
     } catch (emailErr) {
       console.error("Webhook: PDF generation or email delivery failed:", emailErr);
@@ -306,7 +333,7 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        await handlePdfBookPurchase(session, campaignPdfSlug);
+        await handlePdfBookPurchase(stripe, session, campaignPdfSlug);
       } catch (err) {
         console.error("Webhook: campaign pdf purchase handling failed:", err);
         return new Response("Processing failed", { status: 500 });
@@ -335,7 +362,7 @@ export async function POST(request: NextRequest) {
 
     if (pdfSlug) {
       try {
-        await handlePdfBookPurchase(session, pdfSlug);
+        await handlePdfBookPurchase(stripe, session, pdfSlug);
       } catch (err) {
         console.error("Webhook: pdf book purchase handling failed:", err);
         return new Response("Processing failed", { status: 500 });
@@ -350,7 +377,7 @@ export async function POST(request: NextRequest) {
       return handleCreditsPurchase(session);
     }
 
-    return handleReportUnlock(session);
+    return handleReportUnlock(stripe, session);
   }
 
   return new Response("OK", { status: 200 });

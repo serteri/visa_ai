@@ -39,6 +39,7 @@ import {
 } from "@/src/lib/user-reports";
 import { getAgentUser } from "@/lib/crm/leads";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
+import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { safeEqual } from "@/lib/admin-auth";
 
 const REF_COOKIE = "logivisa_ref";
@@ -1365,7 +1366,7 @@ export async function submitFullCheckWaitlist(
   // Best-effort: the lead is already persisted and (if applicable) assigned
   // above, so a broken RESEND_API_KEY or a send failure here must never fail
   // the submission the visitor is waiting on.
-  if (referralAgent) {
+  if (referralAgent && !shouldSuppressReportEmails({ email }, "quick_check_agent_assigned_email")) {
     try {
       await sendAgentAssignedEmail({
         agentEmail: referralAgent.email,
@@ -1430,15 +1431,22 @@ export async function submitFullCheckWaitlist(
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "https://logivisa.com";
   const reportLink = `${baseUrl}/${resolvedLocale}/full-check/result?reportId=${reportRecord.id}`;
 
+  // Free admin order (the submitter's address is on the admin allow-list): neither the customer "report
+  // ready" email nor the internal lead-tier notification is sent. The lead and report are saved as usual.
+  const skipCustomerEmail = shouldSuppressReportEmails({ email }, "quick_check_customer_report_email");
+  const skipInternalEmail = internalLeadTier !== "Cold" && shouldSuppressReportEmails({ email }, "quick_check_internal_lead_email");
+
   Promise.all([
-    sendReportReadyEmail({
+    skipCustomerEmail
+      ? Promise.resolve()
+      : sendReportReadyEmail({
       email,
       fullName,
       reportLink,
       locale: resolvedLocale,
       preview: buildQuickPreview(generatedReport),
     }).catch((err) => console.error("Customer report email failed (non-blocking):", err)),
-    internalLeadTier === "Cold"
+    internalLeadTier === "Cold" || skipInternalEmail
       ? Promise.resolve()
       : sendInternalLeadTierEmail({
           tier: internalLeadTier,
@@ -1626,7 +1634,7 @@ async function unlockPremiumReportInternal(
   try {
     const result = await generateAndSendReport(reportId, email, fullName || undefined);
     pdfSent = result.pdfSent;
-    if (!pdfSent && isEmailDeliveryEnabled()) {
+    if (!pdfSent && !result.suppressed && isEmailDeliveryEnabled()) {
       console.error(`unlockPremiumReport: generateAndSendReport reported failure for report ${reportId}`);
     }
   } catch (err) {

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma"
 import { Resend } from "resend"
 import { getDictionary, Dictionary } from "@/lib/i18n/get-dictionary"
 import { Locale } from "@/lib/i18n/config"
+import { shouldSuppressReportEmails } from "@/lib/email/suppression"
 
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -100,13 +101,17 @@ export async function submitDownloadForm(data: {
     ].join("\n"),
   };
 
+  // Admin allow-list address (free admin order): neither the delivery email nor the admin notification.
+  const suppressEmails = shouldSuppressReportEmails({ email: data.email }, "guide_download_emails")
   try {
-    await Promise.all([
-      resend.emails.send(userEmailPayload),
-      resend.emails.send(adminEmailPayload).catch((err) =>
-        console.error("Admin notification failed (non-blocking):", err)
-      ),
-    ]);
+    if (!suppressEmails) {
+      await Promise.all([
+        resend.emails.send(userEmailPayload),
+        resend.emails.send(adminEmailPayload).catch((err) =>
+          console.error("Admin notification failed (non-blocking):", err)
+        ),
+      ]);
+    }
   } catch (emailError) {
     console.error("Failed to send email:", emailError)
     return { success: false, error: "email_send_failed" }

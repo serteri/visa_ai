@@ -51,3 +51,9 @@ jobs:
       # a clipped EOI banner, or a Financial Roadmap without a total row.
       - name: PDF route-handler tests (banned strings, banner clipping, Roadmap total row; en/tr/zh-Hans)
         run: npm run test:pdf-route
+
+      # Free admin orders (ADMINFREE promotion code, or an ADMIN_EMAILS / KNOWN_TEST_EMAILS address) must send
+      # no report email, internal or customer; normal and other-discount orders send both as before. Runs the
+      # real Stripe webhook handler with Resend, Stripe and Prisma stubbed (fake keys, no network, no DB).
+      - name: Free-admin-order email suppression tests (stubbed sender)
+        run: npm run test:email-suppression

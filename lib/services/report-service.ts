@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 
 import { prisma } from "@/lib/prisma";
+import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import { getUserReportById, markReportPdfSent } from "@/src/lib/user-reports";
 
@@ -294,8 +295,9 @@ export async function getReportPdfForDownload(
 export async function generateAndSendReport(
   reportId: string,
   email: string,
-  fullName?: string
-): Promise<{ pdfSent: boolean }> {
+  fullName?: string,
+  options?: { suppressEmail?: boolean }
+): Promise<{ pdfSent: boolean; suppressed?: boolean }> {
   try {
     const record = await getUserReportById(reportId);
     if (!record) {
@@ -304,6 +306,14 @@ export async function generateAndSendReport(
     }
 
     const recipientEmail = email || record.email;
+
+    // Free admin order: no customer email at all. The report stays unlocked and its PDF downloadable on
+    // demand; pdf_sent stays false because no email went out. (The Stripe webhook passes suppressEmail from
+    // its server-side check of the session's promotion code; the allow-list check here also covers the
+    // admin fast path in unlockPremiumReport.)
+    if (options?.suppressEmail || shouldSuppressReportEmails({ email: [recipientEmail, record.email] }, "report_service_customer_email")) {
+      return { pdfSent: false, suppressed: true };
+    }
 
     if (process.env.SIMULATE_EMAIL_DELIVERY === "true") {
       console.log(
