@@ -372,6 +372,26 @@ export type FinancialRoadmapItem = {
    * needs to reference this row; most items have no `kind`.
    */
   kind?: "vac" | "skills_assessment" | "english_test" | "medical" | "police" | "vac_additional";
+  /**
+   * `vac_additional` only: the structured figures behind the "Estimated total with partner/dependants" line
+   * (financial-roadmap-totals.ts computePartnerTotalAud), so the Roadmap, FAQ and Application Guide quote one
+   * number. Per-person amounts are copied from src/data/visa-fees.json for `subclass` -- never invented, and
+   * never taken to apply to another subclass.
+   */
+  additionalApplicants?: {
+    /** The fee subclass the per-person charges (and the base VAC in the primary total) belong to. */
+    subclass: string;
+    partners: number;
+    children: number;
+    /** True when the input carries no head-count: one partner and no children are assumed. */
+    assumedCounts: boolean;
+    /** Charge for each partner/dependant aged 18+. */
+    adultAud: number;
+    /** Charge for each child under 18. */
+    childAud: number;
+    /** Second-instalment charge for this subclass (per dependant aged 18+ without functional English); absent if the subclass has none. */
+    secondInstalmentAud?: number;
+  };
 };
 
 export type ProgressionPathway = {

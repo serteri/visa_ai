@@ -97,6 +97,188 @@
       ]
     },
     {
+      "id": "vac_additional_adult_189",
+      "description": "Subclass 189 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
+      "value": 2455,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.189.vac.partner_18_plus",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"189\")"
+      ]
+    },
+    {
+      "id": "vac_additional_child_189",
+      "description": "Subclass 189 additional-applicant Visa Application Charge, each child under 18",
+      "value": 1230,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.189.vac.child_under_18",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"189\")"
+      ]
+    },
+    {
+      "id": "vac_additional_adult_190",
+      "description": "Subclass 190 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
+      "value": 2455,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.190.vac.partner_18_plus",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"190\")"
+      ]
+    },
+    {
+      "id": "vac_additional_child_190",
+      "description": "Subclass 190 additional-applicant Visa Application Charge, each child under 18",
+      "value": 1230,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.190.vac.child_under_18",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"190\")"
+      ]
+    },
+    {
+      "id": "vac_additional_adult_482",
+      "description": "Subclass 482 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
+      "value": 4015,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.482.vac.partner_18_plus",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"482\")"
+      ]
+    },
+    {
+      "id": "vac_additional_child_482",
+      "description": "Subclass 482 additional-applicant Visa Application Charge, each child under 18",
+      "value": 1005,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.482.vac.child_under_18",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"482\")"
+      ]
+    },
+    {
+      "id": "vac_additional_adult_485",
+      "description": "Subclass 485 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
+      "value": 1120,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.485.vac.partner_18_plus",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"485\")"
+      ]
+    },
+    {
+      "id": "vac_additional_child_485",
+      "description": "Subclass 485 additional-applicant Visa Application Charge, each child under 18",
+      "value": 560,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.485.vac.child_under_18",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"485\")"
+      ]
+    },
+    {
+      "id": "vac_additional_adult_491",
+      "description": "Subclass 491 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
+      "value": 2455,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.491.vac.partner_18_plus",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"491\")"
+      ]
+    },
+    {
+      "id": "vac_additional_child_491",
+      "description": "Subclass 491 additional-applicant Visa Application Charge, each child under 18",
+      "value": 1230,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.491.vac.child_under_18",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"491\")"
+      ]
+    },
+    {
+      "id": "vac_additional_adult_500",
+      "description": "Subclass 500 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
+      "value": 1000,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.500.vac.partner_18_plus",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"500\")"
+      ]
+    },
+    {
+      "id": "vac_additional_child_500",
+      "description": "Subclass 500 additional-applicant Visa Application Charge, each child under 18",
+      "value": 400,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.500.vac.child_under_18",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"500\")"
+      ]
+    },
+    {
+      "id": "vac_additional_adult_820",
+      "description": "Subclass 820 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
+      "value": 0,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.820.vac.partner_18_plus",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"820\")"
+      ]
+    },
+    {
+      "id": "vac_additional_child_820",
+      "description": "Subclass 820 additional-applicant Visa Application Charge, each child under 18",
+      "value": 2345,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "locations": [
+        "src/data/visa-fees.json:visas.820.vac.child_under_18",
+        "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"820\")"
+      ]
+    },
+    {
       "id": "income_threshold_491_to_191",
       "description": "Taxable income threshold gating the subclass 491 -> 191 (permanent) transition",
       "value": 53900,

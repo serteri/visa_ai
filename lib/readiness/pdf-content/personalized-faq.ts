@@ -1,6 +1,13 @@
 import type { Locale, FinancialRoadmapItem, PointsActionPlan } from "../types";
 import { numberedWays } from "../points-action-text";
-import { computeEstimatedTotalAud, findFinancialRoadmapItem, formatEstimatedTotalLine } from "../financial-roadmap-totals";
+import {
+  computeEstimatedTotalAud,
+  computePartnerTotalAud,
+  findFinancialRoadmapItem,
+  formatEstimatedTotalLine,
+  formatPartnerTotalLine,
+  formatSecondInstalmentLine,
+} from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
 
@@ -260,7 +267,12 @@ export function getPersonalizedFaq(
                       : `Application fee (VAC): ${vacItem.amountLabel}.`
                 );
               }
-              return `${componentParts.join(" ")} ${totalLabel}`;
+              // Partnered applicant: the same second total and second-instalment line the Roadmap and guide quote.
+              const partnerTotal = computePartnerTotalAud(roadmap);
+              const partnerParts = partnerTotal
+                ? [formatPartnerTotalLine(partnerTotal, locale, isZh ? "。" : "."), formatSecondInstalmentLine(partnerTotal, locale)].filter((part): part is string => Boolean(part))
+                : [];
+              return [componentParts.join(" "), totalLabel, ...partnerParts].filter(Boolean).join(" ");
             })()
           : isTr
             ? "Toplam maliyet; beceri değerlendirmesi ücretiniz, dil testi ve resmi başvuru ücretine (VAC) bağlıdır -- bu Tahmini Maliyet Yol Haritası bölümünde ayrıntılı olarak gösterilmiştir."

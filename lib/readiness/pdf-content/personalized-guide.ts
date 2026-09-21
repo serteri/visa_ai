@@ -1,6 +1,13 @@
 import type { Locale, FinancialRoadmapItem, PointsActionPlan } from "../types";
 import { fastestWaysPhrase, getPointsLevers } from "../points-action-text";
-import { computeEstimatedTotalAud, findFinancialRoadmapItem, formatEstimatedTotalLine } from "../financial-roadmap-totals";
+import {
+  computeEstimatedTotalAud,
+  computePartnerTotalAud,
+  findFinancialRoadmapItem,
+  formatEstimatedTotalLine,
+  formatPartnerTotalLine,
+  formatSecondInstalmentLine,
+} from "../financial-roadmap-totals";
 
 type Country = "AU" | "CA";
 
@@ -338,6 +345,13 @@ export function getPersonalizedApplicationGuide(
               lines.push(isTr ? `Polis belgeleri: ${guidePoliceItem.amountLabel}` : isZh ? `无犯罪证明：${guidePoliceItem.amountLabel}` : `Police certificates: ${guidePoliceItem.amountLabel}`);
             }
             lines.push(totalLine);
+            // Partnered applicant: the same second total and second-instalment line the Roadmap and FAQ quote.
+            const guidePartnerTotal = computePartnerTotalAud(roadmap);
+            if (guidePartnerTotal) {
+              lines.push(formatPartnerTotalLine(guidePartnerTotal, locale));
+              const guideInstalmentLine = formatSecondInstalmentLine(guidePartnerTotal, locale);
+              if (guideInstalmentLine) lines.push(guideInstalmentLine);
+            }
             return lines;
           })()
         : (isTr

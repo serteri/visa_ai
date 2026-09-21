@@ -3,7 +3,14 @@ import { assembleBoosterRows } from "./points-booster";
 import { blockedLabel, describePathwayScore } from "./pathway-scores";
 import { deterministicRecommendations, findRecommendationViolations } from "./pathway-recommendations";
 import { orderBySkilledRanking } from "./pathway-ranking";
-import { computeEstimatedTotalAud, describeTotalScope, formatEstimatedTotalLine } from "./financial-roadmap-totals";
+import {
+  computeEstimatedTotalAud,
+  computePartnerTotalAud,
+  describeTotalScope,
+  formatEstimatedTotalLine,
+  formatPartnerTotalLine,
+  formatSecondInstalmentLine,
+} from "./financial-roadmap-totals";
 import { jsPDF } from "jspdf";
 import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
@@ -4774,6 +4781,28 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       const wrappedTotal = doc.splitTextToSize(safeText(totalText), contentWidth) as string[];
       doc.text(wrappedTotal, margin, yPosition);
       yPosition += wrappedTotal.length * 4.6 + 3;
+      // Partnered applicant: the second total (same components + the additional-applicant VAC), then the
+      // second-instalment charge on its own line -- outside both totals.
+      const partnerTotal = computePartnerTotalAud(report.financialRoadmap);
+      if (partnerTotal) {
+        const wrappedPartner = doc.splitTextToSize(safeText(formatPartnerTotalLine(partnerTotal, effectiveLocale)), contentWidth) as string[];
+        ensurePageSpace(wrappedPartner.length * 4.6 + 6);
+        setBoldFont();
+        doc.setFontSize(FONTS.body);
+        doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+        doc.text(wrappedPartner, margin, yPosition);
+        yPosition += wrappedPartner.length * 4.6 + 3;
+        const instalmentLine = formatSecondInstalmentLine(partnerTotal, effectiveLocale);
+        if (instalmentLine) {
+          const wrappedInstalment = doc.splitTextToSize(safeText(instalmentLine), contentWidth) as string[];
+          ensurePageSpace(wrappedInstalment.length * 3.8 + 3);
+          setBaseFont();
+          doc.setFontSize(FONTS.small);
+          doc.setTextColor(COLORS.lightText.r, COLORS.lightText.g, COLORS.lightText.b);
+          doc.text(wrappedInstalment, margin, yPosition);
+          yPosition += wrappedInstalment.length * 3.8 + 2;
+        }
+      }
       // What the total covers and what it leaves out, so the reader can see
       // the total's scope without cross-referencing the rows above.
       setBaseFont();

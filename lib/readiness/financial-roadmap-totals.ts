@@ -211,3 +211,107 @@ export function describeTotalScope(
 export function estimateQualifier(locale: "en" | "tr" | "zh-Hans"): string {
   return locale === "tr" ? "doğrulama bekleyen tahmin" : locale === "zh-Hans" ? "估算，待核实" : "estimate pending verification";
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Partnered applicants: "Estimated total with partner/dependants"
+//
+// The primary-applicant total above is left exactly as it is. For an applicant whose family answer starts with
+// "Partner" the engine adds a second figure built from the SAME roadmap components plus the additional-applicant
+// VAC for the fee subclass (financialRoadmap item kind "vac_additional", figures copied from
+// src/data/visa-fees.json). The Roadmap, the FAQ and the Application Guide all call the functions below with the
+// same roadmap, so they quote one figure. The second-instalment charge is never folded into it: it is stated on
+// its own "possible additional charge" line.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type PartnerTotal = {
+  min: number;
+  max: number;
+  /** The primary total this extends (same components, same estimate flags). */
+  primary: FinancialRoadmapTotal;
+  /** The fee subclass the additional-applicant charges (and the base VAC) belong to. */
+  subclass: string;
+  partners: number;
+  children: number;
+  assumedCounts: boolean;
+  /** Second-instalment charge for this subclass, per dependant aged 18+ without functional English. */
+  secondInstalmentAud?: number;
+};
+
+/** null when the applicant is not partnered, or the fee data has no additional-applicant figures for the subclass. */
+export function computePartnerTotalAud(financialRoadmap: readonly FinancialRoadmapItem[]): PartnerTotal | null {
+  const primary = computeEstimatedTotalAud(financialRoadmap);
+  const extra = findFinancialRoadmapItem(financialRoadmap, "vac_additional")?.additionalApplicants;
+  if (!primary || !extra) return null;
+  const additional = extra.partners * extra.adultAud + extra.children * extra.childAud;
+  return {
+    min: primary.min + additional,
+    max: primary.max + additional,
+    primary,
+    subclass: extra.subclass,
+    partners: extra.partners,
+    children: extra.children,
+    assumedCounts: extra.assumedCounts,
+    secondInstalmentAud: extra.secondInstalmentAud,
+  };
+}
+
+function formatAud(value: number, locale: "en" | "tr" | "zh-Hans"): string {
+  return `AUD ${value.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU")}`;
+}
+
+/** "one partner and no children" / "1 partner and 2 children", in the reader's language. */
+function describeApplicantCounts(total: PartnerTotal, locale: "en" | "tr" | "zh-Hans"): string {
+  const { partners, children, assumedCounts } = total;
+  if (locale === "tr") {
+    const who = `${partners === 1 ? "bir partner" : `${partners} partner`}${children === 0 ? " ve çocuk yok" : ` ve ${children} çocuk`}`;
+    return assumedCounts ? `${who} varsayılarak` : who;
+  }
+  if (locale === "zh-Hans") {
+    const who = `${partners === 1 ? "一位配偶" : `${partners} 位配偶`}${children === 0 ? "且无子女" : `和 ${children} 名子女`}`;
+    return assumedCounts ? `假设有${who}` : who;
+  }
+  const who = `${partners === 1 ? "one partner" : `${partners} partners`}${children === 0 ? " and no children" : ` and ${children} ${children === 1 ? "child" : "children"}`}`;
+  return assumedCounts ? `assuming ${who}` : who;
+}
+
+/**
+ * The one place the partnered total is worded (Roadmap, FAQ and guide all call it). Names the subclass its
+ * figures belong to and, when the input has no head-count, says "assuming one partner". `terminal` is
+ * punctuation right after the range, as in formatEstimatedTotalLine.
+ */
+export function formatPartnerTotalLine(total: PartnerTotal, locale: "en" | "tr" | "zh-Hans", terminal = ""): string {
+  const range = `${formatAud(total.min, locale)}-${total.max.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU")}`;
+  const counts = describeApplicantCounts(total, locale);
+  const partial = !total.primary.complete;
+  const estimated =
+    total.primary.estimatedKinds.length > 0
+      ? locale === "tr"
+        ? ` (${total.primary.estimatedKinds.map((k) => KIND_NOUN[k].tr).join(", ")}: ${estimateQualifier(locale)})`
+        : locale === "zh-Hans"
+          ? `（${total.primary.estimatedKinds.map((k) => KIND_NOUN[k].zh).join("、")}：${estimateQualifier(locale)}）`
+          : ` (${total.primary.estimatedKinds.map((k) => KIND_NOUN[k].en).join(", ")}: ${estimateQualifier(locale)})`
+      : "";
+  if (locale === "tr") {
+    return `Partner/bağımlılarla tahmini toplam${partial ? " (en az)" : ""} (alt sınıf ${total.subclass}; ${counts}): ${range}${estimated}${terminal}`;
+  }
+  if (locale === "zh-Hans") {
+    return `含配偶/受抚养人的预计总计${partial ? "（最低金额）" : ""}（子类 ${total.subclass}；${counts}）：${range}${estimated}${terminal}`;
+  }
+  return `Estimated total with partner/dependants${partial ? " (minimum)" : ""} (subclass ${total.subclass}; ${counts}): ${range}${estimated}${terminal}`;
+}
+
+/**
+ * The second-instalment charge as its own line, explicitly outside both totals. Null when the subclass has no
+ * second-instalment figure in the constants (never invented).
+ */
+export function formatSecondInstalmentLine(total: PartnerTotal, locale: "en" | "tr" | "zh-Hans"): string | null {
+  if (typeof total.secondInstalmentAud !== "number") return null;
+  const amount = formatAud(total.secondInstalmentAud, locale);
+  if (locale === "tr") {
+    return `Olası ek ücret (yukarıdaki toplamların hiçbirine dahil değildir): işlevsel İngilizce kanıtlayamayan 18 yaş ve üzeri her bağımlı için ${amount} ikinci taksit (alt sınıf ${total.subclass}).`;
+  }
+  if (locale === "zh-Hans") {
+    return `可能产生的额外费用（不含在上述任一总计中）：无法证明功能性英语的18岁及以上受抚养人，每人需缴 ${amount} 第二期费用（子类 ${total.subclass}）。`;
+  }
+  return `Possible additional charge (not included in either total above): a second instalment of ${amount} for each dependant aged 18+ who cannot show functional English (subclass ${total.subclass}).`;
+}

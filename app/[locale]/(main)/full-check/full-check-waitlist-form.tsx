@@ -16,7 +16,7 @@ import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { useTranslation } from "@/contexts/language-context";
-import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
+import { downloadReportPdf } from "@/lib/client/download-report-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
 import { findOccupationRecord, getSkilledListMembership } from "@/lib/readiness/occupation-eligibility";
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
@@ -252,6 +252,12 @@ export function FullCheckWaitlistForm({
   const trackedReportIdRef = useRef<string | null>(null);
   const [unlockedReportState, setUnlockedReportState] = useState<{ reportId?: string; report: ReadinessReport; name?: string; email?: string; isUnlocked?: boolean } | null>(null);
   const reportSectionRef = useRef<HTMLDivElement | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const pdfErrorMessage = txt(
+    "PDF indirilemedi. Lütfen tekrar deneyin; sorun sürerse bizimle iletişime geçin.",
+    "The PDF could not be downloaded. Please try again, and contact us if it keeps failing.",
+    "无法下载 PDF。请重试；如仍失败，请联系我们。"
+  );
   const budgetCurrency = selectedCountry === "CA" ? "CAD" : "AUD";
 
   // ── Search state ──
@@ -391,52 +397,22 @@ export function FullCheckWaitlistForm({
         document.getElementById("full-report-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
 
-      // Auto-download PDF
+      // Auto-download PDF from the server route (the same one the success page uses), so the file carries the
+      // stored profile and totals instead of what this browser session happens to hold.
+      const reportId = unlockedReportState.reportId;
       const downloadPdf = async () => {
         try {
-          const pdfBytes = await generateReadinessPDF({
-            report: unlockedReportState.report,
-            locale: locale as "en" | "tr" | "zh-Hans",
-            saveToFile: false,
-            userInputSummary: {
-              name: unlockedReportState.name,
-              email: unlockedReportState.email,
-              // initialValues.occupation is only a one-time seed from URL
-              // params on first page load -- it never reflects what the
-              // user actually typed/selected in Step 2 during this session.
-              // submittedOccupationValue does (same live value the form
-              // itself submits), which is why the PDF's top-level summary
-              // showed "Not specified" even though Historical Trends/Gantt
-              // (built server-side from the real submitted occupation) were
-              // correct.
-              occupation: submittedOccupationValue,
-              mainGoal: initialValues.mainGoal,
-              currentCountry: initialValues.currentCountry,
-              age: initialValues.age,
-              englishLevel,
-              // For AU this means "qualification awarded in Australia"; for
-              // CA the same form field is relabeled "Did you obtain an ECA?"
-              // (see Step3Language) -- either way it's the raw yes/no answer,
-              // interpreted per-country downstream (pdf-personalized-content.ts).
-              isAustralianQualification: qualificationAwardedInAustralia === "yes",
-            },
-          });
-          const blob = new Blob([pdfBytes as unknown as ArrayBuffer], { type: "application/pdf" });
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", "LogiVisa_Assessment_Report.pdf");
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode?.removeChild(link);
-          window.URL.revokeObjectURL(url);
+          setPdfError(null);
+          await downloadReportPdf(reportId ?? "", "LogiVisa_Assessment_Report.pdf");
         } catch (error) {
           console.error("Auto PDF download failed:", error);
+          setPdfError(pdfErrorMessage);
         }
       };
 
       downloadPdf();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unlockedReportState?.isUnlocked, unlockedReportState?.report]);
 
   const [report, setReport] = useState<ReadinessReport | null>(null);
@@ -455,21 +431,13 @@ export function FullCheckWaitlistForm({
   const handleDownloadPDF = async () => {
     if (!unlockedReportState?.report) return;
     trackGaEvent("pdf_download", { reportId: unlockedReportState.reportId });
-    const pdfBytes = await generateReadinessPDF({
-      report: unlockedReportState.report,
-      locale: locale as "en" | "tr" | "zh-Hans",
-      saveToFile: false,
-      userInputSummary: { name: unlockedReportState.name, email: unlockedReportState.email, occupation: submittedOccupationValue, mainGoal: initialValues.mainGoal, currentCountry: initialValues.currentCountry, age: initialValues.age, englishLevel, isAustralianQualification: qualificationAwardedInAustralia === "yes" },
-    });
-    const blob = new Blob([pdfBytes as unknown as ArrayBuffer], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `logivisa-readiness-report-${Date.now()}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setPdfError(null);
+    try {
+      await downloadReportPdf(unlockedReportState.reportId ?? "", `logivisa-readiness-report-${Date.now()}.pdf`);
+    } catch (error) {
+      console.error("PDF download failed:", error);
+      setPdfError(pdfErrorMessage);
+    }
   };
 
   // ── Report display section ──
@@ -514,6 +482,11 @@ export function FullCheckWaitlistForm({
             {isTr ? "PDF İndir" : isZh ? "下载 PDF" : "Download PDF"}
           </Button>
         </div>
+        {pdfError && (
+          <p role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {pdfError}
+          </p>
+        )}
         <LogiAIAssistant locale={locale} reportData={assistantReportData} />
       </div>
     </div>

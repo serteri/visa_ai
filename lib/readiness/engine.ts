@@ -3,6 +3,7 @@ import {
   BASE_VAC_AUD,
   resolveAdditionalApplicantVac,
   resolveSecondInstalmentAud,
+  SECOND_INSTALMENT_AUD,
   INCOME_THRESHOLD_491_TO_191_AUD,
   ENGLISH_TEST_VALIDITY_YEARS,
 } from "@/lib/readiness/constants";
@@ -4935,6 +4936,17 @@ function buildAdditionalApplicantVacItems(
           ? `子类 ${feeSubclass} 的每位随行申请人费用。这些金额不包含在按主申请人计算的预计总计中；18岁及以上受抚养人另可能产生第二期费用（见下文）。`
           : `Per-person charges for additional applicants on subclass ${feeSubclass}. These are not included in the primary-applicant Estimated total; a second instalment can also apply to dependants aged 18+ (see below).`,
       kind: "vac_additional",
+      // Structured figures for the "Estimated total with partner/dependants" line. The form carries no head-count,
+      // so one partner and no children are assumed (and the line says so).
+      additionalApplicants: {
+        subclass: feeSubclass,
+        partners: 1,
+        children: 0,
+        assumedCounts: true,
+        adultAud: extra.adult,
+        childAud: extra.child,
+        secondInstalmentAud: SECOND_INSTALMENT_AUD[feeSubclass],
+      },
     },
   ];
 }

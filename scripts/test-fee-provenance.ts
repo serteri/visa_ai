@@ -17,6 +17,7 @@ import visaFeesData from "../src/data/visa-fees.json";
 import visaDetailsData from "../src/data/visa-details.json";
 import {
   BASE_VAC_AUD,
+  resolveAdditionalApplicantVac,
   SECOND_INSTALMENT_AUD,
   INCOME_THRESHOLD_491_TO_191_AUD,
   ENGLISH_TEST_VALIDITY_YEARS,
@@ -47,6 +48,7 @@ function ok(msg: string) {
   console.log(`  ✅ ${msg}`);
 }
 
+const unverifiedFacts: string[] = [];
 console.log("==================== (1) provenance metadata completeness ====================");
 for (const fact of facts) {
   if (fact.value === null) {
@@ -55,6 +57,10 @@ for (const fact of facts) {
   }
   if (!fact.source || !fact.source.trim()) {
     fail(`${fact.id}: missing "source"`);
+  } else if ((!fact.last_verified || !fact.last_verified.trim()) && fact.source.startsWith("needs human verification")) {
+    // An honest "not verified yet": no date, and the source says so. It is reported, never counted as verified.
+    console.log(`  ⚠️  ${fact.id}: UNVERIFIED (source: needs human verification, last_verified null) -- not treated as verified`);
+    unverifiedFacts.push(fact.id);
   } else if (!fact.last_verified || !fact.last_verified.trim()) {
     fail(`${fact.id}: missing "last_verified"`);
   } else {
@@ -177,6 +183,44 @@ checkSecondInstalment("491", "second_instalment_491");
   } else {
     ok(`vac_186: consistently marked MISSING in both the manifest and BASE_VAC_AUD (no invented number).`);
   }
+}
+
+console.log("\n==================== (2b) additional-applicant VAC: recorded, cross-checked, and NOT treated as verified ====================");
+{
+  const before = failures;
+  const feeVisas = (visaFeesData as unknown as { visas: Record<string, { vac?: { partner_18_plus?: number; child_under_18?: number } }> }).visas;
+  let covered = 0;
+  for (const [subclass, entry] of Object.entries(feeVisas)) {
+    const adult = entry.vac?.partner_18_plus;
+    const child = entry.vac?.child_under_18;
+    if (typeof adult !== "number" || typeof child !== "number" || (adult === 0 && child === 0)) continue;
+    const resolved = resolveAdditionalApplicantVac(subclass);
+    if (!resolved || resolved.adult !== adult || resolved.child !== child) {
+      fail(`resolveAdditionalApplicantVac(${subclass}) = ${JSON.stringify(resolved)} disagrees with visa-fees.json (${adult}/${child})`);
+    }
+    for (const [key, value] of [["adult", adult], ["child", child]] as const) {
+      const fact = facts.find((f) => f.id === `vac_additional_${key}_${subclass}`);
+      if (!fact) {
+        fail(`visa-fees.json quotes an additional-applicant ${key} VAC for ${subclass} but fee-provenance.json has no vac_additional_${key}_${subclass} fact`);
+        continue;
+      }
+      covered++;
+      if (fact.value !== value) fail(`${fact.id}: manifest ${fact.value} != visa-fees.json ${value}`);
+      // Never checked against an official source: must stay flagged as such until a human verifies it.
+      if (fact.last_verified !== null) fail(`${fact.id}: last_verified must be null until a human checks it against an official source (got ${fact.last_verified})`);
+      if (!fact.source?.startsWith("needs human verification")) fail(`${fact.id}: source must be "needs human verification"`);
+    }
+  }
+  const stray = facts.filter((f) => f.id.startsWith("vac_additional_") && f.last_verified !== null);
+  for (const f of stray) fail(`${f.id} claims verification (last_verified ${f.last_verified}) -- not allowed for unchecked figures`);
+  if (covered === 0) fail("no additional-applicant VAC facts were cross-checked");
+  if (failures === before) ok(`${covered} additional-applicant VAC facts agree with visa-fees.json and are marked unverified (last_verified null)`);
+}
+
+// Tally: how many facts a human has actually verified (a date AND a source that does not say "needs human verification").
+{
+  const verified = facts.filter((f) => f.value !== null && f.last_verified && !f.source?.startsWith("needs human verification"));
+  console.log(`\n  verified against an official source: ${verified.length}; explicitly unverified (no date): ${unverifiedFacts.length}`);
 }
 
 console.log("\n==================== (3) authority conflicts recorded as needing human verification ====================");

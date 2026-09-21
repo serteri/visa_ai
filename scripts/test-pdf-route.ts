@@ -30,6 +30,7 @@
  *
  * Usage: npx tsx scripts/test-pdf-route.ts
  */
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { PDFParse } from "pdf-parse";
@@ -44,8 +45,9 @@ import { confidenceLevelLabel, frictionBandDefinition, frictionBandLabel, fricti
 import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
-import { computeEstimatedTotalAud, estimateQualifier, formatEstimatedTotalLine } from "../lib/readiness/financial-roadmap-totals";
-import { ENGLISH_TEST_VALIDITY_YEARS } from "../lib/readiness/constants";
+import { computeEstimatedTotalAud, computePartnerTotalAud, estimateQualifier, formatEstimatedTotalLine, formatPartnerTotalLine, formatSecondInstalmentLine } from "../lib/readiness/financial-roadmap-totals";
+import visaFeesData from "../src/data/visa-fees.json";
+import { ENGLISH_TEST_VALIDITY_YEARS, SECOND_INSTALMENT_AUD } from "../lib/readiness/constants";
 
 const LOCALES = ["en", "tr", "zh-Hans"] as const;
 type Locale = (typeof LOCALES)[number];
@@ -129,6 +131,15 @@ const POLICE_LINE: Record<Locale, string> = {
   tr: "Polis belgeleri:",
   "zh-Hans": "无犯罪证明：",
 };
+const PARTNER_TOTAL_LABEL: Record<Locale, string> = {
+  en: "Estimated total with partner/dependants",
+  tr: "Partner/bağımlılarla tahmini toplam",
+  "zh-Hans": "含配偶/受抚养人的预计总计",
+};
+const ASSUMING_ONE_PARTNER: Record<Locale, string> = { en: "assuming one partner", tr: "bir partner", "zh-Hans": "假设有一位配偶" };
+const POSSIBLE_ADDITIONAL: Record<Locale, string> = { en: "Possible additional charge", tr: "Olası ek ücret", "zh-Hans": "可能产生的额外费用" };
+const AGE_LABEL: Record<Locale, string> = { en: "Age: ", tr: "Yaş: ", "zh-Hans": "年龄：" };
+const NOT_SPECIFIED_AGE: Record<Locale, RegExp> = { en: /Age: ?Not ?specified/, tr: /Yaş: ?Belirtilmedi/, "zh-Hans": /年龄：?未填写/ };
 const ADDITIONAL_VAC_LINE: Record<Locale, string> = {
   en: "Additional applicants (VAC):",
   tr: "Ek başvurucular (VAC):",
@@ -252,7 +263,9 @@ async function checkPdf(
   persona: (typeof PERSONAS)[number],
   report: ReadinessReport,
   outStem: string,
-  expectBanner: boolean
+  expectBanner: boolean,
+  /** The applicant's known age: the PDF must print it, never "Not specified". Omitted for the thin client-shape summary. */
+  knownAge?: string
 ) {
   await writeFile(`${outStem}.pdf`, pdfBytes);
   const text = await extractPdfText(pdfBytes);
@@ -305,6 +318,52 @@ async function checkPdf(
     else if (!squash(flat).includes(squash(ADDITIONAL_VAC_LINE[locale]))) ctx.fail("guide cost list has no partner/child VAC line");
   } else if (additional) {
     ctx.fail("single applicant unexpectedly has a partner/child VAC row");
+  }
+
+  // ── Partnered total: a second line, built from the same components + the additional-applicant VAC ──
+  const partnerLabel = PARTNER_TOTAL_LABEL[locale];
+  const partnerLabelCount = squash(flat).split(squash(partnerLabel)).length - 1;
+  if (!persona.partnered) {
+    if (partnerLabelCount > 0) ctx.fail(`single applicant shows "${partnerLabel}" ${partnerLabelCount}x`);
+  } else {
+    const partner = computePartnerTotalAud(report.financialRoadmap);
+    if (!partner) {
+      ctx.fail("partnered profile: computePartnerTotalAud returned null");
+    } else {
+      // Independent arithmetic straight from src/data/visa-fees.json: primary total + one partner (18+), no children.
+      const adult = (visaFeesData as unknown as { visas: Record<string, { vac: { partner_18_plus: number } }> }).visas[partner.subclass]?.vac.partner_18_plus;
+      if (typeof adult !== "number") ctx.fail(`visa-fees.json has no partner charge for subclass ${partner.subclass}`);
+      else if (partner.min !== total.min + adult || partner.max !== total.max + adult) {
+        ctx.fail(`partner total ${partner.min}-${partner.max} != primary ${total.min}-${total.max} + one partner ${adult}`);
+      }
+      if (partner.partners !== 1 || partner.children !== 0 || !partner.assumedCounts) ctx.fail("no head-count in the input: one partner, no children, flagged as assumed");
+      if (!partner.subclass) ctx.fail("partner total does not name the subclass its figures belong to");
+      // Same figure in Roadmap + FAQ + guide, with the "assuming one partner" wording, in every locale
+      const partnerLine = formatPartnerTotalLine(partner, locale);
+      const partnerMax = partner.max.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU");
+      const partnerNeedle = partnerLine.slice(0, partnerLine.indexOf(partnerMax) + partnerMax.length);
+      const partnerOccurrences = squash(flat).split(squash(partnerNeedle)).length - 1;
+      if (partnerOccurrences < 3) ctx.fail(`partner total "${partnerNeedle}" appears ${partnerOccurrences}x (need Roadmap + FAQ + guide)`);
+      if (!squash(partnerNeedle).includes(squash(ASSUMING_ONE_PARTNER[locale]))) ctx.fail(`partner total line lacks "${ASSUMING_ONE_PARTNER[locale]}"`);
+      if (!squash(partnerNeedle).includes(squash(`${partner.subclass}`))) ctx.fail("partner total line does not name the subclass");
+      if (!squash(partnerNeedle).includes(squash(partnerLabel))) ctx.fail(`partner total line lacks its label "${partnerLabel}"`);
+      // Second instalment: its own "possible additional charge" line (Roadmap + FAQ + guide), never folded in
+      const instalmentLine = formatSecondInstalmentLine(partner, locale);
+      if (partner.secondInstalmentAud !== SECOND_INSTALMENT_AUD[partner.subclass]) ctx.fail("second-instalment amount is not the per-subclass constant");
+      if (!instalmentLine) ctx.fail("no second-instalment line although the subclass has a constant");
+      else {
+        const instalmentOccurrences = squash(flat).split(squash(instalmentLine)).length - 1;
+        if (instalmentOccurrences < 3) ctx.fail(`second-instalment line appears ${instalmentOccurrences}x (need Roadmap + FAQ + guide)`);
+        if (!squash(instalmentLine).includes(squash(POSSIBLE_ADDITIONAL[locale]))) ctx.fail("second-instalment line is not labelled as a possible additional charge");
+      }
+      console.log(`  ${partnerNeedle} | occurrences=${partnerOccurrences}`);
+    }
+  }
+
+  // ── Age: a known age is printed, never "Not specified" ──
+  if (knownAge) {
+    if (NOT_SPECIFIED_AGE[locale].test(squash(flat))) ctx.fail(`"Age: Not specified" appears although the applicant's age is ${knownAge}`);
+    if (!squash(flat).includes(squash(`${AGE_LABEL[locale]}${knownAge}`))) ctx.fail(`the guide's status block does not print "${AGE_LABEL[locale]}${knownAge}"`);
   }
   console.log(`  ${needle} | occurrences=${occurrences}`);
 }
@@ -1273,6 +1332,45 @@ async function runFrictionChecks(
   }
 }
 
+/**
+ * Production PDFs come from ONE place: the server route (app/api/reports/[reportId]/pdf). A client component that
+ * imports the jsPDF generator would reintroduce a browser-built PDF (no stored profile -> "Age: Not specified",
+ * no partnered total), so no "use client" file may import generateReadinessPDF / generate-pdf.
+ */
+function runClientPdfImportCheck(fail: (msg: string) => void) {
+  console.log("\n=== no client component imports the PDF generator ===");
+  const root = process.cwd();
+  const skip = new Set(["node_modules", ".next", ".git", ".claude", "scripts", "scratch", "temp_tests"]);
+  const files: string[] = [];
+  (function walk(dir: string) {
+    for (const name of readdirSync(dir)) {
+      if (skip.has(name)) continue;
+      const full = path.join(dir, name);
+      if (statSync(full).isDirectory()) walk(full);
+      else if (/\.(ts|tsx)$/.test(name)) files.push(full);
+    }
+  })(root);
+  let clientFiles = 0;
+  let bad = 0;
+  for (const file of files) {
+    const src = readFileSync(file, "utf8");
+    // "use client" must be the first statement (comments allowed before it)
+    const withoutLeadingComments = src.replace(/^(?:\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/))*/, "");
+    if (!/^\s*["']use client["']/.test(withoutLeadingComments)) continue;
+    clientFiles++;
+    if (/generateReadinessPDF|readiness\/generate-pdf|from ["'][^"']*\/generate-pdf["']/.test(src)) {
+      bad++;
+      fail(`client component ${path.relative(root, file)} imports the PDF generator -- download from /api/reports/[reportId]/pdf instead`);
+    }
+  }
+  const helper = readFileSync(path.join(root, "lib/client/download-report-pdf.ts"), "utf8");
+  if (!helper.includes("/api/reports/")) fail("lib/client/download-report-pdf.ts no longer downloads from /api/reports/[reportId]/pdf");
+  const form = readFileSync(path.join(root, "app/[locale]/(main)/full-check/full-check-waitlist-form.tsx"), "utf8");
+  if (!form.includes("downloadReportPdf(")) fail("full-check-waitlist-form.tsx does not download through the server route helper");
+  if (!/role="alert"/.test(form) || !/setPdfError\(pdfErrorMessage\)/.test(form)) fail("full-check-waitlist-form.tsx shows no visible error when the PDF download fails");
+  if (bad === 0) console.log(`  ✅ ${clientFiles} client components checked, none imports the PDF generator`);
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -1323,7 +1421,7 @@ async function main() {
           ctx.fail(`route returned HTTP ${res.status} / ${res.headers.get("content-type")}`);
         } else {
           const bytes = new Uint8Array(await res.arrayBuffer());
-          await checkPdf(ctx, bytes, locale, persona, JSON.parse(JSON.stringify(report)), path.join(outDir, `route-${persona.name}-${locale}`), persona.blocked);
+          await checkPdf(ctx, bytes, locale, persona, JSON.parse(JSON.stringify(report)), path.join(outDir, `route-${persona.name}-${locale}`), persona.blocked, persona.input.age);
         }
         if (!caseFailed) console.log("  ✅ ok");
       }
@@ -1354,6 +1452,11 @@ async function main() {
       }
     }
   }
+
+  runClientPdfImportCheck((m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
 
   // Unsupported labels, one authority, estimate qualifier
   await runAuthorityChecks(GET, rows, outDir, (m) => {
