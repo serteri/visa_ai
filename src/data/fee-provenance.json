@@ -8,8 +8,8 @@
       "value": 6135,
       "currency": "AUD",
       "effective_from": "2026-07-01",
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_01July2026.pdf -- \"Cost\" section: \"The visa costs AUD6,135.00 for the main applicant.\"",
       "locations": [
         "lib/readiness/constants.ts:BASE_VAC_AUD[\"189\"]",
         "src/data/visa-fees.json:visas.189.vac.main",
@@ -22,8 +22,8 @@
       "value": 6140,
       "currency": "AUD",
       "effective_from": "2026-07-01",
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_01July2026.pdf -- \"Cost\" section: \"The visa costs AUD6,140.00 for the main applicant.\"",
       "locations": [
         "lib/readiness/constants.ts:BASE_VAC_AUD[\"190\"]",
         "src/data/visa-fees.json:visas.190.vac.main",
@@ -36,8 +36,8 @@
       "value": 6140,
       "currency": "AUD",
       "effective_from": "2026-07-01",
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_01July2026.pdf -- \"Cost\" section: \"From AUD6,140.00 for the main applicant.\"",
       "locations": [
         "lib/readiness/constants.ts:BASE_VAC_AUD[\"491\"]",
         "src/data/visa-fees.json:visas.491.vac.main",
@@ -50,8 +50,8 @@
       "value": 4015,
       "currency": "AUD",
       "effective_from": "2026-07-01",
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf -- \"Cost\" section: \"AUD4,015.00 for the main applicant and for each dependant 18 years and over.\"",
       "locations": [
         "lib/readiness/constants.ts:BASE_VAC_AUD[\"482\"]",
         "src/data/visa-fees.json:visas.482.vac.main",
@@ -74,8 +74,8 @@
       "value": 4885,
       "currency": "AUD",
       "effective_from": "2026-07-01",
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/..._01July2026.pdf and Subclass 190 Skilled Nominated visa/..._01July2026.pdf -- \"Cost\" section: \"The second instalment charge for family members is AUD4,885.00\" (189) / \"AUD4,885\" (190).",
       "locations": [
         "lib/readiness/constants.ts:SECOND_INSTALMENT_AUD[\"189\"|\"190\"]",
         "src/data/visa-fees.json:visas.189.vac.secondInstalmentEnglish, visas.190.vac.secondInstalmentEnglish",
@@ -88,8 +88,8 @@
       "value": 4890,
       "currency": "AUD",
       "effective_from": "2026-07-01",
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/..._01July2026.pdf -- \"Cost\" section: \"The second instalment charge for family members is AUD4,890.00.\"",
       "locations": [
         "lib/readiness/constants.ts:SECOND_INSTALMENT_AUD[\"491\"]",
         "src/data/visa-fees.json:visas.491.vac.secondInstalmentEnglish",
@@ -103,7 +103,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/..._01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you. To work out what your visa will cost use the Visa Pricing Estimator.\" No flat per-dependant AUD figure is stated in the document; the Estimator is an interactive tool, not a document.",
       "locations": [
         "src/data/visa-fees.json:visas.189.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"189\")"
@@ -116,7 +116,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/..._01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you. To work out what your visa will cost use the Visa Pricing Estimator.\" No flat per-dependant AUD figure is stated in the document; the Estimator is an interactive tool, not a document.",
       "locations": [
         "src/data/visa-fees.json:visas.189.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"189\")"
@@ -129,7 +129,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Subclass 190 Skilled Nominated visa/..._01July2026.pdf -- \"Cost\" section: same \"charge for each family member ... use the Visa Pricing Estimator\" wording, no flat per-dependant AUD figure stated.",
       "locations": [
         "src/data/visa-fees.json:visas.190.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"190\")"
@@ -142,7 +142,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Subclass 190 Skilled Nominated visa/..._01July2026.pdf -- \"Cost\" section: same \"charge for each family member ... use the Visa Pricing Estimator\" wording, no flat per-dependant AUD figure stated.",
       "locations": [
         "src/data/visa-fees.json:visas.190.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"190\")"
@@ -154,8 +154,8 @@
       "value": 4015,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf -- \"Cost\" section: \"AUD4,015.00 for the main applicant and for each dependant 18 years and over.\"",
       "locations": [
         "src/data/visa-fees.json:visas.482.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"482\")"
@@ -167,8 +167,8 @@
       "value": 1005,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf -- \"Cost\" section: \"AUD1,005.00 for each dependant under 18 years old.\"",
       "locations": [
         "src/data/visa-fees.json:visas.482.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"482\")"
@@ -181,7 +181,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Temporary Graduate visa (subclass 485).../..._01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" No flat per-dependant AUD figure is stated.",
       "locations": [
         "src/data/visa-fees.json:visas.485.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"485\")"
@@ -194,7 +194,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Temporary Graduate visa (subclass 485).../..._01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" No flat per-dependant AUD figure is stated.",
       "locations": [
         "src/data/visa-fees.json:visas.485.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"485\")"
@@ -207,7 +207,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/..._01July2026.pdf -- \"Cost\" section: same \"charge for each family member ... use the Visa Pricing Estimator\" wording, no flat per-dependant AUD figure stated.",
       "locations": [
         "src/data/visa-fees.json:visas.491.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"491\")"
@@ -220,7 +220,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/..._01July2026.pdf -- \"Cost\" section: same \"charge for each family member ... use the Visa Pricing Estimator\" wording, no flat per-dependant AUD figure stated.",
       "locations": [
         "src/data/visa-fees.json:visas.491.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"491\")"
@@ -233,7 +233,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Visa_500/Student visa_class_500_01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa.\" No flat per-dependant AUD figure is stated.",
       "locations": [
         "src/data/visa-fees.json:visas.500.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"500\")"
@@ -246,7 +246,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Visa_500/Student visa_class_500_01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa.\" No flat per-dependant AUD figure is stated.",
       "locations": [
         "src/data/visa-fees.json:visas.500.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"500\")"
@@ -259,7 +259,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/(Subclasses 820 and 801) Partner visas.../Subclass 820 Partner visa (temporary)_01July2026.pdf -- \"Cost\" section gives AUD11,710.00 (main), AUD1,955.00 and AUD2,475.00 (former subclass 300 holders) only; no dependent-child or partner-addition figure appears anywhere in the document.",
       "locations": [
         "src/data/visa-fees.json:visas.820.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"820\")"
@@ -272,7 +272,7 @@
       "currency": "AUD",
       "effective_from": null,
       "last_verified": null,
-      "source": "needs human verification -- additional-applicant VAC in src/data/visa-fees.json was never checked against an official Home Affairs source (data/knowledge/ not present in this environment)",
+      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/(Subclasses 820 and 801) Partner visas.../Subclass 820 Partner visa (temporary)_01July2026.pdf -- \"Cost\" section gives AUD11,710.00 (main), AUD1,955.00 and AUD2,475.00 (former subclass 300 holders) only; no dependent-child or partner-addition figure appears anywhere in the document.",
       "locations": [
         "src/data/visa-fees.json:visas.820.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"820\")"
@@ -296,8 +296,8 @@
       "value": 1498,
       "currency": "AUD",
       "effective_from": "2025-11-03",
-      "last_verified": "2025-11-03",
-      "source": "needs human verification -- data/knowledge/ not present in this environment. lib/skills-assessment/authorities/acs.ts's own header comment cites \"ACS Migration Skills Assessment -- official guide, fee increase effective 3 November 2025\" but that source document is not present in this repo to re-check.",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- \"Application fee\" (General Skills pathway): \"The application fee for the General Skills assessment pathway is $1,498.\"",
       "locations": [
         "lib/skills-assessment/authorities/acs.ts:pathways[GENERAL_SKILLS].fees[0].amountAUD"
       ]
@@ -308,8 +308,8 @@
       "value": 3,
       "unit": "years",
       "effective_from": null,
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf -- \"Organise English exams\" section: \"English language test results can be no more than 3 years old.\"",
       "locations": [
         "lib/readiness/constants.ts:ENGLISH_TEST_VALIDITY_YEARS.AU"
       ]
@@ -332,8 +332,8 @@
       "value": 79423,
       "currency": "AUD",
       "effective_from": "2026-07-01",
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment",
+      "last_verified": "2026-09-22",
+      "source": "data/knowledge/Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf -- \"Annual indexation of skilled visa income thresholds from 1 July 2026\" section: \"The Core Skills Income Threshold (CSIT) will increase from AUD76,515 to AUD79,423.\"",
       "locations": [
         "lib/readiness/constants.ts:CURRENT_CSIT"
       ]

@@ -185,11 +185,18 @@ checkSecondInstalment("491", "second_instalment_491");
   }
 }
 
-console.log("\n==================== (2b) additional-applicant VAC: recorded, cross-checked, and NOT treated as verified ====================");
+console.log("\n==================== (2b) additional-applicant VAC: recorded and cross-checked against visa-fees.json ====================");
 {
   const before = failures;
   const feeVisas = (visaFeesData as unknown as { visas: Record<string, { vac?: { partner_18_plus?: number; child_under_18?: number } }> }).visas;
+  // Subclasses whose knowledge document states the additional-applicant figure explicitly (fee/threshold
+  // truth-audit, 2026-09-22) -- these facts are allowed (and required) to carry a real last_verified date
+  // and a source that cites data/knowledge instead of "needs human verification". Every other subclass's
+  // knowledge document, checked in the same audit, only confirms a per-family-member charge exists and
+  // defers the amount to the (non-document) Visa Pricing Estimator tool -- those stay unverified.
+  const VERIFIED_SUBCLASSES = new Set(["482"]);
   let covered = 0;
+  let verifiedCount = 0;
   for (const [subclass, entry] of Object.entries(feeVisas)) {
     const adult = entry.vac?.partner_18_plus;
     const child = entry.vac?.child_under_18;
@@ -198,6 +205,7 @@ console.log("\n==================== (2b) additional-applicant VAC: recorded, cro
     if (!resolved || resolved.adult !== adult || resolved.child !== child) {
       fail(`resolveAdditionalApplicantVac(${subclass}) = ${JSON.stringify(resolved)} disagrees with visa-fees.json (${adult}/${child})`);
     }
+    const shouldBeVerified = VERIFIED_SUBCLASSES.has(subclass);
     for (const [key, value] of [["adult", adult], ["child", child]] as const) {
       const fact = facts.find((f) => f.id === `vac_additional_${key}_${subclass}`);
       if (!fact) {
@@ -206,15 +214,21 @@ console.log("\n==================== (2b) additional-applicant VAC: recorded, cro
       }
       covered++;
       if (fact.value !== value) fail(`${fact.id}: manifest ${fact.value} != visa-fees.json ${value}`);
-      // Never checked against an official source: must stay flagged as such until a human verifies it.
-      if (fact.last_verified !== null) fail(`${fact.id}: last_verified must be null until a human checks it against an official source (got ${fact.last_verified})`);
-      if (!fact.source?.startsWith("needs human verification")) fail(`${fact.id}: source must be "needs human verification"`);
+      if (shouldBeVerified) {
+        verifiedCount++;
+        if (fact.last_verified === null) fail(`${fact.id}: subclass ${subclass} has a knowledge-document citation but last_verified is still null`);
+        if (fact.source?.startsWith("needs human verification")) fail(`${fact.id}: subclass ${subclass} has a knowledge-document citation but source still says "needs human verification"`);
+        if (!fact.source?.includes("data/knowledge")) fail(`${fact.id}: verified fact's source does not cite a data/knowledge path`);
+      } else {
+        // Never checked against an official source: must stay flagged as such until a human (or a future
+        // audit session with data/knowledge available) verifies it.
+        if (fact.last_verified !== null) fail(`${fact.id}: last_verified must be null until a knowledge document states the figure (got ${fact.last_verified})`);
+        if (!fact.source?.startsWith("needs human verification")) fail(`${fact.id}: source must start with "needs human verification"`);
+      }
     }
   }
-  const stray = facts.filter((f) => f.id.startsWith("vac_additional_") && f.last_verified !== null);
-  for (const f of stray) fail(`${f.id} claims verification (last_verified ${f.last_verified}) -- not allowed for unchecked figures`);
   if (covered === 0) fail("no additional-applicant VAC facts were cross-checked");
-  if (failures === before) ok(`${covered} additional-applicant VAC facts agree with visa-fees.json and are marked unverified (last_verified null)`);
+  if (failures === before) ok(`${covered} additional-applicant VAC facts agree with visa-fees.json (${verifiedCount} verified against data/knowledge, ${covered - verifiedCount} still unverified)`);
 }
 
 // Tally: how many facts a human has actually verified (a date AND a source that does not say "needs human verification").
