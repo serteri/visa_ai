@@ -1,0 +1,89 @@
+{
+  "_readme": "Provenance manifest for the state-occupation-list data used by lib/state-nomination/occupation-match.ts (matchOccupationToState), mirroring src/data/fee-provenance.json's pattern for fees. Each fact names the git-committed derived file, the raw source document(s) under data/knowledge/State Immigrations/<state> it was generated from (gitignored -- not present in CI or on another machine; only the derived JSON here is), the generator script, row count and extraction date. Regenerate with: npx tsx scripts/generate-state-occupation-lists.ts. A 'coverage' fact records the states that were deliberately NOT given a real per-occupation list (NSW: unit-group codes only; SA: no document exists) and the TAS/VIC national-list fallback decision, so the gaps are as auditable as the data.",
+  "generated_on": "2026-09-22",
+  "facts": [
+    {
+      "id": "state_occ_act",
+      "description": "ACT occupation-match data: 20 rows explicitly '(491 Only)' in the source title -> subclass491 only; the other 259 rows are unmarked -> subclass190/491 = true/true, flagged act491DefaultInferred:true because the Phase 2a review of ACT Migration.pdf found this is an inference (the same list is described as 'ranked by visa subclass' across all four ACT pathway variants; 491 selected first), not a directly stated fact.",
+      "derivedFile": "src/data/state-occupation-lists/act.json",
+      "sourceDocument": "data/knowledge/State Immigrations/ACT/ACT Nominated Migration Program Occupation List.xlsx",
+      "rowCount": 279,
+      "generator": "scripts/generate-state-occupation-lists.ts",
+      "extractedOn": "2026-09-22",
+      "lastVerified": "2026-09-22",
+      "confidence": "high for the 20 (491 Only) rows (directly stated); inferred for the other 259 (see description)"
+    },
+    {
+      "id": "state_occ_nt",
+      "description": "NT occupation-match data, from the NT OFFSHORE Migration Occupation List specifically -- no separate NT onshore/subclass-190 occupation list document exists in data/knowledge, so every row is recorded subclass491 true, subclass190 false.",
+      "derivedFile": "src/data/state-occupation-lists/nt.json",
+      "sourceDocument": "data/knowledge/State Immigrations/NT/NT Offshore Migration Occupation List.xlsx",
+      "rowCount": 139,
+      "generator": "scripts/generate-state-occupation-lists.ts",
+      "extractedOn": "2026-09-22",
+      "lastVerified": "2026-09-22",
+      "confidence": "high -- directly stated per row"
+    },
+    {
+      "id": "state_occ_qld",
+      "description": "QLD occupation-match data, merged from Queensland's separate offshore and onshore skilled occupation lists by ANZSCO code (subclass190/491 = union of the two files' Yes flags for that code).",
+      "derivedFile": "src/data/state-occupation-lists/qld.json",
+      "sourceDocument": [
+        "data/knowledge/State Immigrations/Queensland/Queensland offshore skilled occupation list.xlsx",
+        "data/knowledge/State Immigrations/Queensland/Queensland onshore skilled occupation list.xlsx"
+      ],
+      "rowCount": 201,
+      "generator": "scripts/generate-state-occupation-lists.ts",
+      "extractedOn": "2026-09-22",
+      "lastVerified": "2026-09-22",
+      "confidence": "high -- directly stated per row per source list"
+    },
+    {
+      "id": "state_occ_wa",
+      "description": "WA occupation-match data, grouped by ANZSCO code from occupation-search.csv. CAVEAT: every one of the 329 source rows has Priority Occupation=Yes -- this file reads as a PRIORITY-OCCUPATIONS SEARCH EXPORT, not confirmed to be WA's complete WASMOL Schedule 1/2 + Graduate occupation lists (which may include non-priority occupations this export doesn't cover). A NOT_ON_LIST result for WA means 'not in this priority-occupations export', not 'confirmed excluded from WA's full occupation lists' -- needs human verification against the full WASMOL/GOL before that distinction can be dropped.",
+      "derivedFile": "src/data/state-occupation-lists/wa.json",
+      "sourceDocument": "data/knowledge/State Immigrations/Western Australia/occupation-search.csv",
+      "rowCount": 189,
+      "generator": "scripts/generate-state-occupation-lists.ts",
+      "extractedOn": "2026-09-22",
+      "lastVerified": "2026-09-22",
+      "confidence": "high for the 189 occupations it does cover; needs human verification -- unknown completeness relative to WA's full published occupation lists"
+    },
+    {
+      "id": "state_occ_nsw_unit_groups",
+      "description": "NSW's own lists give only 4-digit ANZSCO UNIT GROUP codes (e.g. 1212 'Crop Farmer'), not full 6-digit occupation codes -- a single unit group covers several distinct occupations, so this cannot support exact-occupation matching. Kept for future use only; matchOccupationToState returns UNIT_GROUP_ONLY for NSW using this file's unit-group-level presence, and deliberately never claims a MATCH or NOT_ON_LIST verdict at the occupation level.",
+      "derivedFile": "src/data/state-occupation-lists/nsw-unit-groups.json",
+      "sourceDocument": [
+        "data/knowledge/State Immigrations/NSW/NSW Skills List Skilled Nominated visa (subclass 190).xlsx",
+        "data/knowledge/State Immigrations/NSW/NSW Regional Skills List Skilled Work Regional visa (subclass 491).xlsx"
+      ],
+      "rowCount": 87,
+      "generator": "scripts/generate-state-occupation-lists.ts",
+      "extractedOn": "2026-09-22",
+      "lastVerified": "2026-09-22",
+      "confidence": "high at the unit-group level; occupation-level confirmation is out of scope by design, not a gap"
+    },
+    {
+      "id": "state_occ_sa",
+      "description": "No occupation-list document exists anywhere in data/knowledge/State Immigrations/SA (Phase 1 inventory finding, re-confirmed) -- every SA document only references 'the South Australian Skilled Occupation List' by name/link, never embeds it. No file was generated; matchOccupationToState('...', 'SA', ...) always returns NO_DATA.",
+      "derivedFile": null,
+      "sourceDocument": null,
+      "rowCount": 0,
+      "generator": null,
+      "extractedOn": "2026-09-22",
+      "lastVerified": "2026-09-22",
+      "confidence": "not applicable -- confirmed absence, not an extraction"
+    },
+    {
+      "id": "state_occ_tas_vic_national_fallback",
+      "description": "TAS and VIC don't publish their own occupation list -- both states' own documents say eligibility runs off 'the Home Affairs skilled occupation list' / 'the Australian Government's eligible skilled occupation list' directly (Phase 1 finding). matchOccupationToState returns NOT_APPLICABLE for these two and checks the NATIONAL list instead, via lib/readiness/occupation-eligibility.ts's getNationalVisaSubclasses(), which already existed and is already used elsewhere in the report (isOnSkilledOccupationList/getSkilledListMembership) -- reading public/skilled-occupation-list.json (690 rows, live/current) with a fallback to src/data/occupations.json's own per-code visa_subclasses for any code missing there. src/data/skilled-occupation-list.OLD.json (556 rows, generated 2026-07-18) was reviewed and found internally sound (well-formed 6-digit ANZSCO codes, plausible authority/list/subclass tagging spot-checked against known occupations) but STALE and SUPERSEDED by public/skilled-occupation-list.json, which has 134 more rows, multilingual titles, and is the file lib/readiness/occupation-eligibility.ts already reads in production -- so it was deliberately NOT promoted/renamed into src/data/. It has not been deleted (left exactly as-is, per instruction) and is unused by this feature.",
+      "derivedFile": null,
+      "sourceDocument": "public/skilled-occupation-list.json (690 rows) via lib/readiness/occupation-eligibility.ts's getNationalVisaSubclasses(), not a new file",
+      "rowCount": 690,
+      "generator": null,
+      "extractedOn": null,
+      "lastVerified": "2026-09-22",
+      "confidence": "reused an existing, already-live source rather than re-extracting -- see description"
+    }
+  ]
+}

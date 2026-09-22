@@ -4087,6 +4087,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       [text.stateCode, text.stateStatus, text.stateMatch, text.note],
       states.map((state) => {
         let note = state.requirements.slice(0, 2).join('; ') || state.summary;
+        // Additive occupation-list check (lib/state-nomination/occupation-match.ts) -- appended directly
+        // rather than folded into `requirements` above, so it is never lost to the slice(0, 2) truncation.
+        // Never affects status/score/matchLevel; absent entirely when the occupation couldn't be resolved.
+        if (state.occupationMatchNote) {
+          note += (note ? ' ' : '') + state.occupationMatchNote;
+        }
         // Only present when this state's data came from the live
         // StateIntelligence DB table (lib/state-intelligence.ts), not the
         // static JSON fallback -- see StateNominationState in

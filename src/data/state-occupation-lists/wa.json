@@ -1,0 +1,1333 @@
+{
+  "_provenance": {
+    "extractedOn": "2026-09-22",
+    "sourceFile": "data/knowledge/State Immigrations/Western Australia/occupation-search.csv",
+    "sourceFileRowCount": 189,
+    "method": "Grouped by ANZSCO code from occupation-search.csv (an occupation can have one row per WASMOL/Graduate stream it qualifies under); subclass190/491 is the union of v190/v491 across its rows. CAVEAT: every row in this source file has Priority Occupation=Yes -- this appears to be a PRIORITY-OCCUPATIONS SEARCH EXPORT, not confirmed to be WA's complete WASMOL Schedule 1/2 + Graduate occupation lists (which may include non-priority occupations this file doesn't cover). A NOT_ON_LIST result for WA means 'not in this priority-occupations export', not 'confirmed excluded from WA's full occupation lists'."
+  },
+  "occupations": [
+    {
+      "anzscoCode": "334112",
+      "occupationTitle": "Airconditioning and Mechanical Services Plumber",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "342111",
+      "occupationTitle": "Airconditioning and Refrigeration Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "232111",
+      "occupationTitle": "Architect",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312111",
+      "occupationTitle": "Architectural Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312199",
+      "occupationTitle": "Architectural, Building and Surveying Technicians nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "331111",
+      "occupationTitle": "Bricklayer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312999",
+      "occupationTitle": "Building and Engineering Technicians nec",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312113",
+      "occupationTitle": "Building Inspector",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "394111",
+      "occupationTitle": "Cabinetmaker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "342411",
+      "occupationTitle": "Cabler (Data and Telecommunications)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "331212",
+      "occupationTitle": "Carpenter",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "331211",
+      "occupationTitle": "Carpenter and Joiner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "233211",
+      "occupationTitle": "Civil Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312211",
+      "occupationTitle": "Civil Engineering Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312212",
+      "occupationTitle": "Civil Engineering Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312114",
+      "occupationTitle": "Construction Estimator",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "133111",
+      "occupationTitle": "Construction Project Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "334113",
+      "occupationTitle": "Drainer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "342211",
+      "occupationTitle": "Electrical Linesworker",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "341111",
+      "occupationTitle": "Electrician (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "341112",
+      "occupationTitle": "Electrician (Special Class)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "333211",
+      "occupationTitle": "Fibrous Plasterer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "332111",
+      "occupationTitle": "Floor Finisher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "334114",
+      "occupationTitle": "Gasfitter",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "333111",
+      "occupationTitle": "Glazier",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "331213",
+      "occupationTitle": "Joiner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "232112",
+      "occupationTitle": "Landscape Architect",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "362213",
+      "occupationTitle": "Landscape Gardener",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "341113",
+      "occupationTitle": "Lift Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312911",
+      "occupationTitle": "Maintenance Planner",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "332211",
+      "occupationTitle": "Painting Trades Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "334111",
+      "occupationTitle": "Plumber (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "133112",
+      "occupationTitle": "Project Builder",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "233213",
+      "occupationTitle": "Quantity Surveyor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "334115",
+      "occupationTitle": "Roof Plumber",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "333311",
+      "occupationTitle": "Roof Tiler",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "333212",
+      "occupationTitle": "Solid Plasterer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "331112",
+      "occupationTitle": "Stonemason",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "233214",
+      "occupationTitle": "Structural Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "312116",
+      "occupationTitle": "Surveying or Spatial Science Technician",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "232212",
+      "occupationTitle": "Surveyor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "342212",
+      "occupationTitle": "Technical Cable Jointer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "232611",
+      "occupationTitle": "Urban and Regional Planner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "333411",
+      "occupationTitle": "Wall and Floor Tiler",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "134111",
+      "occupationTitle": "Child Care Centre Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "241111",
+      "occupationTitle": "Early Childhood (Pre-primary School) Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272312",
+      "occupationTitle": "Educational Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "241311",
+      "occupationTitle": "Middle School Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "241213",
+      "occupationTitle": "Primary School Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "134311",
+      "occupationTitle": "School Principal",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "241411",
+      "occupationTitle": "Secondary School Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "241599",
+      "occupationTitle": "Special Education Teachers nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "241511",
+      "occupationTitle": "Special Needs Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272115",
+      "occupationTitle": "Student Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "249311",
+      "occupationTitle": "Teacher of English to Speakers of Other Languages",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "241512",
+      "occupationTitle": "Teacher of the Hearing Impaired",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "241513",
+      "occupationTitle": "Teacher of the Sight Impaired",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "242111",
+      "occupationTitle": "University Lecturer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "242211",
+      "occupationTitle": "Vocational Education Teacher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252211",
+      "occupationTitle": "Acupuncturist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411111",
+      "occupationTitle": "Ambulance Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "311211",
+      "occupationTitle": "Anaesthetic Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253211",
+      "occupationTitle": "Anaesthetist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252711",
+      "occupationTitle": "Audiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "311212",
+      "occupationTitle": "Cardiac Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253312",
+      "occupationTitle": "Cardiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253512",
+      "occupationTitle": "Cardiothoracic Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272111",
+      "occupationTitle": "Careers Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252111",
+      "occupationTitle": "Chiropractor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253313",
+      "occupationTitle": "Clinical Haematologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272311",
+      "occupationTitle": "Clinical Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272611",
+      "occupationTitle": "Community Arts Worker",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411711",
+      "occupationTitle": "Community Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252299",
+      "occupationTitle": "Complementary Health Therapists nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272199",
+      "occupationTitle": "Counsellors nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411211",
+      "occupationTitle": "Dental Hygienist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252311",
+      "occupationTitle": "Dental Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411213",
+      "occupationTitle": "Dental Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411214",
+      "occupationTitle": "Dental Therapist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252312",
+      "occupationTitle": "Dentist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253911",
+      "occupationTitle": "Dermatologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253917",
+      "occupationTitle": "Diagnostic and Interventional Radiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251111",
+      "occupationTitle": "Dietitian",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411712",
+      "occupationTitle": "Disabilities Services Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272112",
+      "occupationTitle": "Drug and Alcohol Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253912",
+      "occupationTitle": "Emergency Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253315",
+      "occupationTitle": "Endocrinologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411411",
+      "occupationTitle": "Enrolled Nurse",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "234915",
+      "occupationTitle": "Exercise Physiologist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272113",
+      "occupationTitle": "Family and Marriage Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411713",
+      "occupationTitle": "Family Support Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253316",
+      "occupationTitle": "Gastroenterologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253111",
+      "occupationTitle": "General Practitioner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "134299",
+      "occupationTitle": "Health and Welfare Services Managers nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251999",
+      "occupationTitle": "Health Diagnostic and Promotion Professionals nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251911",
+      "occupationTitle": "Health Promotion Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251511",
+      "occupationTitle": "Hospital Pharmacist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251512",
+      "occupationTitle": "Industrial Pharmacist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411112",
+      "occupationTitle": "Intensive Care Ambulance Paramedic",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253317",
+      "occupationTitle": "Intensive Care Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "134211",
+      "occupationTitle": "Medical Administrator",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251211",
+      "occupationTitle": "Medical Diagnostic Radiographer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "234611",
+      "occupationTitle": "Medical Laboratory Scientist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "311213",
+      "occupationTitle": "Medical Laboratory Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253314",
+      "occupationTitle": "Medical Oncologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253999",
+      "occupationTitle": "Medical Practitioners nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251212",
+      "occupationTitle": "Medical Radiation Therapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "311299",
+      "occupationTitle": "Medical Technicians nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254111",
+      "occupationTitle": "Midwife",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252213",
+      "occupationTitle": "Naturopath",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253318",
+      "occupationTitle": "Neurologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253513",
+      "occupationTitle": "Neurosurgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251213",
+      "occupationTitle": "Nuclear Medicine Technologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254212",
+      "occupationTitle": "Nurse Researcher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "134212",
+      "occupationTitle": "Nursing Clinical Director",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251112",
+      "occupationTitle": "Nutritionist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253913",
+      "occupationTitle": "Obstetrician and Gynaecologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252411",
+      "occupationTitle": "Occupational Therapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "311214",
+      "occupationTitle": "Operating Theatre Technician",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253914",
+      "occupationTitle": "Ophthalmologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251411",
+      "occupationTitle": "Optometrist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272313",
+      "occupationTitle": "Organisational Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253514",
+      "occupationTitle": "Orthopaedic Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251412",
+      "occupationTitle": "Orthoptist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251912",
+      "occupationTitle": "Orthotist or Prosthetist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252112",
+      "occupationTitle": "Osteopath",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253515",
+      "occupationTitle": "Otorhinolaryngologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253516",
+      "occupationTitle": "Paediatric Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253321",
+      "occupationTitle": "Paediatrician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253915",
+      "occupationTitle": "Pathologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "311216",
+      "occupationTitle": "Pathology Collector",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "311215",
+      "occupationTitle": "Pharmacy Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252511",
+      "occupationTitle": "Physiotherapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253517",
+      "occupationTitle": "Plastic and Reconstructive Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252611",
+      "occupationTitle": "Podiatrist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "134213",
+      "occupationTitle": "Primary Health Organisation Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253411",
+      "occupationTitle": "Psychiatrist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272399",
+      "occupationTitle": "Psychologists nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272314",
+      "occupationTitle": "Psychotherapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253918",
+      "occupationTitle": "Radiation Oncologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272612",
+      "occupationTitle": "Recreation Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254412",
+      "occupationTitle": "Registered Nurse (Aged Care)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254413",
+      "occupationTitle": "Registered Nurse (Child and Family Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254414",
+      "occupationTitle": "Registered Nurse (Community Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254415",
+      "occupationTitle": "Registered Nurse (Critical Care and Emergency)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254416",
+      "occupationTitle": "Registered Nurse (Developmental Disability)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254417",
+      "occupationTitle": "Registered Nurse (Disability and Rehabilitation)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254421",
+      "occupationTitle": "Registered Nurse (Medical Practice)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254418",
+      "occupationTitle": "Registered Nurse (Medical)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254422",
+      "occupationTitle": "Registered Nurse (Mental Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254425",
+      "occupationTitle": "Registered Nurse (Paediatrics)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254423",
+      "occupationTitle": "Registered Nurse (Perioperative)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254424",
+      "occupationTitle": "Registered Nurse (Surgical)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254499",
+      "occupationTitle": "Registered Nurses nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272114",
+      "occupationTitle": "Rehabilitation Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253322",
+      "occupationTitle": "Renal Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253112",
+      "occupationTitle": "Resident Medical Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411715",
+      "occupationTitle": "Residential Care Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251513",
+      "occupationTitle": "Retail Pharmacist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253323",
+      "occupationTitle": "Rheumatologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272499",
+      "occupationTitle": "Social Professionals nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272511",
+      "occupationTitle": "Social Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "251214",
+      "occupationTitle": "Sonographer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253311",
+      "occupationTitle": "Specialist Physician (General Medicine)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253399",
+      "occupationTitle": "Specialist Physicians nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252712",
+      "occupationTitle": "Speech Pathologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253511",
+      "occupationTitle": "Surgeon (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253324",
+      "occupationTitle": "Thoracic Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "252214",
+      "occupationTitle": "Traditional Chinese Medicine Practitioner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253518",
+      "occupationTitle": "Urologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "253521",
+      "occupationTitle": "Vascular Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "134214",
+      "occupationTitle": "Welfare Centre Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "272613",
+      "occupationTitle": "Welfare Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "411716",
+      "occupationTitle": "Youth Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "599915",
+      "occupationTitle": "Clinical Coder",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254211",
+      "occupationTitle": "Nurse Educator",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254311",
+      "occupationTitle": "Nurse Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "254411",
+      "occupationTitle": "Nurse Practitioner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "234914",
+      "occupationTitle": "Physicist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 1); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "141999",
+      "occupationTitle": "Accommodation and Hospitality Managers nec",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "351111",
+      "occupationTitle": "Baker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "141111",
+      "occupationTitle": "Cafe or Restaurant Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "141211",
+      "occupationTitle": "Caravan Park and Camping Ground Manager",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "WA priority occupation (Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "351311",
+      "occupationTitle": "Chef",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "149311",
+      "occupationTitle": "Conference and Event Organiser",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "351411",
+      "occupationTitle": "Cook",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "141311",
+      "occupationTitle": "Hotel or Motel Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "351112",
+      "occupationTitle": "Pastrycook",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    },
+    {
+      "anzscoCode": "131112",
+      "occupationTitle": "Sales and Marketing Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "WA priority occupation (General - WASMOL Schedule 2, Graduate); minimum points 65. Source list only covers priority occupations, not WA's full WASMOL/GOL lists."
+    }
+  ]
+}

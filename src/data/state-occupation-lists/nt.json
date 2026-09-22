@@ -1,0 +1,896 @@
+{
+  "_provenance": {
+    "extractedOn": "2026-09-22",
+    "sourceFile": "data/knowledge/State Immigrations/NT/NT Offshore Migration Occupation List.xlsx",
+    "sourceFileRowCount": 139,
+    "method": "This is titled the NT OFFSHORE Migration Occupation List; no separate NT onshore/subclass-190 occupation list document exists in data/knowledge. Every row is recorded as subclass491 true, subclass190 false."
+  },
+  "occupations": [
+    {
+      "anzscoCode": "233911",
+      "occupationTitle": "Aeronautical Engineer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "141999",
+      "occupationTitle": "Accommodation and Hospitality Managers nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "231111",
+      "occupationTitle": "Aeroplane Pilot",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "334112",
+      "occupationTitle": "Airconditioning and Mechanical Services Plumber",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "342111",
+      "occupationTitle": "Airconditioning and Refrigeration Mechanic",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "323111",
+      "occupationTitle": "Aircraft Maintenance Engineer (Avionics)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "323112",
+      "occupationTitle": "Aircraft Maintenance Engineer (Mechanical)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "121111",
+      "occupationTitle": "Aquaculture Farmer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "351111",
+      "occupationTitle": "Baker",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "121312",
+      "occupationTitle": "Beef Cattle Farmer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "331111",
+      "occupationTitle": "Bricklayer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "312999",
+      "occupationTitle": "Building and Engineering Technicians nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "342311",
+      "occupationTitle": "Business Machine Mechanic",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "141111",
+      "occupationTitle": "Cafe or Restaurant Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "331212",
+      "occupationTitle": "Carpenter",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "331211",
+      "occupationTitle": "Carpenter and Joiner",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "351311",
+      "occupationTitle": "Chef",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "134111",
+      "occupationTitle": "Child Care Centre Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "252111",
+      "occupationTitle": "Chiropractor",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "272311",
+      "occupationTitle": "Clinical Psychologist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "411711",
+      "occupationTitle": "Community Worker",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "312114",
+      "occupationTitle": "Construction Estimator",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "351411",
+      "occupationTitle": "Cook",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "272199",
+      "occupationTitle": "Counsellors nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "411214",
+      "occupationTitle": "Dental Therapist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "252312",
+      "occupationTitle": "Dentist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "253917",
+      "occupationTitle": "Diagnostic and Interventional Radiologist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "321212",
+      "occupationTitle": "Diesel Motor Mechanic",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "251111",
+      "occupationTitle": "Dietitian",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "411712",
+      "occupationTitle": "Disabilities Services Officer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "272112",
+      "occupationTitle": "Drug and Alcohol Counsellor",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "241111",
+      "occupationTitle": "Early Childhood (Pre-primary School) Teacher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "134499",
+      "occupationTitle": "Education Managers nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "272312",
+      "occupationTitle": "Educational Psychologist",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "341111",
+      "occupationTitle": "Electrician (General)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "341112",
+      "occupationTitle": "Electrician (Special Class)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "342313",
+      "occupationTitle": "Electronic Equipment Trades Worker",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "253912",
+      "occupationTitle": "Emergency Medicine Specialist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "133211",
+      "occupationTitle": "Engineering Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "411411",
+      "occupationTitle": "Enrolled Nurse",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "234915",
+      "occupationTitle": "Exercise Physiologist",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "411713",
+      "occupationTitle": "Family Support Worker",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "323211",
+      "occupationTitle": "Fitter (General)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "323212",
+      "occupationTitle": "Fitter and Turner",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "323213",
+      "occupationTitle": "Fitter-Welder",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "332111",
+      "occupationTitle": "Floor Finisher",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "362211",
+      "occupationTitle": "Gardener (General)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "253111",
+      "occupationTitle": "General Practitioner",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "234411",
+      "occupationTitle": "Geologist",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "233212",
+      "occupationTitle": "Geotechnical Engineer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "333111",
+      "occupationTitle": "Glazier",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "391111",
+      "occupationTitle": "Hairdresser",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "134299",
+      "occupationTitle": "Health and Welfare Services Managers nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "251999",
+      "occupationTitle": "Health Diagnostic and Promotion Professionals nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "251911",
+      "occupationTitle": "Health Promotion Officer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "231114",
+      "occupationTitle": "Helicopter Pilot",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "141311",
+      "occupationTitle": "Hotel or Motel Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "233511",
+      "occupationTitle": "Industrial Engineer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "271299",
+      "occupationTitle": "Judicial and Other Legal Professionals nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "232112",
+      "occupationTitle": "Landscape Architect",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "362213",
+      "occupationTitle": "Landscape Gardener",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "312511",
+      "occupationTitle": "Mechanical Engineering Draftsperson",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "312512",
+      "occupationTitle": "Mechanical Engineering Technician",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "134211",
+      "occupationTitle": "Medical Administrator / Medical Superintendent",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "251211",
+      "occupationTitle": "Medical Diagnostic Radiographer",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "234611",
+      "occupationTitle": "Medical Laboratory Scientist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "253999",
+      "occupationTitle": "Medical Practitioners nec",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "322311",
+      "occupationTitle": "Metal Fabricator",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "241311",
+      "occupationTitle": "Middle School Teacher / Intermediate School Teacher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254111",
+      "occupationTitle": "Midwife",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "233611",
+      "occupationTitle": "Mining Engineer (excluding Petroleum)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "321211",
+      "occupationTitle": "Motor Mechanic (General)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "321213",
+      "occupationTitle": "Motorcycle Mechanic",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "263112",
+      "occupationTitle": "Network Administrator",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "254211",
+      "occupationTitle": "Nurse Educator",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254311",
+      "occupationTitle": "Nurse Manager",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254411",
+      "occupationTitle": "Nurse Practitioner",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254212",
+      "occupationTitle": "Nurse Researcher",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "134212",
+      "occupationTitle": "Nursing Clinical Director",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "251312",
+      "occupationTitle": "Occupational Health and Safety Adviser",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "252411",
+      "occupationTitle": "Occupational Therapist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "251411",
+      "occupationTitle": "Optometrist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "253514",
+      "occupationTitle": "Orthopaedic Surgeon",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "253321",
+      "occupationTitle": "Paediatrician",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "324111",
+      "occupationTitle": "Panelbeater",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "351112",
+      "occupationTitle": "Pastrycook",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "253915",
+      "occupationTitle": "Pathologist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "252511",
+      "occupationTitle": "Physiotherapist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "334111",
+      "occupationTitle": "Plumber (General)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "252611",
+      "occupationTitle": "Podiatrist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "224412",
+      "occupationTitle": "Policy Analyst",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "132411",
+      "occupationTitle": "Policy and Planning Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "399213",
+      "occupationTitle": "Power Generation Plant Operator",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "241213",
+      "occupationTitle": "Primary School Teacher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "133513",
+      "occupationTitle": "Production Manager (Mining)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "133112",
+      "occupationTitle": "Project Builder",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "612112",
+      "occupationTitle": "Property Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "253411",
+      "occupationTitle": "Psychiatrist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "272399",
+      "occupationTitle": "Psychologists nec",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254412",
+      "occupationTitle": "Registered Nurse (Aged Care)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254413",
+      "occupationTitle": "Registered Nurse (Child and Family Health)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254414",
+      "occupationTitle": "Registered Nurse (Community Health)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254415",
+      "occupationTitle": "Registered Nurse (Critical Care and Emergency)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254416",
+      "occupationTitle": "Registered Nurse (Developmental Disability)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254417",
+      "occupationTitle": "Registered Nurse (Disability and Rehabilitation)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254421",
+      "occupationTitle": "Registered Nurse (Medical Practice)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254418",
+      "occupationTitle": "Registered Nurse (Medical)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254422",
+      "occupationTitle": "Registered Nurse (Mental Health)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254425",
+      "occupationTitle": "Registered Nurse (Paediatrics)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254423",
+      "occupationTitle": "Registered Nurse (Perioperative)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254424",
+      "occupationTitle": "Registered Nurse (Surgical)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "254499",
+      "occupationTitle": "Registered Nurses nec",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "253112",
+      "occupationTitle": "Resident Medical Officer",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "411715",
+      "occupationTitle": "Residential Care Officer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "333311",
+      "occupationTitle": "Roof Tiler",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "134311",
+      "occupationTitle": "School Principal",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "241411",
+      "occupationTitle": "Secondary School Teacher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "231213",
+      "occupationTitle": "Ship's Master",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "321214",
+      "occupationTitle": "Small Engine Mechanic",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "272499",
+      "occupationTitle": "Social Professionals nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "272511",
+      "occupationTitle": "Social Worker",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "271311",
+      "occupationTitle": "Solicitor",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "251214",
+      "occupationTitle": "Sonographer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "241599",
+      "occupationTitle": "Special Education Teachers nec",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "241511",
+      "occupationTitle": "Special Needs Teacher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "139999",
+      "occupationTitle": "Specialist Managers nec",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "253311",
+      "occupationTitle": "Specialist Physician (General Medicine)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "Must provide evidence of Australian licence/registration or a statement outlining eligibility to obtain registration of licence to work in Australia"
+    },
+    {
+      "anzscoCode": "252712",
+      "occupationTitle": "Speech Pathologist / Speech Language Therapist",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "233214",
+      "occupationTitle": "Structural Engineer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "272115",
+      "occupationTitle": "Student Counsellor",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "133611",
+      "occupationTitle": "Supply and Distribution Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "312116",
+      "occupationTitle": "Surveying or Spatial Science Technician",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "232212",
+      "occupationTitle": "Surveyor",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "121221",
+      "occupationTitle": "Vegetable Grower",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "333411",
+      "occupationTitle": "Wall and Floor Tiler",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "322313",
+      "occupationTitle": "Welder (First Class)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "134214",
+      "occupationTitle": "Welfare Centre Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "272613",
+      "occupationTitle": "Welfare Worker",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "411716",
+      "occupationTitle": "Youth Worker",
+      "subclass190": false,
+      "subclass491": true
+    }
+  ]
+}

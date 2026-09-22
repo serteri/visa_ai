@@ -636,6 +636,14 @@ export type StateNominationState = {
   /** ISO 8601 string, not a Date -- ReadinessReport round-trips through
    *  JSON (stored as report_json), which doesn't preserve Date instances. */
   lastVerifiedAt?: string;
+  /**
+   * One additive line reporting what lib/state-nomination/occupation-match.ts found for this applicant's
+   * occupation against this state's own occupation-list data (or, for TAS/VIC, the national list; for NSW,
+   * only unit-group level; for SA, that no list data exists at all). Undefined when the applicant's
+   * occupation couldn't be resolved to an ANZSCO code at all -- never fabricated. Does not affect `score`,
+   * `status` or `matchLevel` -- see lib/readiness/state-nomination.ts's calculateStateNominationTracker.
+   */
+  occupationMatchNote?: string;
 };
 
 export type StateNominationTracker = {

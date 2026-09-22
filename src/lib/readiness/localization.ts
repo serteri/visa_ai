@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/readiness/types";
+import type { OccupationMatchResult } from "@/lib/state-nomination/occupation-match";
 
 const textMap: Record<string, { tr?: string; zh?: string }> = {
   "Identity": { tr: "Kimlik", zh: "身份" },
@@ -463,4 +464,118 @@ export function hardGateDefinition(locale: Locale): string {
     return "强制性门槛（Hard Gate）是指年龄上限、薪资底线、最低分数或工作年限等具有约束力的资格规则——一旦被突破，无论其他信号多么有利，该路径都将被判定为不符合资格。";
   }
   return "A Hard Gate is a binding eligibility rule -- an age cap, salary floor, points minimum, or tenure requirement -- that, if breached, makes a pathway ineligible regardless of any other favorable signal.";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Occupation <-> state occupation-list match line (see lib/state-nomination/
+// occupation-match.ts). One combined sentence per state, built from that
+// state's result for each subclass it actually offers (usually 1 or 2).
+// ─────────────────────────────────────────────────────────────────────────────
+
+function joinSubclasses(locale: Locale, subclasses: readonly string[]): string {
+  const labelled = subclasses.map((s) => `${s}`);
+  if (labelled.length === 1) return labelled[0];
+  const and = locale === "tr" ? "ve" : locale === "zh-Hans" ? "和" : "and";
+  const sep = locale === "zh-Hans" ? "" : " ";
+  return `${labelled[0]}${sep}${and}${sep}${labelled[1]}`;
+}
+
+const STATE_NAME_FOR_OCCUPATION_NOTE: Record<string, { en: string; tr: string; zh: string }> = {
+  ACT: { en: "the ACT", tr: "ACT'nin", zh: "ACT" },
+  NT: { en: "the Northern Territory", tr: "Kuzey Topraklari'nin", zh: "北领地" },
+  QLD: { en: "Queensland", tr: "Queensland'in", zh: "昆士兰州" },
+  WA: { en: "Western Australia", tr: "Bati Avustralya'nin", zh: "西澳大利亚州" },
+  NSW: { en: "New South Wales", tr: "Yeni Guney Galler'in", zh: "新南威尔士州" },
+  SA: { en: "South Australia", tr: "Guney Avustralya'nin", zh: "南澳大利亚州" },
+  TAS: { en: "Tasmania", tr: "Tazmanya'nin", zh: "塔斯马尼亚州" },
+  VIC: { en: "Victoria", tr: "Victoria'nin", zh: "维多利亚州" },
+};
+
+/**
+ * One combined line for a single state, from that state's per-subclass matchOccupationToState() results
+ * (1 or 2 elements -- whichever subclasses that state actually offers). Never claims a MATCH or
+ * NOT_ON_LIST verdict the underlying data doesn't support -- see occupation-match.ts's own doc comment.
+ */
+export function occupationMatchLine(locale: Locale, results: readonly OccupationMatchResult[]): string {
+  if (results.length === 0) return "";
+  const stateCode = results[0].stateCode;
+  const stateName = STATE_NAME_FOR_OCCUPATION_NOTE[stateCode]?.[locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh" : "en"] ?? stateCode;
+  const first = results[0];
+
+  if (first.type === "NO_DATA") {
+    if (locale === "tr") return `Meslek listesi kontrolu: ${stateName} resmi meslek listesi elimizde yok -- uygunlugunuzu dogrulamak icin eyaletin kendi sitesini kontrol edin.`;
+    if (locale === "zh-Hans") return `职业清单核查：我们没有${stateName}的官方职业清单——请直接查看该州官网以确认您的职业是否符合资格。`;
+    return `Occupation list check: we don't have ${stateName}'s official occupation list -- check the state's own site to confirm your occupation's eligibility.`;
+  }
+
+  if (first.type === "UNIT_GROUP_ONLY") {
+    const groups = results.filter((r) => r.unitGroupName);
+    const onAny = results.some((r) => r.onUnitGroupList);
+    const onSubclasses = results.filter((r) => r.onUnitGroupList).map((r) => r.subclass);
+    const groupName = groups[0]?.unitGroupName;
+    const groupCode = first.unitGroupCode;
+    if (!groupName) {
+      if (locale === "tr") return `Meslek listesi kontrolu: ${stateName} listesi yalnizca 4 haneli ANZSCO alt grup kodlari iceriyor (${groupCode} bulunamadi) -- meslek duzeyinde teyit mevcut degil; dogrudan eyalet sitesini kontrol edin.`;
+      if (locale === "zh-Hans") return `职业清单核查：${stateName}的清单仅包含4位ANZSCO单元组代码（未找到 ${groupCode}）——无法提供职业级别的确认，请直接查看该州官网。`;
+      return `Occupation list check: ${stateName}'s list only records 4-digit ANZSCO unit group codes (${groupCode} not found there) -- occupation-level confirmation isn't available; check the state's own site directly.`;
+    }
+    if (locale === "tr") {
+      return `Meslek listesi kontrolu: ${stateName} listesi yalnizca ANZSCO alt grubu ${groupCode} (${groupName}) duzeyinde kayit tutuyor${onAny ? ` -- bu alt grup ${joinSubclasses(locale, onSubclasses)} icin listede` : " -- bu alt grup listede degil"}; meslek duzeyinde teyit mevcut degil, dogrudan eyalet sitesini kontrol edin.`;
+    }
+    if (locale === "zh-Hans") {
+      return `职业清单核查：${stateName}的清单仅在ANZSCO单元组 ${groupCode}（${groupName}）层面记录${onAny ? `——该单元组在${joinSubclasses(locale, onSubclasses)}类别清单中` : "——该单元组不在清单中"}；无法提供职业级别的确认，请直接查看该州官网。`;
+    }
+    return `Occupation list check: ${stateName}'s list only records ANZSCO unit group ${groupCode} (${groupName})${onAny ? ` -- that unit group is on the list for subclass ${joinSubclasses(locale, onSubclasses)}` : " -- that unit group is not on the list"}; occupation-level confirmation isn't available, check the state's own site directly.`;
+  }
+
+  if (first.type === "NOT_APPLICABLE") {
+    const onSubclasses = results.filter((r) => r.onNationalList).map((r) => r.subclass);
+    const offSubclasses = results.filter((r) => !r.onNationalList).map((r) => r.subclass);
+    if (locale === "tr") {
+      const parts: string[] = [];
+      if (onSubclasses.length) parts.push(`ulusal beceri listesinde ${joinSubclasses(locale, onSubclasses)} icin yer aliyor`);
+      if (offSubclasses.length) parts.push(`${joinSubclasses(locale, offSubclasses)} icin ulusal beceri listesinde degil`);
+      return `Meslek listesi kontrolu: ${stateName} kendi meslek listesini yayimlamiyor; adaylik Avustralya Hukumeti'nin ulusal beceri listesine gore degerlendiriliyor -- mesleginiz ${parts.join("; ")}.`;
+    }
+    if (locale === "zh-Hans") {
+      const parts: string[] = [];
+      if (onSubclasses.length) parts.push(`在全国技能清单中已列入${joinSubclasses(locale, onSubclasses)}类别`);
+      if (offSubclasses.length) parts.push(`未列入${joinSubclasses(locale, offSubclasses)}类别的全国技能清单`);
+      return `职业清单核查：${stateName}不发布自己的职业清单；提名资格依据澳大利亚政府的全国技能清单评估——您的职业${parts.join("；")}。`;
+    }
+    const parts: string[] = [];
+    if (onSubclasses.length) parts.push(`is on the national skilled list for subclass ${joinSubclasses(locale, onSubclasses)}`);
+    if (offSubclasses.length) parts.push(`is not on the national skilled list for subclass ${joinSubclasses(locale, offSubclasses)}`);
+    return `Occupation list check: ${stateName} doesn't publish its own occupation list; nomination eligibility runs off the Australian Government's national skilled occupation list instead -- your occupation ${parts.join("; ")}.`;
+  }
+
+  // MATCH / NOT_ON_LIST family (ACT, NT, QLD, WA) -- per-subclass, since an occupation can be on the list
+  // for one subclass and not the other.
+  const onSubclasses = results.filter((r) => r.type === "MATCH").map((r) => r.subclass);
+  const offSubclasses = results.filter((r) => r.type === "NOT_ON_LIST").map((r) => r.subclass);
+  const anyInferred = results.some((r) => r.type === "MATCH" && r.inferred);
+  const inferredCaveat = anyInferred
+    ? locale === "tr"
+      ? " (Bu meslek kaynak belgede isaretlenmemis; her iki vize alt sinifina da uygulandigi, ACT'nin programin siralama sekliyle aciklanmasindan cikarilmistir, dogrudan belirtilmemistir.)"
+      : locale === "zh-Hans"
+        ? "（该职业在原始文件中未特别标注；其同时适用于两个签证类别是根据ACT项目排序方式推断得出，并非文件直接说明。）"
+        : " (This occupation is unmarked in the source document; that it applies to both subclasses is inferred from how the ACT program's ranking is described, not stated directly.)"
+    : "";
+
+  if (locale === "tr") {
+    const parts: string[] = [];
+    if (onSubclasses.length) parts.push(`${joinSubclasses(locale, onSubclasses)} icin listede`);
+    if (offSubclasses.length) parts.push(`${joinSubclasses(locale, offSubclasses)} icin listede degil (kontrol edildi)`);
+    return `Meslek listesi kontrolu: mesleginiz ${stateName} listesinde ${parts.join(", ")}.${inferredCaveat}`;
+  }
+  if (locale === "zh-Hans") {
+    const parts: string[] = [];
+    if (onSubclasses.length) parts.push(`在${joinSubclasses(locale, onSubclasses)}类别清单中`);
+    if (offSubclasses.length) parts.push(`不在${joinSubclasses(locale, offSubclasses)}类别清单中（已核查）`);
+    return `职业清单核查：您的职业${parts.map((p) => `${p}（${stateName}）`).join("，")}。${inferredCaveat}`;
+  }
+  const parts: string[] = [];
+  if (onSubclasses.length) parts.push(`on ${stateName}'s list for subclass ${joinSubclasses(locale, onSubclasses)}`);
+  if (offSubclasses.length) parts.push(`checked, not on ${stateName}'s list for subclass ${joinSubclasses(locale, offSubclasses)}`);
+  return `Occupation list check: your occupation is ${parts.join("; ")}.${inferredCaveat}`;
 }

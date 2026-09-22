@@ -1,0 +1,1943 @@
+{
+  "_provenance": {
+    "extractedOn": "2026-09-22",
+    "sourceFile": "data/knowledge/State Immigrations/ACT/ACT Nominated Migration Program Occupation List.xlsx",
+    "sourceFileRowCount": 279,
+    "method": "20 occupations carry a literal '(491 Only)' suffix in the source title -> subclass491 true, subclass190 false. The remaining rows are unmarked in the source; subclass190/491 = true/true is an INFERENCE (act491DefaultInferred:true), not a directly stated fact -- see the Phase 2a review of ACT Migration.pdf, which describes the same list being ranked by visa subclass across all four ACT pathway variants but never states unmarked occupations apply to both subclasses."
+  },
+  "occupations": [
+    {
+      "anzscoCode": "133111",
+      "occupationTitle": "Construction Project Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "133112",
+      "occupationTitle": "Project Builder",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "133211",
+      "occupationTitle": "Engineering Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "133611",
+      "occupationTitle": "Supply And Distribution Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "133612",
+      "occupationTitle": "Procurement Manager",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "134111",
+      "occupationTitle": "Child Care Centre Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "134211",
+      "occupationTitle": "Medical Administrator",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "134212",
+      "occupationTitle": "Nursing Clinical Director",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "134213",
+      "occupationTitle": "Primary Health Organisation Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "134214",
+      "occupationTitle": "Welfare Centre Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "134299",
+      "occupationTitle": "Health And Welfare Services Managers (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "135112",
+      "occupationTitle": "Ict Project Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "135199",
+      "occupationTitle": "Ict Managers (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "139911",
+      "occupationTitle": "Arts Administrator Or Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "139912",
+      "occupationTitle": "Environmental Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "139913",
+      "occupationTitle": "Laboratory Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "139914",
+      "occupationTitle": "Quality Assurance Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "139915",
+      "occupationTitle": "Sports Administrator",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "139999",
+      "occupationTitle": "Specialist Managers (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "141111",
+      "occupationTitle": "Cafe Or Restaurant Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "141311",
+      "occupationTitle": "Hotel Or Motel Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "221111",
+      "occupationTitle": "Accountant (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "221112",
+      "occupationTitle": "Management Accountant",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "221113",
+      "occupationTitle": "Taxation Accountant",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "221211",
+      "occupationTitle": "Company Secretary",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "221213",
+      "occupationTitle": "External Auditor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "221214",
+      "occupationTitle": "Internal Auditor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "224213",
+      "occupationTitle": "Health Information Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "232111",
+      "occupationTitle": "Architect",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "232112",
+      "occupationTitle": "Landscape Architect",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "232212",
+      "occupationTitle": "Surveyor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "232611",
+      "occupationTitle": "Urban And Regional Planner",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233211",
+      "occupationTitle": "Civil Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233212",
+      "occupationTitle": "Geotechnical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233213",
+      "occupationTitle": "Quantity Surveyor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233214",
+      "occupationTitle": "Structural Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233215",
+      "occupationTitle": "Transport Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233311",
+      "occupationTitle": "Electrical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233411",
+      "occupationTitle": "Electronics Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233511",
+      "occupationTitle": "Industrial Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233512",
+      "occupationTitle": "Mechanical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233513",
+      "occupationTitle": "Production Or Plant Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233911",
+      "occupationTitle": "Aeronautical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233912",
+      "occupationTitle": "Agricultural Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233913",
+      "occupationTitle": "Biomedical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233914",
+      "occupationTitle": "Engineering Technologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233915",
+      "occupationTitle": "Environmental Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233916",
+      "occupationTitle": "Naval Architect",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "233999",
+      "occupationTitle": "Engineering Professionals (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234311",
+      "occupationTitle": "Conservation Officer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "234312",
+      "occupationTitle": "Environmental Consultant",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234313",
+      "occupationTitle": "Environmental Research Scientist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234399",
+      "occupationTitle": "Environmental Scientist (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234511",
+      "occupationTitle": "Life Scientist (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234599",
+      "occupationTitle": "Life Scientists (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234611",
+      "occupationTitle": "Medical Laboratory Scientist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234711",
+      "occupationTitle": "Veterinarian",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234914",
+      "occupationTitle": "Physicist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "234999",
+      "occupationTitle": "Natural And Physical Science Professionals (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "241111",
+      "occupationTitle": "Early Childhood (Pre-primary School) Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "241213",
+      "occupationTitle": "Primary School Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "241311",
+      "occupationTitle": "Middle School Teacher (Aus) / Intermediate School Teacher (Nz)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "241411",
+      "occupationTitle": "Secondary School Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "242211",
+      "occupationTitle": "Vocational Education Teacher",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "241511",
+      "occupationTitle": "Special Needs Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "241512",
+      "occupationTitle": "Teacher Of The Hearing Impaired",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "241513",
+      "occupationTitle": "Teacher Of The Sight Impaired",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "241599",
+      "occupationTitle": "Special Education Teachers (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251111",
+      "occupationTitle": "Dietitian",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251112",
+      "occupationTitle": "Nutritionist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251211",
+      "occupationTitle": "Medical Diagnostic Radiographer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251212",
+      "occupationTitle": "Medical Radiation Therapist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251213",
+      "occupationTitle": "Nuclear Medicine Technologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251214",
+      "occupationTitle": "Sonographer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251311",
+      "occupationTitle": "Environmental Health Officer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "251312",
+      "occupationTitle": "Occupational Health And Safety Adviser",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251411",
+      "occupationTitle": "Optometrist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251412",
+      "occupationTitle": "Orthoptist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251511",
+      "occupationTitle": "Hospital Pharmacist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251512",
+      "occupationTitle": "Industrial Pharmacist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251513",
+      "occupationTitle": "Retail Pharmacist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251911",
+      "occupationTitle": "Health Promotion Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251912",
+      "occupationTitle": "Orthotist Or Prosthetist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "251999",
+      "occupationTitle": "Health Diagnostic And Promotion Professionals (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252111",
+      "occupationTitle": "Chiropractor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252112",
+      "occupationTitle": "Osteopath",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252211",
+      "occupationTitle": "Acupuncturist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252213",
+      "occupationTitle": "Naturopath",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252214",
+      "occupationTitle": "Traditional Chinese Medicine Practitioner",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252299",
+      "occupationTitle": "Complementary Health Therapists (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252311",
+      "occupationTitle": "Dental Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252312",
+      "occupationTitle": "Dentist",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "252411",
+      "occupationTitle": "Occupational Therapist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252511",
+      "occupationTitle": "Physiotherapist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252611",
+      "occupationTitle": "Podiatrist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252711",
+      "occupationTitle": "Audiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "252712",
+      "occupationTitle": "Speech Pathologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253111",
+      "occupationTitle": "General Practitioner",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253112",
+      "occupationTitle": "Resident Medical Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253211",
+      "occupationTitle": "Anaesthetist",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "253311",
+      "occupationTitle": "Specialist Physician (General Medicine)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253312",
+      "occupationTitle": "Cardiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253313",
+      "occupationTitle": "Clinical Haematologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253314",
+      "occupationTitle": "Medical Oncologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253315",
+      "occupationTitle": "Endocrinologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253316",
+      "occupationTitle": "Gastroenterologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253317",
+      "occupationTitle": "Intensive Care Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253318",
+      "occupationTitle": "Neurologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253321",
+      "occupationTitle": "Paediatrician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253322",
+      "occupationTitle": "Renal Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253323",
+      "occupationTitle": "Rheumatologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253324",
+      "occupationTitle": "Thoracic Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253399",
+      "occupationTitle": "Specialist Physicians (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253411",
+      "occupationTitle": "Psychiatrist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253511",
+      "occupationTitle": "Surgeon (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253512",
+      "occupationTitle": "Cardiothoracic Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253513",
+      "occupationTitle": "Neurosurgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253514",
+      "occupationTitle": "Orthopaedic Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253515",
+      "occupationTitle": "Otorhinolaryngologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253516",
+      "occupationTitle": "Paediatric Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253517",
+      "occupationTitle": "Plastic And Reconstructive Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253518",
+      "occupationTitle": "Urologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253521",
+      "occupationTitle": "Vascular Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253911",
+      "occupationTitle": "Dermatologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253912",
+      "occupationTitle": "Emergency Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253913",
+      "occupationTitle": "Obstetrician And Gynaecologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253914",
+      "occupationTitle": "Ophthalmologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253915",
+      "occupationTitle": "Pathologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253917",
+      "occupationTitle": "Diagnostic And Interventional Radiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253918",
+      "occupationTitle": "Radiation Oncologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "253999",
+      "occupationTitle": "Medical Practitioners (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254111",
+      "occupationTitle": "Midwife",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254211",
+      "occupationTitle": "Nurse Educator",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254212",
+      "occupationTitle": "Nurse Researcher",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254311",
+      "occupationTitle": "Nurse Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254411",
+      "occupationTitle": "Nurse Practitioner",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254412",
+      "occupationTitle": "Registered Nurse (Aged Care)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254413",
+      "occupationTitle": "Registered Nurse (Child And Family Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254414",
+      "occupationTitle": "Registered Nurse (Community Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254415",
+      "occupationTitle": "Registered Nurse (Critical Care And Emergency)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254416",
+      "occupationTitle": "Registered Nurse (Developmental Disability)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254417",
+      "occupationTitle": "Registered Nurse (Disability And Rehabilitation)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254418",
+      "occupationTitle": "Registered Nurse (Medical)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254421",
+      "occupationTitle": "Registered Nurse (Medical Practice)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254422",
+      "occupationTitle": "Registered Nurse (Mental Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254423",
+      "occupationTitle": "Registered Nurse (Perioperative)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254424",
+      "occupationTitle": "Registered Nurse (Surgical)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254425",
+      "occupationTitle": "Registered Nurse (Paediatrics)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "254499",
+      "occupationTitle": "Registered Nurses (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "261111",
+      "occupationTitle": "Ict Business Analyst",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "261112",
+      "occupationTitle": "Systems Analyst",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "261311",
+      "occupationTitle": "Analyst Programmer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "261312",
+      "occupationTitle": "Developer Programmer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "261313",
+      "occupationTitle": "Software Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "261314",
+      "occupationTitle": "Software Tester",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "261399",
+      "occupationTitle": "Software And Applications Programmers (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "262111",
+      "occupationTitle": "Database Administrator",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "262112",
+      "occupationTitle": "Ict Security Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "262113",
+      "occupationTitle": "Systems Administrator",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263111",
+      "occupationTitle": "Computer Network And Systems Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263112",
+      "occupationTitle": "Network Administrator",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263113",
+      "occupationTitle": "Network Analyst",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263211",
+      "occupationTitle": "Ict Quality Assurance Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263212",
+      "occupationTitle": "Ict Support Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263213",
+      "occupationTitle": "Ict Systems Test Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263299",
+      "occupationTitle": "Ict Support And Test Engineers (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263311",
+      "occupationTitle": "Telecommunications Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "263312",
+      "occupationTitle": "Telecommunications Network Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "271311",
+      "occupationTitle": "Solicitor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272111",
+      "occupationTitle": "Careers Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272112",
+      "occupationTitle": "Drug And Alcohol Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272113",
+      "occupationTitle": "Family And Marriage Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272114",
+      "occupationTitle": "Rehabilitation Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272115",
+      "occupationTitle": "Student Counsellor",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272199",
+      "occupationTitle": "Counsellors (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272311",
+      "occupationTitle": "Clinical Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272312",
+      "occupationTitle": "Educational Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272313",
+      "occupationTitle": "Organisational Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272314",
+      "occupationTitle": "Psychotherapist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272399",
+      "occupationTitle": "Psychologists (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272511",
+      "occupationTitle": "Social Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272611",
+      "occupationTitle": "Community Arts Worker",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "272612",
+      "occupationTitle": "Recreation Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "272613",
+      "occupationTitle": "Welfare Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311211",
+      "occupationTitle": "Anaesthetic Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311212",
+      "occupationTitle": "Cardiac Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311213",
+      "occupationTitle": "Medical Laboratory Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311214",
+      "occupationTitle": "Operating Theatre Technician",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "311215",
+      "occupationTitle": "Pharmacy Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311216",
+      "occupationTitle": "Pathology Collector",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "311299",
+      "occupationTitle": "Medical Technicians (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311411",
+      "occupationTitle": "Chemistry Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311412",
+      "occupationTitle": "Earth Science Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311413",
+      "occupationTitle": "Life Science Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "311499",
+      "occupationTitle": "Science Technicians (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312111",
+      "occupationTitle": "Architectural Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312113",
+      "occupationTitle": "Building Inspector",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312114",
+      "occupationTitle": "Construction Estimator",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "312116",
+      "occupationTitle": "Surveying Or Spatial Science Technician",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "312199",
+      "occupationTitle": "Architectural, Building And Surveying Technicians (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312211",
+      "occupationTitle": "Civil Engineering Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312212",
+      "occupationTitle": "Civil Engineering Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312311",
+      "occupationTitle": "Electrical Engineering Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312312",
+      "occupationTitle": "Electrical Engineering Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312511",
+      "occupationTitle": "Mechanical Engineering Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312512",
+      "occupationTitle": "Mechanical Engineering Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312911",
+      "occupationTitle": "Maintenance Planner",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "312912",
+      "occupationTitle": "Metallurgical Or Materials Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "312999",
+      "occupationTitle": "Building And Engineering Technicians (Nec)",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "313111",
+      "occupationTitle": "Hardware Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "313112",
+      "occupationTitle": "Ict Customer Support Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "313113",
+      "occupationTitle": "Web Administrator",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "313199",
+      "occupationTitle": "Ict Support Technicians (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "313211",
+      "occupationTitle": "Radio Communications Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "313212",
+      "occupationTitle": "Telecommunications Field Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "313213",
+      "occupationTitle": "Telecommunications Network Planner",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "313214",
+      "occupationTitle": "Telecommunications Technical Officer Or Technologist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "321111",
+      "occupationTitle": "Automotive Electrician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "321211",
+      "occupationTitle": "Motor Mechanic (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "321212",
+      "occupationTitle": "Diesel Motor Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "321213",
+      "occupationTitle": "Motorcycle Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "321214",
+      "occupationTitle": "Small Engine Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323111",
+      "occupationTitle": "Aircraft Maintenance Engineer (Avionics)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323112",
+      "occupationTitle": "Aircraft Maintenance Engineer (Mechanical)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323113",
+      "occupationTitle": "Aircraft Maintenance Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323211",
+      "occupationTitle": "Fitter (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323212",
+      "occupationTitle": "Fitter And Turner",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323213",
+      "occupationTitle": "Fitter-welder",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323214",
+      "occupationTitle": "Metal Machinist (First Class)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323299",
+      "occupationTitle": "Metal Fitters And Machinists (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323313",
+      "occupationTitle": "Locksmith",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "323314",
+      "occupationTitle": "Precision Instrument Maker And Repairer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "324111",
+      "occupationTitle": "Panelbeater",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "324211",
+      "occupationTitle": "Vehicle Body Builder",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "324212",
+      "occupationTitle": "Vehicle Trimmer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "324311",
+      "occupationTitle": "Vehicle Painter",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "331111",
+      "occupationTitle": "Bricklayer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "331112",
+      "occupationTitle": "Stonemason",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "331211",
+      "occupationTitle": "Carpenter And Joiner",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "331212",
+      "occupationTitle": "Carpenter",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "331213",
+      "occupationTitle": "Joiner",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "332111",
+      "occupationTitle": "Floor Finisher",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "332211",
+      "occupationTitle": "Painting Trades Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "333111",
+      "occupationTitle": "Glazier",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "333211",
+      "occupationTitle": "Fibrous Plasterer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "333212",
+      "occupationTitle": "Solid Plasterer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "333311",
+      "occupationTitle": "Roof Tiler",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "333411",
+      "occupationTitle": "Wall And Floor Tiler",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "334111",
+      "occupationTitle": "Plumber (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "334112",
+      "occupationTitle": "Airconditioning And Mechanical Services Plumber",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "334113",
+      "occupationTitle": "Drainer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "334114",
+      "occupationTitle": "Gasfitter",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "334115",
+      "occupationTitle": "Roof Plumber",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "341111",
+      "occupationTitle": "Electrician (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "341112",
+      "occupationTitle": "Electrician (Special Class)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "341113",
+      "occupationTitle": "Lift Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "342111",
+      "occupationTitle": "Airconditioning And Refrigeration Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "342211",
+      "occupationTitle": "Electrical Linesworker",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "342212",
+      "occupationTitle": "Technical Cable Jointer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "342411",
+      "occupationTitle": "Cabler (Data And Telecommunications)",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "342413",
+      "occupationTitle": "Telecommunications Linesworker",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "351211",
+      "occupationTitle": "Butcher Or Smallgoods Maker",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "351311",
+      "occupationTitle": "Chef",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "351411",
+      "occupationTitle": "Cook",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "361311",
+      "occupationTitle": "Veterinary Nurse",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411111",
+      "occupationTitle": "Ambulance Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411112",
+      "occupationTitle": "Intensive Care Ambulance Paramedic",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411211",
+      "occupationTitle": "Dental Hygienist",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "411213",
+      "occupationTitle": "Dental Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411214",
+      "occupationTitle": "Dental Therapist",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "anzscoCode": "411311",
+      "occupationTitle": "Diversional Therapist",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411411",
+      "occupationTitle": "Enrolled Nurse",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411711",
+      "occupationTitle": "Community Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411712",
+      "occupationTitle": "Disabilities Services Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411713",
+      "occupationTitle": "Family Support Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411715",
+      "occupationTitle": "Residential Care Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "411716",
+      "occupationTitle": "Youth Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "511111",
+      "occupationTitle": "Contract Administrator",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    },
+    {
+      "anzscoCode": "511112",
+      "occupationTitle": "Program Or Project Administrator",
+      "subclass190": true,
+      "subclass491": true,
+      "act491DefaultInferred": true
+    }
+  ]
+}

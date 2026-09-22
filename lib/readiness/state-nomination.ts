@@ -1,5 +1,8 @@
 import stateNominationData from "@/src/data/state-nomination-status.json";
 import { getStateRule } from "@/lib/state-nomination/state-rules-config";
+import { matchOccupationToStateAllSubclasses, type StateOccupationSubclass } from "@/lib/state-nomination/occupation-match";
+import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
+import { occupationMatchLine } from "@/src/lib/readiness/localization";
 import type {
   AssessmentState,
   Locale,
@@ -443,6 +446,10 @@ export function calculateStateNominationTracker(
   // free-text main goal, which matched the subclass numbers ("189, 190 or 491") instead of any score.
   const pointsEstimate = assessmentState.estimatedPoints;
   const englishScore = englishBand(input.englishLevel);
+  // Real occupation <-> state occupation-list check (lib/state-nomination/occupation-match.ts), additive to
+  // the existing note only -- never affects score/status/matchLevel above. Undefined (no line shown) when
+  // the applicant's occupation can't be resolved to an ANZSCO code at all -- never fabricated.
+  const occupationAnzscoCode = findOccupationRecord(input.occupation)?.anzsco_code;
 
   const states = STATE_ROWS.map((row): StateNominationState => {
     const occupationIsPriority = occupationMatches(row, input.occupation);
@@ -629,6 +636,12 @@ export function calculateStateNominationTracker(
       officialNote: intel?.officialNote,
       sourceUrl: intel?.sourceUrl,
       lastVerifiedAt: intel?.lastVerifiedAt,
+      occupationMatchNote: occupationAnzscoCode
+        ? occupationMatchLine(
+            input.locale,
+            matchOccupationToStateAllSubclasses(occupationAnzscoCode, row.code, row.preferredVisaTypes as StateOccupationSubclass[])
+          )
+        : undefined,
     };
   }).sort((a, b) => b.score - a.score);
 

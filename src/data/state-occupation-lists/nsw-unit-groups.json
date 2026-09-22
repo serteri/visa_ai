@@ -1,0 +1,535 @@
+{
+  "_provenance": {
+    "extractedOn": "2026-09-22",
+    "sourceFiles": [
+      "data/knowledge/State Immigrations/NSW/NSW Skills List Skilled Nominated visa (subclass 190).xlsx",
+      "data/knowledge/State Immigrations/NSW/NSW Regional Skills List Skilled Work Regional visa (subclass 491).xlsx"
+    ],
+    "sourceFileRowCount": 87,
+    "method": "NSW's own lists give only 4-digit ANZSCO UNIT GROUP codes (e.g. 1212 'Crop Farmer'), not full 6-digit occupation codes -- a single unit group covers several distinct occupations, so this cannot support exact-occupation matching the way ACT/NT/QLD/WA can. Kept for future use only; NOT wired into matchOccupationToState (see lib/state-nomination/occupation-match.ts), which returns UNIT_GROUP_ONLY for NSW without reading this file's contents."
+  },
+  "occupations": [
+    {
+      "unitGroupCode": "1212",
+      "unitGroupName": "Crop Farmer",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1214",
+      "unitGroupName": "Mixed Crop and Livestock Farmers",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1324",
+      "unitGroupName": "Policy and Planning Managers",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1325",
+      "unitGroupName": "Research and Development Managers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1331",
+      "unitGroupName": "Construction Managers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1332",
+      "unitGroupName": "Engineering Managers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1334",
+      "unitGroupName": "Manufacturers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1335",
+      "unitGroupName": "Production Managers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1341",
+      "unitGroupName": "Child Care Centre Managers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1342",
+      "unitGroupName": "Health and Welfare Services Managers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "1343",
+      "unitGroupName": "School Principals",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "1351",
+      "unitGroupName": "ICT Managers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2245",
+      "unitGroupName": "Land Economists and Valuers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2312",
+      "unitGroupName": "Marine Transport Professionals",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2321",
+      "unitGroupName": "Architects and Landscape Architects",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2322",
+      "unitGroupName": "Surveyors and Spatial Scientists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2326",
+      "unitGroupName": "Urban and Regional Planners",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2331",
+      "unitGroupName": "Chemical and Materials Engineers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2332",
+      "unitGroupName": "Civil Engineering Professionals",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2333",
+      "unitGroupName": "Electrical Engineers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2334",
+      "unitGroupName": "Electronics Engineers",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "2335",
+      "unitGroupName": "Industrial, Mechanical and Production Engineers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2336",
+      "unitGroupName": "Mining Engineers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2339",
+      "unitGroupName": "Other Engineering Professionals",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2341",
+      "unitGroupName": "Agricultural and Forestry Scientists",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "2342",
+      "unitGroupName": "Chemists, and Food and Wine Scientists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2343",
+      "unitGroupName": "Environmental Scientists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2344",
+      "unitGroupName": "Geologists, Geophysicists and Hydrogeologists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2347",
+      "unitGroupName": "Veterinarians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2411",
+      "unitGroupName": "Early Childhood (Pre-primary School) Teachers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2412",
+      "unitGroupName": "Primary School Teachers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2414",
+      "unitGroupName": "Secondary School Teachers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2421",
+      "unitGroupName": "University Lecturers and Tutors",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2512",
+      "unitGroupName": "Medical Imaging Professionals",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2513",
+      "unitGroupName": "Occupational and Environmental Health Professionals",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2515",
+      "unitGroupName": "Pharmacists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2521",
+      "unitGroupName": "Chiropractors and Osteopaths",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "2523",
+      "unitGroupName": "Dental Practitioners",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2524",
+      "unitGroupName": "Occupational Therapists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2525",
+      "unitGroupName": "Physiotherapist",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2527",
+      "unitGroupName": "Audiologist and Speech Pathologists/Therapist",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2531",
+      "unitGroupName": "Generalist Medical Practitioners",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2533",
+      "unitGroupName": "Specialist Physicians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2534",
+      "unitGroupName": "Psychiatrists",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "2535",
+      "unitGroupName": "Surgeons",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "2539",
+      "unitGroupName": "Other Medical Practitioners",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2541",
+      "unitGroupName": "Midwives",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "2543",
+      "unitGroupName": "Nurse Managers",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "2544",
+      "unitGroupName": "Registered Nurses",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2611",
+      "unitGroupName": "ICT Business and Systems Analysts",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2613",
+      "unitGroupName": "Software and Applications Programmers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2621",
+      "unitGroupName": "Database and Systems Administrators, and ICT Security Specialists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2631",
+      "unitGroupName": "Computer Network Professionals",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2723",
+      "unitGroupName": "Psychologists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "2725",
+      "unitGroupName": "Social Workers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3111",
+      "unitGroupName": "Agricultural Technicians",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3112",
+      "unitGroupName": "Medical Technicians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3121",
+      "unitGroupName": "Architectural, Building and Surveying Technicians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3122",
+      "unitGroupName": "Civil Engineering Draftspersons and Technicians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3123",
+      "unitGroupName": "Electrical Engineering Draftspersons and Technicians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3125",
+      "unitGroupName": "Mechanical Engineering Draftspersons and Technicians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3129",
+      "unitGroupName": "Other Building and Engineering Technicians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3211",
+      "unitGroupName": "Automotive Electricians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3212",
+      "unitGroupName": "Motor Mechanics",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3222",
+      "unitGroupName": "Sheetmetal Trades Workers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3223",
+      "unitGroupName": "Structural Steel and Welding Trades Workers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3231",
+      "unitGroupName": "Aircraft Maintenance Engineers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3232",
+      "unitGroupName": "Metal Fitters and Machinists",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3234",
+      "unitGroupName": "Toolmakers and Engineering Patternmakers",
+      "subclass190": true,
+      "subclass491": false
+    },
+    {
+      "unitGroupCode": "3311",
+      "unitGroupName": "Bricklayers and Stonemasons",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3312",
+      "unitGroupName": "Carpenters and Joiners",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3322",
+      "unitGroupName": "Painting Trades Workers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3331",
+      "unitGroupName": "Glaziers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3332",
+      "unitGroupName": "Plasterers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3333",
+      "unitGroupName": "Roof Tilers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3334",
+      "unitGroupName": "Wall and Floor Tilers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3341",
+      "unitGroupName": "Plumbers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3411",
+      "unitGroupName": "Electricians",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3421",
+      "unitGroupName": "Airconditioning and Refrigeration Mechanics",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3422",
+      "unitGroupName": "Electrical Distribution Trades Workers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3423",
+      "unitGroupName": "Electronics Trades Workers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3424",
+      "unitGroupName": "Telecommunications Trades Workers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3613",
+      "unitGroupName": "Veterinary Nurses",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3941",
+      "unitGroupName": "Cabinetmakers",
+      "subclass190": true,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3942",
+      "unitGroupName": "Wood Machinists and Other Wood Trades Workers",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "3992",
+      "unitGroupName": "Chemical, Gas, Petroleum and Power Generation Plant Operators",
+      "subclass190": false,
+      "subclass491": true
+    },
+    {
+      "unitGroupCode": "4117",
+      "unitGroupName": "Welfare Support Workers",
+      "subclass190": true,
+      "subclass491": true
+    }
+  ]
+}

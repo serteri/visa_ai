@@ -1,0 +1,1420 @@
+{
+  "_provenance": {
+    "extractedOn": "2026-09-22",
+    "sourceFiles": [
+      "data/knowledge/State Immigrations/Queensland/Queensland offshore skilled occupation list.xlsx",
+      "data/knowledge/State Immigrations/Queensland/Queensland onshore skilled occupation list.xlsx"
+    ],
+    "sourceFileRowCount": 201,
+    "method": "The offshore and onshore lists are merged by ANZSCO code; subclass190/491 is the union (true if either source file marks it Yes for that subclass). `notes` records which source list(s) the occupation came from and any Additional-information / Building-and-Construction-pathway text."
+  },
+  "occupations": [
+    {
+      "anzscoCode": "133111",
+      "occupationTitle": "Construction Project Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "133112",
+      "occupationTitle": "Project Builder",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "133211",
+      "occupationTitle": "Engineering Manager",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "133411",
+      "occupationTitle": "Manufacturer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "133512",
+      "occupationTitle": "Production Manager (Manufacturing)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "232212",
+      "occupationTitle": "Surveyor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "232611",
+      "occupationTitle": "Urban And Regional Planner",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233111",
+      "occupationTitle": "Chemical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233112",
+      "occupationTitle": "Materials Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233211",
+      "occupationTitle": "Civil Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233212",
+      "occupationTitle": "Geotechnical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233213",
+      "occupationTitle": "Quantity Surveyor",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233214",
+      "occupationTitle": "Structural Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233215",
+      "occupationTitle": "Transport Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233311",
+      "occupationTitle": "Electrical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233411",
+      "occupationTitle": "Electronics Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233511",
+      "occupationTitle": "Industrial Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233512",
+      "occupationTitle": "Mechanical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233513",
+      "occupationTitle": "Production or Plant Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233611",
+      "occupationTitle": "Mining Engineer (Excluding Petroleum)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233612",
+      "occupationTitle": "Petroleum Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233912",
+      "occupationTitle": "Agricultural Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233913",
+      "occupationTitle": "Biomedical Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "233915",
+      "occupationTitle": "Environmental Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "234312",
+      "occupationTitle": "Environmental Consultant",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "234399",
+      "occupationTitle": "Environmental Scientist (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "234411",
+      "occupationTitle": "Geologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "234413",
+      "occupationTitle": "Hydrogeologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "234711",
+      "occupationTitle": "Veterinarian",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "241111",
+      "occupationTitle": "Early Childhood (Pre-primary School) Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: AQF Bachelor degree required. \n\n\nRegistration required to work in Qld schools \n\n\nUnless qualification has been undertaken in Aus, NZ, UK, USA, CAN or IRE, academic IELTS with 7 for reading and writing and 8 for speaking and listening and an overall of 7.5 minimum required."
+    },
+    {
+      "anzscoCode": "241213",
+      "occupationTitle": "Primary School Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Registration required to work in Qld schools \n\n\nUnless qualification has been undertaken in Aus, NZ, UK, USA, CAN or IRE, academic IELTS with 7 for reading and writing and 8 for speaking and listening and an overall of 7.5 minimum required."
+    },
+    {
+      "anzscoCode": "241311",
+      "occupationTitle": "Middle School Teacher / Intermediate School Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "241411",
+      "occupationTitle": "Secondary School Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "241511",
+      "occupationTitle": "Special Needs Teacher",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "241512",
+      "occupationTitle": "Teacher Of The Hearing Impaired",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "241513",
+      "occupationTitle": "Teacher Of The Sight Impaired",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "241599",
+      "occupationTitle": "Special Education Teachers (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "242211",
+      "occupationTitle": "Vocational Education Teacher / Polytechnic Teacher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "251211",
+      "occupationTitle": "Medical Diagnostic Radiographer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "251212",
+      "occupationTitle": "Medical Radiation Therapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "251213",
+      "occupationTitle": "Nuclear Medicine Technologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "251214",
+      "occupationTitle": "Sonographer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "252411",
+      "occupationTitle": "Occupational Therapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "252511",
+      "occupationTitle": "Physiotherapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "252611",
+      "occupationTitle": "Podiatrist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "252711",
+      "occupationTitle": "Audiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "252712",
+      "occupationTitle": "Speech Pathologist / Speech Language Therapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "253411",
+      "occupationTitle": "Psychiatrist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254111",
+      "occupationTitle": "Midwife",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254412",
+      "occupationTitle": "Registered Nurse (Aged Care)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254413",
+      "occupationTitle": "Registered Nurse (Child And Family Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254414",
+      "occupationTitle": "Registered Nurse (Community Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254415",
+      "occupationTitle": "Registered Nurse (Critical Care And Emergency)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254416",
+      "occupationTitle": "Registered Nurse (Developmental Disability)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254417",
+      "occupationTitle": "Registered Nurse (Disability And Rehabilitation)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254418",
+      "occupationTitle": "Registered Nurse (Medical)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254421",
+      "occupationTitle": "Registered Nurse (Medical Practice)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254422",
+      "occupationTitle": "Registered Nurse (Mental Health)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254423",
+      "occupationTitle": "Registered Nurse (Perioperative)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254424",
+      "occupationTitle": "Registered Nurse (Surgical)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "254425",
+      "occupationTitle": "Registered Nurse (Paediatrics)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "262112",
+      "occupationTitle": "ICT Security Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "272311",
+      "occupationTitle": "Clinical Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "272312",
+      "occupationTitle": "Educational Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "272313",
+      "occupationTitle": "Organisational Psychologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "272399",
+      "occupationTitle": "Psychologists (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "312111",
+      "occupationTitle": "Architectural Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312113",
+      "occupationTitle": "Building Inspector",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312114",
+      "occupationTitle": "Construction Estimator",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312116",
+      "occupationTitle": "Surveying Or Spatial Science Technician",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312199",
+      "occupationTitle": "Architectural, Building And Surveying Technicians (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "312211",
+      "occupationTitle": "Civil Engineering Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312212",
+      "occupationTitle": "Civil Engineering Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312311",
+      "occupationTitle": "Electrical Engineering Draftsperson",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312312",
+      "occupationTitle": "Electrical Engineering Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312511",
+      "occupationTitle": "Mechanical Engineering Draftsperson",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312512",
+      "occupationTitle": "Mechanical Engineering Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "312912",
+      "occupationTitle": "Metallurgical Or Materials Technician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "312999",
+      "occupationTitle": "Building And Engineering Technicians (nec)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "322211",
+      "occupationTitle": "Sheetmetal Trades Worker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "322311",
+      "occupationTitle": "Metal Fabricator",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: ISO9606 welding qualification is preferred \n\n\n​; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "322312",
+      "occupationTitle": "Pressure Welder",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "322313",
+      "occupationTitle": "Welder (First Class)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "323111",
+      "occupationTitle": "Aircraft Maintenance Engineer (Avionics)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "323112",
+      "occupationTitle": "Aircraft Maintenance Engineer (Mechanical)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "323113",
+      "occupationTitle": "Aircraft Maintenance Engineer (Structures)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "323211",
+      "occupationTitle": "Fitter (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "323212",
+      "occupationTitle": "Fitter And Turner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "323213",
+      "occupationTitle": "Fitter Welder",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "323214",
+      "occupationTitle": "Metal Machinist (First Class)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "323299",
+      "occupationTitle": "Metal Fitters and Machinists (nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "331111",
+      "occupationTitle": "Bricklayer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "331112",
+      "occupationTitle": "Stonemason",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "331211",
+      "occupationTitle": "Carpenter And Joiner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "331212",
+      "occupationTitle": "Carpenter",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "331213",
+      "occupationTitle": "Joiner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "332111",
+      "occupationTitle": "Floor Finisher",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "333111",
+      "occupationTitle": "Glazier",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "333211",
+      "occupationTitle": "Plasterer (Wall and Ceiling)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "333212",
+      "occupationTitle": "Renderer (Solid Plaster)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "333311",
+      "occupationTitle": "Roof Tiler",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "333411",
+      "occupationTitle": "Wall And Floor Tiler",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "334111",
+      "occupationTitle": "Plumber (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Licence required to work in Qld; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "334112",
+      "occupationTitle": "Airconditioning And Mechanical Services Plumber",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Licence required to work in Qld; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "334113",
+      "occupationTitle": "Drainer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Licence required to work in Qld; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "334114",
+      "occupationTitle": "Gasfitter",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Licence required to work in Qld; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "334115",
+      "occupationTitle": "Roof Plumber",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Licence required to work in Qld; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "341111",
+      "occupationTitle": "Electrician (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Licence required to work in Qld; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "341112",
+      "occupationTitle": "Electrician (Special Class)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Licence required to work in Qld; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "341113",
+      "occupationTitle": "Lift Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "342111",
+      "occupationTitle": "Airconditioning And Refrigeration Mechanic",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Additional information: Licence required to work in Qld; Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "342211",
+      "occupationTitle": "Electrical Lines worker / Electrical Line Mechanic",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists. Building and Construction pathway: Yes"
+    },
+    {
+      "anzscoCode": "399213",
+      "occupationTitle": "Power Generation Plant Operator",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's offshore and onshore skilled occupation lists."
+    },
+    {
+      "anzscoCode": "121111",
+      "occupationTitle": "Aquaculture Farmer",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "121311",
+      "occupationTitle": "Apiarist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "121312",
+      "occupationTitle": "Beef Cattle Farmer",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "131112",
+      "occupationTitle": "Sales And Marketing Manager",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "133511",
+      "occupationTitle": "Production Manager (Forestry)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "133513",
+      "occupationTitle": "Production Manager (Mining)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "134111",
+      "occupationTitle": "Child Care Centre Manager",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "134212",
+      "occupationTitle": "Nursing Clinical Director",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "141111",
+      "occupationTitle": "Cafe Or Restaurant Manager",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "141311",
+      "occupationTitle": "Hotel Or Motel Manager",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "141999",
+      "occupationTitle": "Accommodation And Hospitality Managers (Nec)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "231111",
+      "occupationTitle": "Aeroplane Pilot",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "233999",
+      "occupationTitle": "Engineering Professionals (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234111",
+      "occupationTitle": "Agricultural Consultant",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234112",
+      "occupationTitle": "Agricultural Scientist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234113",
+      "occupationTitle": "Forester / Forest Scientist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234211",
+      "occupationTitle": "Chemist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234513",
+      "occupationTitle": "Biochemist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234514",
+      "occupationTitle": "Biotechnologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234599",
+      "occupationTitle": "Life Scientists (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234611",
+      "occupationTitle": "Medical Laboratory Scientist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "234915",
+      "occupationTitle": "Exercise Physiologist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "251111",
+      "occupationTitle": "Dietitian",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "251311",
+      "occupationTitle": "Environmental Health Officer",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "251511",
+      "occupationTitle": "Hospital Pharmacist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "251513",
+      "occupationTitle": "Retail Pharmacist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "251912",
+      "occupationTitle": "Orthotist Or Prosthetist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "252311",
+      "occupationTitle": "Dental Specialist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "252312",
+      "occupationTitle": "Dentist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253111",
+      "occupationTitle": "General Practitioner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253112",
+      "occupationTitle": "Resident Medical Officer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253211",
+      "occupationTitle": "Anaesthetist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253311",
+      "occupationTitle": "Specialist Physician (General Medicine)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253312",
+      "occupationTitle": "Cardiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253313",
+      "occupationTitle": "Clinical Haematologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253314",
+      "occupationTitle": "Medical Oncologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253315",
+      "occupationTitle": "Endocrinologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253316",
+      "occupationTitle": "Gastroenterologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253317",
+      "occupationTitle": "Intensive Care Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253318",
+      "occupationTitle": "Neurologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253321",
+      "occupationTitle": "Paediatrician",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253322",
+      "occupationTitle": "Renal Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253323",
+      "occupationTitle": "Rheumatologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253324",
+      "occupationTitle": "Thoracic Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253399",
+      "occupationTitle": "Specialist Physicians (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253511",
+      "occupationTitle": "Surgeon (General)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253512",
+      "occupationTitle": "Cardiothoracic Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253513",
+      "occupationTitle": "Neurosurgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253514",
+      "occupationTitle": "Orthopaedic Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253515",
+      "occupationTitle": "Otorhinolaryngologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253516",
+      "occupationTitle": "Paediatric Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253518",
+      "occupationTitle": "Urologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253521",
+      "occupationTitle": "Vascular Surgeon",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253911",
+      "occupationTitle": "Dermatologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253912",
+      "occupationTitle": "Emergency Medicine Specialist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253913",
+      "occupationTitle": "Obstetrician And Gynaecologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253914",
+      "occupationTitle": "Ophthalmologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253915",
+      "occupationTitle": "Pathologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253917",
+      "occupationTitle": "Diagnostic And Interventional Radiologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253918",
+      "occupationTitle": "Radiation Oncologist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "253999",
+      "occupationTitle": "Medical Practitioners (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "254411",
+      "occupationTitle": "Nurse Practitioner",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "254499",
+      "occupationTitle": "Registered Nurses (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "261311",
+      "occupationTitle": "Analyst Programmer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "261312",
+      "occupationTitle": "Developer Programmer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "261313",
+      "occupationTitle": "Software Engineer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "261399",
+      "occupationTitle": "Software And Applications Programmers (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "272115",
+      "occupationTitle": "Student Counsellor",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "272199",
+      "occupationTitle": "Counsellors (Nec)",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "272314",
+      "occupationTitle": "Psychotherapist",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "272511",
+      "occupationTitle": "Social Worker",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "311213",
+      "occupationTitle": "Medical Laboratory Technician",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "312611",
+      "occupationTitle": "Safety Inspector",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "312913",
+      "occupationTitle": "Mine Deputy",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "321111",
+      "occupationTitle": "Automotive Electrician",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "321211",
+      "occupationTitle": "Motor Mechanic (General)",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "321212",
+      "occupationTitle": "Diesel Motor Mechanic",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "332211",
+      "occupationTitle": "Painter",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "342212",
+      "occupationTitle": "Technical Cable Jointer",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "351311",
+      "occupationTitle": "Chef",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "351411",
+      "occupationTitle": "Cook",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "394111",
+      "occupationTitle": "Cabinetmaker",
+      "subclass190": true,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "399111",
+      "occupationTitle": "Boat Builder and Repairer",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "411211",
+      "occupationTitle": "Dental Hygienist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "411213",
+      "occupationTitle": "Dental Technician",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "411214",
+      "occupationTitle": "Dental Therapist",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "411411",
+      "occupationTitle": "Enrolled Nurse",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    },
+    {
+      "anzscoCode": "411716",
+      "occupationTitle": "Youth Worker",
+      "subclass190": false,
+      "subclass491": true,
+      "notes": "On Queensland's onshore skilled occupation list."
+    }
+  ]
+}

@@ -57,3 +57,8 @@ jobs:
       # real Stripe webhook handler with Resend, Stripe and Prisma stubbed (fake keys, no network, no DB).
       - name: Free-admin-order email suppression tests (stubbed sender)
         run: npm run test:email-suppression
+
+      # Real occupation <-> state occupation-list matching (lib/state-nomination/occupation-match.ts) over
+      # the git-committed src/data/state-occupation-lists/*.json -- pure data/function tests, no database.
+      - name: Occupation <-> state occupation-list match tests
+        run: npm run test:occupation-match

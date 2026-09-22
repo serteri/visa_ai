@@ -9,11 +9,13 @@ type OccupationRecord = {
   occupation_name: string;
   authority: string;
   visa_lists?: string[];
+  visa_subclasses?: string[];
 };
 
 type SkilledOccupationListRow = {
   anzsco_code: string;
   list: string[];
+  visa_types?: string[];
 };
 
 type LocalizedAnzscoRecord = {
@@ -108,6 +110,30 @@ export function getSkilledListMembership(anzscoCode?: string): string[] {
 
   const occupationRecord = OCCUPATIONS_BY_CODE.get(anzscoCode);
   return occupationRecord?.visa_lists ?? [];
+}
+
+const NATIONAL_SUBCLASSES_BY_CODE = new Map<string, Set<string>>();
+for (const row of skilledOccupationListData as SkilledOccupationListRow[]) {
+  const existing = NATIONAL_SUBCLASSES_BY_CODE.get(row.anzsco_code) ?? new Set<string>();
+  for (const subclass of row.visa_types ?? []) existing.add(subclass);
+  NATIONAL_SUBCLASSES_BY_CODE.set(row.anzsco_code, existing);
+}
+
+/**
+ * Which visa subclasses the Australian Government's own national skilled occupation list carries for a
+ * resolved ANZSCO code -- used by states that don't publish their own occupation list (currently TAS and
+ * VIC; see lib/state-nomination/occupation-match.ts) and whose nomination eligibility instead runs off this
+ * national list directly. Same source-preference pattern as getSkilledListMembership: prefers
+ * public/skilled-occupation-list.json's own visa_types, falling back to occupations.json's visa_subclasses
+ * for a code missing there (e.g. "Software Engineer" 261313 -- see that function's doc comment).
+ */
+export function getNationalVisaSubclasses(anzscoCode?: string): string[] {
+  if (!anzscoCode) return [];
+  const fromSkilledList = NATIONAL_SUBCLASSES_BY_CODE.get(anzscoCode);
+  if (fromSkilledList) return Array.from(fromSkilledList);
+
+  const occupationRecord = OCCUPATIONS_BY_CODE.get(anzscoCode);
+  return occupationRecord?.visa_subclasses ?? [];
 }
 
 /**
