@@ -58,7 +58,6 @@ type StateDatasetRow = {
   requiresRecentEmployment: boolean;
   offshoreQuotaPressure: "low" | "medium" | "high" | "closed";
   programWindow: string;
-  priorityKeywords: string[];
   specialConditions: string[];
 };
 
@@ -151,12 +150,6 @@ function requiredEnglishBand(level: StateDatasetRow["minimumEnglish"]): 0 | 1 | 
   return 0;
 }
 
-function occupationMatches(row: StateDatasetRow, occupation?: string): boolean {
-  const normalizedOccupation = normalize(occupation);
-  if (!normalizedOccupation) return false;
-  return row.priorityKeywords.some((keyword) => normalizedOccupation.includes(keyword));
-}
-
 function t(locale: Locale, en: string, tr: string, zh: string): string {
   if (locale === "tr") return tr;
   if (locale === "zh-Hans") return zh;
@@ -168,7 +161,6 @@ function buildSummary(args: {
   row: StateDatasetRow;
   matchLevel: StateMatchLevel;
   offshore: boolean;
-  occupationIsPriority: boolean;
   experienceGap: boolean;
   regionalGap: boolean;
   pointsGap: boolean;
@@ -180,7 +172,6 @@ function buildSummary(args: {
     row,
     matchLevel,
     offshore,
-    occupationIsPriority,
     experienceGap,
     regionalGap,
     pointsGap,
@@ -209,9 +200,9 @@ function buildSummary(args: {
   if (matchLevel === "high") {
     return t(
       locale,
-      `${row.name} is one of the stronger nomination fits based on your profile, current location, and occupation signal.`,
-      `${row.name}, profiliniz, bulunduğunuz yer ve meslek sinyalinize göre daha güçlü aday eyaletlerden biri.`,
-      `${row.name} 根据你的资料、所在地和职业信号，属于更强的提名匹配州之一。`
+      `${row.name} is one of the stronger nomination fits based on your profile and current location.`,
+      `${row.name}, profiliniz ve bulunduğunuz yere göre daha güçlü aday eyaletlerden biri.`,
+      `${row.name} 根据你的资料和所在地，属于更强的提名匹配州之一。`
     );
   }
 
@@ -226,15 +217,9 @@ function buildSummary(args: {
 
   return t(
     locale,
-    occupationIsPriority
-      ? `${row.name} has a usable nomination pathway, but it still looks competitive and condition-based.`
-      : `${row.name} is not closed, but your occupation signal looks weaker there right now.`,
-    occupationIsPriority
-      ? `${row.name} tarafında kullanılabilir bir nomination yolu var, ancak rekabetçi ve koşullu görünüyor.`
-      : `${row.name} kapalı değil, ancak meslek sinyaliniz bu eyalette şu an daha zayıf görünüyor.`,
-    occupationIsPriority
-      ? `${row.name} 存在可用提名路径，但整体仍偏竞争性且附带条件。`
-      : `${row.name} 并未关闭，但你的职业信号在该州目前偏弱。`
+    `${row.name} has a usable nomination pathway, but it still looks competitive and condition-based.`,
+    `${row.name} tarafında kullanılabilir bir nomination yolu var, ancak rekabetçi ve koşullu görünüyor.`,
+    `${row.name} 存在可用提名路径，但整体仍偏竞争性且附带条件。`
   );
 }
 
@@ -242,7 +227,6 @@ function buildRequirements(args: {
   locale: Locale;
   row: StateDatasetRow;
   offshore: boolean;
-  occupationIsPriority: boolean;
   experienceYears: number;
   regionalWilling: boolean;
   pointsEstimate?: number;
@@ -253,7 +237,6 @@ function buildRequirements(args: {
     locale,
     row,
     offshore,
-    occupationIsPriority,
     experienceYears,
     regionalWilling,
     pointsEstimate,
@@ -319,17 +302,6 @@ function buildRequirements(args: {
         "Regional commitment would materially improve this state pathway.",
         "Regional taahhüt bu eyalet yolunu belirgin şekilde güçlendirir.",
         "愿意去偏远地区会显著增强该州路径。"
-      )
-    );
-  }
-
-  if (!occupationIsPriority) {
-    requirements.push(
-      t(
-        locale,
-        "Your occupation is not a clear priority keyword match in this state.",
-        "Mesleğiniz bu eyalette açık bir öncelik eşleşmesi vermiyor.",
-        "你的职业在该州中不属于明显优先关键词匹配。"
       )
     );
   }
@@ -452,7 +424,6 @@ export function calculateStateNominationTracker(
   const occupationAnzscoCode = findOccupationRecord(input.occupation)?.anzsco_code;
 
   const states = STATE_ROWS.map((row): StateNominationState => {
-    const occupationIsPriority = occupationMatches(row, input.occupation);
     const experienceGap = row.minimumExperienceYears > experienceYears;
     const regionalGap = row.regionalFocus && !regionalWilling;
     const pointsGap = typeof pointsEstimate === "number" ? pointsEstimate < row.minimumPoints : false;
@@ -490,7 +461,13 @@ export function calculateStateNominationTracker(
     } else if (effectiveStatus === "Open for Offshore") {
       score = offshore ? 82 : 72;
     } else if (effectiveStatus === "High Demand") {
-      score = occupationIsPriority ? 76 : 64;
+      // Previously occupationIsPriority ? 76 : 64 -- the occupation term is retired (Phase 3b): the keyword
+      // heuristic behind it (a short hand-picked priorityKeywords list per state) never reflected any real
+      // occupation-list data, so the score no longer depends on occupation matching at all. One flat value,
+      // the midpoint of the old range, replaces it -- "High Demand" states are scored as competitive but
+      // viable regardless of occupation, the same way every other status branch here is a flat per-status
+      // value with no occupation term.
+      score = 70;
     } else if (effectiveStatus === "Open (Onshore & Offshore)") {
       score = 80;
     }
@@ -498,8 +475,6 @@ export function calculateStateNominationTracker(
     if (row.offshoreAvailability === "limited" && offshore) score -= 12;
     if (row.offshoreQuotaPressure === "high") score -= 6;
     if (row.offshoreQuotaPressure === "closed") score -= 18;
-    if (occupationIsPriority) score += 8;
-    else score -= 8;
     if (experienceGap) score -= 16;
     if (regionalGap) score -= 14;
     if (pointsGap) score -= 14;
@@ -520,42 +495,20 @@ export function calculateStateNominationTracker(
     const intel = input.stateIntelligence?.[row.code];
     const displayStatus = asKnownStatus(adminConfig?.status) ?? asKnownStatus(intel?.status) ?? effectiveStatus;
 
-    // ── Real-data hard rules (StateOccupationListEntry + points + onshore
-    // status), applied AFTER the heuristic score above and able to override
-    // it. Priority: rule 3 (onshore hard block) > rule 1 (not on list) >
-    // rule 2 (on list but under points threshold) -- checked in that order
-    // so a stricter rule's note isn't clobbered by a weaker one.
+    // ── Onshore/offshore hard block, applied AFTER the heuristic score above and able to override it.
+    // Previously also carried two occupation-list rules here (score=2 "not on list", score capped at 15
+    // "on list but under points") fed by getStateOccupationMatches()/StateOccupationListEntry -- retired in
+    // Phase 3b along with the keyword heuristic above: that DB table is not populated by anything in this
+    // codebase (no cron, no seed, no admin trigger writes to it -- see scripts/sync-state-occupation-lists.ts,
+    // left in place but now uncalled from the production report-generation path) and had a real bug for NSW
+    // (it compared NSW's 4-digit ANZSCO unit-group codes to the applicant's 6-digit code with exact
+    // equality, always reporting "not on list" and applying the harshest penalty even when the applicant's
+    // occupation was genuinely on NSW's list). The real, git-committed occupation-match data
+    // (lib/state-nomination/occupation-match.ts) now only ever affects the additive PDF line below
+    // (occupationMatchNote), never the score.
     let ruleOverrideNote: string | undefined;
 
-    const occupationMatch = input.stateOccupationMatches?.[row.code];
-    // Rule 1: occupation-list data exists for this state AND we positively
-    // confirmed the occupation is NOT on it. A missing occupationMatch
-    // entry means "no list data for this state" (see getStateOccupationMatches's
-    // doc comment) and must NOT trigger this -- that would falsely zero out
-    // states we simply haven't synced list data for yet.
-    if (occupationMatch && !occupationMatch.onList) {
-      score = 2;
-      ruleOverrideNote = t(
-        input.locale,
-        "Your occupation is currently not on this state's skilled list.",
-        "Mesleginiz su anda bu eyaletin nitelikli meslek listesinde degil.",
-        "您的职业目前不在该州的技术职业清单上。"
-      );
-    } else if (occupationMatch?.onList && typeof assessmentState.estimatedPoints === "number" && assessmentState.estimatedPoints < row.minimumPoints) {
-      // Rule 2: confirmed on the list, but real computed points are below
-      // this state's threshold -- heavy penalty, not a full zero (the
-      // occupation itself IS eligible, points can still improve).
-      score = Math.min(score, 15);
-      ruleOverrideNote = t(
-        input.locale,
-        "Occupation is on the list, but points are below the competitive threshold.",
-        "Meslek listede yer aliyor, ancak puan rekabetci esigin altinda.",
-        "该职业在清单上，但分数低于具有竞争力的门槛。"
-      );
-    }
-
-    // Rule 3: onshore-only state and the applicant isn't currently in
-    // Australia -- hard block, takes priority over rules 1/2's note.
+    // Onshore-only state and the applicant isn't currently in Australia -- hard block.
     if (isOnshoreOnlyStatus(displayStatus) && offshore) {
       score = 0;
       ruleOverrideNote = t(
@@ -566,8 +519,7 @@ export function calculateStateNominationTracker(
       );
     }
 
-    // Rule 3b: symmetric hard block for an offshore-only state when the
-    // applicant is currently onshore -- same precedence as rule 3 above.
+    // Symmetric hard block for an offshore-only state when the applicant is currently onshore.
     if (isOffshoreOnlyStatus(displayStatus) && !offshore) {
       score = 0;
       ruleOverrideNote = t(
@@ -597,7 +549,6 @@ export function calculateStateNominationTracker(
       locale: input.locale,
       row: effectiveRow,
       offshore,
-      occupationIsPriority,
       experienceYears,
       regionalWilling,
       pointsEstimate,
@@ -617,7 +568,6 @@ export function calculateStateNominationTracker(
         row: effectiveRow,
         matchLevel,
         offshore,
-        occupationIsPriority,
         experienceGap,
         regionalGap,
         pointsGap,
@@ -628,8 +578,7 @@ export function calculateStateNominationTracker(
       // requirements" note preview (see drawStateNominationTable in
       // lib/readiness/generate-pdf.ts). Order: admin-set customAiNote (top
       // priority, see StateNominationConfig), then the hand-verified
-      // state-rules-config note, then the occupation-list/onshore rule
-      // override.
+      // state-rules-config note, then the onshore/offshore rule override.
       requirements: [adminConfig?.customAiNote, rule?.note, ruleOverrideNote, ...requirements].filter(
         (item): item is string => Boolean(item)
       ),

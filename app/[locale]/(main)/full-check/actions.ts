@@ -22,7 +22,6 @@ import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine
 import {
   getStateIntelligenceMap,
   getStateNominationConfigMap,
-  getStateOccupationMatches,
 } from "@/lib/state-intelligence";
 import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
@@ -1179,14 +1178,21 @@ export async function submitFullCheckWaitlist(
     await updateFullCheckProgress(analysisProgressId, "scanning_occupations");
   }
 
-  // Live state-nomination status/citations + real occupation-list
-  // membership (see lib/state-intelligence.ts and app/api/cron/sync-states)
-  // -- runReadinessEngine itself stays synchronous, so these DB reads have
-  // to happen here, before calling it. Neither throws; both degrade to the
-  // static-data fallback on failure.
-  const [stateIntelligence, stateOccupationMatches, stateNominationConfig] = await Promise.all([
+  // Live state-nomination status/citations (see lib/state-intelligence.ts and app/api/cron/sync-states) --
+  // runReadinessEngine itself stays synchronous, so these DB reads have to happen here, before calling it.
+  // Neither throws; both degrade to the static-data fallback on failure.
+  //
+  // getStateOccupationMatches()/StateOccupationListEntry (real occupation-list membership, DB-backed) was
+  // dropped from this call in Phase 3b: that table is not populated by anything in this codebase (no cron,
+  // no seed, no admin trigger writes to it), so the lookup always returned {} in production and the state-
+  // match score's two occupation-list rules that read it never actually fired -- this call was a dead DB
+  // round-trip on every submission. lib/state-nomination/occupation-match.ts + the git-committed
+  // src/data/state-occupation-lists/*.json is the one real occupation-match source now (display-text only,
+  // never the score); scripts/sync-state-occupation-lists.ts and the StateOccupationListEntry table are left
+  // in place, unused, as a flagged future option (fixing its NSW unit-group/ANZSCO-code bug and deciding
+  // whether occupation-matching should ever affect score again is a separate decision).
+  const [stateIntelligence, stateNominationConfig] = await Promise.all([
     getStateIntelligenceMap(),
-    getStateOccupationMatches(occupation || undefined),
     getStateNominationConfigMap(),
   ]);
 
@@ -1200,7 +1206,6 @@ export async function submitFullCheckWaitlist(
       age,
       occupation: occupation || undefined,
       stateIntelligence,
-      stateOccupationMatches,
       stateNominationConfig,
       englishLevel: englishLevel || undefined,
       qualificationLevel,

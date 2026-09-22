@@ -7,6 +7,8 @@
  */
 import { matchOccupationToState, matchOccupationToStateAllSubclasses } from "../lib/state-nomination/occupation-match";
 import { occupationMatchLine } from "../src/lib/readiness/localization";
+import { runReadinessEngine } from "../src/lib/readiness-engine";
+import type { ReadinessInput } from "../lib/readiness/types";
 
 let failures = 0;
 function ok(msg: string) {
@@ -156,6 +158,76 @@ console.log("\n==================== localized lines (occupationMatchLine): one p
   else ok("ACT inferred-row line carries the inference caveat");
   if (/inferred/i.test(explicitLine)) fail(`ACT explicit (491 Only) line should NOT carry the inference caveat: "${explicitLine}"`);
   else ok("ACT explicit (491 Only) line does not carry the inference caveat");
+}
+
+console.log("\n==================== regression: state-match SCORE is occupation-match-independent (Phase 3b) ====================");
+{
+  // Same profile in every respect except occupation. Software Engineer 261313 is MATCH on ACT's list;
+  // Business Machine Mechanic 342311 is NOT_ON_LIST on ACT's list (it's NT-only -- see the "NT only"
+  // section above). Before Phase 3b this swap would have moved every state's score (the keyword heuristic
+  // and, if StateOccupationListEntry had data, the DB-backed rules both fed directly into the score); after
+  // Phase 3b it must not move the score for ANY state, only the additive occupationMatchNote text.
+  const baseProfile: ReadinessInput = {
+    locale: "en",
+    country: "AU",
+    mainGoal: "Skilled migration through 189, 190 or 491 with a competitive points profile",
+    currentCountry: "Turkey",
+    passportCountry: "Turkey",
+    age: "32",
+    occupationConfirmed: "yes",
+    englishLevel: "superior",
+    qualificationLevel: "PhD/Doctorate",
+    isQualificationRecognized: true,
+    migrationGoals: ["direct_pr"],
+    sponsorOrFamily: "Single / No Dependants",
+  };
+
+  const reportMatch = runReadinessEngine({ ...baseProfile, occupation: "Software Engineer 261313" });
+  const reportNotOnList = runReadinessEngine({ ...baseProfile, occupation: "Business Machine Mechanic 342311" });
+
+  const statesMatch = reportMatch.stateNominationTracker?.states ?? [];
+  const statesNotOnList = reportNotOnList.stateNominationTracker?.states ?? [];
+
+  if (statesMatch.length === 0 || statesNotOnList.length === 0) {
+    fail("state nomination tracker returned no states for one or both occupations -- can't run the regression check");
+  } else {
+    let scoreMismatch = 0;
+    for (const stateMatch of statesMatch) {
+      const stateOther = statesNotOnList.find((s) => s.code === stateMatch.code);
+      if (!stateOther) { fail(`${stateMatch.code}: missing from the second run's states`); continue; }
+      if (stateMatch.score !== stateOther.score) {
+        scoreMismatch++;
+        fail(`${stateMatch.code}: score depends on occupation match -- MATCH-occupation run scored ${stateMatch.score}, NOT_ON_LIST-occupation run scored ${stateOther.score}`);
+      }
+      if (stateMatch.matchLevel !== stateOther.matchLevel) {
+        fail(`${stateMatch.code}: matchLevel depends on occupation match (${stateMatch.matchLevel} vs ${stateOther.matchLevel})`);
+      }
+    }
+    if (scoreMismatch === 0) ok(`all ${statesMatch.length} states scored identically regardless of occupation (Software Engineer vs Business Machine Mechanic)`);
+
+    // topRecommendedStates (the ranking) must also be identical, since it's derived purely from score/matchLevel/isOpen.
+    const rankingMatch = (reportMatch.stateNominationTracker?.topRecommendedStates ?? []).map((s) => s.code);
+    const rankingOther = (reportNotOnList.stateNominationTracker?.topRecommendedStates ?? []).map((s) => s.code);
+    if (JSON.stringify(rankingMatch) !== JSON.stringify(rankingOther)) {
+      fail(`topRecommendedStates ranking depends on occupation match: [${rankingMatch}] vs [${rankingOther}]`);
+    } else {
+      ok(`topRecommendedStates ranking is identical regardless of occupation: [${rankingMatch}]`);
+    }
+
+    // ACT specifically: MATCH for Software Engineer, NOT_ON_LIST for Business Machine Mechanic -- confirm
+    // the display line genuinely differs there, so this isn't passing merely because ACT has no data.
+    const actMatch = statesMatch.find((s) => s.code === "ACT");
+    const actOther = statesNotOnList.find((s) => s.code === "ACT");
+    if (!actMatch?.occupationMatchNote || !actOther?.occupationMatchNote) {
+      fail("ACT: expected an occupationMatchNote on both runs to compare");
+    } else if (actMatch.occupationMatchNote === actOther.occupationMatchNote) {
+      fail(`ACT: occupationMatchNote should differ (MATCH vs NOT_ON_LIST) but is identical: "${actMatch.occupationMatchNote}"`);
+    } else if (!/on the ACT's list/.test(actMatch.occupationMatchNote) || !/not on the ACT's list/.test(actOther.occupationMatchNote)) {
+      fail(`ACT: occupationMatchNote text doesn't read as MATCH/NOT_ON_LIST as expected: "${actMatch.occupationMatchNote}" / "${actOther.occupationMatchNote}"`);
+    } else {
+      ok(`ACT: occupationMatchNote correctly differs while score (${actMatch.score}) and matchLevel (${actMatch.matchLevel}) stay identical between the two occupations`);
+    }
+  }
 }
 
 console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);

@@ -15,7 +15,6 @@
       "requiresRecentEmployment": false,
       "offshoreQuotaPressure": "high",
       "programWindow": "Invitational rounds with high competition",
-      "priorityKeywords": ["engineer", "developer", "software", "ict", "nurse", "teacher", "construction", "accountant"],
       "specialConditions": ["Competitive invitation environment", "Occupation ceilings can move during the program year"]
     },
     {
@@ -33,7 +32,6 @@
       "requiresRecentEmployment": true,
       "offshoreQuotaPressure": "low",
       "programWindow": "Priority usually sits with Victorian pipeline candidates",
-      "priorityKeywords": ["engineer", "digital", "health", "teacher", "research", "construction"],
       "specialConditions": ["Strong preference for applicants already contributing in Victoria"]
     },
     {
@@ -51,7 +49,6 @@
       "requiresRecentEmployment": false,
       "offshoreQuotaPressure": "medium",
       "programWindow": "Program tends to reward broad occupation coverage",
-      "priorityKeywords": ["engineer", "mining", "construction", "teacher", "health", "chef", "trade"],
       "specialConditions": ["Regional flexibility strengthens the nomination case"]
     },
     {
@@ -69,7 +66,6 @@
       "requiresRecentEmployment": false,
       "offshoreQuotaPressure": "medium",
       "programWindow": "Offshore streams usually favour stronger profiles",
-      "priorityKeywords": ["engineer", "health", "teacher", "trade", "construction", "agriculture", "ict"],
       "specialConditions": ["Offshore pathways usually need stronger work experience evidence"]
     },
     {
@@ -87,7 +83,6 @@
       "requiresRecentEmployment": false,
       "offshoreQuotaPressure": "closed",
       "programWindow": "Current program treated as paused/closed",
-      "priorityKeywords": ["health", "teacher", "engineer", "tourism"],
       "specialConditions": ["Program settings can reopen, but current intake is treated as closed"]
     },
     {
@@ -105,7 +100,6 @@
       "requiresRecentEmployment": true,
       "offshoreQuotaPressure": "closed",
       "programWindow": "2025-26 General Skilled Migration allocation fully exhausted; queued applications wait for the 2026-27 allocation",
-      "priorityKeywords": ["energy", "defence", "agriculture", "mining", "health", "aged care", "disability care", "education", "childcare", "hospitality", "tourism", "construction", "trade"],
       "specialConditions": ["2025-26 nomination allocation exhausted -- no new places until 2026-27 allocation is confirmed", "Offshore applicants generally only considered for subclass 491", "3-year commitment to live and work in the NT required from visa grant"]
     },
     {
@@ -123,7 +117,6 @@
       "requiresRecentEmployment": false,
       "offshoreQuotaPressure": "low",
       "programWindow": "Tasmanian study or work ties often matter",
-      "priorityKeywords": ["health", "trade", "teacher", "hospitality", "engineering"],
       "specialConditions": ["Tasmanian ties or local activity normally improve eligibility"]
     },
     {
@@ -141,7 +134,6 @@
       "requiresRecentEmployment": true,
       "offshoreQuotaPressure": "high",
       "programWindow": "2025-26 allocation: 800 places for subclass 190 and 800 for subclass 491, ranked via the merit-based Canberra Matrix; 2026-27 allocation not yet announced",
-      "priorityKeywords": ["ict", "cyber", "engineer", "nurse", "health", "teacher", "dental", "accountant", "electrician", "construction", "chef", "public sector"],
       "specialConditions": ["Ranked by the Canberra Matrix (merit-based, not first-come-first-served) -- invitation is never guaranteed even if eligibility criteria are met", "Two-year commitment to live and work in Canberra after visa grant"]
     }
   ]
