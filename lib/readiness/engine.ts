@@ -4,7 +4,6 @@ import {
   resolveAdditionalApplicantVac,
   resolveSecondInstalmentAud,
   SECOND_INSTALMENT_AUD,
-  INCOME_THRESHOLD_491_TO_191_AUD,
   ENGLISH_TEST_VALIDITY_YEARS,
 } from "@/lib/readiness/constants";
 import { buildAssessmentState, buildEmployerSponsorshipSignal, computePathwayPoints, POINTS_THRESHOLD } from "@/lib/readiness/assessment-state";
@@ -30,6 +29,13 @@ import {
   resolveLocalizedArray,
 } from "@/lib/skills-assessment";
 import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
+import {
+  anzscoCodeFromOccupation,
+  deferredFeesLine,
+  medicalRegistrationAmountLabel,
+  medicalRegistrationExplanation,
+  resolveMedicalRegistration,
+} from "@/lib/health-registration/img-pathways";
 import { estimateQualifier } from "@/lib/readiness/financial-roadmap-totals";
 import {
   type ProvinceCode,
@@ -5105,7 +5111,38 @@ function buildFinancialRoadmap(
       if (resolved) primaryPathway = resolved;
     }
 
-    if (authority && primaryPathway) {
+    if (authority?.authorityId === "AHPRA") {
+      // Doctors: the cost is Medical Board of Australia registration, not a desktop skills assessment. The
+      // pathway (and so the registration type and its two fees, paid together at application) depends on the
+      // occupation -- see resolveMedicalRegistration. Fees are the Board's schedule effective 1 August 2026,
+      // extracted into src/data/health-registration/img-pathways.json; the AMC / ECFMG / college fees have no
+      // published amount there, so they get their own unpriced line (no `kind`, never in any total).
+      const medical = resolveMedicalRegistration({
+        anzscoCode: anzscoCodeFromOccupation(input.occupation, authority.occupations),
+        qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
+      });
+      const authorityLabel = `${authority.authorityName} (${authority.authorityId}) / Medical Board of Australia`;
+      items.push({
+        category: isTr
+          ? `Beceri Değerlendirmesi — ${authority.authorityName} (${authority.authorityId})`
+          : isZh
+            ? `技能评估 — ${authority.authorityName} (${authority.authorityId})`
+            : `Skills Assessment — ${authority.authorityName} (${authority.authorityId})`,
+        estimateType: "official_fee",
+        amountLabel: medicalRegistrationAmountLabel(medical),
+        explanation: medicalRegistrationExplanation(medical, locale, authorityLabel),
+        kind: "skills_assessment",
+        amountMin: medical.totalAud,
+        amountMax: medical.totalAud,
+      });
+      const deferred = deferredFeesLine(medical, locale);
+      items.push({
+        category: deferred.category,
+        estimateType: "variable",
+        amountLabel: deferred.amountLabel,
+        explanation: deferred.explanation,
+      });
+    } else if (authority && primaryPathway) {
       const primaryFee = primaryPathway.fees.find((f) => typeof f.amountAUD === "number")
         ?? primaryPathway.fees[0];
       const feeIsEstimate = primaryFee?.estimated === true;
@@ -5315,21 +5352,27 @@ function buildProgressionPathways(
   }
 
   if (subclasses.includes("491")) {
+    // 191 income requirement, per data/knowledge/Permanent Residence (Skilled Regional) visa (subclass 191)/
+    // Permanent Residence (Skilled Regional) visa (subclass 191).pdf ("Satisfy the income requirement"): "There is
+    // no minimum income requirement. You must provide notices of assessment issued by the Australian Taxation
+    // Office (ATO) for three income years out of the five years of your eligible visa." Replaces the former
+    // AUD 53,900/year taxable-income threshold (INCOME_THRESHOLD_491_TO_191_AUD), which that document contradicts.
+    // Last verified 2026-09-23; provenance: src/data/fee-provenance.json "income_requirement_491_to_191".
     items.push({
       from: "491",
       to: "191",
       label: isTr ? "Bölgesel geçiş bağlamı" : isZh ? "偏远地区过渡路径" : "Regional progression context",
       explanation: isTr
         ? gap > 0
-          ? `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve vergilendirilebilir gelir şartını (yıllık ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("tr-TR")} AUD; bkz. Tahmini Maliyet Yol Haritası) karşılamanız gerekir. Mevcut ${gap} puanlık açığınız göz önüne olduğunda, 491 vizesi üzerinden +15 puanlık bölgesel adaylık desteği almak, bu açığı kapatarak PR'a giden yolda son derece gerçekçi ve gerekli bir adımdır.`
-          : `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve vergilendirilebilir gelir şartını (yıllık ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("tr-TR")} AUD; bkz. Tahmini Maliyet Yol Haritası) karşılamanız gerekir.`
+          ? `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve 491 vizenizin beş yılından üç gelir yılı için Avustralya Vergi Dairesi (ATO) tarafından düzenlenmiş vergi tarhiyat bildirimlerini (notices of assessment) sunmanız gerekir; asgari gelir şartı yoktur. Mevcut ${gap} puanlık açığınız göz önüne olduğunda, 491 vizesi üzerinden +15 puanlık bölgesel adaylık desteği almak, bu açığı kapatarak PR'a giden yolda son derece gerçekçi ve gerekli bir adımdır.`
+          : `491 bölgesel vizesini aldıktan sonra, 191 kalıcı ikamet vizesine geçiş için en az 3 yıl boyunca belirlenmiş bir bölgesel alanda yaşamanız, çalışmanız ve 491 vizenizin beş yılından üç gelir yılı için Avustralya Vergi Dairesi (ATO) tarafından düzenlenmiş vergi tarhiyat bildirimlerini (notices of assessment) sunmanız gerekir; asgari gelir şartı yoktur.`
         : isZh
           ? gap > 0
-            ? `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并满足应纳税收入要求（目前为每年 ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("en-AU")} 澳元；请参见财务路线图部分）。鉴于您目前有 ${gap} 分的分数差距，通过 491 获得偏远地区州担保的 +15 分加分，是通往 191 永久居民签证的一条非常务实且必不可少的捷径。`
-            : `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并满足应纳税收入要求（目前为每年 ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("en-AU")} 澳元；请参见财务路线图部分），方可递交 191 永久居民签证。`
+            ? `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并提供澳大利亚税务局（ATO）就您 491 签证五年中三个收入年度出具的税务评估通知书（notices of assessment）（没有最低收入要求）。鉴于您目前有 ${gap} 分的分数差距，通过 491 获得偏远地区州担保的 +15 分加分，是通往 191 永久居民签证的一条非常务实且必不可少的捷径。`
+            : `获得 491 偏远地区签证后，您必须在指定的偏远地区居住并工作至少 3 年，并提供澳大利亚税务局（ATO）就您 491 签证五年中三个收入年度出具的税务评估通知书（notices of assessment）（没有最低收入要求），方可递交 191 永久居民签证。`
           : gap > 0
-            ? `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and meet taxable income requirements (currently AUD ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("en-AU")}/year; refer to the Financial Roadmap). Given your current points gap of ${gap} points, securing the +15 point regional nomination via subclass 491 is a highly realistic and essential stepping stone to permanent residency (subclass 191).`
-            : `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and meet taxable income requirements (currently AUD ${INCOME_THRESHOLD_491_TO_191_AUD.toLocaleString("en-AU")}/year; refer to the Financial Roadmap) to progress to permanent residency (subclass 191).`,
+            ? `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and provide Australian Taxation Office (ATO) notices of assessment for three income years out of the five years of your 491 visa (there is no minimum income requirement). Given your current points gap of ${gap} points, securing the +15 point regional nomination via subclass 491 is a highly realistic and essential stepping stone to permanent residency (subclass 191).`
+            : `After obtaining a subclass 491 visa, you must live and work in a designated regional area for at least 3 years and provide Australian Taxation Office (ATO) notices of assessment for three income years out of the five years of your 491 visa (there is no minimum income requirement) to progress to permanent residency (subclass 191).`,
     });
   }
 

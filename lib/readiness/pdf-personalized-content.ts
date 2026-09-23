@@ -15,6 +15,7 @@ import {
   type LocalizedString,
 } from "@/lib/skills-assessment";
 import { authorityDisplayName, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
+import { MEDICAL_REGISTRATION_PROCESS } from "@/lib/health-registration/img-pathways";
 import { getEligibilityBadgeState } from "./eligibility-badge";
 import { checkEmployerSponsorshipTerminology } from "./report-invariants";
 import { POINTS_THRESHOLD } from "./assessment-state";
@@ -922,6 +923,8 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     report.assessmentState.isEoiEligible,
     report.financialRoadmap,
     report.pointsEstimate?.actionPlan,
+    // Doctors: the real Medical Board registration process (AMC PSV, college assessment, supervised practice).
+    resolvedAuthority.authorityId === "AHPRA" ? MEDICAL_REGISTRATION_PROCESS[effectiveLocale] : undefined,
   );
 
   addSectionHeading("📋", guide.title);

@@ -266,7 +266,7 @@ async function main() {
       ["ACS/skills fee", /1,498|530|900/],
       ["second instalment 4,885", /4,885/],
       ["second instalment 4,890", /4,890/],
-      ["income threshold 53,900", /53,900|53\.900/],
+      ["191 income: ATO notices of assessment", /notices of assessment/],
     ];
     for (const [label, re] of figureChecks) {
       console.log(`  figure check "${label}": ${re.test(text) ? "present" : "absent"}`);

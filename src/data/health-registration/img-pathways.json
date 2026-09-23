@@ -1,0 +1,2006 @@
+{
+  "sourceDocument": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf",
+  "sourceTitle": "Pathways to registration for international medical graduates",
+  "sourcePageCount": 81,
+  "extractedDate": "2026-09-23",
+  "generatedBy": "scripts/generate-img-pathways.ts",
+  "documentIntro": [
+    "There are different pathways to registration and practice in Australia for internationally qualified medical practitioners (international medical graduates (IMGs)) who have gained their medical qualifications outside Australia or New Zealand. Each pathway involves assessment and each has different eligibility requirements.",
+    "Use this self-assessment tool to work out which pathway to registration is best for you.",
+    "Your registration pathway will reflect your qualifications, the type of registration you are seeking, and whether you are intending to work in Australia temporarily or long term.",
+    "The results will guide you to the type of registration you can apply for."
+  ],
+  "specialistOverview": [
+    "Have you gained your specialist medical qualification outside Australia? This page is an overview of the registration pathways available to specialist international medical graduates (SIMGs)."
+  ],
+  "pathways": [
+    {
+      "id": "competent-authority",
+      "name": "Competent Authority pathway",
+      "sourcePages": [
+        1,
+        11
+      ],
+      "summary": [
+        "This pathway is for international medical graduates (IMGs) – non-specialists and specialists, including general practitioners – who are seeking general registration in Australia.",
+        "You are eligible for this pathway if you have:",
+        "● been assessed by a competent authority, and ● practised in a competent authority country.",
+        "IMGs on this pathway do not need to sit the Australian Medical Council (AMC) exams.",
+        "Once granted provisional registration, you need to complete 12 months of supervised practice before progressing to general registration."
+      ],
+      "whoFor": "IMGs seeking general registration in Australia.",
+      "leadsTo": [
+        "This pathway leads to general registration."
+      ],
+      "eligibility": [
+        {
+          "kind": "paragraph",
+          "text": "All IMGs must have a primary qualification in medicine and surgery awarded by a training institution recognised by both the AMC and the World Directory of Medical Schools (WDOMS)."
+        },
+        {
+          "kind": "paragraph",
+          "text": "To be eligible for the Competent Authority pathway, you must meet the criteria of one of the seven competent authority categories (A–G). Each category has an assessment component (a medical course or exam) and an experience component."
+        },
+        {
+          "kind": "paragraph",
+          "text": "Prescribed assessment component - medical course For your university medical course to meet the competent authority criteria:"
+        },
+        {
+          "kind": "bullet",
+          "text": "the relevant competent authority must have accredited your university medical course, and"
+        },
+        {
+          "kind": "bullet",
+          "text": "you must have studied and completed the course in the competent authority country, or"
+        },
+        {
+          "kind": "bullet",
+          "text": "your course must be on the Board’s list of eligible offshore courses. There are offshore courses for competent authority categories B and F, see What are the eligible offshore courses for categories B and F? below."
+        },
+        {
+          "kind": "paragraph",
+          "text": "Prescribed assessment component - exam For your exam to meet the competent authority criteria:"
+        },
+        {
+          "kind": "bullet",
+          "text": "it must have been completed within the dates listed in the criteria."
+        },
+        {
+          "kind": "paragraph",
+          "text": "Eligible specialist IMGs who meet the requirements for the Specialist pathway or the Expedited Specialist pathway can also meet the requirements for the Competent Authority pathway at the same time."
+        }
+      ],
+      "processBeforeRegistration": {
+        "heading": "Before you apply for registration",
+        "blocks": [
+          {
+            "kind": "bullet",
+            "text": "Apply to the AMC for primary source verification (PSV) of your primary (and specialist if relevant) medical qualifications. You will need to create an AMC account and portfolio. The AMC use the Educational Commission for Foreign Medical Graduates (ECFMG) verification services."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the ECFMG to establish a MyIntealth account and an EPIC portfolio for verification of your qualifications."
+          },
+          {
+            "kind": "bullet",
+            "text": "Secure a suitable position in Australia. This can be an ‘area of need’ position."
+          },
+          {
+            "kind": "bullet",
+            "text": "If you will be working in general practice and are not concurrently applying for a general practice assessment on the Specialist pathway, you need to complete a pre-employment structured clinical interview (PESCI). See the PESCI page for more information."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the Medical Board for provisional registration."
+          }
+        ]
+      },
+      "registrationToApplyFor": [
+        {
+          "kind": "paragraph",
+          "text": "For the Competent Authority pathway, you must first apply for provisional registration so you can complete a period of supervised practice."
+        },
+        {
+          "kind": "paragraph",
+          "text": "Once you have satisfactorily completed 12 months of supervised practice (minimum 47 weeks full-time equivalent practice), you can apply for general registration."
+        }
+      ],
+      "whileRegistered": {
+        "summary": [
+          {
+            "kind": "paragraph",
+            "text": "You can start practising when the Board has granted you provisional registration."
+          },
+          {
+            "kind": "paragraph",
+            "text": "You need to satisfactorily complete 12 months of supervised practice (47 weeks full time equivalent). While you are completing your supervised practice, you must:"
+          }
+        ],
+        "timeframes": [
+          {
+            "timeframe": "0-3 months",
+            "requirement": "Complete an orientation to the Australian health system."
+          },
+          {
+            "timeframe": "3 months",
+            "requirement": "Submit orientation and work performance reports (see What supervision arrangements and hard copy forms do I need?)."
+          }
+        ]
+      },
+      "supervisedPractice": [
+        {
+          "kind": "paragraph",
+          "text": "You must complete 12 months of supervised practice. The Board must approve the position you have secured and your proposed supervision arrangements."
+        },
+        {
+          "kind": "paragraph",
+          "text": "As part of the supervised practice requirement, you must include the following information in your application for registration:"
+        },
+        {
+          "kind": "bullet",
+          "text": "details of a nominated supervisor for Board approval"
+        },
+        {
+          "kind": "bullet",
+          "text": "a completed Supervised practice plan and supervisor’s agreement for IMGs with limited or provisional registration - SPPA-30"
+        },
+        {
+          "kind": "bullet",
+          "text": "a Declaration form (application) - DFLP-00 completed by your supervisor."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The online form tells you when to upload your SPPA-30 and DFLP-00 documents."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If you need to upload the documents after you have submitted your application, click Upload documents on your dashboard in the Ahpra portal."
+        },
+        {
+          "kind": "paragraph",
+          "text": "See the Guidelines - Supervised practice for international medical graduates on the Board’s IMG supervision page for more detail and downloadable PDF forms."
+        }
+      ],
+      "applicationTiming": [
+        "We recommend that you apply at least three months before your intended start date, we can accept applications as early as six months before you intend to start work.",
+        "Once your application is decided, we can delay the start of your registration up to 90 days. You and your employer should discuss the date you need registration before you lodge your application."
+      ],
+      "cpd": [
+        "You need to have a CPD home and do 50 hours of CPD each calendar year.",
+        "You can choose an AMC-accredited CPD home that is suitable for your scope of practice – either a college or non-college CPD home. The CPD homes are listed on the Board’s About CPD homes page.",
+        "General information about CPD is on the Board’s CPD page."
+      ],
+      "fees": {
+        "heading": "What are the fees on this pathway?",
+        "pages": [
+          6,
+          7
+        ],
+        "intro": "There are different fees charged by different organisations for different purposes.",
+        "items": [
+          {
+            "organisation": "AMC",
+            "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+            "deferral": "Contact the AMC for fee information."
+          },
+          {
+            "organisation": "ECFMG",
+            "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+            "deferral": "Contact the ECFMG for fee information."
+          },
+          {
+            "organisation": "Ahpra / Medical Board of Australia",
+            "text": "Ahpra and the Medical Board charge an application fee and a registration fee for provisional registration. See the Medical Board fees page for more information.",
+            "deferral": "See the Medical Board fees page for more information."
+          },
+          {
+            "organisation": "CPD home",
+            "text": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+            "deferral": "See the relevant CPD home for fees."
+          }
+        ]
+      },
+      "ahpraRegistrationTypes": [
+        "provisional"
+      ]
+    },
+    {
+      "id": "standard",
+      "name": "Standard pathway",
+      "sourcePages": [
+        11,
+        26
+      ],
+      "summary": [
+        "This pathway is for international medical graduates (IMGs) who are not eligible for the Competent Authority or Specialist pathways.",
+        "IMGs on this pathway complete:",
+        "● the Australian Medical Council (AMC) written exam (CAT MCQ) ● the AMC clinical exam or a workplace-based assessment (WBA), and ● 12 months of specified supervised practice.",
+        "Applicants who successfully complete the AMC CAT MCQ and either the AMC clinical exam or WBA are awarded the AMC Certificate."
+      ],
+      "whoFor": "IMGs seeking general registration in Australia.",
+      "leadsTo": [
+        "This pathway leads to general registration."
+      ],
+      "eligibility": [
+        {
+          "kind": "paragraph",
+          "text": "All IMGs must have a primary qualification in medicine and surgery awarded by a training institution recognised by both the AMC and the World Directory of Medical Schools (WDOMS)."
+        },
+        {
+          "kind": "paragraph",
+          "text": "IMGs are required to have successfully completed a medical internship (or comparable)."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If you have not completed an internship, you will need to secure an accredited internship position in Australia. However, please note that IMGs may find these positions are difficult to obtain as priority for accredited medical internship positions in Australia is given to Australian graduates. See Guidance - Limited registration for postgraduate training or supervised practice - Exemption to the requirement for a medical internship or comparable (207KB, PDF) for more information."
+        },
+        {
+          "kind": "paragraph",
+          "text": "To be eligible for the Standard pathway, you must pass the AMC CAT MCQ written exam before you apply for registration."
+        }
+      ],
+      "processBeforeRegistration": {
+        "heading": "Before you apply for registration",
+        "blocks": [
+          {
+            "kind": "bullet",
+            "text": "Apply to the AMC for primary source verification (PSV) of your primary medical qualification. You will need to create an AMC account and portfolio. The AMC use the Educational Commission for Foreign Medical Graduates (ECFMG) verification services."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the ECFMG to establish a MyIntealth account and an EPIC portfolio for verification of your qualifications."
+          },
+          {
+            "kind": "bullet",
+            "text": "Pass the AMC MCQ exam."
+          },
+          {
+            "kind": "bullet",
+            "text": "If you will be working in general practice, complete a pre-employment structured clinical interview (PESCI)."
+          }
+        ]
+      },
+      "registrationToApplyFor": [
+        {
+          "kind": "paragraph",
+          "text": "You need to apply for limited or provisional registration so you can complete a period of supervised practice."
+        },
+        {
+          "kind": "bullet",
+          "text": "If you have passed both the AMC CAT MCQ and the AMC clinical exam you can apply for provisional registration."
+        },
+        {
+          "kind": "bullet",
+          "text": "If you have passed the AMC CAT MCQ, you can apply for limited registration."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The type of limited registration you need depends on the position you have secured:"
+        },
+        {
+          "kind": "bullet",
+          "text": "Limited registration for postgraduate training or supervised practice"
+        },
+        {
+          "kind": "bullet",
+          "text": "Limited registration for area of need – if you will be working in an area of need"
+        },
+        {
+          "kind": "paragraph",
+          "text": "When you have satisfactorily completed 12 months of supervised practice (minimum of 47 weeks of full-time equivalent (FTE) practice) and either the clinical exam or WBA, you can apply for general registration."
+        }
+      ],
+      "registrationOptions": [
+        {
+          "title": "Step A: Before registration ● Pass the AMC MCQ exam. Step B: Choose your path There are three options depending on when you complete the AMC clinical exam or WBA: Option Steps leading to general registration Pass both AMC exams before applying for registration",
+          "steps": [
+            "Pass the AMC clinical exam and receive the AMC Certificate.",
+            "Secure a suitable position in a hospital or general practice. This can be an area of need position.",
+            "If you will be working in general practice, complete a pre-employment structured clinical interview (PESCI).",
+            "Apply to the Medical Board for provisional registration (start practising when granted provisional registration).",
+            "Complete orientation to the Australian health system.",
+            "After three months, submit orientation and work performance reports (see below).",
+            "Complete 12 months supervised practice (47 weeks FTE).",
+            "Apply to the Medical Board for general registration (you can apply for general registration early; when you approach the completion of 12 months of supervised practice)."
+          ]
+        },
+        {
+          "title": "Sit AMC clinical exam after being granted limited registration",
+          "steps": [
+            "Secure a suitable position in a hospital or general practice. This can be an ‘area of need’ position.",
+            "If you will be working in general practice, complete a pre-employment structured clinical interview (PESCI).",
+            "Apply to the Medical Board for limited registration (start practising when granted limited registration).",
+            "Complete an orientation to the Australian health system.",
+            "After three months, submit orientation and work performance reports (see below).",
+            "Complete 12 months of supervised practice (47 weeks FTE).",
+            "During supervised practice, complete the AMC clinical exam and receive the AMC Certificate",
+            "Apply to the Medical Board for general registration."
+          ]
+        },
+        {
+          "title": "Complete WBA after being granted limited registration",
+          "steps": [
+            "Secure a suitable position with an AMC-accredited WBA provider (see list of AMC-accredited WBA authorities above)",
+            "Apply to the Medical Board for limited registration (start practising when granted limited registration).",
+            "Complete an orientation to the Australian health system.",
+            "After three months, submit orientation and work performance reports (see below).",
+            "Complete 12 months of supervised practice (47 weeks FTE).",
+            "During supervised practice, complete WBA program and receive the AMC Certificate.",
+            "Apply to the Medical Board for general registration."
+          ]
+        }
+      ],
+      "supervisedPractice": [
+        {
+          "kind": "paragraph",
+          "text": "You must complete 12 months of supervised practice. The Board must approve the position you have secured and your proposed supervision arrangements."
+        },
+        {
+          "kind": "paragraph",
+          "text": "As part of the supervised practice requirement, you must include the following information in your application for registration:"
+        },
+        {
+          "kind": "bullet",
+          "text": "details of a nominated supervisor for Board approval"
+        },
+        {
+          "kind": "bullet",
+          "text": "a completed Supervised practice plan and supervisor’s agreement for IMGs with limited or provisional registration - SPPA-30"
+        },
+        {
+          "kind": "bullet",
+          "text": "a Declaration form (application) - DFLP-00 completed by your supervisor."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The online form tells you when to upload your SPPA-30 and DFLP-00 documents."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If you need to upload the documents after you have submitted your application, click Upload documents on your dashboard in the Ahpra portal."
+        },
+        {
+          "kind": "paragraph",
+          "text": "See the Guidelines - Supervised practice for international medical graduates on the Board’s IMG supervision page for more detail and downloadable PDF forms."
+        }
+      ],
+      "applicationTiming": [
+        "We recommend that you apply at least three months before your intended start date, we can accept applications as early as six months before you intend to start work.",
+        "Once your application is decided, we can delay the start of your registration up to 90 days. You and your employer should discuss the date you need registration before you lodge your application."
+      ],
+      "cpd": [
+        "A CPD home is an AMC-accredited organisation for CPD. You need to have a CPD home and do 50 hours of CPD each calendar year.",
+        "You can choose an AMC-accredited CPD home that is suitable for your scope of practice – either a college or non-college CPD home. The CPD homes are listed on the Board’s About CPD homes page.",
+        "General information about CPD is on the Board’s CPD page."
+      ],
+      "fees": {
+        "heading": "What are the fees for IMGs on this pathway?",
+        "pages": [
+          17
+        ],
+        "intro": "There are different fees charged by different organisations for different purposes.",
+        "items": [
+          {
+            "organisation": "AMC",
+            "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange PSV of your qualifications. Contact the AMC for fee information.",
+            "deferral": "Contact the AMC for fee information."
+          },
+          {
+            "organisation": "ECFMG",
+            "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification. Contact the ECFMG for fee information.",
+            "deferral": "Contact the ECFMG for fee information."
+          },
+          {
+            "organisation": "AMC",
+            "text": "The AMC charges fees for the AMC MCQ , the clinical exams and WBAs. Contact the AMC for fee information.",
+            "deferral": "Contact the AMC for fee information."
+          },
+          {
+            "organisation": "Ahpra / Medical Board of Australia",
+            "text": "Ahpra and the Medical Board charge an application fee and a registration fee for limited or provisional registration. See the Medical Board fees page.",
+            "deferral": "See the Medical Board fees page."
+          },
+          {
+            "organisation": "CPD home",
+            "text": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+            "deferral": "See the relevant CPD home for fees."
+          }
+        ]
+      },
+      "ahpraRegistrationTypes": [
+        "provisional",
+        "limited"
+      ]
+    },
+    {
+      "id": "expedited-specialist",
+      "name": "Expedited Specialist pathway",
+      "sourcePages": [
+        27,
+        42
+      ],
+      "summary": [
+        "This pathway is for specialist international medical graduates (SIMGs) who have an international specialist medical qualification that is on the Medical Board’s Expedited Specialist pathway: accepted qualifications list.",
+        "If you are eligible, you can apply directly to the Board for specialist registration. You need to complete six months of supervised practice, cultural safety education, orientation, and work-placed based assessments."
+      ],
+      "whoFor": "SIMGs seeking specialist registration in Australia.",
+      "leadsTo": [
+        "This pathway leads to specialist registration."
+      ],
+      "eligibility": [
+        {
+          "kind": "paragraph",
+          "text": "All international medical graduates (IMGs) must have a primary qualification in medicine and surgery awarded by a training institution recognised by both the AMC and the World Directory of Medical Schools (WDOMS)."
+        },
+        {
+          "kind": "paragraph",
+          "text": "To be eligible for the Expedited Specialist pathway, you must have a specialist qualification that is on the Board’s Expedited Specialist pathway: accepted qualifications list."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The current specialties on the list are:"
+        },
+        {
+          "kind": "bullet",
+          "text": "anaesthesia"
+        },
+        {
+          "kind": "bullet",
+          "text": "general practice"
+        },
+        {
+          "kind": "bullet",
+          "text": "obstetrics and gynaecology"
+        },
+        {
+          "kind": "bullet",
+          "text": "paediatrics and child health – general paediatrics"
+        },
+        {
+          "kind": "bullet",
+          "text": "physician – general medicine"
+        },
+        {
+          "kind": "bullet",
+          "text": "psychiatry"
+        },
+        {
+          "kind": "bullet",
+          "text": "radiology – diagnostic radiology."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The Board will consider the following priority specialties next:"
+        },
+        {
+          "kind": "bullet",
+          "text": "dermatology"
+        },
+        {
+          "kind": "bullet",
+          "text": "emergency medicine"
+        },
+        {
+          "kind": "bullet",
+          "text": "surgery – general surgery"
+        },
+        {
+          "kind": "bullet",
+          "text": "surgery – otolaryngology."
+        },
+        {
+          "kind": "paragraph",
+          "text": "We will continue to add more specialties as prioritised by Australia’s health ministers."
+        },
+        {
+          "kind": "paragraph",
+          "text": "International specialist medical qualifications are assessed against the qualifications assessment criteria for the Expedited Specialist pathway."
+        }
+      ],
+      "processBeforeRegistration": {
+        "heading": "Before you apply for registration",
+        "blocks": [
+          {
+            "kind": "bullet",
+            "text": "Apply to the AMC for primary source verification (PSV) of your qualifications. This includes primary and specialist medical qualifications (membership/fellowship certificates and CCT/CSCST as listed on the accepted qualifications list)."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the ECFMG to establish a MyIntealth account and an EPIC portfolio for verification of your qualifications."
+          },
+          {
+            "kind": "bullet",
+            "text": "Check that your qualification is on the Board’s Expedited Specialist pathway: accepted qualifications list."
+          },
+          {
+            "kind": "bullet",
+            "text": "Secure a suitable position - this can be done when you apply for registration or after registration has been granted."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the Medical Board for specialist registration."
+          }
+        ]
+      },
+      "registrationToApplyFor": [
+        {
+          "kind": "paragraph",
+          "text": "You can apply for specialist registration. The Medical Board will place conditions on your specialist registration so you can meet the requirements of the specialist registration standard, including six months of supervised practice, an orientation to the Australian healthcare and cultural safety education."
+        },
+        {
+          "kind": "paragraph",
+          "text": "When you have met these requirements, you can apply to have the conditions removed."
+        }
+      ],
+      "whileRegistered": {
+        "summary": [
+          {
+            "kind": "paragraph",
+            "text": "You need to satisfactorily complete six months of supervised practice, orientation and cultural safety education, and other workplace-based assessments."
+          },
+          {
+            "kind": "paragraph",
+            "text": "While you are completing your supervised practice, you must:"
+          }
+        ],
+        "timeframes": [
+          {
+            "timeframe": "0-3 months",
+            "requirement": "Complete an orientation to the Australian health system."
+          },
+          {
+            "timeframe": "3 months",
+            "requirement": "Submit orientation and supervised practice report. See What supervision forms do I need to submit while I hold specialist registration (with conditions)?"
+          },
+          {
+            "timeframe": "4-5 months",
+            "requirement": "Complete a multi-source feedback (MSF) assessment."
+          },
+          {
+            "timeframe": "0-6 months",
+            "requirement": "Satisfactorily complete six months of supervised practice including: cultural safety education requirements, the required workplace-based assessments, and any additional assessments or requirements specified by the Medical Board."
+          },
+          {
+            "timeframe": "6 months",
+            "requirement": "Apply to the Medical Board to have the conditions removed. You will need to provide a final supervision report and evidence of completed requirements. See What supervision forms do I need to submit while I hold specialist registration (with conditions)?."
+          }
+        ]
+      },
+      "supervisedPractice": [
+        {
+          "kind": "paragraph",
+          "text": "You must complete a period of supervised practice (usually six months)."
+        },
+        {
+          "kind": "paragraph",
+          "text": "You will need to submit a supervised practice plan which includes your proposed supervision arrangements and nominating a supervisor and a proposed specialist position for the Board to approve. This can be done when you apply for registration or after registration has been granted."
+        },
+        {
+          "kind": "bullet",
+          "text": "Supervised practice plan - SPPA-00"
+        },
+        {
+          "kind": "bullet",
+          "text": "Supervised practice plan - Section G"
+        },
+        {
+          "kind": "paragraph",
+          "text": "The Board has developed an information sheet that outlines the requirements for supervised practice and sets out the factors the Board considers when deciding whether to approve a nominated supervised practice arrangement."
+        },
+        {
+          "kind": "bullet",
+          "text": "Information sheet - Supervised practice arrangements for specialist international medical graduates on the Expedited Specialist pathway (151 KB,PDF)"
+        },
+        {
+          "kind": "paragraph",
+          "text": "The checklist below can be shared with your proposed supervisor and employer to provide an overview of pathway requirements and the documents needed while you are on the pathway."
+        },
+        {
+          "kind": "bullet",
+          "text": "Checklist: Expedited Specialist Pathway – supervisor checklist (567 KB,PDF)"
+        }
+      ],
+      "applicationTiming": [
+        "We recommend that you apply at least three months before your intended start date, we can accept applications as early as six months before you intend to start work."
+      ],
+      "cpd": [
+        "You need to have a continuing professional development (CPD) home and do 50 hours of CPD each calendar year.",
+        "On this pathway, you will need to include in your CPD program any high-level requirements for your specialty.",
+        "You can choose an AMC-accredited CPD home suitable for your scope of practice – either a specialist medical college or non-college CPD home. The CPD homes are listed on the About CPD homes page.",
+        "General information about CPD is on the Board’s CPD page.",
+        "Transitional arrangements for SIMGs currently registered on the"
+      ],
+      "fees": {
+        "heading": "What are the fees for IMGs on this pathway?",
+        "pages": [
+          31
+        ],
+        "intro": "There are different fees charged by different organisations for different purposes.",
+        "items": [
+          {
+            "organisation": "AMC",
+            "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+            "deferral": "Contact the AMC for fee information."
+          },
+          {
+            "organisation": "ECFMG",
+            "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact ECFMG for more information about fees.",
+            "deferral": "Contact ECFMG for more information about fees."
+          },
+          {
+            "organisation": "Ahpra / Medical Board of Australia",
+            "text": "Ahpra and the Medical Board charge an application fee and a registration fee for specialist registration. See the Medical Board fees page.",
+            "deferral": "See the Medical Board fees page."
+          },
+          {
+            "organisation": "Workplace-based assessment (SIMG pays)",
+            "text": "There are fees for workplace-based assessments while on this pathway. The SIMG will be responsible for the costs of the multi-source feedback assessment and there may be other assessment costs depending on the type of assessment.",
+            "deferral": null
+          },
+          {
+            "organisation": "CPD home",
+            "text": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+            "deferral": "See the relevant CPD home for fees."
+          },
+          {
+            "organisation": "Specialist medical college",
+            "text": "If you choose to get fellowship, there will be college fees. Contact the relevant specialist medical college for details.",
+            "deferral": "Contact the relevant specialist medical college for details."
+          }
+        ]
+      },
+      "ahpraRegistrationTypes": [
+        "specialist"
+      ]
+    },
+    {
+      "id": "specialist-recognition",
+      "name": "Specialist pathway – specialist recognition",
+      "sourcePages": [
+        42,
+        52
+      ],
+      "summary": [
+        "This pathway is for specialist international medical graduates (SIMGs), with an international specialist medical qualification which is not on the Medical Board’s Expedited Specialist pathway: accepted qualifications list.",
+        "SIMGs on this pathway are assessed by the relevant specialist college for comparability to an Australian trained specialist."
+      ],
+      "whoFor": "SIMGs seeking specialist registration in Australia.",
+      "leadsTo": [
+        "This pathway leads to specialist registration."
+      ],
+      "eligibility": [
+        {
+          "kind": "paragraph",
+          "text": "All IMGs must have a primary qualification in medicine and surgery awarded by a training institution recognised by both the AMC and the World Directory of Medical Schools (WDOMS)."
+        },
+        {
+          "kind": "paragraph",
+          "text": "To be eligible for the Specialist pathway – specialist recognition, SIMGs must have satisfied all the training and examination requirements to practise in their field of specialty in their country of training."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The Specialist pathway is for all recognised medical specialties."
+        }
+      ],
+      "processBeforeRegistration": {
+        "heading": "Before you apply for registration",
+        "blocks": [
+          {
+            "kind": "bullet",
+            "text": "Apply to the AMC for primary source verification (PSV) of your primary and specialist medical qualifications. You will need to create an AMC account and portfolio. The AMC use the Educational Commission for Foreign Medical Graduates (ECFMG) verification services."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the ECFMG to establish a MyIntealth account and an EPIC portfolio for verification of your qualifications."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the relevant specialist medical college for a specialist recognition/comparability assessment."
+          },
+          {
+            "kind": "bullet",
+            "text": "SIMGs who want to work in an area of need can apply for an area of need assessment by the specialist medical college at the same time (combined assessment)."
+          },
+          {
+            "kind": "bullet",
+            "text": "The specialist medical college will send you and the Medical Board the outcome of the assessment – either substantially comparable, partially comparable or not comparable (Report 1)."
+          },
+          {
+            "kind": "bullet",
+            "text": "For combined assessments – the specialist medical college will also send you and the Medical Board the outcome of the area of need assessment – either suitable or not suitable for the position (Combined report)."
+          },
+          {
+            "kind": "bullet",
+            "text": "If you are assessed as substantially or partially comparable, you will need to secure a suitable position."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the Medical Board for provisional registration (if you are also eligible for the Competent Authority pathway) or limited registration (all other applicants). The Board must approve the position you have secured and your proposed supervision arrangements."
+          },
+          {
+            "kind": "bullet",
+            "text": "If you are assessed as not comparable, you will not be eligible for the Specialist pathway, but you can apply for a different pathway."
+          }
+        ]
+      },
+      "registrationToApplyFor": [
+        {
+          "kind": "paragraph",
+          "text": "You need to apply for limited or provisional registration so you can complete a period of supervised practice."
+        },
+        {
+          "kind": "paragraph",
+          "text": "When all the college requirements have been met, you can apply for specialist registration."
+        }
+      ],
+      "whileRegistered": {
+        "summary": [
+          {
+            "kind": "paragraph",
+            "text": "You can start practising when the Medical Board has granted you provisional or limited registration."
+          },
+          {
+            "kind": "paragraph",
+            "text": "While you are completing your supervised practice, you must:"
+          }
+        ],
+        "timeframes": [
+          {
+            "timeframe": "0-3 months",
+            "requirement": "Complete an orientation to the Australian health system."
+          },
+          {
+            "timeframe": "3 months",
+            "requirement": "Submit orientation and work performance reports (see What supervision forms do I need to submit while I hold provisional or limited registration?)."
+          },
+          {
+            "timeframe": "3-24 months",
+            "requirement": "Complete the period of supervised practice (between three and 24 months), upskilling and assessments specified by the specialist college."
+          },
+          {
+            "timeframe": "12 months",
+            "requirement": "Submit a work performance report at annual renewal of registration (if more than 12 months of registration required)"
+          }
+        ]
+      },
+      "supervisedPractice": [
+        {
+          "kind": "paragraph",
+          "text": "You must complete a period of supervised practice lasting between three and 24 months. The specialist medical college determines the length of the supervision period."
+        },
+        {
+          "kind": "paragraph",
+          "text": "As part of the supervised practice requirement, you must include the following information in your application for registration:"
+        },
+        {
+          "kind": "bullet",
+          "text": "details of a nominated supervisor for Board approval"
+        },
+        {
+          "kind": "bullet",
+          "text": "a completed Supervised practice plan for IMGs with limited or provisional registration – SPPA-30 (710 KB,PDF)"
+        },
+        {
+          "kind": "bullet",
+          "text": "a Declaration form (application) – DFLP-00 (338 KB,PDF) completed by your supervisor"
+        },
+        {
+          "kind": "paragraph",
+          "text": "The online form tells you when to upload your SPPA-30 and DFLP-00 documents."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If you need to upload the documents after you have submitted your application, click Upload documents on your dashboard in the Ahpra portal."
+        },
+        {
+          "kind": "paragraph",
+          "text": "See the Guidelines - Supervised practice for international medical graduates on the Board’s IMG supervision page for more detail and downloadable PDF forms."
+        }
+      ],
+      "applicationTiming": [
+        "We recommend that you apply at least three months before your intended start date, we can accept applications as early as six months before you intend to start work.",
+        "Once your application is decided, we can delay the start of your registration up to 90 days. You and your employer should discuss the date you need registration before you lodge your application."
+      ],
+      "cpd": [
+        "You need to have a CPD home and do 50 hours of CPD each calendar year.",
+        "Your specialist medical college will be your CPD home. A list of CPD homes is on the Board’s CPD homes webpage.",
+        "General information about CPD is on the Board’s CPD page."
+      ],
+      "fees": {
+        "heading": "What are the fees on this pathway?",
+        "pages": [
+          44,
+          45
+        ],
+        "intro": "There are different fees charged by different organisations for different purposes.",
+        "items": [
+          {
+            "organisation": "AMC",
+            "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+            "deferral": "Contact the AMC for fee information."
+          },
+          {
+            "organisation": "ECFMG",
+            "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+            "deferral": "Contact the ECFMG for fee information."
+          },
+          {
+            "organisation": "Specialist medical college",
+            "text": "The specialist medical colleges charge fees for an assessment of comparability. See the relevant college website about college fees for IMGs.",
+            "deferral": "See the relevant college website about college fees for IMGs."
+          },
+          {
+            "organisation": "Specialist medical college",
+            "text": "The specialist medical colleges charge fees for fellowship/membership. See the relevant college website about fees.",
+            "deferral": "See the relevant college website about fees."
+          },
+          {
+            "organisation": "Other assessments on this pathway",
+            "text": "There may be additional fees for assessments/exams while on this pathway.",
+            "deferral": null
+          },
+          {
+            "organisation": "Ahpra / Medical Board of Australia",
+            "text": "Ahpra and the Medical Board charge an application fee and a registration fee for limited/provisional and specialist registration. See the Medical Board fees page.",
+            "deferral": "See the Medical Board fees page."
+          },
+          {
+            "organisation": "CPD home",
+            "text": "CPD homes charge a joining fee. See the relevant specialist medical college for fees.",
+            "deferral": "See the relevant specialist medical college for fees."
+          }
+        ]
+      },
+      "ahpraRegistrationTypes": [
+        "provisional",
+        "limited",
+        "specialist"
+      ]
+    },
+    {
+      "id": "specialist-area-of-need",
+      "name": "Specialist pathway – area of need",
+      "sourcePages": [
+        52,
+        62
+      ],
+      "summary": [
+        "This pathway is for specialist international medical graduates (SIMGs) with an international specialist medical qualification who wish to work in a specialist level position in an area of need."
+      ],
+      "whoFor": "SIMGs applying for a specialist level position in an area of need.",
+      "leadsTo": [
+        "This pathway does not lead to specialist registration or ongoing registration in Australia.",
+        "If you are aiming for specialist registration, you can also apply for the Specialist pathway – specialist recognition while working in an area of need specialist position.",
+        "This is known as the Combined specialist pathway."
+      ],
+      "eligibility": [
+        {
+          "kind": "paragraph",
+          "text": "All IMGs must have a primary qualification in medicine and surgery awarded by a training institution recognised by both the AMC and the World Directory of Medical Schools (WDOMS)."
+        },
+        {
+          "kind": "paragraph",
+          "text": "To be eligible for the Specialist pathway – area of need, you must have:"
+        },
+        {
+          "kind": "bullet",
+          "text": "satisfied all the training and examination requirements to practise in your field of specialty in your country of training, and"
+        },
+        {
+          "kind": "bullet",
+          "text": "secured a position in an area of need."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The Specialist pathway – area of need is for all recognised medical specialties."
+        }
+      ],
+      "processBeforeRegistration": {
+        "heading": "Before you apply for registration",
+        "blocks": [
+          {
+            "kind": "bullet",
+            "text": "Apply to the AMC for primary source verification (PSV) of your primary and specialist medical qualifications. The AMC use the Educational Commission for Foreign Medical Graduates (ECFMG) verification services."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the ECFMG to establish a MyIntealth account and an EPIC portfolio for verification of your qualifications."
+          },
+          {
+            "kind": "bullet",
+            "text": "Secure a position in an area of need."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the relevant specialist medical college for an area of need assessment."
+          },
+          {
+            "kind": "bullet",
+            "text": "SIMGs who are seeking specialist registration can apply to the college for a specialist recognition (comparability) assessment at the same time (combined assessment)."
+          },
+          {
+            "kind": "bullet",
+            "text": "The specialist college will send you and the Medical Board the outcome of the assessment – either suitable or not suitable for the position (Area of need report)."
+          },
+          {
+            "kind": "bullet",
+            "text": "If you are assessed as suitable, apply to the Medical Board for:"
+          },
+          {
+            "kind": "bullet",
+            "text": "limited registration, or"
+          },
+          {
+            "kind": "bullet",
+            "text": "provisional registration if you are also eligible for the Competent Authority pathway."
+          }
+        ]
+      },
+      "registrationToApplyFor": [
+        {
+          "kind": "paragraph",
+          "text": "You need to apply for limited registration for an area of need."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If you are also eligible for the Competent Authority pathway, you need to apply for provisional registration and can work in an area of need."
+        }
+      ],
+      "whileRegistered": {
+        "summary": [
+          {
+            "kind": "paragraph",
+            "text": "You can start practising when the Medical Board has granted you limited or provisional registration."
+          },
+          {
+            "kind": "paragraph",
+            "text": "While you are completing your supervised practice, you must:"
+          }
+        ],
+        "timeframes": [
+          {
+            "timeframe": "0-3 months",
+            "requirement": "Complete an orientation to the Australian health system."
+          },
+          {
+            "timeframe": "3 months",
+            "requirement": "Submit orientation and work performance reports (see What supervision forms do I need to submit while I hold provisional or limited registration?)."
+          },
+          {
+            "timeframe": "12 months",
+            "requirement": "Submit a work performance report at annual renewal of registration (if more than 12 months of registration required)."
+          }
+        ]
+      },
+      "supervisedPractice": [
+        {
+          "kind": "paragraph",
+          "text": "You must be supervised while you are practising in an area of need."
+        },
+        {
+          "kind": "paragraph",
+          "text": "As part of the supervised practice requirement, you must include the following information in your application for registration:"
+        },
+        {
+          "kind": "bullet",
+          "text": "details of a nominated supervisor for Board approval"
+        },
+        {
+          "kind": "bullet",
+          "text": "a completed Supervised practice plan for international medical graduates – SPPA-30 (710 KB,PDF)"
+        },
+        {
+          "kind": "bullet",
+          "text": "a Declaration form for limited and provisional registration - application – DFLP-00 (338 KB,PDF) completed by your supervisor"
+        },
+        {
+          "kind": "paragraph",
+          "text": "The online form tells you when to upload your SPPA-30 and DFLP-00 documents."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If you need to upload the documents after you have submitted your application, click Upload documents on your dashboard in the Ahpra portal."
+        },
+        {
+          "kind": "paragraph",
+          "text": "See the Guidelines - Supervised practice for international medical graduates on the Board’s IMG supervision page for more detail and downloadable PDF forms."
+        }
+      ],
+      "applicationTiming": [
+        "We recommend that you apply at least three months before your intended start date, we can accept applications as early as six months before you intend to start work.",
+        "Once your application is decided, we can delay the start of your registration up to 90 days. You and your employer should discuss the date you need registration before you lodge your application."
+      ],
+      "cpd": [
+        "You need to have a CPD home and do 50 hours of CPD each calendar year.",
+        "You can choose an AMC-accredited CPD home that is suitable for your scope of practice – either a college or non-college CPD home. The CPD homes are listed on the Board’s About CPD homes page.",
+        "General information about CPD is on the Board’s CPD page."
+      ],
+      "areaOfNeedDeclarationProcess": [
+        "Identify the vacancy. The employer identifies a position that needs to be filled and contacts the relevant specialist medical college for help in preparing a detailed position description and key selection criteria.",
+        "Develop the position description. The employers work with the relevant specialist medical college to prepare: ● the position title ● a comprehensive statement of duties ● qualifications and experience – clearly marking 'essential' vs 'desirable'; and whether candidates must show either practical experience or aptitude in a particular aspect of clinical practice ● special requirements, which may be due to the geographic location or specific nature of the medical services to be provided ● clinical practice privileges or appointments relating to the position ● any special conditions of employment, and ● the remuneration package, including Medicare eligibility if relevant.",
+        "Attempt local recruitment. The employer must demonstrate that advertising has failed to attract a suitably qualified local applicant and that, unless the position is filled, service delivery will be affected adversely.",
+        "Apply for ‘area of need’ status. The employer contacts the state or territory health authority to have the position declared an area of need position. They must provide evidence of reasonable efforts to recruit locally.",
+        "Position is assessed and approved. If approved, the role is declared an area of need position.",
+        "Select a suitable applicant. The employer: ● matches candidates against the position description and selects a suitable applicant, and ● must ensure that the applicant will be eligible to apply for ‘limited registration for area of need’ or ‘provisional registration' via the Competent Authority pathway.",
+        "Complete required applications. The employer and applicant complete the relevant documentation (application to the specialist medical college for an area of need assessment - see below).",
+        "Confirm Medicare eligibility (if needed). If the role requires Medicare billing, the employer confirms with the Australian Government Department of Health, Disability and Ageing that the position is identified as an area of need position and is also in a district of workforce shortage."
+      ],
+      "fees": {
+        "heading": "What are the fees on this pathway?",
+        "pages": [
+          56
+        ],
+        "intro": "There are different fees charged by different organisations for different purposes.",
+        "items": [
+          {
+            "organisation": "AMC",
+            "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+            "deferral": "Contact the AMC for fee information."
+          },
+          {
+            "organisation": "ECFMG",
+            "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+            "deferral": "Contact the ECFMG for fee information."
+          },
+          {
+            "organisation": "Specialist medical college",
+            "text": "The specialist medical colleges charge fees for an area of need assessment. See the relevant college website about college fees for IMGs.",
+            "deferral": "See the relevant college website about college fees for IMGs."
+          },
+          {
+            "organisation": "Ahpra / Medical Board of Australia",
+            "text": "Ahpra and the Medical Board charge an application fee and a registration fee for limited/provisional registration. See the Medical Board fees page.",
+            "deferral": "See the Medical Board fees page."
+          },
+          {
+            "organisation": "CPD home",
+            "text": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+            "deferral": "See the relevant CPD home for fees."
+          }
+        ]
+      },
+      "ahpraRegistrationTypes": [
+        "provisional",
+        "limited"
+      ]
+    },
+    {
+      "id": "short-term-training",
+      "name": "Short-term training in a medical specialty pathway",
+      "sourcePages": [
+        62,
+        71
+      ],
+      "summary": [
+        "This pathway is for specialist international medical graduates (SIMGs) and SIMGs in training who would like to undertake up to 24 months of specialist or advanced training in Australia.",
+        "The relevant specialist medical college assesses whether the SIMG is suitable for a specific training position.",
+        "This pathway offers short term registration and does not lead to registration as a specialist in Australia. If you are seeking specialist registration in Australia, you can apply through the Expedited Specialist pathway or the Specialist pathway – specialist recognition."
+      ],
+      "whoFor": "SIMGs or SIMGs in training who would like to complete a short period of specialist or advanced training in Australia.",
+      "leadsTo": [
+        "The Short-term training pathway does not lead to ongoing registration or specialist registration.",
+        "SIMGs on this pathway return to their country after completing their training."
+      ],
+      "eligibility": [
+        {
+          "kind": "paragraph",
+          "text": "All IMGs must have a primary qualification in medicine and surgery awarded by a training institution recognised by both the AMC and the World Directory of Medical Schools (WDOMS)."
+        },
+        {
+          "kind": "paragraph",
+          "text": "IMGs are required to have successfully completed a medical internship (or comparable) overseas."
+        },
+        {
+          "kind": "paragraph",
+          "text": "To be eligible for the Short-term training in a medical specialty pathway, you must:"
+        },
+        {
+          "kind": "bullet",
+          "text": "have satisfied all the training and examination requirements to practise in your field of specialty in your country of training, or"
+        },
+        {
+          "kind": "bullet",
+          "text": "be a SIMG in training within two years of completing your specialist training."
+        },
+        {
+          "kind": "paragraph",
+          "text": "You must to have already have an offer for a training position in Australia."
+        }
+      ],
+      "processBeforeRegistration": {
+        "heading": "Before you apply for registration",
+        "blocks": [
+          {
+            "kind": "bullet",
+            "text": "Apply to the AMC for primary source verification (PSV) of your primary and specialist qualifications. The AMC use the Educational Commission for Foreign Medical Graduates (ECFMG) verification services."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the ECFMG to establish a MyIntealth account and an EPIC portfolio for verification of your qualifications."
+          },
+          {
+            "kind": "bullet",
+            "text": "Secure a suitable training position in Australia."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the relevant specialist medical college for an assessment of your suitability for the training position (using Medical Board application form AAMC-30 – see below)."
+          },
+          {
+            "kind": "bullet",
+            "text": "The specialist medical college will assess your suitability for the training position."
+          },
+          {
+            "kind": "bullet",
+            "text": "The specialist medical college will send you the outcome of the assessment – the training position is suitable or not suitable for you."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the Medical Board for limited registration. You can apply for provisional registration if you are also eligible for the Competent Authority pathway."
+          }
+        ]
+      },
+      "registrationToApplyFor": [
+        {
+          "kind": "paragraph",
+          "text": "SIMGs on the Short-term training in a medical specialty pathway need to apply for limited registration for postgraduate training or supervised practice. You can apply for provisional registration if you are also eligible for the Competent Authority pathway."
+        }
+      ],
+      "whileRegistered": {
+        "summary": [
+          {
+            "kind": "paragraph",
+            "text": "You can start practising when the Board has granted you limited or provisional registration."
+          }
+        ],
+        "timeframes": [
+          {
+            "timeframe": "0-3 months",
+            "requirement": "Complete an orientation to the Australian health system."
+          },
+          {
+            "timeframe": "3 months",
+            "requirement": "Submit orientation and work performance reports (See What supervision arrangements and hard copy forms do I need?)."
+          },
+          {
+            "timeframe": "12 months",
+            "requirement": "Submit a work performance report at annual renewal of registration. (See What supervision forms do I need to submit while I hold limited or provisional registration?)."
+          }
+        ]
+      },
+      "supervisedPractice": [
+        {
+          "kind": "paragraph",
+          "text": "You must be supervised while completing training."
+        },
+        {
+          "kind": "paragraph",
+          "text": "You must include the following information in your application for registration:"
+        },
+        {
+          "kind": "bullet",
+          "text": "details of a nominated supervisor for Board approval"
+        },
+        {
+          "kind": "bullet",
+          "text": "a completed Supervised practice plan and supervisor’s agreement for IMGs with limited or provisional registration - SPPA-30"
+        },
+        {
+          "kind": "bullet",
+          "text": "a Declaration form (application) - DFLP-00 completed by your supervisor."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The online form tells you when to upload your SPPA-30 and DFLP-00 documents."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If you need to upload the documents after you have submitted your application, click Upload documents on your dashboard in the Ahpra portal."
+        },
+        {
+          "kind": "paragraph",
+          "text": "See the Guidelines - Supervised practice for international medical graduates on the Board’s IMG supervision page for more detail and downloadable PDF forms."
+        }
+      ],
+      "applicationTiming": [
+        "We recommend that you apply at least three months before your intended start date, we can accept applications as early as six months before you intend to start work.",
+        "Once your application is decided, we can delay the start of your registration up to 90 days. You and your employer should discuss the date you need registration before you lodge your application."
+      ],
+      "cpd": [
+        "You need to have a CPD home and do 50 hours of CPD each calendar year.",
+        "You can choose an AMC-accredited CPD home that is suitable for your scope of practice – either a college or non-college CPD home. The CPD homes are listed on the Board’s About CPD homes page.",
+        "General information about CPD is on the Board’s CPD page."
+      ],
+      "fees": {
+        "heading": "What are the fees for IMGs on this pathway?",
+        "pages": [
+          65
+        ],
+        "intro": "There are different fees charged by different organisations for different purposes.",
+        "items": [
+          {
+            "organisation": "AMC",
+            "text": "The AMC charges a fee to establish an AMC candidate account for you, so it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+            "deferral": "Contact the AMC for fee information."
+          },
+          {
+            "organisation": "ECFMG",
+            "text": "ECFMG charge a fee for verifying your qualifications. Contact the ECFMG for fee information.",
+            "deferral": "Contact the ECFMG for fee information."
+          },
+          {
+            "organisation": "Specialist medical college",
+            "text": "The specialist medical colleges charge fees for an assessment of suitability for the Short-term training in a medical specialty pathway. See the relevant college website about fees for SIMGs.",
+            "deferral": "See the relevant college website about fees for SIMGs."
+          },
+          {
+            "organisation": "Ahpra / Medical Board of Australia",
+            "text": "Ahpra and the Medical Board charge an application fee and a registration fee for limited or provisional registration. See the Medical Board fees page.",
+            "deferral": "See the Medical Board fees page."
+          },
+          {
+            "organisation": "CPD home",
+            "text": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+            "deferral": "See the relevant CPD home for fees."
+          }
+        ]
+      },
+      "ahpraRegistrationTypes": [
+        "provisional",
+        "limited"
+      ]
+    },
+    {
+      "id": "au-nz-graduates-overseas-specialist",
+      "name": "Australian and NZ medical graduates with overseas specialist qualifications",
+      "sourcePages": [
+        71,
+        77
+      ],
+      "summary": [
+        "This information is for Australian or New Zealand medical graduates who also hold an international specialist qualification.",
+        "The processes to seek specialist registration are similar to the processes for specialist international medical graduates (SIMGs). You may be eligible for the Expedited Specialist pathway. Those not eligible for the Expedited Specialist pathway will need to have their specialist qualification assessed by the relevant specialist college for comparability to an approved qualification for the specialty. The college assessment is similar to SIMGs on the Specialist pathway – specialist recognition, but it is not the same."
+      ],
+      "whoFor": "Medical practitioners awarded a Board-approved primary medical qualification in Australia or New Zealand and who hold an international specialist qualification and are seeking specialist registration in Australia.",
+      "leadsTo": [
+        "This pathway leads to specialist registration.",
+        "Medical practitioners who have an approved Australian or New Zealand primary medical qualification are also qualified for general registration."
+      ],
+      "eligibility": [
+        {
+          "kind": "bullet",
+          "text": "To be eligible, Australian or New Zealand medical graduates must have satisfied all the training and examination requirements to practise in their field of specialty in their country of specialist training."
+        },
+        {
+          "kind": "bullet",
+          "text": "To be eligible for the Expedited Specialist pathway, Australian and New Zealand medical graduates must have a specialist qualification on the Expedited Specialist Pathway: accepted qualifications list."
+        }
+      ],
+      "processBeforeRegistration": {
+        "heading": "What is the process to apply?",
+        "blocks": [
+          {
+            "kind": "bullet",
+            "text": "Apply to the AMC for primary source verification (PSV) of your specialist medical qualification. The AMC uses the Educational Commission for Foreign Medical Graduates (ECFMG) verification services."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the ECFMG to establish an EPIC/MyIntealth account for verification of your qualifications."
+          },
+          {
+            "kind": "paragraph",
+            "text": "The verification process of the specialist qualification is the same as that undertaken for IMGs."
+          },
+          {
+            "kind": "paragraph",
+            "text": "The outcome of the verification process can be accessed by the college and Ahpra on the AMC portal."
+          },
+          {
+            "kind": "paragraph",
+            "text": "If your specialist qualification is on the Expedited Specialist Pathway: accepted qualifications list:"
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the Medical Board for specialist registration. You can also apply for provisional registration (if you have not completed an accredited internship in Australia) or for general registration (if you have completed an accredited internship in Australia)."
+          },
+          {
+            "kind": "bullet",
+            "text": "See the application process on the Expedited Specialist pathway page."
+          },
+          {
+            "kind": "paragraph",
+            "text": "If your specialist qualification is not on the list Expedited Specialist Pathway: accepted qualifications list:"
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the relevant specialist medical college for a specialist recognition/comparability assessment."
+          },
+          {
+            "kind": "bullet",
+            "text": "The specialist college will send you the outcome of the assessment – either substantially comparable, partially comparable or not comparable. If your qualification is assessed as not comparable you will not be eligible for specialist registration and you have the option to apply for the college training program."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the Medical Board for provisional registration (if you have not completed an accredited internship in Australia) or for general registration (if you have completed an accredited internship in Australia)."
+          },
+          {
+            "kind": "bullet",
+            "text": "If you are required to apply for provisional registration, you will need to secure a suitable position and provide details of your proposed supervision arrangements for Board approval."
+          }
+        ]
+      },
+      "registrationToApplyFor": [
+        {
+          "kind": "paragraph",
+          "text": "Australian and New Zealand medical graduates whose specialist qualification is on the Expedited Specialist Pathway: accepted qualifications list can apply for specialist registration."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If the specialist qualification is not on the list, the doctor will need to apply for provisional or general registration to complete the requirements set by the relevant specialist college following the assessment of their specialist qualification."
+        },
+        {
+          "kind": "paragraph",
+          "text": "Australian and New Zealand medical graduates who have completed an accredited internship in Australia or New Zealand, can apply for general registration. If they have not completed an accredited internship, they apply for provisional registration."
+        }
+      ],
+      "whileRegistered": {
+        "summary": [
+          {
+            "kind": "paragraph",
+            "text": "If your specialist qualification is on the Expedited Specialist Pathway: accepted qualifications list and you have been granted specialist registration without conditions, you can start practising as a specialist."
+          },
+          {
+            "kind": "bullet",
+            "text": "If you are not exempt from the requirements for supervised practice, orientation and cultural safety education, you will have conditions imposed on your specialist registration to enable you to complete these requirements. You cannot start practising until you secure a suitable position and provide details of your supervision arrangements for Board approval."
+          },
+          {
+            "kind": "bullet",
+            "text": "See the Expedited Specialist Pathway page for information about these requirements."
+          },
+          {
+            "kind": "paragraph",
+            "text": "If your specialist qualification is not on the Expedited Specialist Pathway: accepted qualifications list, you will hold either provisional or general registration and you can start practising."
+          },
+          {
+            "kind": "bullet",
+            "text": "Complete any requirements and assessments specified by the specialist college."
+          },
+          {
+            "kind": "bullet",
+            "text": "Receive confirmation from the specialist college of satisfactory completion of requirements."
+          },
+          {
+            "kind": "bullet",
+            "text": "There are additional reporting requirements for provisional registrants."
+          },
+          {
+            "kind": "bullet",
+            "text": "Apply to the Medical Board for specialist registration."
+          }
+        ],
+        "timeframes": []
+      },
+      "supervisedPractice": [
+        {
+          "kind": "paragraph",
+          "text": "If your qualification is on the Expedited Specialist Pathway: accepted qualifications list and you are not exempt from the requirement for a period of supervision, see the Expedited Specialist Pathway page for details."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If your specialist qualification is not on the Expedited Specialist Pathway: accepted qualifications list, you will need to complete any requirements and assessments specified by the specialist college which may include supervised practice."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If you hold general registration, there are no Board supervision requirements."
+        },
+        {
+          "kind": "paragraph",
+          "text": "There are additional reporting requirements for provisional registrants. Contact Ahpra for the details."
+        }
+      ],
+      "cpd": [
+        "Australian and New Zealand medical graduates with an overseas specialist qualification who hold provisional registration, general registration or specialist registration need to have a CPD home and do 50 hours CPD each calendar year.",
+        "You can choose an AMC-accredited CPD home that is suitable for your scope of practice – either a college or non-college CPD home. The CPD homes are listed on the About CPD homes page.",
+        "More information about CPD requirements is on the Board’s CPD page."
+      ],
+      "fees": {
+        "heading": "What are the fees for this pathway?",
+        "pages": [
+          74,
+          75
+        ],
+        "intro": "There are different fees charged by different organisations for different purposes.",
+        "items": [
+          {
+            "organisation": "AMC",
+            "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your specialist qualification. Contact the AMC for fee information.",
+            "deferral": "Contact the AMC for fee information."
+          },
+          {
+            "organisation": "ECFMG",
+            "text": "ECFMG charges a fee for the EPIC PSV service. Contact the ECFMG for more information about fees.",
+            "deferral": "Contact the ECFMG for more information about fees."
+          },
+          {
+            "organisation": "Specialist medical college",
+            "text": "The specialist medical colleges charge fees for an assessment of comparability and associated requirements. See the relevant college website about college fees.",
+            "deferral": "See the relevant college website about college fees."
+          },
+          {
+            "organisation": "Other assessments on this pathway",
+            "text": "There are fees for assessments on the Expedited Specialist pathway. See the Expedited Specialist pathway page for details.",
+            "deferral": "See the Expedited Specialist pathway page for details."
+          },
+          {
+            "organisation": "Ahpra / Medical Board of Australia",
+            "text": "Ahpra and the Medical Board charge an application fee and a registration fee for registration. See the Medical Board fees page.",
+            "deferral": "See the Medical Board fees page."
+          },
+          {
+            "organisation": "CPD home",
+            "text": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+            "deferral": "See the relevant CPD home for fees."
+          },
+          {
+            "organisation": "Specialist medical college",
+            "text": "If you choose to get fellowship, there will be college fees. Contact the college for details.",
+            "deferral": "Contact the college for details."
+          }
+        ]
+      },
+      "ahpraRegistrationTypes": [
+        "registration (type depends on the qualification route)"
+      ]
+    }
+  ],
+  "ahpraFeeSchedule": {
+    "title": "Medical Board of Australia — Schedule of fees effective 1 August 2026",
+    "effectiveDate": "1 August 2026",
+    "currency": "AUD",
+    "pages": [
+      78,
+      79,
+      80,
+      81
+    ],
+    "columns": {
+      "nationalFeeAud": "National fee ($)",
+      "nswRebateOrSurchargeAud": "Rebate or surcharge for NSW registrant ($)",
+      "nswFeeAud": "Fee for registrants with principal place of practice in NSW ($)"
+    },
+    "fundingStatement": [
+      "Registration fees fund the work of Ahpra and the Medical Board of Australia (MBA) to keep the public safe. Each Board in the National Registration and Accreditation Scheme is responsible for meeting the full cost of regulating their profession, as there are no government or other subsidies to support this vital role.",
+      "Medical registration and application fees fund:",
+      "● managing applications for registration, including complex applications from internationally qualified practitioners ● developing professional standards that guide the profession and set expectations ● accrediting programs of study that lead to registration and endorsement, and contributing to the funding of accreditation of intern training positions via the Australian Medical Council and the state-based intern training accreditation authorities ● investigating and managing concerns about registered health practitioners, including taking immediate action and referring matters to tribunals ● criminal prosecutions for breaches in advertising and use of title ● funding the work of the Health Ombudsman in Queensland ● maintaining the public register ● funding practitioner health services, and ● funding the National Health Practitioner Ombudsman."
+    ],
+    "items": [
+      {
+        "id": "application-fee-for-general-registration",
+        "item": "Application fee for general registration",
+        "nationalFeeAud": 1661,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 1661,
+        "footnote": "*",
+        "page": 78
+      },
+      {
+        "id": "application-fee-for-specialist-registration",
+        "item": "Application fee for specialist registration",
+        "nationalFeeAud": 1661,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 1661,
+        "footnote": "*",
+        "page": 78
+      },
+      {
+        "id": "application-fee-for-provisional-registration-for-australian-and-new-zealand-graduates",
+        "item": "Application fee for provisional registration for Australian and New Zealand graduates",
+        "nationalFeeAud": 332,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 332,
+        "footnote": "*",
+        "page": 78
+      },
+      {
+        "id": "application-fee-for-provisional-registration-for-international-medical-graduates-graduates-outside-australia-and-new-zealand",
+        "item": "Application fee for provisional registration for international medical graduates (graduates outside Australia and New Zealand)",
+        "nationalFeeAud": 773,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 773,
+        "footnote": "*",
+        "page": 78
+      },
+      {
+        "id": "application-fee-for-general-registration-after-converting-from-provisional-registration",
+        "item": "Application fee for general registration after converting from provisional registration",
+        "nationalFeeAud": 543,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 543,
+        "footnote": "*",
+        "page": 78
+      },
+      {
+        "id": "application-fee-for-limited-registration",
+        "item": "Application fee for limited registration",
+        "nationalFeeAud": 1131,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 1131,
+        "footnote": "*",
+        "page": 78
+      },
+      {
+        "id": "application-fee-for-non-practising-registration",
+        "item": "Application fee for non-practising registration",
+        "nationalFeeAud": 332,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 332,
+        "footnote": "*",
+        "page": 78
+      },
+      {
+        "id": "application-fee-for-endorsement-of-registration",
+        "item": "Application fee for endorsement of registration",
+        "nationalFeeAud": 332,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 332,
+        "footnote": null,
+        "page": 79
+      },
+      {
+        "id": "application-fee-for-fast-track-application",
+        "item": "Application fee for fast track application",
+        "nationalFeeAud": 200,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 200,
+        "footnote": "*",
+        "page": 79
+      },
+      {
+        "id": "application-fee-to-add-specialist-registration-to-current-general-registration",
+        "item": "Application fee to add specialist registration to current general registration",
+        "nationalFeeAud": 543,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 543,
+        "footnote": null,
+        "page": 79
+      },
+      {
+        "id": "application-fee-to-add-general-registration-to-current-specialist-registration",
+        "item": "Application fee to add general registration to current specialist registration",
+        "nationalFeeAud": 543,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 543,
+        "footnote": null,
+        "page": 79
+      },
+      {
+        "id": "application-fee-to-add-another-specialist-registration-to-current-specialist-registration",
+        "item": "Application fee to add another specialist registration to current specialist registration",
+        "nationalFeeAud": 543,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 543,
+        "footnote": null,
+        "page": 79
+      },
+      {
+        "id": "registration-fee-for-general-registration",
+        "item": "Registration fee for general registration",
+        "nationalFeeAud": 1102,
+        "nswRebateOrSurchargeAud": 177,
+        "nswFeeAud": 925,
+        "footnote": null,
+        "page": 79
+      },
+      {
+        "id": "registration-fee-for-specialist-registration-for-practitioners-who-do-not-hold-general-registration",
+        "item": "Registration fee for specialist registration (for practitioners who do not hold general registration)",
+        "nationalFeeAud": 1102,
+        "nswRebateOrSurchargeAud": 177,
+        "nswFeeAud": 925,
+        "footnote": null,
+        "page": 79
+      },
+      {
+        "id": "registration-fee-for-limited-registration",
+        "item": "Registration fee for limited registration",
+        "nationalFeeAud": 1102,
+        "nswRebateOrSurchargeAud": 177,
+        "nswFeeAud": 925,
+        "footnote": null,
+        "page": 79
+      },
+      {
+        "id": "registration-fee-for-provisional-registration",
+        "item": "Registration fee for provisional registration",
+        "nationalFeeAud": 543,
+        "nswRebateOrSurchargeAud": 66,
+        "nswFeeAud": 477,
+        "footnote": null,
+        "page": 79
+      },
+      {
+        "id": "registration-fee-for-non-practising-registration",
+        "item": "Registration fee for non-practising registration",
+        "nationalFeeAud": 213,
+        "nswRebateOrSurchargeAud": 7,
+        "nswFeeAud": 206,
+        "footnote": null,
+        "page": 80
+      },
+      {
+        "id": "registration-fee-for-general-registration-teaching-and-assessing",
+        "item": "Registration fee for general registration (teaching and assessing)",
+        "nationalFeeAud": 213,
+        "nswRebateOrSurchargeAud": 7,
+        "nswFeeAud": 206,
+        "footnote": null,
+        "page": 80
+      },
+      {
+        "id": "late-renewal-fee-for-general-registration",
+        "item": "Late renewal fee for general registration",
+        "nationalFeeAud": 50,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 50,
+        "footnote": null,
+        "page": 80
+      },
+      {
+        "id": "late-renewal-fee-for-specialist-registration",
+        "item": "Late renewal fee for specialist registration",
+        "nationalFeeAud": 50,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 50,
+        "footnote": null,
+        "page": 80
+      },
+      {
+        "id": "late-renewal-fee-for-limited-registration",
+        "item": "Late renewal fee for limited registration",
+        "nationalFeeAud": 50,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 50,
+        "footnote": null,
+        "page": 80
+      },
+      {
+        "id": "late-renewal-fee-for-provisional-registration",
+        "item": "Late renewal fee for provisional registration",
+        "nationalFeeAud": 50,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 50,
+        "footnote": null,
+        "page": 80
+      },
+      {
+        "id": "late-renewal-fee-for-non-practising-registration",
+        "item": "Late renewal fee for non-practising registration",
+        "nationalFeeAud": 10,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 10,
+        "footnote": null,
+        "page": 80
+      },
+      {
+        "id": "late-renewal-fee-for-general-registration-teaching-and-assessing",
+        "item": "Late renewal fee for general registration (teaching and assessing)",
+        "nationalFeeAud": 50,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 50,
+        "footnote": null,
+        "page": 80
+      },
+      {
+        "id": "limited-registration-renewal-fee-for-practitioners-who-have-applied-for-general-or-specialist-registration",
+        "item": "Limited registration renewal fee for practitioners who have applied for general or specialist registration",
+        "nationalFeeAud": 30,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 30,
+        "footnote": "**",
+        "page": 80
+      },
+      {
+        "id": "provisional-registration-renewal-fee-for-practitioners-who-have-applied-for-general-or-specialist-registration",
+        "item": "Provisional registration renewal fee for practitioners who have applied for general or specialist registration",
+        "nationalFeeAud": 30,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 30,
+        "footnote": "**",
+        "page": 81
+      },
+      {
+        "id": "verification-of-registration-status-certificate-of-registration-status",
+        "item": "Verification of registration status (Certificate of Registration Status)",
+        "nationalFeeAud": 50,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 50,
+        "footnote": null,
+        "page": 81
+      },
+      {
+        "id": "copy-of-the-register-if-application-is-assessed-as-in-the-public-interest",
+        "item": "Copy of the register (if application is assessed as in the public interest)",
+        "nationalFeeAud": 2000,
+        "nswRebateOrSurchargeAud": 0,
+        "nswFeeAud": 2000,
+        "footnote": null,
+        "page": 81
+      }
+    ],
+    "footnotes": [
+      {
+        "marker": "*",
+        "text": "Payment of both an application fee and a registration fee is required at the time of application."
+      },
+      {
+        "marker": "**",
+        "text": "There is a transitional fee only for medical practitioners who need to renew their limited or provisional registration while their complete application for general or specialist registration is being assessed. The full registration fee for renewal of limited or provisional registration is not required in this circumstance."
+      }
+    ],
+    "notes": [
+      "There are no fees for the registration of students.",
+      "There is no application fee to change registration type to ‘non-practising’.",
+      "Only one annual registration fee applies to medical practitioners who are renewing general and specialist registration.",
+      "Medical practitioners with general and specialist registration are only required to pay one late renewal fee in addition to the annual registration fee.",
+      "Individuals who are required to apply for an international criminal history check from an approved supplier, will be responsible for the cost of the check."
+    ]
+  },
+  "unresolvedFees": [
+    {
+      "pathwayId": "competent-authority",
+      "organisation": "AMC",
+      "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "deferralText": "Contact the AMC for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "competent-authority",
+      "organisation": "ECFMG",
+      "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+      "deferralText": "Contact the ECFMG for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "competent-authority",
+      "organisation": "CPD home",
+      "text": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+      "deferralText": "See the relevant CPD home for fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "standard",
+      "organisation": "AMC",
+      "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange PSV of your qualifications. Contact the AMC for fee information.",
+      "deferralText": "Contact the AMC for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "standard",
+      "organisation": "ECFMG",
+      "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification. Contact the ECFMG for fee information.",
+      "deferralText": "Contact the ECFMG for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "standard",
+      "organisation": "AMC",
+      "text": "The AMC charges fees for the AMC MCQ , the clinical exams and WBAs. Contact the AMC for fee information.",
+      "deferralText": "Contact the AMC for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "standard",
+      "organisation": "CPD home",
+      "text": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+      "deferralText": "See the relevant CPD home for fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "expedited-specialist",
+      "organisation": "AMC",
+      "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "deferralText": "Contact the AMC for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "expedited-specialist",
+      "organisation": "ECFMG",
+      "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact ECFMG for more information about fees.",
+      "deferralText": "Contact ECFMG for more information about fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "expedited-specialist",
+      "organisation": "Workplace-based assessment (SIMG pays)",
+      "text": "There are fees for workplace-based assessments while on this pathway. The SIMG will be responsible for the costs of the multi-source feedback assessment and there may be other assessment costs depending on the type of assessment.",
+      "deferralText": null,
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "expedited-specialist",
+      "organisation": "CPD home",
+      "text": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+      "deferralText": "See the relevant CPD home for fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "expedited-specialist",
+      "organisation": "Specialist medical college",
+      "text": "If you choose to get fellowship, there will be college fees. Contact the relevant specialist medical college for details.",
+      "deferralText": "Contact the relevant specialist medical college for details.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-recognition",
+      "organisation": "AMC",
+      "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "deferralText": "Contact the AMC for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-recognition",
+      "organisation": "ECFMG",
+      "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+      "deferralText": "Contact the ECFMG for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-recognition",
+      "organisation": "Specialist medical college",
+      "text": "The specialist medical colleges charge fees for an assessment of comparability. See the relevant college website about college fees for IMGs.",
+      "deferralText": "See the relevant college website about college fees for IMGs.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-recognition",
+      "organisation": "Specialist medical college",
+      "text": "The specialist medical colleges charge fees for fellowship/membership. See the relevant college website about fees.",
+      "deferralText": "See the relevant college website about fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-recognition",
+      "organisation": "Other assessments on this pathway",
+      "text": "There may be additional fees for assessments/exams while on this pathway.",
+      "deferralText": null,
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-recognition",
+      "organisation": "CPD home",
+      "text": "CPD homes charge a joining fee. See the relevant specialist medical college for fees.",
+      "deferralText": "See the relevant specialist medical college for fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-area-of-need",
+      "organisation": "AMC",
+      "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "deferralText": "Contact the AMC for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-area-of-need",
+      "organisation": "ECFMG",
+      "text": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+      "deferralText": "Contact the ECFMG for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-area-of-need",
+      "organisation": "Specialist medical college",
+      "text": "The specialist medical colleges charge fees for an area of need assessment. See the relevant college website about college fees for IMGs.",
+      "deferralText": "See the relevant college website about college fees for IMGs.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "specialist-area-of-need",
+      "organisation": "CPD home",
+      "text": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+      "deferralText": "See the relevant CPD home for fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "short-term-training",
+      "organisation": "AMC",
+      "text": "The AMC charges a fee to establish an AMC candidate account for you, so it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "deferralText": "Contact the AMC for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "short-term-training",
+      "organisation": "ECFMG",
+      "text": "ECFMG charge a fee for verifying your qualifications. Contact the ECFMG for fee information.",
+      "deferralText": "Contact the ECFMG for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "short-term-training",
+      "organisation": "Specialist medical college",
+      "text": "The specialist medical colleges charge fees for an assessment of suitability for the Short-term training in a medical specialty pathway. See the relevant college website about fees for SIMGs.",
+      "deferralText": "See the relevant college website about fees for SIMGs.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "short-term-training",
+      "organisation": "CPD home",
+      "text": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+      "deferralText": "See the relevant CPD home for fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "au-nz-graduates-overseas-specialist",
+      "organisation": "AMC",
+      "text": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your specialist qualification. Contact the AMC for fee information.",
+      "deferralText": "Contact the AMC for fee information.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "au-nz-graduates-overseas-specialist",
+      "organisation": "ECFMG",
+      "text": "ECFMG charges a fee for the EPIC PSV service. Contact the ECFMG for more information about fees.",
+      "deferralText": "Contact the ECFMG for more information about fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "au-nz-graduates-overseas-specialist",
+      "organisation": "Specialist medical college",
+      "text": "The specialist medical colleges charge fees for an assessment of comparability and associated requirements. See the relevant college website about college fees.",
+      "deferralText": "See the relevant college website about college fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "au-nz-graduates-overseas-specialist",
+      "organisation": "Other assessments on this pathway",
+      "text": "There are fees for assessments on the Expedited Specialist pathway. See the Expedited Specialist pathway page for details.",
+      "deferralText": "See the Expedited Specialist pathway page for details.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "au-nz-graduates-overseas-specialist",
+      "organisation": "CPD home",
+      "text": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+      "deferralText": "See the relevant CPD home for fees.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    },
+    {
+      "pathwayId": "au-nz-graduates-overseas-specialist",
+      "organisation": "Specialist medical college",
+      "text": "If you choose to get fellowship, there will be college fees. Contact the college for details.",
+      "deferralText": "Contact the college for details.",
+      "status": "needs human verification",
+      "reason": "This document gives no amount for this fee; it defers to the organisation named."
+    }
+  ]
+}

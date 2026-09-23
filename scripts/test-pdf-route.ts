@@ -43,6 +43,13 @@ import visaTrends from "../src/data/visa-trends.json";
 import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
 import { confidenceLevelLabel, frictionBandDefinition, frictionBandLabel, frictionLevelDefinitionGeneric, occupationMatchLine } from "../src/lib/readiness/localization";
 import { matchOccupationToStateAllSubclasses, type StateOccupationSubclass } from "../lib/state-nomination/occupation-match";
+import {
+  deferredFeesLine,
+  MEDICAL_REGISTRATION_PROCESS,
+  medicalRegistrationAmountLabel,
+  medicalRegistrationFeeBreakdown,
+  resolveMedicalRegistration,
+} from "../lib/health-registration/img-pathways";
 import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
@@ -1168,8 +1175,13 @@ async function runAuthorityChecks(
       const resStart = flat.indexOf(sq(RESOURCES_HEADING[locale]));
       const body = resStart >= 0 ? flat.slice(0, resStart) : flat; // the generic "Official Resources" link list is exempt
       const named = AUTHORITY_PATTERNS.filter((a) => a.re.test(body)).map((a) => a.id);
-      const stray = named.filter((id) => id !== resolved.authorityId);
+      // A body that is part of the resolved authority's own process is not a second authority: for doctors the
+      // Medical Board document has the AMC verify qualifications (PSV) and run the exams inside Ahpra
+      // registration. Naming the AMC as an alternative assessing body ("AMC pathway") is still a failure.
+      const PROCESS_BODIES: Record<string, string[]> = { AHPRA: ["AMC"] };
+      const stray = named.filter((id) => id !== resolved.authorityId && !(PROCESS_BODIES[resolved.authorityId] ?? []).includes(id));
       if (stray.length > 0) f(`text names other authorities ${stray} although ${profile.input.occupation} resolves to ${resolved.authorityId}`);
+      if (/AMC ?pathway/i.test(body)) f(`text frames the AMC as an assessing pathway ("AMC pathway") although ${profile.input.occupation} resolves to ${resolved.authorityId}`);
       if (!named.includes(resolved.authorityId)) f(`the resolved authority ${resolved.authorityId} is never named`);
 
       // ── 5. Estimate qualifier next to every figure from an estimated fee ───
@@ -1454,6 +1466,111 @@ async function runOccupationMatchChecks(
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Medical registration (GP 253111) + 191 income requirement. The AHPRA line must quote the Medical Board fees
+// from src/data/health-registration/img-pathways.json with their "effective 1 August 2026" citation; the AMC /
+// ECFMG / college line must never carry a number (the source document publishes none); and the 491 -> 191
+// Bridge to PR text must describe the ATO notices-of-assessment requirement with no dollar figure (the subclass
+// 191 document: "There is no minimum income requirement").
+// ─────────────────────────────────────────────────────────────────────────────
+
+const GP_PROFILE: ReadinessInput = {
+  ...base,
+  currentCountry: "Turkey",
+  age: "38",
+  occupation: "General Practitioner 253111",
+  occupationConfirmed: "yes",
+  englishLevel: "competent",
+  qualificationLevel: "Bachelor's Degree",
+  sponsorOrFamily: undefined,
+  offshoreExperienceYears: 6,
+  migrationGoals: ["direct_pr"],
+};
+
+async function runMedicalRegistrationChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  const medical = resolveMedicalRegistration({ anzscoCode: "253111" });
+  if (medical.pathwayId !== "expedited-specialist" || medical.totalAud !== 1661 + 1102) {
+    fail(`GP 253111 should resolve to the Expedited Specialist pathway at AUD 2,763 (1,661 + 1,102); got ${medical.pathwayId} AUD ${medical.totalAud}`);
+  }
+  for (const locale of LOCALES) {
+    const label = `medical-registration gp-253111/${locale}`;
+    console.log(`\n=== ${label} ===`);
+    let caseFailed = false;
+    const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+    const input: ReadinessInput = { ...GP_PROFILE, locale };
+    const report = runReadinessEngine(input);
+
+    // Engine-level: the roadmap rows themselves.
+    const skills = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+    // src/lib/readiness-engine.ts renders "AUD" as "澳元" in zh-Hans amount cells.
+    const expectedAmount = locale === "zh-Hans" ? medicalRegistrationAmountLabel(medical).replace(/AUD/g, "澳元") : medicalRegistrationAmountLabel(medical);
+    const expectedBreakdown = medicalRegistrationFeeBreakdown(medical, locale);
+    if (!skills) f("no skills_assessment row in the Financial Roadmap");
+    else {
+      if (skills.amountLabel !== expectedAmount) f(`AHPRA row amount is "${skills.amountLabel}", expected "${expectedAmount}"`);
+      if (skills.amountMin !== 2763 || skills.amountMax !== 2763 || skills.estimated) f(`AHPRA row must be an exact, non-estimated AUD 2,763 (got ${skills.amountMin}-${skills.amountMax}, estimated=${skills.estimated})`);
+      if (!skills.explanation.startsWith(expectedBreakdown)) f(`AHPRA row explanation must open with the cited fee breakdown "${expectedBreakdown}"`);
+      if (/2[,.]?500|\b850\b/.test(`${skills.amountLabel} ${skills.explanation}`)) f("AHPRA row still carries the old AUD 2,500 / 850 placeholder");
+    }
+    const deferred = deferredFeesLine(medical, locale);
+    const deferredRow = report.financialRoadmap.find((i) => i.category === deferred.category);
+    if (!deferredRow) f("no separate AMC / ECFMG / college row in the Financial Roadmap");
+    else {
+      if (deferredRow.kind !== undefined || deferredRow.amountMin !== undefined || deferredRow.amountMax !== undefined) f("the AMC / ECFMG / college row must carry no kind and no amount (it must never enter a total)");
+      if (/\d/.test(`${deferredRow.amountLabel} ${deferredRow.explanation}`)) f(`the AMC / ECFMG / college row shows a number: "${deferredRow.amountLabel}"`);
+    }
+
+    // 191 income requirement (Bridge to PR), engine level.
+    const to191 = report.progressionPathways.find((p) => p.from === "491" && p.to === "191");
+    if (!to191) f("no 491 -> 191 Bridge to PR item for this profile");
+    else {
+      if (!/notices of assessment/.test(to191.explanation)) f(`191 item does not describe the ATO notices of assessment requirement: "${to191.explanation}"`);
+      if (/53[,.\s]?900|AUD\s*\d|\$\s*\d|\d[\d,.]*\s*澳元/.test(to191.explanation)) f(`191 item still states an income figure: "${to191.explanation}"`);
+      if (!/(3 years|3 yıl|3 年)/.test(to191.explanation)) f("191 item lost the 3-year designated regional area requirement");
+    }
+
+    // PDF-level: the same text must reach the real route's PDF output.
+    const reportId = `medical-${locale}`;
+    rows.set(reportId, {
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+    });
+    const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+    if (res.status !== 200) { f(`route returned HTTP ${res.status}`); continue; }
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    const pages = (await extractPdfPages(bytes)).map((p) => p.replace(/L o g i V i s a\s*/g, "").replace(/\d+ \/ \d+\s*Generated by[^\n]*\n?/g, "").replace(/-- \d+ of \d+ --/g, ""));
+    const raw = pages.join("\n");
+    await writeFile(path.join(outDir, `medical-gp-253111-${locale}.txt`), raw);
+    const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
+    const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : flatten(t));
+    const has = (t: string) => sq(flat).includes(sq(t));
+
+    if (!has(expectedAmount)) f(`AHPRA amount not found in the PDF: "${expectedAmount}"`);
+    if (!has(expectedBreakdown)) f(`AHPRA fee breakdown + citation not found verbatim in the PDF: "${expectedBreakdown}"`);
+    if (!has("effective 1 August 2026")) f('"effective 1 August 2026" citation missing from the PDF');
+    for (const n of ["2,763", "1,661", "1,102"]) if (!flat.includes(n)) f(`Medical Board figure ${n} missing from the PDF`);
+    if (/AUD\s*2[,.]?500\b/.test(flat)) f("PDF still shows the old AUD 2,500 college placeholder");
+    if (!has(deferred.amountLabel)) f(`AMC / ECFMG / college line not found in the PDF: "${deferred.amountLabel}"`);
+    // Whatever follows the deferred line's category up to its amount text must hold no figure either.
+    const at = sq(flat).indexOf(sq(deferred.category));
+    if (at >= 0) {
+      const window = sq(flat).slice(at, at + sq(deferred.category).length + sq(deferred.amountLabel).length + 20);
+      if (/\d{2,}|AUD\s*\d|\$\s*\d/.test(window.replace(sq(deferred.category), ""))) f(`AMC / ECFMG / college line is followed by a number in the PDF: "${window}"`);
+    } else f("AMC / ECFMG / college category not found in the PDF");
+    const processLead = MEDICAL_REGISTRATION_PROCESS[locale].split(locale === "zh-Hans" ? "。" : ". ")[0];
+    if (!has(processLead)) f(`sourced process description not found in the PDF (FAQ / guide): "${processLead}"`);
+    if (/53[,.\s]?900/.test(flat)) f("PDF still mentions the 53,900 income threshold");
+    if (!/notices\s*of\s*assessment/.test(flat)) f("PDF does not describe the 191 ATO notices of assessment requirement");
+
+    if (!caseFailed) console.log(`  ✅ ok (AHPRA ${expectedAmount.slice(0, 60)}...; AMC/college line unpriced; 191 = ATO notices)`);
+  }
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -1543,6 +1660,12 @@ async function main() {
 
   // Occupation <-> state occupation-list match line
   await runOccupationMatchChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
+
+  // Medical registration fees (GP 253111) + the 191 income requirement
+  await runMedicalRegistrationChecks(GET, rows, outDir, (m) => {
     failed = true;
     console.error("  ❌ " + m);
   });

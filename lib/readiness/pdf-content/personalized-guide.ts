@@ -52,6 +52,12 @@ export function getPersonalizedApplicationGuide(
   financialRoadmap?: FinancialRoadmapItem[],
   /** AU: the engine's action plan -- English/nomination are only suggested when it lists them. */
   pointsActionPlan?: PointsActionPlan,
+  /**
+   * How the assessment actually works for this authority, already localized -- passed only where the generic
+   * "apply to the authority" step is misleading (doctors: Medical Board registration via the AMC and a college,
+   * see MEDICAL_REGISTRATION_PROCESS in lib/health-registration/img-pathways.ts). Appended to the skills step.
+   */
+  authorityProcessNote?: string,
 ): {
   title: string;
   userName: string;
@@ -145,7 +151,8 @@ export function getPersonalizedApplicationGuide(
             ? `${name}, ${occupationLabel} için beceri değerlendirmesi henüz yapılmamış. Bu, vize başvurusunun zorunlu bir adımıdır. İlk adımınız, resmi mevzuat aracından size özel değerlendirme kurumunu belirlemektir.`
             : isZh
               ? `${name}，您的职业（${occupationLabel}）尚未完成技能评估。这是签证申请的必要步骤。您的首要步骤是通过官方立法文件确定您的具体评估机构。`
-              : `${name}, skills assessment for ${occupationLabel} has not been completed yet. This is a mandatory step for your visa application. Your first step is identifying your specific assessing authority from the official legislative instrument.`),
+              : `${name}, skills assessment for ${occupationLabel} has not been completed yet. This is a mandatory step for your visa application. Your first step is identifying your specific assessing authority from the official legislative instrument.`)
+        + (authorityProcessNote ? ` ${authorityProcessNote}` : ""),
     });
   }
 

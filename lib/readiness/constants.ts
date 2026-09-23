@@ -109,13 +109,10 @@ export function resolveSecondInstalmentAud(
   return SECOND_INSTALMENT_AUD["189"];
 }
 
-/**
- * Taxable income threshold gating the subclass 491 -> 191 (permanent)
- * transition. Previously inlined as literal text in ~4 places across
- * engine.ts (EN/TR/ZH x singular/plural phrasing) -- centralized here so an
- * update only needs to happen once.
- */
-export const INCOME_THRESHOLD_491_TO_191_AUD = 53_900;
+// (INCOME_THRESHOLD_491_TO_191_AUD, a AUD 53,900/year taxable-income threshold for the 491 -> 191 transition,
+// was removed on 2026-09-23: the subclass 191 document in data/knowledge states "There is no minimum income
+// requirement" -- the requirement is ATO notices of assessment for three income years out of the five years of
+// the eligible visa. See the 491 -> 191 item in engine.ts and fee-provenance.json "income_requirement_491_to_191".)
 
 /**
  * How long an English-test score remains valid, per country's own skilled-

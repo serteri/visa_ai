@@ -1,0 +1,628 @@
+{
+  "sourceDocument": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf",
+  "sourceTitle": "Pathways to registration for international medical graduates",
+  "extractedDate": "2026-09-23",
+  "generatedBy": "scripts/generate-img-pathways.ts",
+  "facts": [
+    {
+      "id": "mba_fee_application-fee-for-general-registration",
+      "description": "Application fee for general registration",
+      "value": 1661,
+      "nswFeeAud": 1661,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.78 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for general registration\": national fee 1661, NSW 1661."
+    },
+    {
+      "id": "mba_fee_application-fee-for-specialist-registration",
+      "description": "Application fee for specialist registration",
+      "value": 1661,
+      "nswFeeAud": 1661,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.78 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for specialist registration\": national fee 1661, NSW 1661."
+    },
+    {
+      "id": "mba_fee_application-fee-for-provisional-registration-for-australian-and-new-zealand-graduates",
+      "description": "Application fee for provisional registration for Australian and New Zealand graduates",
+      "value": 332,
+      "nswFeeAud": 332,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.78 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for provisional registration for Australian and New Zealand graduates\": national fee 332, NSW 332."
+    },
+    {
+      "id": "mba_fee_application-fee-for-provisional-registration-for-international-medical-graduates-graduates-outside-australia-and-new-zealand",
+      "description": "Application fee for provisional registration for international medical graduates (graduates outside Australia and New Zealand)",
+      "value": 773,
+      "nswFeeAud": 773,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.78 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for provisional registration for international medical graduates (graduates outside Australia and New Zealand)\": national fee 773, NSW 773."
+    },
+    {
+      "id": "mba_fee_application-fee-for-general-registration-after-converting-from-provisional-registration",
+      "description": "Application fee for general registration after converting from provisional registration",
+      "value": 543,
+      "nswFeeAud": 543,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.78 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for general registration after converting from provisional registration\": national fee 543, NSW 543."
+    },
+    {
+      "id": "mba_fee_application-fee-for-limited-registration",
+      "description": "Application fee for limited registration",
+      "value": 1131,
+      "nswFeeAud": 1131,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.78 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for limited registration\": national fee 1131, NSW 1131."
+    },
+    {
+      "id": "mba_fee_application-fee-for-non-practising-registration",
+      "description": "Application fee for non-practising registration",
+      "value": 332,
+      "nswFeeAud": 332,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.78 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for non-practising registration\": national fee 332, NSW 332."
+    },
+    {
+      "id": "mba_fee_application-fee-for-endorsement-of-registration",
+      "description": "Application fee for endorsement of registration",
+      "value": 332,
+      "nswFeeAud": 332,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for endorsement of registration\": national fee 332, NSW 332."
+    },
+    {
+      "id": "mba_fee_application-fee-for-fast-track-application",
+      "description": "Application fee for fast track application",
+      "value": 200,
+      "nswFeeAud": 200,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee for fast track application\": national fee 200, NSW 200."
+    },
+    {
+      "id": "mba_fee_application-fee-to-add-specialist-registration-to-current-general-registration",
+      "description": "Application fee to add specialist registration to current general registration",
+      "value": 543,
+      "nswFeeAud": 543,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee to add specialist registration to current general registration\": national fee 543, NSW 543."
+    },
+    {
+      "id": "mba_fee_application-fee-to-add-general-registration-to-current-specialist-registration",
+      "description": "Application fee to add general registration to current specialist registration",
+      "value": 543,
+      "nswFeeAud": 543,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee to add general registration to current specialist registration\": national fee 543, NSW 543."
+    },
+    {
+      "id": "mba_fee_application-fee-to-add-another-specialist-registration-to-current-specialist-registration",
+      "description": "Application fee to add another specialist registration to current specialist registration",
+      "value": 543,
+      "nswFeeAud": 543,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Application fee to add another specialist registration to current specialist registration\": national fee 543, NSW 543."
+    },
+    {
+      "id": "mba_fee_registration-fee-for-general-registration",
+      "description": "Registration fee for general registration",
+      "value": 1102,
+      "nswFeeAud": 925,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Registration fee for general registration\": national fee 1102, NSW 925."
+    },
+    {
+      "id": "mba_fee_registration-fee-for-specialist-registration-for-practitioners-who-do-not-hold-general-registration",
+      "description": "Registration fee for specialist registration (for practitioners who do not hold general registration)",
+      "value": 1102,
+      "nswFeeAud": 925,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Registration fee for specialist registration (for practitioners who do not hold general registration)\": national fee 1102, NSW 925."
+    },
+    {
+      "id": "mba_fee_registration-fee-for-limited-registration",
+      "description": "Registration fee for limited registration",
+      "value": 1102,
+      "nswFeeAud": 925,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Registration fee for limited registration\": national fee 1102, NSW 925."
+    },
+    {
+      "id": "mba_fee_registration-fee-for-provisional-registration",
+      "description": "Registration fee for provisional registration",
+      "value": 543,
+      "nswFeeAud": 477,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.79 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Registration fee for provisional registration\": national fee 543, NSW 477."
+    },
+    {
+      "id": "mba_fee_registration-fee-for-non-practising-registration",
+      "description": "Registration fee for non-practising registration",
+      "value": 213,
+      "nswFeeAud": 206,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Registration fee for non-practising registration\": national fee 213, NSW 206."
+    },
+    {
+      "id": "mba_fee_registration-fee-for-general-registration-teaching-and-assessing",
+      "description": "Registration fee for general registration (teaching and assessing)",
+      "value": 213,
+      "nswFeeAud": 206,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Registration fee for general registration (teaching and assessing)\": national fee 213, NSW 206."
+    },
+    {
+      "id": "mba_fee_late-renewal-fee-for-general-registration",
+      "description": "Late renewal fee for general registration",
+      "value": 50,
+      "nswFeeAud": 50,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Late renewal fee for general registration\": national fee 50, NSW 50."
+    },
+    {
+      "id": "mba_fee_late-renewal-fee-for-specialist-registration",
+      "description": "Late renewal fee for specialist registration",
+      "value": 50,
+      "nswFeeAud": 50,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Late renewal fee for specialist registration\": national fee 50, NSW 50."
+    },
+    {
+      "id": "mba_fee_late-renewal-fee-for-limited-registration",
+      "description": "Late renewal fee for limited registration",
+      "value": 50,
+      "nswFeeAud": 50,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Late renewal fee for limited registration\": national fee 50, NSW 50."
+    },
+    {
+      "id": "mba_fee_late-renewal-fee-for-provisional-registration",
+      "description": "Late renewal fee for provisional registration",
+      "value": 50,
+      "nswFeeAud": 50,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Late renewal fee for provisional registration\": national fee 50, NSW 50."
+    },
+    {
+      "id": "mba_fee_late-renewal-fee-for-non-practising-registration",
+      "description": "Late renewal fee for non-practising registration",
+      "value": 10,
+      "nswFeeAud": 10,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Late renewal fee for non-practising registration\": national fee 10, NSW 10."
+    },
+    {
+      "id": "mba_fee_late-renewal-fee-for-general-registration-teaching-and-assessing",
+      "description": "Late renewal fee for general registration (teaching and assessing)",
+      "value": 50,
+      "nswFeeAud": 50,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Late renewal fee for general registration (teaching and assessing)\": national fee 50, NSW 50."
+    },
+    {
+      "id": "mba_fee_limited-registration-renewal-fee-for-practitioners-who-have-applied-for-general-or-specialist-registration",
+      "description": "Limited registration renewal fee for practitioners who have applied for general or specialist registration",
+      "value": 30,
+      "nswFeeAud": 30,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.80 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Limited registration renewal fee for practitioners who have applied for general or specialist registration\": national fee 30, NSW 30."
+    },
+    {
+      "id": "mba_fee_provisional-registration-renewal-fee-for-practitioners-who-have-applied-for-general-or-specialist-registration",
+      "description": "Provisional registration renewal fee for practitioners who have applied for general or specialist registration",
+      "value": 30,
+      "nswFeeAud": 30,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.81 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Provisional registration renewal fee for practitioners who have applied for general or specialist registration\": national fee 30, NSW 30."
+    },
+    {
+      "id": "mba_fee_verification-of-registration-status-certificate-of-registration-status",
+      "description": "Verification of registration status (Certificate of Registration Status)",
+      "value": 50,
+      "nswFeeAud": 50,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.81 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Verification of registration status (Certificate of Registration Status)\": national fee 50, NSW 50."
+    },
+    {
+      "id": "mba_fee_copy-of-the-register-if-application-is-assessed-as-in-the-public-interest",
+      "description": "Copy of the register (if application is assessed as in the public interest)",
+      "value": 2000,
+      "nswFeeAud": 2000,
+      "currency": "AUD",
+      "effective_from": "2026-08-01",
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.81 -- \"Medical Board of Australia — Schedule of fees effective 1 August 2026\", row \"Copy of the register (if application is assessed as in the public interest)\": national fee 2000, NSW 2000."
+    },
+    {
+      "id": "img_pathway_competent_authority",
+      "description": "Competent Authority pathway: who it is for, eligibility, process, registration type, timeframes, fee responsibilities",
+      "value": null,
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf pp.1-11"
+    },
+    {
+      "id": "img_pathway_standard",
+      "description": "Standard pathway: who it is for, eligibility, process, registration type, timeframes, fee responsibilities",
+      "value": null,
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf pp.11-26"
+    },
+    {
+      "id": "img_pathway_expedited_specialist",
+      "description": "Expedited Specialist pathway: who it is for, eligibility, process, registration type, timeframes, fee responsibilities",
+      "value": null,
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf pp.27-42"
+    },
+    {
+      "id": "img_pathway_specialist_recognition",
+      "description": "Specialist pathway – specialist recognition: who it is for, eligibility, process, registration type, timeframes, fee responsibilities",
+      "value": null,
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf pp.42-52"
+    },
+    {
+      "id": "img_pathway_specialist_area_of_need",
+      "description": "Specialist pathway – area of need: who it is for, eligibility, process, registration type, timeframes, fee responsibilities",
+      "value": null,
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf pp.52-62"
+    },
+    {
+      "id": "img_pathway_short_term_training",
+      "description": "Short-term training in a medical specialty pathway: who it is for, eligibility, process, registration type, timeframes, fee responsibilities",
+      "value": null,
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf pp.62-71"
+    },
+    {
+      "id": "img_pathway_au_nz_graduates_overseas_specialist",
+      "description": "Australian and NZ medical graduates with overseas specialist qualifications: who it is for, eligibility, process, registration type, timeframes, fee responsibilities",
+      "value": null,
+      "last_verified": "2026-09-23",
+      "status": "extracted",
+      "source": "data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf pp.71-77"
+    },
+    {
+      "id": "deferred_fee_competent_authority_amc_1",
+      "description": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.6/7 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"Contact the AMC for fee information.\""
+    },
+    {
+      "id": "deferred_fee_competent_authority_ecfmg_1",
+      "description": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.6/7 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"Contact the ECFMG for fee information.\""
+    },
+    {
+      "id": "deferred_fee_competent_authority_cpd_home_1",
+      "description": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.6/7 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"See the relevant CPD home for fees.\""
+    },
+    {
+      "id": "deferred_fee_standard_amc_1",
+      "description": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange PSV of your qualifications. Contact the AMC for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.17 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"Contact the AMC for fee information.\""
+    },
+    {
+      "id": "deferred_fee_standard_ecfmg_1",
+      "description": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification. Contact the ECFMG for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.17 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"Contact the ECFMG for fee information.\""
+    },
+    {
+      "id": "deferred_fee_standard_amc_2",
+      "description": "The AMC charges fees for the AMC MCQ , the clinical exams and WBAs. Contact the AMC for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.17 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"Contact the AMC for fee information.\""
+    },
+    {
+      "id": "deferred_fee_standard_cpd_home_1",
+      "description": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.17 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"See the relevant CPD home for fees.\""
+    },
+    {
+      "id": "deferred_fee_expedited_specialist_amc_1",
+      "description": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.31 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"Contact the AMC for fee information.\""
+    },
+    {
+      "id": "deferred_fee_expedited_specialist_ecfmg_1",
+      "description": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact ECFMG for more information about fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.31 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"Contact ECFMG for more information about fees.\""
+    },
+    {
+      "id": "deferred_fee_expedited_specialist_workplace_based_assessment_simg_pays_1",
+      "description": "There are fees for workplace-based assessments while on this pathway. The SIMG will be responsible for the costs of the multi-source feedback assessment and there may be other assessment costs depending on the type of assessment.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.31 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount."
+    },
+    {
+      "id": "deferred_fee_expedited_specialist_cpd_home_1",
+      "description": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.31 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"See the relevant CPD home for fees.\""
+    },
+    {
+      "id": "deferred_fee_expedited_specialist_specialist_medical_college_1",
+      "description": "If you choose to get fellowship, there will be college fees. Contact the relevant specialist medical college for details.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.31 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"Contact the relevant specialist medical college for details.\""
+    },
+    {
+      "id": "deferred_fee_specialist_recognition_amc_1",
+      "description": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.44/45 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"Contact the AMC for fee information.\""
+    },
+    {
+      "id": "deferred_fee_specialist_recognition_ecfmg_1",
+      "description": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.44/45 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"Contact the ECFMG for fee information.\""
+    },
+    {
+      "id": "deferred_fee_specialist_recognition_specialist_medical_college_1",
+      "description": "The specialist medical colleges charge fees for an assessment of comparability. See the relevant college website about college fees for IMGs.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.44/45 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"See the relevant college website about college fees for IMGs.\""
+    },
+    {
+      "id": "deferred_fee_specialist_recognition_specialist_medical_college_2",
+      "description": "The specialist medical colleges charge fees for fellowship/membership. See the relevant college website about fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.44/45 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"See the relevant college website about fees.\""
+    },
+    {
+      "id": "deferred_fee_specialist_recognition_other_assessments_on_this_pathway_1",
+      "description": "There may be additional fees for assessments/exams while on this pathway.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.44/45 (\"What are the fees on this pathway?\") names this fee but gives no amount."
+    },
+    {
+      "id": "deferred_fee_specialist_recognition_cpd_home_1",
+      "description": "CPD homes charge a joining fee. See the relevant specialist medical college for fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.44/45 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"See the relevant specialist medical college for fees.\""
+    },
+    {
+      "id": "deferred_fee_specialist_area_of_need_amc_1",
+      "description": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.56 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"Contact the AMC for fee information.\""
+    },
+    {
+      "id": "deferred_fee_specialist_area_of_need_ecfmg_1",
+      "description": "ECFMG charge a fee for the MyIntealth and EPIC PSV service to verify your qualification(s). Contact the ECFMG for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.56 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"Contact the ECFMG for fee information.\""
+    },
+    {
+      "id": "deferred_fee_specialist_area_of_need_specialist_medical_college_1",
+      "description": "The specialist medical colleges charge fees for an area of need assessment. See the relevant college website about college fees for IMGs.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.56 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"See the relevant college website about college fees for IMGs.\""
+    },
+    {
+      "id": "deferred_fee_specialist_area_of_need_cpd_home_1",
+      "description": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.56 (\"What are the fees on this pathway?\") names this fee but gives no amount: \"See the relevant CPD home for fees.\""
+    },
+    {
+      "id": "deferred_fee_short_term_training_amc_1",
+      "description": "The AMC charges a fee to establish an AMC candidate account for you, so it can arrange primary source verification (PSV) of your qualifications. Contact the AMC for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.65 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"Contact the AMC for fee information.\""
+    },
+    {
+      "id": "deferred_fee_short_term_training_ecfmg_1",
+      "description": "ECFMG charge a fee for verifying your qualifications. Contact the ECFMG for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.65 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"Contact the ECFMG for fee information.\""
+    },
+    {
+      "id": "deferred_fee_short_term_training_specialist_medical_college_1",
+      "description": "The specialist medical colleges charge fees for an assessment of suitability for the Short-term training in a medical specialty pathway. See the relevant college website about fees for SIMGs.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.65 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"See the relevant college website about fees for SIMGs.\""
+    },
+    {
+      "id": "deferred_fee_short_term_training_cpd_home_1",
+      "description": "Continuing professional development (CPD) homes charge a joining fee. See the relevant CPD home for fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.65 (\"What are the fees for IMGs on this pathway?\") names this fee but gives no amount: \"See the relevant CPD home for fees.\""
+    },
+    {
+      "id": "deferred_fee_au_nz_graduates_overseas_specialist_amc_1",
+      "description": "The AMC charges a fee to establish an AMC candidate account for you, so that it can arrange primary source verification (PSV) of your specialist qualification. Contact the AMC for fee information.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.74/75 (\"What are the fees for this pathway?\") names this fee but gives no amount: \"Contact the AMC for fee information.\""
+    },
+    {
+      "id": "deferred_fee_au_nz_graduates_overseas_specialist_ecfmg_1",
+      "description": "ECFMG charges a fee for the EPIC PSV service. Contact the ECFMG for more information about fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.74/75 (\"What are the fees for this pathway?\") names this fee but gives no amount: \"Contact the ECFMG for more information about fees.\""
+    },
+    {
+      "id": "deferred_fee_au_nz_graduates_overseas_specialist_specialist_medical_college_1",
+      "description": "The specialist medical colleges charge fees for an assessment of comparability and associated requirements. See the relevant college website about college fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.74/75 (\"What are the fees for this pathway?\") names this fee but gives no amount: \"See the relevant college website about college fees.\""
+    },
+    {
+      "id": "deferred_fee_au_nz_graduates_overseas_specialist_other_assessments_on_this_pathway_1",
+      "description": "There are fees for assessments on the Expedited Specialist pathway. See the Expedited Specialist pathway page for details.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.74/75 (\"What are the fees for this pathway?\") names this fee but gives no amount: \"See the Expedited Specialist pathway page for details.\""
+    },
+    {
+      "id": "deferred_fee_au_nz_graduates_overseas_specialist_cpd_home_1",
+      "description": "CPD homes charge a joining fee. See the relevant CPD home for fees.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.74/75 (\"What are the fees for this pathway?\") names this fee but gives no amount: \"See the relevant CPD home for fees.\""
+    },
+    {
+      "id": "deferred_fee_au_nz_graduates_overseas_specialist_specialist_medical_college_2",
+      "description": "If you choose to get fellowship, there will be college fees. Contact the college for details.",
+      "value": null,
+      "last_verified": null,
+      "status": "needs human verification",
+      "source": "needs human verification -- data/knowledge/Skill Assessments/Pathways to registration for international medical graduates/Pathways to registration for international medical graduates.pdf p.74/75 (\"What are the fees for this pathway?\") names this fee but gives no amount: \"Contact the college for details.\""
+    }
+  ]
+}

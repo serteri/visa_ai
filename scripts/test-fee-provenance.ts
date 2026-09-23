@@ -19,10 +19,10 @@ import {
   BASE_VAC_AUD,
   resolveAdditionalApplicantVac,
   SECOND_INSTALMENT_AUD,
-  INCOME_THRESHOLD_491_TO_191_AUD,
   ENGLISH_TEST_VALIDITY_YEARS,
   CURRENT_CSIT,
 } from "../lib/readiness/constants";
+import * as readinessConstants from "../lib/readiness/constants";
 import { acsAuthority } from "../lib/skills-assessment/authorities/acs";
 import { listAuthorities } from "../lib/skills-assessment";
 import { findAuthorityConflicts } from "../lib/skills-assessment/resolve-authority";
@@ -52,7 +52,13 @@ const unverifiedFacts: string[] = [];
 console.log("==================== (1) provenance metadata completeness ====================");
 for (const fact of facts) {
   if (fact.value === null) {
-    console.log(`  ⚠️  ${fact.id}: value is null (known gap: ${fact.source}) -- metadata check skipped`);
+    // A verified fact with no dollar amount by design (e.g. "there is no minimum income requirement") carries
+    // last_verified; a null value without it is a genuine gap.
+    console.log(
+      fact.last_verified
+        ? `  ✅ ${fact.id}: verified ${fact.last_verified}, no dollar value by design -- ${fact.description}`
+        : `  ⚠️  ${fact.id}: value is null (known gap: ${fact.source}) -- metadata check skipped`,
+    );
     continue;
   }
   if (!fact.source || !fact.source.trim()) {
@@ -124,14 +130,15 @@ checkSecondInstalment("189", "second_instalment_189_190");
 checkSecondInstalment("190", "second_instalment_189_190");
 checkSecondInstalment("491", "second_instalment_491");
 
-// Income threshold: manifest vs constants.ts (no second JSON copy exists by design -- Phase 1 centralized it).
+// 491 -> 191 income requirement: the subclass 191 document says there is no minimum income (ATO notices of
+// assessment for three income years instead) -- the manifest must say so, with no dollar value, and the old
+// threshold constant must not come back.
 {
-  const fact = findFact("income_threshold_491_to_191");
-  if (fact.value !== INCOME_THRESHOLD_491_TO_191_AUD) {
-    fail(`Income threshold disagrees: manifest=${fact.value}, constants.ts=${INCOME_THRESHOLD_491_TO_191_AUD}`);
-  } else {
-    ok(`Income threshold: manifest and constants.ts agree (AUD ${INCOME_THRESHOLD_491_TO_191_AUD})`);
-  }
+  const fact = findFact("income_requirement_491_to_191");
+  if (fact.value !== null) fail(`191 income requirement must carry no dollar value (got ${fact.value})`);
+  else if (!/There is no minimum income requirement/.test(fact.source ?? "") || !/notices of assessment/.test(fact.source ?? "")) fail("191 income requirement source must quote the subclass 191 document");
+  else if ("INCOME_THRESHOLD_491_TO_191_AUD" in readinessConstants) fail("INCOME_THRESHOLD_491_TO_191_AUD is back in constants.ts");
+  else ok("191 income requirement: no minimum income, ATO notices of assessment (sourced), no threshold constant");
 }
 
 // English test validity: manifest vs constants.ts.

@@ -279,15 +279,15 @@
       ]
     },
     {
-      "id": "income_threshold_491_to_191",
-      "description": "Taxable income threshold gating the subclass 491 -> 191 (permanent) transition",
-      "value": 53900,
+      "id": "income_requirement_491_to_191",
+      "description": "Subclass 191 (from 491) income requirement: no minimum income; ATO notices of assessment for three income years out of the five years of the eligible visa",
+      "value": null,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": "2026-09-20",
-      "source": "needs human verification -- data/knowledge/ not present in this environment. This is the pre-existing codebase value; whether it reflects the post-1-July-2026 indexed threshold is NOT confirmed.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Permanent Residence (Skilled Regional) visa (subclass 191)/Permanent Residence (Skilled Regional) visa (subclass 191).pdf -- \"Satisfy the income requirement\": \"There is no minimum income requirement. You must provide notices of assessment issued by the Australian Taxation Office (ATO) for three income years out of the five years of your eligible visa.\" (The document names subclass 491 and 494 as the eligible visas.) Replaces the former unsourced AUD 53,900/year threshold.",
       "locations": [
-        "lib/readiness/constants.ts:INCOME_THRESHOLD_491_TO_191_AUD"
+        "lib/readiness/engine.ts:buildProgressionPathways (Bridge to PR, 491 -> 191 item)"
       ]
     },
     {
