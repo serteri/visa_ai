@@ -1,60 +1,47 @@
 /**
  * AI-assistant credit packages sold on app/[locale]/pricing, resolved SERVER-SIDE only.
  *
- * The pricing page used to read NEXT_PUBLIC_STRIPE_{STARTER,COMPREHENSIVE}_CREDITS_PRICE_ID in the browser.
- * NEXT_PUBLIC_* values are inlined at build time; when they are not set in the Vercel build environment the
- * browser bundle keeps an unresolved `process.env.NEXT_PUBLIC_...` lookup that evaluates to undefined, and
- * the Buy Now handler returned early with only a console.error -- both buttons silently did nothing in
- * production. The browser now sends only the package id ("starter" | "comprehensive"); the price id is
- * resolved here, at request time.
- *
- * Resolution per package: the server-only STRIPE_<PLAN>_CREDITS_PRICE_ID override if set, otherwise the
- * committed default for the Stripe mode of STRIPE_SECRET_KEY (sk_live_ -> live price, anything else -> test
- * price), so the price can never be from the other mode than the key. The legacy NEXT_PUBLIC_* names are
- * deliberately NOT read: local .env files still carry live ids under them next to a test key. Price ids are
- * public identifiers, not secrets. Defaults checked against Stripe on 2026-09-23: live AUD 9.99 / 19.99
- * one-time, tax_behavior "exclusive"; the test-mode prices mirror them exactly.
+ * The browser sends only the package id ("starter" | "comprehensive"); never a price or a NEXT_PUBLIC_* price
+ * id (when those were missing from the Vercel build they were inlined as undefined and Buy Now silently did
+ * nothing). The Checkout line item is inline price_data with the GST-inclusive amount from lib/pricing.ts and
+ * tax_behavior "inclusive", like the Premium report: the advertised price is the total the customer pays.
+ * No Stripe Price object is used, so nothing has to be created or edited in the Stripe dashboard.
  */
+import { PRODUCT_PRICE_AUD_CENTS } from "@/lib/pricing";
 
 export type CreditPackageId = "starter" | "comprehensive";
 
 type CreditPackage = {
   credits: number;
-  envKey: string;
-  defaultPriceId: { live: string; test: string };
+  /** Product name shown on the Checkout page (the same names the former live Stripe products used). */
+  name: string;
 };
 
 export const CREDIT_PACKAGES: Readonly<Record<CreditPackageId, CreditPackage>> = {
-  starter: {
-    credits: 50,
-    envKey: "STRIPE_STARTER_CREDITS_PRICE_ID",
-    defaultPriceId: { live: "price_1U4LBCPBavTMsgWAqlbD4jVv", test: "price_1UIfzMPBavTMsgWAF513wSsy" },
-  },
-  comprehensive: {
-    credits: 150,
-    envKey: "STRIPE_COMPREHENSIVE_CREDITS_PRICE_ID",
-    defaultPriceId: { live: "price_1U4LBsPBavTMsgWAThYuUrSK", test: "price_1UIfzMPBavTMsgWAJRi0xnNI" },
-  },
+  starter: { credits: 50, name: "LogiVisa Starter - 50 Credits" },
+  comprehensive: { credits: 150, name: "LogiVisa Pro - 150 Credits" },
 };
 
 export function isCreditPackageId(value: unknown): value is CreditPackageId {
   return value === "starter" || value === "comprehensive";
 }
 
-function stripeMode(): "live" | "test" {
-  return process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_") ? "live" : "test";
+export function getCreditPackagePriceCents(id: CreditPackageId): number {
+  return PRODUCT_PRICE_AUD_CENTS[id === "starter" ? "credits_starter" : "credits_comprehensive"];
 }
 
-export function getCreditPackagePriceId(id: CreditPackageId): string {
-  const pkg = CREDIT_PACKAGES[id];
-  const override = process.env[pkg.envKey]?.trim().replace(/^["']+|["']+$/g, "");
-  return override || pkg.defaultPriceId[stripeMode()];
-}
-
-/** Legacy clients posted a priceId; map it back to its package if it is one of ours. */
-export function findCreditPackageByPriceId(priceId: string): CreditPackageId | null {
-  for (const id of Object.keys(CREDIT_PACKAGES) as CreditPackageId[]) {
-    if (getCreditPackagePriceId(id) === priceId) return id;
-  }
-  return null;
+export function getCreditPackageLineItem(id: CreditPackageId) {
+  return {
+    price_data: {
+      currency: "aud",
+      product_data: {
+        name: CREDIT_PACKAGES[id].name,
+        // General - Electronically Supplied Services: the tax code the former Stripe products carried.
+        tax_code: "txcd_10000000",
+      },
+      unit_amount: getCreditPackagePriceCents(id),
+      tax_behavior: "inclusive" as const,
+    },
+    quantity: 1,
+  };
 }

@@ -37,9 +37,9 @@ async function resolveReferralAgentId(): Promise<string | undefined> {
  * Creates a one-off Stripe Checkout Session for a lead-magnet campaign's
  * paid fallback (shown once campaigns.slots_remaining hits 0). Price is
  * read from the campaigns row rather than a pre-created Stripe Price object,
- * since each campaign's price is DB-configured; unlike the fixed-catalog
- * products in lib/stripe.ts (getPriceIdForProduct), this uses Stripe's
- * inline `price_data` for a dynamic, per-campaign amount.
+ * since each campaign's price is DB-configured. Like the fixed-catalog
+ * products in app/api/checkout/route.ts (whose amounts live in lib/pricing.ts),
+ * it uses Stripe's inline `price_data`, GST-inclusive.
  */
 export async function createCheckoutSession(
   campaignSlug: string,

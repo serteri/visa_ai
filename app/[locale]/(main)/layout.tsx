@@ -25,12 +25,12 @@ function getLocaleTitle(locale: string) {
 
 function getLocaleDescription(locale: string) {
   if (locale === "tr") {
-    return "Avustralya Skilled Migration (189/190/491) icin ucretsiz puan hesaplayici, ANZSCO kod bulucu ve hazirlik raporlari. Turkce ve Global Ingilizce PDF PR rehberleri $9.99'dan basliyor.";
+    return "Avustralya Skilled Migration (189/190/491) icin ucretsiz puan hesaplayici, ANZSCO kod bulucu ve hazirlik raporlari. Turkce ve Global Ingilizce PDF PR rehberleri GST dahil A$10.99'dan basliyor.";
   }
   if (locale === "zh-Hans") {
-    return "免费的澳大利亚技术移民（189/190/491）积分计算器、ANZSCO 职业代码查找工具和准备度报告。土耳其语和全球英语 PDF 永居指南起价 $9.99。";
+    return "免费的澳大利亚技术移民（189/190/491）积分计算器、ANZSCO 职业代码查找工具和准备度报告。土耳其语和全球英语 PDF 永居指南起价 A$10.99（含GST）。";
   }
-  return "Free Australia Skilled Migration (189/190/491) points calculator, ANZSCO finder, and readiness reports. Turkish and Global English PDF PR guides from $9.99.";
+  return "Free Australia Skilled Migration (189/190/491) points calculator, ANZSCO finder, and readiness reports. Turkish and Global English PDF PR guides from A$10.99 inc. GST.";
 }
 
 function getOgLocale(locale: string) {

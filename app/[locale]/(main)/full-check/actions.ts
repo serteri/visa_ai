@@ -1074,7 +1074,7 @@ export async function submitFullCheckWaitlist(
 
   // The one-report-per-email anti-abuse check that used to live here was
   // removed for the same reason as the IP rate limit below: the system is
-  // now full-time Premium (paid, 19.99 AUD + GST/report via Stripe), so blocking a
+  // now full-time Premium (paid, A$21.99 inc. GST per report via Stripe), so blocking a
   // repeat submission from the same email mainly punished legitimate paying
   // customers (a household submitting for multiple family members, or
   // wanting a fresh report after a life change) rather than free-tier abuse,

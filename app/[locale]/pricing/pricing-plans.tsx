@@ -6,6 +6,7 @@ import { AlertCircle, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/contexts/language-context";
+import { getProductPriceDisplay, type GstInclusiveProduct } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
 interface Plan {
@@ -15,7 +16,8 @@ interface Plan {
   id: "starter" | "comprehensive";
   nameKey: string;
   descriptionKey: string;
-  price: string;
+  /** GST-inclusive price from lib/pricing.ts -- the same amount Checkout charges. */
+  priceProduct: GstInclusiveProduct;
   featureKeys: string[];
   highlighted?: boolean;
 }
@@ -25,14 +27,14 @@ const PLANS: Plan[] = [
     id: "starter",
     nameKey: "pricing.starter.name",
     descriptionKey: "pricing.starter.description",
-    price: "$9.99",
+    priceProduct: "credits_starter",
     featureKeys: ["pricing.starter.feature1", "pricing.starter.feature2", "pricing.starter.feature3"],
   },
   {
     id: "comprehensive",
     nameKey: "pricing.comprehensive.name",
     descriptionKey: "pricing.comprehensive.description",
-    price: "$19.99",
+    priceProduct: "credits_comprehensive",
     featureKeys: [
       "pricing.comprehensive.feature1",
       "pricing.comprehensive.feature2",
@@ -42,7 +44,7 @@ const PLANS: Plan[] = [
   },
 ];
 
-export function PricingPlans() {
+export function PricingPlans({ locale }: { locale: string }) {
   const { t } = useTranslation();
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -105,7 +107,7 @@ export function PricingPlans() {
                 <CardTitle className="text-xl">{t(plan.nameKey)}</CardTitle>
                 <p className="text-sm text-muted-foreground">{t(plan.descriptionKey)}</p>
                 <p className="pt-2 text-4xl font-bold text-foreground">
-                  {plan.price}
+                  {getProductPriceDisplay(plan.priceProduct, locale)}
                   <span className="text-base font-normal text-muted-foreground">
                     {t("pricing.perOneTime", " / one-time")}
                   </span>

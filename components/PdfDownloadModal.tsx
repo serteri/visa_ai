@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
+import { getProductPriceDisplay } from "@/lib/pricing";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { COUNTRY_CODES, defaultCountryCodeForLocale, dialForCountryCode } from "@/lib/country-codes";
 import {
@@ -84,6 +85,9 @@ export function PdfDownloadModal({
     if (locale === "zh-Hans") return zh;
     return en;
   }
+
+  // GST-inclusive, the same amount Checkout charges (lib/pricing.ts).
+  const ebookPrice = getProductPriceDisplay(product === "global" ? "pdf_book_global" : "pdf_book", locale);
 
   useEffect(() => {
     if (open) {
@@ -227,9 +231,9 @@ export function PdfDownloadModal({
           );
           setError(
             tx(
-              "Ücretsiz kota az önce doldu — aşağıdan $9.99 ile satın alabilirsiniz.",
-              "The free quota just filled up — you can purchase below for $9.99.",
-              "免费名额刚刚用完 — 可在下方以 $9.99 购买。"
+              `Ücretsiz kota az önce doldu — aşağıdan ${ebookPrice} ile satın alabilirsiniz.`,
+              `The free quota just filled up — you can purchase below for ${ebookPrice}.`,
+              `免费名额刚刚用完 — 可在下方以 ${ebookPrice} 购买。`
             )
           );
         } else {
@@ -331,7 +335,7 @@ export function PdfDownloadModal({
             ) : (
               <>
                 {tx("💳 Ucretsiz kota doldu. Fiyat: ", "💳 Free quota is full. Price: ", "💳 免费名额已满。价格：")}
-                <strong>$9.99</strong>
+                <strong>{ebookPrice}</strong>
               </>
             )}
           </div>
@@ -502,9 +506,9 @@ export function PdfDownloadModal({
                 email={form.email || undefined}
                 className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0"
                 label={tx(
-                  "💳 Şimdi Satın Al — $9.99",
-                  "💳 Buy Now — $9.99",
-                  "💳 立即购买 — $9.99"
+                  `💳 Şimdi Satın Al — ${ebookPrice}`,
+                  `💳 Buy Now — ${ebookPrice}`,
+                  `💳 立即购买 — ${ebookPrice}`
                 )}
                 onBeforeCheckout={handleBeforeCheckout}
               />

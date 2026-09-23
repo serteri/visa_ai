@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { getProductPriceDisplay } from "@/lib/pricing";
 
 type ProductType = "premium" | "pdf_book" | "pdf_book_global";
 
@@ -26,8 +27,8 @@ type Props = {
 
 const DEFAULT_LABEL: Record<ProductType, string> = {
   premium: "Upgrade to Premium",
-  pdf_book: "Buy Now — $9.99",
-  pdf_book_global: "Buy Now — $9.99",
+  pdf_book: `Buy Now — ${getProductPriceDisplay("pdf_book", "en")}`,
+  pdf_book_global: `Buy Now — ${getProductPriceDisplay("pdf_book_global", "en")}`,
 };
 
 export function StripeCheckoutButton({

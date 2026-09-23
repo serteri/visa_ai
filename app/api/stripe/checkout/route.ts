@@ -2,22 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { getStripeClient, getStripeBaseUrl } from "@/lib/stripe";
-import {
-  CREDIT_PACKAGES,
-  findCreditPackageByPriceId,
-  getCreditPackagePriceId,
-  isCreditPackageId,
-  type CreditPackageId,
-} from "@/lib/stripe/credit-packages";
+import { CREDIT_PACKAGES, getCreditPackageLineItem, isCreditPackageId } from "@/lib/stripe/credit-packages";
 import { getVisitorContext } from "@/lib/visitor-tracking";
 
 export const dynamic = "force-dynamic";
 
 interface CheckoutPayload {
-  /** "starter" | "comprehensive" -- the price id is resolved server-side (lib/stripe/credit-packages.ts). */
+  /** "starter" | "comprehensive" -- the price is resolved server-side (lib/stripe/credit-packages.ts). */
   plan?: string;
-  /** Legacy: older bundles posted the price id itself. Accepted only if it is one of our packages' prices. */
-  priceId?: string;
   /** Optional prefill from /pricing?email=... (set by the AI assistant's upgrade prompt). */
   email?: string;
 }
@@ -33,9 +25,8 @@ function sanitizeEmail(value: unknown): string | undefined {
 
 /**
  * One-time credit-package checkout for the AI assistant paywall (see
- * app/[locale]/pricing). Unlike app/api/checkout/route.ts (fixed product
- * types), this accepts any Stripe priceId directly from the frontend since
- * the pricing page's packages aren't part of the existing productType enum.
+ * app/[locale]/pricing). The browser sends only the package id; the
+ * GST-inclusive line item comes from lib/stripe/credit-packages.ts.
  *
  * The purchasing identity is the anonymous ChatVisitor (IP+User-Agent, see
  * getVisitorContext) rather than a signed-in user, since the chat paywall
@@ -44,19 +35,16 @@ function sanitizeEmail(value: unknown): string | undefined {
  * are attached too when available, purely for reconciliation.
  */
 export async function POST(req: NextRequest) {
-  console.log("KULLANILAN STRIPE KEY SON 4 HANE:", process.env.STRIPE_SECRET_KEY?.slice(-4));
   try {
     const body = ((await req.json().catch(() => ({}))) ?? {}) as CheckoutPayload;
 
-    let plan: CreditPackageId | null = isCreditPackageId(body.plan) ? body.plan : null;
-    if (!plan && body.priceId) plan = findCreditPackageByPriceId(body.priceId);
-    if (!plan) {
+    const plan = body.plan;
+    if (!isCreditPackageId(plan)) {
       return NextResponse.json({ error: "Unknown credit package." }, { status: 400 });
     }
 
-    const priceId = getCreditPackagePriceId(plan);
     // The webhook (app/api/stripe/webhook/route.ts) reads the credit amount back out of
-    // session.metadata.credits rather than re-deriving it from priceId.
+    // session.metadata.credits rather than re-deriving it from the line item.
     const credits = CREDIT_PACKAGES[plan].credits;
     const prefillEmail = sanitizeEmail(body.email);
 
@@ -68,7 +56,7 @@ export async function POST(req: NextRequest) {
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [getCreditPackageLineItem(plan)],
       customer_email: session?.user?.email || prefillEmail,
       // Stripe Tax needs a customer location to calculate GST; this is the
       // billing address Checkout collects to satisfy that requirement.
@@ -81,7 +69,6 @@ export async function POST(req: NextRequest) {
         userId: session?.user?.id || "",
         email: session?.user?.email || prefillEmail || "",
         plan,
-        priceId,
         // Stripe metadata values are strings only; the webhook parses this
         // back to a number before incrementing premiumCredits.
         credits: String(credits),

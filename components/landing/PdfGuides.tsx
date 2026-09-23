@@ -1,11 +1,12 @@
 import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
+import { getProductPriceDisplay } from "@/lib/pricing";
 
 interface PdfGuidesProps {
   locale: string;
 }
 
 /** Dual PDF product grid (Turkish edition / Global English edition). Both
- *  guides are a flat $9.99 — no free-slot logic. */
+ *  guides have a flat GST-inclusive price (lib/pricing.ts) — no free-slot logic. */
 export function PdfGuides({ locale }: PdfGuidesProps) {
   return (
     <section id="pdf-download-section" className="case-file scroll-mt-24 bg-[var(--cf-bg)] py-24 sm:py-32">
@@ -58,7 +59,7 @@ export function PdfGuides({ locale }: PdfGuidesProps) {
                 productType="pdf_book"
                 locale={locale}
                 className="h-14 w-full px-8 py-4 text-base bg-[var(--cf-accent)] font-semibold text-white hover:opacity-90"
-                label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
+                label={`${locale === "tr" ? "💳 Şimdi Satın Al" : locale === "zh-Hans" ? "💳 立即购买" : "💳 Buy Now"} — ${getProductPriceDisplay("pdf_book", locale)}`}
               />
             </div>
           </div>
@@ -110,7 +111,7 @@ export function PdfGuides({ locale }: PdfGuidesProps) {
                 productType="pdf_book_global"
                 locale={locale}
                 className="h-14 w-full px-8 py-4 text-base bg-[var(--cf-accent)] font-semibold text-white hover:opacity-90"
-                label={locale === "tr" ? "💳 Şimdi Satın Al — $9.99" : locale === "zh-Hans" ? "💳 立即购买 — $9.99" : "💳 Buy Now — $9.99"}
+                label={`${locale === "tr" ? "💳 Şimdi Satın Al" : locale === "zh-Hans" ? "💳 立即购买" : "💳 Buy Now"} — ${getProductPriceDisplay("pdf_book_global", locale)}`}
               />
             </div>
           </div>

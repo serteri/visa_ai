@@ -38,7 +38,7 @@ const inter = Inter({
 const SITE_NAME = "LogiVisa";
 const BASE_URL = "https://www.logivisa.com";
 const SITE_DESCRIPTION =
-  "Australia Skilled Migration (Subclass 189/190/491) points calculator, ANZSCO finder, and readiness reports — plus complete PDF migration guides from $9.99.";
+  "Australia Skilled Migration (Subclass 189/190/491) points calculator, ANZSCO finder, and readiness reports — plus complete PDF migration guides from A$10.99 inc. GST.";
 
 // This root layout wraps every locale. It sets the site-wide English default;
 // per-locale title/description/OpenGraph is generated in

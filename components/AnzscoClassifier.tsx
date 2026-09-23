@@ -6,6 +6,7 @@ import { CheckCircle2, FileText, Loader2, UploadCloud, XCircle } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PdfDownloadModal, type PdfProduct } from "@/components/PdfDownloadModal";
+import { getProductPriceDisplay } from "@/lib/pricing";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 
 type ClassifyResult = {
@@ -151,7 +152,7 @@ const CTA_COPY: Record<
         açığa çıkarın.
       </>
     ),
-    button: "Tam Rehberi İndir ($9.99)",
+    button: `Tam Rehberi İndir (${getProductPriceDisplay("pdf_book", "tr")})`,
     termsLinkText: "Kullanım Koşullarını",
     termsLabel: (link) => (
       <>
@@ -174,7 +175,7 @@ const CTA_COPY: Record<
         in our 80+ page Blueprint.
       </>
     ),
-    button: "Download Full Blueprint ($9.99)",
+    button: `Download Full Blueprint (${getProductPriceDisplay("pdf_book_global", "en")})`,
     termsLinkText: "Terms of Service",
     termsLabel: (link) => (
       <>
@@ -197,7 +198,7 @@ const CTA_COPY: Record<
         。
       </>
     ),
-    button: "下载完整蓝图 ($9.99)",
+    button: `下载完整蓝图 (${getProductPriceDisplay("pdf_book_global", "zh")})`,
     termsLinkText: "服务条款",
     termsLabel: (link) => (
       <>
@@ -258,7 +259,7 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
   // The guide is delivered through the SAME PdfDownloadModal + /api/pdf-download
   // pipeline the homepage uses, so the 18-slot pool (FREE_LIMIT, admin/test
   // exclusion) is shared: a free grab here counts against the same counter, and
-  // once it is exhausted the modal falls back to the existing $9.99 Stripe
+  // once it is exhausted the modal falls back to the existing paid Stripe
   // checkout automatically. Turkish locale -> Turkish guide, everything else ->
   // the Global English guide.
   const modalProduct: PdfProduct = locale === "tr" ? "turkish" : "global";
@@ -558,7 +559,9 @@ export function AnzscoClassifier({ initialLocale }: AnzscoClassifierProps) {
 
               {slotsExhausted ? (
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-indigo-700">$9.99</span>
+                  <span className="text-3xl font-black text-indigo-700">
+                    {getProductPriceDisplay(modalProduct === "turkish" ? "pdf_book" : "pdf_book_global", locale)}
+                  </span>
                   <span className="text-base font-medium text-slate-400 line-through">$29.99</span>
                 </div>
               ) : (

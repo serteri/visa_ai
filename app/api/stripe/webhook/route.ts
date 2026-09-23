@@ -341,7 +341,7 @@ export async function POST(request: NextRequest) {
 
       // Financial ledger write for EVERY campaign sale (not just
       // referral-attributed ones) -- no CRM lead exists for this purchase
-      // (an assessment-report lead and a $9.99 guide purchase are different
+      // (an assessment-report lead and a guide purchase are different
       // things), so buyerEmail identifies the buyer instead of a fabricated
       // UserReport row that would pollute CRM conversion metrics. Errors
       // here are NOT swallowed: this is a financial record, and letting the

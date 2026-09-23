@@ -46,7 +46,7 @@ export default async function PricingPage({ params }: PageProps) {
         </header>
 
         <main className="mx-auto max-w-4xl px-4 pb-20">
-          <PricingPlans />
+          <PricingPlans locale={locale} />
         </main>
       </div>
     </LanguageProvider>

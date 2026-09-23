@@ -8,8 +8,10 @@
  *   - NextAuth's auth() returns "not signed in" (it needs a live request context);
  *   - Resend's Emails.send is a recorder (no email ever leaves the machine; RESEND_API_KEY is fake).
  *
- *   1. /api/stripe/checkout (the pricing page's Buy Now handler) creates a real Checkout Session for both
- *      packages, with and without a ?email= prefill, with a malformed prefill, and via a legacy priceId body.
+ *   1. /api/stripe/checkout (the /pricing Buy Now handler) and /api/checkout (the ebooks) create real Checkout
+ *      Sessions for all four GST-inclusive products (both ebooks, both credit packages): one AUD line item at
+ *      the lib/pricing.ts amount, tax_behavior "inclusive", amount_total equal to the advertised price. The same
+ *      line items with an Australian customer address must carry GST of exactly price/11 inside the total.
  *   2. A real Checkout Session with the real ADMINFREE promotion code applied goes through the real webhook
  *      handler (app/api/stripe/webhook/route.ts); the handler's own discount lookup hits Stripe. No email may
  *      be sent. Control: the same flow without the promotion code sends both emails.
@@ -105,11 +107,34 @@ async function main() {
   const stripe = new Stripe(TEST_KEY!);
   const { NextRequest } = await import("next/server");
   const { POST: checkoutPOST } = await import("../app/api/stripe/checkout/route");
+  const { POST: productCheckoutPOST } = await import("../app/api/checkout/route");
   const { POST: webhookPOST } = await import("../app/api/stripe/webhook/route");
-  const { CREDIT_PACKAGES, getCreditPackagePriceId } = await import("../lib/stripe/credit-packages");
+  const { CREDIT_PACKAGES, getCreditPackageLineItem } = await import("../lib/stripe/credit-packages");
+  const { getCheckoutLineItem } = await import("../lib/stripe/line-items");
+  const { PRODUCT_PRICE_AUD_CENTS } = await import("../lib/pricing");
 
-  // ── 1. credit-package checkout (BUG 1) ─────────────────────────────────────
-  console.log("\n=== 1. /api/stripe/checkout creates a real test-mode Checkout Session ===");
+  type ProductKey = "pdf_book" | "pdf_book_global" | "credits_starter" | "credits_comprehensive";
+  const expectedCents = (key: ProductKey) => PRODUCT_PRICE_AUD_CENTS[key];
+
+  /** Shared assertions: one inclusive AUD line item at the lib/pricing.ts amount, GST never added on top. */
+  async function inspectSession(sessionId: string, key: ProductKey, billingRequired = true) {
+    const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ["line_items"] });
+    const items = session.line_items?.data ?? [];
+    const price = items[0]?.price;
+    check(session.livemode === false, "session is test mode");
+    check(session.mode === "payment", `mode = ${session.mode}`);
+    check(items.length === 1 && price?.unit_amount === expectedCents(key) && price?.currency === "aud", `one line item: ${items[0]?.description} @ ${price?.unit_amount} ${price?.currency}`);
+    check(price?.tax_behavior === "inclusive", `tax_behavior = ${price?.tax_behavior}`);
+    check(session.automatic_tax?.enabled === true, "automatic_tax on");
+    if (billingRequired) check(session.billing_address_collection === "required", "billing address required");
+    check(session.amount_total === expectedCents(key), `amount_total = ${session.amount_total} (the advertised GST-inclusive price)`);
+    return { session, items };
+  }
+
+  const sessionIdFrom = (url: string | undefined) => url?.match(/cs_test_[A-Za-z0-9]+/)?.[0];
+
+  // ── 1a. credit packages through /api/stripe/checkout (the /pricing Buy Now handler) ──
+  console.log("\n=== 1a. /api/stripe/checkout creates a real test-mode Checkout Session ===");
   const postCheckout = (body: unknown) =>
     checkoutPOST(
       new NextRequest("http://localhost/api/stripe/checkout", {
@@ -125,42 +150,110 @@ async function main() {
     { label: "starter, ?email=buyer@example.test", body: { plan: "starter", email: "buyer@example.test" }, plan: "starter", expectEmail: "buyer@example.test" },
     { label: "comprehensive, ?email=buyer@example.test", body: { plan: "comprehensive", email: " buyer@example.test " }, plan: "comprehensive", expectEmail: "buyer@example.test" },
     { label: "starter, malformed ?email=not-an-email (ignored, not fatal)", body: { plan: "starter", email: "not-an-email" }, plan: "starter", expectEmail: null },
-    { label: "legacy body { priceId } (old cached bundle)", body: { priceId: getCreditPackagePriceId("comprehensive") }, plan: "comprehensive", expectEmail: null },
   ];
 
-  const report: Array<Record<string, unknown>> = [];
   for (const c of cases) {
     console.log(`\n-- ${c.label}`);
     const res = await postCheckout(c.body);
     const data = (await res.json()) as { url?: string; error?: string };
     check(res.status === 200 && typeof data.url === "string" && data.url.startsWith("https://checkout.stripe.com/"), `HTTP ${res.status}, Checkout URL returned${data.error ? ` (error: ${data.error})` : ""}`);
-    if (!data.url) continue;
-    const sessionId = data.url.match(/cs_test_[A-Za-z0-9]+/)?.[0];
-    check(Boolean(sessionId), `test-mode session id in the Checkout URL (${sessionId})`);
-    if (!sessionId) continue;
-    const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ["line_items"] });
-    const items = session.line_items?.data ?? [];
-    check(session.livemode === false, "session is test mode");
-    check(session.mode === "payment", `mode = ${session.mode}`);
-    check(items.length === 1 && items[0].price?.id === getCreditPackagePriceId(c.plan), `one line item, price ${items[0]?.price?.id}`);
+    const sessionId = sessionIdFrom(data.url);
+    if (!sessionId) {
+      check(false, "test-mode session id in the Checkout URL");
+      continue;
+    }
+    const { session } = await inspectSession(sessionId, c.plan === "starter" ? "credits_starter" : "credits_comprehensive");
     check(session.metadata?.credits === String(CREDIT_PACKAGES[c.plan].credits) && session.metadata?.plan === c.plan, `metadata credits=${session.metadata?.credits} plan=${session.metadata?.plan} visitorId=${session.metadata?.visitorId}`);
     check((session.customer_email ?? null) === c.expectEmail, `customer_email = ${session.customer_email ?? "(none, Checkout asks for it)"}`);
     check(session.url === data.url, "returned URL is this session's URL");
-    report.push({
-      case: c.label,
-      id: session.id,
-      mode: session.mode,
-      currency: session.currency,
-      line_items: items.map((i) => `${i.quantity} x ${i.description} @ ${i.price?.unit_amount} ${i.price?.currency} (${i.price?.id}, tax_behavior=${i.price?.tax_behavior})`),
-      amount_subtotal: session.amount_subtotal,
-      amount_total: session.amount_total,
-      automatic_tax: session.automatic_tax?.enabled,
-      customer_email: session.customer_email,
-    });
   }
   {
     const res = await postCheckout({ plan: "enterprise" });
     check(res.status === 400, `unknown package is rejected with 400 (got ${res.status})`);
+    const legacy = await postCheckout({ priceId: "price_anything" });
+    check(legacy.status === 400, `a bare priceId body is rejected with 400 -- the browser can't pick the price (got ${legacy.status})`);
+  }
+
+  // ── 1b. ebooks through /api/checkout (StripeCheckoutButton on the guides / PDF modal) ──
+  console.log("\n=== 1b. /api/checkout creates a real test-mode Checkout Session for both ebooks ===");
+  for (const productType of ["pdf_book", "pdf_book_global"] as const) {
+    for (const locale of ["en", "tr", "zh-Hans"]) {
+      console.log(`\n-- ${productType}, locale ${locale}`);
+      const res = await productCheckoutPOST(
+        new NextRequest("http://localhost/api/checkout", {
+          method: "POST",
+          body: JSON.stringify({ productType, locale, email: "buyer@example.test" }),
+          headers: { "content-type": "application/json" },
+        }),
+      );
+      const data = (await res.json()) as { url?: string; error?: string };
+      check(res.status === 200, `HTTP ${res.status}${data.error ? ` (error: ${data.error})` : ""}`);
+      const sessionId = sessionIdFrom(data.url);
+      if (!sessionId) {
+        check(false, "test-mode session id in the Checkout URL");
+        continue;
+      }
+      const { session } = await inspectSession(sessionId, productType);
+      check(session.metadata?.productType === productType, `metadata productType = ${session.metadata?.productType}`);
+    }
+  }
+
+  // ── 1c. the same line items with an Australian customer address: Stripe computes the GST ──
+  // An open session has no tax until the buyer's address is known. A test customer with an Australian
+  // address makes Stripe Tax calculate at creation. The line items are the exact objects the two routes send.
+  // billing_address_collection is left at Stripe's default here (the routes' "required" is checked in 1a/1b).
+  // The invariant asserted unconditionally: amount_total is the advertised price with the address known too --
+  // GST is never added on top. The GST amount itself is asserted only when Stripe reports automatic_tax
+  // "complete": it needs an AU tax registration in the Stripe account's TEST mode (live has one; test mode had
+  // none as of 2026-09-23) and, for Checkout, usually the address typed on the hosted page -- otherwise the
+  // status stays "requires_location_inputs" and the reason is printed instead of failing.
+  console.log("\n=== 1c. Australian address: real amount_total / amount_tax per product ===");
+  const customer = await stripe.customers.create({
+    email: "au-buyer@example.test",
+    name: "AU Test Buyer",
+    address: { line1: "1 Martin Place", city: "Sydney", state: "NSW", postal_code: "2000", country: "AU" },
+    metadata: { purpose: "scripts/test-stripe-real.ts GST check" },
+  });
+  const taxRows: Array<Record<string, unknown>> = [];
+  const auProducts: Array<{ key: ProductKey; lineItem: ReturnType<typeof getCheckoutLineItem> }> = [
+    { key: "pdf_book", lineItem: getCheckoutLineItem("pdf_book") },
+    { key: "pdf_book_global", lineItem: getCheckoutLineItem("pdf_book_global") },
+    { key: "credits_starter", lineItem: getCreditPackageLineItem("starter") },
+    { key: "credits_comprehensive", lineItem: getCreditPackageLineItem("comprehensive") },
+  ];
+  try {
+    for (const { key, lineItem } of auProducts) {
+      console.log(`\n-- ${key}`);
+      const created = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: [lineItem],
+        customer: customer.id,
+        customer_update: { address: "auto", name: "auto" },
+        automatic_tax: { enabled: true },
+        success_url: "https://example.test/success",
+        cancel_url: "https://example.test/cancel",
+      });
+      const { session } = await inspectSession(created.id, key, false);
+      const cents = expectedCents(key);
+      const tax = session.total_details?.amount_tax ?? null;
+      const expectedTax = Math.round(cents / 11);
+      if (session.automatic_tax?.status === "complete") {
+        check(tax === expectedTax, `amount_tax = ${tax} (GST inside the price: ${cents}/11 = ${expectedTax})`);
+      } else {
+        console.log(`  ⚠️  GST amount not computed by Stripe: automatic_tax.status = ${session.automatic_tax?.status} (amount_tax ${tax}); expected ${expectedTax} once computed`);
+      }
+      taxRows.push({
+        product: key,
+        session: session.id,
+        unit_amount: cents,
+        amount_subtotal: session.amount_subtotal,
+        amount_tax: tax,
+        amount_total: session.amount_total,
+        automatic_tax_status: session.automatic_tax?.status,
+      });
+    }
+  } finally {
+    await stripe.customers.del(customer.id);
   }
 
   // ── 2. ADMINFREE on a real session through the real webhook (BUG 2) ────────
@@ -235,8 +328,8 @@ async function main() {
   }
 
   console.log = realLog;
-  console.log("\n=== real test-mode Checkout Sessions created by /api/stripe/checkout ===");
-  for (const row of report) console.log(JSON.stringify(row, null, 2));
+  console.log("\n=== Australian-address sessions (test mode) ===");
+  for (const row of taxRows) console.log(JSON.stringify(row));
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
   process.exitCode = failures === 0 ? 0 : 1;
 }
