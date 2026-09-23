@@ -7,13 +7,12 @@
  * NOTE on a second, pre-existing mechanism: this codebase already has an independent, DB-backed occupation-
  * match pipeline -- scripts/sync-state-occupation-lists.ts populates the StateOccupationListEntry Prisma
  * table from the same data/knowledge source files, and lib/state-intelligence.ts's getStateOccupationMatches
- * reads it into ReadinessInput.stateOccupationMatches, which lib/readiness/state-nomination.ts already uses
- * to override the state-nomination SCORE (not just display a note). This module is deliberately separate
- * from that one: it is a pure, synchronous, fully testable function over git-committed static data, used
- * ONLY to add the new informational line this feature asks for (see calculateStateNominationTracker's
- * occupationMatchNote) -- it does not touch the existing score formula, and does not require a database
- * connection (so it works in CI and in every test script here, none of which have a real Prisma client).
- * Reconciling the two into one pipeline is a reasonable follow-up but out of scope here.
+ * could read it. Phase 3b retired that pipeline from the report path (the table is never populated, and its
+ * NSW lookup compared 4-digit unit-group codes to 6-digit ANZSCO codes); the table, the sync script and
+ * getStateOccupationMatches are left in place, unused. This module is now the only occupation-match source:
+ * a pure, synchronous, fully testable function over git-committed static data, used ONLY for the
+ * informational line (see calculateStateNominationTracker's occupationMatchNote) -- the state-match score
+ * does not depend on occupation matching at all, and no database connection is needed (so it works in CI).
  *
  * Coverage (see the Phase 1 inventory and Phase 2a review this was built from):
  *   ACT, NT, QLD, WA  -- real per-occupation, ANZSCO-coded lists            -> MATCH / NOT_ON_LIST

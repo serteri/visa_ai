@@ -2,7 +2,7 @@
  * One-off verification script for the recent state-nomination rules /
  * occupation-mapping / [object Object] fixes. Runs one realistic,
  * below-threshold AU profile through the real production pipeline
- * (runReadinessEngine + getStateIntelligenceMap/getStateOccupationMatches,
+ * (runReadinessEngine + getStateIntelligenceMap,
  * same as app/[locale]/(main)/full-check/actions.ts) and writes the PDF to
  * test-output.pdf in the project root for manual inspection.
  *
@@ -11,10 +11,9 @@
  * (offshore), Turkish passport. No other point-earning fields set
  * (experience/qualification/partner/regional bonuses all omitted) so the
  * total lands at the expected 25 + 10 = 35 points, below the ~65-80
- * competitive thresholds used across state minimumPoints -- this is
- * specifically to exercise state-nomination rule 2 (on-list-but-under-
- * points) for whichever states have Software Engineer on their synced
- * occupation list, and rule 1 (not-on-list) for the ones that don't.
+ * competitive thresholds used across state minimumPoints. (The occupation-
+ * list score rules this script originally exercised were retired in
+ * Phase 3b; occupation matching now only adds occupationMatchNote text.)
  *
  * Usage: npx tsx scripts/test-pdf-generation.ts
  */
@@ -24,7 +23,7 @@ import path from "node:path";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
 import type { ReadinessInput } from "../lib/readiness/types";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
-import { getStateIntelligenceMap, getStateOccupationMatches } from "../lib/state-intelligence";
+import { getStateIntelligenceMap } from "../lib/state-intelligence";
 import { prisma } from "../lib/prisma";
 
 const testInput: ReadinessInput = {
@@ -42,12 +41,9 @@ const testInput: ReadinessInput = {
 };
 
 async function main() {
-  const [stateIntelligence, stateOccupationMatches] = await Promise.all([
-    getStateIntelligenceMap(),
-    getStateOccupationMatches(testInput.occupation),
-  ]);
+  const stateIntelligence = await getStateIntelligenceMap();
 
-  const report = runReadinessEngine({ ...testInput, stateIntelligence, stateOccupationMatches });
+  const report = runReadinessEngine({ ...testInput, stateIntelligence });
 
   console.log("Estimated points:", report.assessmentState.estimatedPoints);
   console.log("Occupation eligibility:", report.assessmentState.occupationEligibility);

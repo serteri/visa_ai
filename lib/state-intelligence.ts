@@ -90,11 +90,14 @@ export interface StateOccupationMatch {
 
 /**
  * Real occupation-list membership per state, from StateOccupationListEntry
- * (synced by scripts/sync-state-occupation-lists.ts). Keyed by state code,
- * shaped to drop into ReadinessInput.stateOccupationMatches so
- * calculateStateNominationTracker (lib/readiness/state-nomination.ts) can
- * apply real "is this occupation on the list" penalties instead of a
- * hardcoded occupation-priority-keyword heuristic.
+ * (synced by scripts/sync-state-occupation-lists.ts). Keyed by state code.
+ *
+ * UNUSED since Phase 3b: no production code path calls this, and the state-
+ * match score no longer depends on occupation matching. Kept (with the table
+ * and sync script) as a flagged future option. Known bug if revived: NSW's
+ * list rows are 4-digit ANZSCO unit-group codes, but the lookup below does
+ * exact equality against the applicant's 6-digit code, so NSW would always
+ * read as "not on list".
  *
  * Only includes an entry for a state code if that state actually HAS list
  * data loaded (queried separately via a DISTINCT stateCode scan) -- a state

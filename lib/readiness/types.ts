@@ -31,14 +31,6 @@ export type ReadinessInput = {
     { status?: string; officialNote?: string; sourceUrl?: string; lastVerifiedAt?: string }
   >;
   /**
-   * Real occupation-list membership per state (lib/state-intelligence.ts's
-   * getStateOccupationMatches), fetched by the caller for the same reason
-   * as stateIntelligence above. A missing key means "no list data loaded
-   * for this state" (must NOT be treated as "occupation not on list");
-   * calculateStateNominationTracker relies on this distinction.
-   */
-  stateOccupationMatches?: Record<string, { onList: boolean; subclasses: string[] }>;
-  /**
    * Admin-managed overrides (lib/state-intelligence.ts's
    * getStateNominationConfigMap, backed by the StateNominationConfig Prisma
    * model / app/[locale]/(main)/admin/states admin panel), keyed by state
