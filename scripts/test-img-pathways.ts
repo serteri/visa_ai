@@ -13,6 +13,8 @@ import { existsSync } from "node:fs";
 import data from "../src/data/health-registration/img-pathways.json";
 import provenance from "../src/data/health-registration/provenance.json";
 import { buildImgPathways, buildProvenance, OUT_FILE, PROVENANCE_FILE, serialize, SOURCE_DOCUMENT } from "./generate-img-pathways";
+import { AMC_OUT_FILE, AMC_SOURCE_DOCUMENT, buildAmcFees } from "./generate-amc-fees";
+import amcFees from "../src/data/health-registration/amc-fees.json";
 import { EXPEDITED_SPECIALTIES, resolveMedicalRegistration } from "../lib/health-registration/img-pathways";
 import { readFileSync } from "node:fs";
 
@@ -37,6 +39,14 @@ async function main() {
       if (committed === fresh) ok(`${file} matches the generator's output`);
       else fail(`${file} drifted from the generator's output -- run: npx tsx scripts/generate-img-pathways.ts`);
     }
+  }
+
+  if (!existsSync(AMC_SOURCE_DOCUMENT)) {
+    console.log(`  SKIPPED: ${AMC_SOURCE_DOCUMENT} not present (data/knowledge is gitignored)`);
+  } else {
+    const committed = readFileSync(AMC_OUT_FILE, "utf8").replace(/\r\n/g, "\n");
+    if (committed === serialize(await buildAmcFees())) ok(`${AMC_OUT_FILE} matches the generator's output`);
+    else fail(`${AMC_OUT_FILE} drifted from the generator's output -- run: npx tsx scripts/generate-amc-fees.ts`);
   }
 
   console.log("\n==================== (2) committed-file invariants ====================");
@@ -75,6 +85,22 @@ async function main() {
   if (gp.pathwayId === "expedited-specialist" && gp.applicationFee.nationalFeeAud === 1661 && gp.registrationFee.nationalFeeAud === 1102 && gp.totalAud === 2763) {
     ok("GP 253111 -> Expedited Specialist pathway, specialist registration AUD 1,661 + AUD 1,102 = AUD 2,763");
   } else fail(`GP 253111 resolved to ${gp.pathwayId} AUD ${gp.applicationFee.nationalFeeAud} + ${gp.registrationFee.nationalFeeAud}`);
+
+  // AMC (amc-fees.json): only the clinical examination is priced; the rest stays "not stated".
+  const inPerson = amcFees.fees.find((f) => f.id === "amc_clinical_exam_in_person");
+  const online = amcFees.fees.find((f) => f.id === "amc_clinical_exam_online");
+  if (inPerson?.amountAud === 3000 && online?.amountAud === 3400 && inPerson.quote.includes("$3,000") && online.quote.includes("$3,400")) {
+    ok("AMC clinical examination: AUD 3,000 in person / AUD 3,400 online, each with its quote");
+  } else fail(`AMC clinical examination fees wrong: ${JSON.stringify(amcFees.fees)}`);
+  if (amcFees.effectiveDate === null && amcFees.notStated.length === 3 && amcFees.notStated.every((f) => f.status === "needs human verification")) {
+    ok("AMC candidate account/PSV, CAT MCQ and WBA fees: not stated, needs human verification; no effective date");
+  } else fail("AMC not-stated fees / effective date wrong");
+  const rmo = resolveMedicalRegistration({ anzscoCode: "253112" });
+  if (rmo.pathwayId === "standard" && rmo.totalMinAud === 1131 + 1102 + 3000 && rmo.totalMaxAud === 1131 + 1102 + 3400) {
+    ok("RMO 253112 (Standard pathway): Medical Board AUD 2,233 + AMC clinical exam AUD 3,000-3,400 = AUD 5,233-5,633");
+  } else fail(`RMO 253112 totals wrong: ${rmo.pathwayId} ${rmo.totalMinAud}-${rmo.totalMaxAud}`);
+  if (gp.amcClinicalExam === undefined && gp.totalMinAud === 2763 && gp.totalMaxAud === 2763) ok("GP 253111: no AMC exam fee added (Expedited Specialist pathway), total unchanged at AUD 2,763");
+  else fail("GP 253111 picked up an AMC exam fee it does not pay");
 
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
   process.exitCode = failures === 0 ? 0 : 1;

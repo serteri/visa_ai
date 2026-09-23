@@ -4922,11 +4922,21 @@ function buildAdditionalApplicantVacItems(
   if (!extra || (extra.adult === 0 && extra.child === 0)) return [];
 
   const fmt = (n: number) => n.toLocaleString(isTr ? "tr-TR" : "en-AU");
-  const amountLabel = isTr
-    ? `Partner/18+ bağımlı: kişi başı AUD ${fmt(extra.adult)}; 18 yaş altı çocuk: kişi başı AUD ${fmt(extra.child)}`
-    : isZh
-      ? `配偶/18岁及以上受抚养人：每人 AUD ${fmt(extra.adult)}；18岁以下子女：每人 AUD ${fmt(extra.child)}`
-      : `Partner/dependant 18+: AUD ${fmt(extra.adult)} each; child under 18: AUD ${fmt(extra.child)} each`;
+  // Subclass 820 (Partner visa): the partner is the SPONSOR, not an additional applicant, so the 18+ charge
+  // (visa-fees.json partner_18_plus, the page's "Additional Applicant Charge 18+") applies only to other
+  // dependants aged 18+, and no "with partner" total is built (it would charge the sponsor).
+  const sponsorIsPartner = feeSubclass === "820";
+  const amountLabel = sponsorIsPartner
+    ? isTr
+      ? `18+ bağımlı: kişi başı AUD ${fmt(extra.adult)}; 18 yaş altı çocuk: kişi başı AUD ${fmt(extra.child)} (sponsor partner ücret ödemez)`
+      : isZh
+        ? `18岁及以上受抚养人：每人 AUD ${fmt(extra.adult)}；18岁以下子女：每人 AUD ${fmt(extra.child)}（担保人配偶无需缴费）`
+        : `Dependant 18+: AUD ${fmt(extra.adult)} each; child under 18: AUD ${fmt(extra.child)} each (your sponsoring partner pays no charge)`
+    : isTr
+      ? `Partner/18+ bağımlı: kişi başı AUD ${fmt(extra.adult)}; 18 yaş altı çocuk: kişi başı AUD ${fmt(extra.child)}`
+      : isZh
+        ? `配偶/18岁及以上受抚养人：每人 AUD ${fmt(extra.adult)}；18岁以下子女：每人 AUD ${fmt(extra.child)}`
+        : `Partner/dependant 18+: AUD ${fmt(extra.adult)} each; child under 18: AUD ${fmt(extra.child)} each`;
   return [
     {
       category: isTr
@@ -4943,8 +4953,8 @@ function buildAdditionalApplicantVacItems(
           : `Per-person charges for additional applicants on subclass ${feeSubclass}. These are not included in the primary-applicant Estimated total; a second instalment can also apply to dependants aged 18+ (see below).`,
       kind: "vac_additional",
       // Structured figures for the "Estimated total with partner/dependants" line. The form carries no head-count,
-      // so one partner and no children are assumed (and the line says so).
-      additionalApplicants: {
+      // so one partner and no children are assumed (and the line says so). Not for 820 -- see sponsorIsPartner.
+      additionalApplicants: sponsorIsPartner ? undefined : {
         subclass: feeSubclass,
         partners: 1,
         children: 0,
@@ -5132,8 +5142,9 @@ function buildFinancialRoadmap(
         amountLabel: medicalRegistrationAmountLabel(medical),
         explanation: medicalRegistrationExplanation(medical, locale, authorityLabel),
         kind: "skills_assessment",
-        amountMin: medical.totalAud,
-        amountMax: medical.totalAud,
+        // Medical Board fees, plus the AMC clinical examination on the Standard pathway (in person .. online).
+        amountMin: medical.totalMinAud,
+        amountMax: medical.totalMaxAud,
       });
       const deferred = deferredFeesLine(medical, locale);
       items.push({

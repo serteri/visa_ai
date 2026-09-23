@@ -1,0 +1,90 @@
+{
+  "extractedDate": "2026-09-23",
+  "generatedBy": "scripts/generate-additional-applicant-vac.ts",
+  "subclasses": {
+    "189": {
+      "sourceDocument": "data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf",
+      "intro": "There is also a charge for each family member who applies for the visa with you.",
+      "adult18Plus": {
+        "amountAud": 3070,
+        "page": 4,
+        "quote": "Additional Applicant Charge 18+ | 1 | 3,070.00"
+      },
+      "childUnder18": {
+        "amountAud": 1540,
+        "page": 4,
+        "quote": "Additional Applicant Charge U18 | 1 | 1,540.00"
+      }
+    },
+    "190": {
+      "sourceDocument": "data/knowledge/Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "intro": "There is also a charge for each family member who applies for the visa with you.",
+      "adult18Plus": {
+        "amountAud": 3070,
+        "page": 3,
+        "quote": "Additional Applicant Charge 18+ | 1 | 3,070.00"
+      },
+      "childUnder18": {
+        "amountAud": 1535,
+        "page": 3,
+        "quote": "Additional Applicant Charge U18 | 1 | 1,535.00"
+      }
+    },
+    "485": {
+      "sourceDocument": "data/knowledge/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf",
+      "intro": "There is also a charge for each family member who applies for the visa with you.",
+      "adult18Plus": {
+        "amountAud": 2875,
+        "page": 4,
+        "quote": "Additional Applicant Charge 18+ | 1 | 2,875.00"
+      },
+      "childUnder18": {
+        "amountAud": 1450,
+        "page": 4,
+        "quote": "Additional Applicant Charge U18 | 1 | 1,450.00"
+      }
+    },
+    "491": {
+      "sourceDocument": "data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "intro": "There is also a charge for each family member who applies for the visa with you.",
+      "adult18Plus": {
+        "amountAud": 3070,
+        "page": 4,
+        "quote": "Additional Applicant Charge 18+ | 1 | 3,070.00"
+      },
+      "childUnder18": {
+        "amountAud": 1535,
+        "page": 4,
+        "quote": "Additional Applicant Charge U18 | 1 | 1,535.00"
+      }
+    },
+    "500": {
+      "sourceDocument": "data/knowledge/Visa_500/Student visa_class_500_23September2026.pdf",
+      "intro": "There is also a charge for each family member who applies for the visa.",
+      "adult18Plus": {
+        "amountAud": 1530,
+        "page": 4,
+        "quote": "Additional Applicant Charge 18+ | 1 | 1,530.00"
+      },
+      "childUnder18": {
+        "amountAud": 500,
+        "page": 4,
+        "quote": "Additional Applicant Charge U18 | 1 | 500.00"
+      }
+    },
+    "820": {
+      "sourceDocument": "data/knowledge/(Subclasses 820 and 801) Partner visas (apply in Australia)/Subclass 820 Partner visa (temporary)/Subclass 820 Partner visa (temporary)_23September2026.pdf",
+      "intro": "There is also a fee for each family member that applies for the visa with you.",
+      "adult18Plus": {
+        "amountAud": 5860,
+        "page": 4,
+        "quote": "Additional Applicant Charge 18+ | 1 | 5,860.00"
+      },
+      "childUnder18": {
+        "amountAud": 2935,
+        "page": 4,
+        "quote": "Additional Applicant Charge U18 | 1 | 2,935.00"
+      }
+    }
+  }
+}

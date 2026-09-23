@@ -8,8 +8,8 @@
       "vac_note": "Effective 1 July 2026. Reduced concession pricing applies to eligible Pacific/Timor-Leste and ASEAN citizens and to ELICOS/Non-Award sector applicants — see visa-details.json for the full country lists.",
       "vac": {
         "main": 2500,
-        "partner_18_plus": 1000,
-        "child_under_18": 400
+        "partner_18_plus": 1530,
+        "child_under_18": 500
       }
     },
     "485": {
@@ -17,8 +17,8 @@
       "vac_note": "Effective 1 July 2026. Reduced concession pricing applies to eligible Pacific/Timor-Leste citizens — see visa-details.json for the full country list.",
       "vac": {
         "main": 5750,
-        "partner_18_plus": 1120,
-        "child_under_18": 560
+        "partner_18_plus": 2875,
+        "child_under_18": 1450
       }
     },
     "482": {
@@ -35,8 +35,8 @@
       "vac_note": "Effective 1 July 2026. A mandatory Second Instalment of AUD 4,885.00 applies to applicants 18+ without functional English. Reduced concession pricing applies to eligible Pacific/Timor-Leste citizens — see visa-details.json for the full country list.",
       "vac": {
         "main": 6135,
-        "partner_18_plus": 2455,
-        "child_under_18": 1230,
+        "partner_18_plus": 3070,
+        "child_under_18": 1540,
         "secondInstalmentEnglish": 4885
       }
     },
@@ -45,8 +45,8 @@
       "vac_note": "Effective 1 July 2026. A mandatory Second Instalment of AUD 4,885.00 applies to applicants 18+ without functional English. Reduced concession pricing applies to eligible Pacific/Timor-Leste citizens — see visa-details.json for the full country list.",
       "vac": {
         "main": 6140,
-        "partner_18_plus": 2455,
-        "child_under_18": 1230,
+        "partner_18_plus": 3070,
+        "child_under_18": 1535,
         "secondInstalmentEnglish": 4885
       }
     },
@@ -55,8 +55,8 @@
       "vac_note": "Effective 1 July 2026. A mandatory Second Instalment of AUD 4,890.00 applies to dependent applicants 18+ without functional English. Reduced concession pricing applies to eligible Pacific/Timor-Leste citizens — see visa-details.json for the full country list.",
       "vac": {
         "main": 6140,
-        "partner_18_plus": 2455,
-        "child_under_18": 1230,
+        "partner_18_plus": 3070,
+        "child_under_18": 1535,
         "secondInstalmentEnglish": 4890
       }
     },
@@ -65,8 +65,8 @@
       "vac_note": "This fee covers both the temporary (820) and permanent (801) stages of the application. Effective 1 July 2026.",
       "vac": {
         "main": 11710,
-        "partner_18_plus": 0,
-        "child_under_18": 2345,
+        "partner_18_plus": 5860,
+        "child_under_18": 2935,
         "subclass300Holder": 1955,
         "formerSubclass300Holder": 2475
       }

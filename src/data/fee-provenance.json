@@ -99,11 +99,11 @@
     {
       "id": "vac_additional_adult_189",
       "description": "Subclass 189 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
-      "value": 2455,
+      "value": 3070,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/..._01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you. To work out what your visa will cost use the Visa Pricing Estimator.\" No flat per-dependant AUD figure is stated in the document; the Estimator is an interactive tool, not a document.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf p.4 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" Fee table row: \"Additional Applicant Charge 18+ | 1 | 3,070.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.189.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"189\")"
@@ -112,11 +112,11 @@
     {
       "id": "vac_additional_child_189",
       "description": "Subclass 189 additional-applicant Visa Application Charge, each child under 18",
-      "value": 1230,
+      "value": 1540,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/..._01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you. To work out what your visa will cost use the Visa Pricing Estimator.\" No flat per-dependant AUD figure is stated in the document; the Estimator is an interactive tool, not a document.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf p.4 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" Fee table row: \"Additional Applicant Charge U18 | 1 | 1,540.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.189.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"189\")"
@@ -125,11 +125,11 @@
     {
       "id": "vac_additional_adult_190",
       "description": "Subclass 190 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
-      "value": 2455,
+      "value": 3070,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Subclass 190 Skilled Nominated visa/..._01July2026.pdf -- \"Cost\" section: same \"charge for each family member ... use the Visa Pricing Estimator\" wording, no flat per-dependant AUD figure stated.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf p.3 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" Fee table row: \"Additional Applicant Charge 18+ | 1 | 3,070.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.190.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"190\")"
@@ -138,11 +138,11 @@
     {
       "id": "vac_additional_child_190",
       "description": "Subclass 190 additional-applicant Visa Application Charge, each child under 18",
-      "value": 1230,
+      "value": 1535,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Subclass 190 Skilled Nominated visa/..._01July2026.pdf -- \"Cost\" section: same \"charge for each family member ... use the Visa Pricing Estimator\" wording, no flat per-dependant AUD figure stated.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf p.3 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" Fee table row: \"Additional Applicant Charge U18 | 1 | 1,535.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.190.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"190\")"
@@ -177,11 +177,11 @@
     {
       "id": "vac_additional_adult_485",
       "description": "Subclass 485 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
-      "value": 1120,
+      "value": 2875,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Temporary Graduate visa (subclass 485).../..._01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" No flat per-dependant AUD figure is stated.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf p.4 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" Fee table row: \"Additional Applicant Charge 18+ | 1 | 2,875.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.485.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"485\")"
@@ -190,11 +190,11 @@
     {
       "id": "vac_additional_child_485",
       "description": "Subclass 485 additional-applicant Visa Application Charge, each child under 18",
-      "value": 560,
+      "value": 1450,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Temporary Graduate visa (subclass 485).../..._01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" No flat per-dependant AUD figure is stated.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf p.4 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" Fee table row: \"Additional Applicant Charge U18 | 1 | 1,450.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.485.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"485\")"
@@ -203,11 +203,11 @@
     {
       "id": "vac_additional_adult_491",
       "description": "Subclass 491 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
-      "value": 2455,
+      "value": 3070,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/..._01July2026.pdf -- \"Cost\" section: same \"charge for each family member ... use the Visa Pricing Estimator\" wording, no flat per-dependant AUD figure stated.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf p.4 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" Fee table row: \"Additional Applicant Charge 18+ | 1 | 3,070.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.491.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"491\")"
@@ -216,11 +216,11 @@
     {
       "id": "vac_additional_child_491",
       "description": "Subclass 491 additional-applicant Visa Application Charge, each child under 18",
-      "value": 1230,
+      "value": 1535,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/..._01July2026.pdf -- \"Cost\" section: same \"charge for each family member ... use the Visa Pricing Estimator\" wording, no flat per-dependant AUD figure stated.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf p.4 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa with you.\" Fee table row: \"Additional Applicant Charge U18 | 1 | 1,535.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.491.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"491\")"
@@ -229,11 +229,11 @@
     {
       "id": "vac_additional_adult_500",
       "description": "Subclass 500 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
-      "value": 1000,
+      "value": 1530,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Visa_500/Student visa_class_500_01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa.\" No flat per-dependant AUD figure is stated.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Visa_500/Student visa_class_500_23September2026.pdf p.4 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa.\" Fee table row: \"Additional Applicant Charge 18+ | 1 | 1,530.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.500.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"500\")"
@@ -242,11 +242,11 @@
     {
       "id": "vac_additional_child_500",
       "description": "Subclass 500 additional-applicant Visa Application Charge, each child under 18",
-      "value": 400,
+      "value": 500,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/Visa_500/Student visa_class_500_01July2026.pdf -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa.\" No flat per-dependant AUD figure is stated.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/Visa_500/Student visa_class_500_23September2026.pdf p.4 -- \"Cost\" section: \"There is also a charge for each family member who applies for the visa.\" Fee table row: \"Additional Applicant Charge U18 | 1 | 500.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.500.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"500\")"
@@ -255,11 +255,11 @@
     {
       "id": "vac_additional_adult_820",
       "description": "Subclass 820 additional-applicant Visa Application Charge, each partner/dependant aged 18+",
-      "value": 0,
+      "value": 5860,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/(Subclasses 820 and 801) Partner visas.../Subclass 820 Partner visa (temporary)_01July2026.pdf -- \"Cost\" section gives AUD11,710.00 (main), AUD1,955.00 and AUD2,475.00 (former subclass 300 holders) only; no dependent-child or partner-addition figure appears anywhere in the document.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/(Subclasses 820 and 801) Partner visas (apply in Australia)/Subclass 820 Partner visa (temporary)/Subclass 820 Partner visa (temporary)_23September2026.pdf p.4 -- \"Cost\" section: \"There is also a fee for each family member that applies for the visa with you.\" Fee table row: \"Additional Applicant Charge 18+ | 1 | 5,860.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.820.vac.partner_18_plus",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"820\")"
@@ -268,11 +268,11 @@
     {
       "id": "vac_additional_child_820",
       "description": "Subclass 820 additional-applicant Visa Application Charge, each child under 18",
-      "value": 2345,
+      "value": 2935,
       "currency": "AUD",
       "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- checked against data/knowledge in this session: data/knowledge/(Subclasses 820 and 801) Partner visas.../Subclass 820 Partner visa (temporary)_01July2026.pdf -- \"Cost\" section gives AUD11,710.00 (main), AUD1,955.00 and AUD2,475.00 (former subclass 300 holders) only; no dependent-child or partner-addition figure appears anywhere in the document.",
+      "last_verified": "2026-09-23",
+      "source": "data/knowledge/(Subclasses 820 and 801) Partner visas (apply in Australia)/Subclass 820 Partner visa (temporary)/Subclass 820 Partner visa (temporary)_23September2026.pdf p.4 -- \"Cost\" section: \"There is also a fee for each family member that applies for the visa with you.\" Fee table row: \"Additional Applicant Charge U18 | 1 | 2,935.00\" (extracted by scripts/generate-additional-applicant-vac.ts into src/data/additional-applicant-vac.json).",
       "locations": [
         "src/data/visa-fees.json:visas.820.vac.child_under_18",
         "lib/readiness/constants.ts:resolveAdditionalApplicantVac(\"820\")"

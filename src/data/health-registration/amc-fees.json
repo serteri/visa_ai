@@ -1,0 +1,54 @@
+{
+  "sourceDocument": "data/knowledge/Skill Assessments/Australian Medical Council(AMC)/Australian Medical Council.pdf",
+  "sourceTitle": "Australian Medical Council (AMC) -- Standard pathway, examinations and assessment, other pathways",
+  "sourcePageCount": 53,
+  "extractedDate": "2026-09-23",
+  "generatedBy": "scripts/generate-amc-fees.ts",
+  "effectiveDate": null,
+  "effectiveDateNote": "The document states no effective date for the reduced clinical examination fees.",
+  "fees": [
+    {
+      "id": "amc_clinical_exam_in_person",
+      "item": "AMC clinical examination (in person)",
+      "amountAud": 3000,
+      "previousAmountAud": 3991,
+      "page": 33,
+      "quote": "We have reduced the fee of the AMC in-person clinical exam from $3,991 to $3,000 and the online clinical exam from $4,391 to $3,400.",
+      "payment": "Fees for clinical examinations are payable when an examination session is scheduled."
+    },
+    {
+      "id": "amc_clinical_exam_online",
+      "item": "AMC clinical examination (online)",
+      "amountAud": 3400,
+      "previousAmountAud": 4391,
+      "page": 33,
+      "quote": "We have reduced the fee of the AMC in-person clinical exam from $3,991 to $3,000 and the online clinical exam from $4,391 to $3,400.",
+      "alsoStated": {
+        "page": 27,
+        "quote": "The fee for the online clinical examination is AUD $3,400."
+      },
+      "payment": "Fees for clinical examinations are payable when an examination session is scheduled."
+    }
+  ],
+  "notStated": [
+    {
+      "id": "amc_candidate_account_psv",
+      "item": "AMC candidate account / portfolio and primary source verification (PSV)",
+      "status": "needs human verification",
+      "reason": "No amount in this document; it only links out (\"Find out more about fees\", p.33)."
+    },
+    {
+      "id": "amc_cat_mcq_exam",
+      "item": "AMC CAT MCQ examination",
+      "status": "needs human verification",
+      "reason": "No amount in this document; it only links out (\"Find out more about fees\", p.33)."
+    },
+    {
+      "id": "amc_workplace_based_assessment",
+      "item": "AMC-accredited workplace-based assessment (WBA)",
+      "status": "needs human verification",
+      "reason": "No amount in this document; it only links out (\"Find out more about fees\", p.33)."
+    }
+  ],
+  "outOfScope": "The document gives no ECFMG, specialist-college or CPD-home fees: it states the AMC does not conduct assessments for the Specialist, Expedited Specialist or Short-term training pathways and has no role in registration."
+}

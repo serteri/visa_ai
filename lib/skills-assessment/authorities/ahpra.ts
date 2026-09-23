@@ -37,6 +37,16 @@ function registryPathway(pathwayId: string, name: SkillsAssessmentPathway["name"
     fees: [
       boardFee(fees.applicationFee),
       boardFee(fees.registrationFee),
+      // Standard pathway only: the AMC clinical examination (amc-fees.json, from the AMC's own pages).
+      ...(fees.amcClinicalExam
+        ? [
+            {
+              label: "AMC clinical examination (in person; online AUD " + fees.amcClinicalExam.onlineAud + ")",
+              amountAUD: fees.amcClinicalExam.inPersonAud,
+              note: `Australian Medical Council, p.${fees.amcClinicalExam.page}: "${fees.amcClinicalExam.quote}"`,
+            } satisfies AuthorityFee,
+          ]
+        : []),
       // No amountAUD on purpose: the source document gives none.
       ...fees.deferredFees.map((f): AuthorityFee => ({ label: f.organisation, note: f.text })),
     ],

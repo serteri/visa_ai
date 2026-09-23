@@ -10,6 +10,7 @@
  * information."), so they are surfaced only as that deferral text -- never as a number.
  */
 import data from "@/src/data/health-registration/img-pathways.json";
+import amcFees from "@/src/data/health-registration/amc-fees.json";
 
 type Block = { kind: "paragraph" | "bullet"; text: string };
 type FeeRow = (typeof data.ahpraFeeSchedule.items)[number];
@@ -88,6 +89,14 @@ export type MedicalRegistrationFees = {
   alternative?: { condition: string; applicationFee: FeeRow; registrationFee: FeeRow; totalAud: number };
   /** The document's own statements for every non-Medical-Board fee on this pathway -- no amounts. */
   deferredFees: Array<{ organisation: string; text: string; deferralText: string | null }>;
+  /**
+   * Standard pathway only: the AMC clinical examination fee, from the AMC's own pages (amc-fees.json) -- the
+   * one AMC fee any source document states. In person is the low end, online the high end.
+   */
+  amcClinicalExam?: { inPersonAud: number; onlineAud: number; page: number; quote: string };
+  /** Medical Board total, plus the AMC clinical examination where it applies (min = in person, max = online). */
+  totalMinAud: number;
+  totalMaxAud: number;
   sourcePages: number[];
 };
 
@@ -96,6 +105,21 @@ const pair = (applicationId: string, registrationId: string) => {
   const registrationFee = feeRow(registrationId);
   return { applicationFee, registrationFee, totalAud: applicationFee.nationalFeeAud + registrationFee.nationalFeeAud };
 };
+
+function amcFee(id: string) {
+  const fee = amcFees.fees.find((f) => f.id === id);
+  if (!fee) throw new Error(`amc-fees.json has no "${id}" -- regenerate it (scripts/generate-amc-fees.ts)`);
+  return fee;
+}
+
+/** Adds totalMinAud/totalMaxAud: the Medical Board total, plus the AMC clinical examination when given. */
+function withTotals<T extends { totalAud: number; amcClinicalExam?: MedicalRegistrationFees["amcClinicalExam"] }>(fees: T) {
+  return {
+    ...fees,
+    totalMinAud: fees.totalAud + (fees.amcClinicalExam?.inPersonAud ?? 0),
+    totalMaxAud: fees.totalAud + (fees.amcClinicalExam?.onlineAud ?? 0),
+  };
+}
 
 /** Picks the pathway and the Medical Board fees that apply to this applicant (see the assumptions per branch). */
 export function resolveMedicalRegistration(input: { anzscoCode?: string; qualificationAwardedInAustralia?: boolean }): MedicalRegistrationFees {
@@ -109,7 +133,7 @@ export function resolveMedicalRegistration(input: { anzscoCode?: string; qualifi
   // them only in its section for Australian/NZ graduates who also hold an overseas specialist qualification.
   if (input.qualificationAwardedInAustralia === true) {
     const p = pathway("au-nz-graduates-overseas-specialist");
-    return {
+    return withTotals({
       pathwayId: "au-nz-graduate",
       pathwayName: p.name,
       registrationType: "general",
@@ -120,13 +144,13 @@ export function resolveMedicalRegistration(input: { anzscoCode?: string; qualifi
       },
       deferredFees: deferred(p.id),
       sourcePages: [...p.sourcePages, ...data.ahpraFeeSchedule.pages],
-    };
+    });
   }
 
   const specialty = ANZSCO_TO_EXPEDITED_SPECIALTY[code];
   if (specialty && EXPEDITED_SPECIALTIES.includes(specialty)) {
     const p = pathway("expedited-specialist");
-    return {
+    return withTotals({
       pathwayId: "expedited-specialist",
       pathwayName: p.name,
       expeditedSpecialty: specialty,
@@ -134,12 +158,12 @@ export function resolveMedicalRegistration(input: { anzscoCode?: string; qualifi
       ...pair("application-fee-for-specialist-registration", "registration-fee-for-specialist-registration-for-practitioners-who-do-not-hold-general-registration"),
       deferredFees: deferred(p.id),
       sourcePages: [...p.sourcePages, ...data.ahpraFeeSchedule.pages],
-    };
+    });
   }
 
   if (NON_SPECIALIST_CODES.has(code)) {
     const p = pathway("standard");
-    return {
+    return withTotals({
       pathwayId: "standard",
       pathwayName: p.name,
       registrationType: "limited",
@@ -152,14 +176,23 @@ export function resolveMedicalRegistration(input: { anzscoCode?: string; qualifi
         ),
       },
       deferredFees: deferred(p.id),
+      // The Standard pathway needs the AMC clinical examination or a workplace-based assessment; the exam is the
+      // usual route ("Most non-specialist IMGs are assessed through this method"), and its fee is the one AMC fee
+      // a source document states (amc-fees.json). The WBA and CAT MCQ fees stay unpriced.
+      amcClinicalExam: {
+        inPersonAud: amcFee("amc_clinical_exam_in_person").amountAud,
+        onlineAud: amcFee("amc_clinical_exam_online").amountAud,
+        page: amcFee("amc_clinical_exam_in_person").page,
+        quote: amcFee("amc_clinical_exam_in_person").quote,
+      },
       sourcePages: [...p.sourcePages, ...data.ahpraFeeSchedule.pages],
-    };
+    });
   }
 
   // Every other AHPRA occupation is a specialty not on the Expedited list: college comparability assessment,
   // limited registration for supervised practice, then specialist registration.
   const p = pathway("specialist-recognition");
-  return {
+  return withTotals({
     pathwayId: "specialist-recognition",
     pathwayName: p.name,
     registrationType: "limited",
@@ -167,7 +200,7 @@ export function resolveMedicalRegistration(input: { anzscoCode?: string; qualifi
     laterStage: pair("application-fee-for-specialist-registration", "registration-fee-for-specialist-registration-for-practitioners-who-do-not-hold-general-registration"),
     deferredFees: deferred(p.id),
     sourcePages: [...p.sourcePages, ...data.ahpraFeeSchedule.pages],
-  };
+  });
 }
 
 // ── report text ──────────────────────────────────────────────────────────────────────────────────────
@@ -197,7 +230,19 @@ export function feeScheduleCitation(locale: Locale): string {
  * "effective 1 August 2026" citation lead the explanation instead (medicalRegistrationFeeBreakdown).
  */
 export function medicalRegistrationAmountLabel(fees: MedicalRegistrationFees): string {
-  return aud(fees.totalAud);
+  return fees.totalMinAud === fees.totalMaxAud ? aud(fees.totalMinAud) : `${aud(fees.totalMinAud)}–${fees.totalMaxAud.toLocaleString("en-AU")}`;
+}
+
+/** The AMC clinical examination sentence (Standard pathway), cited to the AMC's own pages; "" when not applicable. */
+export function amcClinicalExamLine(fees: MedicalRegistrationFees, locale: Locale): string {
+  const exam = fees.amcClinicalExam;
+  if (!exam) return "";
+  return pick(
+    locale,
+    `Plus the AMC clinical examination: ${aud(exam.inPersonAud)} in person or ${aud(exam.onlineAud)} online, payable to the AMC when the exam is scheduled (Australian Medical Council, p.${exam.page}: "${exam.quote}"; no effective date stated). It applies if you take the clinical exam rather than a workplace-based assessment; the AMC CAT MCQ exam and candidate-account/PSV fees are not published in either document.`,
+    `Buna AMC klinik sınavı eklenir: yüz yüze ${aud(exam.inPersonAud)} veya çevrimiçi ${aud(exam.onlineAud)}, sınav planlandığında AMC'ye ödenir (Australian Medical Council, s.${exam.page}: "${exam.quote}"; yürürlük tarihi belirtilmemiş). İşyeri temelli değerlendirme yerine klinik sınava girerseniz geçerlidir; AMC CAT MCQ sınavı ve aday hesabı/PSV ücretleri iki belgede de yayımlanmamıştır.`,
+    `另加 AMC 临床考试：现场 ${aud(exam.inPersonAud)} 或线上 ${aud(exam.onlineAud)}，在安排考试时向 AMC 缴纳（Australian Medical Council，第 ${exam.page} 页："${exam.quote}"；未注明生效日期）。适用于参加临床考试而非工作场所评估的情况；AMC CAT MCQ 考试及候选人账户/PSV 费用在两份文件中均未公布。`,
+  );
 }
 
 /** "Medical Board application fee AUD 1,661 + registration fee AUD 1,102 for specialist registration (...effective 1 August 2026)." */
@@ -264,7 +309,8 @@ export function medicalRegistrationExplanation(fees: MedicalRegistrationFees, lo
     ` Değerlendirme kurumu: ${authorityLabel}. Kaynak: "${data.sourceTitle}" (Medical Board of Australia / Ahpra), ${feeScheduleCitation("tr")}.`,
     ` 评估机构：${authorityLabel}。来源："${data.sourceTitle}"（Medical Board of Australia / Ahpra），${feeScheduleCitation("zh-Hans")}。`,
   );
-  return `${medicalRegistrationFeeBreakdown(fees, locale)} ${why}${nsw}${source}`;
+  const amc = amcClinicalExamLine(fees, locale);
+  return `${medicalRegistrationFeeBreakdown(fees, locale)}${amc ? ` ${amc}` : ""} ${why}${nsw}${source}`;
 }
 
 const ORGANISATION: Record<string, { en: string; tr: string; zh: string }> = {
@@ -291,9 +337,9 @@ export function deferredFeesLine(fees: MedicalRegistrationFees, locale: Locale):
     amountLabel: pick(locale, "Not published -- confirm directly", "Yayımlanmadı -- doğrudan teyit edin", "未公布——请直接确认"),
     explanation: pick(
       locale,
-      `Charged separately by: ${orgs.join(", ")}. The Medical Board document names these fees but gives no amounts, so no figure is shown here -- confirm each directly with the organisation. In the document's own words (English): ${quoted}`,
-      `Ayrıca ücret alan kuruluşlar: ${orgs.join(", ")}. Medical Board belgesi bu ücretleri sayar ancak tutar vermez; bu yüzden burada rakam gösterilmez -- her birini doğrudan ilgili kuruluşla teyit edin. Belgenin kendi ifadesiyle (İngilizce): ${quoted}`,
-      `另行收费的机构：${orgs.join("、")}。医学委员会文件列出了这些费用但未给出金额，因此此处不显示数字——请直接向各机构确认。文件原文（英文）：${quoted}`,
+      `Charged separately by: ${orgs.join(", ")}. The Medical Board document names these fees but gives no amounts, so no figure is shown here -- confirm each directly with the organisation.${fees.amcClinicalExam ? " (The AMC clinical examination fee is shown in the line above, from the AMC's own pages.)" : ""} In the document's own words (English): ${quoted}`,
+      `Ayrıca ücret alan kuruluşlar: ${orgs.join(", ")}. Medical Board belgesi bu ücretleri sayar ancak tutar vermez; bu yüzden burada rakam gösterilmez -- her birini doğrudan ilgili kuruluşla teyit edin.${fees.amcClinicalExam ? " (AMC klinik sınavı ücreti, AMC'nin kendi sayfalarından, yukarıdaki satırda gösterilmiştir.)" : ""} Belgenin kendi ifadesiyle (İngilizce): ${quoted}`,
+      `另行收费的机构：${orgs.join("、")}。医学委员会文件列出了这些费用但未给出金额，因此此处不显示数字——请直接向各机构确认。${fees.amcClinicalExam ? "（AMC 临床考试费用已根据 AMC 官方页面列于上一行。）" : ""}文件原文（英文）：${quoted}`,
     ),
   };
 }
