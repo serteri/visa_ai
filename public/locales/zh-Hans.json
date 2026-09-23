@@ -728,6 +728,7 @@
   "pricing.mostPopular": "最受欢迎",
   "pricing.buyNow": "立即购买",
   "pricing.redirecting": "正在跳转...",
+  "pricing.checkoutError": "无法启动结账，请稍后重试。",
   "pricing.starter.name": "入门套餐",
   "pricing.starter.description": "一次性购买",
   "pricing.starter.feature1": "50条高级AI消息",

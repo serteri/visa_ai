@@ -62,3 +62,12 @@ jobs:
       # the git-committed src/data/state-occupation-lists/*.json -- pure data/function tests, no database.
       - name: Occupation <-> state occupation-list match tests
         run: npm run test:occupation-match
+
+      # REAL Stripe test mode (not stubbed): /api/stripe/checkout must create a Checkout Session for both
+      # credit packages, and a session with the real ADMINFREE promotion code must go through the real webhook
+      # handler with no email sent. Prisma/Resend/auth are stubbed, so nothing touches production. Needs the
+      # STRIPE_TEST_SECRET_KEY repository secret (sk_test_ only); without it the step prints SKIPPED and passes.
+      - name: Real Stripe test-mode checkout + ADMINFREE webhook suppression
+        run: npm run test:stripe-real
+        env:
+          STRIPE_TEST_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}

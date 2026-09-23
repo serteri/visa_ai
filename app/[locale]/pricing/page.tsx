@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { ShellHeaderGate } from "@/components/shell-gates";
 import { LanguageProvider } from "@/contexts/language-context";
 import { getTranslations, t } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
@@ -26,9 +27,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function PricingPage({ params }: PageProps) {
   const { locale } = await params;
   const translations = await getTranslations(locale as Locale);
+  const showAdmin = process.env.SHOW_ADMIN === "true";
 
+  // /pricing sits outside the (main) route group, so it doesn't get that layout's site header -- rendered
+  // here directly (same component, same props as app/[locale]/(main)/layout.tsx) so the page has the
+  // logo/home link and the normal navigation.
   return (
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
+      <ShellHeaderGate locale={locale} showAdmin={showAdmin} />
       <div className="min-h-screen bg-background">
         <header className="mx-auto max-w-4xl px-4 pt-16 pb-10 text-center sm:pt-24">
           <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">

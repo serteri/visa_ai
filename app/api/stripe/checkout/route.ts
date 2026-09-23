@@ -2,22 +2,33 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { getStripeClient, getStripeBaseUrl } from "@/lib/stripe";
+import {
+  CREDIT_PACKAGES,
+  findCreditPackageByPriceId,
+  getCreditPackagePriceId,
+  isCreditPackageId,
+  type CreditPackageId,
+} from "@/lib/stripe/credit-packages";
 import { getVisitorContext } from "@/lib/visitor-tracking";
 
 export const dynamic = "force-dynamic";
 
 interface CheckoutPayload {
+  /** "starter" | "comprehensive" -- the price id is resolved server-side (lib/stripe/credit-packages.ts). */
+  plan?: string;
+  /** Legacy: older bundles posted the price id itself. Accepted only if it is one of our packages' prices. */
   priceId?: string;
+  /** Optional prefill from /pricing?email=... (set by the AI assistant's upgrade prompt). */
+  email?: string;
 }
 
-// Maps each credit package's Stripe Price id to the credit amount it grants.
-// The webhook (app/api/stripe/webhook/route.ts) reads the resolved amount
-// back out of session.metadata.credits rather than re-deriving it from
-// priceId, so this mapping only needs to exist here.
-function getCreditsForPriceId(priceId: string): number | null {
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_STARTER_CREDITS_PRICE_ID) return 50;
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_COMPREHENSIVE_CREDITS_PRICE_ID) return 150;
-  return null;
+// Loose sanity check only: a malformed customer_email makes Stripe reject the whole session, so anything
+// that doesn't look like an address is dropped (Checkout then asks for the email itself) rather than
+// failing the purchase.
+function sanitizeEmail(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const email = value.trim();
+  return email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : undefined;
 }
 
 /**
@@ -35,17 +46,19 @@ function getCreditsForPriceId(priceId: string): number | null {
 export async function POST(req: NextRequest) {
   console.log("KULLANILAN STRIPE KEY SON 4 HANE:", process.env.STRIPE_SECRET_KEY?.slice(-4));
   try {
-    const body = (await req.json()) as CheckoutPayload;
-    const priceId = body.priceId;
+    const body = ((await req.json().catch(() => ({}))) ?? {}) as CheckoutPayload;
 
-    if (!priceId) {
-      return NextResponse.json({ error: "priceId is required." }, { status: 400 });
+    let plan: CreditPackageId | null = isCreditPackageId(body.plan) ? body.plan : null;
+    if (!plan && body.priceId) plan = findCreditPackageByPriceId(body.priceId);
+    if (!plan) {
+      return NextResponse.json({ error: "Unknown credit package." }, { status: 400 });
     }
 
-    const credits = getCreditsForPriceId(priceId);
-    if (credits === null) {
-      return NextResponse.json({ error: "Unknown priceId." }, { status: 400 });
-    }
+    const priceId = getCreditPackagePriceId(plan);
+    // The webhook (app/api/stripe/webhook/route.ts) reads the credit amount back out of
+    // session.metadata.credits rather than re-deriving it from priceId.
+    const credits = CREDIT_PACKAGES[plan].credits;
+    const prefillEmail = sanitizeEmail(body.email);
 
     const [visitor, session] = await Promise.all([getVisitorContext(req), auth()]);
 
@@ -56,7 +69,7 @@ export async function POST(req: NextRequest) {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
-      customer_email: session?.user?.email || undefined,
+      customer_email: session?.user?.email || prefillEmail,
       // Stripe Tax needs a customer location to calculate GST; this is the
       // billing address Checkout collects to satisfy that requirement.
       billing_address_collection: "required",
@@ -66,7 +79,8 @@ export async function POST(req: NextRequest) {
       metadata: {
         visitorId: visitor.id,
         userId: session?.user?.id || "",
-        email: session?.user?.email || "",
+        email: session?.user?.email || prefillEmail || "",
+        plan,
         priceId,
         // Stripe metadata values are strings only; the webhook parses this
         // back to a number before incrementing premiumCredits.

@@ -728,6 +728,7 @@
   "pricing.mostPopular": "Most Popular",
   "pricing.buyNow": "Buy Now",
   "pricing.redirecting": "Redirecting...",
+  "pricing.checkoutError": "We couldn't start the checkout. Please try again in a moment.",
   "pricing.starter.name": "Starter Package",
   "pricing.starter.description": "One-time purchase",
   "pricing.starter.feature1": "50 Premium AI Messages",

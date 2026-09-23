@@ -735,6 +735,7 @@
   "pricing.mostPopular": "En Popüler",
   "pricing.buyNow": "Satın Al",
   "pricing.redirecting": "Yönlendiriliyor...",
+  "pricing.checkoutError": "Ödeme sayfası başlatılamadı. Lütfen birazdan tekrar deneyin.",
   "pricing.starter.name": "Başlangıç Paketi",
   "pricing.starter.description": "Tek seferlik satın alım",
   "pricing.starter.feature1": "50 Premium AI Mesajı",

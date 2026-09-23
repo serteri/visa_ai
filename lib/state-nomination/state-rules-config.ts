@@ -156,14 +156,15 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
   // 2026-27 program will be published when available."). The data/knowledge/State Immigrations/Victoria
   // documents predate that announcement and are stale on program status; the eligibility facts below
   // (free ROI, DHA baseline, no separate state list) come from them and describe the program when open.
-  // `status`/`offshoreQuotaPressure` are deliberately left as they were -- the admin panel's
-  // "Suspended / Closed" takes priority at read time (see getStateNominationConfigMap).
+  // `status`/`offshoreQuotaPressure` match the admin panel's "Suspended / Closed" (which still takes priority
+  // at read time, see getStateNominationConfigMap), so the fallback used when the admin config can't be read
+  // (CI, a DB failure) agrees with this note instead of scoring Victoria as open.
   VIC: {
     code: "VIC",
     name: "Victoria",
-    status: "Open (Onshore & Offshore)",
+    status: "Suspended / Closed",
     note: "Victoria's 2025-26 skilled visa nomination program (subclasses 190 and 491) is closed -- Live in Melbourne states all places have been filled. Information about the 2026-27 program has not yet been published.",
-    offshoreQuotaPressure: "medium",
+    offshoreQuotaPressure: "closed",
     aiSummary:
       "Victoria's 2025-26 skilled visa nomination program is closed: the official Live in Melbourne site (liveinmelbourne.vic.gov.au) states that all places have been filled and that information about the 2026-27 program will be published when available. No new Registrations of Interest can be selected for Victorian nomination until 2026-27 settings are announced. When the program is open, Victoria nominates for subclass 190 (permanent) and subclass 491 (provisional, regional) through a free Registration of Interest (ROI) on the Live in Melbourne portal, with only the Department of Home Affairs visa fee payable later. Both onshore and offshore applicants have been eligible: offshore applicants for 491 were not required to claim earnings in their ROI, and subclass 190 applicants living overseas had to commit to living in Victoria; subclass 190 had no minimum work experience or hours-of-work requirement. Basic DHA-aligned eligibility applies (under 45, Competent English, valid skills assessment on the Australian Government's own eligible skilled occupation list -- Victoria does not maintain its own separate list, unlike NSW/SA/WA) and at least 65 points. These when-open settings come from 2025-26 program documents and may change for 2026-27.",
     keyFacts: [
