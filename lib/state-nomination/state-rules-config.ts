@@ -151,26 +151,32 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     sourceDocument:
       "data/knowledge/State Immigrations/NSW/Skilled Nominated visa (Subclass 190)/Skilled Nominated visa (Subclass 190).pdf; data/knowledge/State Immigrations/NSW/Skilled Work Regional visa (subclass 491)/Skilled Work Regional visa (subclass 491) NSW.pdf",
   },
+  // Victoria: closure confirmed 2026-09-23 directly against liveinmelbourne.vic.gov.au ("Victoria's 2025-26
+  // skilled visa nomination program is closed, and all places have been filled. Information about the
+  // 2026-27 program will be published when available."). The data/knowledge/State Immigrations/Victoria
+  // documents predate that announcement and are stale on program status; the eligibility facts below
+  // (free ROI, DHA baseline, no separate state list) come from them and describe the program when open.
+  // `status`/`offshoreQuotaPressure` are deliberately left as they were -- the admin panel's
+  // "Suspended / Closed" takes priority at read time (see getStateNominationConfigMap).
   VIC: {
     code: "VIC",
     name: "Victoria",
     status: "Open (Onshore & Offshore)",
-    note: "Victoria's own subclass 190 and 491 nomination documents describe an actively operating, free-of-charge Registration of Interest (ROI) process open to onshore and offshore applicants, with no allocation-exhausted or closure notice of the kind NSW and NT publish when their programs are shut. This CONFLICTS with the admin panel's current 'Closed' status -- confirm directly with liveinmelbourne.vic.gov.au before treating either value as current.",
+    note: "Victoria's 2025-26 skilled visa nomination program (subclasses 190 and 491) is closed -- Live in Melbourne states all places have been filled. Information about the 2026-27 program has not yet been published.",
     offshoreQuotaPressure: "medium",
     aiSummary:
-      "Victoria nominates for subclass 190 (permanent) and subclass 491 (provisional, regional) through a free Registration of Interest (ROI) on the Live in Melbourne portal -- 'Victorian Registration of Interest (ROI) and nomination are free of charge,' with only the Department of Home Affairs visa fee payable later. Both onshore and offshore applicants are eligible: offshore applicants for 491 are not required to claim earnings in their ROI, and subclass 190 applicants living overseas must simply commit to living in Victoria. Subclass 190 has no minimum work experience or hours-of-work requirement at all. Basic DHA-aligned eligibility applies (under 45, Competent English, valid skills assessment on the Australian Government's own eligible skilled occupation list -- Victoria does not maintain its own separate list, unlike NSW/SA/WA): at least 65 points and a selected ROI. Neither the subclass 190 nor the subclass 491 document contains any allocation, quota, 'closed', or 'paused' language -- a contrast with NSW and NT's documents from the same collection, which both carry an explicit 'Important Notice: Closure' banner when their programs are shut. This absence is suggestive of an open program but is not itself an explicit 'open' statement, so it should be treated as moderate-confidence evidence, not a confirmed fact.",
+      "Victoria's 2025-26 skilled visa nomination program is closed: the official Live in Melbourne site (liveinmelbourne.vic.gov.au) states that all places have been filled and that information about the 2026-27 program will be published when available. No new Registrations of Interest can be selected for Victorian nomination until 2026-27 settings are announced. When the program is open, Victoria nominates for subclass 190 (permanent) and subclass 491 (provisional, regional) through a free Registration of Interest (ROI) on the Live in Melbourne portal, with only the Department of Home Affairs visa fee payable later. Both onshore and offshore applicants have been eligible: offshore applicants for 491 were not required to claim earnings in their ROI, and subclass 190 applicants living overseas had to commit to living in Victoria; subclass 190 had no minimum work experience or hours-of-work requirement. Basic DHA-aligned eligibility applies (under 45, Competent English, valid skills assessment on the Australian Government's own eligible skilled occupation list -- Victoria does not maintain its own separate list, unlike NSW/SA/WA) and at least 65 points. These when-open settings come from 2025-26 program documents and may change for 2026-27.",
     keyFacts: [
-      "Registration of Interest (ROI) and nomination are free of charge -- only the Department of Home Affairs visa fee applies.",
-      "Subclass 190: no minimum work experience or hours-of-work requirement.",
-      "Subclass 491: offshore applicants are not required to claim earnings in their ROI; onshore applicants must be living and working in regional Victoria.",
+      "The 2025-26 Victorian skilled visa nomination program (subclasses 190 and 491) is closed -- all places have been filled (confirmed on liveinmelbourne.vic.gov.au).",
+      "Information about the 2026-27 program has not yet been published.",
+      "When open: Registration of Interest (ROI) and nomination are free of charge -- only the Department of Home Affairs visa fee applies.",
+      "When open: subclass 190 has no minimum work experience or hours-of-work requirement.",
+      "When open: subclass 491 offshore applicants are not required to claim earnings in their ROI; onshore applicants must be living and working in regional Victoria.",
       "Occupation must be on the Australian Government's own eligible skilled occupation list -- Victoria does not maintain a separate state list (unlike NSW/SA/WA).",
       "DHA baseline applies: under 45, at least Competent English, valid skills assessment, at least 65 points.",
-      "Neither document states an allocation figure, a quota, or any closed/paused/suspended notice -- unlike NSW and NT's documents in the same collection, which both carry an explicit closure banner when shut.",
-      "CONFLICTS with the admin panel's current 'Closed' status for Victoria -- re-verify directly with the Live in Melbourne website before relying on either value.",
     ],
-    lastVerified: "2026-09-22",
-    sourceDocument:
-      "data/knowledge/State Immigrations/Victoria/Skilled Nominated visa (subclass 190) Victoria Australia/Skilled Nominated visa (subclass 190) Victoria Australia.pdf; data/knowledge/State Immigrations/Victoria/Skilled Work Regional (Provisional) visa (subclass 491)/Skilled Work Regional (Provisional) visa (subclass 491) Victoria Australia.pdf",
+    lastVerified: "2026-09-23",
+    sourceDocument: "Confirmed directly against liveinmelbourne.vic.gov.au (2026-09-23)",
   },
   QLD: {
     code: "QLD",
