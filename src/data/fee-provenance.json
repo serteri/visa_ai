@@ -1163,7 +1163,7 @@
       "last_verified": "2026-09-24",
       "source": "lib/skills-assessment/authorities/otc-australia.ts pathways[DESKTOP_ASSESSMENT_MIGRATION].fees[0].amountAUD -- data/knowledge/Skill Assessments/Occupational Therapy Council of Australia Limited/Occupational Therapy Council of Australia Limited1.pdf p.1: \"The cost for the Assessment for migration is A$800.00.\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
       "locations": [
-        "src/data/assessing-bodies.json:assessingBodies.\"OT Australia\".fee",
+        "src/data/assessing-bodies.json:assessingBodies.OTC.fee",
         "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
       ]
     }

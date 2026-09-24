@@ -1,4 +1,4 @@
-import type { SkillsAssessmentAuthority } from "./types";
+import type { ApplicantLocation, AuthorityFee, SkillsAssessmentAuthority } from "./types";
 import { aacaAuthority } from "./authorities/aaca";
 import { acsAuthority } from "./authorities/acs";
 import { adcAuthority } from "./authorities/adc";
@@ -94,6 +94,40 @@ export function getDefaultPathway(
   authority: SkillsAssessmentAuthority | null
 ): SkillsAssessmentAuthority["pathways"][number] | null {
   return authority?.pathways[0] ?? null;
+}
+
+/**
+ * Where the applicant applies from, from the intake's current country (an ISO code such as "AU" / "SG", or a
+ * name). Same rule as the state-nomination and ranked-pathways offshore checks: anything that is not Australia is
+ * offshore; no country given -> unknown.
+ */
+export function applicantLocationFor(currentCountry: string | undefined): ApplicantLocation | undefined {
+  const c = (currentCountry ?? "").trim().toLowerCase();
+  if (!c) return undefined;
+  if (c === "au" || c.includes("australia") || c.includes("australya")) return "onshore";
+  if (c === "sg" || c.includes("singapore") || c.includes("singapur")) return "singapore";
+  return "offshore";
+}
+
+/**
+ * The fee the report quotes for a pathway: its first amount, unless the pathway prices by applicant location
+ * (fees tagged applicantLocation, e.g. CPA Australia onshore / offshore / Singapore) -- then the one for the
+ * applicant's current country. Singapore falls back to offshore where no Singapore fee exists; an unknown country
+ * gets the onshore fee (the pathway's first), as before.
+ */
+export function selectPrimaryFee(
+  pathway: SkillsAssessmentAuthority["pathways"][number],
+  currentCountry: string | undefined
+): AuthorityFee | undefined {
+  const priced = pathway.fees.filter((f) => typeof f.amountAUD === "number");
+  const location = applicantLocationFor(currentCountry);
+  if (location && priced.some((f) => f.applicantLocation)) {
+    const match =
+      priced.find((f) => f.applicantLocation === location) ??
+      (location === "singapore" ? priced.find((f) => f.applicantLocation === "offshore") : undefined);
+    if (match) return match;
+  }
+  return priced[0] ?? pathway.fees[0];
 }
 
 /**

@@ -1687,6 +1687,72 @@ async function runNursingChecks(
   }
 }
 
+/**
+ * CPA Australia prices its qualification assessment by where the applicant applies from (onshore AUD 565, offshore
+ * AUD 514, Singapore AUD 560). The report must quote the applicant's own figure -- read from the PDF bytes, not the
+ * report object. Also: an Occupational Therapist's PDF names the assessing body OTC, never the professional
+ * association (Occupational Therapy Australia).
+ */
+async function runLocationFeeAndOtcChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  const accountant: ReadinessInput = { ...base, occupation: "Accountant (General) 221111", occupationConfirmed: "yes", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 3 };
+  const cases: Array<{ name: string; currentCountry: string; expected: number; other: number[]; locales: readonly Locale[] }> = [
+    { name: "offshore-IN", currentCountry: "IN", expected: 514, other: [565, 560], locales: LOCALES },
+    { name: "onshore-AU", currentCountry: "AU", expected: 565, other: [514, 560], locales: LOCALES },
+    { name: "onshore-Australia-name", currentCountry: "Australia", expected: 565, other: [514, 560], locales: ["en"] },
+    { name: "singapore-SG", currentCountry: "SG", expected: 560, other: [565, 514], locales: ["en"] },
+  ];
+  const render = async (reportId: string, input: ReadinessInput, report: ReadinessReport, locale: Locale, file: string) => {
+    rows.set(reportId, {
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+    });
+    const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+    if (res.status !== 200) return null;
+    const raw = (await extractPdfPages(new Uint8Array(await res.arrayBuffer()))).join("\n");
+    await writeFile(path.join(outDir, file), raw);
+    return locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
+  };
+
+  for (const c of cases) {
+    for (const locale of c.locales) {
+      const label = `cpa ${c.name}/${locale}`;
+      console.log(`\n=== ${label} ===`);
+      let caseFailed = false;
+      const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+      const input: ReadinessInput = { ...accountant, currentCountry: c.currentCountry, locale };
+      const report = runReadinessEngine(input);
+      const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+      if (!row || !/CPA/.test(row.category)) { f(`no CPA skills_assessment row (got "${row?.category}")`); continue; }
+      if (row.amountMin !== c.expected || row.amountMax !== c.expected) f(`roadmap amount ${row.amountMin}-${row.amountMax}, expected ${c.expected}`);
+      const flat = await render(`cpa-${c.name}-${locale}`, input, report, locale, `cpa-${c.name}-${locale}.txt`);
+      if (flat === null) { f("route did not return the PDF"); continue; }
+      // zh-Hans renders "AUD" as "澳元" in amount cells.
+      const amount = (n: number) => new RegExp(`(AUD|澳元)\\s*${n}\\b|\\b${n}\\s*澳元`);
+      if (!amount(c.expected).test(flat)) f(`PDF does not show AUD ${c.expected}`);
+      for (const n of c.other) if (amount(n).test(flat)) f(`PDF shows AUD ${n} (another location's CPA fee)`);
+      if (!caseFailed) console.log(`  ✅ ok (current country ${c.currentCountry} -> CPA AUD ${c.expected} in the PDF)`);
+    }
+  }
+
+  const label = "otc 252411/en";
+  console.log(`\n=== ${label} ===`);
+  const input: ReadinessInput = { ...base, occupation: "Occupational Therapist 252411", occupationConfirmed: "yes", sponsorOrFamily: undefined, locale: "en" };
+  const report = runReadinessEngine(input);
+  const flat = await render("otc-252411-en", input, report, "en", "otc-252411-en.txt");
+  if (flat === null) fail(`${label}: route did not return the PDF`);
+  else {
+    let caseFailed = false;
+    if (!/Occupational Therapy Council of Australia/.test(flat)) { caseFailed = true; fail(`${label}: PDF does not name the Occupational Therapy Council of Australia`); }
+    if (/Occupational Therapy Australia|otaus\.com\.au/.test(flat)) { caseFailed = true; fail(`${label}: PDF names Occupational Therapy Australia (the professional association) as the assessing body`); }
+    if (!caseFailed) console.log("  ✅ ok (assessing body: Occupational Therapy Council of Australia)");
+  }
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -1788,6 +1854,12 @@ async function main() {
 
   // Nursing skills assessment (Anmac): RN 254418 AUD 595 cited; no AUD 1,000 placeholder on any ANMAC occupation
   await runNursingChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
+
+  // CPA fee by applicant location (offshore 514 / onshore 565 / Singapore 560); OT assessing body named OTC
+  await runLocationFeeAndOtcChecks(GET, rows, outDir, (m) => {
     failed = true;
     console.error("  ❌ " + m);
   });

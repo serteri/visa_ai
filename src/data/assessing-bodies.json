@@ -277,10 +277,10 @@
       "description": "Assesses speech pathologists for Australian migration.",
       "color": "rose"
     },
-    "OT Australia": {
-      "name": "Occupational Therapy Australia",
-      "shortName": "OT Australia",
-      "website": "https://www.otaus.com.au/advocacy/immigration",
+    "OTC": {
+      "name": "Occupational Therapy Council of Australia",
+      "shortName": "OTC",
+      "website": "https://www.otcouncil.com.au",
       "fee": "AUD 800",
       "feeNote": {
         "en": "Assessment for migration (desktop assessment) by the Occupational Therapy Council (OTC).",
@@ -384,7 +384,7 @@
     "241511": "TEQSA",
     "232111": "AACA",
     "232112": "AACA",
-    "252411": "OT Australia",
+    "252411": "OTC",
     "252712": "SpeechPathAus",
     "234711": "AVBC",
     "234111": "AAA",

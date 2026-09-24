@@ -25,10 +25,12 @@ import {
   getAuthorityById,
   getDefaultPathway,
   resolveACSPathway,
+  selectPrimaryFee,
   resolveLocalized,
   resolveLocalizedArray,
 } from "@/lib/skills-assessment";
 import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
+import type { ApplicantLocation } from "@/lib/skills-assessment/types";
 import {
   anzscoCodeFromOccupation,
   deferredFeesLine,
@@ -5185,11 +5187,15 @@ function buildFinancialRoadmap(
         explanation: registration.explanation,
       });
     } else if (authority && primaryPathway) {
-      const primaryFee = primaryPathway.fees.find((f) => typeof f.amountAUD === "number")
-        ?? primaryPathway.fees[0];
+      // Location-priced fees (CPA Australia onshore / offshore / Singapore): the one for the applicant's current country.
+      const primaryFee = selectPrimaryFee(primaryPathway, input.currentCountry);
       const feeIsEstimate = primaryFee?.estimated === true;
+      const feeQualifiers = [
+        primaryFee?.applicantLocation ? applicantLocationPhrase(primaryFee.applicantLocation, locale) : "",
+        primaryFee?.note ? resolveLocalized(primaryFee.note, locale) : "",
+      ].filter(Boolean).join("; ");
       const feeLabel = (primaryFee?.amountAUD !== undefined
-        ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU")} ${primaryFee.note ? `(${resolveLocalized(primaryFee.note, locale)})` : ""}`
+        ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU")} ${feeQualifiers ? `(${feeQualifiers})` : ""}`
         : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "")).trim() + (feeIsEstimate ? ` (${estimateQualifier(locale)})` : "");
       const processing = primaryPathway.processingTimeWeeks
         ? `${primaryPathway.processingTimeWeeks.standard} wk${primaryPathway.processingTimeWeeks.ifIncomplete ? ` (${primaryPathway.processingTimeWeeks.ifIncomplete} wk if incomplete)` : ""}`
@@ -7354,4 +7360,15 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
       : "Regulatory disclaimer: Licensed RCIC consultants provide official counsel in Canada. This report is for initial guidance only.",
     partnerSponsorshipAssessment: pAssessment,
   };
+}
+
+/** Who a location-priced skills assessment fee applies to (CPA Australia), in the report's language. */
+function applicantLocationPhrase(location: ApplicantLocation, locale: string): string {
+  const phrases: Record<ApplicantLocation, { en: string; tr: string; zh: string }> = {
+    onshore: { en: "applying from within Australia", tr: "Avustralya içinden başvuru", zh: "在澳洲境内申请" },
+    offshore: { en: "applying from outside Australia", tr: "Avustralya dışından başvuru", zh: "在澳洲境外申请" },
+    singapore: { en: "applying from Singapore", tr: "Singapur'dan başvuru", zh: "在新加坡申请" },
+  };
+  const p = phrases[location];
+  return locale === "tr" ? p.tr : locale === "zh-Hans" ? p.zh : p.en;
 }

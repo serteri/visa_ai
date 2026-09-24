@@ -48,7 +48,14 @@ export interface AuthorityFee {
    * carries the same "estimate pending verification" qualifier.
    */
   estimated?: boolean;
+  /**
+   * Where the applicant applies from, for an authority that prices by location (CPA Australia). When a pathway's
+   * fees carry this, the report quotes the one matching the applicant's current country -- see selectPrimaryFee.
+   */
+  applicantLocation?: ApplicantLocation;
 }
+
+export type ApplicantLocation = "onshore" | "offshore" | "singapore";
 
 export interface ProcessingTime {
   /** Standard processing time in weeks for a complete application. */

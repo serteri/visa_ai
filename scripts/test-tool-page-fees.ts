@@ -17,8 +17,13 @@
  *     time equals the registry's where the source document states one and shows no figure where it does not, the
  *     "Source" line cites the registry's document with a page, and every tool code resolves to that authority in the
  *     report (known mapping gaps listed, never silently added to).
+ *   - Occupational Therapist: the card names and links OTC (as the registry does), and "Occupational Therapy
+ *     Australia" (the professional association) appears nowhere in app/components/lib/src/locales.
  * Pure data checks: runs in CI (no data/knowledge needed).
  */
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
+
 import tool from "../src/data/assessing-bodies.json";
 import feeProvenance from "../src/data/fee-provenance.json";
 import { anmacFee, FULL_SKILLS_ASSESSMENT_CODES, resolveAnmacAssessment } from "../lib/health-registration/anmac-fees";
@@ -204,7 +209,7 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
       time: { kind: "sourced", pathwayId: "OQA" },
     },
     {
-      key: "OT Australia",
+      key: "OTC",
       file: "otc-australia",
       authority: otcAustraliaAuthority,
       shown: [{ pathwayId: "DESKTOP_ASSESSMENT_MIGRATION", index: 0, factId: "tool_page_otc_assessment_for_migration_fee" }],
@@ -287,6 +292,32 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
 
     if (failures === before) ok(`${c.key}: tool page ${body.fee}, ${times[0]} = registry ${a.authorityId} (${c.shown.map((r) => `${r.pathwayId} ${reg(a, r)}`).join(", ")})`);
   }
+}
+
+console.log("\n==================== Occupational Therapist: assessing body is OTC, not Occupational Therapy Australia ====================");
+{
+  const before = failures;
+  // The migration skills assessment is done by the Occupational Therapy Council of Australia (OTC); Occupational
+  // Therapy Australia (otaus.com.au) is the professional association. The tool card must name and link the body
+  // the report's registry names (otc-australia.ts), whose contact domain is otcouncil.com.au.
+  const body = tool.assessingBodies[mapping["252411"] as keyof typeof tool.assessingBodies] as { name: string; shortName: string; website: string };
+  const registryName = otcAustraliaAuthority.authorityName.replace(/ Ltd$/, "");
+  const registryDomain = JSON.stringify(otcAustraliaAuthority).match(/@([a-z0-9.-]+\.[a-z]+)/)?.[1];
+  if (body.name !== registryName) fail(`252411 card names "${body.name}", the registry names "${registryName}"`);
+  if (body.shortName !== otcAustraliaAuthority.authorityId) fail(`252411 card short name "${body.shortName}" != "${otcAustraliaAuthority.authorityId}"`);
+  if (!registryDomain || new URL(body.website).hostname.replace(/^www\./, "") !== registryDomain) fail(`252411 card links ${body.website}, not the registry's domain ${registryDomain}`);
+
+  // Nowhere the site or the report renders from may name the association as the assessing body.
+  const walk = (dir: string): string[] =>
+    readdirSync(dir).flatMap((n) => {
+      const p = join(dir, n);
+      return statSync(p).isDirectory() ? walk(p) : /\.(tsx?|json|md)$/.test(n) ? [p] : [];
+    });
+  const offenders = ["app", "components", "lib", "src", "public/locales"]
+    .flatMap(walk)
+    .filter((p) => /Occupational Therapy Australia|otaus\.com\.au/.test(readFileSync(p, "utf8")));
+  if (offenders.length) fail(`"Occupational Therapy Australia" / otaus.com.au still appears in: ${offenders.join(", ")}`);
+  if (failures === before) ok(`252411: tool card "${body.name}" (${body.shortName}, ${body.website}); no "Occupational Therapy Australia" in app/components/lib/src/locales`);
 }
 
 console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);

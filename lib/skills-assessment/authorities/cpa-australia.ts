@@ -184,11 +184,12 @@ export const cpaAustraliaAuthority: SkillsAssessmentAuthority = {
       ],
       requiresPriorAssessment: false,
       fees: [
-        { label: { en: "Qualification assessment (onshore)", tr: "Yeterlilik değerlendirmesi (yerli)", "zh-Hans": "资格评估（境内）" }, amountAUD: 565 },
-        { label: { en: "Qualification assessment (offshore)", tr: "Yeterlilik değerlendirmesi (yabancı)", "zh-Hans": "资格评估（境外）" }, amountAUD: 514 },
+        { label: { en: "Qualification assessment (onshore)", tr: "Yeterlilik değerlendirmesi (yerli)", "zh-Hans": "资格评估（境内）" }, amountAUD: 565, applicantLocation: "onshore" },
+        { label: { en: "Qualification assessment (offshore)", tr: "Yeterlilik değerlendirmesi (yabancı)", "zh-Hans": "资格评估（境外）" }, amountAUD: 514, applicantLocation: "offshore" },
         {
           label: { en: "Qualification assessment (Singapore)", tr: "Yeterlilik değerlendirmesi (Singapur)", "zh-Hans": "资格评估（新加坡）" },
           amountAUD: 560,
+          applicantLocation: "singapore",
           note: {
             en: "Plus 9% Singapore GST for payments on/after 1 Jan 2024.",
             tr: "1 Ocak 2024 ve sonrasında ödemeler için %9 Singapur GST eklenir.",
