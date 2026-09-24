@@ -70,6 +70,13 @@ jobs:
       - name: IMG registration pathways data (drift + invariants)
         run: npm run test:img-pathways
 
+      # Nursing skills assessment fees (src/data/health-registration/anmac-fees.json, extracted from Anmac.pdf).
+      # The regenerate-and-diff drift check needs the gitignored source PDF and is SKIPPED here; the committed-file
+      # invariants (the four stated fees with page + quote, the 6–8 week wait, the unpriced NMBA international
+      # application/registration fees, the mapping of all 15 ANMAC occupations) always run.
+      - name: ANMAC nursing skills assessment fees (drift + invariants)
+        run: npm run test:anmac-fees
+
       # REAL Stripe test mode (not stubbed): /api/stripe/checkout must create a Checkout Session for both
       # credit packages, and a session with the real ADMINFREE promotion code must go through the real webhook
       # handler with no email sent. Prisma/Resend/auth are stubbed, so nothing touches production. Needs the

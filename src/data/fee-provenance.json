@@ -844,6 +844,80 @@
         "lib/skills-assessment/authorities/*.ts",
         "src/data/occupations.json"
       ]
+    },
+    {
+      "id": "anmac_full_skills_assessment_fee",
+      "description": "Anmac Full skills assessment fee (nurses currently or previously registered as a nurse in Canada, Hong Kong, Ireland, Singapore, Spain, the United Kingdom or the United States; midwives with a minimum Bachelor of Midwifery from Ireland, the UK or the US registered in that country)",
+      "value": 595,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "data/knowledge/Skill Assessments/Anmac/Anmac.pdf p.26 -- \"Full skills assessment Apply for this assessment if you are registered as a nurse or midwife in an approved overseas country and meet the eligibility requirements below. ● Fee: $595 AUD ● Time to apply: 25 minutes (average, not including document preparation) ● Current wait time for assessment to start: 6–8 weeks\". Nursing eligibility (p.26): \"For nursing applicants To qualify for a Full skills assessment, you must: ● hold a relevant nursing qualification ● be current or previously registered as a nurse in one of the following countries: ● Canada ● Hong Kong ● Ireland ● Singapore ● Spain ● United Kingdom ● United States. If your qualification is not a Bachelor of Nursing from Canada, Hong Kong, Ireland, the United Kingdom or the United States, you must also: ● have completed a qualification that led to general nursing registration after 1 January 2017 ● have successfully completed a regulatory examination process in one of the countries listed above (where applicable) ● have completed at least 1,800 hours of paid registered nurse work experience since 1 January 2017 in that same country.\" (extracted by scripts/generate-anmac-fees.ts into src/data/health-registration/anmac-fees.json).",
+      "locations": [
+        "lib/health-registration/anmac-fees.ts:resolveAnmacAssessment (full)",
+        "lib/skills-assessment/authorities/anmac.ts:pathways[FULL_SKILLS_ASSESSMENT].fees[0].amountAUD"
+      ]
+    },
+    {
+      "id": "anmac_modified_skills_assessment_fee",
+      "description": "Anmac Modified skills assessment fee (current registration with NMBA/Ahpra, the Nursing Council of New Zealand or the Midwifery Council of New Zealand)",
+      "value": 395,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "data/knowledge/Skill Assessments/Anmac/Anmac.pdf p.37 -- \"Modified skills assessment Apply for this assessment if you are currently registered as a nurse or midwife in Australia or New Zealand. ● Fee: $395 AUD ● Time to apply: 20 minutes (average, not including document preparation) ● Current wait time for assessment to start: 6–8 weeks\". Eligibility: \"To qualify for a Modified skills assessment, you need current registration from one of the following: ● Nursing and Midwifery Board of Australia (NMBA/Ahpra) ● Nursing Council of New Zealand (NCNZ) ● Midwifery Council of New Zealand (MCNZ).\" (extracted by scripts/generate-anmac-fees.ts into src/data/health-registration/anmac-fees.json).",
+      "locations": [
+        "lib/health-registration/anmac-fees.ts:resolveAnmacAssessment (modified)",
+        "lib/skills-assessment/authorities/anmac.ts:pathways[MODIFIED_SKILLS_ASSESSMENT].fees[0].amountAUD"
+      ]
+    },
+    {
+      "id": "anmac_direct_care_skills_assessment_fee",
+      "description": "Anmac Direct care skills assessment fee (Nursing Support Worker ANZSCO 423312 and Personal Care Assistant ANZSCO 423313 only; not used by any ANMAC-registry occupation)",
+      "value": 545,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "data/knowledge/Skill Assessments/Anmac/Anmac.pdf p.33 -- \"This assessment is for the following occupations only: ● Nursing Support Worker (ANZSCO 423312) ● Personal Care Assistant (ANZSCO 423313) Fee: $545 AUD Time to apply: 25 minutes (average, not including document preparation) Current wait time for assessment to start: 6–8 weeks\" (extracted by scripts/generate-anmac-fees.ts into src/data/health-registration/anmac-fees.json).",
+      "locations": [
+        "src/data/health-registration/anmac-fees.json:fees[anmac_direct_care_skills_assessment]"
+      ]
+    },
+    {
+      "id": "nmba_iqnm_assessment_fee",
+      "description": "Ahpra/NMBA IQNM assessment fee (assessment and orientation), non-refundable -- registration pathway after the Self-check, not the Anmac migration skills assessment",
+      "value": 410,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "data/knowledge/Skill Assessments/Anmac/Anmac.pdf p.20-21 -- \"If you are assigned to Stream A or B, or your qualification has not yet been assessed against the criteria, you will need to pay a non-refundable IQNM assessment fee (assessment and orientation) of $410 and complete Orientation Part 1.\" (extracted by scripts/generate-anmac-fees.ts into src/data/health-registration/anmac-fees.json).",
+      "locations": [
+        "lib/health-registration/anmac-fees.ts:nursingRegistrationLine (not in any total)"
+      ]
+    },
+    {
+      "id": "nmba_international_application_fee",
+      "description": "NMBA/Ahpra application fee for international applications (non-refundable)",
+      "value": null,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- document names it but states no amount: data/knowledge/Skill Assessments/Anmac/Anmac.pdf (p.19: \"● Fees for international applications: ● Application fee ● Registration fee Note: the application fee is non-refundable.\").",
+      "locations": [
+        "lib/health-registration/anmac-fees.ts:nursingRegistrationLine (named, never priced)"
+      ]
+    },
+    {
+      "id": "nmba_international_registration_fee",
+      "description": "NMBA/Ahpra registration fee for international applications",
+      "value": null,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- document names it but states no amount: data/knowledge/Skill Assessments/Anmac/Anmac.pdf (p.19: \"● Fees for international applications: ● Application fee ● Registration fee Note: the application fee is non-refundable.\").",
+      "locations": [
+        "lib/health-registration/anmac-fees.ts:nursingRegistrationLine (named, never priced)"
+      ]
     }
   ]
 }

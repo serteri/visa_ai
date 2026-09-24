@@ -50,6 +50,15 @@ import {
   medicalRegistrationFeeBreakdown,
   resolveMedicalRegistration,
 } from "../lib/health-registration/img-pathways";
+import {
+  ANMAC_ASSESSMENT_PROCESS,
+  anmacAmountLabel,
+  anmacFeeCitation,
+  FULL_SKILLS_ASSESSMENT_CODES,
+  nursingRegistrationLine,
+  resolveAnmacAssessment,
+} from "../lib/health-registration/anmac-fees";
+import { anmacAuthority } from "../lib/skills-assessment/authorities/anmac";
 import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
@@ -1571,6 +1580,113 @@ async function runMedicalRegistrationChecks(
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Nursing skills assessment (Anmac). A Registered Nurse (Medical) 254418 persona must show the Anmac Full skills
+// assessment AUD 595 with its Anmac.pdf p.26 citation and the stated 6–8 week wait in the real PDF; none of the 15
+// ANMAC occupations may still carry the old AUD 1,000 placeholder; Enrolled Nurse (overseas) gets no amount.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const NURSE_PROFILE: ReadinessInput = {
+  ...base,
+  currentCountry: "United Kingdom",
+  age: "31",
+  occupation: "Registered Nurse (Medical) 254418",
+  occupationConfirmed: "yes",
+  englishLevel: "proficient",
+  qualificationLevel: "Bachelor's Degree",
+  sponsorOrFamily: undefined,
+  offshoreExperienceYears: 5,
+  migrationGoals: ["direct_pr"],
+};
+
+async function runNursingChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  // Registry: no placeholder left.
+  for (const p of anmacAuthority.pathways) {
+    for (const fee of p.fees) {
+      if (fee.amountAUD === 1000 || fee.estimated) fail(`anmac.ts pathway ${p.pathwayId} still carries the AUD 1,000 / estimated placeholder`);
+    }
+    if (p.processingTimeWeeks) fail(`anmac.ts pathway ${p.pathwayId} has a processingTimeWeeks the document does not state`);
+  }
+
+  // Engine: every one of the 15 ANMAC occupations, overseas-qualified and Australian-qualified.
+  let checked = 0;
+  for (const occ of anmacAuthority.occupations) {
+    for (const qualificationAwardedInAustralia of [false, true]) {
+      const report = runReadinessEngine({ ...NURSE_PROFILE, occupation: `${occ.title} ${occ.anzscoCode}`, qualificationAwardedInAustralia, locale: "en" });
+      const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+      const label = `${occ.anzscoCode} ${occ.title} (${qualificationAwardedInAustralia ? "AU-qualified" : "overseas"})`;
+      checked++;
+      if (!row) { fail(`${label}: no skills_assessment row`); continue; }
+      if (!/ANMAC/.test(row.category)) fail(`${label}: skills row is not the ANMAC row: "${row.category}"`);
+      if (row.amountMin === 1000 || row.amountMax === 1000 || /1[,.]?000\b/.test(row.amountLabel) || row.estimated) fail(`${label}: still shows the AUD 1,000 placeholder ("${row.amountLabel}")`);
+      if (/12 wk|REASONABLE PLACEHOLDER|Estimate only/i.test(row.explanation)) fail(`${label}: explanation still carries the placeholder wording`);
+      const expected = qualificationAwardedInAustralia ? 395 : FULL_SKILLS_ASSESSMENT_CODES.has(occ.anzscoCode!) ? 595 : undefined;
+      if (row.amountMin !== expected || row.amountMax !== expected) fail(`${label}: amount ${row.amountMin}-${row.amountMax}, expected ${expected ?? "none (needs human verification)"}`);
+      if (expected === undefined && !/needs human verification/.test(row.explanation)) fail(`${label}: unmapped row must say "needs human verification"`);
+    }
+  }
+  console.log(`\n=== nursing: ${checked} ANMAC occupation/qualification combinations checked at engine level ===`);
+
+  const full = resolveAnmacAssessment({ anzscoCode: "254418" });
+  if (full.assessmentId !== "full" || full.fee?.amountAud !== 595) fail(`254418 should resolve to the Full skills assessment AUD 595; got ${full.assessmentId} ${full.fee?.amountAud}`);
+
+  for (const locale of LOCALES) {
+    const label = `nursing rn-254418/${locale}`;
+    console.log(`\n=== ${label} ===`);
+    let caseFailed = false;
+    const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+    const input: ReadinessInput = { ...NURSE_PROFILE, locale };
+    const report = runReadinessEngine(input);
+    const skills = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+    // src/lib/readiness-engine.ts renders "AUD" as "澳元" in zh-Hans amount cells.
+    const expectedAmount = locale === "zh-Hans" ? anmacAmountLabel(full, locale).replace(/AUD/g, "澳元") : anmacAmountLabel(full, locale);
+    const citation = locale === "tr" ? "Anmac.pdf, s.26" : locale === "zh-Hans" ? "Anmac.pdf，第 26 页" : "Anmac.pdf, p.26";
+    if (!skills) f("no skills_assessment row");
+    else {
+      if (skills.amountLabel !== expectedAmount) f(`ANMAC row amount "${skills.amountLabel}", expected "${expectedAmount}"`);
+      if (skills.amountMin !== 595 || skills.amountMax !== 595 || skills.estimated) f(`ANMAC row must be an exact, non-estimated AUD 595 (got ${skills.amountMin}-${skills.amountMax}, estimated=${skills.estimated})`);
+      if (!skills.explanation.includes(citation)) f(`ANMAC row explanation lacks the "${citation}" citation`);
+      if (!skills.explanation.includes(anmacFeeCitation(full.fee!, locale))) f(`ANMAC row explanation lacks "${anmacFeeCitation(full.fee!, locale)}"`);
+    }
+    const registration = nursingRegistrationLine(locale);
+    const regRow = report.financialRoadmap.find((i) => i.category === registration.category);
+    if (!regRow) f("no separate nursing registration (Ahpra/NMBA) row");
+    else if (regRow.kind !== undefined || regRow.amountMin !== undefined) f("nursing registration row must carry no kind and no amount (never in a total)");
+
+    const reportId = `nursing-${locale}`;
+    rows.set(reportId, {
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+    });
+    const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+    if (res.status !== 200) { f(`route returned HTTP ${res.status}`); continue; }
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    const pages = (await extractPdfPages(bytes)).map((p) => p.replace(/L o g i V i s a\s*/g, "").replace(/\d+ \/ \d+\s*Generated by[^\n]*\n?/g, "").replace(/-- \d+ of \d+ --/g, ""));
+    const raw = pages.join("\n");
+    await writeFile(path.join(outDir, `nursing-rn-254418-${locale}.txt`), raw);
+    const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
+    const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : flatten(t));
+    const has = (t: string) => sq(flat).includes(sq(t));
+
+    if (!has(expectedAmount)) f(`ANMAC amount not found in the PDF: "${expectedAmount}"`);
+    if (!has(anmacFeeCitation(full.fee!, locale))) f(`ANMAC fee + citation not found verbatim in the PDF: "${anmacFeeCitation(full.fee!, locale)}"`);
+    if (!has("6–8")) f("stated 6–8 week wait time missing from the PDF");
+    // A standalone AUD 1,000 -- not the start of a range such as the RMA line's "AUD 1,000–2,500".
+    if (/AUD\s*1[,.]?000\b(?!\s*[–-]\s*\d)|澳元\s*1[,.]?000\b(?!\s*[–-]\s*\d)|\b1[,.]?000\s*澳元/.test(flat)) f("PDF still shows the old AUD 1,000 placeholder");
+    if (/REASONABLE PLACEHOLDER|Estimate only -- verify current processing/i.test(flat)) f("PDF still carries the placeholder wording");
+    const processLead = ANMAC_ASSESSMENT_PROCESS[locale].split(locale === "zh-Hans" ? "。" : ". ")[0];
+    if (!has(processLead)) f(`sourced Anmac process description not found in the PDF (FAQ / guide): "${processLead}"`);
+    if (!has(registration.category)) f(`nursing registration line not found in the PDF: "${registration.category}"`);
+
+    if (!caseFailed) console.log(`  ✅ ok (ANMAC ${expectedAmount}, ${citation}, 6–8 weeks; registration line unpriced except AUD 410)`);
+  }
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -1666,6 +1782,12 @@ async function main() {
 
   // Medical registration fees (GP 253111) + the 191 income requirement
   await runMedicalRegistrationChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
+
+  // Nursing skills assessment (Anmac): RN 254418 AUD 595 cited; no AUD 1,000 placeholder on any ANMAC occupation
+  await runNursingChecks(GET, rows, outDir, (m) => {
     failed = true;
     console.error("  ❌ " + m);
   });

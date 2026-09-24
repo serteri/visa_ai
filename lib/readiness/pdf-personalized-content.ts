@@ -16,6 +16,7 @@ import {
 } from "@/lib/skills-assessment";
 import { authorityDisplayName, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { MEDICAL_REGISTRATION_PROCESS } from "@/lib/health-registration/img-pathways";
+import { ANMAC_ASSESSMENT_PROCESS } from "@/lib/health-registration/anmac-fees";
 import { getEligibilityBadgeState } from "./eligibility-badge";
 import { checkEmployerSponsorshipTerminology } from "./report-invariants";
 import { POINTS_THRESHOLD } from "./assessment-state";
@@ -924,7 +925,12 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     report.financialRoadmap,
     report.pointsEstimate?.actionPlan,
     // Doctors: the real Medical Board registration process (AMC PSV, college assessment, supervised practice).
-    resolvedAuthority.authorityId === "AHPRA" ? MEDICAL_REGISTRATION_PROCESS[effectiveLocale] : undefined,
+    // Nurses: which Anmac assessment applies (Full / Modified), its fee and the stated wait time (Anmac.pdf).
+    resolvedAuthority.authorityId === "AHPRA"
+      ? MEDICAL_REGISTRATION_PROCESS[effectiveLocale]
+      : resolvedAuthority.authorityId === "ANMAC"
+        ? ANMAC_ASSESSMENT_PROCESS[effectiveLocale]
+        : undefined,
   );
 
   addSectionHeading("📋", guide.title);

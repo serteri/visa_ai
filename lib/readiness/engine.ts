@@ -36,6 +36,7 @@ import {
   medicalRegistrationExplanation,
   resolveMedicalRegistration,
 } from "@/lib/health-registration/img-pathways";
+import { anmacAmountLabel, anmacExplanation, nursingRegistrationLine, resolveAnmacAssessment } from "@/lib/health-registration/anmac-fees";
 import { estimateQualifier } from "@/lib/readiness/financial-roadmap-totals";
 import {
   type ProvinceCode,
@@ -5152,6 +5153,36 @@ function buildFinancialRoadmap(
         estimateType: "variable",
         amountLabel: deferred.amountLabel,
         explanation: deferred.explanation,
+      });
+    } else if (authority?.authorityId === "ANMAC") {
+      // Nurses: the Anmac assessment is chosen by registration status, not occupation -- see
+      // resolveAnmacAssessment. Fees from src/data/health-registration/anmac-fees.json (Anmac.pdf). An occupation
+      // the document does not clearly price (Enrolled Nurse, overseas) gets no amount rather than a guess.
+      const nursing = resolveAnmacAssessment({
+        anzscoCode: anzscoCodeFromOccupation(input.occupation, authority.occupations),
+        qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
+      });
+      const authorityLabel = `${authority.authorityName} (${authority.authorityId})`;
+      items.push({
+        category: isTr
+          ? `Beceri Değerlendirmesi — ${authority.authorityName} (${authority.authorityId})`
+          : isZh
+            ? `技能评估 — ${authority.authorityName} (${authority.authorityId})`
+            : `Skills Assessment — ${authority.authorityName} (${authority.authorityId})`,
+        estimateType: nursing.fee ? "official_fee" : "variable",
+        amountLabel: anmacAmountLabel(nursing, locale),
+        explanation: anmacExplanation(nursing, locale, authorityLabel),
+        kind: "skills_assessment",
+        amountMin: nursing.fee?.amountAud,
+        amountMax: nursing.fee?.amountAud,
+      });
+      // Registration to practise (Ahpra/NMBA): no `kind`, so never in any total.
+      const registration = nursingRegistrationLine(locale);
+      items.push({
+        category: registration.category,
+        estimateType: "variable",
+        amountLabel: registration.amountLabel,
+        explanation: registration.explanation,
       });
     } else if (authority && primaryPathway) {
       const primaryFee = primaryPathway.fees.find((f) => typeof f.amountAUD === "number")

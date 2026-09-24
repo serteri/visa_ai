@@ -32,6 +32,8 @@ import {
 } from "../lib/readiness/constants";
 import * as readinessConstants from "../lib/readiness/constants";
 import { acsAuthority } from "../lib/skills-assessment/authorities/acs";
+import { anmacAuthority } from "../lib/skills-assessment/authorities/anmac";
+import anmacFeesData from "../src/data/health-registration/anmac-fees.json";
 import { listAuthorities } from "../lib/skills-assessment";
 import { findAuthorityConflicts } from "../lib/skills-assessment/resolve-authority";
 
@@ -185,6 +187,44 @@ checkSecondInstalment("491", "second_instalment_491");
   } else {
     ok(`ACS General Skills Assessment fee: manifest and acs.ts agree (AUD ${feeVal})`);
   }
+}
+
+// ANMAC / NMBA nursing fees: manifest vs the extraction (src/data/health-registration/anmac-fees.json, from
+// Anmac.pdf) vs the registry. Stated fees are dated and quote their page; the international application and
+// registration fees are named in the document with no amount and must stay null / "needs human verification".
+{
+  const before = failures;
+  const extraction = anmacFeesData as unknown as {
+    sourceDocument: string;
+    fees: Array<{ id: string; amountAud: number; page: number; quote: string }>;
+    notStated: Array<{ id: string; status: string }>;
+  };
+  const STATED: Record<string, string> = {
+    anmac_full_skills_assessment_fee: "anmac_full_skills_assessment",
+    anmac_modified_skills_assessment_fee: "anmac_modified_skills_assessment",
+    anmac_direct_care_skills_assessment_fee: "anmac_direct_care_skills_assessment",
+    nmba_iqnm_assessment_fee: "nmba_iqnm_assessment_fee",
+  };
+  for (const [factId, feeId] of Object.entries(STATED)) {
+    const fact = findFact(factId);
+    const fee = extraction.fees.find((f) => f.id === feeId);
+    if (!fee) { fail(`anmac-fees.json has no "${feeId}"`); continue; }
+    if (fact.value !== fee.amountAud) fail(`${factId}: manifest ${fact.value} != anmac-fees.json ${fee.amountAud}`);
+    if (!fact.last_verified) fail(`${factId}: stated in the document but last_verified is null`);
+    if (!fact.source?.includes(extraction.sourceDocument) || !fact.source.includes(fee.quote) || !fact.source.includes(`p.${fee.page}`)) fail(`${factId}: source must cite ${extraction.sourceDocument} p.${fee.page} and quote "${fee.quote}"`);
+  }
+  for (const [pathwayId, factId] of [["FULL_SKILLS_ASSESSMENT", "anmac_full_skills_assessment_fee"], ["MODIFIED_SKILLS_ASSESSMENT", "anmac_modified_skills_assessment_fee"]] as const) {
+    const fee = anmacAuthority.pathways.find((p) => p.pathwayId === pathwayId)?.fees[0];
+    if (fee?.amountAUD !== findFact(factId).value || fee?.estimated) fail(`anmac.ts ${pathwayId} fee ${fee?.amountAUD} disagrees with ${factId} or is flagged estimated`);
+  }
+  for (const n of extraction.notStated) {
+    const fact = findFact(n.id);
+    if (fact.value !== null || fact.last_verified !== null || !fact.source?.startsWith("needs human verification -- document names it but states no amount")) {
+      fail(`${n.id}: must be value null, last_verified null, source "needs human verification -- document names it but states no amount"`);
+    }
+    if (n.status !== "needs human verification") fail(`anmac-fees.json ${n.id} status is "${n.status}"`);
+  }
+  if (failures === before) ok("ANMAC Full 595 / Modified 395 / Direct care 545 and NMBA IQNM 410: manifest = anmac-fees.json = anmac.ts, each quoted; NMBA international application + registration fees unpriced (needs human verification)");
 }
 
 // Confirm the known gap is still honestly a gap, not silently "fixed" by

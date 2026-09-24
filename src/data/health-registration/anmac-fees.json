@@ -1,0 +1,176 @@
+{
+  "sourceDocument": "data/knowledge/Skill Assessments/Anmac/Anmac.pdf",
+  "sourceTitle": "Ahpra / Nursing and Midwifery Board of Australia -- internationally qualified nurses and midwives; Anmac skilled migration skills assessments",
+  "sourcePageCount": 41,
+  "extractedDate": "2026-09-24",
+  "generatedBy": "scripts/generate-anmac-fees.ts",
+  "effectiveDate": null,
+  "effectiveDateNote": "The document states no effective date for any of these fees.",
+  "fees": [
+    {
+      "id": "anmac_full_skills_assessment",
+      "body": "Anmac",
+      "item": "Full skills assessment",
+      "amountAud": 595,
+      "page": 26,
+      "quote": "Full skills assessment Apply for this assessment if you are registered as a nurse or midwife in an approved overseas country and meet the eligibility requirements below. ● Fee: $595 AUD ● Time to apply: 25 minutes (average, not including document preparation) ● Current wait time for assessment to start: 6–8 weeks",
+      "appliesTo": "Apply for this assessment if you are registered as a nurse or midwife in an approved overseas country and meet the eligibility requirements below.",
+      "eligibility": {
+        "nursing": {
+          "pages": [
+            26
+          ],
+          "quote": "For nursing applicants To qualify for a Full skills assessment, you must: ● hold a relevant nursing qualification ● be current or previously registered as a nurse in one of the following countries: ● Canada ● Hong Kong ● Ireland ● Singapore ● Spain ● United Kingdom ● United States. If your qualification is not a Bachelor of Nursing from Canada, Hong Kong, Ireland, the United Kingdom or the United States, you must also: ● have completed a qualification that led to general nursing registration after 1 January 2017 ● have successfully completed a regulatory examination process in one of the countries listed above (where applicable) ● have completed at least 1,800 hours of paid registered nurse work experience since 1 January 2017 in that same country.",
+          "registeredIn": [
+            "Canada",
+            "Hong Kong",
+            "Ireland",
+            "Singapore",
+            "Spain",
+            "United Kingdom",
+            "United States"
+          ],
+          "additionalIfNotBachelorOfNursingFrom": "Canada, Hong Kong, Ireland, the United Kingdom or the United States",
+          "additionalRequirements": [
+            "have completed a qualification that led to general nursing registration after 1 January 2017",
+            "have successfully completed a regulatory examination process in one of the countries listed above (where applicable)",
+            "have completed at least 1,800 hours of paid registered nurse work experience since 1 January 2017 in that same country"
+          ]
+        },
+        "midwifery": {
+          "pages": [
+            26,
+            27
+          ],
+          "quote": "For midwifery applicants To qualify for a Full skills assessment, you must: ● hold a minimum Bachelor of Midwifery qualification from Ireland, the United Kingdom or the United States ● be registered as a midwife in the same country as your qualification.",
+          "requirements": [
+            "hold a minimum Bachelor of Midwifery qualification from Ireland, the United Kingdom or the United States",
+            "be registered as a midwife in the same country as your qualification"
+          ]
+        },
+        "laterAustralianOrNzRegistration": {
+          "page": 27,
+          "quote": "If you apply for a Full skills assessment and later become registered in Australia or New Zealand, the Full skills assessment process and fees will still apply."
+        }
+      },
+      "waitTimeToStart": {
+        "minWeeks": 6,
+        "maxWeeks": 8,
+        "page": 26,
+        "note": "Wait time for the assessment to START, as stated; the document gives no time to complete the assessment."
+      }
+    },
+    {
+      "id": "anmac_direct_care_skills_assessment",
+      "body": "Anmac",
+      "item": "Direct care skills assessment",
+      "amountAud": 545,
+      "page": 33,
+      "quote": "This assessment is for the following occupations only: ● Nursing Support Worker (ANZSCO 423312) ● Personal Care Assistant (ANZSCO 423313) Fee: $545 AUD Time to apply: 25 minutes (average, not including document preparation) Current wait time for assessment to start: 6–8 weeks",
+      "appliesTo": "This assessment is for the following occupations only:",
+      "occupations": [
+        {
+          "title": "Nursing Support Worker",
+          "anzscoCode": "423312"
+        },
+        {
+          "title": "Personal Care Assistant",
+          "anzscoCode": "423313"
+        }
+      ],
+      "eligibility": {
+        "pages": [
+          34
+        ],
+        "quote": "To qualify for a Direct care skills assessment, you must meet all requirements of at least one of the following pathways: Qualification pathway You must hold a minimum Certificate III qualification in a relevant field (including nursing-related study or personal or aged care) that: ● was at least 6 months in duration ● was completed face-to-face ● included at least 120 hours of practical experience. Work experience pathway You must have at least 12 months of full-time paid work experience that: ● was completed within the last 5 years ● was in a relevant area, including nursing, direct care or aged care.",
+        "relevantDefinition": {
+          "page": 34,
+          "quote": "‘Relevant’ means a course or work where direct care roles and responsibilities are the focus. This does not include midwifery, disability or child care."
+        }
+      },
+      "waitTimeToStart": {
+        "minWeeks": 6,
+        "maxWeeks": 8,
+        "page": 33,
+        "note": "Wait time for the assessment to START, as stated; the document gives no time to complete the assessment."
+      }
+    },
+    {
+      "id": "anmac_modified_skills_assessment",
+      "body": "Anmac",
+      "item": "Modified skills assessment",
+      "amountAud": 395,
+      "page": 37,
+      "quote": "Modified skills assessment Apply for this assessment if you are currently registered as a nurse or midwife in Australia or New Zealand. ● Fee: $395 AUD ● Time to apply: 20 minutes (average, not including document preparation) ● Current wait time for assessment to start: 6–8 weeks",
+      "appliesTo": "Apply for this assessment if you are currently registered as a nurse or midwife in Australia or New Zealand.",
+      "eligibility": {
+        "page": 37,
+        "quote": "To qualify for a Modified skills assessment, you need current registration from one of the following: ● Nursing and Midwifery Board of Australia (NMBA/Ahpra) ● Nursing Council of New Zealand (NCNZ) ● Midwifery Council of New Zealand (MCNZ).",
+        "currentRegistrationWith": [
+          "Nursing and Midwifery Board of Australia (NMBA/Ahpra)",
+          "Nursing Council of New Zealand (NCNZ)",
+          "Midwifery Council of New Zealand (MCNZ)"
+        ],
+        "generalCodesWithoutWorkExperience": {
+          "page": 40,
+          "quote": "If you do not have work experience, choose one of these general codes that apply to you: ● 254499 Registered Nurse (Not Elsewhere Classified) ● 254111 Midwife ● 411411 Enrolled Nurse.",
+          "codes": [
+            "254499 Registered Nurse (Not Elsewhere Classified)",
+            "254111 Midwife",
+            "411411 Enrolled Nurse"
+          ]
+        }
+      },
+      "waitTimeToStart": {
+        "minWeeks": 6,
+        "maxWeeks": 8,
+        "page": 37,
+        "note": "Wait time for the assessment to START, as stated; the document gives no time to complete the assessment."
+      }
+    },
+    {
+      "id": "nmba_iqnm_assessment_fee",
+      "body": "Ahpra / Nursing and Midwifery Board of Australia",
+      "item": "IQNM assessment fee (assessment and orientation) -- registration pathway, not the Anmac migration skills assessment",
+      "amountAud": 410,
+      "page": 20,
+      "pages": [
+        20,
+        21
+      ],
+      "quote": "If you are assigned to Stream A or B, or your qualification has not yet been assessed against the criteria, you will need to pay a non-refundable IQNM assessment fee (assessment and orientation) of $410 and complete Orientation Part 1.",
+      "appliesTo": "After the Self-check: IQNMs assigned to Stream A or B, or whose qualification has not yet been assessed against the criteria.",
+      "refundable": false
+    }
+  ],
+  "notStated": [
+    {
+      "id": "nmba_international_application_fee",
+      "item": "NMBA/Ahpra application fee for international applications (non-refundable)",
+      "status": "needs human verification",
+      "reason": "The document names this fee but states no amount (p.19: \"● Fees for international applications: ● Application fee ● Registration fee Note: the application fee is non-refundable.\")."
+    },
+    {
+      "id": "nmba_international_registration_fee",
+      "item": "NMBA/Ahpra registration fee for international applications",
+      "status": "needs human verification",
+      "reason": "The document names this fee but states no amount (p.19: \"● Fees for international applications: ● Application fee ● Registration fee Note: the application fee is non-refundable.\")."
+    }
+  ],
+  "unpricedStages": [
+    {
+      "id": "nmba_mcq_exam",
+      "item": "NMBA multiple-choice question (MCQ) exam (Stream B outcomes-based assessment)",
+      "page": 15,
+      "quote": "Multiple-choice question exam (MCQ) The multiple-choice question (MCQ) exam assesses the candidate’s professional knowledge.",
+      "status": "no fee stated in this document"
+    },
+    {
+      "id": "nmba_osce",
+      "item": "NMBA Objective Structured Clinical Exam (OSCE) (Stream B outcomes-based assessment)",
+      "page": 15,
+      "quote": "The Objective Structured Clinical Exam (OSCE) is a clinical exam",
+      "status": "no fee stated in this document"
+    }
+  ]
+}
