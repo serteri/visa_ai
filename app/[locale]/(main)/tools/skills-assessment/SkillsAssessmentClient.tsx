@@ -17,15 +17,31 @@ import assessingData from "@/src/data/assessing-bodies.json";
 import { useTranslation } from "@/contexts/language-context";
 
 type Occupation = { code: string; title: string; skillLevel: string; duties: string[] };
-type AssessingBody = {
+type Localized = string | { en: string; tr: string; "zh-Hans": string };
+type FeeFields = {
+  fee: string;
+  /** One-line eligibility note under the fee (e.g. ANMAC: which of its two fees applies). */
+  feeNote?: Localized;
+  processingTime: Localized;
+  processingNote?: Localized;
+  /** Where the figures come from (the extracted source data the report also uses). */
+  source?: string;
+};
+type AssessingBody = FeeFields & {
   name: string;
   shortName: string;
   website: string;
-  fee: string;
-  processingTime: string;
   description: string;
   color: string;
+  /** Per-ANZSCO fee fields where the sourced fee depends on the occupation (doctors, enrolled nurses). */
+  occupationOverrides?: Record<string, Partial<FeeFields>>;
 };
+
+function pickLocalized(value: Localized | undefined, locale: string): string {
+  if (value === undefined) return "";
+  if (typeof value === "string") return value;
+  return locale === "tr" ? value.tr : locale === "zh-Hans" ? value["zh-Hans"] : value.en;
+}
 
 const OCCUPATIONS = (anzscoList as any[]).map((o) => ({
   code: o.code,
@@ -156,7 +172,9 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
   }
 
   const selectedBodyKey = selected ? occupationMapping[selected.code] : null;
-  const selectedBody = selectedBodyKey ? assessingBodies[selectedBodyKey] : null;
+  const selectedBody = selectedBodyKey && selected
+    ? { ...assessingBodies[selectedBodyKey], ...assessingBodies[selectedBodyKey].occupationOverrides?.[selected.code] }
+    : null;
 
   // For "all bodies" grid — filtered if bodyFilter is set
   const allBodies = Object.entries(assessingBodies).filter(([key]) => {
@@ -314,6 +332,9 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                         <p className="mt-0.5 text-base font-bold text-slate-900">
                           {selectedBody.fee}
                         </p>
+                        {selectedBody.feeNote && (
+                          <p className="mt-1 text-xs leading-relaxed text-slate-600">{pickLocalized(selectedBody.feeNote, locale)}</p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
@@ -321,11 +342,20 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                       <div>
                         <p className="text-xs font-medium text-slate-600">{t("sa.processingTime", "Processing Time")}</p>
                         <p className="mt-0.5 text-base font-bold text-slate-900">
-                          {selectedBody.processingTime}
+                          {pickLocalized(selectedBody.processingTime, locale)}
                         </p>
+                        {selectedBody.processingNote && (
+                          <p className="mt-1 text-xs leading-relaxed text-slate-600">{pickLocalized(selectedBody.processingNote, locale)}</p>
+                        )}
                       </div>
                     </div>
                   </div>
+
+                  {selectedBody.source && (
+                    <p className="mt-2 text-xs text-slate-500">
+                      {t("sa.source", "Source")}: {selectedBody.source}
+                    </p>
+                  )}
 
                   {/* Info box */}
                   <div className="mt-5 rounded-xl border border-[#53917E]/30 bg-[#53917E]/10 px-4 py-3">

@@ -77,6 +77,12 @@ jobs:
       - name: ANMAC nursing skills assessment fees (drift + invariants)
         run: npm run test:anmac-fees
 
+      # The free Skills Assessment Finder page reads src/data/assessing-bodies.json, not the report's data. Its
+      # ANMAC and Medical Board (doctor) fees must equal the report's sourced figures, compared against the report's
+      # own modules (lib/health-registration/anmac-fees.ts, img-pathways.ts) -- fails if the two ever drift.
+      - name: Skills Assessment Finder page fees = report's sourced ANMAC / Medical Board fees
+        run: npm run test:tool-page-fees
+
       # REAL Stripe test mode (not stubbed): /api/stripe/checkout must create a Checkout Session for both
       # credit packages, and a session with the real ADMINFREE promotion code must go through the real webhook
       # handler with no email sent. Prisma/Resend/auth are stubbed, so nothing touches production. Needs the

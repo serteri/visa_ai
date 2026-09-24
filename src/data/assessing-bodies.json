@@ -22,10 +22,31 @@
       "name": "Australian Nursing and Midwifery Accreditation Council",
       "shortName": "ANMAC",
         "website": "https://www.anmac.org.au",
-      "fee": "AUD 765",
-      "processingTime": "8–12 weeks",
+      "fee": "AUD 595 / AUD 395",
+      "feeNote": {
+        "en": "AUD 595: Full skills assessment, if you are registered as a nurse or midwife overseas (for nurses: Canada, Hong Kong, Ireland, Singapore, Spain, UK or US). AUD 395: Modified skills assessment, if you are already registered with NMBA/Ahpra or in New Zealand. Your report shows the figure for your profile.",
+        "tr": "AUD 595: Full beceri değerlendirmesi, yurt dışında hemşire veya ebe olarak kayıtlıysanız (hemşireler için: Kanada, Hong Kong, İrlanda, Singapur, İspanya, Birleşik Krallık veya ABD). AUD 395: Modified beceri değerlendirmesi, zaten NMBA/Ahpra'ya veya Yeni Zelanda'da kayıtlıysanız. Raporunuz profilinize uyan tutarı gösterir.",
+        "zh-Hans": "AUD 595：完整技能评估，适用于在海外注册为护士或助产士者（护士限：加拿大、香港、爱尔兰、新加坡、西班牙、英国或美国）。AUD 395：修改版技能评估，适用于已在 NMBA/Ahpra 或新西兰注册者。您的报告会显示适用于您情况的金额。"
+      },
+      "processingTime": "6–8 weeks",
+      "processingNote": {
+        "en": "Current wait time for the assessment to start; no completion time is stated.",
+        "tr": "Değerlendirmenin başlaması için güncel bekleme süresi; tamamlanma süresi belirtilmemiş.",
+        "zh-Hans": "评估开始前的当前等待时间；未注明完成时间。"
+      },
+      "source": "Ahpra / NMBA and Anmac skills assessment pages (Anmac.pdf), pp.26 and 37; no effective date stated",
       "description": "Assesses nursing and midwifery qualifications for Australian migration.",
-      "color": "pink"
+      "color": "pink",
+      "occupationOverrides": {
+        "411411": {
+          "fee": "AUD 395",
+          "feeNote": {
+            "en": "AUD 395: Modified skills assessment, if you are already registered with NMBA/Ahpra or in New Zealand. For an enrolled nurse registered only overseas, the source document does not clearly state which assessment or fee applies -- confirm with Anmac.",
+            "tr": "AUD 395: Modified beceri değerlendirmesi, zaten NMBA/Ahpra'ya veya Yeni Zelanda'da kayıtlıysanız. Yalnızca yurt dışında kayıtlı bir enrolled nurse için kaynak belge hangi değerlendirmenin veya ücretin geçerli olduğunu açıkça belirtmiyor -- Anmac ile teyit edin.",
+            "zh-Hans": "AUD 395：修改版技能评估，适用于已在 NMBA/Ahpra 或新西兰注册者。仅在海外注册的 enrolled nurse 适用哪项评估或费用，来源文件未明确说明——请向 Anmac 确认。"
+          }
+        }
+      }
     },
     "VETASSESS": {
       "name": "VETASSESS",
@@ -79,7 +100,39 @@
       "fee": "AUD 290–870",
       "processingTime": "3–6 months",
       "description": "Regulates health practitioners including doctors, dentists, pharmacists, physiotherapists, and psychologists.",
-      "color": "red"
+      "color": "red",
+      "occupationOverrides": {
+        "253111": {
+          "fee": "AUD 2,763",
+          "feeNote": {
+            "en": "Medical Board of Australia application fee AUD 1,661 + specialist registration fee AUD 1,102 (Expedited Specialist pathway: general practice is on the accepted list). AMC, ECFMG and college fees are not published in the source.",
+            "tr": "Medical Board of Australia başvuru ücreti AUD 1,661 + uzman kaydı ücreti AUD 1,102 (Expedited Specialist yolu: aile hekimliği kabul listesinde). AMC, ECFMG ve kolej ücretleri kaynakta yayımlanmamıştır.",
+            "zh-Hans": "澳大利亚医学委员会申请费 AUD 1,661 + 专科注册费 AUD 1,102（快速专科通道：全科医学在认可清单上）。AMC、ECFMG 及专科学院费用在来源文件中未公布。"
+          },
+          "processingTime": { "en": "Not stated", "tr": "Belirtilmemiş", "zh-Hans": "未注明" },
+          "processingNote": {
+            "en": "The source document states no processing time; about six months of supervised practice follows.",
+            "tr": "Kaynak belge işlem süresi belirtmiyor; ardından yaklaşık altı ay denetimli uygulama gelir.",
+            "zh-Hans": "来源文件未注明处理时间；之后需约六个月的督导执业。"
+          },
+          "source": "Medical Board of Australia / Ahpra, Pathways to registration for international medical graduates: schedule of fees effective 1 August 2026"
+        },
+        "253999": {
+          "fee": "AUD 5,233–5,633",
+          "feeNote": {
+            "en": "Standard pathway: Medical Board application fee AUD 1,131 + limited registration fee AUD 1,102, plus the AMC clinical examination AUD 3,000 in person or AUD 3,400 online. The AMC CAT MCQ and candidate-account/PSV fees are not published in the source.",
+            "tr": "Standart yol: Medical Board başvuru ücreti AUD 1,131 + sınırlı kayıt ücreti AUD 1,102, artı AMC klinik sınavı yüz yüze AUD 3,000 veya çevrimiçi AUD 3,400. AMC CAT MCQ ve aday hesabı/PSV ücretleri kaynakta yayımlanmamıştır.",
+            "zh-Hans": "标准通道：医学委员会申请费 AUD 1,131 + 有限注册费 AUD 1,102，另加 AMC 临床考试（现场 AUD 3,000 或线上 AUD 3,400）。AMC CAT MCQ 及候选人账户/PSV 费用在来源文件中未公布。"
+          },
+          "processingTime": { "en": "Not stated", "tr": "Belirtilmemiş", "zh-Hans": "未注明" },
+          "processingNote": {
+            "en": "The source documents state no processing time; 12 months of supervised practice follows.",
+            "tr": "Kaynak belgeler işlem süresi belirtmiyor; ardından 12 ay denetimli uygulama gelir.",
+            "zh-Hans": "来源文件未注明处理时间；之后需 12 个月督导执业。"
+          },
+          "source": "Medical Board of Australia / Ahpra, Pathways to registration for international medical graduates: schedule of fees effective 1 August 2026; Australian Medical Council, p.33 (AMC clinical examination)"
+        }
+      }
     },
     "ACWA": {
       "name": "Australian Community Workers Association",

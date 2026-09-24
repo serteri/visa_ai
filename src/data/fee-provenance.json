@@ -918,6 +918,85 @@
       "locations": [
         "lib/health-registration/anmac-fees.ts:nursingRegistrationLine (named, never priced)"
       ]
+    },
+    {
+      "id": "tool_page_anmac_full_skills_assessment_fee",
+      "description": "Skills Assessment Finder page, ANMAC fee (first figure): Anmac Full skills assessment, for nurses/midwives registered overseas",
+      "value": 595,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "src/data/health-registration/anmac-fees.json fees[anmac_full_skills_assessment].amountAud (extracted from data/knowledge/Skill Assessments/Anmac/Anmac.pdf p.26 by scripts/generate-anmac-fees.ts, commit b4c46e4; provenance fact anmac_full_skills_assessment_fee). Not re-read from the PDF.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.ANMAC.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_anmac_modified_skills_assessment_fee",
+      "description": "Skills Assessment Finder page, ANMAC fee (second figure; and the Enrolled Nurse 411411 override): Anmac Modified skills assessment, for applicants already registered with NMBA/Ahpra or in New Zealand",
+      "value": 395,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "src/data/health-registration/anmac-fees.json fees[anmac_modified_skills_assessment].amountAud (extracted from Anmac.pdf p.37, commit b4c46e4; provenance fact anmac_modified_skills_assessment_fee). Wait time 6–8 weeks from the same entries' waitTimeToStart. Not re-read from the PDF.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.ANMAC.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)",
+        "src/data/assessing-bodies.json:assessingBodies.ANMAC.occupationOverrides.411411.fee"
+      ]
+    },
+    {
+      "id": "tool_page_medical_253111_fee_min",
+      "description": "Skills Assessment Finder page, General Practitioner (253111) fee, low end",
+      "value": 2763,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/health-registration/img-pathways.ts resolveMedicalRegistration({anzscoCode:\"253111\"}).totalMinAud/totalMaxAud: Expedited Specialist pathway, src/data/health-registration/img-pathways.json ahpraFeeSchedule rows mba_fee_application-fee-for-specialist-registration (1,661) + specialist registration fee for practitioners who do not hold general registration (1,102), Medical Board schedule of fees effective 1 August 2026. Not re-read from the PDF.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.AHPRA.occupationOverrides.253111.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_medical_253111_fee_max",
+      "description": "Skills Assessment Finder page, General Practitioner (253111) fee, high end",
+      "value": 2763,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/health-registration/img-pathways.ts resolveMedicalRegistration({anzscoCode:\"253111\"}).totalMinAud/totalMaxAud: Expedited Specialist pathway, src/data/health-registration/img-pathways.json ahpraFeeSchedule rows mba_fee_application-fee-for-specialist-registration (1,661) + specialist registration fee for practitioners who do not hold general registration (1,102), Medical Board schedule of fees effective 1 August 2026. Not re-read from the PDF.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.AHPRA.occupationOverrides.253111.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_medical_253999_fee_min",
+      "description": "Skills Assessment Finder page, Medical Practitioners nec (253999) fee, low end",
+      "value": 5233,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/health-registration/img-pathways.ts resolveMedicalRegistration({anzscoCode:\"253999\"}).totalMinAud/totalMaxAud: Standard pathway, src/data/health-registration/img-pathways.json limited registration application (1,131) + registration (1,102) fees (schedule effective 1 August 2026), plus src/data/health-registration/amc-fees.json AMC clinical examination 3,000 in person / 3,400 online (Australian Medical Council p.33). Not re-read from the PDFs.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.AHPRA.occupationOverrides.253999.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_medical_253999_fee_max",
+      "description": "Skills Assessment Finder page, Medical Practitioners nec (253999) fee, high end",
+      "value": 5633,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/health-registration/img-pathways.ts resolveMedicalRegistration({anzscoCode:\"253999\"}).totalMinAud/totalMaxAud: Standard pathway, src/data/health-registration/img-pathways.json limited registration application (1,131) + registration (1,102) fees (schedule effective 1 August 2026), plus src/data/health-registration/amc-fees.json AMC clinical examination 3,000 in person / 3,400 online (Australian Medical Council p.33). Not re-read from the PDFs.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.AHPRA.occupationOverrides.253999.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
     }
   ]
 }
