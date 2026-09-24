@@ -15,10 +15,12 @@
  *   - ACS, TRA, CPA Australia, CA ANZ, IPA, AACA, OTC: the fee equals the registry figures the report shows
  *     (lib/skills-assessment/authorities/*.ts -- every ACS pathway, the default pathway elsewhere), the processing
  *     time equals the registry's where the source document states one and shows no figure where it does not, the
- *     "Source" line cites the registry's document with a page, and every tool code resolves to that authority in the
- *     report (known mapping gaps listed, never silently added to).
+ *     "Source" line cites the registry's document with a page.
  *   - Occupational Therapist: the card names and links OTC (as the registry does), and "Occupational Therapy
  *     Australia" (the professional association) appears nowhere in app/components/lib/src/locales.
+ *   - Every tool-page occupation names the assessing authority the report resolves for it
+ *     (resolveAssessingAuthority on "<title> <code>"); pre-existing mismatches outside the 5 fixed codes are listed
+ *     with the Home Affairs authority, and the list can only shrink.
  * Pure data checks: runs in CI (no data/knowledge needed).
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -36,7 +38,8 @@ import { caanzAuthority } from "../lib/skills-assessment/authorities/caanz";
 import { ipaAustraliaAuthority } from "../lib/skills-assessment/authorities/ipa-australia";
 import { aacaAuthority } from "../lib/skills-assessment/authorities/aaca";
 import { otcAustraliaAuthority } from "../lib/skills-assessment/authorities/otc-australia";
-import { getSkillsAssessmentAuthority } from "../lib/skills-assessment";
+import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
+import anzscoList from "../src/data/anzsco-list.json";
 import type { SkillsAssessmentAuthority } from "../lib/skills-assessment/types";
 
 type Localized = string | { en: string; tr: string; "zh-Hans": string };
@@ -218,10 +221,6 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
       time: { kind: "unsourced", pathwayId: "DESKTOP_ASSESSMENT_MIGRATION", registryWeeks: 5, why: "the OTC document states no processing time" },
     },
   ];
-  // Tool-page codes the report resolves to a different registry authority (or none): known, reported, not changed
-  // here (mapping is out of scope). A NEW mismatch fails, so the list cannot silently grow.
-  const knownMappingMismatches = new Set(["221213", "222211", "232112", "322311", "342111"]);
-
   for (const c of checks) {
     const before = failures;
     const body = bodies[c.key];
@@ -281,16 +280,73 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
       }
     }
 
-    // Every tool code under this body resolves, in the report, to this registry authority.
-    for (const [code, key] of Object.entries(mapping)) {
-      if (key !== c.key) continue;
-      const resolved = getSkillsAssessmentAuthority(code)?.authorityId ?? "none";
-      if (resolved === a.authorityId) continue;
-      if (knownMappingMismatches.has(code)) console.log(`  ⚠️  ${code}: tool page shows ${c.key}, the report resolves ${resolved} (known mapping gap, not changed here)`);
-      else fail(`${code}: tool page shows ${c.key}, but the report resolves ${resolved}`);
-    }
-
     if (failures === before) ok(`${c.key}: tool page ${body.fee}, ${times[0]} = registry ${a.authorityId} (${c.shown.map((r) => `${r.pathwayId} ${reg(a, r)}`).join(", ")})`);
+  }
+}
+
+console.log("\n==================== Every tool-page occupation: same assessing authority as the report ====================");
+{
+  const before = failures;
+  // The report resolves the authority with resolveAssessingAuthority() on the intake's occupation ("<title> <code>");
+  // the tool page reads occupationMapping. Registry authorityId -> the tool page's body key for the same body.
+  const TOOL_KEY: Record<string, string> = {
+    ACS: "ACS", EA: "Engineers Australia", ANMAC: "ANMAC", VETASSESS: "VETASSESS", TRA: "TRA", CPA: "CPAA",
+    "CA-ANZ": "ICAA", IPA: "IPA", AHPRA: "AHPRA", AACA: "AACA", OTC: "OTC",
+  };
+  // Mismatches that predate this guard, on occupations outside the 5 it was written for. Each is recorded with the
+  // authority the Home Affairs skilled occupation list (data/knowledge/Skilled Occupation List.md) names, so the
+  // wrong side is known; changing them would change what those occupations show, so they are reported, not fixed.
+  // A listed code that stops mismatching must be removed; any other mismatch fails -- the list can only shrink.
+  const KNOWN: Record<string, { tool: string; report: string; homeAffairs: string }> = {
+    "132111": { tool: "AIMS", report: "VETASSESS", homeAffairs: "VETASSESS" },
+    "224711": { tool: "VETASSESS", report: "GENERAL", homeAffairs: "VETASSESS" },
+    "224999": { tool: "VETASSESS", report: "ACS", homeAffairs: "VETASSESS; ACS (Data Scientist only)" },
+    "234111": { tool: "AAA", report: "VETASSESS", homeAffairs: "VETASSESS" },
+    "234112": { tool: "AAA", report: "VETASSESS", homeAffairs: "VETASSESS" },
+    "234611": { tool: "AHPRA", report: "AIMS", homeAffairs: "AIMS (Medical Scientists)" },
+    "234711": { tool: "AVBC", report: "GENERAL", homeAffairs: "AVBC" },
+    "241111": { tool: "TEQSA", report: "GENERAL", homeAffairs: "ACECQA" },
+    "241213": { tool: "TEQSA", report: "GENERAL", homeAffairs: "AITSL" },
+    "241411": { tool: "TEQSA", report: "GENERAL", homeAffairs: "AITSL" },
+    "241511": { tool: "TEQSA", report: "GENERAL", homeAffairs: "AITSL" },
+    "251211": { tool: "AHPRA", report: "GENERAL", homeAffairs: "ASMIRT" },
+    "251214": { tool: "AHPRA", report: "GENERAL", homeAffairs: "ASMIRT" },
+    "251411": { tool: "AHPRA", report: "GENERAL", homeAffairs: "OCANZ" },
+    "252312": { tool: "AHPRA", report: "ADC", homeAffairs: "ADC" },
+    "252511": { tool: "AHPRA", report: "GENERAL", homeAffairs: "APC" },
+    "252712": { tool: "SpeechPathAus", report: "GENERAL", homeAffairs: "SPA" },
+    "271311": { tool: "LIV", report: "GENERAL", homeAffairs: "Legal admissions authority of a state or territory" },
+    "272311": { tool: "AHPRA", report: "GENERAL", homeAffairs: "APS" },
+    "272511": { tool: "ACWA", report: "GENERAL", homeAffairs: "AASW" },
+    "312212": { tool: "Engineers Australia", report: "VETASSESS", homeAffairs: "VETASSESS" },
+    "351311": { tool: "VETASSESS", report: "TRA", homeAffairs: "TRA" },
+    "351411": { tool: "VETASSESS", report: "TRA", homeAffairs: "TRA" },
+    "411711": { tool: "ACWA", report: "GENERAL", homeAffairs: "Community Work Australia" },
+    "421111": { tool: "VETASSESS", report: "GENERAL", homeAffairs: "ACECQA" },
+  };
+  // 221213 CPA (Home Affairs: CAANZ / CPAA / IPA; the registry prefers CPA), 222211 and 232112 VETASSESS, 322311 and
+  // 342111 TRA -- per the Home Affairs list and the VETASSESS / TRA documents.
+  const SOURCED = new Set(["221213", "222211", "232112", "322311", "342111"]);
+  const titles = new Map((anzscoList as Array<{ code: string | number; title_en?: string }>).map((o) => [String(o.code), o.title_en ?? ""]));
+  let matched = 0;
+  for (const [code, toolKey] of Object.entries(mapping)) {
+    const resolved = resolveAssessingAuthority(`${titles.get(code) ?? ""} ${code}`.trim());
+    const report = resolved.authorityId;
+    const known = KNOWN[code];
+    // The 5 codes fixed from source documents must resolve from the registry's own occupation list, not a title keyword.
+    if (SOURCED.has(code) && resolved.source !== "registry-code") fail(`${code}: the report resolves ${report} by ${resolved.source}, not from the registry's occupation list`);
+    if (TOOL_KEY[report] === toolKey) {
+      matched++;
+      if (known) fail(`${code}: tool page and report now agree (${toolKey}) -- remove it from the known-mismatch list`);
+      continue;
+    }
+    if (!known) fail(`${code} ${titles.get(code)}: tool page shows ${toolKey}, the report resolves ${report}`);
+    else if (known.tool !== toolKey || known.report !== report) fail(`${code}: known mismatch changed (tool ${toolKey}, report ${report}; recorded tool ${known.tool}, report ${known.report}) -- re-check it and update the list`);
+  }
+  for (const code of Object.keys(KNOWN)) if (!(code in mapping)) fail(`${code}: in the known-mismatch list but not on the tool page`);
+  if (failures === before) {
+    ok(`${matched} tool-page occupations name the same assessing authority as the report; ${Object.keys(KNOWN).length} known pre-existing mismatches unchanged (Home Affairs authority recorded for each)`);
+    for (const [code, k] of Object.entries(KNOWN)) console.log(`  ⚠️  ${code}: tool ${k.tool}, report ${k.report}; Home Affairs list: ${k.homeAffairs}`);
   }
 }
 

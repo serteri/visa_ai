@@ -119,6 +119,10 @@ export const traAustraliaAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "333411", title: "Wall and Floor Tiler" },
     { anzscoCode: "322313", title: "Welder (First Class)" },
     { anzscoCode: "394113", title: "Furniture Maker" },
+    // TRA guidelines (July 2026): OSAP nominated occupations p.7 / p.9 and accepted-qualifications table p.11 / p.13;
+    // Home Affairs skilled occupation list (data/knowledge/Skilled Occupation List.md) names TRA for both.
+    { anzscoCode: "342111", title: "Airconditioning and Refrigeration Mechanic" },
+    { anzscoCode: "322311", title: "Metal Fabricator" },
   ],
   lastVerified: "2026-08-05",
   sourceDocument:

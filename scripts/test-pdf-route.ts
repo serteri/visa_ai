@@ -1753,6 +1753,52 @@ async function runLocationFeeAndOtcChecks(
   }
 }
 
+/**
+ * The 5 occupations where the Skills Assessment Finder and the report used to name different assessing authorities.
+ * Each PDF must name the authority the Home Affairs skilled occupation list (and the authority's own document) gives,
+ * matching the tool page -- and not the body it used to show.
+ */
+async function runToolPageAuthorityChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  const cases = [
+    { occupation: "External Auditor 221213", id: "CPA", name: "CPA Australia Ltd", not: /Chartered Accountants Australia and New Zealand \(CA-ANZ\)/ },
+    { occupation: "Financial Market Dealer 222211", id: "VETASSESS", name: "Vocational Education and Training Assessment Services", not: /CPA Australia Ltd/ },
+    { occupation: "Landscape Architect 232112", id: "VETASSESS", name: "Vocational Education and Training Assessment Services", not: /Architects Accreditation Council/ },
+    { occupation: "Metal Fabricator 322311", id: "TRA", name: "Trades Recognition Australia", not: /General Professional Authority/ },
+    { occupation: "Airconditioning and Refrigeration Mechanic 342111", id: "TRA", name: "Trades Recognition Australia", not: /General Professional Authority/ },
+  ];
+  for (const c of cases) {
+    const code = c.occupation.slice(-6);
+    const label = `authority ${code}/en`;
+    console.log(`\n=== ${label} ===`);
+    let caseFailed = false;
+    const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+    const input: ReadinessInput = { ...base, occupation: c.occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, locale: "en" };
+    const report = runReadinessEngine(input);
+    const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+    // VETASSESS has no priced pathway in the registry, so its roadmap row is the generic one (unchanged here); the
+    // authority is named in the PDF's skills-assessment sections, checked below.
+    if (c.id !== "VETASSESS" && !row?.category.includes(`(${c.id})`)) f(`roadmap skills row is "${row?.category}", expected ${c.id}`);
+    const reportId = `authority-${code}-en`;
+    rows.set(reportId, {
+      id: reportId, email: "qa@example.com", locale: "en", report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+    });
+    const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+    if (res.status !== 200) { f(`route returned HTTP ${res.status}`); continue; }
+    const raw = (await extractPdfPages(new Uint8Array(await res.arrayBuffer()))).join("\n");
+    await writeFile(path.join(outDir, `authority-${code}-en.txt`), raw);
+    const flat = flatten(raw);
+    if (!flat.includes(`${c.name} (${c.id})`)) f(`PDF does not name "${c.name} (${c.id})"`);
+    if (c.not.test(flat)) f(`PDF still names ${c.not.source}`);
+    if (!caseFailed) console.log(`  ✅ ok (${c.name} (${c.id}))`);
+  }
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -1860,6 +1906,12 @@ async function main() {
 
   // CPA fee by applicant location (offshore 514 / onshore 565 / Singapore 560); OT assessing body named OTC
   await runLocationFeeAndOtcChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
+
+  // The 5 occupations where the tool page and the report used to name different assessing authorities
+  await runToolPageAuthorityChecks(GET, rows, outDir, (m) => {
     failed = true;
     console.error("  ❌ " + m);
   });

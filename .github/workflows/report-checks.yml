@@ -51,6 +51,8 @@ jobs:
       # a clipped EOI banner, or a Financial Roadmap without a total row. Also: the CPA Australia fee follows the
       # applicant's current country (offshore AUD 514, Australia AUD 565, Singapore AUD 560), and an Occupational
       # Therapist's PDF names the Occupational Therapy Council of Australia, not Occupational Therapy Australia.
+      # The 5 occupations the page and report used to disagree on (221213, 222211, 232112, 322311, 342111) name
+      # the Home Affairs-listed authority in the PDF.
       - name: PDF route-handler tests (banned strings, banner clipping, Roadmap total row; en/tr/zh-Hans)
         run: npm run test:pdf-route
 
@@ -82,7 +84,8 @@ jobs:
       # The free Skills Assessment Finder page reads src/data/assessing-bodies.json, not the report's data. Its
       # ANMAC and Medical Board (doctor) fees must equal the report's sourced figures, compared against the report's
       # own modules (lib/health-registration/anmac-fees.ts, img-pathways.ts); ACS, TRA, CPA, CA ANZ, IPA, AACA and
-      # OTC against the registry (lib/skills-assessment/authorities/*.ts) -- fails if the two ever drift.
+      # OTC against the registry (lib/skills-assessment/authorities/*.ts) -- fails if the two ever drift. Also fails if any
+      # occupation's assessing authority on the page differs from the one the report resolves (known older gaps listed).
       - name: Skills Assessment Finder page fees = report's sourced fees (ANMAC, Medical Board, ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC)
         run: npm run test:tool-page-fees
 
