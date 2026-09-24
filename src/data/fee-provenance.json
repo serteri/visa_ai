@@ -997,6 +997,175 @@
         "src/data/assessing-bodies.json:assessingBodies.AHPRA.occupationOverrides.253999.fee",
         "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
       ]
+    },
+    {
+      "id": "tool_page_acs_general_skills_fee",
+      "description": "Skills Assessment Finder page, ACS fee (first figure): General Skills assessment pathway",
+      "value": 1498,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/acs.ts pathways[GENERAL_SKILLS].fees[0].amountAUD (same figure as provenance fact acs_general_skills_assessment_fee, verified 2026-09-22) -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf p.19: \"The application fee for the General Skills assessment pathway is $1,498\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.ACS.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_acs_post_au_study_fee",
+      "description": "Skills Assessment Finder page, ACS fee (second figure): Post Australian Study pathway",
+      "value": 1136,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/acs.ts pathways[POST_AU_STUDY].fees[0].amountAUD -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf p.15: \"The application fee for the Post Australian Study Application pathway is $1,136\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.ACS.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_acs_rpl_qualification_only_fee",
+      "description": "Skills Assessment Finder page, ACS fee (third figure): RPL and Qualification Only pathways",
+      "value": 625,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/acs.ts pathways[RPL | QUALIFICATION_ONLY_TG485 | QUALIFICATION_ONLY_PY].fees[0].amountAUD -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf pp.21-22: \"The application fee for the RPL assessment pathway is $625 ... The application fee for the Qualification Only Assessment pathway is $625\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.ACS.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_tra_msa_fee",
+      "description": "Skills Assessment Finder page, TRA fee: Migration Skills Assessment",
+      "value": 795,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/tra-australia.ts pathways[MSA].fees[0].amountAUD -- data/knowledge/Skill Assessments/Trades Recognition Australia/Trades Recognition Australia.pdf p.19: \"Migration Skills Assessment $795\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.TRA.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_tra_msa_review_fee",
+      "description": "Skills Assessment Finder page, TRA fee note: Migration Skills Assessment Review",
+      "value": 610,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/tra-australia.ts pathways[MSA].fees[1].amountAUD -- data/knowledge/Skill Assessments/Trades Recognition Australia/Trades Recognition Australia.pdf p.19: \"Migration Skills Assessment Review (if required) $610\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.TRA.feeNote",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (fee note)"
+      ]
+    },
+    {
+      "id": "tool_page_cpa_qualification_assessment_fee_onshore",
+      "description": "Skills Assessment Finder page, CPA Australia fee (first figure): qualification assessment, onshore applicants",
+      "value": 565,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/cpa-australia.ts pathways[QUALIFICATION_ASSESSMENT].fees[0].amountAUD -- data/knowledge/Skill Assessments/CPA Australia Ltd/CPA Australia Ltd.pdf p.27: \"Qualification assessment $565 (Onshore Applicants)\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.CPAA.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_cpa_qualification_assessment_fee_offshore",
+      "description": "Skills Assessment Finder page, CPA Australia fee (second figure): qualification assessment, offshore applicants",
+      "value": 514,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/cpa-australia.ts pathways[QUALIFICATION_ASSESSMENT].fees[1].amountAUD -- data/knowledge/Skill Assessments/CPA Australia Ltd/CPA Australia Ltd.pdf p.27: \"Qualification assessment $514 (Offshore Applicants)\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.CPAA.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_cpa_qualification_assessment_fee_singapore",
+      "description": "Skills Assessment Finder page, CPA Australia fee note: qualification assessment, applicants in Singapore",
+      "value": 560,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/cpa-australia.ts pathways[QUALIFICATION_ASSESSMENT].fees[2].amountAUD -- data/knowledge/Skill Assessments/CPA Australia Ltd/CPA Australia Ltd.pdf p.27: \"Qualification assessment $560 (Applicants in Singapore)\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.CPAA.feeNote",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (fee note)"
+      ]
+    },
+    {
+      "id": "tool_page_caanz_qualification_assessment_fee",
+      "description": "Skills Assessment Finder page, CA ANZ fee: qualification assessment only, standard processing",
+      "value": 565,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/caanz.ts pathways[qualification-assessment].fees[0].amountAUD -- data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.45: \"Qualification assessment only – Standard processing time $560 $565 (New Fee from 1 July 2026)\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.ICAA.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_ipa_standard_qualification_assessment_fee",
+      "description": "Skills Assessment Finder page, IPA fee: standard qualification assessment",
+      "value": 595,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/ipa-australia.ts pathways[QUALIFICATION_ASSESSMENT].fees[0].amountAUD -- data/knowledge/Skill Assessments/Institute of Public Accountants Ltd/Institute of Public Accountants Ltd.pdf p.5: \"Standard Qualification Assessment $595 7 business days\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.IPA.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_ipa_priority_qualification_assessment_fee",
+      "description": "Skills Assessment Finder page, IPA fee note: priority qualification assessment",
+      "value": 795,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/ipa-australia.ts pathways[QUALIFICATION_ASSESSMENT].fees[1].amountAUD -- data/knowledge/Skill Assessments/Institute of Public Accountants Ltd/Institute of Public Accountants Ltd.pdf p.5: \"Priority Qualification Assessment $795 1 - 2 business days\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.IPA.feeNote",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (fee note)"
+      ]
+    },
+    {
+      "id": "tool_page_aaca_oqa_fee",
+      "description": "Skills Assessment Finder page, AACA fee: Overseas Qualifications Assessment, new applicants",
+      "value": 4900,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/aaca.ts pathways[OQA].fees[0].amountAUD -- data/knowledge/Skill Assessments/Architects Accreditation Council of Australia/Architects Accreditation Council of Australia.pdf p.6: \"Overseas Qualifications Assessment – New applicants: AUD $4,900\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.AACA.fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
+    },
+    {
+      "id": "tool_page_otc_assessment_for_migration_fee",
+      "description": "Skills Assessment Finder page, OTC (Occupational Therapist) fee: assessment for migration",
+      "value": 800,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-24",
+      "source": "lib/skills-assessment/authorities/otc-australia.ts pathways[DESKTOP_ASSESSMENT_MIGRATION].fees[0].amountAUD -- data/knowledge/Skill Assessments/Occupational Therapy Council of Australia Limited/Occupational Therapy Council of Australia Limited1.pdf p.1: \"The cost for the Assessment for migration is A$800.00.\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "locations": [
+        "src/data/assessing-bodies.json:assessingBodies.\"OT Australia\".fee",
+        "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
+      ]
     }
   ]
 }

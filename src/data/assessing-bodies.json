@@ -4,8 +4,23 @@
       "name": "Australian Computer Society",
       "shortName": "ACS",
         "website": "https://www.acs.org.au/msa",
-      "fee": "AUD 530",
-      "processingTime": "4–6 weeks",
+      "fee": "AUD 1,498 / AUD 1,136 / AUD 625",
+      "feeNote": {
+        "en": "AUD 1,498: General Skills assessment (e.g. an overseas IT qualification). AUD 1,136: Post Australian Study (Australian bachelor's degree or higher plus work experience). AUD 625: Recognition of Prior Learning (no IT qualification, 6+ years' experience) or Qualification Only. Your report shows the figure for your profile.",
+        "tr": "AUD 1,498: General Skills değerlendirmesi (ör. yurt dışı BT niteliği). AUD 1,136: Post Australian Study (Avustralya'da lisans veya üzeri + iş deneyimi). AUD 625: Önceki Öğrenmenin Tanınması (BT niteliği yok, 6+ yıl deneyim) veya Qualification Only. Raporunuz profilinize uyan tutarı gösterir.",
+        "zh-Hans": "AUD 1,498：通用技能评估（如海外 IT 学历）。AUD 1,136：澳洲留学后评估（澳洲学士或以上学历加工作经验）。AUD 625：先前学习认可 RPL（无 IT 学历、6 年以上经验）或仅资格评估。您的报告会显示适用于您情况的金额。"
+      },
+      "processingTime": {
+        "en": "Not stated",
+        "tr": "Belirtilmemiş",
+        "zh-Hans": "未注明"
+      },
+      "processingNote": {
+        "en": "The ACS source document states no processing time; confirm with ACS.",
+        "tr": "ACS kaynak belgesi işlem süresi belirtmiyor; ACS ile teyit edin.",
+        "zh-Hans": "ACS 来源文件未注明处理时间；请向 ACS 确认。"
+      },
+      "source": "ACS Migration Skills Assessment — official guide, fee increase effective 3 November 2025, pp.15, 19, 21–22",
       "description": "Assesses ICT professionals for skilled migration visa applications.",
       "color": "blue"
     },
@@ -61,8 +76,23 @@
       "name": "Trades Recognition Australia",
       "shortName": "TRA",
       "website": "https://www.tradesrecognitionaustralia.gov.au",
-      "fee": "AUD 480",
-      "processingTime": "10–14 weeks",
+      "fee": "AUD 795",
+      "feeNote": {
+        "en": "Migration Skills Assessment (MSA). A review, if you need one, is AUD 610.",
+        "tr": "Migration Skills Assessment (MSA). Gerekirse inceleme ücreti AUD 610.",
+        "zh-Hans": "移民技能评估（MSA）。如需复审，费用为 AUD 610。"
+      },
+      "processingTime": {
+        "en": "About 120 days",
+        "tr": "Yaklaşık 120 gün",
+        "zh-Hans": "约 120 天"
+      },
+      "processingNote": {
+        "en": "From submission to a final outcome, as TRA states it; times vary.",
+        "tr": "TRA'nın belirttiği üzere başvurudan nihai sonuca kadar; süreler değişebilir.",
+        "zh-Hans": "按 TRA 的说明，从提交到最终结果；时间可能有所不同。"
+      },
+      "source": "Trades Recognition Australia — Migration Skills Assessment Program Guidelines (July 2026), pp.18–19",
       "description": "Assesses trade and technical occupations including automotive, fabrication, construction and electrical trades.",
       "color": "orange"
     },
@@ -70,8 +100,23 @@
       "name": "CPA Australia",
       "shortName": "CPA Australia",
         "website": "https://www.cpaaustralia.com.au",
-      "fee": "AUD 540",
-      "processingTime": "4–8 weeks",
+      "fee": "AUD 565 / AUD 514",
+      "feeNote": {
+        "en": "Qualification assessment: AUD 565 if you apply from within Australia, AUD 514 from outside Australia (AUD 560 in Singapore, plus Singapore GST).",
+        "tr": "Nitelik değerlendirmesi: Avustralya içinden başvuruda AUD 565, Avustralya dışından AUD 514 (Singapur'da AUD 560, artı Singapur GST).",
+        "zh-Hans": "资格评估：在澳洲境内申请 AUD 565，境外申请 AUD 514（新加坡 AUD 560，另加新加坡 GST）。"
+      },
+      "processingTime": {
+        "en": "About 10 business days",
+        "tr": "Yaklaşık 10 iş günü",
+        "zh-Hans": "约 10 个工作日"
+      },
+      "processingNote": {
+        "en": "Standard processing; Fast Track is about 5 business days.",
+        "tr": "Standart işlem; Fast Track yaklaşık 5 iş günü.",
+        "zh-Hans": "标准处理；快速通道约 5 个工作日。"
+      },
+      "source": "CPA Australia Ltd — Migration to Australia (official CPA Australia web content), pp.25, 27",
       "description": "Assesses accounting and finance professionals for Australian skilled migration.",
       "color": "emerald"
     },
@@ -79,8 +124,18 @@
       "name": "Chartered Accountants Australia and New Zealand",
       "shortName": "CA ANZ",
       "website": "https://www.charteredaccountantsanz.com/become-a-member/your-career/immigration",
-      "fee": "AUD 515",
-      "processingTime": "4–6 weeks",
+      "fee": "AUD 565",
+      "feeNote": {
+        "en": "Qualification assessment only, standard processing, from 1 July 2026. CA ANZ full members pay no assessment fee.",
+        "tr": "Yalnızca nitelik değerlendirmesi, standart işlem, 1 Temmuz 2026'dan itibaren. CA ANZ tam üyeleri değerlendirme ücreti ödemez.",
+        "zh-Hans": "仅资格评估，标准处理，自 2026 年 7 月 1 日起。CA ANZ 正式会员无需支付评估费。"
+      },
+      "processingTime": {
+        "en": "Confirm with CA ANZ",
+        "tr": "CA ANZ ile teyit edin",
+        "zh-Hans": "请向 CA ANZ 确认"
+      },
+      "source": "Chartered Accountants Australia and New Zealand — Migration Skills Assessment, pp.45, 49 (fees from 1 July 2026)",
       "description": "Assesses chartered accountants and auditors for migration purposes.",
       "color": "teal"
     },
@@ -88,8 +143,18 @@
       "name": "Institute of Public Accountants",
       "shortName": "IPA",
         "website": "https://www.ipaa.org.au",
-      "fee": "AUD 400",
-      "processingTime": "4–6 weeks",
+      "fee": "AUD 595",
+      "feeNote": {
+        "en": "Standard qualification assessment. Priority (a response within 1–2 business days) is AUD 795.",
+        "tr": "Standart nitelik değerlendirmesi. Öncelikli başvuru (1–2 iş günü içinde yanıt) AUD 795.",
+        "zh-Hans": "标准资格评估。优先评估（1–2 个工作日内回复）为 AUD 795。"
+      },
+      "processingTime": {
+        "en": "7 business days",
+        "tr": "7 iş günü",
+        "zh-Hans": "7 个工作日"
+      },
+      "source": "Institute of Public Accountants Ltd — Migration to Australia, p.5",
       "description": "Assesses public accountants for Australian skilled migration.",
       "color": "cyan"
     },
@@ -165,8 +230,23 @@
       "name": "Architects Accreditation Council of Australia",
       "shortName": "AACA",
       "website": "https://www.aaca.org.au/skills-assessment-for-migration",
-      "fee": "AUD 680",
-      "processingTime": "8–12 weeks",
+      "fee": "AUD 4,900",
+      "feeNote": {
+        "en": "Overseas Qualifications Assessment (OQA), new applicants.",
+        "tr": "Overseas Qualifications Assessment (OQA), yeni başvuru sahipleri.",
+        "zh-Hans": "海外资格评估（OQA），新申请人。"
+      },
+      "processingTime": {
+        "en": "7 weeks",
+        "tr": "7 hafta",
+        "zh-Hans": "7 周"
+      },
+      "processingNote": {
+        "en": "Generally, from lodgement; 12 weeks if documents are incomplete. Excludes scheduling the competency assessment interview.",
+        "tr": "Genellikle başvurudan itibaren; belgeler eksikse 12 hafta. Yeterlilik değerlendirme görüşmesinin planlanması hariç.",
+        "zh-Hans": "一般自递交起计算；文件不完整时为 12 周。不含能力评估面试的安排时间。"
+      },
+      "source": "AACA OQA Applicants Guide, October 2025, pp.6, 12",
       "description": "Assesses architects for Australian skilled migration.",
       "color": "slate"
     },
@@ -201,8 +281,23 @@
       "name": "Occupational Therapy Australia",
       "shortName": "OT Australia",
       "website": "https://www.otaus.com.au/advocacy/immigration",
-      "fee": "AUD 520",
-      "processingTime": "6–8 weeks",
+      "fee": "AUD 800",
+      "feeNote": {
+        "en": "Assessment for migration (desktop assessment) by the Occupational Therapy Council (OTC).",
+        "tr": "Occupational Therapy Council (OTC) tarafından göç için değerlendirme (masaüstü değerlendirme).",
+        "zh-Hans": "职业治疗委员会（OTC）的移民评估（书面评估）。"
+      },
+      "processingTime": {
+        "en": "Not stated",
+        "tr": "Belirtilmemiş",
+        "zh-Hans": "未注明"
+      },
+      "processingNote": {
+        "en": "The OTC source document states no processing time; confirm with OTC.",
+        "tr": "OTC kaynak belgesi işlem süresi belirtmiyor; OTC ile teyit edin.",
+        "zh-Hans": "OTC 来源文件未注明处理时间；请向 OTC 确认。"
+      },
+      "source": "OTC Assessment for Migration & Pathways to Evidence English Language Proficiency (June/April 2026), p.1",
       "description": "Assesses occupational therapists for Australian skilled migration.",
       "color": "orange"
     },

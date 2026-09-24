@@ -79,8 +79,9 @@ jobs:
 
       # The free Skills Assessment Finder page reads src/data/assessing-bodies.json, not the report's data. Its
       # ANMAC and Medical Board (doctor) fees must equal the report's sourced figures, compared against the report's
-      # own modules (lib/health-registration/anmac-fees.ts, img-pathways.ts) -- fails if the two ever drift.
-      - name: Skills Assessment Finder page fees = report's sourced ANMAC / Medical Board fees
+      # own modules (lib/health-registration/anmac-fees.ts, img-pathways.ts); ACS, TRA, CPA, CA ANZ, IPA, AACA and
+      # OTC against the registry (lib/skills-assessment/authorities/*.ts) -- fails if the two ever drift.
+      - name: Skills Assessment Finder page fees = report's sourced fees (ANMAC, Medical Board, ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC)
         run: npm run test:tool-page-fees
 
       # REAL Stripe test mode (not stubbed): /api/stripe/checkout must create a Checkout Session for both
