@@ -21,6 +21,8 @@
  *   - Every tool-page occupation names the assessing authority the report resolves for it
  *     (resolveAssessingAuthority on "<title> <code>"); pre-existing mismatches outside the 5 fixed codes are listed
  *     with the Home Affairs authority, and the list can only shrink.
+ *   - TRA: codes on TRA's OSAP list carry an override -- the OSAP fee for the four licensed occupations, an OSAP note
+ *     (listed passports) for the rest -- citing the list page; codes not on it keep the standard AUD 795 card.
  * Pure data checks: runs in CI (no data/knowledge needed).
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -39,6 +41,7 @@ import { ipaAustraliaAuthority } from "../lib/skills-assessment/authorities/ipa-
 import { aacaAuthority } from "../lib/skills-assessment/authorities/aaca";
 import { otcAustraliaAuthority } from "../lib/skills-assessment/authorities/otc-australia";
 import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
+import { OSAP_FEES, TRA_OSAP_OCCUPATIONS } from "../lib/skills-assessment/tra-osap";
 import anzscoList from "../src/data/anzsco-list.json";
 import type { SkillsAssessmentAuthority } from "../lib/skills-assessment/types";
 
@@ -282,6 +285,40 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
 
     if (failures === before) ok(`${c.key}: tool page ${body.fee}, ${times[0]} = registry ${a.authorityId} (${c.shown.map((r) => `${r.pathwayId} ${reg(a, r)}`).join(", ")})`);
   }
+}
+
+console.log("\n==================== TRA occupations: OSAP where TRA's guidelines require it (lib/skills-assessment/tra-osap.ts) ====================");
+{
+  const before = failures;
+  const tra = bodies.TRA;
+  const osapPathway = traAustraliaAuthority.pathways.find((p) => p.pathwayId === "OSAP")!;
+  const registryFees = traAustraliaAuthority.pathways.flatMap((p) => p.fees.map((f) => f.amountAUD).filter((v): v is number => typeof v === "number"));
+  const allowed = [...registryFees, OSAP_FEES.pathway1Min];
+  const counts = { osapOnly: 0, passport: 0, msa: 0 };
+  for (const [code, key] of Object.entries(mapping)) {
+    if (key !== "TRA") continue;
+    const entry = TRA_OSAP_OCCUPATIONS[code];
+    const o = tra.occupationOverrides?.[code];
+    if (!entry) {
+      counts.msa++;
+      if (o) fail(`${code}: not on TRA's OSAP list, but the tool page overrides the standard TRA card`);
+      continue;
+    }
+    if (!o) { fail(`${code}: on TRA's OSAP list (p.${entry.page}) but the tool page shows only the standard AUD 795 card`); continue; }
+    noteFiguresWithin(`TRA ${code}`, o.feeNote, allowed);
+    if (!o.source?.includes(String(entry.page))) fail(`${code}: source must cite the OSAP list page ${entry.page}: "${o.source}"`);
+    if (entry.countries === "ALL") {
+      counts.osapOnly++;
+      if (!same(numbers(o.fee ?? ""), [OSAP_FEES.pathway2, OSAP_FEES.pathway1Max])) fail(`${code}: OSAP-only, but the tool fee is "${o.fee}" (expected AUD ${OSAP_FEES.pathway2}–${OSAP_FEES.pathway1Max})`);
+      for (const t of allText(o.feeNote)) for (const n of [OSAP_FEES.pathway2, OSAP_FEES.pathway1Min, OSAP_FEES.pathway1Max]) if (!numbers(t).includes(n)) fail(`${code}: fee note must state AUD ${n}: "${t}"`);
+      for (const t of allText(o.processingTime)) if (!numbers(t).includes(osapPathway.processingTimeWeeks!.standard)) fail(`${code}: processing time "${t}" != OSAP ${osapPathway.processingTimeWeeks!.standard} weeks`);
+    } else {
+      counts.passport++;
+      if (o.fee !== undefined) fail(`${code}: OSAP only for listed passports -- the tool fee must stay the standard MSA figure`);
+      for (const t of allText(o.feeNote)) for (const n of [OSAP_FEES.pathway2, OSAP_FEES.pathway1Max]) if (!numbers(t).includes(n)) fail(`${code}: fee note must state the OSAP range (AUD ${n}): "${t}"`);
+    }
+  }
+  if (failures === before) ok(`TRA tool codes: ${counts.osapOnly} OSAP-only (AUD ${OSAP_FEES.pathway2}–${OSAP_FEES.pathway1Max}), ${counts.passport} OSAP for listed passports (note), ${counts.msa} standard MSA`);
 }
 
 console.log("\n==================== Every tool-page occupation: same assessing authority as the report ====================");

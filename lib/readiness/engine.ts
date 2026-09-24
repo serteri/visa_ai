@@ -31,6 +31,7 @@ import {
 } from "@/lib/skills-assessment";
 import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import type { ApplicantLocation } from "@/lib/skills-assessment/types";
+import { OSAP_FEES, resolveTraProgram, type TraProgram } from "@/lib/skills-assessment/tra-osap";
 import {
   anzscoCodeFromOccupation,
   deferredFeesLine,
@@ -5124,6 +5125,19 @@ function buildFinancialRoadmap(
       if (resolved) primaryPathway = resolved;
     }
 
+    // TRA: the Offshore Skills Assessment Program instead of the standard MSA where TRA's guidelines require it --
+    // the four licensed occupations for every applicant, the other OSAP-listed occupations for listed passports.
+    const traProgram = authority?.authorityId === "TRA"
+      ? resolveTraProgram({
+          anzscoCode: anzscoCodeFromOccupation(input.occupation, authority.occupations),
+          passportCountry: input.passportCountry,
+          qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
+        })
+      : undefined;
+    if (authority && traProgram?.program === "OSAP") {
+      primaryPathway = authority.pathways.find((p) => p.pathwayId === "OSAP") ?? primaryPathway;
+    }
+
     if (authority?.authorityId === "AHPRA") {
       // Doctors: the cost is Medical Board of Australia registration, not a desktop skills assessment. The
       // pathway (and so the registration type and its two fees, paid together at application) depends on the
@@ -5194,9 +5208,13 @@ function buildFinancialRoadmap(
         primaryFee?.applicantLocation ? applicantLocationPhrase(primaryFee.applicantLocation, locale) : "",
         primaryFee?.note ? resolveLocalized(primaryFee.note, locale) : "",
       ].filter(Boolean).join("; ");
-      const feeLabel = (primaryFee?.amountAUD !== undefined
-        ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU")} ${feeQualifiers ? `(${feeQualifiers})` : ""}`
-        : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "")).trim() + (feeIsEstimate ? ` (${estimateQualifier(locale)})` : "");
+      const osap = traProgram?.program === "OSAP" ? traProgram : undefined;
+      const feeLabel = osap
+        ? traOsapAmountLabel(osap, locale)
+        : (primaryFee?.amountAUD !== undefined
+          ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU")} ${feeQualifiers ? `(${feeQualifiers})` : ""}`
+          : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "")).trim() + (feeIsEstimate ? ` (${estimateQualifier(locale)})` : "");
+      const traNote = traProgram ? traProgramNote(traProgram, locale) : "";
       const processing = primaryPathway.processingTimeWeeks
         ? `${primaryPathway.processingTimeWeeks.standard} wk${primaryPathway.processingTimeWeeks.ifIncomplete ? ` (${primaryPathway.processingTimeWeeks.ifIncomplete} wk if incomplete)` : ""}`
         : "";
@@ -5221,21 +5239,23 @@ function buildFinancialRoadmap(
           ? feeLabel
           : feeLabel,
         explanation: isTr
-          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
-          : `Assessing authority: ${authority.authorityName}. Default pathway: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
+          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""}${traNote ? ` ${traNote}` : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
+          : `Assessing authority: ${authority.authorityName}. Default pathway: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""}${traNote ? ` ${traNote}` : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
         kind: "skills_assessment",
-        amountMin: primaryFee?.amountAUD,
-        amountMax: primaryFee?.amountAUD,
+        amountMin: osap ? osap.amountMin : primaryFee?.amountAUD,
+        amountMax: osap ? osap.amountMax : primaryFee?.amountAUD,
         estimated: feeIsEstimate || undefined,
       });
     } else {
-      // Should not be reachable now that generalAuthority (VETASSESS /
-      // General Professional Authority) is always resolved as the last
-      // resort above -- kept as a defensive fallback only, in case
-      // getAuthorityById/getAssessingAuthority is ever refactored to allow
-      // a genuinely unresolvable case again.
+      // Reached when the resolved authority has no priced pathway in the registry (VETASSESS: pathways: []), or --
+      // defensively -- if no authority resolves at all. The row names the authority when there is one; the amount
+      // and explanation stay the generic multi-authority range.
       items.push({
-        category: isTr ? "Beceri Değerlendirmesi (Assessing Authority'ye göre)" : "Skills Assessment (by Assessing Authority)",
+        category: authority
+          ? isTr
+            ? `Beceri Değerlendirmesi — ${authority.authorityName} (${authority.authorityId})`
+            : `Skills Assessment — ${authority.authorityName} (${authority.authorityId})`
+          : isTr ? "Beceri Değerlendirmesi (Assessing Authority'ye göre)" : "Skills Assessment (by Assessing Authority)",
         estimateType: "third_party_estimate",
         amountLabel: isTr
           ? "AUD 530–900+ (kuruma ve mesleğe göre)"
@@ -7371,4 +7391,55 @@ function applicantLocationPhrase(location: ApplicantLocation, locale: string): s
   };
   const p = phrases[location];
   return locale === "tr" ? p.tr : locale === "zh-Hans" ? p.zh : p.en;
+}
+
+const TRA_GUIDELINES = { en: "TRA guidelines", tr: "TRA kılavuzu", zh: "TRA 指南" };
+const pageRef = (page: number, locale: string) => (locale === "tr" ? `s.${page}` : locale === "zh-Hans" ? `第 ${page} 页` : `p.${page}`);
+const aud = (n: number) => n.toLocaleString("en-AU");
+
+/** Roadmap amount for a TRA Offshore Skills Assessment Program row (fees: TRA guidelines p.5, via the registry). */
+function traOsapAmountLabel(osap: TraProgram, locale: string): string {
+  const { pathway1Min, pathway1Max, pathway1Practical, pathway2 } = OSAP_FEES;
+  if (osap.osapPathway === 2) {
+    return locale === "tr" ? `AUD ${aud(pathway2)} (OSAP Yol 2)` : locale === "zh-Hans" ? `AUD ${aud(pathway2)}（OSAP 途径2）` : `AUD ${aud(pathway2)} (OSAP Pathway 2)`;
+  }
+  if (osap.osapPathway === 1) {
+    return locale === "tr"
+      ? `AUD ${aud(pathway1Min)}–${aud(pathway1Max)} (OSAP Yol 1; gerekirse pratik değerlendirme AUD ${aud(pathway1Practical)})`
+      : locale === "zh-Hans"
+        ? `AUD ${aud(pathway1Min)}–${aud(pathway1Max)}（OSAP 途径1；如需实操评估另加 AUD ${aud(pathway1Practical)}）`
+        : `AUD ${aud(pathway1Min)}–${aud(pathway1Max)} (OSAP Pathway 1; practical assessment AUD ${aud(pathway1Practical)} if required)`;
+  }
+  return locale === "tr"
+    ? `AUD ${aud(pathway2)}–${aud(pathway1Max)} (OSAP: Avustralya VET niteliğiyle Yol 2, niteliksiz Yol 1)`
+    : locale === "zh-Hans"
+      ? `AUD ${aud(pathway2)}–${aud(pathway1Max)}（OSAP：持澳洲 VET 资格走途径2，否则途径1）`
+      : `AUD ${aud(pathway2)}–${aud(pathway1Max)} (OSAP: Pathway 2 with an Australian VET qualification, Pathway 1 without)`;
+}
+
+/** Why the TRA row is OSAP or MSA, citing the OSAP occupation list page. Empty when the occupation is not on it. */
+function traProgramNote(t: TraProgram, locale: string): string {
+  if (t.page === undefined) return "";
+  const ref = `${locale === "tr" ? TRA_GUIDELINES.tr : locale === "zh-Hans" ? TRA_GUIDELINES.zh : TRA_GUIDELINES.en} ${pageRef(t.page, locale)}`;
+  const countries = (t.osapCountries ?? []).join(", ");
+  switch (t.reason) {
+    case "licensed":
+      return locale === "tr"
+        ? `TRA bu lisanslı meslekte tüm ülkelerden başvuranlar için standart MSA yerine Offshore Skills Assessment Program (OSAP) şartı arar (${ref}).`
+        : locale === "zh-Hans"
+          ? `对于这一持牌职业，TRA 要求所有国家的申请人参加 Offshore Skills Assessment Program（OSAP），而非标准 MSA（${ref}）。`
+          : `TRA requires the Offshore Skills Assessment Program (OSAP), not the standard MSA, for this licensed occupation for applicants from all countries (${ref}).`;
+    case "passport":
+      return locale === "tr"
+        ? `Pasaport ülkeniz TRA'nın bu meslek için listelediği ülkeler arasında olduğundan standart MSA yerine OSAP gerekir (${ref}).`
+        : locale === "zh-Hans"
+          ? `您的护照国家在 TRA 为该职业列出的国家之中，因此需参加 OSAP 而非标准 MSA（${ref}）。`
+          : `Your passport country is on TRA's list for this occupation, so the OSAP applies instead of the standard MSA (${ref}).`;
+    default:
+      return locale === "tr"
+        ? `Pasaportunuz şu ülkelerden biriyse TRA bu meslek için standart MSA yerine OSAP (AUD ${aud(OSAP_FEES.pathway2)}–${aud(OSAP_FEES.pathway1Max)}) şartı arar: ${countries} (${ref}).`
+        : locale === "zh-Hans"
+          ? `如果您的护照来自以下国家，TRA 对该职业要求参加 OSAP（AUD ${aud(OSAP_FEES.pathway2)}–${aud(OSAP_FEES.pathway1Max)}）而非标准 MSA：${countries}（${ref}）。`
+          : `If your passport is from one of these countries, TRA requires the OSAP (AUD ${aud(OSAP_FEES.pathway2)}–${aud(OSAP_FEES.pathway1Max)}) for this occupation instead of the standard MSA: ${countries} (${ref}).`;
+  }
 }

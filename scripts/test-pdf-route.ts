@@ -1780,9 +1780,7 @@ async function runToolPageAuthorityChecks(
     const input: ReadinessInput = { ...base, occupation: c.occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, locale: "en" };
     const report = runReadinessEngine(input);
     const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
-    // VETASSESS has no priced pathway in the registry, so its roadmap row is the generic one (unchanged here); the
-    // authority is named in the PDF's skills-assessment sections, checked below.
-    if (c.id !== "VETASSESS" && !row?.category.includes(`(${c.id})`)) f(`roadmap skills row is "${row?.category}", expected ${c.id}`);
+    if (!row?.category.includes(`(${c.id})`)) f(`roadmap skills row is "${row?.category}", expected ${c.id}`);
     const reportId = `authority-${code}-en`;
     rows.set(reportId, {
       id: reportId, email: "qa@example.com", locale: "en", report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
@@ -1796,6 +1794,99 @@ async function runToolPageAuthorityChecks(
     if (!flat.includes(`${c.name} (${c.id})`)) f(`PDF does not name "${c.name} (${c.id})"`);
     if (c.not.test(flat)) f(`PDF still names ${c.not.source}`);
     if (!caseFailed) console.log(`  ✅ ok (${c.name} (${c.id}))`);
+  }
+}
+
+/**
+ * (1) The Financial Roadmap's skills-assessment sentence ("Skills assessment (<authority>): ...") is built from the
+ * roadmap row's category. It must read as one clean label in every language: no "((by Assessing Authority))" (the
+ * row with no priced pathway -- VETASSESS) and no "技能评估（技能评估 — ...）" (ANMAC / AHPRA rows in zh-Hans).
+ * (2) TRA occupations the TRA guidelines put on the Offshore Skills Assessment Program (OSAP) are quoted the OSAP fee,
+ * not the standard AUD 795 MSA: every applicant for the four licensed occupations (pp.1-2, 4, 7-10), and applicants
+ * whose passport is listed for the occupation (p.3, pp.7-10).
+ */
+async function runRoadmapLabelAndOsapChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  const render = async (reportId: string, input: ReadinessInput, locale: Locale) => {
+    const report = runReadinessEngine(input);
+    rows.set(reportId, {
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+    });
+    const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+    if (res.status !== 200) return { report, flat: null as string | null };
+    const raw = (await extractPdfPages(new Uint8Array(await res.arrayBuffer()))).join("\n");
+    await writeFile(path.join(outDir, `${reportId}.txt`), raw);
+    return { report, flat: locale === "zh-Hans" ? squashAll(raw) : flatten(raw) };
+  };
+  const doubled = /\(\s*\(|（\s*（|技能评估（\s*技能评估|Skills assessment \(\s*Skills Assessment|Beceri değerlendirmesi \(\s*Beceri Değerlendirmesi/;
+
+  const labelCases = [
+    { name: "vetassess-222211", occupation: "Financial Market Dealer 222211", authority: "Vocational Education and Training Assessment Services (VETASSESS)" },
+    { name: "vetassess-232112", occupation: "Landscape Architect 232112", authority: "Vocational Education and Training Assessment Services (VETASSESS)" },
+    { name: "anmac-254418", occupation: "Registered Nurse (Medical) 254418", authority: "Australian Nursing and Midwifery Accreditation Council (ANMAC)" },
+    { name: "ahpra-253111", occupation: "General Practitioner 253111", authority: "Australian Health Practitioner Regulation Agency (AHPRA)" },
+  ];
+  for (const c of labelCases) {
+    for (const locale of LOCALES) {
+      const label = `roadmap-label ${c.name}/${locale}`;
+      console.log(`\n=== ${label} ===`);
+      let caseFailed = false;
+      const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+      const { flat } = await render(`label-${c.name}-${locale}`, { ...base, occupation: c.occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, locale }, locale);
+      if (flat === null) { f("route did not return the PDF"); continue; }
+      const m = flat.match(doubled);
+      if (m) f(`doubled label in the PDF: "...${flat.slice(Math.max(0, m.index! - 40), m.index! + 60)}..."`);
+      const lead = locale === "tr" ? "Beceri değerlendirmesi (" : locale === "zh-Hans" ? "技能评估（" : "Skills assessment (";
+      const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : flatten(t));
+      if (!flat.includes(sq(`${lead}${c.authority}`))) f(`the cost sentence does not read "${lead}${c.authority}..."`);
+      if (!caseFailed) console.log(`  ✅ ok (${lead}${c.authority}...)`);
+    }
+  }
+
+  // OSAP: the four licensed occupations for any passport; Chef for a listed (IN) vs unlisted (TR) passport.
+  const p1 = "3,120–5,320";
+  const osapCases: Array<{ name: string; occupation: string; passport: string; osap: boolean; page: number }> = [
+    { name: "342111", occupation: "Airconditioning and Refrigeration Mechanic 342111", passport: "TR", osap: true, page: 7 },
+    { name: "341111", occupation: "Electrician (General) 341111", passport: "TR", osap: true, page: 8 },
+    { name: "341112", occupation: "Electrician (Special Class) 341112", passport: "GB", osap: true, page: 8 },
+    { name: "334111", occupation: "Plumber (General) 334111", passport: "TR", osap: true, page: 10 },
+    { name: "351311-IN", occupation: "Chef 351311", passport: "IN", osap: true, page: 7 },
+    { name: "351311-TR", occupation: "Chef 351311", passport: "TR", osap: false, page: 7 },
+  ];
+  for (const c of osapCases) {
+    for (const locale of LOCALES) {
+      const label = `osap ${c.name}/${locale}`;
+      console.log(`\n=== ${label} ===`);
+      let caseFailed = false;
+      const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+      const input: ReadinessInput = {
+        ...base, occupation: c.occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, passportCountry: c.passport,
+        currentCountry: c.passport, qualificationLevel: "Certificate", qualificationAwardedInAustralia: false, offshoreExperienceYears: 5, locale,
+      };
+      const { report, flat } = await render(`osap-${c.name}-${locale}`, input, locale);
+      const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+      if (!row || !/\(TRA\)/.test(row.category)) { f(`no TRA skills row ("${row?.category}")`); continue; }
+      const [min, max] = c.osap ? [3120, 5320] : [795, 795];
+      if (row.amountMin !== min || row.amountMax !== max) f(`roadmap amount ${row.amountMin}-${row.amountMax}, expected ${min}-${max}`);
+      if (flat === null) { f("route did not return the PDF"); continue; }
+      const amount = (t: string) => new RegExp(`(AUD|澳元)\\s*${t.replace(/[–-]/g, "[–-]")}`);
+      const pageRef = locale === "tr" ? `s.${c.page}` : locale === "zh-Hans" ? `第${c.page}页` : `p.${c.page}`;
+      if (c.osap) {
+        if (!amount(p1).test(flat)) f(`PDF does not show the OSAP Pathway 1 fee AUD ${p1}`);
+        if (/(AUD|澳元)\s*795\b/.test(flat)) f("PDF still quotes the standard AUD 795 MSA fee");
+        if (!/OSAP/.test(flat)) f("PDF does not name the Offshore Skills Assessment Program (OSAP)");
+      } else {
+        if (!/(AUD|澳元)\s*795\b/.test(flat)) f("PDF does not show the standard AUD 795 MSA fee");
+        if (!amount("2,020–5,320").test(flat)) f("PDF does not mention the OSAP range for listed passports");
+      }
+      if (!flat.includes(pageRef)) f(`PDF does not cite the TRA OSAP list page (${pageRef})`);
+      if (!caseFailed) console.log(`  ✅ ok (${c.osap ? `OSAP AUD ${p1}` : "MSA AUD 795 + OSAP note"}, ${pageRef})`);
+    }
   }
 }
 
@@ -1912,6 +2003,12 @@ async function main() {
 
   // The 5 occupations where the tool page and the report used to name different assessing authorities
   await runToolPageAuthorityChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
+
+  // Roadmap skills-assessment label (no "((...))" / "技能评估（技能评估 — ...）"); TRA OSAP fee where TRA requires it
+  await runRoadmapLabelAndOsapChecks(GET, rows, outDir, (m) => {
     failed = true;
     console.error("  ❌ " + m);
   });

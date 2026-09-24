@@ -247,10 +247,10 @@ export function getPersonalizedFaq(
               if (skillsItem) {
                 componentParts.push(
                   isTr
-                    ? `Beceri değerlendirmesi (${skillsItem.category.replace(/^Beceri Değerlendirmesi\s*—?\s*/, "") || "ilgili kurum"}): ${skillsItem.amountLabel}.`
+                    ? `Beceri değerlendirmesi (${skillsAuthorityName(skillsItem.category) || "ilgili kurum"}): ${skillsItem.amountLabel}.`
                     : isZh
-                      ? `技能评估（${skillsItem.category.replace(/^Skills Assessment\s*—?\s*/, "") || "相关机构"}）：${skillsItem.amountLabel}。`
-                      : `Skills assessment (${skillsItem.category.replace(/^Skills Assessment\s*—?\s*/, "") || "relevant authority"}): ${skillsItem.amountLabel}.`
+                      ? `技能评估（${skillsAuthorityName(skillsItem.category) || "相关机构"}）：${skillsItem.amountLabel}。`
+                      : `Skills assessment (${skillsAuthorityName(skillsItem.category) || "relevant authority"}): ${skillsItem.amountLabel}.`
                 );
               }
               if (englishItem) {
@@ -395,4 +395,16 @@ export function getPersonalizedFaq(
     title: isTr ? "Sizin İçin Önemli Sorular" : isZh ? "对您重要的问题" : "Questions Relevant to You",
     items,
   };
+}
+
+/**
+ * The authority part of a skills_assessment roadmap category, for "Skills assessment (<authority>)": drops the
+ * category's own "Skills Assessment" prefix in any report language ("Skills Assessment — X", "Beceri Değerlendirmesi
+ * — X", "技能评估 — X"; the engine writes the English one in zh-Hans too) and one pair of brackets wrapping the rest
+ * ("Skills Assessment (by Assessing Authority)"), so the sentence never reads "((...))" or "技能评估（技能评估 — ...）".
+ */
+export function skillsAuthorityName(category: string): string {
+  const rest = category.replace(/^(Skills Assessment|Beceri Değerlendirmesi|技能评估)\s*—?\s*/i, "").trim();
+  const wrapped = rest.match(/^[(（]([^()（）]*)[)）]$/);
+  return (wrapped ? wrapped[1] : rest).trim();
 }

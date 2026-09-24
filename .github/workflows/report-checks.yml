@@ -53,6 +53,8 @@ jobs:
       # Therapist's PDF names the Occupational Therapy Council of Australia, not Occupational Therapy Australia.
       # The 5 occupations the page and report used to disagree on (221213, 222211, 232112, 322311, 342111) name
       # the Home Affairs-listed authority in the PDF.
+      # The roadmap's skills-assessment sentence reads as one clean label (no "((by Assessing Authority))" or
+      # "技能评估（技能评估 — ...）"), and TRA occupations its guidelines put on OSAP are quoted the OSAP fee, not AUD 795.
       - name: PDF route-handler tests (banned strings, banner clipping, Roadmap total row; en/tr/zh-Hans)
         run: npm run test:pdf-route
 
