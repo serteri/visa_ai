@@ -1,12 +1,15 @@
 import type { SkillsAssessmentAuthority, LocalizedString } from "../types";
+import { businessDaysToWeeks, caanzFee, caanzRegistryFee, CAANZ_FEES, CAANZ_FEES_SOURCE } from "../caanz-fees";
 
 /**
  * Chartered Accountants Australia and New Zealand (CA ANZ)
- * Source: CA ANZ Migration Skills Assessment — PDF (22 pages)
- * Verified: 2026-08-04
+ * Source: CA ANZ Migration Skills Assessment document (77 pages),
+ *   data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/
+ * Verified: 2026-09-26
  *
- * Fee schedule effective 1 July 2026 — "current" values below.
- * Previous fees (pre-1 Jul 2026) are retained as `previousFeeAUD` for historical reference.
+ * Fees and processing times come from src/data/skills-assessment/caanz-fees.json (scripts/generate-caanz-fees.ts;
+ * fee table p.44-49, fees from 1 July 2026, previous fees kept as `previousFeeAUD`). One AUD fee per assessment type --
+ * the document states no onshore/offshore/Singapore variant; the figures this file used to carry were CPA Australia's.
  *
  * Multilanguage support: EN, TR, ZH-Hans
  */
@@ -23,9 +26,8 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "221213", title: "External Auditor" },
     { anzscoCode: "132211", title: "Finance Manager" },
   ],
-  lastVerified: "2026-08-04",
-  sourceDocument:
-    "Chartered Accountants Australia and New Zealand — Migration Skills Assessment (PDF, 22 pages)",
+  lastVerified: "2026-09-26",
+  sourceDocument: CAANZ_FEES_SOURCE.title,
   notes: [
     {
       en: "CA ANZ full members pay $0 for all assessment services (noted in fee schedule).",
@@ -60,14 +62,8 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
           "zh-Hans": "所有为列出的ANZSCO职业申请CA ANZ技能评估的申请人",
         },
       ],
-      fees: [
-        { label: { en: "Qualification assessment (onshore)", tr: "Yeterlilik değerlendirmesi (yerli)", "zh-Hans": "资格评估（境内）" }, amountAUD: 565 },
-        { label: { en: "Qualification assessment (offshore)", tr: "Yeterlilik değerlendirmesi (yabancı)", "zh-Hans": "资格评估（境外）" }, amountAUD: 514 },
-        { label: { en: "Qualification assessment (Singapore)", tr: "Yeterlilik değerlendirmesi (Singapur)", "zh-Hans": "资格评估（新加坡）" }, amountAUD: 560 },
-        { label: { en: "Fast Track qualification assessment (onshore)", tr: "Hızlı Yeterlilik değerlendirmesi (yerli)", "zh-Hans": "快速资格评估（境内）" }, amountAUD: 675 },
-        { label: { en: "Fast Track qualification assessment (offshore)", tr: "Hızlı Yeterlilik değerlendirmesi (yabancı)", "zh-Hans": "快速资格评估（境外）" }, amountAUD: 614 },
-        { label: { en: "Fast Track qualification assessment (Singapore)", tr: "Hızlı Yeterlilik değerlendirmesi (Singapur)", "zh-Hans": "快速资格评估（新加坡）" }, amountAUD: 669 },
-      ],
+      fees: [caanzRegistryFee("caanz_qualification_standard"), caanzRegistryFee("caanz_qualification_express")],
+      processingTimeWeeks: { standard: businessDaysToWeeks(caanzFee("caanz_qualification_standard").processingBusinessDays), note: { en: `Standard ${caanzFee("caanz_qualification_standard").processingBusinessDays} business days; express ${caanzFee("caanz_qualification_express").processingBusinessDays} business days (CA ANZ p.${caanzFee("caanz_qualification_standard").page}).`, tr: `Standart ${caanzFee("caanz_qualification_standard").processingBusinessDays} iş günü; ekspres ${caanzFee("caanz_qualification_express").processingBusinessDays} iş günü (CA ANZ s.${caanzFee("caanz_qualification_standard").page}).`, "zh-Hans": `标准 ${caanzFee("caanz_qualification_standard").processingBusinessDays} 个工作日；加急 ${caanzFee("caanz_qualification_express").processingBusinessDays} 个工作日（CA ANZ 第 ${caanzFee("caanz_qualification_standard").page} 页）。` } },
       documentRequirements: [
         {
           en: "Passport (photo page) or national ID card.",
@@ -143,11 +139,8 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
         tr: "'Uygun' yeterlilik değerlendirme sonucu olmadan değerlendirilemez.",
         "zh-Hans": "没有'合适'的资格评估结果无法进行评估。",
       },
-      fees: [
-        { label: { en: "Employment only (onshore)", tr: "Yalnızca istihdam (yerli)", "zh-Hans": "仅就业（境内）" }, amountAUD: 260 },
-        { label: { en: "Employment only (offshore)", tr: "Yalnızca istihdam (yabancı)", "zh-Hans": "仅就业（境外）" }, amountAUD: 236 },
-        { label: { en: "Employment only (Singapore)", tr: "Yalnızca istihdam (Singapur)", "zh-Hans": "仅就业（新加坡）" }, amountAUD: 257 },
-      ],
+      fees: [caanzRegistryFee("caanz_skilled_employment_standard"), caanzRegistryFee("caanz_skilled_employment_express")],
+      processingTimeWeeks: { standard: businessDaysToWeeks(caanzFee("caanz_skilled_employment_standard").processingBusinessDays), note: { en: `Standard ${caanzFee("caanz_skilled_employment_standard").processingBusinessDays} business days; express ${caanzFee("caanz_skilled_employment_express").processingBusinessDays} business days (CA ANZ p.${caanzFee("caanz_skilled_employment_standard").page}).`, tr: `Standart ${caanzFee("caanz_skilled_employment_standard").processingBusinessDays} iş günü; ekspres ${caanzFee("caanz_skilled_employment_express").processingBusinessDays} iş günü (CA ANZ s.${caanzFee("caanz_skilled_employment_standard").page}).`, "zh-Hans": `标准 ${caanzFee("caanz_skilled_employment_standard").processingBusinessDays} 个工作日；加急 ${caanzFee("caanz_skilled_employment_express").processingBusinessDays} 个工作日（CA ANZ 第 ${caanzFee("caanz_skilled_employment_standard").page} 页）。` } },
       documentRequirements: [
         {
           en: "Employer testimonial per role: letterhead, full contact details, signature from higher-level person, DD/MM/YYYY dates, specific duties, employment terms, weekly hours, annual salary.",
@@ -197,14 +190,8 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
       },
       occupation: "ALL",
       requiresPriorAssessment: false,
-      fees: [
-        { label: { en: "Combined (onshore)", tr: "Kombine (yerli)", "zh-Hans": "联合（境内）" }, amountAUD: 620 },
-        { label: { en: "Combined (offshore)", tr: "Kombine (yabancı)", "zh-Hans": "联合（境外）" }, amountAUD: 564 },
-        { label: { en: "Combined (Singapore)", tr: "Kombine (Singapur)", "zh-Hans": "联合（新加坡）" }, amountAUD: 615 },
-        { label: { en: "Additional ANZSCO (onshore)", tr: "Ek ANZSCO (yerli)", "zh-Hans": "额外ANZSCO（境内）" }, amountAUD: 350 },
-        { label: { en: "Additional ANZSCO (offshore)", tr: "Ek ANZSCO (yabancı)", "zh-Hans": "额外ANZSCO（境外）" }, amountAUD: 318 },
-        { label: { en: "Additional ANZSCO (Singapore)", tr: "Ek ANZSCO (Singapur)", "zh-Hans": "额外ANZSCO（新加坡）" }, amountAUD: 347 },
-      ],
+      fees: [caanzRegistryFee("caanz_combined")],
+      processingTimeWeeks: { standard: businessDaysToWeeks(caanzFee("caanz_combined").processingBusinessDays), note: { en: `${caanzFee("caanz_combined").processingBusinessDays} business days (CA ANZ p.${caanzFee("caanz_combined").page}).`, tr: `${caanzFee("caanz_combined").processingBusinessDays} iş günü (CA ANZ s.${caanzFee("caanz_combined").page}).`, "zh-Hans": `${caanzFee("caanz_combined").processingBusinessDays} 个工作日（CA ANZ 第 ${caanzFee("caanz_combined").page} 页）。` } },
       documentRequirements: [
         {
           en: "All documents from Qualification Assessment pathway.",
@@ -294,37 +281,15 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
       { area: "Audit & Assurance", status: ["Optional", "Optional", "Optional", null, null, null], _needsVerification: false },
     ],
   },
-  feesSchedule: [
-    { type: "Qualification assessment (onshore)", currentFeeAUD: 565, previousFeeAUD: 540, processingTime: "10 business days", effectiveDate: "2026-07-01" },
-    { type: "Qualification assessment (offshore)", currentFeeAUD: 514, previousFeeAUD: 491, effectiveDate: "2026-07-01" },
-    { type: "Qualification assessment (Singapore)", currentFeeAUD: 560, previousFeeAUD: 535, effectiveDate: "2026-07-01" },
-    { type: "Fast Track qualification assessment (onshore)", currentFeeAUD: 675, previousFeeAUD: 645, processingTime: "5 business days", effectiveDate: "2026-07-01" },
-    { type: "Fast Track qualification assessment (offshore)", currentFeeAUD: 614, previousFeeAUD: 589, effectiveDate: "2026-07-01" },
-    { type: "Fast Track qualification assessment (Singapore)", currentFeeAUD: 669, previousFeeAUD: 640, effectiveDate: "2026-07-01" },
-    { type: "Employment only (onshore)", currentFeeAUD: 260, previousFeeAUD: 248, processingTime: "10 business days", effectiveDate: "2026-07-01" },
-    { type: "Employment only (offshore)", currentFeeAUD: 236, previousFeeAUD: 225, effectiveDate: "2026-07-01" },
-    { type: "Employment only (Singapore)", currentFeeAUD: 257, previousFeeAUD: 246, effectiveDate: "2026-07-01" },
-    { type: "Combined qual+employment (onshore)", currentFeeAUD: 620, previousFeeAUD: 590, processingTime: "10 business days", effectiveDate: "2026-07-01" },
-    { type: "Combined qual+employment (offshore)", currentFeeAUD: 564, previousFeeAUD: 537, effectiveDate: "2026-07-01" },
-    { type: "Combined qual+employment (Singapore)", currentFeeAUD: 615, previousFeeAUD: 586, effectiveDate: "2026-07-01" },
-    { type: "Additional ANZSCO — Qual (onshore)", currentFeeAUD: 260, previousFeeAUD: 248, effectiveDate: "2026-07-01" },
-    { type: "Additional ANZSCO — Qual (offshore)", currentFeeAUD: 236, previousFeeAUD: 225, effectiveDate: "2026-07-01" },
-    { type: "Additional ANZSCO — Qual (Singapore)", currentFeeAUD: 257, previousFeeAUD: 246, effectiveDate: "2026-07-01" },
-    { type: "Additional ANZSCO — Combined (onshore)", currentFeeAUD: 350, previousFeeAUD: 333, effectiveDate: "2026-07-01" },
-    { type: "Additional ANZSCO — Combined (offshore)", currentFeeAUD: 318, previousFeeAUD: 303, effectiveDate: "2026-07-01" },
-    { type: "Additional ANZSCO — Combined (Singapore)", currentFeeAUD: 347, previousFeeAUD: 331, effectiveDate: "2026-07-01" },
-    { type: "Update — Qual (onshore)", currentFeeAUD: 185, previousFeeAUD: 176, effectiveDate: "2026-07-01" },
-    { type: "Update — Qual (offshore)", currentFeeAUD: 168, previousFeeAUD: 160, effectiveDate: "2026-07-01" },
-    { type: "Update — Qual (Singapore)", currentFeeAUD: 183, previousFeeAUD: 174, effectiveDate: "2026-07-01" },
-    { type: "Review — single (onshore)", currentFeeAUD: 185, previousFeeAUD: 176, effectiveDate: "2026-07-01" },
-    { type: "Review — single (offshore)", currentFeeAUD: 168, previousFeeAUD: 160, effectiveDate: "2026-07-01" },
-    { type: "Review — single (Singapore)", currentFeeAUD: 183, previousFeeAUD: 174, effectiveDate: "2026-07-01" },
-    { type: "Update — Employment (onshore)", currentFeeAUD: 185, previousFeeAUD: 176, effectiveDate: "2026-07-01" },
-    { type: "Update — Employment (offshore)", currentFeeAUD: 168, previousFeeAUD: 160, effectiveDate: "2026-07-01" },
-    { type: "Update — Employment (Singapore)", currentFeeAUD: 183, previousFeeAUD: 174, effectiveDate: "2026-07-01" },
-    { type: "Reissue of Outcome Letter", currentFeeAUD: 0, previousFeeAUD: 0, note: "Free of charge", effectiveDate: "2026-07-01" },
-    { type: "Withdrawal administration fee", currentFeeAUD: 85, previousFeeAUD: 81, effectiveDate: "2026-07-01" },
-  ],
+  // Every row of CA ANZ's fee table (p.44-49): previous fee, fee from 1 July 2026, processing time.
+  feesSchedule: CAANZ_FEES.map((f) => ({
+    type: f.item,
+    previousFeeAUD: f.previousAmountAud,
+    currentFeeAUD: f.amountAud,
+    processingTime: `${f.processingBusinessDays} business days`,
+    effectiveDate: CAANZ_FEES_SOURCE.effectiveDate,
+    note: `CA ANZ document p.${f.page}`,
+  })),
   processingNotes: {
     initialReviewDays: 10,
     additionalInfoResponseDays: 20,

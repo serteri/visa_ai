@@ -96,6 +96,38 @@
       "description": "Assesses trade and technical occupations including automotive, fabrication, construction and electrical trades.",
       "color": "orange",
       "occupationOverrides": {
+        "322211": {
+          "feeNote": {
+            "en": "Migration Skills Assessment (MSA). A review, if you need one, is AUD 610. If your passport is from a country TRA lists for this occupation (including India, the Philippines and South Africa), the Offshore Skills Assessment Program applies instead: AUD 2,020–5,320.",
+            "tr": "Migration Skills Assessment (MSA). Gerekirse inceleme ücreti AUD 610. Pasaportunuz TRA'nın bu meslek için listelediği bir ülkedense (Hindistan, Filipinler ve Güney Afrika dahil), bunun yerine Offshore Skills Assessment Program uygulanır: AUD 2,020–5,320.",
+            "zh-Hans": "移民技能评估（MSA）。如需复审，费用为 AUD 610。如果您的护照来自 TRA 为该职业列出的国家（包括印度、菲律宾和南非），则改为参加 Offshore Skills Assessment Program：AUD 2,020–5,320。"
+          },
+          "source": "Trades Recognition Australia — Migration Skills Assessment Program Guidelines (July 2026), pp.18–19; OSAP: pp.3, 5, 10"
+        },
+        "323299": {
+          "feeNote": {
+            "en": "Migration Skills Assessment (MSA). A review, if you need one, is AUD 610. If your passport is from a country TRA lists for this occupation (including India, the Philippines and South Africa), the Offshore Skills Assessment Program applies instead: AUD 2,020–5,320.",
+            "tr": "Migration Skills Assessment (MSA). Gerekirse inceleme ücreti AUD 610. Pasaportunuz TRA'nın bu meslek için listelediği bir ülkedense (Hindistan, Filipinler ve Güney Afrika dahil), bunun yerine Offshore Skills Assessment Program uygulanır: AUD 2,020–5,320.",
+            "zh-Hans": "移民技能评估（MSA）。如需复审，费用为 AUD 610。如果您的护照来自 TRA 为该职业列出的国家（包括印度、菲律宾和南非），则改为参加 Offshore Skills Assessment Program：AUD 2,020–5,320。"
+          },
+          "source": "Trades Recognition Australia — Migration Skills Assessment Program Guidelines (July 2026), pp.18–19; OSAP: pp.3, 5, 9"
+        },
+        "324111": {
+          "feeNote": {
+            "en": "Migration Skills Assessment (MSA). A review, if you need one, is AUD 610. If your passport is from a country TRA lists for this occupation (including India, the Philippines and South Africa), the Offshore Skills Assessment Program applies instead: AUD 2,020–5,320.",
+            "tr": "Migration Skills Assessment (MSA). Gerekirse inceleme ücreti AUD 610. Pasaportunuz TRA'nın bu meslek için listelediği bir ülkedense (Hindistan, Filipinler ve Güney Afrika dahil), bunun yerine Offshore Skills Assessment Program uygulanır: AUD 2,020–5,320.",
+            "zh-Hans": "移民技能评估（MSA）。如需复审，费用为 AUD 610。如果您的护照来自 TRA 为该职业列出的国家（包括印度、菲律宾和南非），则改为参加 Offshore Skills Assessment Program：AUD 2,020–5,320。"
+          },
+          "source": "Trades Recognition Australia — Migration Skills Assessment Program Guidelines (July 2026), pp.18–19; OSAP: pp.3, 5, 9"
+        },
+        "331213": {
+          "feeNote": {
+            "en": "Migration Skills Assessment (MSA). A review, if you need one, is AUD 610. If your passport is from a country TRA lists for this occupation (including India, the Philippines and South Africa), the Offshore Skills Assessment Program applies instead: AUD 2,020–5,320.",
+            "tr": "Migration Skills Assessment (MSA). Gerekirse inceleme ücreti AUD 610. Pasaportunuz TRA'nın bu meslek için listelediği bir ülkedense (Hindistan, Filipinler ve Güney Afrika dahil), bunun yerine Offshore Skills Assessment Program uygulanır: AUD 2,020–5,320.",
+            "zh-Hans": "移民技能评估（MSA）。如需复审，费用为 AUD 610。如果您的护照来自 TRA 为该职业列出的国家（包括印度、菲律宾和南非），则改为参加 Offshore Skills Assessment Program：AUD 2,020–5,320。"
+          },
+          "source": "Trades Recognition Australia — Migration Skills Assessment Program Guidelines (July 2026), pp.18–19; OSAP: pp.3, 5, 9"
+        },
         "321211": {
           "feeNote": {
             "en": "Migration Skills Assessment (MSA). A review, if you need one, is AUD 610. If your passport is from a country TRA lists for this occupation (including India, the Philippines and South Africa), the Offshore Skills Assessment Program applies instead: AUD 2,020–5,320.",
@@ -238,9 +270,14 @@
         "zh-Hans": "仅资格评估，标准处理，自 2026 年 7 月 1 日起。CA ANZ 正式会员无需支付评估费。"
       },
       "processingTime": {
-        "en": "Confirm with CA ANZ",
-        "tr": "CA ANZ ile teyit edin",
-        "zh-Hans": "请向 CA ANZ 确认"
+        "en": "10 business days",
+        "tr": "10 iş günü",
+        "zh-Hans": "10 个工作日"
+      },
+      "processingNote": {
+        "en": "Standard processing; express processing (AUD 665) is 5 business days.",
+        "tr": "Standart işlem; ekspres işlem (AUD 665) 5 iş günü.",
+        "zh-Hans": "标准处理；加急处理（AUD 665）为 5 个工作日。"
       },
       "source": "Chartered Accountants Australia and New Zealand — Migration Skills Assessment, pp.45, 49 (fees from 1 July 2026)",
       "description": "Assesses chartered accountants and auditors for migration purposes.",
@@ -499,6 +536,10 @@
     "271311": "LIV",
     "321211": "TRA",
     "322311": "TRA",
+    "322211": "TRA",
+    "323299": "TRA",
+    "324111": "TRA",
+    "331213": "TRA",
     "322313": "TRA",
     "331111": "TRA",
     "331212": "TRA",

@@ -2139,7 +2139,7 @@
     {
       "anzsco_code": "322211",
       "occupation_name": "Sheetmetal Trades Worker",
-      "authority": "Unknown",
+      "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -8364,7 +8364,7 @@
     {
       "anzsco_code": "323299",
       "occupation_name": "Metal Fitters and Machinists nec",
-      "authority": "Unknown",
+      "authority": "TRA",
       "min_qualification": "AQF Certificate III/IV (trade)",
       "post_qual_experience_years": 3,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -11718,7 +11718,7 @@
     {
       "anzsco_code": "331213",
       "occupation_name": "Joiner",
-      "authority": "Unknown",
+      "authority": "TRA",
       "min_qualification": "AQF Certificate III (trade)",
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",
@@ -15513,7 +15513,7 @@
     {
       "anzsco_code": "324111",
       "occupation_name": "Panelbeater",
-      "authority": "Unknown",
+      "authority": "TRA",
       "min_qualification": "AQF Certificate III (trade)",
       "post_qual_experience_years": 3,
       "english_requirement": "Not required for migration skills assessment",

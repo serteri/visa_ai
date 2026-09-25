@@ -123,6 +123,12 @@ export const traAustraliaAuthority: SkillsAssessmentAuthority = {
     // Home Affairs skilled occupation list (data/knowledge/Skilled Occupation List.md) names TRA for both.
     { anzscoCode: "342111", title: "Airconditioning and Refrigeration Mechanic" },
     { anzscoCode: "322311", title: "Metal Fabricator" },
+    // On TRA's OSAP occupation list (guidelines p.9 / p.10; OSAP for listed passports -- lib/skills-assessment/tra-osap.ts)
+    // and listed with TRA as the assessing authority in the Home Affairs skilled occupation list.
+    { anzscoCode: "331213", title: "Joiner" },
+    { anzscoCode: "323299", title: "Metal Fitters and Machinists nec" },
+    { anzscoCode: "324111", title: "Panelbeater" },
+    { anzscoCode: "322211", title: "Sheetmetal Trades Worker" },
   ],
   lastVerified: "2026-08-05",
   sourceDocument:

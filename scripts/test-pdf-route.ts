@@ -1850,8 +1850,14 @@ async function runRoadmapLabelAndOsapChecks(
 
   // OSAP: the four licensed occupations for any passport; Chef for a listed (IN) vs unlisted (TR) passport.
   const p1 = "3,120–5,320";
-  const osapCases: Array<{ name: string; occupation: string; passport: string; osap: boolean; page: number }> = [
+  const osapCases: Array<{ name: string; occupation: string; passport: string; osap: boolean; page: number; locales?: readonly Locale[] }> = [
     { name: "342111", occupation: "Airconditioning and Refrigeration Mechanic 342111", passport: "TR", osap: true, page: 7 },
+    // The four OSAP-listed trades added to the TRA registry: TRA (not "no authority"), OSAP for a listed (IN)
+    // passport, the standard AUD 795 with the OSAP note for an unlisted (TR) one.
+    ...([["331213", "Joiner", 9], ["323299", "Metal Fitters and Machinists nec", 9], ["324111", "Panelbeater", 9], ["322211", "Sheetmetal Trades Worker", 10]] as const).flatMap(([code, title, page]) => [
+      { name: `${code}-IN`, occupation: `${title} ${code}`, passport: "IN", osap: true, page, locales: ["en"] as const },
+      { name: `${code}-TR`, occupation: `${title} ${code}`, passport: "TR", osap: false, page, locales: ["en"] as const },
+    ]),
     { name: "341111", occupation: "Electrician (General) 341111", passport: "TR", osap: true, page: 8 },
     { name: "341112", occupation: "Electrician (Special Class) 341112", passport: "GB", osap: true, page: 8 },
     { name: "334111", occupation: "Plumber (General) 334111", passport: "TR", osap: true, page: 10 },
@@ -1859,7 +1865,7 @@ async function runRoadmapLabelAndOsapChecks(
     { name: "351311-TR", occupation: "Chef 351311", passport: "TR", osap: false, page: 7 },
   ];
   for (const c of osapCases) {
-    for (const locale of LOCALES) {
+    for (const locale of c.locales ?? LOCALES) {
       const label = `osap ${c.name}/${locale}`;
       console.log(`\n=== ${label} ===`);
       let caseFailed = false;

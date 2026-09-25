@@ -194,7 +194,7 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
       shown: [{ pathwayId: "qualification-assessment", index: 0, factId: "tool_page_caanz_qualification_assessment_fee" }],
       note: [],
       reportPathways: [caanzAuthority.pathways[0].pathwayId],
-      time: { kind: "unsourced", pathwayId: "qualification-assessment", registryWeeks: undefined, why: "the registry records no CA ANZ processing time" },
+      time: { kind: "sourced", pathwayId: "qualification-assessment" },
     },
     {
       key: "IPA",

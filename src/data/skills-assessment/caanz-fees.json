@@ -1,0 +1,209 @@
+{
+  "sourceDocument": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf",
+  "sourceTitle": "Chartered Accountants Australia and New Zealand — Migration Skills Assessment",
+  "sourcePageCount": 77,
+  "extractedDate": "2026-09-26",
+  "generatedBy": "scripts/generate-caanz-fees.ts",
+  "effectiveDate": "2026-07-01",
+  "effectiveDateSource": {
+    "page": 44,
+    "quote": "From 1 July 2026, our migration skills assessment fees will increase by an average of approximately 2%. These increases are broadly consistent with recent CPI movements, with individual application costs rising by $5 per item. Fees have been reviewed and approved in accordance with Guiding Principles and Standards for Skilled Migration Assessing Authorities. Applications received before 1 July 2026 will be charged at current rates."
+  },
+  "currency": "AUD",
+  "locationVariants": {
+    "stated": false,
+    "note": "The document states one AUD fee per assessment type; it states no onshore, offshore, Singapore or other location variant."
+  },
+  "occupations": {
+    "page": 2,
+    "pages": [
+      2,
+      4
+    ],
+    "list": [
+      {
+        "title": "Accountant (General)",
+        "anzscoCode": "221111"
+      },
+      {
+        "title": "Management Accountant",
+        "anzscoCode": "221112"
+      },
+      {
+        "title": "Taxation Accountant",
+        "anzscoCode": "221113"
+      },
+      {
+        "title": "Corporate Treasurer",
+        "anzscoCode": "221212"
+      },
+      {
+        "title": "External Auditor",
+        "anzscoCode": "221213"
+      },
+      {
+        "title": "Finance Manager",
+        "anzscoCode": "132211"
+      }
+    ]
+  },
+  "scope": {
+    "qualification": {
+      "pages": [
+        5
+      ],
+      "quote": "Qualification Assessment Assesses whether your education and professional qualification are comparable to an Australian Bachelor’s degree under the Australian Qualifications Framework (AQF). Assesses coverage of required competency areas Confirms English language proficiency Required for all applicants. Must be completed before applying for skilled employment assessment."
+    },
+    "skilled_employment": {
+      "page": 5,
+      "quote": "Skilled Employment Assessment (Optional) Assesses if your work experience is relevant and meets the required skill level. You must first have a suitable and valid qualification assessment outcome for the same occupation from CA ANZ."
+    },
+    "combined": {
+      "page": 37,
+      "quote": "You can apply for a combined assessment that includes both: Qualification assessment – CA ANZ checks if your qualifications meet the required standard. Skilled employment assessment – if your qualifications are suitable, CA ANZ will assess your work experience."
+    }
+  },
+  "fees": [
+    {
+      "id": "caanz_qualification_standard",
+      "item": "Qualification assessment only – Standard processing time",
+      "assessment": "qualification",
+      "processing": "standard",
+      "amountAud": 565,
+      "previousAmountAud": 560,
+      "processingBusinessDays": 10,
+      "page": 45,
+      "quote": "Qualification assessment only – Standard processing time $560 $565 10 business days"
+    },
+    {
+      "id": "caanz_qualification_express",
+      "item": "Qualification assessment only – Express processing time",
+      "assessment": "qualification",
+      "processing": "express",
+      "amountAud": 665,
+      "previousAmountAud": 660,
+      "processingBusinessDays": 5,
+      "page": 45,
+      "quote": "Qualification assessment only – Express processing time $660 $665 5 business days"
+    },
+    {
+      "id": "caanz_skilled_employment_standard",
+      "item": "Skilled employment assessment only – Standard processing time",
+      "assessment": "skilled_employment",
+      "processing": "standard",
+      "amountAud": 265,
+      "previousAmountAud": 260,
+      "processingBusinessDays": 15,
+      "page": 45,
+      "quote": "Skilled employment assessment only – Standard processing time* $260 $265 15 business days"
+    },
+    {
+      "id": "caanz_skilled_employment_express",
+      "item": "Skilled employment assessment only – Express processing time",
+      "assessment": "skilled_employment",
+      "processing": "express",
+      "amountAud": 365,
+      "previousAmountAud": 360,
+      "processingBusinessDays": 10,
+      "page": 46,
+      "quote": "Skilled employment assessment only – Express processing time* $360 $365 10 business days"
+    },
+    {
+      "id": "caanz_combined",
+      "item": "Combined assessment (Qualification AND Skilled employment)",
+      "assessment": "combined",
+      "amountAud": 625,
+      "previousAmountAud": 620,
+      "processingBusinessDays": 20,
+      "page": 46,
+      "quote": "Combined assessment (Qualification AND Skilled employment) $620 $625 20 business days"
+    },
+    {
+      "id": "caanz_reassessment_single",
+      "item": "Reassessment (Qualification OR Skilled employment)",
+      "assessment": "reassessment",
+      "amountAud": 185,
+      "previousAmountAud": 180,
+      "processingBusinessDays": 10,
+      "page": 46,
+      "quote": "Reassessment (Qualification OR Skilled employment) $180 $185 10 business days"
+    },
+    {
+      "id": "caanz_reassessment_both",
+      "item": "Reassessment (Qualification AND Skilled employment)",
+      "assessment": "reassessment",
+      "amountAud": 365,
+      "previousAmountAud": 360,
+      "processingBusinessDays": 15,
+      "page": 47,
+      "quote": "Reassessment (Qualification AND Skilled employment) $360 $365 15 business days"
+    },
+    {
+      "id": "caanz_internal_review_single",
+      "item": "Internal review - review of the decision (Qualification OR Skilled employment)",
+      "assessment": "internal_review",
+      "amountAud": 185,
+      "previousAmountAud": 180,
+      "processingBusinessDays": 10,
+      "page": 47,
+      "quote": "Internal review - review of the decision (Qualification OR Skilled employment) $180 $185 10 business days"
+    },
+    {
+      "id": "caanz_internal_review_both",
+      "item": "Internal review - review of the decision (Qualification AND Skilled employment)",
+      "assessment": "internal_review",
+      "amountAud": 365,
+      "previousAmountAud": 360,
+      "processingBusinessDays": 15,
+      "page": 47,
+      "quote": "Internal review - review of the decision $360 $365 15 business days (Qualification AND Skilled employment)"
+    },
+    {
+      "id": "caanz_external_appeal_single",
+      "item": "External appeal (Qualification OR Skilled employment)",
+      "assessment": "external_appeal",
+      "amountAud": 185,
+      "previousAmountAud": 180,
+      "processingBusinessDays": 10,
+      "page": 48,
+      "quote": "External appeal (Qualification OR Skilled employment) $180 $185 10 business days"
+    },
+    {
+      "id": "caanz_external_appeal_both",
+      "item": "External appeal (Qualification AND Skilled employment)",
+      "assessment": "external_appeal",
+      "amountAud": 365,
+      "previousAmountAud": 360,
+      "processingBusinessDays": 15,
+      "page": 48,
+      "quote": "External appeal (Qualification AND Skilled employment $360 $365 15 business days"
+    },
+    {
+      "id": "caanz_withdrawal",
+      "item": "Withdrawal request (Admin fee)",
+      "assessment": "withdrawal",
+      "amountAud": 95,
+      "previousAmountAud": 90,
+      "processingBusinessDays": 2,
+      "page": 49,
+      "quote": "Withdrawal request (Admin fee) $90 $95 2 business days"
+    }
+  ],
+  "notes": [
+    {
+      "id": "skilled_employment_prerequisite",
+      "page": 49,
+      "quote": "*Skilled employment assessment is only available if you have received a suitable qualification assessment outcome from CA ANZ."
+    },
+    {
+      "id": "full_members_pay_nothing",
+      "page": 49,
+      "quote": "Note: CA ANZ full members do not need to pay the migration skills assessment fee. If you are eligible, your invoice will show a $0 fee."
+    },
+    {
+      "id": "completeness_check",
+      "page": 42,
+      "quote": "We will review your application within 10 business days of submission to check if it is complete."
+    }
+  ]
+}

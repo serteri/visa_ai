@@ -34,6 +34,8 @@ import * as readinessConstants from "../lib/readiness/constants";
 import { acsAuthority } from "../lib/skills-assessment/authorities/acs";
 import { anmacAuthority } from "../lib/skills-assessment/authorities/anmac";
 import anmacFeesData from "../src/data/health-registration/anmac-fees.json";
+import caanzFeesData from "../src/data/skills-assessment/caanz-fees.json";
+import { caanzAuthority } from "../lib/skills-assessment/authorities/caanz";
 import { listAuthorities } from "../lib/skills-assessment";
 import { findAuthorityConflicts } from "../lib/skills-assessment/resolve-authority";
 
@@ -225,6 +227,24 @@ checkSecondInstalment("491", "second_instalment_491");
     if (n.status !== "needs human verification") fail(`anmac-fees.json ${n.id} status is "${n.status}"`);
   }
   if (failures === before) ok("ANMAC Full 595 / Modified 395 / Direct care 545 and NMBA IQNM 410: manifest = anmac-fees.json = anmac.ts, each quoted; NMBA international application + registration fees unpriced (needs human verification)");
+}
+
+// CA ANZ fees: manifest vs the extraction (src/data/skills-assessment/caanz-fees.json, from CA ANZ's own document) vs
+// the registry. Every row of the fee table is dated and quotes its page; no CPA Australia figure is left in caanz.ts.
+{
+  const before = failures;
+  for (const fee of caanzFeesData.fees) {
+    const fact = findFact(`${fee.id}_fee`);
+    if (fact.value !== fee.amountAud) fail(`${fee.id}_fee: manifest ${fact.value} != caanz-fees.json ${fee.amountAud}`);
+    if (!fact.last_verified) fail(`${fee.id}_fee: stated in the document but last_verified is null`);
+    if (!fact.source?.includes(caanzFeesData.sourceDocument) || !fact.source.includes(fee.quote) || !fact.source.includes(`p.${fee.page}`)) fail(`${fee.id}_fee: source must cite ${caanzFeesData.sourceDocument} p.${fee.page} and quote "${fee.quote}"`);
+  }
+  const registryFees = caanzAuthority.pathways.flatMap((p) => p.fees.map((f) => f.amountAUD));
+  const extracted = new Set(caanzFeesData.fees.map((f) => f.amountAud));
+  const stray = registryFees.filter((v) => v === undefined || !extracted.has(v));
+  if (stray.length) fail(`caanz.ts pathway fees not in caanz-fees.json: ${stray.join(", ")}`);
+  if (/PDF, 22 pages/.test(caanzAuthority.sourceDocument)) fail("caanz.ts still cites the \"22 pages\" document");
+  if (failures === before) ok(`CA ANZ: ${caanzFeesData.fees.length} fee-table rows (from 1 July 2026): manifest = caanz-fees.json = caanz.ts, each quoted with its page`);
 }
 
 // Confirm the known gap is still honestly a gap, not silently "fixed" by

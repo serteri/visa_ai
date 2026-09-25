@@ -83,6 +83,13 @@ jobs:
       - name: ANMAC nursing skills assessment fees (drift + invariants)
         run: npm run test:anmac-fees
 
+      # CA ANZ skills assessment fees (src/data/skills-assessment/caanz-fees.json, extracted from CA ANZ's own document).
+      # The regenerate-and-diff drift check needs the gitignored source PDF and is SKIPPED here; the committed-file
+      # invariants (the 12 fee-table rows with page + quote, 1 July 2026 effective date, no location variants, the six
+      # occupations, and caanz.ts carrying only these figures -- none of the CPA figures it used to copy) always run.
+      - name: CA ANZ skills assessment fees (drift + invariants)
+        run: npm run test:caanz-fees
+
       # The free Skills Assessment Finder page reads src/data/assessing-bodies.json, not the report's data. Its
       # ANMAC and Medical Board (doctor) fees must equal the report's sourced figures, compared against the report's
       # own modules (lib/health-registration/anmac-fees.ts, img-pathways.ts); ACS, TRA, CPA, CA ANZ, IPA, AACA and

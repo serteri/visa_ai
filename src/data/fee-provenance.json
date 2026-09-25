@@ -1166,6 +1166,167 @@
         "src/data/assessing-bodies.json:assessingBodies.OTC.fee",
         "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
       ]
+    },
+    {
+      "id": "caanz_qualification_standard_fee",
+      "description": "CA ANZ migration skills assessment: Qualification assessment only – Standard processing time (fee from 1 July 2026; previous fee AUD 560; 10 business days)",
+      "value": 565,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.45 -- \"Qualification assessment only – Standard processing time $560 $565 10 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_qualification_standard].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule",
+        "lib/skills-assessment/authorities/caanz.ts:pathways[qualification-assessment].fees[0].amountAUD"
+      ]
+    },
+    {
+      "id": "caanz_qualification_express_fee",
+      "description": "CA ANZ migration skills assessment: Qualification assessment only – Express processing time (fee from 1 July 2026; previous fee AUD 660; 5 business days)",
+      "value": 665,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.45 -- \"Qualification assessment only – Express processing time $660 $665 5 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_qualification_express].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule",
+        "lib/skills-assessment/authorities/caanz.ts:pathways[qualification-assessment].fees[1].amountAUD"
+      ]
+    },
+    {
+      "id": "caanz_skilled_employment_standard_fee",
+      "description": "CA ANZ migration skills assessment: Skilled employment assessment only – Standard processing time (fee from 1 July 2026; previous fee AUD 260; 15 business days)",
+      "value": 265,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.45 -- \"Skilled employment assessment only – Standard processing time* $260 $265 15 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_skilled_employment_standard].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule",
+        "lib/skills-assessment/authorities/caanz.ts:pathways[employment-assessment].fees[0].amountAUD"
+      ]
+    },
+    {
+      "id": "caanz_skilled_employment_express_fee",
+      "description": "CA ANZ migration skills assessment: Skilled employment assessment only – Express processing time (fee from 1 July 2026; previous fee AUD 360; 10 business days)",
+      "value": 365,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.46 -- \"Skilled employment assessment only – Express processing time* $360 $365 10 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_skilled_employment_express].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule",
+        "lib/skills-assessment/authorities/caanz.ts:pathways[employment-assessment].fees[1].amountAUD"
+      ]
+    },
+    {
+      "id": "caanz_combined_fee",
+      "description": "CA ANZ migration skills assessment: Combined assessment (Qualification AND Skilled employment) (fee from 1 July 2026; previous fee AUD 620; 20 business days)",
+      "value": 625,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.46 -- \"Combined assessment (Qualification AND Skilled employment) $620 $625 20 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_combined].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule",
+        "lib/skills-assessment/authorities/caanz.ts:pathways[combined].fees[0].amountAUD"
+      ]
+    },
+    {
+      "id": "caanz_reassessment_single_fee",
+      "description": "CA ANZ migration skills assessment: Reassessment (Qualification OR Skilled employment) (fee from 1 July 2026; previous fee AUD 180; 10 business days)",
+      "value": 185,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.46 -- \"Reassessment (Qualification OR Skilled employment) $180 $185 10 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_reassessment_single].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule"
+      ]
+    },
+    {
+      "id": "caanz_reassessment_both_fee",
+      "description": "CA ANZ migration skills assessment: Reassessment (Qualification AND Skilled employment) (fee from 1 July 2026; previous fee AUD 360; 15 business days)",
+      "value": 365,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.47 -- \"Reassessment (Qualification AND Skilled employment) $360 $365 15 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_reassessment_both].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule"
+      ]
+    },
+    {
+      "id": "caanz_internal_review_single_fee",
+      "description": "CA ANZ migration skills assessment: Internal review - review of the decision (Qualification OR Skilled employment) (fee from 1 July 2026; previous fee AUD 180; 10 business days)",
+      "value": 185,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.47 -- \"Internal review - review of the decision (Qualification OR Skilled employment) $180 $185 10 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_internal_review_single].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule"
+      ]
+    },
+    {
+      "id": "caanz_internal_review_both_fee",
+      "description": "CA ANZ migration skills assessment: Internal review - review of the decision (Qualification AND Skilled employment) (fee from 1 July 2026; previous fee AUD 360; 15 business days)",
+      "value": 365,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.47 -- \"Internal review - review of the decision $360 $365 15 business days (Qualification AND Skilled employment)\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_internal_review_both].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule"
+      ]
+    },
+    {
+      "id": "caanz_external_appeal_single_fee",
+      "description": "CA ANZ migration skills assessment: External appeal (Qualification OR Skilled employment) (fee from 1 July 2026; previous fee AUD 180; 10 business days)",
+      "value": 185,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.48 -- \"External appeal (Qualification OR Skilled employment) $180 $185 10 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_external_appeal_single].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule"
+      ]
+    },
+    {
+      "id": "caanz_external_appeal_both_fee",
+      "description": "CA ANZ migration skills assessment: External appeal (Qualification AND Skilled employment) (fee from 1 July 2026; previous fee AUD 360; 15 business days)",
+      "value": 365,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.48 -- \"External appeal (Qualification AND Skilled employment $360 $365 15 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_external_appeal_both].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule"
+      ]
+    },
+    {
+      "id": "caanz_withdrawal_fee",
+      "description": "CA ANZ migration skills assessment: Withdrawal request (Admin fee) (fee from 1 July 2026; previous fee AUD 90; 2 business days)",
+      "value": 95,
+      "currency": "AUD",
+      "effective_from": "2026-07-01",
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Chartered Accountants Australia and New Zealand/Chartered Accountants Australia and New Zealand.pdf p.49 -- \"Withdrawal request (Admin fee) $90 $95 2 business days\"",
+      "locations": [
+        "src/data/skills-assessment/caanz-fees.json:fees[caanz_withdrawal].amountAud",
+        "lib/skills-assessment/authorities/caanz.ts:feesSchedule"
+      ]
     }
   ]
 }
