@@ -6,7 +6,8 @@
  *   2. Committed-file invariants (always): the 20 rows (12 pathway fees, 8 additional services) with excl./incl. GST
  *      amounts and pages; the fee period; processing stated only as time to an assessor; GST applicability unpriced;
  *      the registry's pathway fees = these rows; the report's figure (CDR; manager CDR + skilled employment); and the
- *      Home Affairs occupation moves (5 added, 313213/313214 in, 312312/312412/312512 out to TRA).
+ *      Home Affairs occupation moves (5 added, 313213/313214 in, 312312/312412/312512 out to TRA); and the points
+ *      calculator's Professional Year tip keyed on professional engineering codes (none for 313213 / 313214).
  */
 import { existsSync, readFileSync } from "node:fs";
 
@@ -16,6 +17,8 @@ import { engineersAustraliaAuthority } from "../lib/skills-assessment/authoritie
 import { traAustraliaAuthority } from "../lib/skills-assessment/authorities/tra-australia";
 import { resolveEngineersAustraliaAssessment } from "../lib/skills-assessment/engineers-australia-fees";
 import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
+import { calculateVisaPoints, type PointsCalculatorInput } from "../lib/readiness/visa-points-calculator";
+import occupations from "../src/data/occupations.json";
 
 let failures = 0;
 const ok = (m: string) => console.log(`  ✅ ${m}`);
@@ -69,10 +72,17 @@ async function main() {
   if (engineersAustraliaAuthority.pathways.every((x) => x.fees.every((f) => typeof f.amountAUD === "number"))) ok("engineers-australia.ts: every pathway fee is an extracted figure (no amountAUD: undefined)");
   else fail("engineers-australia.ts still has a fee without an amount");
 
-  const civil = resolveEngineersAustraliaAssessment({ anzscoCode: "233211" });
-  const manager = resolveEngineersAustraliaAssessment({ anzscoCode: "133211" });
-  if (civil.fee.id === "ea_cdr" && civil.amountMin === 940 && civil.amountMax === 1034 && manager.fee.id === "ea_cdr_rse" && manager.amountMin === 1375 && manager.amountMax === 1512.5) ok("report: CDR AUD 940–1,034; Engineering Manager CDR + skilled employment AUD 1,375–1,512.50");
-  else fail(`report figures: civil ${JSON.stringify(civil)}, manager ${JSON.stringify(manager)}`);
+  // Report figure by the applicant's country (the document does not say who pays GST; the AIMS rule is applied).
+  const cases: Array<[string, string | undefined, string, number]> = [
+    ["233211", "IN", "ea_cdr", 940], ["233211", "AU", "ea_cdr", 1034], ["233211", undefined, "ea_cdr", 1034],
+    ["133211", "IN", "ea_cdr_rse", 1375], ["133211", "Australia", "ea_cdr_rse", 1512.5],
+  ];
+  const bad = cases.filter(([code, country, id, amount]) => {
+    const a = resolveEngineersAustraliaAssessment({ anzscoCode: code, currentCountry: country });
+    return a.fee.id !== id || a.amountMin !== amount || a.amountMax !== amount;
+  });
+  if (bad.length === 0) ok("report: CDR AUD 940 outside Australia / 1,034 in Australia (or no country); Engineering Manager 1,375 / 1,512.50");
+  else fail(`report figures: ${JSON.stringify(bad)}`);
 
   // Home Affairs occupation moves.
   const eaCodes = new Set(engineersAustraliaAuthority.occupations.map((o) => o.anzscoCode));
@@ -85,6 +95,22 @@ async function main() {
   ];
   if (wrong.length === 0) ok(`${toEa.join(", ")} -> EA; ${toTra.join(", ")} -> TRA (Home Affairs skilled occupation list)`);
   else fail(`occupation moves: ${wrong.join("; ")}`);
+
+  // Professional Year tip (points calculator): by ANZSCO professional engineering code, not by the assessing authority
+  // -- 313213 / 313214 are assessed by Engineers Australia but are not professional engineering occupations.
+  const py = (code: string, name: string) =>
+    calculateVisaPoints({ ageRange: "25_32", englishLevel: "Competent", qualificationLevel: "Bachelor", offshoreExperienceYears: 3, onshoreExperienceYears: 0, anzscoCode: code, occupationName: name, hasNAATI: false, hasProfessionalYear: false, hasRegionalStudy: false, partnerSkilled: false } satisfies PointsCalculatorInput)
+      .boosters.some((b) => /Professional Year/.test(b.title));
+  const pyCases: Array<[string, string, boolean]> = [
+    ["313213", "Telecommunications Network Planner", false],
+    ["313214", "Telecommunications Technical Officer or Technologist", false],
+    ["233211", "Civil Engineer", true],
+    ["263311", "Telecommunications Engineer", true],
+  ];
+  const pyBad = pyCases.filter(([code, name, want]) => py(code, name) !== want);
+  const authority313 = ["313213", "313214"].map((c) => (occupations as { occupations: Array<{ anzsco_code: string; authority: string | null }> }).occupations.find((o) => o.anzsco_code === c)?.authority);
+  if (pyBad.length === 0 && authority313.every((a) => a === "Engineers Australia")) ok("Professional Year tip: none for 313213 / 313214 (dataset authority Engineers Australia); still shown for 233211, 263311");
+  else fail(`Professional Year tip: ${JSON.stringify(pyBad)}; 313213 / 313214 dataset authority ${authority313.join(", ")}`);
 
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
   process.exitCode = failures === 0 ? 0 : 1;

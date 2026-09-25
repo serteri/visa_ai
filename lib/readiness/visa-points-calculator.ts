@@ -213,11 +213,24 @@ function getSpecialistEducationPoints(input: PointsCalculatorInput): number {
   return input.specialistEducationStemResponse === "yes" ? 10 : 0;
 }
 
-function isProfessionalYearRelevantOccupation(input: PointsCalculatorInput, authority?: string): boolean {
+/**
+ * Engineering Professional Year: by the occupation's ANZSCO code -- minor group 233 Engineering Professionals and unit
+ * group 2633 Telecommunications Engineering Professionals -- not by the assessing authority. Engineers Australia also
+ * assesses technician / planner occupations (e.g. 313213, 313214), which are not professional engineering.
+ */
+export function isProfessionalEngineeringCode(anzscoCode?: string): boolean {
+  if (!anzscoCode || NOT_PROFESSIONAL_ENGINEERING.has(anzscoCode)) return false;
+  return anzscoCode.startsWith("233") || anzscoCode.startsWith("2633");
+}
+
+/** Codes under 233 that are not engineering professions: Quantity Surveyor (AIQS) and two technician roles. */
+const NOT_PROFESSIONAL_ENGINEERING: ReadonlySet<string> = new Set(["233213", "233614", "233616"]);
+
+export function isProfessionalYearRelevantOccupation(input: PointsCalculatorInput, authority?: string, anzscoCode?: string): boolean {
   if (authority === "ACS") return true;
   const occupation = (input.occupationName ?? "").toLowerCase();
   return (
-    authority?.toLowerCase().includes("engineers australia") === true ||
+    isProfessionalEngineeringCode(anzscoCode ?? input.anzscoCode) ||
     occupation.includes("account") ||
     occupation.includes("audit") ||
     occupation.includes("software") ||
@@ -236,7 +249,8 @@ function generateBoosters(
   input: PointsCalculatorInput,
   currentScore: number,
   breakdown: PointsBreakdown,
-  occupationAuthority?: string
+  occupationAuthority?: string,
+  occupationCode?: string
 ): BoosterScenario[] {
   const boosters: BoosterScenario[] = [];
 
@@ -258,7 +272,7 @@ function generateBoosters(
     });
   }
 
-  if (!input.hasProfessionalYear && isProfessionalYearRelevantOccupation(input, occupationAuthority)) {
+  if (!input.hasProfessionalYear && isProfessionalYearRelevantOccupation(input, occupationAuthority, occupationCode)) {
     boosters.push({
       title: "Professional Year Scenario",
       potentialPoints: 5,
@@ -411,7 +425,7 @@ export function calculateVisaPoints(input: PointsCalculatorInput): PointsCalcula
   };
 
   // Generate booster scenarios
-  const boosters = generateBoosters(input, baseScore, breakdown, occupationAuthority);
+  const boosters = generateBoosters(input, baseScore, breakdown, occupationAuthority, occupationRecord?.anzsco_code);
 
   // Check eligibility for points test
   const isEligibleForPointsTest = score189 >= MINIMUM_POINTS_THRESHOLD;

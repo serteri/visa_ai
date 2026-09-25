@@ -1,4 +1,5 @@
-import type { ApplicantLocation, AuthorityFee, SkillsAssessmentAuthority } from "./types";
+import type { AuthorityFee, SkillsAssessmentAuthority } from "./types";
+import { applicantLocationFor } from "./applicant-location";
 import { aacaAuthority } from "./authorities/aaca";
 import { acsAuthority } from "./authorities/acs";
 import { adcAuthority } from "./authorities/adc";
@@ -68,6 +69,24 @@ const PREFERRED_AUTHORITY: Readonly<Record<string, string>> = {
 };
 
 /**
+ * Codes the Home Affairs skilled occupation list assigns to MORE than one assessing authority, beyond the one the
+ * registry resolves (whose fees the report quotes): the others, named alongside it wherever the authority is named.
+ * 312999 Building and Engineering Technicians nec: "VETASSESS Engineers Australia".
+ */
+const ALSO_ASSESSED_BY: Readonly<Record<string, readonly string[]>> = {
+  "312999": ["VETASSESS"],
+};
+
+/** Other registry authorities Home Affairs lists for this code (empty for almost every code). */
+export function alsoAssessedBy(occupationCode: string | undefined): SkillsAssessmentAuthority[] {
+  const code = normalizeOccupationCode(occupationCode);
+  if (!code) return [];
+  return (ALSO_ASSESSED_BY[code] ?? [])
+    .map((id) => AUTHORITIES.find((a) => a.authorityId === id && a.occupations.some((o) => o.anzscoCode === code)))
+    .filter((a): a is SkillsAssessmentAuthority => a !== undefined);
+}
+
+/**
  * Looks up the assessing authority for a given occupation code.
  *
  * Accepts AU (ANZSCO/OSCA) and CA (NOC) codes in any of these forms:
@@ -111,18 +130,7 @@ export function getDefaultPathway(
   return authority?.pathways[0] ?? null;
 }
 
-/**
- * Where the applicant applies from, from the intake's current country (an ISO code such as "AU" / "SG", or a
- * name). Same rule as the state-nomination and ranked-pathways offshore checks: anything that is not Australia is
- * offshore; no country given -> unknown.
- */
-export function applicantLocationFor(currentCountry: string | undefined): ApplicantLocation | undefined {
-  const c = (currentCountry ?? "").trim().toLowerCase();
-  if (!c) return undefined;
-  if (c === "au" || c.includes("australia") || c.includes("australya")) return "onshore";
-  if (c === "sg" || c.includes("singapore") || c.includes("singapur")) return "singapore";
-  return "offshore";
-}
+export { applicantLocationFor } from "./applicant-location";
 
 /**
  * The fee the report quotes for a pathway: its first amount, unless the pathway prices by applicant location

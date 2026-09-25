@@ -1758,45 +1758,6 @@
       ]
     },
     {
-      "id": "authority_conflict_312999",
-      "description": "ANZSCO 312999 (Building and Engineering Technicians nec): the codebase names more than one assessing authority -- EA (registry) vs VETASSESS (registry) vs VETASSESS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_313213",
-      "description": "ANZSCO 313213 (Telecommunications Network Planner): the codebase names more than one assessing authority -- EA (registry) vs TRA (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_313214",
-      "description": "ANZSCO 313214 (Telecommunications Technical Officer or Technologist): the codebase names more than one assessing authority -- EA (registry) vs TRA (dataset authority field). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
       "id": "authority_conflict_399111",
       "description": "ANZSCO 399111 (Boat Builder and Repairer): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
       "value": null,

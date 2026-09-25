@@ -1,5 +1,5 @@
 import occupationsData from "@/src/data/occupations.json";
-import { getAuthorityById, getSkillsAssessmentAuthority } from "./index";
+import { alsoAssessedBy, getAuthorityById, getSkillsAssessmentAuthority } from "./index";
 import { getAssessingAuthority } from "./occupation-authority-map";
 import { normalizeOccupationCode, type SkillsAssessmentAuthority } from "./types";
 
@@ -23,17 +23,21 @@ export type ResolvedAuthority = {
   /** True when the universal fallback (VETASSESS / General Professional Authority) was used. */
   isGeneralFallback: boolean;
   source: "registry-code" | "keyword" | "general";
+  /** Other authorities Home Affairs lists for this code (e.g. 312999: VETASSESS besides Engineers Australia). */
+  alsoAssessedBy?: Array<{ authorityId: string; authorityName: string }>;
 };
 
 export function resolveAssessingAuthority(occupation: string | undefined): ResolvedAuthority {
   const byCode = getSkillsAssessmentAuthority(occupation);
   if (byCode) {
+    const also = alsoAssessedBy(occupation).filter((a) => a.authorityId !== byCode.authorityId);
     return {
       authorityId: byCode.authorityId,
       authorityName: byCode.authorityName,
       authority: byCode,
       isGeneralFallback: false,
       source: "registry-code",
+      ...(also.length ? { alsoAssessedBy: also.map((a) => ({ authorityId: a.authorityId, authorityName: a.authorityName })) } : {}),
     };
   }
   const fuzzy = getAssessingAuthority(occupation);
@@ -48,7 +52,9 @@ export function resolveAssessingAuthority(occupation: string | undefined): Resol
 
 /** The one way an authority is named in prose: "Australian Computer Society (ACS)". */
 export function authorityDisplayName(resolved: ResolvedAuthority): string {
-  return resolved.source === "registry-code" ? `${resolved.authorityName} (${resolved.authorityId})` : resolved.authorityName;
+  if (resolved.source !== "registry-code") return resolved.authorityName;
+  // Where Home Affairs lists more than one authority, every one is named (" / " reads in every report language).
+  return [resolved, ...(resolved.alsoAssessedBy ?? [])].map((a) => `${a.authorityName} (${a.authorityId})`).join(" / ");
 }
 
 // ── Authority vocabulary in the occupation dataset ─────────────────────────

@@ -26,6 +26,7 @@ import {
   getDefaultPathway,
   resolveACSPathway,
   selectPrimaryFee,
+  alsoAssessedBy,
   resolveLocalized,
   resolveLocalizedArray,
 } from "@/lib/skills-assessment";
@@ -5142,7 +5143,7 @@ function buildFinancialRoadmap(
     // Engineers Australia: fees by pathway, excl./incl. GST (engineers-australia-fees.json). The intake cannot tell
     // whether a qualification is accredited, so the report quotes the CDR pathway and names the accredited ones.
     const eaAssessment = authority?.authorityId === "EA"
-      ? resolveEngineersAustraliaAssessment({ anzscoCode: anzscoCodeFromOccupation(input.occupation, authority.occupations) })
+      ? resolveEngineersAustraliaAssessment({ anzscoCode: anzscoCodeFromOccupation(input.occupation, authority.occupations), currentCountry: input.currentCountry })
       : undefined;
     if (authority && eaAssessment) {
       primaryPathway = authority.pathways.find((p) => p.pathwayId === eaAssessment.pathwayId) ?? primaryPathway;
@@ -5232,7 +5233,8 @@ function buildFinancialRoadmap(
           : (primaryFee?.amountAUD !== undefined
           ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU")} ${feeQualifiers ? `(${feeQualifiers})` : ""}`
           : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "")).trim() + (feeIsEstimate ? ` (${estimateQualifier(locale)})` : "");
-      const traNote = traProgram ? traProgramNote(traProgram, locale) : eaAssessment ? eaNote(eaAssessment, locale as "en" | "tr" | "zh-Hans") : "";
+      const alsoNote = alsoAssessedByNote(authority, alsoAssessedBy(input.occupation), locale);
+      const traNote = [traProgram ? traProgramNote(traProgram, locale) : eaAssessment ? eaNote(eaAssessment, locale as "en" | "tr" | "zh-Hans") : "", alsoNote].filter(Boolean).join(" ");
       const processing = primaryPathway.processingTimeWeeks?.label
         ? resolveLocalized(primaryPathway.processingTimeWeeks.label, locale)
         : primaryPathway.processingTimeWeeks
@@ -7462,4 +7464,15 @@ function traProgramNote(t: TraProgram, locale: string): string {
           ? `如果您的护照来自以下国家，TRA 对该职业要求参加 OSAP（AUD ${aud(OSAP_FEES.pathway2)}–${aud(OSAP_FEES.pathway1Max)}）而非标准 MSA：${countries}（${ref}）。`
           : `If your passport is from one of these countries, TRA requires the OSAP (AUD ${aud(OSAP_FEES.pathway2)}–${aud(OSAP_FEES.pathway1Max)}) for this occupation instead of the standard MSA: ${countries} (${ref}).`;
   }
+}
+
+/** Home Affairs lists another assessing authority too (e.g. 312999: VETASSESS and Engineers Australia). */
+function alsoAssessedByNote(primary: { authorityName: string }, others: Array<{ authorityName: string }>, locale: string): string {
+  if (!others.length) return "";
+  const names = [primary, ...others].map((a) => a.authorityName).join(" / ");
+  return locale === "tr"
+    ? `İçişleri Bakanlığı'nın nitelikli meslek listesi bu meslek için birden fazla değerlendirme kurumu gösterir: ${names}; gösterilen ücret ${primary.authorityName} ücretidir.`
+    : locale === "zh-Hans"
+      ? `内政部技术职业清单为该职业列出了多个评估机构：${names}；所示费用为 ${primary.authorityName} 的费用。`
+      : `The Home Affairs skilled occupation list names more than one assessing authority for this occupation: ${names}; the fee shown is ${primary.authorityName}'s.`;
 }

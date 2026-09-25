@@ -6937,7 +6937,7 @@
     {
       "anzsco_code": "312999",
       "occupation_name": "Building and Engineering Technicians nec",
-      "authority": "VETASSESS",
+      "authority": "VETASSESS / Engineers Australia",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -14415,11 +14415,11 @@
     {
       "anzsco_code": "313213",
       "occupation_name": "Telecommunications Network Planner",
-      "authority": "TRA",
+      "authority": "Engineers Australia",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
-      "critical_warning": "ACS deducted experience may reduce claimed skilled years.",
+      "critical_warning": "",
       "visa_lists": [
         "MLTSSL",
         "CSOL"
@@ -22978,7 +22978,7 @@
     {
       "anzsco_code": "313214",
       "occupation_name": "Telecommunications Technical Officer or Technologist",
-      "authority": "TRA",
+      "authority": "Engineers Australia",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",

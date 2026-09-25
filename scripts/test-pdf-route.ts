@@ -1921,8 +1921,11 @@ async function runExtractedAuthorityChecks(
   };
   const amount = (a: string) => new RegExp(`(AUD|澳元)\\s*${a.replace(/[–-]/g, "[–-]").replace(/\./g, "\\.")}(?![\\d,])`);
   const cases: Array<{ name: string; occupation: string; country: string; id: string; amount: string; not: string[]; min: number; max: number; also?: RegExp }> = [
-    { name: "ea-233211", occupation: "Civil Engineer 233211", country: "IN", id: "EA", amount: "940–1,034", not: ["835"], min: 940, max: 1034, also: /p\.9|s\.9|第9页/ },
-    { name: "ea-133211", occupation: "Engineering Manager 133211", country: "IN", id: "EA", amount: "1,375–1,512.50", not: ["835"], min: 1375, max: 1512.5 },
+    // Engineers Australia by the applicant's country: outside Australia excl. GST, in Australia incl. GST.
+    { name: "ea-233211-IN", occupation: "Civil Engineer 233211", country: "IN", id: "EA", amount: "940", not: ["835", "940–1,034"], min: 940, max: 940, also: /p\.9|s\.9|第9页/ },
+    { name: "ea-233211-AU", occupation: "Civil Engineer 233211", country: "AU", id: "EA", amount: "1,034", not: ["835", "940–1,034"], min: 1034, max: 1034, also: /p\.9|s\.9|第9页/ },
+    { name: "ea-133211-IN", occupation: "Engineering Manager 133211", country: "IN", id: "EA", amount: "1,375", not: ["835", "1,375–1,512.50"], min: 1375, max: 1375 },
+    { name: "ea-133211-AU", occupation: "Engineering Manager 133211", country: "AU", id: "EA", amount: "1,512.50", not: ["835", "1,375–1,512.50"], min: 1512.5, max: 1512.5 },
     { name: "aims-234611-IN", occupation: "Medical Laboratory Scientist 234611", country: "IN", id: "AIMS", amount: "900", not: ["990"], min: 900, max: 900 },
     { name: "aims-234611-AU", occupation: "Medical Laboratory Scientist 234611", country: "AU", id: "AIMS", amount: "990", not: ["900"], min: 990, max: 990 },
     { name: "aims-311216-IN", occupation: "Pathology Collector 311216", country: "IN", id: "AIMS", amount: "900", not: ["990"], min: 900, max: 900 },
@@ -1952,6 +1955,8 @@ async function runExtractedAuthorityChecks(
     { occupation: "Pathology Collector 311216", id: "AIMS", name: "Australian Institute of Medical Scientists", text: /Pathology Collector \/ Phlebotomist/ },
     { occupation: "Flying Instructor 231113", id: "VETASSESS", name: "Vocational Education and Training Assessment Services" },
     { occupation: "Aeroplane Pilot 231111", id: "CASA", name: "Civil Aviation Safety Authority", text: /around 14 days/ },
+    // Home Affairs lists both for 312999: the report names both wherever it names the authority.
+    { occupation: "Building and Engineering Technicians nec 312999", id: "EA", name: "Engineers Australia (The Institution of Engineers Australia) (EA) / Vocational Education and Training Assessment Services (VETASSESS)", text: /names more than one assessing authority for this occupation/ },
   ];
   for (const c of authorityCases) {
     const label = `authority-fix ${c.occupation}/en`;
@@ -1967,6 +1972,19 @@ async function runExtractedAuthorityChecks(
     if (c.text && !c.text.test(flat)) f(`PDF does not contain ${c.text.source}`);
     if (/\b14 business days\b/.test(flat) && c.id === "CASA") f('PDF still says "14 business days"');
     if (!caseFailed) console.log(`  ✅ ok (${c.id})`);
+  }
+
+  // 313213 / 313214 are assessed by Engineers Australia but are not professional engineering: no Professional Year tip.
+  for (const occupation of ["Telecommunications Network Planner 313213", "Telecommunications Technical Officer or Technologist 313214"]) {
+    const label = `no-PY ${occupation.slice(-6)}/en`;
+    console.log(`\n=== ${label} ===`);
+    const input: ReadinessInput = { ...base, occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, locale: "en" };
+    const { report, flat } = await render(`nopy-${occupation.slice(-6)}-en`, input, "en");
+    const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+    if (!row?.category.includes("(EA)")) fail(`${label}: roadmap skills row "${row?.category}", expected EA`);
+    else if (flat === null) fail(`${label}: route did not return the PDF`);
+    else if (/Professional Year/i.test(flat)) fail(`${label}: PDF offers the Professional Year`);
+    else console.log("  ✅ ok (EA; no Professional Year tip)");
   }
 }
 
